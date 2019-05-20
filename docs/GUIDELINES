@@ -1,0 +1,71 @@
+
+
+
+                        Design Guidelines
+                        -----------------
+
+
+The most important feature for a tool for writer is to manage the text mass.
+If you consider a 300 page novel, it can be hard to edit the content alone as
+as big bunch of text. Now, when you consider that most novels have lots of
+meta text - plans, sketches and such - keeping track of all of them can be
+painful with regular text editors or word processors.
+
+We need to be able to develop the story in more manageable pieces. We need to
+be able to store meta data to the text (that is, plans, ideas, design, synopses),
+and we need to have a tool that can show us that meta data in meaningful way
+when writing.
+
+Second thing in an editor aimed for fiction writers is that it should be as
+easy to use as possible. Few of the guidelines:
+
+- "Just start writing": when you open the editor, you can start writing
+  your story immediately, just like opening a notepad. No need for any kind
+  of setup. Getting back to a story you rejected four years ago should be easy.
+  
+- All meta data is added later, when the story grows. They should be tools
+  you take in use when you need them. For example, at some point you might want
+  to create a bigger view to your story, and you start writing synopses to
+  chapters. At some point you may need to sketch some events, and you add those
+  sketches to your story. But never ever they should be mandatory things to do
+  when writing.
+
+Most stories get their "initial" shape pretty quickly. You have an idea of
+a character, or how it starts, how it ends, or what is the turning point. You
+might have idea where it happens, or when it happens.
+
+The difficult thing is to weave the pieces of the story so that it goes through
+the initial idea. Close all writers do not lack ideas: they just lack ideas for
+those small things tieing certain pieces together.
+
+- - -
+
+Some other design guidelines:
+
+- This is an editor for writers: writers use keyboard, so UI will use
+  keyboard.
+  
+- "WYSIWYG": As far as possible, make it look just like what you get when
+  printing it out. Try to minimize all distractions.
+
+- It is an editor for writing, not for typesetting. Be very, very cautious
+  to give the user anything to mess up with typesettings (fonts, faces,
+  justifying, ...)
+
+- Views: What writer needs most is not a typewriter, but an ability to view
+  her/his story from multiple angles. You need to have different views to the
+  story, and in each view, you should be able to modify it directly.
+
+  Viewing story from multiple view points is more important than you
+  first think. Just like a sculptor, you will be turning your subject
+  to different angles to be able to sculpt it at one point.
+
+- - -
+
+We need to make some scoping for the project:
+
+- Generally, the editor is mainly meant to write short stories. Let's
+  say that at maximum it can be used to edit stories with around 50,000 - 80,000
+  words, formed from around 50-80 scenes, and split to 3-5 parts or around 15-25
+  chapters.
+  

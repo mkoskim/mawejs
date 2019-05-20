@@ -1,0 +1,211 @@
+<html>
+<head></head>
+<body>
+<!---------------------------------------------------------------------------->
+<!-- Styles -->
+<!---------------------------------------------------------------------------->
+<style>
+
+.hidden { display: none; }
+#draghandle { cursor: move; }
+.autoheight { resize: none; overflow-y: hidden; }
+
+/*---------------------------------------------------------------------------*/
+
+div#board {
+    background: rgb(200, 200, 200);
+    overflow-x: auto;
+    overflow-y: scroll;
+}
+
+/*---------------------------------------------------------------------------*/
+
+div#sheet {
+    min-width: 10cm;
+    max-width: 12cm;
+
+    padding-top: 1cm;
+    padding-bottom: 2cm;
+    padding-left: 1cm;
+    padding-right: 1cm;
+
+    background: white;
+
+    overflow: auto;
+    /* Space left around sheet on board */
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1cm;
+    margin-bottom: 1cm;
+}
+
+/*---------------------------------------------------------------------------*/
+/* Sheet is divided to rows */
+/*---------------------------------------------------------------------------*/
+
+.sheetrow {
+    width: 100%;
+    display: block;
+    margin: 0px;
+    border: 0px;
+    /*
+    border: 1px solid rgb(200, 200, 230); 
+    */
+
+    font: 12pt Times;
+
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+/*---------------------------------------------------------------------------*/
+/* Styles for story header */
+
+div#header {
+    margin-bottom: 1cm;
+}
+
+div#header #title {
+    text-align: center;
+    font-size: 18pt;
+    font-weight: bold;
+    margin-bottom: 8pt;
+}
+
+div#header #author {
+    text-align: center;
+    margin-bottom: 8pt;
+}
+
+/*---------------------------------------------------------------------------*/
+/* Styles for scene elements */
+
+div#scenelist {
+    border-width: 2px;
+    border-style: dotted;
+    border-color: transparent; /*rgb(160, 160, 220);*/
+}
+
+.scene {
+}
+
+.scene #synopsis {
+    width: 100%;
+    font: 10pt Arial;
+    background: rgb(255, 255, 220);
+    /*border: 1px solid rgb(255, 255, 210);*/
+    border: 0px;
+    border-radius: 4px;
+}
+
+.scene #sketch {
+    width: 100%;
+    font: 10pt Arial;
+    background: rgb(245, 255, 250);
+    border: 0px;
+}
+
+.scene #content {
+    width: 100%;
+    font: 12pt Times;
+    margin-top: 4pt;
+    border: 0px;
+}
+
+/*---------------------------------------------------------------------------*/
+/* section     = parts
+ * sub-section = chapters
+ * composite   = scenes
+ */
+/*---------------------------------------------------------------------------*/
+
+body
+{
+    counter-reset: section;
+    counter-reset: sub-section;
+    counter-reset: composite;
+}
+
+h1:before {
+    content: "Part " counter(section);
+    counter-increment: section;
+}
+
+h2:before {
+    content: "Chapter " counter(sub-section);
+    counter-increment: sub-section;
+}
+
+h3 {
+    font-weight: normal;
+    font: 12pt Times;
+    color: rgb(100, 100, 100);
+    margin: 0;
+    padding: 0;
+    display: inline;
+}
+
+h3:before {
+    content: "(" counter(composite) ")";
+    counter-increment: composite;
+}
+</style>
+
+<!---------------------------------------------------------------------------->
+<!-- Toolbar for the view -->
+<!---------------------------------------------------------------------------->
+
+<div id="topbar" class="gui">
+    <div id="toolbar" class="widgetbox">
+        <div class="check"><input type="checkbox" id="synopses" checked/><label for="synopses">Synopses</label></div>
+        <div class="check"><input type="checkbox" id="sketches" checked/><label for="sketches">Sketches</label></div>
+        <div class="check"><input type="checkbox" id="content"  checked /><label for="content">Content</label></div>
+        </div>
+</div>
+
+<!---------------------------------------------------------------------------->
+<!-- Board for displaying the story -->
+<!---------------------------------------------------------------------------->
+
+<div id="board">
+    <div id="sheet">
+        <div id="header">
+            <input id="author" class="lineedit sheetrow" placeholder="<Your name>" />
+            <input id="title"  class="lineedit sheetrow"  placeholder="<Unnamed story>" />
+            </div>
+        <div id="scenelist">
+            </div>
+    </div>
+</div>
+
+<!---------------------------------------------------------------------------->
+<!-- Templates used by this view -->
+<!---------------------------------------------------------------------------->
+
+<div id="template" style="display: none;">
+    <div class="scene">
+        <div class="sheetrow">
+            <!-- <div class="scene_name" style="display: table; width: 100%;">
+                <input id="name" placeholder="" type="text" style="display: table-cell; width: 100%;"></input>
+                <h3 id="draghandle" style="display: table-cell; width: 1px;"></h3>
+                </div> -->
+            <textarea
+                id="synopsis"
+                class="autoheight textedit"
+            />
+        </div>
+        <div class="sheetrow">
+            <textarea
+                id="sketch"
+                class="autoheight textedit"
+            />
+            </div>
+        <div class="sheetrow">
+            <textarea
+                id="content"
+                class="autoheight textedit"
+            />
+        </div>
+    </div>
+</body></html>

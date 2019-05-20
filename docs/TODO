@@ -1,0 +1,97 @@
+TODO:
+
+-------------------------------------------------------------------------------
+
+- Toolbar should be view specific.
+
+- First things first: we can develop the editor by using browser local
+  storage, file drops and file downloads. We could integrate cloud storages
+  (Google Drive and DropBox) later.
+
+-------------------------------------------------------------------------------
+
+General:
+
+
+- What we know for sure, is that a story is a sequence of scenes.
+
+- What we also know for sure, is that we need to be able to store metadata
+  at various levels: for one scene, for a chapter, for entire story. We need
+  to be able to link other documents to the story, for example, links to
+  documents describing the backgrounds.
+
+-------------------------------------------------------------------------------
+
+- Software needs to be organized so that it has "views": what editor needs
+  most, is tools to view the story from different angles. Main view is
+  "draft" view - it lets you edit your story close the same way as you down
+  with regular text editors. But you need more: you need to be able to review
+  the synopses, the structure of the story, and so on.
+
+- It is important, that write aid tools are available when writing (if wanted).
+  For example, it is good idea to have the synopses on the screen when working
+  with scene.
+
+- Lets not yet pay too much attention for editing the story. Lets first concentrate
+  on creating views to a story. Lets then make those views "editable"
+
+- NOTE: It should be easy to have "splitted" editor, that is, only chosen scenes
+  would be visible. Give user tools to choose what parts of the text s/he is
+  editing.
+
+-------------------------------------------------------------------------------
+
+Integration:
+
+- Google Drive support: load & store stories from Google Drive, store
+  project manager database to google drive. Export stories to google
+  drive.
+
+Project manager:
+
+- Implement project manager
+
+- Listing projects, filtering etc
+
+- Online publishing? Integrated to project manager?
+
+Publishing:
+
+- Need to be designed. How to organize stories, and publish them e.g.
+  in wordpress?
+
+Import & Export:
+
+- Loading and storing stories to Google Drive and similar.
+
+- Export RTF
+
+- Export EPUB
+
+- Export HTML (for e.g. WordPress)
+
+-------------------------------------------------------------------------------
+
+Nice-to-have features:
+
+- Opening multiple stories and moving scenes between them. This would be nice
+  for splitting and merging stories.
+
+-------------------------------------------------------------------------------
+
+TODO: Small things:
+
+- Drag'n'drop without mouse: Somehow, you should be able to grab your scene,
+  and start moving it around. Maybe "move up" / "move down" functionality?
+
+  - Maybe Alt-G (grab) enters a state where you can move scene around with
+    cursor keys? Alt-G again would revert back to normal mode.
+  
+- Lose focus: Get rid of sheet focus to be able to go around with page
+  up & down. Also, regain focus to somewhat nice spot?
+  
+-------------------------------------------------------------------------------
+
+DONE:
+
+- Browser (Chrome) find seems to work perfectly!

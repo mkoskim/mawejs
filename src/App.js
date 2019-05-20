@@ -1,26 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Plain from 'slate-plain-serializer'
+import { Editor } from 'slate-react'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import React from 'react'
+
+/**
+ * Deserialize the initial editor value.
+ *
+ * @type {Object}
+ */
+
+const initialValue = Plain.deserialize(
+  'This is editable plain text, just like a <textarea>!'
+)
+
+/**
+ * The plain text example.
+ *
+ * @type {Component}
+ */
+
+class PlainText extends React.Component {
+  /**
+   * Render the editor.
+   *
+   * @return {Component} component
+   */
+
+  render() {
+    return (
+      <Editor
+        placeholder="Enter some plain text..."
+        defaultValue={initialValue}
+      />
+    )
+  }
 }
 
-export default App;
+/**
+ * Export.
+ */
+
+export default PlainText
+
