@@ -23,22 +23,11 @@ import './index.css';
  */
 
 const initialValue = Plain.deserialize(
-  'This is editable plain text, just like a <textarea>!'
+  "This is editable plain text, just like a <textarea>!" +
+  "\n\nYes!"
 )
 
-/**
- * The plain text example.
- *
- * @type {Component}
- */
-
 class PlainText extends React.Component {
-  /**
-   * Render the editor.
-   *
-   * @return {Component} component
-   */
-
   render() {
     return (
       <Editor
@@ -49,9 +38,7 @@ class PlainText extends React.Component {
   }
 }
 
-/**
- * Export.
- */
+// ----------------------------------------------------------------------------
 
 ReactDOM.render(<PlainText />, document.getElementById('root'));
 
