@@ -2,7 +2,11 @@
 
                 File Format (Story structure) for moe editor
                 --------------------------------------------
-                        
+
+NOTE! By default, our net application could store stories to a database - all
+together. That could simplify certain operations, like project manager, and
+shared tags. File format is (1) to determine how the story is stored to database,
+and (2) exporting and importing stories to database.
 
 We borrow the basic concept from existing Python implementation, with
 certain modifications. For example, Python implementation works with
