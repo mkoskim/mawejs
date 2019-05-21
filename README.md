@@ -5,6 +5,18 @@ This is my moe - My/Markus Own Editor - implemented as a web application. The pr
 
 - - -
 
+Installing:
+
+1. Clone the repository
+2. Install node.js (with npm)
+3. Install components: `moe.net$ npm install`
+
+Running:
+
+    moe.net$ npm start
+
+- - -
+
 **Just start writing**
 
 moe as an editor was written to me to write stories. As such it has certain design guidelines. The most important is *"Just start writing"* - many editors meant for writers need first to do some basic configurations. Moe's principle is that when you open it, it is ready for writing your story, just like notepad or similar applications. All the tools that help you to keep track with the text mass are taken into use just when you need it - without any need for configuring them beforehand.
