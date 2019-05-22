@@ -1,0 +1,16 @@
+Plans & sketches
+----------------
+
+SplitView: By default, there is one editor. But you should be able to split
+the view, and have two editors side to side, to be able to edit your story
+at two different locations.
+
+Furthermore, you would be able to load another story in to your editor, so
+that you are able to split & merge stories together. Examples:
+
+- During writing your story you realize that some of your planned plots could
+  work better as a spinoff: split the view, create new story, drag & drop pieces
+  from your main story to splitted view and save it as a spinoff.
+  
+- During your work, you realize you have another story containing great stuff
+  for this story. Open it in splitview, and drag&drop elements to your main story.
