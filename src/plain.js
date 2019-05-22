@@ -13,31 +13,50 @@ const initialValue = Plain.deserialize(
   'This is editable plain text, just like a <textarea>!'
 )
 
-/**
- * The plain text example.
- *
- * @type {Component}
- */
+//-----------------------------------------------------------------------------
 
+function renderEditor(props, editor, next) {
+  const wordCount = 100; //countWords(editor.value.text)
+  const children = next()
+  return (
+    <React.Fragment>
+      <div id="editor">
+      <div>Editor:</div>
+      {children}
+      <span className="word-count">{wordCount}</span>
+      </div>
+    </React.Fragment>
+  )
+}
+
+//-----------------------------------------------------------------------------
+
+function PlainText(props)
+{
+    return (
+      <Editor
+        renderEditor={renderEditor}
+        placeholder="Enter some plain text..."
+        defaultValue={initialValue}
+      />
+    )
+}
+
+/*
 class PlainText extends React.Component {
-  /**
-   * Render the editor.
-   *
-   * @return {Component} component
-   */
-
   render() {
     return (
       <Editor
+        renderEditor={renderEditor}
         placeholder="Enter some plain text..."
         defaultValue={initialValue}
       />
     )
   }
 }
-
-/**
- * Export.
- */
+*/
 
 export default PlainText
+
+//-----------------------------------------------------------------------------
+
