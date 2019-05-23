@@ -31,6 +31,24 @@ parser.
 
 -------------------------------------------------------------------------------
 
+Note: It might be better to allow in-content comments.
+
+Note: We might remove the scene "visibility". Every scene in body is visible.
+No scene in other groups is visible. This would simplify the system. If user
+wants to make some scenes invisible, s/he cuts them to another group.
+
+Lets try to make group handling easy and intuitive. Like,
+
+- Cut scenes to clipboard, paste scenes to clipboard: this could be our way
+  to move scenes instead of drag'n'dropping. But we still might have DnD
+  support.
+
+- Rename clipboard (make it a group)
+
+- Paste scenes from other groups
+
+-------------------------------------------------------------------------------
+
 Simplified structure of a file:
 
     <story>

@@ -40,7 +40,8 @@ ReactDOM.render(
 class Toggle extends React.Component {
   state = {isToggleOn: true};
   
-  handleClick = () => {
+  handleClick = (event) => {
+    //console.log(event);
     this.setState(state => ({
       isToggleOn: !state.isToggleOn
     }));
