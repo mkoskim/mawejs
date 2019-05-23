@@ -2,16 +2,27 @@
 ******************************************************************************/
 
 /*---------------------------------------------------------------------------*/
+/* Make <html> and its <body> to use entire browser window area */
+/*---------------------------------------------------------------------------*/
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
 
 body {
-    margin: 0;
+    margin: 0; /* Remove margins */
+    background: rgb(200, 200, 200);
+    font-family: arial;
+    font-size: 10pt;
 }
 
 /*---------------------------------------------------------------------------*/
 
-#main {
+#root {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    height: 100%;
     background: rgb(240, 240, 240);
 }
 
@@ -19,24 +30,69 @@ body {
 
 .Toolbar {
     display: flex;
-    border-bottom: 2px solid #eee;
-    padding: 4px 4px 8px 4px;
-    /*
-    position: relative;
-    padding: 1px 18px 17px;
-    margin: 0 -20px;
-    */
+    background: rgb(250, 250, 250);
+    border-bottom: 1px solid rgb(170, 170, 170);
+    padding: 4pt;
 }
 
 .Statusbar {
-    border-top: 2px solid #eee;
-    padding: 4px 4px 4px 4px;
-    /*
-    position: relative;
-    padding: 1px 18px 17px;
-    margin: 0 -20px;
-    margin-top: 20px;
+    background: rgb(250, 250, 250);
+    border-top: 1px solid rgb(170, 170, 170);
+    padding: 4pt;
+    margin-top: auto;
+}
+
+/*---------------------------------------------------------------------------*/
+
+div.editor {
+    font-family: times;
+    font-size: 12pt;
+    flex: 1 1 auto;
+    background: white;
+    overflow: auto;
+
+    padding-top: 1cm;
+    padding-bottom: 2cm;
+    padding-left: 1cm;
+    padding-right: 1cm;
+
+    flex: auto; /* Equals: flex 1 1 auto; */
+
+/*
+    min-width: 10cm;
+    max-width: 15cm;
+*/
+    /* Space left around sheet on board */
+/*
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1cm;
+    margin-bottom: 1cm;
     */
+}
+
+/*---------------------------------------------------------------------------*/
+
+.Toolbar .Button {
+    cursor: pointer;
+    padding: 2pt 2pt 2pt 2pt;
+    /*
+    margin: 2pt;
+    padding: 2pt 4pt 0pt 4pt;
+    padding: 2px 8px 2px 8px;
+    margin: 2px 2px 2px 2px;
+    */
+}
+
+.Toolbar .Button:hover {
+    transition-property: background;
+    transition-duration: 0.2s;
+    background: rgb(200, 200, 200);
+}
+
+.Toolbar .Separator {
+    border-left: 1pt solid rgb(180, 180, 180);
+    margin: 2pt 4pt 4pt 4pt;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -53,24 +109,4 @@ body {
 
 .material-icons.md-light { color: rgba(255, 255, 255, 1); }
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
-
-.Button {
-    cursor: pointer;
-    font-size: 9pt;
-    border: 1px solid gray;
-    border-radius: 5px;
-    padding: 4px 8px 4px 8px;
-    margin: 2px 2px 2px 2px;
-    /*
-    */
-}
-
-/*---------------------------------------------------------------------------*/
-
-div.editor {
-    overflow-y: auto;
-    overflow-x: hidden;
-    margin-bottom: auto;
-    padding: 4px 4px 4px 4px;
-}
 

@@ -1,7 +1,5 @@
 import React from 'react'
 
-import { cx, css } from 'emotion'
-
 //-----------------------------------------------------------------------------
 
 export const Toolbar = React.forwardRef(({ className, ...props }, ref) => (
@@ -30,4 +28,22 @@ export const Button = React.forwardRef(
       className="Button"
     />
 ))
+
+//-----------------------------------------------------------------------------
+
+export function Icon(props)
+{
+    const {name} = props;
+    
+    return (
+        <Button><i className="material-icons">{name}</i></Button>
+    );
+}
+
+export function Separator(props)
+{
+    return <span className="Separator" />;
+}
+
+
 

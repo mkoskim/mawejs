@@ -2,7 +2,7 @@ import React from 'react'
 
 import Plain from 'slate-plain-serializer'
 import { Editor } from 'slate-react'
-import { Toolbar, Statusbar, Button } from "./toolbar"
+import { Toolbar, Statusbar, Button, Icon, Separator } from "./toolbar"
 
 //-----------------------------------------------------------------------------
 
@@ -18,8 +18,11 @@ function PlainText(props)
     return (
         <React.Fragment>
             <Toolbar>
-                <Button><i class="material-icons md-dark">format_bold</i></Button>
+                <Icon name="format_bold"/>
+                <Icon name="format_italic"/>
+                <Separator/>
                 <Button>BTN</Button>
+                
                 <span style={{marginLeft: "auto"}} />
                 <Button>BTN</Button>
                 </Toolbar>

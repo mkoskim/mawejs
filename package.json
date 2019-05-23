@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "emotion": "^10.0.9",
     "immutable": "^4.0.0-rc.12",
+    "is-hotkey": "^0.1.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
