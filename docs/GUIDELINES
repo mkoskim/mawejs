@@ -7,28 +7,39 @@
 
 First and foremost rule: "Just start writing" - when you open the editor,
 you can start writing your story immediately, just like opening a notepad. No
-need for any kind of setup. The "magic" comes later.
+need for any kind of setup.
+
+The "magic" comes later.
+
+- - -
 
 There are basically two worlds of text editors:
 
-1) Editors like notepad and office word: here, you have a bunch of text on
-   display, and you edit it as it is.
+1) Notepad, office word, google docs and similar: These are editors which
+handle the text as one single bunch. They assume that if you want to split
+the text, you will create several files (as we do when making software),
+and those files are compiled together externally.
+
+This group generally lacks the ability to split the text to manageable
+pieces, which becomes a problem when your story is like 80,000 words. As an
+example, you can not move chapters in the index view in google docs
+or office word. Plain text editors don't even have an index.
    
-   This group generally lacks the ability to split the text to manageable
-   parts, which becomes a problem when your story is like 80,000 words. As an
-   example, you can not reorder chapters in the index view in google docs
-   or office word. Plain text editors don't even have an index.
-   
-2) Editors for writers, like ywriter and such: here, the editor is more like
-   your email client. At right side you have index, containing the list of
-   the blocks, and at left side you can edit the content of your block.
-   
-   These editors usually have limited possibilities to edit your text "as is".
-   You basically edit it block by block, and switching the block from index.
-   Most of these editors can "print" you a draft of your entire text, but that
-   draft is usually not editable. When you are reading it and find an error,
-   you need to go back to actual editor, locate the block that had error, fix
-   it and print out the new draft.
+2) ywriter and similar: These editors are designed for writers, and they are
+based on text splits, usually named scenes.
+
+These editors are often more like a email client. You have a list of scenes
+(c.f. list of conversions) at left side, and you have editor box at right side
+to edit the scene you chose.
+
+These editors usually have limited possibilities to edit your text "as is".
+You basically edit it block by block, and switch the block from index.
+Most of these editors can "print" you a draft of your entire text, but that
+draft is usually not editable. When you are reading it and find an error,
+you need to go back to actual editor, locate the block that had error, fix
+it and print out the new draft.
+
+- - -
 
 Moe aims between these two worlds. As far as possible, I try to keep the "draft
 view" the main view to edit your story. As far as possible, this draft view

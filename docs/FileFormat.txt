@@ -20,32 +20,40 @@ this. It mainly helps in certain operations, but I'd like to concentrate on
 basics, and we could trust to rich text and HTTP links on meta text. We
 could try to simplify the structure.
 
+NOTE! We will keep native file format as XML, for two reasons: (1) we can then
+load files created by previous moe version, and (2) browsers have built-in XML
+parser.
+
 NOTE! We could now prepare for future needs. This means that in general,
 editor preserves blocks it can not edit. For example, our first version might
 not be able to edit anything but content, but it will still preserve synopses
 and such attached to the scene. Or something similar.
 
-NOTE! We will keep native file format as XML, for two reasons: (1) we can then
-load files created by previous moe version, and (2) browsers have built-in XML
-parser.
-
 -------------------------------------------------------------------------------
 
-Note: It might be better to allow in-content comments.
+NOTE: It might be better to allow in-content comments. Then, when
+there starts to be a huge comment block, you could move them to separate
+sketch element. Note: in-text comments will be visible when text is visible.
+It is encouraged to get rid of them when working towards final draft.
 
-Note: We might remove the scene "visibility". Every scene in body is visible.
-No scene in other groups is visible. This would simplify the system. If user
-wants to make some scenes invisible, s/he cuts them to another group.
+NOTE: Now when we have version groups, we might need to move formatting options
+inside the <body>, out from <head>. I really don't like this. But without this,
+you are not able to print out draft with same settings you used earlier.
 
-Lets try to make group handling easy and intuitive. Like,
+This could be problem, if your story has first been short story, and you
+are expanding it to larger one. Then the draft settings, as well as other <head>
+block elements (like synopsis, backcover text and such) do not match anymore
+to old short version.
 
-- Cut scenes to clipboard, paste scenes to clipboard: this could be our way
-  to move scenes instead of drag'n'dropping. But we still might have DnD
-  support.
+But we need to accept, that versioning is meant for versioning. It assumes that
+versions are close enough to each other: they tell the same story. If they are
+not telling the same story, they should be different stories. And there are
+other ways to do this.
 
-- Rename clipboard (make it a group)
-
-- Paste scenes from other groups
+Let's first reject this. It is overly complex. Some easier possibilities is to
+add draft outlook options to <group> attributes... Of course, one way would
+be such, that we copy <head> element to <version> groups, and extract it if
+we switch version...
 
 -------------------------------------------------------------------------------
 
@@ -79,6 +87,11 @@ I would really like to emphasize the nature of a story as a sequence of scenes.
 Chapters and sections are tools for you to keep your story organized, not the
 content you work for.
 
+NOTE: We remove the scene "visibility" attribute. Every scene in body is visible.
+No scene in other groups is visible. This will simplify the system. If writer
+wants to make some scenes hidden, s/he cuts them to another group. If writer
+wants to make some scenes visible, s/he cuts them to body group.
+
 -------------------------------------------------------------------------------
 
 Today, groups are mainly used for certain purposes: (1) I tend to use them
@@ -111,6 +124,11 @@ additional information:
         ...
         </version>
     <version> ... </version>
+
+<body>, <group> and <version> are all similar components, they are lists of
+scenes. It is true, that they would not need different names: you could tell
+the nature of a group with id, class or another attribute. But for sake of
+simplicity, lets keep their distinct names.
 
 NOTES! Differences to current implementation:
 
@@ -149,14 +167,31 @@ mainly meant for those. We just use them to store background information, too.
   trashcan, and then take them back to another location. We might even rename
   Trashcan to Clipboard.
 
+In editor, we try to make group handling easy and intuitive.
+
+- Cut scenes to clipboard, paste scenes to clipboard: this could be our way
+  to move scenes instead of drag'n'dropping. But we still might have DnD
+  support.
+
+- Cut & Paste scenes between body and some other group: that is, make that
+  group "clipboard" temporarily.
+
+- "Rename" clipboard (make it a group): Scenes in clipboard will be moved
+  to new group, and clipboard group is emptied.
+
+- Group merging and splitting.
+
+- "Grabbing" scenes and moving them around
+
 -------------------------------------------------------------------------------
 
 VERSION CONTROL: This is an issue we need to have some sort of mechanism. It
 was left unfinished in Python version, and that has caused some problems. Many
-things depend on where you are storing your stories. Some places have already
-versioned file system, so you can recall older versions without any problems. Some
-storages do not have that, and you probably would like keep versions manually. There
-are few possibilities:
+things depend on where you are storing your stories.
+
+Some places have already versioned file system, so you can recall older
+versions without any problems. Some storages do not have that, and you probably
+would like keep versions manually. There are few possibilities:
 
 1) Using in-file versioning, that is, the editor creates group where it duplicates
    the current scenes. We will implement this possibility, so even in worst case
@@ -168,22 +203,26 @@ are few possibilities:
 
 I feel that even that many storages nowadays give you some version control, it would
 not hurt to have one built-in to the file format. So, even if everything else fails,
-you could use the built-in version control.
+you could use the built-in version control. In-file versioning is anyways better than
+manually save versions with different names to disk.
 
 VERSIONS are mechanically equal to groups, but they are meant to store one version
 of the story (<body>) itself. Version groups are usually read-only. Some operations:
 
 1) Create version: your <body> block is copied as a version.
 
-1) Revert back to some old version (<body> is replaced by that version),
+1) Switch to some old version (<body> is replaced by that version). In this
+   case, the current body might need to be versioned, so that it is not lost. Lets
+   think this version switching a bit...
 
 2) Delete version
 
-3) Change version to a group. This allows editing the content. Basically, you
-   could do the opposite, convert a <group> to a <version>
+3) Change version to a group and vice versa. This would be great when importing
+   old moe files.
 
-4) It might be possible to delete meta-data from version, and it could be possible
-   to store a version as a draft.
+NOTE: I was thinking if it might be possible to delete meta-data from version,
+or if it could be possible to store a version as a (RTF) draft. Most probably
+this will not be possible.
 
 -------------------------------------------------------------------------------
 

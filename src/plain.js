@@ -1,13 +1,10 @@
-import Plain from 'slate-plain-serializer'
-import { Editor } from 'slate-react'
-
 import React from 'react'
 
-/**
- * Deserialize the initial editor value.
- *
- * @type {Object}
- */
+import Plain from 'slate-plain-serializer'
+import { Editor } from 'slate-react'
+import { Toolbar, Statusbar, Button } from "./toolbar"
+
+//-----------------------------------------------------------------------------
 
 const initialValue = Plain.deserialize(
   'This is editable plain text, just like a <textarea>!'
@@ -15,34 +12,30 @@ const initialValue = Plain.deserialize(
 
 //-----------------------------------------------------------------------------
 
-function renderEditor(props, editor, next) {
-  const wordCount = 100; //countWords(editor.value.text)
-  const children = next()
-  return (
-    <React.Fragment>
-      <div id="editor">
-      <div>Editor:</div>
-      {children}
-      <span className="word-count">{wordCount}</span>
-      </div>
-    </React.Fragment>
-  )
-}
-
-//-----------------------------------------------------------------------------
-
+//*
 function PlainText(props)
 {
     return (
-      <Editor
-        renderEditor={renderEditor}
-        placeholder="Enter some plain text..."
-        defaultValue={initialValue}
-      />
+        <React.Fragment>
+            <Toolbar>
+                <Button><i class="material-icons md-dark">format_bold</i></Button>
+                <Button>BTN</Button>
+                <span style={{marginLeft: "auto"}} />
+                <Button>BTN</Button>
+                </Toolbar>
+            <Editor
+                className = "editor"
+                placeholder="Enter some plain text..."
+                defaultValue={initialValue}
+            />
+            <Statusbar>
+                <span className="word-count">XXX</span>
+                </Statusbar>
+        </React.Fragment>
     )
 }
 
-/*
+/*/
 class PlainText extends React.Component {
   render() {
     return (
@@ -54,7 +47,7 @@ class PlainText extends React.Component {
     )
   }
 }
-*/
+/**/
 
 export default PlainText
 

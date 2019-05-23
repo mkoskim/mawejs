@@ -36,7 +36,7 @@ ReactDOM.render(
 );
 */
 
-//*
+/*
 class Toggle extends React.Component {
   state = {isToggleOn: true};
   
@@ -110,5 +110,5 @@ ReactDOM.render(
     document.getElementById('root')
 );
 /**/
-//ReactDOM.render(<PlainText />);
 
+ReactDOM.render(<PlainText />, document.getElementById("root"));

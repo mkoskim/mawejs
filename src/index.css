@@ -1,7 +1,15 @@
 /******************************************************************************
 ******************************************************************************/
 
-div#main {
+/*---------------------------------------------------------------------------*/
+
+body {
+    margin: 0;
+}
+
+/*---------------------------------------------------------------------------*/
+
+#main {
     display: flex;
     flex-direction: row;
     background: rgb(240, 240, 240);
@@ -9,6 +17,60 @@ div#main {
 
 /*---------------------------------------------------------------------------*/
 
-div#editor {
-    background: white;
+.Toolbar {
+    display: flex;
+    border-bottom: 2px solid #eee;
+    padding: 4px 4px 8px 4px;
+    /*
+    position: relative;
+    padding: 1px 18px 17px;
+    margin: 0 -20px;
+    */
 }
+
+.Statusbar {
+    border-top: 2px solid #eee;
+    padding: 4px 4px 4px 4px;
+    /*
+    position: relative;
+    padding: 1px 18px 17px;
+    margin: 0 -20px;
+    margin-top: 20px;
+    */
+}
+
+/*---------------------------------------------------------------------------*/
+
+.material-icons       { font-size: 18px; }
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.60); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+
+.Button {
+    cursor: pointer;
+    font-size: 9pt;
+    border: 1px solid gray;
+    border-radius: 5px;
+    padding: 4px 8px 4px 8px;
+    margin: 2px 2px 2px 2px;
+    /*
+    */
+}
+
+/*---------------------------------------------------------------------------*/
+
+div.editor {
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: auto;
+    padding: 4px 4px 4px 4px;
+}
+
