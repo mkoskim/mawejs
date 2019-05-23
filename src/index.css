@@ -44,34 +44,40 @@ body {
 
 /*---------------------------------------------------------------------------*/
 
-div.editor {
+.board
+{
     flex: auto; /* Equals: flex 1 1 auto; */
 
-    font-family: times;
-    font-size: 12pt;
-    flex: 1 1 auto;
-    background: white;
-
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: auto;
 
-    padding-top: 1cm;
-    padding-bottom: 2cm;
-    padding-left: 1cm;
-    padding-right: 1cm;
-
-    min-width: 10cm;
-    max-width: 15cm;
-
-    margin-left: auto;
-    margin-right: auto;
-/*
-    margin-top: 1cm;
-    margin-bottom: 1cm;
-*/
     /* Space left around sheet on board */
 /*
     */
+}
+
+.editor {
+    font-family: times;
+    font-size: 12pt;
+    line-height: 1.4;
+
+    background: white;
+
+    padding-top: 1cm;
+    padding-bottom: 2cm;
+    padding-left: 0.8cm;
+    padding-right: 0.8cm;
+
+    min-width: 10cm;
+    max-width: 15cm;
+    min-height: 20cm;
+    
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 8pt;
+    margin-bottom: 8pt;
+
+    box-shadow: 0 0 4pt 2pt rgba(100, 100, 100, 0.2);
 }
 
 /*---------------------------------------------------------------------------*/

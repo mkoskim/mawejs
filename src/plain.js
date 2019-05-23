@@ -54,12 +54,14 @@ function PlainText(props)
                 <span style={{marginLeft: "auto"}} />
                 <Button>button</Button>
                 </Toolbar>
-            <Editor
-                className = "editor"
-                placeholder="Enter some plain text..."
-                defaultValue={Plain.deserialize(lorem)}
-                plugins = {plugins}
-            />
+            <div className="board">
+                <Editor
+                    className = "editor"
+                    placeholder="Enter some plain text..."
+                    defaultValue={Plain.deserialize(lorem)}
+                    plugins = {plugins}
+                />
+            </div>
             <Statusbar>
                 <span className="word-count">XXX</span>
                 </Statusbar>
