@@ -16,7 +16,7 @@ think that Alt-G is "goto", and then you choose where you go:
             Alt-C   Goto content
             Alt-..  Goto sketches
 
-- - -
+-------------------------------------------------------------------------------
 
 Alt:
 
@@ -46,6 +46,8 @@ Alt  -  W -
 Alt  -  X - 
 Alt  -  Y - 
 Alt  -  Z - 
+
+-------------------------------------------------------------------------------
 
 Ctrl:
 
