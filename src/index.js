@@ -6,6 +6,13 @@ import PlainText from "./plain";
 
 import "./index.css";
 
+
+//-----------------------------------------------------------------------------
+
+ReactDOM.render(<PlainText />, document.getElementById("root"));
+
+//-----------------------------------------------------------------------------
+// Tests and such
 //-----------------------------------------------------------------------------
 
 /*
@@ -110,5 +117,3 @@ ReactDOM.render(
     document.getElementById('root')
 );
 /**/
-
-ReactDOM.render(<PlainText />, document.getElementById("root"));

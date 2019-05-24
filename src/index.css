@@ -14,15 +14,26 @@ html, body {
 
 body {
     background: rgb(240, 240, 240);
-    font-family: arial;
-    font-size: 10pt;
+    font-family: Arial;
+    font-size: 12pt;
 }
 
 /*---------------------------------------------------------------------------*/
 
 #root {
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
+    height: 100%;
+    /*
+    */
+}
+
+/*---------------------------------------------------------------------------*/
+
+.Editor /* Editor group combines toolbar, board and statusbar */
+{
+    display: flex;
+    flex-flow: column;
     height: 100%;
 }
 
@@ -44,10 +55,9 @@ body {
 
 /*---------------------------------------------------------------------------*/
 
-.board
+.Editor .Board
 {
     flex: auto; /* Equals: flex 1 1 auto; */
-
     overflow-y: auto;
     overflow-x: auto;
 
@@ -56,11 +66,12 @@ body {
     */
 }
 
-.editor {
-    font-family: times;
-    font-size: 12pt;
+.Editor .Board .Sheet {
+    font: 12pt times;
     line-height: 1.4;
+}
 
+.Editor .Board .Sheet {
     background: white;
 
     padding-top: 1cm;
@@ -77,6 +88,12 @@ body {
     margin-top: 8pt;
     margin-bottom: 8pt;
 
+    /*
+    */
+}
+
+.Editor .Board .Sheet:focus
+{
     box-shadow: 0 0 4pt 2pt rgba(100, 100, 100, 0.2);
 }
 
@@ -85,7 +102,9 @@ body {
 .Toolbar .Button {
     cursor: pointer;
     padding: 2pt 2pt 2pt 2pt;
+    font-size: 10pt;
     /*
+    border-radius: 3pt;
     margin: 2pt;
     padding: 2pt 4pt 0pt 4pt;
     padding: 2px 8px 2px 8px;

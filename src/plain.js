@@ -8,7 +8,7 @@ import isHotkey from "is-hotkey"
 
 //-----------------------------------------------------------------------------
 
-const lorem =
+const lorem = Plain.deserialize(
     "Lorem ipsum dolor sit amet, consectetur adipisicing elit, " +
     "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. " +
     "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris " +
@@ -16,7 +16,7 @@ const lorem =
     "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla " +
     "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in " +
     "culpa qui officia deserunt mollit anim id est laborum.\n\n"
-;
+);
 
 //-----------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ function AddLorem(hotkey) {
     return {
         onKeyDown(event, editor, next) {
             if (isHotkey(hotkey, event)) {
-                editor.insertText(lorem)
+                editor.insertFragment(lorem.document)
                 console.log("insert")
             } else {
                 return next()
@@ -35,16 +35,10 @@ function AddLorem(hotkey) {
 
 //-----------------------------------------------------------------------------
 
-const plugins = [
-    AddLorem("alt+l"),
-];
-
-//-----------------------------------------------------------------------------
-//*
 function PlainText(props)
 {
     return (
-        <React.Fragment>
+        <div className="Editor">
             <Toolbar>
                 <Icon name="format_bold"/>
                 <Icon name="format_italic"/>
@@ -54,34 +48,21 @@ function PlainText(props)
                 <span style={{marginLeft: "auto"}} />
                 <Button>button</Button>
                 </Toolbar>
-            <div className="board">
+            <div className="Board">
                 <Editor
-                    className = "editor"
-                    placeholder="Enter some plain text..."
-                    defaultValue={Plain.deserialize(lorem)}
-                    plugins = {plugins}
+                    className = "Sheet"
+                    defaultValue={lorem}
+                    plugins = {[
+                        AddLorem("Alt+L"),
+                    ]}
                 />
             </div>
             <Statusbar>
                 <span className="word-count">XXX</span>
                 </Statusbar>
-        </React.Fragment>
+        </div>
     )
 }
-
-/*/
-class PlainText extends React.Component {
-  render() {
-    return (
-      <Editor
-        renderEditor={renderEditor}
-        placeholder="Enter some plain text..."
-        defaultValue={initialValue}
-      />
-    )
-  }
-}
-/**/
 
 export default PlainText
 

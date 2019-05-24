@@ -2,16 +2,53 @@ TODO:
 
 -------------------------------------------------------------------------------
 
-- Toolbar should be view specific.
+- Ctrl-Z looses focus as last thing.
 
-- First things first: we can develop the editor by using browser local
-  storage, file drops and file downloads. We could integrate cloud storages
-  (Google Drive and DropBox) later.
+-------------------------------------------------------------------------------
+
+Ideas, and such:
+
+- Maybe we could try scenes as breaks, not as containers? Just like we thought
+  chapters and parts would work? This could be bit more friendly to text editing
+  component... All in all, we need to find ways to compile different kinds of
+  views (creating them from internal data, and updating internal data based on
+  the edits).
+
+- Folding! We could now try some "freeform" hide tool... It would make blocks
+  (selections) hidden.
+
+-------------------------------------------------------------------------------
+
+Versions:
+
+- We might decide so, that <body> has always a version tag. So, by default:
+
+        <body version="master"> ... </body>
+
+        <version name="master"> ... </version>
+        <version name="X"> ... </version>
+
+  ...You are editing "master" version of the story.
+
+- This would allow us few things:
+
+  1. "Saving" body to a version: Pressing Ctrl-S would update the corresponding
+     version.
+     
+  2. Switching version: in this case, your <body> is changed to specific version,
+     and its version-attribute is changed.
+     
+  3. Creating new versions: In this case, your <body> stays in the version it was
+     but its content is copied as a new version.
+     
+  4. Version rename: for example, if you rename "master" to "1.0", if <body>
+     is using that version, rename <body> tag, too.
+
+- Initially, this sounds pretty consistent mechanism?
 
 -------------------------------------------------------------------------------
 
 General:
-
 
 - What we know for sure, is that a story is a sequence of scenes.
 
@@ -19,6 +56,16 @@ General:
   at various levels: for one scene, for a chapter, for entire story. We need
   to be able to link other documents to the story, for example, links to
   documents describing the backgrounds.
+
+-------------------------------------------------------------------------------
+
+Automation: Let's develop ideas where we can replace different kinds of
+settings and such with automation.
+
+- Can we implement "auto-spacing"? That is, when elements are shrink, they
+  would also try to dense the content by using smaller line spacing and
+  maybe smaller font? The other way to do this is to let user select the
+  parameters...
 
 -------------------------------------------------------------------------------
 
@@ -42,6 +89,10 @@ General:
 -------------------------------------------------------------------------------
 
 Integration:
+
+- First things first: we can develop the editor by using browser local
+  storage, file drops and file downloads. We could integrate cloud storages
+  (Google Drive and DropBox) later.
 
 - Google Drive support: load & store stories from Google Drive, store
   project manager database to google drive. Export stories to google

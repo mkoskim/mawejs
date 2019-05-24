@@ -31,29 +31,28 @@ and such attached to the scene. Or something similar.
 
 -------------------------------------------------------------------------------
 
+Things to remember:
+
+    - name of the story is different thing than title of the story.
+
+-------------------------------------------------------------------------------
+
 NOTE: It might be better to allow in-content comments. Then, when
 there starts to be a huge comment block, you could move them to separate
 sketch element. Note: in-text comments will be visible when text is visible.
 It is encouraged to get rid of them when working towards final draft.
 
-NOTE: Now when we have version groups, we might need to move formatting options
-inside the <body>, out from <head>. I really don't like this. But without this,
-you are not able to print out draft with same settings you used earlier.
+NOTE: Now when we have version groups, we might need to move <head> containing
+title and formatting options inside <body> and <version>. This would allow you
+to get the draft out as it was when you versioned it.
 
-This could be problem, if your story has first been short story, and you
-are expanding it to larger one. Then the draft settings, as well as other <head>
-block elements (like synopsis, backcover text and such) do not match anymore
-to old short version.
+Let's consider this, very carefully. Is there need to keep <head> information
+alone? Could the project manager read the information from <body> section?
 
-But we need to accept, that versioning is meant for versioning. It assumes that
-versions are close enough to each other: they tell the same story. If they are
-not telling the same story, they should be different stories. And there are
-other ways to do this.
-
-Let's first reject this. It is overly complex. Some easier possibilities is to
-add draft outlook options to <group> attributes... Of course, one way would
-be such, that we copy <head> element to <version> groups, and extract it if
-we switch version...
+Of course, versioning is meant for versioning, not for storing multiple stories
+inside one file. It assumes that versions are close enough to each other: they
+tell the same story. If they are not telling the same story, they would better be
+separate stories.
 
 -------------------------------------------------------------------------------
 
@@ -69,28 +68,75 @@ Simplified structure of a file:
             <scene> ... </scene>
             <scene> ... </scene>
             ...
-            <chapter /> <!-- chapter BREAK, not chapter container -->
-            <part /> <!-- Part BREAK, not part container -->
         </body>
     </story>
-
-Main difference to previous format: Parts and chapters are not groups anymore.
-They do not contain scenes. They are part and chapter BREAKS.
-
-The main reason for this choice is that even that logically you could think
-that scenes are part of chapters and parts, it is very, very rare that you
-are moving entire chapters or parts as one bunch - mostly you are organizing
-scenes between certain chapters. Simple, one-dimensional list of scenes should
-make many basic operations simpler to implement.
-
-I would really like to emphasize the nature of a story as a sequence of scenes.
-Chapters and sections are tools for you to keep your story organized, not the
-content you work for.
 
 NOTE: We remove the scene "visibility" attribute. Every scene in body is visible.
 No scene in other groups is visible. This will simplify the system. If writer
 wants to make some scenes hidden, s/he cuts them to another group. If writer
 wants to make some scenes visible, s/he cuts them to body group.
+
+NOTE! I need to think closer, if <scene>, <chapter> and <part> elements are
+groups, or if they are breaks. More about this later. <scene> is a group by
+nature, because it is somewhat individible piece of text - when you move scene,
+you want all the content to move with that. <part> and <chapter> are different
+in that sense, that it is very, very rare you move entire chapters or parts to
+different location. What you usually do, is to reorganize scenes inside of them
+(moving them in slightly different order, moving scenes between chapters and such).
+Lets think about this very, very closely.
+
+I would really like to emphasize the nature of a story as a sequence of scenes.
+Chapters and sections are tools for you to keep your story organized, not the
+content you work for.
+
+-------------------------------------------------------------------------------
+
+Alternatives:
+
+    <story version="A">
+        <version name="A"> 
+            <head> ... </head>
+            <scene> ... </scene>
+            ...
+            </version>
+        <version name="B"> ... </version>
+        <version name="C"> ... </version>
+        ...
+
+        <group> ... </group>
+        <group> ... </group>
+        ...
+    </story>
+
+This file format would get rid of <body> element. The version attribute at
+<story> element would tell what is the current "newest" version. <head> information
+would be stored inside <version> blocks, so that you could recall also title, author
+and draft print settings when switching version.
+
+No, we don't do that. I want to preserve the Ctrl-S (Save) as a "commit" to
+certain version. So, we keep the <body> block. But we might do better to move
+<head> inside <body>.
+
+    <story>
+        <body version="B">
+            <head>
+            <scene>
+            <scene>
+            ...
+        <version name="A"> 
+            <head>
+            <scene>
+            ...
+            </version>
+        <version name="B"> ... </version>
+        <version name="C"> ... </version>
+        ...
+
+        <group> ... </group>
+        <group> ... </group>
+        ...
+    </story>
+
 
 -------------------------------------------------------------------------------
 
@@ -109,46 +155,29 @@ blocks, a story can have multiple <group> and <version> blocks to store
 additional information:
 
     <story>
-    <head> ... </head>
-    <body> ... </body>
-    <group>
-        <scene> ... </scene>
-        <scene> ... </scene>
-        ...
-        </group>
-    <group> ... </group>
-    ...
-    <version>
-        <scene> ... </scene>
-        <scene> ... </scene>
-        ...
-        </version>
-    <version> ... </version>
+        <head> ... </head>
+
+        <body> ... </body>
+
+        <group>
+            <scene> ... </scene>
+            <scene> ... </scene>
+            ...
+            </group>
+        <group> ... </group>
+
+        <version>
+            <scene> ... </scene>
+            <scene> ... </scene>
+            ...
+            </version>
+        <version> ... </version>
+    </story>
 
 <body>, <group> and <version> are all similar components, they are lists of
 scenes. It is true, that they would not need different names: you could tell
 the nature of a group with id, class or another attribute. But for sake of
 simplicity, lets keep their distinct names.
-
-NOTES! Differences to current implementation:
-
-- Groups are not nested. You can't have <group> inside a <group>. Multi-level
-   groups will be flattened, i.e. moving a group in to a group will be group
-   mergning.
-
-- Groups are always invisible, i.e. they are not added to content. Only <body>
-  contains visible elements. The exception could be versions, in which case you
-  can choose which version you are printing.
-
-NOTE! Why would we not allow writer to use <groups> as chapters or parts? This
-way s/he could have one chapter or part in main view, and another in side pane?
-Yes, but it would make few things much harder. First, versioning: you would need
-yet another top-level organization to allow versions to store chapter/part
-containers. It would make it hard to edit the text as one bunch.
-
-But lets keep this in mind. You will need an ability to edit your text one 
-chapter at time, and have another chapter in your side pane. Or something very
-similar.
 
 -------------------------------------------------------------------------------
 
@@ -166,6 +195,20 @@ mainly meant for those. We just use them to store background information, too.
   trashcan is "clipboard", because you could use scene deletion to move them to
   trashcan, and then take them back to another location. We might even rename
   Trashcan to Clipboard.
+
+NOTES! Differences to current implementation:
+
+- Groups are not nested. You can't have <group> inside a <group>. Multi-level
+   groups will be flattened, i.e. moving a group in to a group will be group
+   mergning.
+
+- Groups are always invisible, i.e. they are not added to content. Only <body>
+  contains visible elements. Versions are exceptions, in that manner, that you
+  can choose the version you want to print.
+  
+NOTE! Even that chapters and parts are not groups, you will need an ability
+to edit your text one chapter at time, and have another chapter in your side
+pane. Or something very similar.
 
 In editor, we try to make group handling easy and intuitive.
 
@@ -185,8 +228,10 @@ In editor, we try to make group handling easy and intuitive.
 
 -------------------------------------------------------------------------------
 
-VERSION CONTROL: This is an issue we need to have some sort of mechanism. It
-was left unfinished in Python version, and that has caused some problems. Many
+VERSION CONTROL
+
+BACKGROUND & REASONING: This is an issue we need to have some sort of mechanism.
+It was left unfinished in Python version, and that has caused some problems. Many
 things depend on where you are storing your stories.
 
 Some places have already versioned file system, so you can recall older
@@ -207,28 +252,41 @@ you could use the built-in version control. In-file versioning is anyways better
 manually save versions with different names to disk.
 
 VERSIONS are mechanically equal to groups, but they are meant to store one version
-of the story (<body>) itself. Version groups are usually read-only. Some operations:
+of the story (<body>) itself. Version groups are usually read-only.
 
-1) Create version: your <body> block is copied as a version.
+We add version attribute to body. It will tell, which version it is "committing".
+This then will allow us to:
 
-1) Switch to some old version (<body> is replaced by that version). In this
-   case, the current body might need to be versioned, so that it is not lost. Lets
-   think this version switching a bit...
+    (1) "Commit": <body> content is stored to <version>, based on <body version>
+        value.
+    
+    (2) Revert changes: <body> is recalled from current <version>
+    
+    (3) Create new version: <body version> is changed, and it is committed
+        as a new version.
+     
+    (4) Switch version: <body> is stored to its current <version> block,
+        <body version> is changed, and <body> is recalled from version.
 
-2) Delete version
+    (5) Delete version: <version> is deleted. If the version was loaded to
+        <body>, <body version> is changed to next available <version> and
+        recalled.
 
-3) Change version to a group and vice versa. This would be great when importing
-   old moe files.
+Furthermore, we might need a tool that can change <version> to <group> and
+vice versa.
 
-NOTE: I was thinking if it might be possible to delete meta-data from version,
-or if it could be possible to store a version as a (RTF) draft. Most probably
-this will not be possible.
+NOTE: I was thinking if it might be possible to "strip" versions, for example,
+by removing "meta text" from it, or even store it as a draft. Most probably
+this will not make any sense.
 
 -------------------------------------------------------------------------------
 
-NOTE! Both <group> and <version> can be stored to disk as a file. And, it will be
-possible to read a story inside another as a group. There are certain limitations
-in this:
+SPLITTING AND MERGING STORIES
+
+Both <group> and <version> can be stored to disk as a story. And, it will be
+possible to read a story inside another as a group - or to be specific:
+it will be possible to read group from another story inside a story (you need
+to choose, which group you read in). There are certain limitations in this:
 
 1) You can load a specific group from a file to your editor, not the entire text.
    The ability to load groups from files to side pane is not meant to edit two
@@ -246,6 +304,9 @@ about collections later.
 -------------------------------------------------------------------------------
 
 Heading:
+
+NOTE! We need to think more closely, which fields are "version-specific", and
+which are story-wide.
 
 NOTE! Changes to previous thoughts:
 
@@ -303,6 +364,12 @@ in most of the cases, for example, sending your story to a competition.
 
 TAGS: Internally, tags are meant to filter scenes. Pressing a tag will shown
 only scenes that have the same tag.
+
+NOTE! Think a bit about tags and versions. You might have changed character names
+or places, and thus your tags in older versions are "invalid" - groups are using
+new tags, so filtering them with old tags don't work as expected. Maybe this does
+not matter? If you want tags to work again with groups, you rename them in the
+version.
 
 Externally, tags are used by project manager, initially for the same purpose as
 in story, filtering - pressing a tag will show only stories that are using that
