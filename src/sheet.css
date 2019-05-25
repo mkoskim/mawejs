@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*/
+
+.Sheet {
+    font: 12pt times;
+    line-height: 1.4;
+    /*
+    */
+}
+
+/*---------------------------------------------------------------------------*/
+
+.Sheet#header #title {
+    text-align: center;
+    font-size: 18pt;
+    font-weight: bold;
+    margin-bottom: 8pt;
+}
+
+.Sheet#header #title #author {
+    text-align: center;
+    margin-bottom: 8pt;
+}
+
+.Sheet #header {
+    margin-bottom: 1cm;
+}
+
+/*---------------------------------------------------------------------------*/
+
+.Sheet #folded {
+    border: 1pt solid rgb(200, 200, 200);
+}
+
+.Sheet #hidden {
+    display: none;
+}
+
+/*---------------------------------------------------------------------------*/
+
+.Sheet h1 {
+}
+
+/*---------------------------------------------------------------------------*/
+
+.Sheet p {
+    margin: 0;
+}

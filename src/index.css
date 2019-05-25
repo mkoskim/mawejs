@@ -66,14 +66,7 @@ body {
     */
 }
 
-.Editor .Board .Sheet {
-    font: 12pt times;
-    line-height: 1.4;
-    /*
-    */
-}
-
-.Editor .Board .Sheet {
+.Sheet {
     background: white;
 
     padding-top: 1cm;

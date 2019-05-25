@@ -2,9 +2,14 @@ import React from 'react'
 
 import Plain from 'slate-plain-serializer'
 import { Editor } from 'slate-react'
+import { Block, Value } from "slate"
 import { Toolbar, Statusbar, Button, Icon, Separator } from "./toolbar"
 
 import isHotkey from "is-hotkey"
+
+//-----------------------------------------------------------------------------
+
+import "./sheet.css"
 
 //-----------------------------------------------------------------------------
 
@@ -18,6 +23,8 @@ const lorem = Plain.deserialize(
     "culpa qui officia deserunt mollit anim id est laborum.\n\n"
 );
 
+const story = lorem;
+
 //-----------------------------------------------------------------------------
 // Editor to edit scene lists
 //-----------------------------------------------------------------------------
@@ -26,7 +33,18 @@ export default class SceneListEditor extends React.Component
 {
     //-------------------------------------------------------------------------
 
-    state = { value: lorem }
+    schema = {
+//*
+        blocks: {
+            folded: {
+            }
+        }
+/**/
+    }
+
+    //-------------------------------------------------------------------------
+
+    state = { value: story }
 
     ref = editor => { this.editor = editor }
     
@@ -47,16 +65,18 @@ export default class SceneListEditor extends React.Component
                     <span style={{marginLeft: "auto"}} />
                     <Button>button</Button>
                     </Toolbar>
-                <div className="Board" lang="fi">
+                <div className="Board">
                     <Editor
                         className = "Sheet"
 
-                        ref   = { this.ref }
-                        value = { this.state.value }
-                        
-                        onKeyDown  = {this.onKeyDown}
-                        onChange   = {this.onChange}
-                        renderMark = {this.renderMark}
+                        ref    = { this.ref }
+                        value  = { this.state.value }
+                        schema = { this.schema }
+
+                        onKeyDown   = {this.onKeyDown}
+                        onChange    = {this.onChange}
+                        renderMark  = {this.renderMark}
+                        renderBlock = {this.renderBlock}
                         
                         /* Chrome understand only English :( */
                         spellCheck  = {false}
@@ -71,16 +91,54 @@ export default class SceneListEditor extends React.Component
     }
 
     //-------------------------------------------------------------------------
+    // Helpers
+    //-------------------------------------------------------------------------
+    
+    hasMark = type => {
+        const { value } = this.state
+        return value.activeMarks.some(mark => mark.type === type)
+    }
+
+    hasBlock = type => {
+        const { value } = this.state
+        return value.blocks.some(node => node.type === type)
+    }
+
+    //-------------------------------------------------------------------------
     // Marks
     //-------------------------------------------------------------------------
     
     renderMark = (props, editor, next) =>
     {
-        const { children, mark, attributes } = props
+        const { mark, attributes, children } = props
         
         switch(mark.type)
         {
             case "bold": return <strong {...attributes}>{children}</strong>;
+            default: return next();
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    // Blocks
+    //-------------------------------------------------------------------------
+    
+    renderBlock = (props, editor, next) =>
+    {
+        const { node, attributes, children } = props
+        
+        switch(node.type)
+        {
+            case "title":  return <div id="title" {...attributes}>{children}</div>;
+            case "author": return <div id="author" {...attributes}>{children}</div>;
+
+            case "folded": return (
+                <div id="folded" contentEditable={false} {...attributes}>...
+                    <div id="hidden">{children}</div>
+                </div>
+            );
+
+            case "line":   return <p {...attributes}>{children}</p>;
             default: return next();
         }
     }
@@ -95,9 +153,20 @@ export default class SceneListEditor extends React.Component
         {
             editor.toggleMark("bold");
         }
-        if(isHotkey("Alt+L", event))
+        else if(isHotkey("Alt+L", event))
         {
             editor.insertFragment(lorem.document)
+        }
+        else if(isHotkey("Alt+F", event))
+        {
+            const { value: { document, blocks } } = this.state;
+            const block  = blocks.first();
+            const parent = document.getParent(block.key);
+            
+            if(parent && parent.type === "folded")
+                editor.unwrapBlock("folded");
+            else
+                editor.wrapBlock("folded");
         }
         else return next();
 
