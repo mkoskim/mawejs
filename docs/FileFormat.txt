@@ -17,7 +17,7 @@ We borrow the basic concept from existing Python implementation, with
 certain modifications. For example, Python implementation works with
 trees: you can have nested groups of scenes. I think we really don't need
 this. It mainly helps in certain operations, but I'd like to concentrate on
-basics, and we could trust to rich text and HTTP links on meta text. We
+basics, and we could trust to rich text and HTTP links in meta text. We
 could try to simplify the structure.
 
 NOTE! We will keep native file format as XML, for two reasons: (1) we can then
@@ -39,14 +39,15 @@ Things to remember:
 
 NOTE: It might be better to allow in-content comments. Then, when
 there starts to be a huge comment block, you could move them to separate
-sketch element. Note: in-text comments will be visible when text is visible.
-It is encouraged to get rid of them when working towards final draft.
+sketch element. Note: in-text comments will be visible when text is visible
+(but of course not printed to draft). It is encouraged to get rid of them
+when working towards final draft.
 
 NOTE: Now when we have version groups, we might need to move <head> containing
 title and formatting options inside <body> and <version>. This would allow you
 to get the draft out as it was when you versioned it.
 
-Let's consider this, very carefully. Is there need to keep <head> information
+Let's consider this very carefully. Is there need to keep <head> information
 alone? Could the project manager read the information from <body> section?
 
 Of course, versioning is meant for versioning, not for storing multiple stories

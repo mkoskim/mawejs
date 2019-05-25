@@ -15,7 +15,7 @@ html, body {
 body {
     background: rgb(240, 240, 240);
     font-family: Arial;
-    font-size: 12pt;
+    font-size: 10pt;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -69,6 +69,8 @@ body {
 .Editor .Board .Sheet {
     font: 12pt times;
     line-height: 1.4;
+    /*
+    */
 }
 
 .Editor .Board .Sheet {

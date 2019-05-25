@@ -2,7 +2,14 @@ TODO:
 
 -------------------------------------------------------------------------------
 
-- Ctrl-Z looses focus as last thing.
+- What a heck? No Finnish spell checking on Chrome?!? No spellcheking based
+  on lang attribute?!? Am I living 2019, or 1989? Well, according to bug
+  reports and such, we just need to leave spellchecking for future. Browsers
+  just don't have any hunch about the languages other than English, and their
+  developers not any intention to fix it.
+
+- Ctrl-Z looses focus as last thing: maybe the first item in the undo buffer
+  is "got focus"?
 
 -------------------------------------------------------------------------------
 
@@ -16,35 +23,6 @@ Ideas, and such:
 
 - Folding! We could now try some "freeform" hide tool... It would make blocks
   (selections) hidden.
-
--------------------------------------------------------------------------------
-
-Versions:
-
-- We might decide so, that <body> has always a version tag. So, by default:
-
-        <body version="master"> ... </body>
-
-        <version name="master"> ... </version>
-        <version name="X"> ... </version>
-
-  ...You are editing "master" version of the story.
-
-- This would allow us few things:
-
-  1. "Saving" body to a version: Pressing Ctrl-S would update the corresponding
-     version.
-     
-  2. Switching version: in this case, your <body> is changed to specific version,
-     and its version-attribute is changed.
-     
-  3. Creating new versions: In this case, your <body> stays in the version it was
-     but its content is copied as a new version.
-     
-  4. Version rename: for example, if you rename "master" to "1.0", if <body>
-     is using that version, rename <body> tag, too.
-
-- Initially, this sounds pretty consistent mechanism?
 
 -------------------------------------------------------------------------------
 
@@ -85,6 +63,35 @@ settings and such with automation.
 - NOTE: It should be easy to have "splitted" editor, that is, only chosen scenes
   would be visible. Give user tools to choose what parts of the text s/he is
   editing.
+
+-------------------------------------------------------------------------------
+
+Versions:
+
+- We might decide so, that <body> has always a version tag. So, by default:
+
+        <body version="master"> ... </body>
+
+        <version name="master"> ... </version>
+        <version name="X"> ... </version>
+
+  ...You are editing "master" version of the story.
+
+- This would allow us few things:
+
+  1. "Saving" body to a version: Pressing Ctrl-S would update the corresponding
+     version.
+     
+  2. Switching version: in this case, your <body> is changed to specific version,
+     and its version-attribute is changed.
+     
+  3. Creating new versions: In this case, your <body> stays in the version it was
+     but its content is copied as a new version.
+     
+  4. Version rename: for example, if you rename "master" to "1.0", if <body>
+     is using that version, rename <body> tag, too.
+
+- Initially, this sounds pretty consistent mechanism?
 
 -------------------------------------------------------------------------------
 

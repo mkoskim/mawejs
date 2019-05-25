@@ -3,6 +3,8 @@
                             HOTKEY PLANNING
                             ---------------
                             
+-------------------------------------------------------------------------------
+
 Lets make a quick plan about hotkeys. Objectives:
 
 - Frequently needed operations are behind easy hotkeys
@@ -15,6 +17,18 @@ think that Alt-G is "goto", and then you choose where you go:
             Alt-S   Goto synopsis
             Alt-C   Goto content
             Alt-..  Goto sketches
+
+-------------------------------------------------------------------------------
+
+There are certain hotkeys that already have default action, and it is
+probably bad idea to use them for something else. For example:
+
+Ctrl-A      Select all
+Ctrl-X      Cut
+Ctrl-C      Copy
+Ctrl-V      Paste
+Ctrl-Z      Undo
+Ctrl-Y      Redo
 
 -------------------------------------------------------------------------------
 

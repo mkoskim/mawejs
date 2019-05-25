@@ -2,14 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import Tables from "./tables";
-import PlainText from "./plain";
+import SceneListEditor from "./scenelist";
 
 import "./index.css";
 
 
 //-----------------------------------------------------------------------------
 
-ReactDOM.render(<PlainText />, document.getElementById("root"));
+ReactDOM.render(<SceneListEditor />, document.getElementById("root"));
 
 //-----------------------------------------------------------------------------
 // Tests and such
