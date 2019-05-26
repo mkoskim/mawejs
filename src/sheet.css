@@ -27,6 +27,51 @@
 
 /*---------------------------------------------------------------------------*/
 
+.Sheet h1 {
+}
+
+/*---------------------------------------------------------------------------*/
+
+.Sheet p {
+    margin: 0;
+    margin-bottom: 1em;
+}
+
+.Sheet #comment p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.Sheet #comment {
+    background: rgb(230, 255, 230);
+    border-left:  4pt solid rgb(150, 200, 150);
+    padding: 4pt 0.5cm 4pt 1cm;
+    margin-bottom: 1em;
+
+    /*
+    position: relative;
+    height: 2cm;
+    overflow: hidden;
+    */
+}
+
+/*
+.Sheet #comment:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-image: linear-gradient(
+        rgba(230, 255, 230, 0) 50%,
+        rgba(230, 255, 230, 1) 90%
+    );
+}
+*/
+
+/*---------------------------------------------------------------------------*/
+
 .Sheet #folded {
     border: 1pt solid rgb(200, 200, 200);
 }
@@ -35,13 +80,3 @@
     display: none;
 }
 
-/*---------------------------------------------------------------------------*/
-
-.Sheet h1 {
-}
-
-/*---------------------------------------------------------------------------*/
-
-.Sheet p {
-    margin: 0;
-}

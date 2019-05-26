@@ -20,7 +20,7 @@ const lorem = Plain.deserialize(
     "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in " +
     "reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla " +
     "pariatur. Excepteur sint occaecat cupidatat non proident, sunt in " +
-    "culpa qui officia deserunt mollit anim id est laborum.\n\n"
+    "culpa qui officia deserunt mollit anim id est laborum.\n"
 );
 
 const story = lorem;
@@ -129,16 +129,18 @@ export default class SceneListEditor extends React.Component
         
         switch(node.type)
         {
-            case "title":  return <div id="title" {...attributes}>{children}</div>;
-            case "author": return <div id="author" {...attributes}>{children}</div>;
+            case "title":   return <div id="title" {...attributes}>{children}</div>;
+            case "author":  return <div id="author" {...attributes}>{children}</div>;
 
+            case "line":    return <p {...attributes}>{children}</p>;
+            case "comment": return <div id="comment" {...attributes}>{children}</div>;
+            
             case "folded": return (
                 <div id="folded" contentEditable={false} {...attributes}>...
                     <div id="hidden">{children}</div>
                 </div>
             );
 
-            case "line":   return <p {...attributes}>{children}</p>;
             default: return next();
         }
     }
@@ -146,6 +148,29 @@ export default class SceneListEditor extends React.Component
     //-------------------------------------------------------------------------
     // Hotkeys
     //-------------------------------------------------------------------------
+
+    wrapBlock = (editor, type) =>
+    {
+        const { value: { document, blocks } } = this.state;
+        const block  = blocks.first();
+        const parent = document.getParent(block.key);
+        
+        if(parent && parent.type === type)
+            editor.unwrapBlock(type);
+        else
+            editor.wrapBlock(type);
+    }
+
+    setBlock = (editor, type) =>
+    {
+        const { value: { document, blocks } } = this.state;
+        const block  = blocks.first();
+        
+        if(block.type === type)
+            editor.setBlocks("line");
+        else
+            editor.setBlocks(type);
+    }
 
     onKeyDown = (event, editor, next) =>
     {
@@ -157,16 +182,12 @@ export default class SceneListEditor extends React.Component
         {
             editor.insertFragment(lorem.document)
         }
+        else if(isHotkey("Alt+C", event))
+        {
+            this.wrapBlock(editor, "comment");
+        }
         else if(isHotkey("Alt+F", event))
         {
-            const { value: { document, blocks } } = this.state;
-            const block  = blocks.first();
-            const parent = document.getParent(block.key);
-            
-            if(parent && parent.type === "folded")
-                editor.unwrapBlock("folded");
-            else
-                editor.wrapBlock("folded");
         }
         else return next();
 

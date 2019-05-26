@@ -144,12 +144,4 @@ TODO: Small things:
 
   - Maybe Alt-G (grab) enters a state where you can move scene around with
     cursor keys? Alt-G again would revert back to normal mode.
-  
-- Lose focus: Get rid of sheet focus to be able to go around with page
-  up & down. Also, regain focus to somewhat nice spot?
-  
--------------------------------------------------------------------------------
 
-DONE:
-
-- Browser (Chrome) find seems to work perfectly!
