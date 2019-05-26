@@ -11,6 +11,8 @@ import isHotkey from "is-hotkey"
 
 import "./sheet.css"
 
+import xmlfile from "./story.xml";
+
 //-----------------------------------------------------------------------------
 
 const lorem = Plain.deserialize(
@@ -23,6 +25,13 @@ const lorem = Plain.deserialize(
     "culpa qui officia deserunt mollit anim id est laborum.\n"
 );
 
+//-----------------------------------------------------------------------------
+// TODO: We need some material for further development. Lets make XML
+// import.
+//-----------------------------------------------------------------------------
+
+const parsed = new DOMParser().parseFromString(xmlfile, "text/xml");
+
 const story = lorem;
 
 //-----------------------------------------------------------------------------
@@ -34,13 +43,25 @@ export default class SceneListEditor extends React.Component
     //-------------------------------------------------------------------------
 
     schema = {
-//*
         blocks: {
             folded: {
             }
         }
-/**/
     }
+
+    //-------------------------------------------------------------------------
+    // It would be great to have a list of available hotkeys here. Would make
+    // it easier to design them.
+    //-------------------------------------------------------------------------
+    
+    plugins = [
+        this.pluginMark  ("Mod+B", "bold",   this.renderBold),
+        this.pluginMark  ("Mod+I", "italic", this.renderItalic),
+
+        this.pluginAction("Alt+L", this.insertLorem),
+
+        //this.pluginWrap  ("Alt+C", this.wrapBlock),
+    ]
 
     //-------------------------------------------------------------------------
 
@@ -69,12 +90,14 @@ export default class SceneListEditor extends React.Component
                     <Editor
                         className = "Sheet"
 
-                        ref    = { this.ref }
-                        value  = { this.state.value }
-                        schema = { this.schema }
+                        ref     = { this.ref }
+                        value   = { this.state.value }
+                        schema  = { this.schema }
 
-                        onKeyDown   = {this.onKeyDown}
+                        plugins = { this.plugins }
+
                         onChange    = {this.onChange}
+                        onKeyDown   = {this.onKeyDown}
                         renderMark  = {this.renderMark}
                         renderBlock = {this.renderBlock}
                         
@@ -88,6 +111,123 @@ export default class SceneListEditor extends React.Component
                     </Statusbar>
             </div>
         )
+    }
+
+    //-------------------------------------------------------------------------
+    // Element rendering
+    //-------------------------------------------------------------------------
+
+    renderBold(props, editor, next)
+    {
+        return <b {...props.attributes}>{props.children}</b>;
+    }
+
+    renderItalic(props, editor, next)
+    {
+        return <i {...props.attributes}>{props.children}</i>;
+    }
+
+    renderParagraph(props, editor, next)
+    {
+        return <p {...props.attributes}>{props.children}</p>;
+    }
+    
+    renderComment(props, editor, next)
+    {
+        return <div id="comment" {...props.attributes}>{props.children}</div>;
+    }
+    
+    //-------------------------------------------------------------------------
+
+    insertLorem(event, editor, next)
+    {
+        editor.insertFragment(lorem.document);
+    }
+
+    //-------------------------------------------------------------------------
+    // Simple marks & blocks
+    //-------------------------------------------------------------------------
+    
+    pluginMark(hotkey, markname, render) {
+        return {
+            onKeyDown(event, editor, next)
+            {
+                if(!isHotkey(hotkey, event)) return next();
+
+                event.preventDefault();
+                editor.toggleMark(markname);
+            },
+
+            renderMark(props, editor, next)
+            {
+                if(props.mark.type !== markname) return next();
+                return render(props, editor, next);
+            },
+        }
+    }
+
+    pluginAction(hotkey, action) {
+        return {
+            onKeyDown(event, editor, next)
+            {
+                if(!isHotkey(hotkey, event)) return next();
+
+                event.preventDefault();
+                return action(event, editor, next);
+            },
+        }
+    }
+
+    pluginWrap(hotkey, blockname, render) {
+        return {
+            onKeyDown(event, editor, next)
+            {
+                if(!isHotkey(hotkey, event)) return next();
+                console.log(event);
+                event.preventDefault();
+                this.wrapBlock(editor, blockname);
+            },
+
+            renderBlock(props, editor, next)
+            {
+                if(props.node.type !== blockname) return next();
+                return render(props, editor, next);
+            },
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    // Blocks
+    //-------------------------------------------------------------------------
+    
+    renderBlock = (props, editor, next) =>
+    {
+        const { node, attributes, children } = props
+        
+        switch(node.type)
+        {
+            case "title":   return <div id="title" {...attributes}>{children}</div>;
+            case "author":  return <div id="author" {...attributes}>{children}</div>;
+
+            case "line":    return this.renderParagraph(props, editor, next);
+            
+            case "folded": return (
+                <div id="folded" contentEditable={false} {...attributes}>...
+                    <div id="hidden">{children}</div>
+                </div>
+            );
+
+            default: return next();
+        }
+    }
+
+    //-------------------------------------------------------------------------
+    // Hotkeys
+    //-------------------------------------------------------------------------
+
+    onKeyDown = (event, editor, next) =>
+    {
+        return next();
     }
 
     //-------------------------------------------------------------------------
@@ -105,48 +245,6 @@ export default class SceneListEditor extends React.Component
     }
 
     //-------------------------------------------------------------------------
-    // Marks
-    //-------------------------------------------------------------------------
-    
-    renderMark = (props, editor, next) =>
-    {
-        const { mark, attributes, children } = props
-        
-        switch(mark.type)
-        {
-            case "bold": return <strong {...attributes}>{children}</strong>;
-            default: return next();
-        }
-    }
-
-    //-------------------------------------------------------------------------
-    // Blocks
-    //-------------------------------------------------------------------------
-    
-    renderBlock = (props, editor, next) =>
-    {
-        const { node, attributes, children } = props
-        
-        switch(node.type)
-        {
-            case "title":   return <div id="title" {...attributes}>{children}</div>;
-            case "author":  return <div id="author" {...attributes}>{children}</div>;
-
-            case "line":    return <p {...attributes}>{children}</p>;
-            case "comment": return <div id="comment" {...attributes}>{children}</div>;
-            
-            case "folded": return (
-                <div id="folded" contentEditable={false} {...attributes}>...
-                    <div id="hidden">{children}</div>
-                </div>
-            );
-
-            default: return next();
-        }
-    }
-
-    //-------------------------------------------------------------------------
-    // Hotkeys
     //-------------------------------------------------------------------------
 
     wrapBlock = (editor, type) =>
@@ -170,28 +268,6 @@ export default class SceneListEditor extends React.Component
             editor.setBlocks("line");
         else
             editor.setBlocks(type);
-    }
-
-    onKeyDown = (event, editor, next) =>
-    {
-        if(isHotkey("Mod+B", event))
-        {
-            editor.toggleMark("bold");
-        }
-        else if(isHotkey("Alt+L", event))
-        {
-            editor.insertFragment(lorem.document)
-        }
-        else if(isHotkey("Alt+C", event))
-        {
-            this.wrapBlock(editor, "comment");
-        }
-        else if(isHotkey("Alt+F", event))
-        {
-        }
-        else return next();
-
-        event.preventDefault();
     }
 }
 
