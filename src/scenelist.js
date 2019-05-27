@@ -35,6 +35,179 @@ const parsed = new DOMParser().parseFromString(xmlfile, "text/xml");
 const story = lorem;
 
 //-----------------------------------------------------------------------------
+// Element schema
+//-----------------------------------------------------------------------------
+
+const schema = {
+    document:
+    {
+    },
+    
+    blocks:
+    {
+        scenebreak: { isVoid: true },
+        folded: { isVoid: true },
+    },
+
+    inlines:
+    {
+        action: { isVoid: true },
+    },
+}
+
+//-----------------------------------------------------------------------------
+// Element rendering
+//-----------------------------------------------------------------------------
+
+const render = 
+{
+    "bold": (props, editor, next) =>
+    {
+        return <b {...props.attributes}>{props.children}</b>;
+    },
+    "italic": (props, editor, next) =>
+    {
+        return <i {...props.attributes}>{props.children}</i>;
+    },
+
+    //-------------------------------------------------------------------------
+
+    "line": (props, editor, next) =>
+    {
+        return <p {...props.attributes}>{props.children}</p>;
+    },
+    "comment": (props, editor, next) =>
+    {
+        return <div id="comment" {...props.attributes}>{props.children}</div>;
+    },
+
+    //-------------------------------------------------------------------------
+
+    "title": (props, editor, next) =>
+    {
+        return <div id="title" {...props.attributes}>{props.children}</div>;
+    },
+    "author": (props, editor, next) =>
+    {
+        return <div id="author" {...props.attributes}>{props.children}</div>;
+    },
+
+    //-------------------------------------------------------------------------
+
+    "action": (props, editor, next) =>
+    {
+        const { attributes, node, isFocused } = props;
+        const name = node.data.get("name");
+        return (
+            <span {...attributes}
+                className={"action" + (isFocused ? " focus" : "")}
+            >
+            {name}
+            </span>
+        );
+    },
+    
+    "scenebreak": (props, editor, next) =>
+    {
+        const { attributes, node, isFocused } = props;
+        return (
+            <p {...attributes}
+                className={"action" + (isFocused ? " focus" : "")}
+            >
+            &lt;unfold&gt;
+            </p>
+        );
+    },
+    //-------------------------------------------------------------------------
+
+    "folded": (props, editor, next) =>
+    {
+        const { attributes, node, isFocused, children } = props;
+        return (
+            <div {...attributes}
+                className={"action" + (isFocused ? " focus" : "")}
+                >
+                ...
+                <div className="hidden" contentEditable={false}>{children}</div>
+            </div>
+        )
+    },
+}
+
+//-----------------------------------------------------------------------------
+// It would be great to have a list of available hotkeys here. Would make
+// it easier to design them.
+//-----------------------------------------------------------------------------
+
+const hotkeys =
+{
+    "Mod+B": (event, editor, next) => { editor.toggleMark("bold"); },
+    "Mod+I": (event, editor, next) => { editor.toggleMark("italic"); },
+
+    "Alt+C": (event, editor, next) => { toggleWrap(editor, "comment"); },
+    "Alt+F": (event, editor, next) => { toggleWrap(editor, "folded"); },
+
+    "Alt+L": (event, editor, next) => { editor.insertFragment(lorem.document); },
+    "Alt+I": (event, editor, next) =>
+    {
+        editor.insertBlock({
+            type: "scenebreak",
+            data: { name: "scene" }
+        });
+/*
+        editor.insertInline({
+            type: "action",
+            data: { name: "scene" }
+        });
+*/
+    },
+}
+
+//-------------------------------------------------------------------------
+// Helpers
+//-------------------------------------------------------------------------
+
+function toggleWrap(editor, type)
+{
+    const { value: { document, blocks } } = editor;
+    const block  = blocks.first();
+    const parent = document.getParent(block.key);
+    
+    if(parent && parent.type === type)
+        editor.unwrapBlock(type);
+    else
+        editor.wrapBlock(type);
+}
+
+/*
+hasMark(type) {
+    const { value } = this.state
+    return value.activeMarks.some(mark => mark.type === type)
+}
+
+hasBlock = type => {
+    const { value } = this.state
+    return value.blocks.some(node => node.type === type)
+}
+*/
+
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+
+/*
+setBlock = (editor, type) =>
+{
+    const { value: { document, blocks } } = this.state;
+    const block  = blocks.first();
+    
+    if(block.type === type)
+        editor.setBlocks("line");
+    else
+        editor.setBlocks(type);
+}
+*/
+
+//-----------------------------------------------------------------------------
 // Editor to edit scene lists
 //-----------------------------------------------------------------------------
 
@@ -42,25 +215,7 @@ export default class SceneListEditor extends React.Component
 {
     //-------------------------------------------------------------------------
 
-    schema = {
-        blocks: {
-            folded: {
-            }
-        }
-    }
-
-    //-------------------------------------------------------------------------
-    // It would be great to have a list of available hotkeys here. Would make
-    // it easier to design them.
-    //-------------------------------------------------------------------------
-    
     plugins = [
-        this.pluginMark  ("Mod+B", "bold",   this.renderBold),
-        this.pluginMark  ("Mod+I", "italic", this.renderItalic),
-
-        this.pluginAction("Alt+L", this.insertLorem),
-
-        //this.pluginWrap  ("Alt+C", this.wrapBlock),
     ]
 
     //-------------------------------------------------------------------------
@@ -92,14 +247,15 @@ export default class SceneListEditor extends React.Component
 
                         ref     = { this.ref }
                         value   = { this.state.value }
-                        schema  = { this.schema }
+                        schema  = { schema }
 
                         plugins = { this.plugins }
 
                         onChange    = {this.onChange}
                         onKeyDown   = {this.onKeyDown}
                         renderMark  = {this.renderMark}
-                        renderBlock = {this.renderBlock}
+                        renderBlock = {this.renderNode}
+                        renderInline= {this.renderNode}
                         
                         /* Chrome understand only English :( */
                         spellCheck  = {false}
@@ -116,109 +272,15 @@ export default class SceneListEditor extends React.Component
     //-------------------------------------------------------------------------
     // Element rendering
     //-------------------------------------------------------------------------
-
-    renderBold(props, editor, next)
-    {
-        return <b {...props.attributes}>{props.children}</b>;
-    }
-
-    renderItalic(props, editor, next)
-    {
-        return <i {...props.attributes}>{props.children}</i>;
-    }
-
-    renderParagraph(props, editor, next)
-    {
-        return <p {...props.attributes}>{props.children}</p>;
-    }
     
-    renderComment(props, editor, next)
+    renderMark(props, editor, next)
     {
-        return <div id="comment" {...props.attributes}>{props.children}</div>;
+        return render[props.mark.type](props, editor, next);
     }
-    
-    //-------------------------------------------------------------------------
 
-    insertLorem(event, editor, next)
+    renderNode(props, editor, next)
     {
-        editor.insertFragment(lorem.document);
-    }
-
-    //-------------------------------------------------------------------------
-    // Simple marks & blocks
-    //-------------------------------------------------------------------------
-    
-    pluginMark(hotkey, markname, render) {
-        return {
-            onKeyDown(event, editor, next)
-            {
-                if(!isHotkey(hotkey, event)) return next();
-
-                event.preventDefault();
-                editor.toggleMark(markname);
-            },
-
-            renderMark(props, editor, next)
-            {
-                if(props.mark.type !== markname) return next();
-                return render(props, editor, next);
-            },
-        }
-    }
-
-    pluginAction(hotkey, action) {
-        return {
-            onKeyDown(event, editor, next)
-            {
-                if(!isHotkey(hotkey, event)) return next();
-
-                event.preventDefault();
-                return action(event, editor, next);
-            },
-        }
-    }
-
-    pluginWrap(hotkey, blockname, render) {
-        return {
-            onKeyDown(event, editor, next)
-            {
-                if(!isHotkey(hotkey, event)) return next();
-                console.log(event);
-                event.preventDefault();
-                this.wrapBlock(editor, blockname);
-            },
-
-            renderBlock(props, editor, next)
-            {
-                if(props.node.type !== blockname) return next();
-                return render(props, editor, next);
-            },
-        }
-    }
-
-    //-------------------------------------------------------------------------
-    // Blocks
-    //-------------------------------------------------------------------------
-    
-    renderBlock = (props, editor, next) =>
-    {
-        const { node, attributes, children } = props
-        
-        switch(node.type)
-        {
-            case "title":   return <div id="title" {...attributes}>{children}</div>;
-            case "author":  return <div id="author" {...attributes}>{children}</div>;
-
-            case "line":    return this.renderParagraph(props, editor, next);
-            
-            case "folded": return (
-                <div id="folded" contentEditable={false} {...attributes}>...
-                    <div id="hidden">{children}</div>
-                </div>
-            );
-
-            default: return next();
-        }
+        return render[props.node.type](props, editor, next);
     }
 
     //-------------------------------------------------------------------------
@@ -227,47 +289,16 @@ export default class SceneListEditor extends React.Component
 
     onKeyDown = (event, editor, next) =>
     {
+        for(var hotkey in hotkeys)
+        {
+            if(isHotkey(hotkey, event))
+            {
+                event.preventDefault();
+                hotkeys[hotkey](event, editor, next);
+                break;
+            }
+        }
         return next();
-    }
-
-    //-------------------------------------------------------------------------
-    // Helpers
-    //-------------------------------------------------------------------------
-    
-    hasMark = type => {
-        const { value } = this.state
-        return value.activeMarks.some(mark => mark.type === type)
-    }
-
-    hasBlock = type => {
-        const { value } = this.state
-        return value.blocks.some(node => node.type === type)
-    }
-
-    //-------------------------------------------------------------------------
-    //-------------------------------------------------------------------------
-
-    wrapBlock = (editor, type) =>
-    {
-        const { value: { document, blocks } } = this.state;
-        const block  = blocks.first();
-        const parent = document.getParent(block.key);
-        
-        if(parent && parent.type === type)
-            editor.unwrapBlock(type);
-        else
-            editor.wrapBlock(type);
-    }
-
-    setBlock = (editor, type) =>
-    {
-        const { value: { document, blocks } } = this.state;
-        const block  = blocks.first();
-        
-        if(block.type === type)
-            editor.setBlocks("line");
-        else
-            editor.setBlocks(type);
     }
 }
 

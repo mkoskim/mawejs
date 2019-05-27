@@ -76,7 +76,25 @@
     border: 1pt solid rgb(200, 200, 200);
 }
 
-.Sheet #hidden {
+.Sheet .hidden {
     display: none;
 }
 
+/*---------------------------------------------------------------------------*/
+
+.Sheet .focus {
+    box-shadow: 0 0 2px 2px rgb(100, 120, 150);
+}
+
+.Sheet .action {
+    font-family: 10pt Arial;
+    background: rgb(220, 220, 230);
+    border-radius: 2pt;
+    padding: 0pt 4pt 0pt 4pt;
+}
+
+.Sheet .scenebreak
+{
+    border: none;
+    border-top: 1pt dashed rgb(200, 200, 200);
+}

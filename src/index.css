@@ -50,7 +50,6 @@ body {
     background: rgb(250, 250, 250);
     border-top: 1px solid rgb(170, 170, 170);
     padding: 4pt;
-    margin-top: auto;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -96,10 +95,10 @@ body {
 
 .Toolbar .Button {
     cursor: pointer;
-    padding: 2pt 2pt 2pt 2pt;
+    padding: 2pt 2pt 0pt 2pt;
     font-size: 10pt;
-    /*
     border-radius: 3pt;
+    /*
     margin: 2pt;
     padding: 2pt 4pt 0pt 4pt;
     padding: 2px 8px 2px 8px;
