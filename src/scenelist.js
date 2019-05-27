@@ -111,11 +111,12 @@ const render =
     {
         const { attributes, node, isFocused } = props;
         return (
-            <p {...attributes}
-                className={"action" + (isFocused ? " focus" : "")}
-            >
-            &lt;unfold&gt;
-            </p>
+            <div {...attributes}>
+                <span className={"action" + (isFocused ? " focus" : "")}>
+                    &lt;unfold&gt;
+                    </span>
+                <p/>
+            </div>
         );
     },
     //-------------------------------------------------------------------------
@@ -124,11 +125,14 @@ const render =
     {
         const { attributes, node, isFocused, children } = props;
         return (
-            <div {...attributes}
-                className={"action" + (isFocused ? " focus" : "")}
-                >
-                ...
-                <div className="hidden" contentEditable={false}>{children}</div>
+            <div {...attributes}>
+                <span className={"action" + (isFocused ? " focus" : "")}>
+                    &lt;unfold&gt;
+                    </span>
+                <div className="hidden">
+                    {children}
+                    </div>
+                <p/>
             </div>
         )
     },
@@ -150,16 +154,17 @@ const hotkeys =
     "Alt+L": (event, editor, next) => { editor.insertFragment(lorem.document); },
     "Alt+I": (event, editor, next) =>
     {
+//*
         editor.insertBlock({
             type: "scenebreak",
             data: { name: "scene" }
         });
-/*
+/*/
         editor.insertInline({
             type: "action",
             data: { name: "scene" }
         });
-*/
+/**/
     },
 }
 
