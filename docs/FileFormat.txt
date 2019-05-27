@@ -33,7 +33,7 @@ and such attached to the scene. Or something similar.
 
 Things to remember:
 
-    - name of the story is different thing than title of the story.
+- name of the story is different thing than title of the story.
 
 -------------------------------------------------------------------------------
 

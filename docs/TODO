@@ -2,12 +2,6 @@ TODO:
 
 -------------------------------------------------------------------------------
 
-- What a heck? No Finnish spell checking on Chrome?!? No spellcheking based
-  on lang attribute?!? Am I living 2019, or 1989? Well, according to bug
-  reports and such, we just need to leave spellchecking for future. Browsers
-  just don't have any hunch about the languages other than English, and their
-  developers not any intention to fix it.
-
 - Ctrl-Z looses focus as last thing: maybe the first item in the undo buffer
   is "got focus"?
 
@@ -15,14 +9,18 @@ TODO:
 
 Ideas, and such:
 
+- Debug view: some area to print debug info
+
+- Comment show/hide button
+
+- Half-done: Folding! We could now try some "freeform" hide tool... It would
+  make blocks (selections) hidden.
+
 - Maybe we could try scenes as breaks, not as containers? Just like we thought
   chapters and parts would work? This could be bit more friendly to text editing
   component... All in all, we need to find ways to compile different kinds of
   views (creating them from internal data, and updating internal data based on
   the edits).
-
-- Folding! We could now try some "freeform" hide tool... It would make blocks
-  (selections) hidden.
 
 -------------------------------------------------------------------------------
 
@@ -34,6 +32,12 @@ General:
   at various levels: for one scene, for a chapter, for entire story. We need
   to be able to link other documents to the story, for example, links to
   documents describing the backgrounds.
+
+- What a heck? No Finnish spell checking on Chrome?!? No spellcheking based
+  on lang attribute?!? Am I living 2019, or 1989? Well, according to bug
+  reports and such, we just need to leave spellchecking for future. Browsers
+  just don't have any hunch about the languages other than English, and their
+  developers not any intention to fix it.
 
 -------------------------------------------------------------------------------
 

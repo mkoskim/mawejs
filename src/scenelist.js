@@ -7,8 +7,6 @@ import { Toolbar, Statusbar, Button, Icon, Separator } from "./toolbar"
 
 import isHotkey from "is-hotkey"
 
-//-----------------------------------------------------------------------------
-
 import "./sheet.css"
 
 import xmlfile from "./story.xml";
@@ -26,8 +24,7 @@ const lorem = Plain.deserialize(
 );
 
 //-----------------------------------------------------------------------------
-// TODO: We need some material for further development. Lets make XML
-// import.
+// TODO: XML import. We need a way to create material for test & development.
 //-----------------------------------------------------------------------------
 
 const parsed = new DOMParser().parseFromString(xmlfile, "text/xml");
@@ -61,6 +58,10 @@ const schema = {
 
 const render = 
 {
+    //-------------------------------------------------------------------------
+    // Generic text styles (marks)
+    //-------------------------------------------------------------------------
+    
     "bold": (props, editor, next) =>
     {
         return <b {...props.attributes}>{props.children}</b>;
@@ -71,27 +72,38 @@ const render =
     },
 
     //-------------------------------------------------------------------------
+    // Generic text blocks
+    //-------------------------------------------------------------------------
 
     "line": (props, editor, next) =>
     {
         return <p {...props.attributes}>{props.children}</p>;
     },
+    "indent": (props, editor, next) =>
+    {
+        return <div id="indent" {...props.attributes}>{props.children}</div>;
+    },
+
+    //-------------------------------------------------------------------------
+    // 
+    //-------------------------------------------------------------------------
+
     "comment": (props, editor, next) =>
     {
         return <div id="comment" {...props.attributes}>{props.children}</div>;
     },
 
-    //-------------------------------------------------------------------------
-
     "title": (props, editor, next) =>
     {
         return <div id="title" {...props.attributes}>{props.children}</div>;
     },
+
     "author": (props, editor, next) =>
     {
         return <div id="author" {...props.attributes}>{props.children}</div>;
     },
 
+    //-------------------------------------------------------------------------
     //-------------------------------------------------------------------------
 
     "action": (props, editor, next) =>
@@ -119,6 +131,7 @@ const render =
             </div>
         );
     },
+
     //-------------------------------------------------------------------------
 
     "folded": (props, editor, next) =>
@@ -149,7 +162,10 @@ const hotkeys =
     "Mod+I": (event, editor, next) => { editor.toggleMark("italic"); },
 
     "Alt+C": (event, editor, next) => { toggleWrap(editor, "comment"); },
-    "Alt+F": (event, editor, next) => { toggleWrap(editor, "folded"); },
+    "Alt+F": (event, editor, next) => { toggleFold(editor); },
+
+    "Tab"      : (event, editor, next) => { editor.wrapBlock("indent"); },
+    "Shift+Tab": (event, editor, next) => { editor.unwrapBlock("indent"); },
 
     "Alt+L": (event, editor, next) => { editor.insertFragment(lorem.document); },
     "Alt+I": (event, editor, next) =>
@@ -166,6 +182,19 @@ const hotkeys =
         });
 /**/
     },
+
+    //-------------------------------------------------------------------------
+    // Reserved hotkeys
+    //-------------------------------------------------------------------------
+
+    // "Mod+A": Select all
+    // "Mod+X": Cut
+    // "Mod+C": Copy
+    // "Mod+V": Paste
+    // "Mod+Z": Undo
+    // "Mod+Y": Redo
+    // "Mod+F": Find
+    // "Mod+G": Find next
 }
 
 //-------------------------------------------------------------------------
@@ -182,6 +211,24 @@ function toggleWrap(editor, type)
         editor.unwrapBlock(type);
     else
         editor.wrapBlock(type);
+}
+
+function toggleFold(editor)
+{
+    const { value: { document, blocks } } = editor;
+    const block  = blocks.first();
+    const type = "folded";
+    
+    const parent = document.getParent(block.key);
+    
+    if(parent && parent.type === type)
+    {
+        editor.unwrapBlock(type);
+    }
+    else
+    {
+        editor.wrapBlock(type);
+    }
 }
 
 /*
@@ -303,7 +350,7 @@ export default class SceneListEditor extends React.Component
                 break;
             }
         }
-        return next();
+        next();
     }
 }
 

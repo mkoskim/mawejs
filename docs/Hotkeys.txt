@@ -20,6 +20,18 @@ think that Alt-G is "goto", and then you choose where you go:
 
 -------------------------------------------------------------------------------
 
+Notepad++ folding shortcuts:
+
+https://superuser.com/questions/647097/notepad-expand-collapse-block-with-keyboard
+
+Alt-0, 1, 2 to fold certain level
+Shift-Alt-0, 1, 2 to unfold certain level
+
+Alt-F to fold current level
+Shift-Alt-F to unfold current level
+
+-------------------------------------------------------------------------------
+
 There are certain hotkeys that already have default action, and it is
 probably bad idea to use them for something else. For example:
 
