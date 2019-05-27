@@ -77,7 +77,7 @@
 
 /*---------------------------------------------------------------------------*/
 
-.Sheet #folded {
+.Sheet #scene {
     border: 1pt solid rgb(200, 200, 200);
 }
 
@@ -88,11 +88,15 @@
 /*---------------------------------------------------------------------------*/
 
 .Sheet .action {
+    position: absolute;
+    left: 0.5cm;
+    top: -5pt;
     font: 9pt Arial;
-    background: rgb(230, 230, 240);
+    /*background: rgb(230, 230, 240);*/
+    color: rgb(140, 140, 140);
+    background: rgba(255, 255, 255, 1);
     border-radius: 2pt;
     padding: 1pt 6pt 1pt 6pt;
-    margin-left: -2cm;
 }
 
 .Sheet .focus {

@@ -90,7 +90,17 @@ const render =
 
     "comment": (props, editor, next) =>
     {
-        return <div id="comment" {...props.attributes}>{props.children}</div>;
+        //const { comments } = editor.state;
+        const comments = true;
+
+        if(comments)
+        {
+            return <div id="comment" {...props.attributes}>{props.children}</div>;
+        }
+        else
+        {
+            return <div id="comment" className="hidden" {...props.attributes}>{props.children}</div>;
+        }
     },
 
     "title": (props, editor, next) =>
@@ -119,36 +129,27 @@ const render =
         );
     },
     
+    //-------------------------------------------------------------------------
+
+    "scene": (props, editor, next) =>
+    {
+        const { attributes, node, isFocused, children } = props;
+        return <div id="scene">{children}</div>;
+    },
+
     "scenebreak": (props, editor, next) =>
     {
         const { attributes, node, isFocused } = props;
         return (
-            <div {...attributes} style={{display: "flex", flexFlow: "row"}}>
+            <div {...attributes} style={{position: "relative"}}>
+                <hr style={{width: "100%", border: "0", borderTop: "1px dashed rgb(160, 160, 160)"}}/>
                 <div className={"action" + (isFocused ? " focus" : "")}>
-                    &lt;unfold&gt;
+                    scene
                     </div>
-                <div><hr/></div>
             </div>
         );
     },
 
-    //-------------------------------------------------------------------------
-
-    "folded": (props, editor, next) =>
-    {
-        const { attributes, node, isFocused, children } = props;
-        return (
-            <div {...attributes}>
-                <span className={"action" + (isFocused ? " focus" : "")}>
-                    &lt;unfold&gt;
-                    </span>
-                <div className="hidden" contentEditable={false}>
-                    {children}
-                    </div>
-                <p/>
-            </div>
-        )
-    },
 }
 
 //-----------------------------------------------------------------------------
@@ -161,8 +162,13 @@ const hotkeys =
     "Mod+B": (event, editor, next) => { editor.toggleMark("bold"); },
     "Mod+I": (event, editor, next) => { editor.toggleMark("italic"); },
 
-    "Alt+C": (event, editor, next) => { toggleWrap(editor, "comment"); },
-    "Alt+F": (event, editor, next) => { toggleFold(editor); },
+    "Alt+C": (event, editor, next) => { toggleWrap(editor, "comment" ); },
+    "Alt+F": (event, editor, next) =>
+    {
+        const { comments } = editor.state;
+        editor.setState({comments: !comments});
+        console.log(comments);
+    },
 
     "Tab"      : (event, editor, next) => { editor.wrapBlock("indent"); },
     "Shift+Tab": (event, editor, next) => { editor.unwrapBlock("indent"); },
@@ -173,7 +179,7 @@ const hotkeys =
 //*
         editor.insertBlock({
             type: "scenebreak",
-            data: { name: "scene" }
+            data: { name: "Scene" }
         });
 /*/
         editor.insertInline({
@@ -203,34 +209,66 @@ const hotkeys =
 // Helpers
 //-------------------------------------------------------------------------
 
-function toggleWrap(editor, type)
+function toggleWrap(editor, wrapping)
 {
+    const type = 
+        (typeof wrapping === "string" || wrapping instanceof String)
+        ? wrapping : wrapping.type;
+
     const { value: { document, blocks } } = editor;
     const block  = blocks.first();
     const parent = document.getParent(block.key);
     
     if(parent && parent.type === type)
-        editor.unwrapBlock(type);
+        editor.unwrapBlock(wrapping);
     else
-        editor.wrapBlock(type);
+        editor.wrapBlock(wrapping);
 }
 
 function toggleFold(editor)
 {
     const { value: { document, blocks } } = editor;
+    let block  = blocks.first();
+    
+    while(block)
+    {
+        console.log(block.type);
+        console.log(block.data);
+        
+        const isFolded = block.data.get("folded");
+        if(isFolded != undefined)
+        {
+            editor.setNodeByKey(block.key, {data: { folded: !isFolded }});
+            break;
+        }
+        block = document.getParent(block.key);
+    }
+/*
+    const { value: { document, blocks } } = editor;
     const block  = blocks.first();
-    const type = "folded";
+    const type = "scene";
     
     const parent = document.getParent(block.key);
     
     if(parent && parent.type === type)
     {
-        editor.unwrapBlock(type);
+        //editor.unwrapBlock(type);
     }
     else
     {
-        editor.wrapBlock(type);
+        editor
+            .wrapBlock({
+                type: "scene",
+            })
+            .moveToStartOfBlock()
+            .insertBlock({
+                type: "scenebreak",
+                data: { name: "scene" }
+            })
+        ;
+        //editor.wrapBlock(type);
     }
+*/
 }
 
 /*
@@ -274,12 +312,13 @@ export default class SceneListEditor extends React.Component
 
     //-------------------------------------------------------------------------
 
-    state = { value: story }
+    state = {
+        comments: true,
+        value: story,
+    }
 
     ref = editor => { this.editor = editor }
     
-    onChange = ({value}) => { this.setState({value}); }
-
     //-------------------------------------------------------------------------
 
     render()
@@ -305,11 +344,11 @@ export default class SceneListEditor extends React.Component
 
                         plugins = { this.plugins }
 
-                        onChange    = {this.onChange}
-                        onKeyDown   = {this.onKeyDown}
-                        renderMark  = {this.renderMark}
-                        renderBlock = {this.renderNode}
-                        renderInline= {this.renderNode}
+                        onChange     = {this.onChange}
+                        onKeyDown    = {this.onKeyDown}
+                        renderMark   = {this.renderMark}
+                        renderBlock  = {this.renderNode}
+                        renderInline = {this.renderNode}
                         
                         /* Chrome understand only English :( */
                         spellCheck  = {false}
@@ -326,13 +365,13 @@ export default class SceneListEditor extends React.Component
     //-------------------------------------------------------------------------
     // Element rendering
     //-------------------------------------------------------------------------
-    
-    renderMark(props, editor, next)
+
+    renderMark = (props, editor, next) =>
     {
         return render[props.mark.type](props, editor, next);
     }
 
-    renderNode(props, editor, next)
+    renderNode = (props, editor, next) =>
     {
         return render[props.node.type](props, editor, next);
     }
@@ -354,5 +393,10 @@ export default class SceneListEditor extends React.Component
         }
         next();
     }
+
+    //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
+
+    onChange = ({value}) => { this.setState({value}); }
 }
 
