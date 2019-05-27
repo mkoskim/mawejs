@@ -43,7 +43,7 @@ const schema = {
     blocks:
     {
         scenebreak: { isVoid: true },
-        folded: { isVoid: true },
+        //folded: { isVoid: true },
     },
 
     inlines:
@@ -123,11 +123,11 @@ const render =
     {
         const { attributes, node, isFocused } = props;
         return (
-            <div {...attributes}>
-                <span className={"action" + (isFocused ? " focus" : "")}>
+            <div {...attributes} style={{display: "flex", flexFlow: "row"}}>
+                <div className={"action" + (isFocused ? " focus" : "")}>
                     &lt;unfold&gt;
-                    </span>
-                <p/>
+                    </div>
+                <div><hr/></div>
             </div>
         );
     },
@@ -142,7 +142,7 @@ const render =
                 <span className={"action" + (isFocused ? " focus" : "")}>
                     &lt;unfold&gt;
                     </span>
-                <div className="hidden">
+                <div className="hidden" contentEditable={false}>
                     {children}
                     </div>
                 <p/>
@@ -195,6 +195,8 @@ const hotkeys =
     // "Mod+Y": Redo
     // "Mod+F": Find
     // "Mod+G": Find next
+    // "Mod+plus": Zoom In
+    // "Mod+minu": Zoom Out
 }
 
 //-------------------------------------------------------------------------

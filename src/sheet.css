@@ -88,10 +88,11 @@
 /*---------------------------------------------------------------------------*/
 
 .Sheet .action {
-    font: 10pt Arial;
-    background: rgb(220, 220, 230);
+    font: 9pt Arial;
+    background: rgb(230, 230, 240);
     border-radius: 2pt;
-    padding: 2pt 6pt 2pt 6pt;
+    padding: 1pt 6pt 1pt 6pt;
+    margin-left: -2cm;
 }
 
 .Sheet .focus {
