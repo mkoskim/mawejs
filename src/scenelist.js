@@ -1,3 +1,17 @@
+//******************************************************************************
+//******************************************************************************
+//
+// Viewing & editing scene lists. A scene list forms the story. It might be
+// schemantically divided to chapters and even parts, but it is the scene
+// list that is the story.
+//
+// The objective is, that scene lists are also used to store larger meta text
+// blocks (plans, sketches, background information and such). That way you
+// could freely store scenes to groups for later use.
+//
+//******************************************************************************
+//******************************************************************************
+
 import React from 'react'
 
 import Plain from 'slate-plain-serializer'
@@ -79,18 +93,28 @@ const render =
     {
         return <p {...props.attributes}>{props.children}</p>;
     },
+    
+    //-------------------------------------------------------------------------
+    // TODO: backspace to dedent at the beginning of the block.
+    //-------------------------------------------------------------------------
+
     "indent": (props, editor, next) =>
     {
         return <div id="indent" {...props.attributes}>{props.children}</div>;
     },
 
     //-------------------------------------------------------------------------
-    // 
+    // TODO: Comment show/hide
+    // TODO: Adjancent comment block merging. Probably holds true with
+    // many other blocks (like intend)
     //-------------------------------------------------------------------------
 
     "comment": (props, editor, next) =>
     {
-        //const { comments } = editor.state;
+        //console.log("Props.comments: " + props.comments + " Editor.comments: " + editor.comments);
+        
+        console.log(props);
+        
         const comments = true;
 
         if(comments)
@@ -102,6 +126,9 @@ const render =
             return <div id="comment" className="hidden" {...props.attributes}>{props.children}</div>;
         }
     },
+
+    //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 
     "title": (props, editor, next) =>
     {
@@ -141,11 +168,10 @@ const render =
     {
         const { attributes, node, isFocused } = props;
         return (
-            <div {...attributes} style={{position: "relative"}}>
-                <hr style={{width: "100%", border: "0", borderTop: "1px dashed rgb(160, 160, 160)"}}/>
-                <div className={"action" + (isFocused ? " focus" : "")}>
+            <div {...attributes} className="scenebreak" style={{position: "relative"}}>
+                <span className={"action" + (isFocused ? " focus" : "")}>
                     scene
-                    </div>
+                    </span>
             </div>
         );
     },
@@ -162,6 +188,9 @@ const hotkeys =
     "Mod+B": (event, editor, next) => { editor.toggleMark("bold"); },
     "Mod+I": (event, editor, next) => { editor.toggleMark("italic"); },
 
+    "Tab"      : (event, editor, next) => { editor.wrapBlock("indent"); },
+    "Shift+Tab": (event, editor, next) => { editor.unwrapBlock("indent"); },
+
     "Alt+C": (event, editor, next) => { toggleWrap(editor, "comment" ); },
     "Alt+F": (event, editor, next) =>
     {
@@ -169,9 +198,6 @@ const hotkeys =
         editor.setState({comments: !comments});
         console.log(comments);
     },
-
-    "Tab"      : (event, editor, next) => { editor.wrapBlock("indent"); },
-    "Shift+Tab": (event, editor, next) => { editor.unwrapBlock("indent"); },
 
     "Alt+L": (event, editor, next) => { editor.insertFragment(lorem.document); },
     "Alt+I": (event, editor, next) =>
@@ -181,6 +207,8 @@ const hotkeys =
             type: "scenebreak",
             data: { name: "Scene" }
         });
+        // If last block, insert:
+        editor.insertBlock("line");
 /*/
         editor.insertInline({
             type: "action",
@@ -236,7 +264,7 @@ function toggleFold(editor)
         console.log(block.data);
         
         const isFolded = block.data.get("folded");
-        if(isFolded != undefined)
+        if(isFolded !== undefined)
         {
             editor.setNodeByKey(block.key, {data: { folded: !isFolded }});
             break;
@@ -307,32 +335,50 @@ export default class SceneListEditor extends React.Component
 {
     //-------------------------------------------------------------------------
 
-    plugins = [
-    ]
+    constructor(props)
+    {
+        super(props);
+        this.state = {
+            comments: true,
+            value: story,
+        }
+    }
 
     //-------------------------------------------------------------------------
 
-    state = {
-        comments: true,
-        value: story,
+    ref = editor => { this.editor = editor }
+
+    plugins = [
+    ]
+
+    onContentChange = ({value}) => { this.setState({value}); }
+
+    //-------------------------------------------------------------------------
+
+    toggleComments = (event) =>
+    {
+        const comments = this.state.comments;
+        this.setState(state => ({comments: !comments}));
     }
 
-    ref = editor => { this.editor = editor }
-    
     //-------------------------------------------------------------------------
 
     render()
     {
+        console.log("render comments:" + this.state.comments);
         return (
             <div className="Editor">
                 <Toolbar>
                     <Icon name="format_bold"/>
                     <Icon name="format_italic"/>
                     <Separator/>
-                    <Button>button</Button>
+                    <Button>test</Button>
+                    <Button>test</Button>
                     
                     <span style={{marginLeft: "auto"}} />
-                    <Button>button</Button>
+                    <Icon name="short_text" />
+                    <Icon name="notes" />
+                    <Icon name="comment" onClick={this.toggleComments}/>
                     </Toolbar>
                 <div className="Board">
                     <Editor
@@ -344,7 +390,7 @@ export default class SceneListEditor extends React.Component
 
                         plugins = { this.plugins }
 
-                        onChange     = {this.onChange}
+                        onChange     = {this.onContentChange}
                         onKeyDown    = {this.onKeyDown}
                         renderMark   = {this.renderMark}
                         renderBlock  = {this.renderNode}
@@ -353,6 +399,8 @@ export default class SceneListEditor extends React.Component
                         /* Chrome understand only English :( */
                         spellCheck  = {false}
                         autoCorrect = {false}
+                        
+                        comments = {this.state.comments}
                     />
                 </div>
                 <Statusbar>
@@ -373,6 +421,7 @@ export default class SceneListEditor extends React.Component
 
     renderNode = (props, editor, next) =>
     {
+        //props.comments = this.state.comments;
         return render[props.node.type](props, editor, next);
     }
 
@@ -393,10 +442,4 @@ export default class SceneListEditor extends React.Component
         }
         next();
     }
-
-    //-------------------------------------------------------------------------
-    //-------------------------------------------------------------------------
-
-    onChange = ({value}) => { this.setState({value}); }
 }
-

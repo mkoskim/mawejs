@@ -34,7 +34,8 @@
 
 .Sheet p {
     margin: 0;
-    margin-bottom: 1em;
+    /* margin-bottom: 1em; */
+    text-indent: 1cm;
 }
 
 .Sheet #indent
@@ -77,8 +78,9 @@
 
 /*---------------------------------------------------------------------------*/
 
-.Sheet #scene {
-    border: 1pt solid rgb(200, 200, 200);
+.Sheet .scene {
+    /*border: 1pt solid rgb(200, 200, 200);*/
+    /*margin-top: 4pt;*/
 }
 
 .Sheet .hidden {
@@ -88,23 +90,50 @@
 /*---------------------------------------------------------------------------*/
 
 .Sheet .action {
-    position: absolute;
+    cursor: pointer;
     left: 0.5cm;
     top: -5pt;
     font: 9pt Arial;
-    /*background: rgb(230, 230, 240);*/
-    color: rgb(140, 140, 140);
-    background: rgba(255, 255, 255, 1);
-    border-radius: 2pt;
+    border-radius: 6pt;
     padding: 1pt 6pt 1pt 6pt;
+    margin-left: 0.5cm;
+    /*
+    color: rgb(160, 160, 160);
+    background: rgba(255, 255, 255, 1);
+    */
+    color: rgba(0, 0, 0, 0);
 }
 
 .Sheet .focus {
-    box-shadow: 0 0 2px 2px rgb(100, 120, 150);
+    box-shadow: 0 0 1px 2px rgb(180, 180, 200);
+    background: rgba(230, 230, 230, 1);
+    color: black;
+}
+
+.Sheet .action:hover {
+    /*box-shadow: 0 0 1px 2px rgb(100, 120, 150);*/
+    background: rgba(230, 230, 230, 1);
+    color: black;
 }
 
 .Sheet .scenebreak
 {
-    border: none;
-    border-top: 1pt dashed rgb(200, 200, 200);
+    position: relative;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.Sheet .scenebreak:before
+{
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    border-top: 1px dashed rgb(220, 220, 220);
+    content: "";
+    z-index: -1;
+    /*
+    display: block;
+    */
+    /*height: 1px;*/
+    /* margin-top: 1.5em; */
 }

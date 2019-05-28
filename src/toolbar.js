@@ -36,7 +36,7 @@ export function Icon(props)
     const {name} = props;
     
     return (
-        <Button><i className="material-icons">{name}</i></Button>
+        <Button><i className="material-icons"{...props}>{name}</i></Button>
     );
 }
 
