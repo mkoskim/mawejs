@@ -190,10 +190,9 @@ const hotkeys =
     "Mod+B": (event, editor, next) => { editor.toggleMark("bold"); },
     "Mod+I": (event, editor, next) => { editor.toggleMark("italic"); },
 
-    "Tab"      : (event, editor, next) => { wrapOnce(editor, "indent"); },
-    "Shift+Tab": (event, editor, next) => { unwrapOnce(editor, "indent"); },
+    "Tab"      : (event, editor, next) => { toggleWrap(editor, "indent"); },
 
-    "Alt+C": (event, editor, next) => { toggleWrap(editor, "comment" ); },
+    "Alt+C": (event, editor, next) => { toggleWrap(editor, "comment", ["line", "indent"]); },
     "Alt+F": (event, editor, next) =>
     {
         const { comments } = editor.state;
@@ -239,30 +238,42 @@ const hotkeys =
 // Helpers
 //-------------------------------------------------------------------------
 
-function parentBlockType(editor)
+function parentBlock(editor, include = [])
 {
     const { value: { document, blocks } } = editor;
     const block  = blocks.first();
-    const parent = document.getParent(block.key);
+    var   parent = document.getParent(block.key);
     
-    return parent ? parent.type : null;
+    if(include.length) while((parent) && include.includes(parent.type))
+    {
+        console.log(parent.type);
+        parent = document.getParent(parent.key);
+    }
+    
+    return parent;
+}
+
+function parentBlockType(editor, include = [])
+{
+    const parent = parentBlock(editor, include);
+    return (parent) ? parent.type : null;
 }
 
 //-------------------------------------------------------------------------
 // (un)wrapOnce prevents recursive blocks.
 //-------------------------------------------------------------------------
 
-function wrapOnce(editor, wrapping)
+function wrapOnce(editor, wrapping, include = [])
 {
     const type = 
         (typeof wrapping === "string" || wrapping instanceof String)
         ? wrapping : wrapping.type;
-    const parent = parentBlockType(editor);
+    const parent = parentBlockType(editor, include);
     
     if(parent !== type) editor.wrapBlock(wrapping);
 }
 
-function unwrapOnce(editor, wrapping)
+function unwrapOnce(editor, wrapping, include = [])
 {
     const type = 
         (typeof wrapping === "string" || wrapping instanceof String)
@@ -274,12 +285,12 @@ function unwrapOnce(editor, wrapping)
 
 //-------------------------------------------------------------------------
 
-function toggleWrap(editor, wrapping)
+function toggleWrap(editor, wrapping, include = [])
 {
     const type = 
         (typeof wrapping === "string" || wrapping instanceof String)
         ? wrapping : wrapping.type;
-    const parent = parentBlockType(editor);
+    const parent = parentBlockType(editor, include);
 
     if(parent === type)
         editor.unwrapBlock(wrapping);
