@@ -95,7 +95,9 @@ const render =
     },
     
     //-------------------------------------------------------------------------
-    // TODO: backspace to dedent at the beginning of the block.
+    // TODO: backspace to dedent at the beginning of the block. Note:
+    // most probably, we dont allow nested indentations. They are not part
+    // of any books. They are part of only not-so-well structured articles.
     //-------------------------------------------------------------------------
 
     "indent": (props, editor, next) =>
@@ -188,8 +190,8 @@ const hotkeys =
     "Mod+B": (event, editor, next) => { editor.toggleMark("bold"); },
     "Mod+I": (event, editor, next) => { editor.toggleMark("italic"); },
 
-    "Tab"      : (event, editor, next) => { editor.wrapBlock("indent"); },
-    "Shift+Tab": (event, editor, next) => { editor.unwrapBlock("indent"); },
+    "Tab"      : (event, editor, next) => { wrapOnce(editor, "indent"); },
+    "Shift+Tab": (event, editor, next) => { unwrapOnce(editor, "indent"); },
 
     "Alt+C": (event, editor, next) => { toggleWrap(editor, "comment" ); },
     "Alt+F": (event, editor, next) =>
@@ -237,21 +239,55 @@ const hotkeys =
 // Helpers
 //-------------------------------------------------------------------------
 
+function parentBlockType(editor)
+{
+    const { value: { document, blocks } } = editor;
+    const block  = blocks.first();
+    const parent = document.getParent(block.key);
+    
+    return parent ? parent.type : null;
+}
+
+//-------------------------------------------------------------------------
+// (un)wrapOnce prevents recursive blocks.
+//-------------------------------------------------------------------------
+
+function wrapOnce(editor, wrapping)
+{
+    const type = 
+        (typeof wrapping === "string" || wrapping instanceof String)
+        ? wrapping : wrapping.type;
+    const parent = parentBlockType(editor);
+    
+    if(parent !== type) editor.wrapBlock(wrapping);
+}
+
+function unwrapOnce(editor, wrapping)
+{
+    const type = 
+        (typeof wrapping === "string" || wrapping instanceof String)
+        ? wrapping : wrapping.type;
+    const parent = parentBlockType(editor);
+    
+    if(parent === type) editor.unwrapBlock(wrapping);
+}
+
+//-------------------------------------------------------------------------
+
 function toggleWrap(editor, wrapping)
 {
     const type = 
         (typeof wrapping === "string" || wrapping instanceof String)
         ? wrapping : wrapping.type;
+    const parent = parentBlockType(editor);
 
-    const { value: { document, blocks } } = editor;
-    const block  = blocks.first();
-    const parent = document.getParent(block.key);
-    
-    if(parent && parent.type === type)
+    if(parent === type)
         editor.unwrapBlock(wrapping);
     else
         editor.wrapBlock(wrapping);
 }
+
+//-------------------------------------------------------------------------
 
 function toggleFold(editor)
 {

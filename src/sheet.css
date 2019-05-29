@@ -32,15 +32,17 @@
 
 /*---------------------------------------------------------------------------*/
 
+/* TODO: Later, we go with paragraphs that: have first line indented, except
+ * in all specific cases where it is regarded as "starting" paragraph, when
+ * it does not have indentation. Will be difficult with lists, indented blocks
+ * scenes, chapters and so on. But it is needed to produce "correct" RTF draft
+ * from text.
+ */
+
 .Sheet p {
     margin: 0;
-    /* margin-bottom: 1em; */
-    text-indent: 1cm;
-}
-
-.Sheet #indent
-{
-    padding-left: 1cm;
+    margin-bottom: 1em;
+    /* text-indent: 1cm; */
 }
 
 .Sheet #comment p {
@@ -48,20 +50,28 @@
     margin-bottom: 0.5em;
 }
 
+/*---------------------------------------------------------------------------*/
+
 .Sheet #comment {
     background: rgb(230, 255, 230);
     border-left:  4pt solid rgb(150, 200, 150);
-    padding: 4pt 0.5cm 4pt 1cm;
+    margin-left: 1cm;
+    padding: 4pt 4pt 4pt 1em;
     margin-bottom: 1em;
+}
 
-    /*
+/* Demonstration: this shows how to fade out content on blocks, which
+ * size is limited. Does not work as well as it should, but looks "cool"
+ * if you don't go inside the box.
+ */
+
+/*
+.Sheet #comment {
     position: relative;
     height: 2cm;
     overflow: hidden;
-    */
 }
 
-/*
 .Sheet #comment:after {
     content: '';
     position: absolute;
@@ -69,7 +79,8 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background-image: linear-gradient(
+    background-image: linear-gradient
+    (
         rgba(230, 255, 230, 0) 50%,
         rgba(230, 255, 230, 1) 90%
     );
@@ -78,15 +89,45 @@
 
 /*---------------------------------------------------------------------------*/
 
+.Sheet #indent
+{
+    padding-left: 1cm;
+}
+
+/*---------------------------------------------------------------------------*/
+/* Scene div's
+/*---------------------------------------------------------------------------*/
+
 .Sheet .scene {
     /*border: 1pt solid rgb(200, 200, 200);*/
     /*margin-top: 4pt;*/
 }
 
-.Sheet .hidden {
-    display: none;
+/* Even thought we don't save scene breaks (only scene groups), we most probably
+ * will need a "break" block for all sorts of actions. This one will will draw
+ * greyed line at the middle of the break block. We programmatically insert
+ * a button to this.
+ */
+
+.Sheet .scenebreak
+{
+    position: relative;
+    cursor: pointer;
+    z-index: 1;
 }
 
+.Sheet .scenebreak:before
+{
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    border-top: 1px dashed rgb(220, 220, 220);
+    content: "";
+    z-index: -1;
+}
+
+/*---------------------------------------------------------------------------*/
+/* Special elements */
 /*---------------------------------------------------------------------------*/
 
 .Sheet .action {
@@ -116,24 +157,8 @@
     color: black;
 }
 
-.Sheet .scenebreak
-{
-    position: relative;
-    cursor: pointer;
-    z-index: 1;
+.Sheet .hidden {
+    display: none;
 }
 
-.Sheet .scenebreak:before
-{
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    border-top: 1px dashed rgb(220, 220, 220);
-    content: "";
-    z-index: -1;
-    /*
-    display: block;
-    */
-    /*height: 1px;*/
-    /* margin-top: 1.5em; */
-}
+
