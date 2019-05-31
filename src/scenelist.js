@@ -115,7 +115,7 @@ const render =
     {
         //console.log("Props.comments: " + props.comments + " Editor.comments: " + editor.comments);
         
-        console.log(props);
+        //console.log(props);
         
         const comments = true;
 
@@ -190,6 +190,9 @@ const hotkeys =
     "Mod+B": (event, editor, next) => { editor.toggleMark("bold"); },
     "Mod+I": (event, editor, next) => { editor.toggleMark("italic"); },
 
+    // TODO: Can we implement indent as some sort of props instead of wrapping
+    // blocks? Comments as well.
+
     "Tab"      : (event, editor, next) => { toggleWrap(editor, "indent"); },
 
     "Alt+C": (event, editor, next) => { toggleWrap(editor, "comment", ["line", "indent"]); },
@@ -197,7 +200,7 @@ const hotkeys =
     {
         const { comments } = editor.state;
         editor.setState({comments: !comments});
-        console.log(comments);
+        //console.log(comments);
     },
 
     "Alt+L": (event, editor, next) => { editor.insertFragment(lorem.document); },
@@ -222,45 +225,41 @@ const hotkeys =
     // Reserved hotkeys
     //-------------------------------------------------------------------------
 
-    // "Mod+A": Select all
-    // "Mod+X": Cut
-    // "Mod+C": Copy
-    // "Mod+V": Paste
-    // "Mod+Z": Undo
-    // "Mod+Y": Redo
-    // "Mod+F": Find
-    // "Mod+G": Find next
-    // "Mod+plus": Zoom In
-    // "Mod+minu": Zoom Out
+    // "Mod+A"      : Select all
+    // "Mod+X"      : Cut
+    // "Mod+C"      : Copy
+    // "Mod+V"      : Paste
+    // "Mod+Z"      : Undo
+    // "Mod+Y"      : Redo
+    // "Mod+F"      : Find
+    // "Mod+G"      : Find next
+    // "Mod+S"      : Save
+    // "Mod+plus"   : Zoom In
+    // "Mod+minus"  : Zoom Out
 }
 
 //-------------------------------------------------------------------------
 // Helpers
 //-------------------------------------------------------------------------
 
-function parentBlock(editor, include = [])
+function findInnermostBlock(editor, exclude = ["line"])
 {
     const { value: { document, blocks } } = editor;
-    const block  = blocks.first();
-    var   parent = document.getParent(block.key);
+    var   child  = blocks.first();
+    var   parent = document.getParent(child.key);
     
-    if(include.length) while((parent) && include.includes(parent.type))
+    while((parent) && exclude.includes(parent.type))
     {
-        console.log(parent.type);
+        console.log("Parent:", parent ? parent.type : undefined, "Child:", child.type);
+        child  = parent;
         parent = document.getParent(parent.key);
     }
-    
-    return parent;
-}
-
-function parentBlockType(editor, include = [])
-{
-    const parent = parentBlock(editor, include);
-    return (parent) ? parent.type : null;
+    console.log("Parent:", parent ? parent.type : undefined, "Child:", child.type);
+    return { parent: parent, child: child };
 }
 
 //-------------------------------------------------------------------------
-// (un)wrapOnce prevents recursive blocks.
+// (un)wrapOnce for non-recursive blocks.
 //-------------------------------------------------------------------------
 
 function wrapOnce(editor, wrapping, include = [])
@@ -268,9 +267,9 @@ function wrapOnce(editor, wrapping, include = [])
     const type = 
         (typeof wrapping === "string" || wrapping instanceof String)
         ? wrapping : wrapping.type;
-    const parent = parentBlockType(editor, include);
+    const { parent, child } = findInnermostBlock(editor, include);
     
-    if(parent !== type) editor.wrapBlock(wrapping);
+    if(!parent || parent.type !== type) editor.wrapNodeByKey(child.key, wrapping);
 }
 
 function unwrapOnce(editor, wrapping, include = [])
@@ -278,9 +277,9 @@ function unwrapOnce(editor, wrapping, include = [])
     const type = 
         (typeof wrapping === "string" || wrapping instanceof String)
         ? wrapping : wrapping.type;
-    const parent = parentBlockType(editor);
+    const { parent, child } = findInnermostBlock(editor, include);
     
-    if(parent === type) editor.unwrapBlock(wrapping);
+    if(parent && parent.type === type) editor.unwrapNodeByKey(child.key);
 }
 
 //-------------------------------------------------------------------------
@@ -290,12 +289,14 @@ function toggleWrap(editor, wrapping, include = [])
     const type = 
         (typeof wrapping === "string" || wrapping instanceof String)
         ? wrapping : wrapping.type;
-    const parent = parentBlockType(editor, include);
+    const { parent, child } = findInnermostBlock(editor, include);
 
-    if(parent === type)
-        editor.unwrapBlock(wrapping);
+    console.log("Parent:", parent ? parent.type : undefined, "Child:", child.type);
+
+    if(parent && parent.type === type)
+        editor.unwrapBlockByKey(parent.key, wrapping);
     else
-        editor.wrapBlock(wrapping);
+        editor.wrapBlockByKey(child.key, wrapping);
 }
 
 //-------------------------------------------------------------------------
@@ -307,8 +308,8 @@ function toggleFold(editor)
     
     while(block)
     {
-        console.log(block.type);
-        console.log(block.data);
+        //console.log(block.type);
+        //console.log(block.data);
         
         const isFolded = block.data.get("folded");
         if(isFolded !== undefined)
@@ -412,7 +413,7 @@ export default class SceneListEditor extends React.Component
 
     render()
     {
-        console.log("render comments:" + this.state.comments);
+        //console.log("render comments:" + this.state.comments);
         return (
             <div className="Editor">
                 <Toolbar>
