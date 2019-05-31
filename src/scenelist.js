@@ -283,6 +283,10 @@ function unwrapOnce(editor, wrapping, include = [])
 }
 
 //-------------------------------------------------------------------------
+// TODO: We should also check the other childs, too, instead of just checking
+// the first one. What if we first wrap selected parts, and then adjust the
+// blocks?
+//-------------------------------------------------------------------------
 
 function toggleWrap(editor, wrapping, include = [])
 {
