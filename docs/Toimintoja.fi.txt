@@ -1,0 +1,21 @@
+Toimintoja
+----------
+
+- Tekstiä on kyettävä editoimaan draft-näkymässä.
+
+- Tekstistä pitää saada "split view" ja sitä pitää pystyä editoimaan
+molemmissa yhtä aikaa. Sitä tarvitaan mm. osien ja kommenttien siirtämisessä
+muihin paikkoihin.
+
+- Tekstin splittaus ja mergetys pitää olla helppoa
+
+- Sivulle pitää saada leikeryhmä, johon voi helposti siirtää osia, ja josta
+voi siirtää tekstiin osia.
+
+- Kirjoittaminen on monilta osiltaan palasten siirtämistä ja muokkaamista.
+
+- Pitää olla mahdollista avata toinen tiedosto rinnalle. Tarinan voi jakaa
+muiksi tarinoiksi. Tarinoille yhteistä dokumentaatiota pitää pystyä
+pitämään yllä, siirrellen ja muokaten tavaraa tarinoiden ja dokumenttien
+välissä.
+
