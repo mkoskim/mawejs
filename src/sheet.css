@@ -55,9 +55,11 @@
 .Sheet #comment {
     background: rgb(230, 255, 230);
     border-left:  4pt solid rgb(150, 200, 150);
-    margin-left: 1cm;
     padding: 4pt 4pt 4pt 1em;
     margin-bottom: 1em;
+    /*
+    margin-left: 1cm;
+    */
 }
 
 /* Demonstration: this shows how to fade out content on blocks, which
