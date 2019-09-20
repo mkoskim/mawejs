@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "immutable": "^4.0.0-rc.12",
-    "is-hotkey": "^0.1.5",
+    "is-hotkey": "^0.1.6",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-scripts": "3.0.1",
