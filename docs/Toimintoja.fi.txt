@@ -14,8 +14,22 @@ voi siirtää tekstiin osia.
 
 - Kirjoittaminen on monilta osiltaan palasten siirtämistä ja muokkaamista.
 
-- Pitää olla mahdollista avata toinen tiedosto rinnalle. Tarinan voi jakaa
-muiksi tarinoiksi. Tarinoille yhteistä dokumentaatiota pitää pystyä
-pitämään yllä, siirrellen ja muokaten tavaraa tarinoiden ja dokumenttien
-välissä.
+-------------------------------------------------------------------------------
+
+TARINOIDEN VÄLISIÄ TOIMINTOJA
+
+- Mikä on tarinan määritelmä?
+
+  1) Voiko yhdessä tiedostossa olla monta pientä tarinaa (kuten Ansastajat)?
+
+  2) Voiko yksi tarina koostua useasta tiedostosta?
+
+- Tarinoiden yhteinen metatieto. Esimerkiksi, cityplex-sarjaan kuuluvilla
+  tarinoilla voisi olla yhteisiä tiedostoja taustoista.
+
+  * Metatieto pitäisi pystyä jotenkin helposti linkkaamaan tarinaan.
+
+- Tarinoiden pitää olla splitattavissa ja mergetettävissä. Toisin sanoen,
+  on oltava mahdollista avata kaksi tarinaa yhtä aikaa ja siirrellä osia
+  niiden välillä.
 
