@@ -315,9 +315,9 @@ which are story-wide.
 NOTE! Changes to previous thoughts:
 
 1) In current plan, tags do not have any content. Tags are only added to scenes,
-   they are not - at least integral - part of the heading. If you need a description
-   for your tag, you create a scene in to your sketch <group>, and tag it with the
-   tag it describes.
+   they are not - at least integral - part of the heading. If you need a
+   description for your tag, you create a scene in to your sketch <group>, and
+   tag it with the tag it describes.
 
 2) There is no more plans and sketches stored in the <head> section. We will use
    separate groups to store our plans and sketches.
