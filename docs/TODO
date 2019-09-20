@@ -2,8 +2,8 @@ TODO:
 
 -------------------------------------------------------------------------------
 
-- Ctrl-Z looses focus as last thing: maybe the first item in the undo buffer
-  is "got focus"?
+- LOOKS FIXED: Ctrl-Z looses focus as last thing: maybe the first item
+  in the undo buffer is "got focus"?
 
 -------------------------------------------------------------------------------
 

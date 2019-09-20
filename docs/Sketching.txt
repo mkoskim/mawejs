@@ -15,7 +15,8 @@ that you are able to split & merge stories together. Examples:
   from your main story to splitted view and save it as a spinoff.
   
 - During your work, you realize you have another story containing great stuff
-  for this story. Open it in splitview, and drag&drop elements to your main story.
+  for this story. Open it in splitview, and drag'n'drop elements to your main
+  story.
   
 -------------------------------------------------------------------------------
 
