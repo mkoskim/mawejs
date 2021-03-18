@@ -1,15 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import Tables from "./tables";
-import SceneListEditor from "./scenelist";
+//import Tables from "./tables";
 
 import "./index.css";
 
-
 //-----------------------------------------------------------------------------
 
+/*
+import SceneListEditor from "./scenelist";
+
 ReactDOM.render(<SceneListEditor />, document.getElementById("root"));
+*/
 
 //-----------------------------------------------------------------------------
 // Tests and such
@@ -41,7 +43,7 @@ ReactDOM.render(
     <Comment author={{name: "Yes"}} text="1" date="2" />,
     document.getElementById('root')
 );
-*/
+/**/
 
 /*
 class Toggle extends React.Component {
@@ -69,17 +71,21 @@ ReactDOM.render(
 );
 /**/
 
-/*
+//*
+
+//const { remote } = require("electron");
+
 class Clock extends React.Component
 {
     constructor(props) {
         super(props);
         this.state = {date: new Date() };
-        //this.state = {}
+        //this.state = {};
         //this.tick();
     }
     
     tick() {
+        //app.console.log("Tick");
         this.setState({ date: new Date() });
     }
 
