@@ -3,23 +3,24 @@
   "description": "Editor for writers.",
   "author": "Markus Koskimies <mkoskim@gmail.com>",
   "version": "0.0.1",
-  "main": "./public/electron.js",
+  "main": "./electron/main.js",
   "homepage": "./",
   "private": true,
   "dependencies": {
     "concurrently": "^6.0.0",
     "cross-env": "^7.0.3",
+    "electron": "^12.0.1",
+    "electron-builder": "^22.10.5",
     "electron-is-dev": "^2.0.0",
     "electron-window-state": "^5.0.3",
-    "fs": "0.0.1-security",
     "immutable": "^4.0.0-rc.12",
     "is-hotkey": "^0.1.8",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "react-scripts": "^3.4.4",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-scripts": "^4.0.3",
     "serve": "^11.3.2",
-    "slate": "^0.47.9",
-    "slate-react": "^0.22.10",
+    "slate": "^0.59.0",
+    "slate-react": "^0.59.0",
     "wait-on": "^5.3.0"
   },
   "scripts": {
@@ -47,8 +48,5 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "electron-builder": "^22.10.5",
-    "electron": "^12.0.1"
-  }
+  "devDependencies": {}
 }

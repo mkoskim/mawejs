@@ -72,8 +72,11 @@ ReactDOM.render(
 /**/
 
 //*
+//const fs = require("fs")
 
-//const { remote } = require("electron");
+//const ipc = window.require("electron").ipcRenderer;
+//console.log(fs.readdirSync("/"));
+console.log(window.fs.readdirSync("/"));
 
 class Clock extends React.Component
 {
