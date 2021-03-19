@@ -1,9 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-//import Tables from "./tables";
-
 import "./index.css";
+
+
+//import Tables from "./tables";
+import LocalFS from "./storage/localfs";
+new LocalFS();
 
 //-----------------------------------------------------------------------------
 
@@ -72,11 +75,6 @@ ReactDOM.render(
 /**/
 
 //*
-//const fs = require("fs")
-
-//const ipc = window.require("electron").ipcRenderer;
-//console.log(fs.readdirSync("/"));
-console.log(window.fs.readdirSync("/"));
 
 class Clock extends React.Component
 {
@@ -106,8 +104,7 @@ class Clock extends React.Component
     render() {
         return (
         <div>
-          <h1>Hello, world!</h1>
-          <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
+          <h2>Time: {this.state.date.toLocaleTimeString()}.</h2>
         </div>
         );
     }
