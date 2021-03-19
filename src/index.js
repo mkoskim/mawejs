@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import Button from '@material-ui/core/Button';
 
-import "./index.css";
-
+// import "./index.css";
 
 //import Tables from "./tables";
 import LocalFS from "./storage/localfs";
@@ -19,6 +19,19 @@ ReactDOM.render(<SceneListEditor />, document.getElementById("root"));
 //-----------------------------------------------------------------------------
 // Tests and such
 //-----------------------------------------------------------------------------
+
+//*
+
+function App() {
+  return (
+    <Button variant="contained" color="primary">
+      Hello World
+    </Button>
+  );
+}
+
+ReactDOM.render(<App />, document.getElementById('root')); //document.querySelector('#app'));
+/**/
 
 /*
 function Author(props)
@@ -74,7 +87,7 @@ ReactDOM.render(
 );
 /**/
 
-//*
+/*
 
 class Clock extends React.Component
 {
