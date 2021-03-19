@@ -2,19 +2,23 @@
 // Create bridge from React app running in browser to Electron
 //-----------------------------------------------------------------------------
 
-const {
-    contextBridge,
-    ipcRenderer
-} = require("electron");
-
-const fs = require("fs");
+const electron = require("electron");
+const {contextBridge} = electron;
 
 //-----------------------------------------------------------------------------
 // Exposing full interfaces
 //-----------------------------------------------------------------------------
 
+const {ipcRenderer} = electron;
 contextBridge.exposeInMainWorld("ipc", ipcRenderer);
+
+const fs = require("fs");
+console.log("fs", fs);
 contextBridge.exposeInMainWorld("fs", fs);
+
+//const app = electron.app || electron.remote.app;
+//console.log("app", app);
+//contextBridge.exposeInMainWorld("app", app);
 
 //-----------------------------------------------------------------------------
 // More controlled way to expose interfaces

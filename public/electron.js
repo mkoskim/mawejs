@@ -2,7 +2,8 @@
 // Main Window
 //-----------------------------------------------------------------------------
 
-const {BrowserWindow} = require('electron') 
+const electron = require('electron');
+const {BrowserWindow} = electron;
 const windowStateKeeper = require('electron-window-state');
 
 const url = require('url') 
@@ -29,8 +30,11 @@ async function createWindow()
             contextIsolation: true,
             enableRemoteModule: false,
             preload: path.join(__dirname, "preload.js")
-        }
+        },
     });
+
+    home = app.getPath("home");
+    console.log(home);
 
     mainWindowState.manage(mainWindow);
 
@@ -50,7 +54,7 @@ async function createWindow()
 // Application
 //-----------------------------------------------------------------------------
 
-const {app} = require('electron') 
+const {app} = electron;
 
 app.on("ready", createWindow);
 
@@ -72,7 +76,7 @@ app.on("activate", () => {
 // IPC interface
 //-----------------------------------------------------------------------------
 
-const { ipcMain } = require("electron");
+const {ipcMain} = electron;
 
 const fs = require("fs")
 
