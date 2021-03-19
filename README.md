@@ -18,17 +18,26 @@ This time I try to make the "draft view" - where you see your story close simila
 
 **Installing**
 
-1. Clone the repository
-2. Install npm
-3. Get dependencies: `mawe$ npm install`
+Install the needed tools, if you don't have them already. On Linux you can do that from command line, on Windows you can get the installation packages from web:
+
+    $ sudo apt install git
+    $ sudo apt install npm
+
+Clone the repository:
+
+    $ git clone https://github.com/mkoskim/mawe.web.git
+
+Get dependencies:
+
+    mawe.web$ npm install
 
 Running:
 
-    mawe$ npm start
+    mawe.web$ npm start
 
 Updating dependencies:
 
-    mawe$ npm update
+    mawe.web$ npm update
 
 - - -
 
