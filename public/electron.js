@@ -36,16 +36,14 @@ async function createWindow()
 
     mainWindow.on("closed", () => (mainWindow = null));
     mainWindow.webContents.openDevTools();
-    
-    if(isDev)
-    {
-        mainWindow.loadURL('http://localhost:3000');
-    }
-    else
-    {
-        mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
-    }
 
+    const url = isDev ?
+        'http://localhost:3000' :
+        `file://${path.join(__dirname, '../build/index.html')}`
+    ;
+
+    console.log("Loading:", url);
+    mainWindow.loadURL(url);
 }
 
 //-----------------------------------------------------------------------------

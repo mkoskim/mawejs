@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Create bridge from browser React app to Electron
+// Create bridge from React app running in browser to Electron
 //-----------------------------------------------------------------------------
 
 const {
