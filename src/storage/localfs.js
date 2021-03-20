@@ -8,7 +8,7 @@
 
 import Storage from "./storage";
 
-const path = require('path')
+//const path = require('path')
 const ipc = window.ipc;
 
 //const {app} = require("electron").remote;
@@ -24,21 +24,15 @@ export default class LocalFS extends Storage
         super();
     }
 
-    readdir()
+    getpathid(name)
     {
-        var folder = path.join(".", "");
-        var files = ipc.sendSync("fs-readdir-sync", { path: folder });
-        console.log(files);
-/*
-        //const ipc = window.require("electron").ipcRenderer;
-        //console.log(fs.readdirSync("/"));
-        //console.log("app:", window.app);
-        //console.log(dir);
-        var files = fs.readdirSync(folder, {withFileTypes: true});
-        files = files.filter(file => file["isDirectory"]());
-        console.log(files);
-        //files = files.filter(file => file.type.isDirectory());
-        */
-        return files;
+        var pathid = ipc.sendSync("fs-getpath-sync", { name: name });
+        console.log(pathid);
+        return pathid;
+    }
+
+    readdir(pathid)
+    {
+        return ipc.sendSync("fs-readdir-sync", { path: pathid });
     }
 }

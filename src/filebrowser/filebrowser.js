@@ -21,13 +21,13 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import FolderIcon from '@material-ui/icons/Folder';
 import FileIcon from '@material-ui/icons/Description';
+import StarIcon from '@material-ui/icons/Star';
 
 import { makeStyles } from '@material-ui/core/styles';
 
 //-----------------------------------------------------------------------------
 
 import LocalFS from "../storage/localfs"
-import { ThreeSixty } from '@material-ui/icons';
 
 //-----------------------------------------------------------------------------
 
@@ -40,13 +40,68 @@ export default class FileBrowser extends React.Component
         super(props);
 
         this.state = {
+            location: "home",
+            pathid: null,
+            //pathid: "/home/markus/Dropbox/tarinat",
             folders: [],
             files: [],
+            hidden: false,
         }
         this.storage = new LocalFS();
     }
 
     //-------------------------------------------------------------------------
+
+    render()
+    {
+        return (
+        <Box>
+        <this.appbar />
+        <List>
+            {this.renderCategory("Folders", this.state.folders)}
+            {this.renderCategory("Files", this.state.files)}
+            </List>
+            </Box>
+        );
+    }
+
+    renderCategory(category, files)
+    {
+        if(!this.state.hidden)
+        {
+            files = files.filter(file => !file.name.startsWith("."));
+        }
+
+        if(files.length)
+        {
+            return (
+                <Box>
+                    <ListItem><ListItemText primary={category}/></ListItem>
+                    <Box display="flex" flexWrap="wrap">
+                        {files.map(file => this.renderFile(file))}
+                        </Box>
+                    </Box>
+            );
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    renderFile(file)
+    {
+        return (        
+        <Box width={200} p="4px"><Card variant="outlined">
+        <ListItem button>
+            <ListItemAvatar>
+                { file.type == "folder" ? <FolderIcon/> : <FileIcon/> }
+                </ListItemAvatar>
+            <ListItemText primary={file.name} />
+            </ListItem>
+        </Card></Box>
+        );
+    }
 
     appbar()
     {
@@ -62,48 +117,19 @@ export default class FileBrowser extends React.Component
         );
     }
 
-    renderfile(file)
-    {
-        return (        
-        <Box width={200} p="4px"><Card variant="outlined">
-        <ListItem button>
-            <ListItemAvatar>
-                { file.type == "folder" ? <FolderIcon /> : <FileIcon/> }
-                </ListItemAvatar>
-            <ListItemText primary={file.name} />
-            </ListItem>
-        </Card></Box>
-        );
-    }
-
-    renderfolder(files)
-    {
-        return <Box display="flex" flexWrap="wrap">
-                {files.map(file => this.renderfile(file))}
-                </Box>;
-    }
-
-    render()
-    {
-        return (
-        <Box>
-        <this.appbar />
-        <List>
-            <ListItem><ListItemText primary="Folders"/></ListItem>
-            {this.renderfolder(this.state.folders)}
-            <ListItem><ListItemText primary="Files"/></ListItem>
-            {this.renderfolder(this.state.files)}
-            </List>
-            </Box>
-        );
-    }
-
     //-------------------------------------------------------------------------
 
     readdir()
     {
-        var files = this.storage.readdir();
-        //files.forEach(file => console.log(file.isDirectory()));
+        const fs = this.storage;
+        if(this.state.pathid == null)
+        {
+            this.state.pathid = fs.getpathid(this.state.location);
+        }
+        const files = fs.readdir(this.state.pathid);
+
+        //console.log(files);
+
         this.setState({
             folders: files.filter(file => file.type == "folder"),
             files: files.filter(file => file.type != "folder"),
