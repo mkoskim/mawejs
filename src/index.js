@@ -1,12 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Button from '@material-ui/core/Button';
 
 // import "./index.css";
 
 //import Tables from "./tables";
-import LocalFS from "./storage/localfs";
-new LocalFS();
+// import LocalFS from "./storage/localfs";
 
 //-----------------------------------------------------------------------------
 
@@ -21,6 +19,18 @@ ReactDOM.render(<SceneListEditor />, document.getElementById("root"));
 //-----------------------------------------------------------------------------
 
 //*
+import FileBrowser from "./filebrowser/filebrowser";
+ReactDOM.render(<FileBrowser/>, document.getElementById('root'));
+
+/**/
+
+/*
+import Clock from "./tests/clock";
+ReactDOM.render(<Clock/>, document.getElementById('root'));
+/**/
+
+/*
+import Button from '@material-ui/core/Button';
 
 function App() {
   return (
@@ -85,46 +95,6 @@ ReactDOM.render(
   <Toggle />,
   document.getElementById('root')
 );
-/**/
-
-/*
-
-class Clock extends React.Component
-{
-    constructor(props) {
-        super(props);
-        this.state = {date: new Date() };
-        //this.state = {};
-        //this.tick();
-    }
-    
-    tick() {
-        //app.console.log("Tick");
-        this.setState({ date: new Date() });
-    }
-
-    componentDidMount() {
-        this.timerID = setInterval(
-          () => this.tick(),
-          1000
-        );
-    }
-    
-    componentWillUnmount() {
-        clearInterval(this.timerID);
-    }
-
-    render() {
-        return (
-        <div>
-          <h2>Time: {this.state.date.toLocaleTimeString()}.</h2>
-        </div>
-        );
-    }
-}
-
-ReactDOM.render(<Clock/>, document.getElementById('root'));
-
 /**/
 
 /*

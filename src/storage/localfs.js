@@ -21,7 +21,10 @@ export default class LocalFS extends Storage
     constructor()
     {
         super();
+    }
 
+    readdir()
+    {
         //const ipc = window.require("electron").ipcRenderer;
         //console.log(fs.readdirSync("/"));
         //console.log("app:", window.app);
@@ -29,5 +32,6 @@ export default class LocalFS extends Storage
         console.log(dir);
         var files = fs.readdirSync(dir);
         console.log(files);
+        return files;
     }
 }
