@@ -12,20 +12,16 @@ const {contextBridge} = electron;
 const {ipcRenderer} = electron;
 contextBridge.exposeInMainWorld("ipc", ipcRenderer);
 
-const fs = require("fs");
-console.log("fs", fs);
-contextBridge.exposeInMainWorld("fs", fs);
-
-//const app = electron.app || electron.remote.app;
-//console.log("app", app);
-//contextBridge.exposeInMainWorld("app", app);
-
 //-----------------------------------------------------------------------------
 // More controlled way to expose interfaces
 //-----------------------------------------------------------------------------
 
-    /*
-    "api", {
+// const {ipcRenderer} = electron;
+
+// Expose protected methods that allow the renderer process to use
+// the ipcRenderer without exposing the entire object
+/*
+"api", {
         send: (channel, data) => {
             // whitelist channels
             //let validChannels = ["toMain"];

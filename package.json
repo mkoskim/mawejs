@@ -8,6 +8,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
     "concurrently": "^6.0.0",
     "cross-env": "^7.0.3",
     "electron-is-dev": "^2.0.0",

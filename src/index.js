@@ -19,28 +19,21 @@ ReactDOM.render(<SceneListEditor />, document.getElementById("root"));
 //-----------------------------------------------------------------------------
 
 //*
+
+import { MuiThemeProvider as MaterialUI, createMuiTheme } from '@material-ui/core/styles';
+
 import FileBrowser from "./filebrowser/filebrowser";
-ReactDOM.render(<FileBrowser/>, document.getElementById('root'));
+
+const theme = createMuiTheme({
+});
+
+ReactDOM.render(<FileBrowser />, document.getElementById('root'));
 
 /**/
 
 /*
 import Clock from "./tests/clock";
 ReactDOM.render(<Clock/>, document.getElementById('root'));
-/**/
-
-/*
-import Button from '@material-ui/core/Button';
-
-function App() {
-  return (
-    <Button variant="contained" color="primary">
-      Hello World
-    </Button>
-  );
-}
-
-ReactDOM.render(<App />, document.getElementById('root')); //document.querySelector('#app'));
 /**/
 
 /*

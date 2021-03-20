@@ -7,7 +7,7 @@ const {BrowserWindow} = electron;
 const windowStateKeeper = require('electron-window-state');
 
 const url = require('url') 
-const path = require('path')  
+const path = require('path')
 const isDev = require("electron-is-dev");
 
 var mainWindow = null;
@@ -80,10 +80,17 @@ const {ipcMain} = electron;
 
 const fs = require("fs")
 
-ipcMain.on("readdir", (event, arg) => 
+function filetype(dirent)
 {
-    console.log("readdir");
+    if(dirent.isDirectory()) return "folder";
+    return "file";
+}
+
+ipcMain.on("fs-readdir-sync", (event, arg) => 
+{
+    //console.log(arg);
     //root = fs.readdirSync("");
-    //event.returnValue = fs.readdirSync("");
-    event.returnValue = "done"
+    files = fs.readdirSync(arg.path, {withFileTypes: true});
+    files = files.map(dirent => { return { name: dirent.name, type: filetype(dirent)}; });
+    event.returnValue = files;
 });

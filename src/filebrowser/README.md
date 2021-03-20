@@ -7,6 +7,7 @@ What features we need:
 - Creating folders
 - Renaming files
 - Deleting files
+- Moving files
 - Searching
 
 In addition to work with local file systems, it would be great if it works with
