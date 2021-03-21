@@ -20,14 +20,13 @@ ReactDOM.render(<SceneListEditor />, document.getElementById("root"));
 
 //*
 
-import { MuiThemeProvider as MaterialUI, createMuiTheme } from '@material-ui/core/styles';
-
 import FileBrowser from "./filebrowser/filebrowser";
 
-const theme = createMuiTheme({
-});
+const app = (
+  <FileBrowser />
+);
 
-ReactDOM.render(<FileBrowser />, document.getElementById('root'));
+ReactDOM.render(app, document.getElementById('root'));
 
 /**/
 

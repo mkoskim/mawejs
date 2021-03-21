@@ -13,15 +13,17 @@ import {
     Button, Checkbox, Icon,
     Paper, Box,
     Divider,
+    Chip,
     Grid, GridList, GridListTile,
     List, ListItem, ListItemAvatar, ListItemText, ListItemIcon, Avatar,
-    AppBar, Toolbar, IconButton, Typography,
+    AppBar, Toolbar, IconButton, Typography, ButtonGroup,
 } from "@material-ui/core";
 
 import MenuIcon from '@material-ui/icons/Menu';
 import FolderIcon from '@material-ui/icons/Folder';
 import FileIcon from '@material-ui/icons/Description';
 import StarIcon from '@material-ui/icons/Star';
+import HomeIcon from  '@material-ui/icons/Home';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -40,14 +42,40 @@ export default class FileBrowser extends React.Component
         super(props);
 
         this.state = {
-            location: "home",
-            pathid: null,
-            //pathid: "/home/markus/Dropbox/tarinat",
+            splitpath: [],
             folders: [],
             files: [],
             hidden: false,
+            location: "home",
         }
         this.storage = new LocalFS();
+    }
+
+    //-------------------------------------------------------------------------
+
+    componentDidMount()
+    {
+        this.readdir();
+    }
+    
+    componentWillUnmount()
+    {
+    }
+
+    //-------------------------------------------------------------------------
+
+    onFileClicked(pathid, type)
+    {
+        if(type === "folder")
+        {
+            console.log("Folder:", pathid);
+            this.readdir(pathid);
+        }
+        else
+        {
+            console.log("File:", pathid);
+            //this.readdir(pathid);
+        }
     }
 
     //-------------------------------------------------------------------------
@@ -58,10 +86,33 @@ export default class FileBrowser extends React.Component
         <Box>
         <this.appbar />
         <List>
+            {this.renderPath()}
+            <Divider/>
             {this.renderCategory("Folders", this.state.folders)}
             {this.renderCategory("Files", this.state.files)}
             </List>
             </Box>
+        );
+    }
+
+    renderPath()
+    {
+        return <Box>
+            <ButtonGroup>
+            {this.state.splitpath.map(file => this.renderPathItem(file, false))}
+            </ButtonGroup>
+            <IconButton><StarIcon /></IconButton>
+        </Box>;
+    }
+
+    renderPathItem(file, head)
+    {
+        return (
+            <Button
+                style={{textTransform: "none"}}
+                onClick={this.onFileClicked.bind(this, file.pathid, file.type)}>
+                {file.name + "/"}
+                </Button>
         );
     }
 
@@ -93,9 +144,9 @@ export default class FileBrowser extends React.Component
     {
         return (        
         <Box width={200} p="4px"><Card variant="outlined">
-        <ListItem button>
+        <ListItem button onClick={this.onFileClicked.bind(this, file.pathid, file.type)}>
             <ListItemAvatar>
-                { file.type == "folder" ? <FolderIcon/> : <FileIcon/> }
+                { file.type === "folder" ? <FolderIcon/> : <FileIcon/> }
                 </ListItemAvatar>
             <ListItemText primary={file.name} />
             </ListItem>
@@ -119,31 +170,20 @@ export default class FileBrowser extends React.Component
 
     //-------------------------------------------------------------------------
 
-    readdir()
+    readdir(pathid)
     {
         const fs = this.storage;
-        if(this.state.pathid == null)
+        if(pathid == null)
         {
-            this.state.pathid = fs.getpathid(this.state.location);
+            pathid = fs.getpathid(this.state.location);
         }
-        const files = fs.readdir(this.state.pathid);
-
-        //console.log(files);
+        const files = fs.readdir(pathid);
 
         this.setState({
-            folders: files.filter(file => file.type == "folder"),
-            files: files.filter(file => file.type != "folder"),
+            pathid: pathid,
+            splitpath: fs.pathsplit(pathid),
+            folders: files.filter(file => file.type === "folder"),
+            files: files.filter(file => file.type !== "folder"),
         });
-    }
-
-    //-------------------------------------------------------------------------
-
-    componentDidMount()
-    {
-        this.readdir();
-    }
-    
-    componentWillUnmount()
-    {
     }
 }

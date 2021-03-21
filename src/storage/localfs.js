@@ -33,6 +33,11 @@ export default class LocalFS extends Storage
 
     readdir(pathid)
     {
-        return ipc.sendSync("fs-readdir-sync", { path: pathid });
+        return ipc.sendSync("fs-readdir-sync", { pathid: pathid });
+    }
+
+    pathsplit(pathid)
+    {
+        return ipc.sendSync("fs-pathsplit-sync", { pathid: pathid });
     }
 }

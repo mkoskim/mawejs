@@ -109,6 +109,30 @@ ipcMain.on("fs-getpath-sync", (event, arg) =>
 
 //-----------------------------------------------------------------------------
 
+function getAbsPath(pathid)
+{
+    if(!path.isAbsolute(pathid))
+    {
+        pathid = path.join(app.getAppPath(), pathid);
+    }
+    var abspath = path.normalize(pathid);
+    console.log(pathid, "->", abspath);
+    return abspath;
+}
+
+function getDirent(pathid)
+{
+    try
+    {
+        dirent = fs.lstatSync(pathid);
+        dirent.name = path.basename(pathid);
+        return dirent;
+    } catch(error)
+    {
+        return null;
+    }
+}
+
 function filetype(dirent)
 {
     if(dirent.isDirectory()) return "folder";
@@ -117,29 +141,68 @@ function filetype(dirent)
 
 ipcMain.on("fs-readdir-sync", (event, arg) => 
 {
-    console.log("readdir:", arg.path);
+    const pathid = getAbsPath(arg.pathid);
 
-    var dirent;
+    var dirent = getDirent(pathid);
     
-    try
-    {
-        dirent = fs.lstatSync(arg.path);
-    } catch(error)
+    if(dirent == null)
     {
         event.returnValue = null;
         return;
     }
-    
-    var files = [];
 
     if(dirent.isDirectory())
     {
-        files = fs.readdirSync(arg.path, {withFileTypes: true});
-        event.returnValue = files.map(dirent => { return { name: dirent.name, type: filetype(dirent)}; });
+        var files = fs.readdirSync(pathid, {withFileTypes: true});
+
+        event.returnValue = files.map(dirent =>
+            {
+                return {
+                    name: dirent.name,
+                    type: filetype(dirent),
+                    pathid: path.join(pathid, dirent.name)
+                };
+            });        
     }
     else
     {
-        console.log(dirent);
-        event.returnValue = [ { name: path.basename(arg.path), type: filetype(dirent) } ];
+        event.returnValue = [{
+            name: dirent.name,
+            type: filetype(dirent),
+            pathid: pathid,
+        }];
     }
+
+});
+
+ipcMain.on("fs-pathsplit-sync", (event, arg) => 
+{
+    var pathid = arg.pathid;
+
+    var dirent = getDirent(pathid);
+    if(filetype(dirent) != "folder")
+    {
+        pathid = path.dirname(pathid);
+    }
+
+    dirs = [{
+        name: path.basename(pathid),
+        type: "folder",
+        pathid: pathid,
+    }];
+
+    while(pathid != path.dirname(pathid))
+    {
+        pathid = path.dirname(pathid);
+        dirs.push({
+            name: path.basename(pathid),
+            type: "folder",
+            pathid: pathid,
+        });
+    } 
+
+    dirs = dirs.reverse();
+
+    //console.log(dirs);
+    event.returnValue = dirs;
 });
