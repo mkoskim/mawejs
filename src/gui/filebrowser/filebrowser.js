@@ -6,30 +6,43 @@
 //*****************************************************************************
 //*****************************************************************************
 
+/* TODO:
+- Handle access right problems
+*/
+
 import React from 'react'
 
 import {
     Card, CardContent,
     Button, Checkbox, Icon,
+    Switch,
+    Breadcrumbs,
     Paper, Box,
     Divider,
-    Chip,
+    Chip, Link,
     Grid, GridList, GridListTile,
-    List, ListItem, ListItemAvatar, ListItemText, ListItemIcon, Avatar,
+    List, ListItem, ListItemAvatar, ListItemText, ListItemIcon, ListItemSecondaryAction,
+    Avatar,
     AppBar, Toolbar, IconButton, Typography, ButtonGroup,
+    TextField, InputBase,
 } from "@material-ui/core";
 
 import MenuIcon from '@material-ui/icons/Menu';
 import FolderIcon from '@material-ui/icons/Folder';
 import FileIcon from '@material-ui/icons/Description';
-import StarIcon from '@material-ui/icons/Star';
+import StarIcon from '@material-ui/icons/StarOutline';
 import HomeIcon from  '@material-ui/icons/Home';
+import SearchIcon from  '@material-ui/icons/Search';
 
 import { makeStyles } from '@material-ui/core/styles';
 
+import SplitButton from "../components/splitbutton";
+
+import SearchBar from "material-ui-search-bar";
+
 //-----------------------------------------------------------------------------
 
-import LocalFS from "../storage/localfs"
+import LocalFS from "../../storage/localfs"
 
 //-----------------------------------------------------------------------------
 
@@ -43,7 +56,6 @@ export default class FileBrowser extends React.Component
 
         this.state = {
             splitpath: [],
-            folders: [],
             files: [],
             hidden: false,
             location: "home",
@@ -83,51 +95,78 @@ export default class FileBrowser extends React.Component
     render()
     {
         return (
-        <Box>
-        <this.appbar />
-        {this.renderPath()}
-        <Divider/>
-        {this.renderCategory("Folders", this.state.folders)}
-        {this.renderCategory("Files", this.state.files)}
+        <Box display="flex">
+            {this.renderOptions()}
+            {this.renderTiles()}
         </Box>
         );
     }
 
-    renderPath()
-    {
-        return <Box>
-            <ButtonGroup>
-            {this.state.splitpath.map(file => this.renderPathItem(file, false))}
-            </ButtonGroup>
-            <IconButton><StarIcon /></IconButton>
-        </Box>;
-    }
+    //-------------------------------------------------------------------------
 
-    renderPathItem(file, head)
+    renderPlaces()
     {
         return (
-            <Button
-                style={{textTransform: "none"}}
-                onClick={this.onFileActivate.bind(this, file.pathid, file.type)}>
-                {file.name + "/"}
-                </Button>
+            <List>
+                <ListItem button><ListItemText primary="Home" /></ListItem>
+                <ListItem button><ListItemText primary="Dropbox" /></ListItem>
+                <ListItem button><ListItemText primary="Documents" /></ListItem>
+            </List>
+        );
+    }
+
+    //-------------------------------------------------------------------------
+
+    renderOptions()
+    {
+        return(
+            <List>
+                <ListItem>
+                    <ListItemText primary="Hidden files" />
+                    <ListItemSecondaryAction>
+                    <Checkbox
+                        edge="end"
+                        checked={this.state["hidden"]}
+                        onChange={() => this.setState({hidden: !this.state.hidden})}
+                    />
+                    </ListItemSecondaryAction>
+                </ListItem>
+            </List>
+        );
+    }
+
+    //-------------------------------------------------------------------------
+
+    renderTiles()
+    {
+        var entries = this.state.files;
+
+        if(!this.state.hidden)
+        {
+            entries = entries.filter(file => !file.name.startsWith("."));
+        }
+
+        var folders = entries.filter(file => file.type === "folder");
+        var files = entries.filter(file => file.type !== "folder");
+
+        return (
+            <Box>
+                {this.renderPath()}
+                {this.renderCategory("Folders", folders)}
+                {this.renderCategory("Files", files)}
+            </Box>
         );
     }
 
     renderCategory(category, files)
     {
-        if(!this.state.hidden)
-        {
-            files = files.filter(file => !file.name.startsWith("."));
-        }
-
         if(files.length)
         {
             return (
                 <Box>
                     <ListItem><ListItemText primary={category}/></ListItem>
                     <Box display="flex" flexWrap="wrap">
-                        {files.map(file => this.renderFile(file))}
+                        {files.map(file => this.renderEntry(file))}
                         </Box>
                     </Box>
             );
@@ -138,11 +177,11 @@ export default class FileBrowser extends React.Component
         }
     }
 
-    renderFile(file)
+    renderEntry(file)
     {
         return (        
         <Box width={200} p="4px"><Card variant="outlined">
-        <ListItem button onDoubleClick={this.onFileActivate.bind(this, file.pathid, file.type)}>
+        <ListItem button onClick={this.onFileActivate.bind(this, file.pathid, file.type)}>
             <ListItemAvatar>
                 { file.type === "folder" ? <FolderIcon/> : <FileIcon/> }
                 </ListItemAvatar>
@@ -152,17 +191,37 @@ export default class FileBrowser extends React.Component
         );
     }
 
-    appbar()
+    //-------------------------------------------------------------------------
+
+    renderPath()
     {
-        // Trying app bar
+        return <Box display="flex" alignItems="center">
+            <Box display="flex" flexWrap="wrap">
+            {this.state.splitpath.map(file => this.renderPathItem(file, false))}
+            <Button size="small"><StarIcon /></Button>
+            </Box>
+        </Box>;
+    }
+
+    renderSearchBar()
+    {
         return (
-        <AppBar position="static">
-            <Toolbar variant="dense">
-                <IconButton edge="start" color="inherit" aria-label="menu">
-                <MenuIcon />
-                </IconButton>
-            </Toolbar>
-        </AppBar>
+        <SearchBar
+            value={this.state.search}
+            cancelOnEscape
+            onChange={(newValue) => this.setState({ search: newValue })}
+        />);
+    }
+
+    renderPathItem(file, head)
+    {
+        return (
+            <Button
+                style={{textTransform: "none"}}
+                onClick={this.onFileActivate.bind(this, file.pathid, file.type)}
+                >
+                {file.name === "" ? "Local" : file.name}
+                </Button>
         );
     }
 
@@ -180,8 +239,7 @@ export default class FileBrowser extends React.Component
         this.setState({
             pathid: pathid,
             splitpath: fs.pathsplit(pathid),
-            folders: files.filter(file => file.type === "folder"),
-            files: files.filter(file => file.type !== "folder"),
+            files: files,
         });
     }
 }

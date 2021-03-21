@@ -2,8 +2,9 @@ TODO:
 
 -------------------------------------------------------------------------------
 
-- LOOKS FIXED: Ctrl-Z looses focus as last thing: maybe the first item
-  in the undo buffer is "got focus"?
+FileBrowser:
+
+- Handle access right violations (e.g. when opening folders)
 
 -------------------------------------------------------------------------------
 
@@ -12,9 +13,6 @@ Ideas, and such:
 - Debug view: some area to print debug info
 
 - Comment show/hide button
-
-- Half-done: Folding! We could now try some "freeform" hide tool... It would
-  make blocks (selections) hidden.
 
 - Maybe we could try scenes as breaks, not as containers? Just like we thought
   chapters and parts would work? This could be bit more friendly to text editing

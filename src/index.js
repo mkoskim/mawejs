@@ -20,7 +20,7 @@ ReactDOM.render(<SceneListEditor />, document.getElementById("root"));
 
 //*
 
-import FileBrowser from "./filebrowser/filebrowser";
+import FileBrowser from "./gui/filebrowser/filebrowser";
 
 const app = (
   <FileBrowser />
