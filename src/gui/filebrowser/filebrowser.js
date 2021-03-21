@@ -23,7 +23,8 @@ import {
     Grid, GridList, GridListTile,
     List, ListItem, ListItemAvatar, ListItemText, ListItemIcon, ListItemSecondaryAction,
     Avatar,
-    AppBar, Toolbar, IconButton, Typography, ButtonGroup,
+    AppBar, Drawer,
+    Toolbar, IconButton, Typography, ButtonGroup,
     TextField, InputBase,
 } from "@material-ui/core";
 
@@ -57,8 +58,9 @@ export default class FileBrowser extends React.Component
         this.state = {
             splitpath: [],
             files: [],
-            hidden: false,
             location: "home",
+            hidden: false,
+            filesDisabled: false,
         }
         this.storage = new LocalFS();
     }
@@ -117,20 +119,28 @@ export default class FileBrowser extends React.Component
 
     //-------------------------------------------------------------------------
 
+    renderOption(text, key, onchange)
+    {
+        return (
+            <ListItem>
+            <ListItemText primary={text} />
+            <ListItemSecondaryAction>
+            <Checkbox
+                edge="end"
+                checked={this.state[key]}
+                onChange={onchange}
+            />
+            </ListItemSecondaryAction>
+            </ListItem>
+        );
+    }
+
     renderOptions()
     {
         return(
             <List>
-                <ListItem>
-                    <ListItemText primary="Hidden files" />
-                    <ListItemSecondaryAction>
-                    <Checkbox
-                        edge="end"
-                        checked={this.state["hidden"]}
-                        onChange={() => this.setState({hidden: !this.state.hidden})}
-                    />
-                    </ListItemSecondaryAction>
-                </ListItem>
+            {this.renderOption("Hidden files", "hidden", () => this.setState({hidden: !this.state.hidden}))}
+            {this.renderOption("Files disabled", "filesDisabled", () => this.setState({filesDisabled: !this.state.filesDisabled}))}
             </List>
         );
     }
@@ -150,23 +160,25 @@ export default class FileBrowser extends React.Component
         var files = entries.filter(file => file.type !== "folder");
 
         return (
-            <Box>
+            <Box flex>
                 {this.renderPath()}
-                {this.renderCategory("Folders", folders)}
-                {this.renderCategory("Files", files)}
+                <Box flexGrow={1} style={{overflowY: "auto"}}>
+                {this.renderCategory("Folders", folders, false)}
+                {this.renderCategory("Files", files, this.state.filesDisabled)}
+                </Box>
             </Box>
         );
     }
 
-    renderCategory(category, files)
+    renderCategory(category, files, disabled)
     {
         if(files.length)
         {
             return (
                 <Box>
-                    <ListItem><ListItemText primary={category}/></ListItem>
+                    <ListItemText primary={category}/>
                     <Box display="flex" flexWrap="wrap">
-                        {files.map(file => this.renderEntry(file))}
+                        {files.map(file => this.renderEntry(file, disabled))}
                         </Box>
                     </Box>
             );
@@ -177,11 +189,11 @@ export default class FileBrowser extends React.Component
         }
     }
 
-    renderEntry(file)
+    renderEntry(file, disabled)
     {
         return (        
         <Box width={200} p="4px"><Card variant="outlined">
-        <ListItem button onClick={this.onFileActivate.bind(this, file.pathid, file.type)}>
+        <ListItem button disabled={disabled} onClick={this.onFileActivate.bind(this, file.pathid, file.type)}>
             <ListItemAvatar>
                 { file.type === "folder" ? <FolderIcon/> : <FileIcon/> }
                 </ListItemAvatar>
