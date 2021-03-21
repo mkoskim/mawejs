@@ -64,7 +64,7 @@ export default class FileBrowser extends React.Component
 
     //-------------------------------------------------------------------------
 
-    onFileClicked(pathid, type)
+    onFileActivate(pathid, type)
     {
         if(type === "folder")
         {
@@ -85,13 +85,11 @@ export default class FileBrowser extends React.Component
         return (
         <Box>
         <this.appbar />
-        <List>
-            {this.renderPath()}
-            <Divider/>
-            {this.renderCategory("Folders", this.state.folders)}
-            {this.renderCategory("Files", this.state.files)}
-            </List>
-            </Box>
+        {this.renderPath()}
+        <Divider/>
+        {this.renderCategory("Folders", this.state.folders)}
+        {this.renderCategory("Files", this.state.files)}
+        </Box>
         );
     }
 
@@ -110,7 +108,7 @@ export default class FileBrowser extends React.Component
         return (
             <Button
                 style={{textTransform: "none"}}
-                onClick={this.onFileClicked.bind(this, file.pathid, file.type)}>
+                onClick={this.onFileActivate.bind(this, file.pathid, file.type)}>
                 {file.name + "/"}
                 </Button>
         );
@@ -144,7 +142,7 @@ export default class FileBrowser extends React.Component
     {
         return (        
         <Box width={200} p="4px"><Card variant="outlined">
-        <ListItem button onClick={this.onFileClicked.bind(this, file.pathid, file.type)}>
+        <ListItem button onDoubleClick={this.onFileActivate.bind(this, file.pathid, file.type)}>
             <ListItemAvatar>
                 { file.type === "folder" ? <FolderIcon/> : <FileIcon/> }
                 </ListItemAvatar>

@@ -1,3 +1,11 @@
+//*****************************************************************************
+//*****************************************************************************
+//
+// Electron Main process
+//
+//*****************************************************************************
+//*****************************************************************************
+
 //-----------------------------------------------------------------------------
 // Main Window
 //-----------------------------------------------------------------------------
@@ -33,9 +41,6 @@ async function createWindow()
         },
     });
 
-    home = app.getPath("home");
-    console.log(home);
-
     mainWindowState.manage(mainWindow);
 
     mainWindow.on("closed", () => (mainWindow = null));
@@ -46,7 +51,7 @@ async function createWindow()
         `file://${path.join(__dirname, '../build/index.html')}`
     ;
 
-    console.log("Loading:", url);
+    //console.log("Loading:", url);
     mainWindow.loadURL(url);
 }
 
@@ -72,17 +77,27 @@ app.on("activate", () => {
     }
 });
 
-//-----------------------------------------------------------------------------
-// IPC interface
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//*****************************************************************************
+//
+// IPC interface: This is mainly meant to give renderer (application)
+// access to local drive. My aim is to create an interface to local disk
+// which resembles a bit network based disks like Google Drive. This could
+// help later integrating such drives to the application.
+//
+//*****************************************************************************
+//*****************************************************************************
 
 const {ipcMain} = electron;
 
 const fs = require("fs")
 
 //-----------------------------------------------------------------------------
+// This function retrieves paths by symbolic name like "home", "appPath",
+// "downloads" and so on.
+//-----------------------------------------------------------------------------
 
-ipcMain.on("fs-getpath-sync", (event, arg) =>
+ipcMain.on("fs-getlocation-sync", (event, arg) =>
 {
     var name = arg.name;
     var pathid;
@@ -108,6 +123,8 @@ ipcMain.on("fs-getpath-sync", (event, arg) =>
 });
 
 //-----------------------------------------------------------------------------
+// Directory reading
+//-----------------------------------------------------------------------------
 
 function getAbsPath(pathid)
 {
@@ -116,7 +133,7 @@ function getAbsPath(pathid)
         pathid = path.join(app.getAppPath(), pathid);
     }
     var abspath = path.normalize(pathid);
-    console.log(pathid, "->", abspath);
+    //console.log(pathid, "->", abspath);
     return abspath;
 }
 
@@ -138,6 +155,11 @@ function filetype(dirent)
     if(dirent.isDirectory()) return "folder";
     return "file";
 }
+
+//-----------------------------------------------------------------------------
+// Get the content of a directory. Returns a list of elements with name,
+// type ("file", "folder", ...) and pathid (absolute path).
+//-----------------------------------------------------------------------------
 
 ipcMain.on("fs-readdir-sync", (event, arg) => 
 {
@@ -174,6 +196,10 @@ ipcMain.on("fs-readdir-sync", (event, arg) =>
     }
 
 });
+
+//-----------------------------------------------------------------------------
+// This function splits the path to a list of directory entries.
+//-----------------------------------------------------------------------------
 
 ipcMain.on("fs-pathsplit-sync", (event, arg) => 
 {

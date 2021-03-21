@@ -24,9 +24,9 @@ export default class LocalFS extends Storage
         super();
     }
 
-    getpathid(name)
+    getpathid(location)
     {
-        var pathid = ipc.sendSync("fs-getpath-sync", { name: name });
+        var pathid = ipc.sendSync("fs-getlocation-sync", { name: location });
         console.log(pathid);
         return pathid;
     }
