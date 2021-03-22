@@ -97,7 +97,7 @@ export default class FileBrowser extends React.Component
     render()
     {
         return (
-        <Box display="flex">
+        <Box display="flex" flexDirection="row">
             {this.renderOptions()}
             {this.renderTiles()}
         </Box>
@@ -160,7 +160,7 @@ export default class FileBrowser extends React.Component
         var files = entries.filter(file => file.type !== "folder");
 
         return (
-            <Box flex>
+            <Box display="flex" flexDirection="column" style={{maxHeight: "100vh"}}>
                 {this.renderPath()}
                 <Box flexGrow={1} style={{overflowY: "auto"}}>
                 {this.renderCategory("Folders", folders, false)}

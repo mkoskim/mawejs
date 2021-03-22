@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-// import "./index.css";
+//import "./index.css";
 
 //import Tables from "./tables";
 // import LocalFS from "./storage/localfs";
@@ -21,12 +21,14 @@ ReactDOM.render(<SceneListEditor />, document.getElementById("root"));
 //*
 
 import FileBrowser from "./gui/filebrowser/filebrowser";
+import CssBaseline from '@material-ui/core/CssBaseline';
+import {Box} from "@material-ui/core";
 
 const app = (
-  <FileBrowser />
+    <FileBrowser />
 );
 
-ReactDOM.render(app, document.getElementById('root'));
+ReactDOM.render(app, document.body);
 
 /**/
 
