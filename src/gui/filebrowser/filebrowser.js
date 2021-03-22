@@ -39,8 +39,9 @@ import WarnIcon from '@material-ui/icons/Warning';
 
 import TypeFolder from '@material-ui/icons/Folder';
 import TypeFile from '@material-ui/icons/Description';
-import TypeUnknown from '@material-ui/icons/Help';
-//import TypeUnknown from '@material-ui/icons/HighlightOff';
+import TypeUnknown from '@material-ui/icons/Close';
+//import TypeUnknown from '@material-ui/icons/Help';
+//import TypeUnknown from '@material-ui/icons/BrokenImage';
 //import TypeUnknown from '@material-ui/icons/CancelPresentationOutlined';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -71,8 +72,11 @@ export default class FileBrowser extends React.Component
             splitpath: [],
             files: [],
             
-            hidden: false,
-            filesDisabled: false,
+            includeHidden: false,
+            disableFiles: false,
+            excludeSymlinks: false,
+            excludeInaccessible: false,
+            excludeUnknown: false,
         }
         this.storage = new LocalFS();
     }
@@ -172,10 +176,29 @@ export default class FileBrowser extends React.Component
 
     renderOptions()
     {
+        function Option(props)
+        {
+            return (
+                <ListItem>
+                    <ListItemText primary={props.name} />
+                    <ListItemSecondaryAction>
+                    <Checkbox
+                        edge="end"
+                        checked={props.checked}
+                        onChange={props.onChange}
+                    />
+                    </ListItemSecondaryAction>
+                </ListItem>
+            );
+        }
+
         return(
             <List>
-            {this.renderOption("Hidden files", "hidden", () => this.setState({hidden: !this.state.hidden}))}
-            {this.renderOption("Files disabled", "filesDisabled", () => this.setState({filesDisabled: !this.state.filesDisabled}))}
+                <Option name="Hidden files" checked={this.state.includeHidden} onChange={() => this.setState({includeHidden: !this.state.includeHidden})}/>
+                <Option name="Disable files" checked={this.state.disableFiles} onChange={() => this.setState({disableFiles: !this.state.disableFiles})}/>
+                <Option name="Exlude symlinks" checked={this.state.excludeSymlinks} onChange={() => this.setState({excludeSymlinks: !this.state.excludeSymlinks})}/>
+                <Option name="Exlude inaccessible" checked={this.state.excludeInaccessible} onChange={() => this.setState({excludeInaccessible: !this.state.excludeInaccessible})}/>
+                <Option name="Exlude unknown" checked={this.state.excludeUnknown} onChange={() => this.setState({excludeUnknown: !this.state.excludeUnknown})}/>
             </List>
         );
     }
@@ -186,9 +209,24 @@ export default class FileBrowser extends React.Component
     {
         var entries = this.state.files;
 
-        if(!this.state.hidden)
+        if(!this.state.includeHidden)
         {
             entries = entries.filter(file => !file.name.startsWith("."));
+        }
+
+        if(this.state.excludeSymlinks)
+        {
+            entries = entries.filter(file => !file.symlink);
+        }
+
+        if(this.state.excludeInaccessible)
+        {
+            entries = entries.filter(file => file.access);
+        }
+
+        if(this.state.excludeUnknown)
+        {
+            entries = entries.filter(file => file.type);
         }
 
         var folders = entries.filter(file => file.type === "folder");
@@ -199,7 +237,7 @@ export default class FileBrowser extends React.Component
                 {this.renderPath()}
                 <Box flexGrow={1} style={{overflowY: "auto"}}>
                 {this.renderCategory("Folders", folders, false)}
-                {this.renderCategory("Files", files, this.state.filesDisabled)}
+                {this.renderCategory("Files", files, this.state.disableFiles)}
                 </Box>
             </Box>
         );
