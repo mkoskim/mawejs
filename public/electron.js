@@ -43,8 +43,12 @@ async function createWindow()
 
     mainWindowState.manage(mainWindow);
 
-    mainWindow.on("closed", () => (mainWindow = null));
+    // Disable menu
+    //mainWindow.setMenu(null);
+
     mainWindow.webContents.openDevTools();
+
+    mainWindow.on("closed", () => (mainWindow = null));
 
     const url = isDev ?
         'http://localhost:3000' :
