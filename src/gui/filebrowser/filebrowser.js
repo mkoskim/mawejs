@@ -174,12 +174,18 @@ export default class FileBrowser extends React.Component
     {
         if(files.length)
         {
+            const content = (
+                <Box display="flex" flexWrap="wrap">
+                {files.map(file => this.renderEntry(file, disabled))}
+                </Box>
+            );
+
+            const header = (category) ? <ListItemText primary={category}/> : "";
+
             return (
                 <Box>
-                    <ListItemText primary={category}/>
-                    <Box display="flex" flexWrap="wrap">
-                        {files.map(file => this.renderEntry(file, disabled))}
-                        </Box>
+                    {header}
+                    {content}
                     </Box>
             );
         }
