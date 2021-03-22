@@ -34,6 +34,14 @@ import FileIcon from '@material-ui/icons/Description';
 import StarIcon from '@material-ui/icons/StarOutline';
 import HomeIcon from  '@material-ui/icons/Home';
 import SearchIcon from  '@material-ui/icons/Search';
+import BlockIcon from '@material-ui/icons/Block';
+import WarnIcon from '@material-ui/icons/Warning';
+
+import TypeFolder from '@material-ui/icons/Folder';
+import TypeFile from '@material-ui/icons/Description';
+import TypeUnknown from '@material-ui/icons/Help';
+//import TypeUnknown from '@material-ui/icons/HighlightOff';
+//import TypeUnknown from '@material-ui/icons/CancelPresentationOutlined';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -56,9 +64,13 @@ export default class FileBrowser extends React.Component
         super(props);
 
         this.state = {
+            places: [
+                { name: "Home", location: "home" },
+                { name: "Documents", location: "documents" },
+            ],
             splitpath: [],
             files: [],
-            location: "home",
+            
             hidden: false,
             filesDisabled: false,
         }
@@ -69,7 +81,7 @@ export default class FileBrowser extends React.Component
 
     componentDidMount()
     {
-        this.readdir();
+        this.readdir(this.storage.getfileid("home"));
     }
     
     componentWillUnmount()
@@ -78,17 +90,29 @@ export default class FileBrowser extends React.Component
 
     //-------------------------------------------------------------------------
 
-    onFileActivate(pathid, type)
+    onFileActivate(fileid, type)
     {
         if(type === "folder")
         {
-            console.log("Folder:", pathid);
-            this.readdir(pathid);
+            console.log("Folder:", fileid);
+            this.readdir(fileid);
         }
         else
         {
-            console.log("File:", pathid);
-            //this.readdir(pathid);
+            console.log("File:", fileid);
+            //this.readdir(fileid);
+        }
+    }
+
+    onPlaceActivate(place)
+    {
+        if(place.fileid)
+        {
+            this.readdir(place.fileid);
+        }
+        else
+        {
+            this.readdir(this.storage.getfileid(place.location));
         }
     }
 
@@ -98,7 +122,11 @@ export default class FileBrowser extends React.Component
     {
         return (
         <Box display="flex" flexDirection="row">
-            {this.renderOptions()}
+            <Box>
+                {this.renderPlaces()}
+                <Divider/>
+                {this.renderOptions()}
+                </Box>
             {this.renderTiles()}
         </Box>
         );
@@ -106,13 +134,20 @@ export default class FileBrowser extends React.Component
 
     //-------------------------------------------------------------------------
 
+    renderPlace(place)
+    {
+        return (
+        <ListItem button>
+            <ListItemText primary={place.name} onClick={this.onPlaceActivate.bind(this, place)}/>
+            </ListItem>
+        );
+    }
+
     renderPlaces()
     {
         return (
             <List>
-                <ListItem button><ListItemText primary="Home" /></ListItem>
-                <ListItem button><ListItemText primary="Dropbox" /></ListItem>
-                <ListItem button><ListItemText primary="Documents" /></ListItem>
+                {this.state.places.map(place => this.renderPlace(place))}
             </List>
         );
     }
@@ -197,18 +232,21 @@ export default class FileBrowser extends React.Component
 
     renderEntry(file, disabled)
     {
+        const icon = {
+            "folder":  (<TypeFolder />),
+            "file":    (<TypeFile />),
+        }[file.type] || (<TypeUnknown />);
+
         return (        
         <Box width={200} p="4px"><Card variant="outlined">
-        <ListItem button disabled={disabled} onClick={this.onFileActivate.bind(this, file.pathid, file.type)}>
-            <ListItemAvatar>
-                { file.type === "folder" ? <FolderIcon/> : <FileIcon/> }
-                </ListItemAvatar>
-            <ListItemText primary={file.name} />
+        <ListItem button disabled={!file.access || disabled} onClick={this.onFileActivate.bind(this, file.fileid, file.type)}>
+            <ListItemAvatar>{icon}</ListItemAvatar>
+            <ListItemText primary={file.name}/>
             </ListItem>
         </Card></Box>
         );
     }
-
+    
     //-------------------------------------------------------------------------
 
     renderPath()
@@ -236,7 +274,7 @@ export default class FileBrowser extends React.Component
         return (
             <Button
                 style={{textTransform: "none"}}
-                onClick={this.onFileActivate.bind(this, file.pathid, file.type)}
+                onClick={this.onFileActivate.bind(this, file.fileid, file.type)}
                 >
                 {file.name === "" ? "Local" : file.name}
                 </Button>
@@ -245,18 +283,20 @@ export default class FileBrowser extends React.Component
 
     //-------------------------------------------------------------------------
 
-    readdir(pathid)
+    readdir(fileid)
     {
         const fs = this.storage;
-        if(pathid == null)
+        const files = fs.readdir(fileid);
+
+        if(!files)
         {
-            pathid = fs.getpathid(this.state.location);
+            // Add error message here
+            return ;
         }
-        const files = fs.readdir(pathid);
 
         this.setState({
-            pathid: pathid,
-            splitpath: fs.pathsplit(pathid),
+            fileid: fileid,
+            splitpath: fs.pathsplit(fileid),
             files: files,
         });
     }

@@ -19,37 +19,22 @@ ipcMain.on("fs-pathsplit-sync", fsPathSplitSync);
 
 const fs = require("fs");
 const path = require("path");
-const { promisify } = require('util');
 const {app} = require("electron");
+const hostfs = require("./hostfs");
+const { promisify } = require("util");
 
-function getAbsPath(pathid)
-{
-    if(!path.isAbsolute(pathid))
-    {
-        pathid = path.join(app.getAppPath(), pathid);
-    }
-    var abspath = path.normalize(pathid);
-    //console.log(pathid, "->", abspath);
-    return abspath;
-}
+//-----------------------------------------------------------------------------
+// Get the content of a directory. Returns a list of elements with name,
+// type ("file", "folder", ...) and fileid (absolute path).
+//-----------------------------------------------------------------------------
 
-function getDirent(pathid)
+async function fsReaddirSync(event, arg)
 {
-    try
-    {
-        dirent = fs.lstatSync(pathid);
-        dirent.name = path.basename(pathid);
-        return dirent;
-    } catch(error)
-    {
-        return null;
-    }
-}
+    console.log("FileID", arg.fileid);
 
-function filetype(dirent)
-{
-    if(dirent.isDirectory()) return "folder";
-    return "file";
+    const entries = await hostfs.getFiles(arg.fileid);
+
+    event.returnValue = entries;
 }
 
 //-----------------------------------------------------------------------------
@@ -58,99 +43,55 @@ function filetype(dirent)
 function fsGetLocationSync(event, arg)
 {
     var name = arg.name;
-    var pathid;
+    var fileid;
 
     if(name == "appPath")
     {
-        pathid = app.getAppPath();
+        fileid = app.getAppPath();
     }
     else if(name == "root")
     {
-        pathid = "/";
+        fileid = "/";
     }
     else
     {
         try {
-            pathid = app.getPath(name);
+            fileid = app.getPath(name);
         } catch(error)
         {
-            pathid = null;
+            fileid = null;
         }
     }
-    event.returnValue = pathid;
-}
-
-//-----------------------------------------------------------------------------
-// Get the content of a directory. Returns a list of elements with name,
-// type ("file", "folder", ...) and pathid (absolute path).
-//-----------------------------------------------------------------------------
-
-function fsReaddirSync(event, arg)
-{
-    console.log("PathID", arg.pathid);
-
-    const pathid = getAbsPath(arg.pathid);
-
-    var dirent = getDirent(pathid);
-    
-    if(dirent == null)
-    {
-        event.returnValue = null;
-        return;
-    }
-
-    if(dirent.isDirectory())
-    {
-        var files = fs.readdirSync(pathid, {withFileTypes: true});
-        //var files = await promisify(fs.readdir)(pathid, {withFileTypes: true});
-
-        event.returnValue = files.map(dirent =>
-            {
-                return {
-                    name: dirent.name,
-                    type: filetype(dirent),
-                    pathid: path.join(pathid, dirent.name)
-                };
-            });        
-    }
-    else
-    {
-        event.returnValue = [{
-            name: dirent.name,
-            type: filetype(dirent),
-            pathid: pathid,
-        }];
-    }
-
+    event.returnValue = fileid;
 }
 
 //-----------------------------------------------------------------------------
 // This function splits the path to a list of directory entries.
 //-----------------------------------------------------------------------------
 
-function fsPathSplitSync(event, arg)
+async function fsPathSplitSync(event, arg)
 {
-    var pathid = arg.pathid;
+    var fileid = arg.fileid;
 
-    var dirent = getDirent(pathid);
-    if(filetype(dirent) != "folder")
+    var dirent = await hostfs.getFileEntry(fileid);
+    if(dirent.type != "folder")
     {
-        pathid = path.dirname(pathid);
+        fileid = path.dirname(fileid);
     }
 
     dirs = [{
-        name: path.basename(pathid),
+        name: path.basename(fileid),
         type: "folder",
-        pathid: pathid,
+        fileid: fileid,
     }];
 
-    while(pathid != path.dirname(pathid))
+    while(fileid != path.dirname(fileid))
     {
-        pathid = path.dirname(pathid);
+        fileid = path.dirname(fileid);
         dirs.push({
-            name: path.basename(pathid),
+            name: path.basename(fileid),
             type: "folder",
-            pathid: pathid,
+            fileid: fileid,
         });
     } 
 

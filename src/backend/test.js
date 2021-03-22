@@ -1,7 +1,16 @@
-console.log("Hello");
-
 const fs = require("fs");
 const path = require('path');
+const hostfs = require("./hostfs");
+
+//console.log(await readdir("."));
+
+//*
+//hostfs.getFiles("/home/markus/Dropbox/tarinat")
+hostfs.getFiles("/home/")
+//hostfs.getFiles("src")
+  .then(files => console.log(files))
+  .catch(e => console.error(e));
+/**/
 
 //console.log(path.resolve("$HOME"));
 
@@ -39,37 +48,3 @@ var walk = function(dir, done) {
 
 walk(".", (err, files) => { console.log(err, files); });
 */
-
-const { promisify } = require('util');
-const { resolve } = require('path');
-//const fs = require('fs');
-//const readdir = promisify(fs.readdir);
-//const stat = promisify(fs.stat);
-
-async function getFiles(dir) {
-  var files = await promisify(fs.readdir)(dir);
-  files = files.map(file => resolve(dir, file));
-  const subfiles = await Promise.all(files.map(async (subdir) => {
-    const res = resolve(dir, subdir);
-
-    try {
-        const dirent = await promisify(fs.stat)(res);
-        //return (dirent.isDirectory() ? getFiles(res) : []);
-        return [];
-    } catch(err)
-    {
-        return [];
-    }
-  }));
-  return files.concat(subfiles).reduce((a, f) => a.concat(f), []);
-  //return [resolve(dir)].concat(files);
-}
-
-//console.log(await readdir("."));
-
-//*
-getFiles("/home/markus/Dropbox/tarinat")
-//getFiles("src")
-  .then(files => console.log(files))
-  .catch(e => console.error(e));
-/**/

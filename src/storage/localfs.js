@@ -24,20 +24,20 @@ export default class LocalFS extends Storage
         super();
     }
 
-    getpathid(location)
+    getfileid(location)
     {
-        var pathid = ipc.sendSync("fs-getlocation-sync", { name: location });
-        console.log(pathid);
-        return pathid;
+        var fileid = ipc.sendSync("fs-getlocation-sync", { name: location });
+        console.log(location, "->", fileid);
+        return fileid;
     }
 
-    readdir(pathid)
+    readdir(fileid)
     {
-        return ipc.sendSync("fs-readdir-sync", { pathid: pathid });
+        return ipc.sendSync("fs-readdir-sync", { fileid: fileid });
     }
 
-    pathsplit(pathid)
+    pathsplit(fileid)
     {
-        return ipc.sendSync("fs-pathsplit-sync", { pathid: pathid });
+        return ipc.sendSync("fs-pathsplit-sync", { fileid: fileid });
     }
 }
