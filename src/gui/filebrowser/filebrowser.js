@@ -138,44 +138,43 @@ export default class FileBrowser extends React.Component
 
     //-------------------------------------------------------------------------
 
-    renderPlace(place)
-    {
-        return (
-        <ListItem button>
-            <ListItemText primary={place.name} onClick={this.onPlaceActivate.bind(this, place)}/>
-            </ListItem>
-        );
-    }
-
     renderPlaces()
     {
         return (
             <List>
-                {this.state.places.map(place => this.renderPlace(place))}
+                {this.state.places.map(place =>
+                    <Place
+                        name={place.name}
+                        onClick={() => this.onPlaceActivate(place)}
+                    />
+                )}
             </List>
         );
+
+        function Place(props)
+        {
+            return (
+                <ListItem button>
+                <ListItemText primary={props.name} onClick={props.onClick}/>
+                </ListItem>
+            );
+        }
     }
 
     //-------------------------------------------------------------------------
 
-    renderOption(text, key, onchange)
-    {
-        return (
-            <ListItem>
-            <ListItemText primary={text} />
-            <ListItemSecondaryAction>
-            <Checkbox
-                edge="end"
-                checked={this.state[key]}
-                onChange={onchange}
-            />
-            </ListItemSecondaryAction>
-            </ListItem>
-        );
-    }
-
     renderOptions()
     {
+        return(
+            <List>
+                <Option name="Include hidden" checked={this.state.includeHidden} onChange={() => this.setState({includeHidden: !this.state.includeHidden})}/>
+                <Option name="Disable files" checked={this.state.disableFiles} onChange={() => this.setState({disableFiles: !this.state.disableFiles})}/>
+                <Option name="Exclude symlinks" checked={this.state.excludeSymlinks} onChange={() => this.setState({excludeSymlinks: !this.state.excludeSymlinks})}/>
+                <Option name="Exclude inaccessible" checked={this.state.excludeInaccessible} onChange={() => this.setState({excludeInaccessible: !this.state.excludeInaccessible})}/>
+                <Option name="Exclude unknown" checked={this.state.excludeUnknown} onChange={() => this.setState({excludeUnknown: !this.state.excludeUnknown})}/>
+            </List>
+        );
+
         function Option(props)
         {
             return (
@@ -191,81 +190,51 @@ export default class FileBrowser extends React.Component
                 </ListItem>
             );
         }
-
-        return(
-            <List>
-                <Option name="Hidden files" checked={this.state.includeHidden} onChange={() => this.setState({includeHidden: !this.state.includeHidden})}/>
-                <Option name="Disable files" checked={this.state.disableFiles} onChange={() => this.setState({disableFiles: !this.state.disableFiles})}/>
-                <Option name="Exlude symlinks" checked={this.state.excludeSymlinks} onChange={() => this.setState({excludeSymlinks: !this.state.excludeSymlinks})}/>
-                <Option name="Exlude inaccessible" checked={this.state.excludeInaccessible} onChange={() => this.setState({excludeInaccessible: !this.state.excludeInaccessible})}/>
-                <Option name="Exlude unknown" checked={this.state.excludeUnknown} onChange={() => this.setState({excludeUnknown: !this.state.excludeUnknown})}/>
-            </List>
-        );
     }
 
     //-------------------------------------------------------------------------
 
     renderTiles()
     {
-        var entries = this.state.files;
+        var entries = this.state.files.filter(file =>
+            (this.state.includeHidden || !file.name.startsWith(".")) &&
+            (!this.state.excludeSymlinks || !file.symlink) &&
+            (!this.state.excludeInaccessible || file.access) &&
+            (!this.state.excludeUnknown || file.type)
+        );
 
-        if(!this.state.includeHidden)
-        {
-            entries = entries.filter(file => !file.name.startsWith("."));
-        }
-
-        if(this.state.excludeSymlinks)
-        {
-            entries = entries.filter(file => !file.symlink);
-        }
-
-        if(this.state.excludeInaccessible)
-        {
-            entries = entries.filter(file => file.access);
-        }
-
-        if(this.state.excludeUnknown)
-        {
-            entries = entries.filter(file => file.type);
-        }
-
-        var folders = entries.filter(file => file.type === "folder");
-        var files = entries.filter(file => file.type !== "folder");
+        const folders = entries.filter(file => file.type === "folder");
+        const files = entries.filter(file => file.type !== "folder");
 
         return (
             <Box display="flex" flexDirection="column" style={{maxHeight: "100vh"}}>
                 {this.renderPath()}
                 <Box flexGrow={1} style={{overflowY: "auto"}}>
-                {this.renderCategory("Folders", folders, false)}
-                {this.renderCategory("Files", files, this.state.disableFiles)}
+                {this.renderCategory("Folders", folders)}
+                {this.renderCategory("Files",   files, this.state.disableFiles)}
                 </Box>
             </Box>
         );
-    }
+        }
 
-    renderCategory(category, files, disabled)
+    renderCategory(name, files, disabled=false)
     {
-        if(files.length)
-        {
-            const content = (
-                <Box display="flex" flexWrap="wrap">
-                {files.map(file => this.renderEntry(file, disabled))}
+        if(!files.length) return ;
+
+        const content = (
+            <Box display="flex" flexWrap="wrap">
+            {files.map(file => this.renderEntry(file, disabled))}
+            </Box>
+        );
+
+        const header = (name) ? <ListItemText primary={name}/> : "";
+
+        return (
+            <Box>
+                {header}
+                {content}
                 </Box>
-            );
-
-            const header = (category) ? <ListItemText primary={category}/> : "";
-
-            return (
-                <Box>
-                    {header}
-                    {content}
-                    </Box>
-            );
-        }
-        else
-        {
-            return;
-        }
+        );
     }
 
     renderEntry(file, disabled)
