@@ -19,14 +19,6 @@ const {ipcMain: ipc} = require("electron-better-ipc");
 
 const hostfs = require("./hostfs");
 
-ipc.answerRenderer("fs-readdir", async(dir) => {
-    return hostfs.fsGetFiles(dir);
-});
-
-ipc.answerRenderer("fs-splitpath", async(path) => {
-    return hostfs.fsSplitPath(path);
-});
-
-ipc.answerRenderer("fs-getlocation", async(location) => {
-    return hostfs.fsGetLocation(location);
-});
+ipc.answerRenderer("fs-readdir", hostfs.fsGetFiles);
+ipc.answerRenderer("fs-splitpath", hostfs.fsSplitPath);
+ipc.answerRenderer("fs-getlocation", hostfs.fsGetLocation);

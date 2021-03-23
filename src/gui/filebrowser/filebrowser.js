@@ -108,16 +108,14 @@ export default class FileBrowser extends React.Component
         }
     }
 
-    onPlaceActivate(place)
+    async onPlaceActivate(place)
     {
-        if(place.fileid)
+        if(!place.fileid)
         {
-            this.readdir(place.fileid);
+            place.fileid = await this.storage.getfileid(place.location);
         }
-        else
-        {
-            this.readdir(this.storage.getfileid(place.location));
-        }
+
+        this.readdir(place.fileid);
     }
 
     //-------------------------------------------------------------------------
@@ -253,12 +251,18 @@ export default class FileBrowser extends React.Component
 
     renderPath()
     {
-        return <Box display="flex" alignItems="center">
-            <Box display="flex" flexWrap="wrap">
-            {this.state.splitpath.map(file => this.renderPathItem(file, false))}
-            <Button size="small"><StarIcon /></Button>
-            </Box>
-        </Box>;
+        return (
+            <ButtonGroup>
+            {this.state.splitpath.map(file =>
+                <Button
+                    style={{textTransform: "none"}}
+                    onClick={() => this.onFileActivate(file.fileid, file.type)}
+                >
+                {file.name ? file.name : "/"}
+                </Button>
+            )}
+            </ButtonGroup>
+        );
     }
 
     renderSearchBar()
@@ -269,18 +273,6 @@ export default class FileBrowser extends React.Component
             cancelOnEscape
             onChange={(newValue) => this.setState({ search: newValue })}
         />);
-    }
-
-    renderPathItem(file, head)
-    {
-        return (
-            <Button
-                style={{textTransform: "none"}}
-                onClick={this.onFileActivate.bind(this, file.fileid, file.type)}
-                >
-                {file.name === "" ? "Local" : file.name}
-                </Button>
-        );
     }
 
     //-------------------------------------------------------------------------
