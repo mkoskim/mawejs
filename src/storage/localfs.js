@@ -8,15 +8,6 @@
 
 import Storage from "./storage";
 
-//const path = require('path')
-const ipc = window.ipc;
-
-//const {app} = require("electron").remote;
-
-//console.log("Home:", window.homedir);
-
-//const fs = require("fs")
-
 export default class LocalFS extends Storage
 {
     constructor()
@@ -26,18 +17,16 @@ export default class LocalFS extends Storage
 
     getfileid(location)
     {
-        var fileid = ipc.sendSync("fs-getlocation-sync", { name: location });
-        console.log(location, "->", fileid);
-        return fileid;
+        return window.ipc.callMain("fs-getlocation", location);
     }
 
     readdir(fileid)
     {
-        return ipc.sendSync("fs-readdir-sync", { fileid: fileid });
+        return window.ipc.callMain("fs-readdir", fileid);
     }
 
-    pathsplit(fileid)
+    splitpath(fileid)
     {
-        return ipc.sendSync("fs-pathsplit-sync", { fileid: fileid });
+        return window.ipc.callMain("fs-splitpath", fileid);
     }
 }

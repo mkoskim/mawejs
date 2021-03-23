@@ -85,7 +85,7 @@ export default class FileBrowser extends React.Component
 
     componentDidMount()
     {
-        this.readdir(this.storage.getfileid("home"));
+        this.storage.getfileid("home").then(fileid => this.readdir(fileid));
     }
     
     componentWillUnmount()
@@ -98,12 +98,12 @@ export default class FileBrowser extends React.Component
     {
         if(type === "folder")
         {
-            console.log("Folder:", fileid);
+            //console.log("Folder:", fileid);
             this.readdir(fileid);
         }
         else
         {
-            console.log("File:", fileid);
+            //console.log("File:", fileid);
             //this.readdir(fileid);
         }
     }
@@ -210,8 +210,8 @@ export default class FileBrowser extends React.Component
             <Box display="flex" flexDirection="column" style={{maxHeight: "100vh"}}>
                 {this.renderPath()}
                 <Box flexGrow={1} style={{overflowY: "auto"}}>
-                {this.renderCategory("Folders", folders)}
-                {this.renderCategory("Files",   files, this.state.disableFiles)}
+                    {this.renderCategory("Folders", folders)}
+                    {this.renderCategory("Files",   files, this.state.disableFiles)}
                 </Box>
             </Box>
         );
@@ -227,14 +227,9 @@ export default class FileBrowser extends React.Component
             </Box>
         );
 
-        const header = (name) ? <ListItemText primary={name}/> : "";
+        const header = (name) ? <ListItemText primary={name}/> : null;
 
-        return (
-            <Box>
-                {header}
-                {content}
-                </Box>
-        );
+        return <Box>{header}{content}</Box>;
     }
 
     renderEntry(file, disabled)
@@ -290,10 +285,10 @@ export default class FileBrowser extends React.Component
 
     //-------------------------------------------------------------------------
 
-    readdir(fileid)
+    async readdir(fileid)
     {
         const fs = this.storage;
-        const files = fs.readdir(fileid);
+        const files = await fs.readdir(fileid);
 
         if(!files)
         {
@@ -301,10 +296,12 @@ export default class FileBrowser extends React.Component
             return ;
         }
 
+        const splitted = await fs.splitpath(fileid);
+
         this.setState({
             fileid: fileid,
-            splitpath: fs.pathsplit(fileid),
             files: files,
-        });
+            splitpath: splitted,
+        });    
     }
 }

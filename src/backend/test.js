@@ -6,10 +6,10 @@ const hostfs = require("./hostfs");
 
 //*
 //hostfs.getFiles("/home/markus/Dropbox/tarinat")
-hostfs.getFiles("/home/")
+hostfs.fsGetFiles("/home/")
 //hostfs.getFiles("src")
-  .then(files => console.log(files))
-  .catch(e => console.error(e));
+    .then(r => console.log(r))
+    .catch(e => console.error(e));
 /**/
 
 //console.log(path.resolve("$HOME"));

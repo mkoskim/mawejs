@@ -7,12 +7,15 @@
 //*****************************************************************************
 
 exports.getFileEntry = getFileEntry;
-exports.getFiles = getFiles;
+exports.fsGetFiles = fsGetFiles;
+exports.fsGetLocation = fsGetLocation;
+exports.fsSplitPath = fsSplitPath;
 
 //-----------------------------------------------------------------------------
 
 const fs = require("fs");
 const path = require('path');
+const {app} = require("electron");
 
 //-----------------------------------------------------------------------------
 // Get file entry with info: name, type, real path as ID
@@ -78,7 +81,7 @@ async function getFileEntry(fileid)
 // Get file entries from directory
 //-----------------------------------------------------------------------------
 
-async function getFiles(dirid)
+async function fsGetFiles(dirid)
 {
     try
     {
@@ -90,4 +93,63 @@ async function getFiles(dirid)
     {
         return null;
     }
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+async function fsGetLocation(name)
+{
+    var fileid;
+
+    if(name == "appPath")
+    {
+        fileid = app.getAppPath();
+    }
+    else if(name == "root")
+    {
+        fileid = "/";
+    }
+    else
+    {
+        try {
+            fileid = app.getPath(name);
+        } catch(error)
+        {
+            fileid = null;
+        }
+    }
+
+    return fileid;
+}
+
+//-----------------------------------------------------------------------------
+// This function splits the path to a list of directory entries.
+//-----------------------------------------------------------------------------
+
+async function fsSplitPath(fileid)
+{
+    var dirent = await getFileEntry(fileid);
+    if(dirent.type != "folder")
+    {
+        fileid = path.dirname(fileid);
+    }
+
+    dirs = [{
+        name: path.basename(fileid),
+        type: "folder",
+        fileid: fileid,
+    }];
+
+    while(fileid != path.dirname(fileid))
+    {
+        fileid = path.dirname(fileid);
+        dirs.push({
+            name: path.basename(fileid),
+            type: "folder",
+            fileid: fileid,
+        });
+    } 
+
+    return dirs.reverse();
 }

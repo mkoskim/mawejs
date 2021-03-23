@@ -9,94 +9,24 @@
 //*****************************************************************************
 //*****************************************************************************
 
-const {ipcMain} = require("electron");
+const os = require("os");
+console.log(os.userInfo());
 
-ipcMain.on("fs-getlocation-sync", fsGetLocationSync);
-ipcMain.on("fs-readdir-sync", fsReaddirSync);
-ipcMain.on("fs-pathsplit-sync", fsPathSplitSync);
+// HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
+require("electron").ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});
 
-//-----------------------------------------------------------------------------
+const {ipcMain: ipc} = require("electron-better-ipc");
 
-const fs = require("fs");
-const path = require("path");
-const {app} = require("electron");
 const hostfs = require("./hostfs");
-const { promisify } = require("util");
 
-//-----------------------------------------------------------------------------
-// Get the content of a directory. Returns a list of elements with name,
-// type ("file", "folder", ...) and fileid (absolute path).
-//-----------------------------------------------------------------------------
+ipc.answerRenderer("fs-readdir", async(dir) => {
+    return hostfs.fsGetFiles(dir);
+});
 
-async function fsReaddirSync(event, arg)
-{
-    console.log("FileID", arg.fileid);
+ipc.answerRenderer("fs-splitpath", async(path) => {
+    return hostfs.fsSplitPath(path);
+});
 
-    const entries = await hostfs.getFiles(arg.fileid);
-
-    event.returnValue = entries;
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-
-function fsGetLocationSync(event, arg)
-{
-    var name = arg.name;
-    var fileid;
-
-    if(name == "appPath")
-    {
-        fileid = app.getAppPath();
-    }
-    else if(name == "root")
-    {
-        fileid = "/";
-    }
-    else
-    {
-        try {
-            fileid = app.getPath(name);
-        } catch(error)
-        {
-            fileid = null;
-        }
-    }
-    event.returnValue = fileid;
-}
-
-//-----------------------------------------------------------------------------
-// This function splits the path to a list of directory entries.
-//-----------------------------------------------------------------------------
-
-async function fsPathSplitSync(event, arg)
-{
-    var fileid = arg.fileid;
-
-    var dirent = await hostfs.getFileEntry(fileid);
-    if(dirent.type != "folder")
-    {
-        fileid = path.dirname(fileid);
-    }
-
-    dirs = [{
-        name: path.basename(fileid),
-        type: "folder",
-        fileid: fileid,
-    }];
-
-    while(fileid != path.dirname(fileid))
-    {
-        fileid = path.dirname(fileid);
-        dirs.push({
-            name: path.basename(fileid),
-            type: "folder",
-            fileid: fileid,
-        });
-    } 
-
-    dirs = dirs.reverse();
-
-    //console.log(dirs);
-    event.returnValue = dirs;
-}
+ipc.answerRenderer("fs-getlocation", async(location) => {
+    return hostfs.fsGetLocation(location);
+});

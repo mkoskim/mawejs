@@ -11,6 +11,7 @@
     "@material-ui/icons": "^4.11.2",
     "concurrently": "^6.0.0",
     "cross-env": "^7.0.3",
+    "electron-better-ipc": "^1.1.1",
     "electron-is-dev": "^2.0.0",
     "electron-window-state": "^5.0.3",
     "immutable": "^4.0.0-rc.12",

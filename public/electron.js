@@ -37,7 +37,7 @@ async function createWindow()
             nodeIntegration: false,
             contextIsolation: true,
             enableRemoteModule: false,
-            preload: path.join(__dirname, "../src/backend/preload.js")
+            preload: path.join(__dirname, "../src/backend/services.js")
         },
     });
 
@@ -86,4 +86,3 @@ app.on("activate", () => {
 //-----------------------------------------------------------------------------
 
 const ipcmain = require("../src/backend/ipcmain");
-console.log(ipcmain);
