@@ -43,23 +43,18 @@ async function createWindow()
 
     mainWindowState.manage(mainWindow);
 
+    mainWindow.on("closed", () => (mainWindow = null));
+
     if(isDev)
     {
+        // TODO: Custom menu for developing
         mainWindow.webContents.openDevTools();
+        mainWindow.loadURL('http://localhost:3000');
     }
     else{
         mainWindow.setMenu(null);
+        mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
     }
-
-    mainWindow.on("closed", () => (mainWindow = null));
-
-    const url = isDev ?
-        'http://localhost:3000' :
-        `file://${path.join(__dirname, '../build/index.html')}`
-    ;
-
-    //console.log("Loading:", url);
-    mainWindow.loadURL(url);
 }
 
 //-----------------------------------------------------------------------------
