@@ -1,10 +1,10 @@
-# mawe
+# mawe.web
 
-This is my moe (My/Markus Own Editor) implemented as a web application. The project is now renamed as mawe, lets say it is acronym from My/Markus Advanced Web/Writer's Editor. The project is in very early state, I have just started to sketch it.
+This is my mawe (My/Markus Advanced Writer's Editor) implemented as a web application. The project is in very early state, I have just started to sketch it.
 
 **Motivation**
 
-Even that moe is still usable story editor - and still in my everyday use - there are certain problems with it that I would like to address in this version.
+There are certain things I would like to address in this version.
 
 First, the old editor is written with Python + GTK, and thus it mainly works off the shelf only in Linux machines. At the time it was written, it was still huge improvement compared to software written in C++ or similar, which would need porting and compiling them to all supported platforms.
 
@@ -35,17 +35,17 @@ Running:
 
     mawe.web$ npm start
 
-Updating dependencies:
+If you update the project with 'git pull', you may need to update the libraries, too:
 
+    mawe.web$ git pull
     mawe.web$ npm update
 
 - - -
 
 **Design Principles: "Just start writing"**
 
-mawe is meant to be an editor to write stories - not press articles, blog posts, technical documents or anything but stories. That means that it has tools to split the text mass to manageable pieces, and it keeps "meta text" - plans, sketches and such - together with the final result (story itself).
+mawe is meant to be an editor to write stories - not press articles, blog posts, technical documents or anything else but stories. That means that it has tools to split the text mass to manageable pieces, and it keeps "meta text" - plans, sketches and such - together with the final result (story itself).
 
 But unlike some of its "competitors", mawe's main design principle is *"Just start writing"* - you should be able to start writing your story right after starting the editor, without any kind of setting up or configuring, just like opening a notepad.
 
 All the tools that later help you to keep track with the text mass are taken into use just when you need it, without need for configuring them beforehand. Thus, you don't first create scene list, but you later split text to scenes. You don't need to write synopses or tag scenes, until you feel that you need them.
-
