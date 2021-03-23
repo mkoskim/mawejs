@@ -37,16 +37,19 @@ async function createWindow()
             nodeIntegration: false,
             contextIsolation: true,
             enableRemoteModule: false,
-            preload: path.join(__dirname, "../src/backend/services.js")
+            preload: path.join(__dirname, "./backend/services.js")
         },
     });
 
     mainWindowState.manage(mainWindow);
 
-    // Disable menu
-    //mainWindow.setMenu(null);
-
-    mainWindow.webContents.openDevTools();
+    if(isDev)
+    {
+        mainWindow.webContents.openDevTools();
+    }
+    else{
+        mainWindow.setMenu(null);
+    }
 
     mainWindow.on("closed", () => (mainWindow = null));
 
@@ -85,4 +88,4 @@ app.on("activate", () => {
 // IPC interface
 //-----------------------------------------------------------------------------
 
-const ipcmain = require("../src/backend/ipcmain");
+const ipcmain = require("./backend/ipcmain");
