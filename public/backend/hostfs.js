@@ -41,6 +41,7 @@ async function getFileEntry(fileid)
         type:    null,
         symlink: false,
         access:  false,
+        hidden:  path.basename(fileid).startsWith("."),
     }
 
     var dirent = await fs.promises.lstat(fileid).catch(err => null);

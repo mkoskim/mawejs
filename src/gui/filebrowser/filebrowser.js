@@ -195,7 +195,7 @@ export default class FileBrowser extends React.Component
     renderTiles()
     {
         var entries = this.state.files.filter(file =>
-            (this.state.includeHidden || !file.name.startsWith(".")) &&
+            (this.state.includeHidden || !file.hidden) &&
             (!this.state.excludeSymlinks || !file.symlink) &&
             (!this.state.excludeInaccessible || file.access) &&
             (!this.state.excludeUnknown || file.type)
