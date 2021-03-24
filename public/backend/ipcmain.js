@@ -10,7 +10,8 @@
 //*****************************************************************************
 
 const os = require("os");
-console.log(os.userInfo());
+console.log("Platform:", os.platform());
+console.log("UserInfo:", os.userInfo());
 
 // HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
 require("electron").ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});

@@ -28,7 +28,7 @@ const app = (
     <FileBrowser />
 );
 
-ReactDOM.render(app, document.body);
+ReactDOM.render(app, document.getElementById('root'));
 
 /**/
 
