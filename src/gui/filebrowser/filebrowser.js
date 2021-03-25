@@ -74,12 +74,12 @@ export default class FileBrowser extends React.Component
             
             search: "",
 
-            disableFiles: false,
+            filesDisabled: false,
             excludeHidden: true,
             excludeSymlinks: false,
             excludeInaccessible: false,
             excludeUnknown: false,
-            excludeFiles: false,
+            onlyFolders: false,
         }
         this.storage = new LocalFS();
     }
@@ -177,12 +177,13 @@ export default class FileBrowser extends React.Component
                     value={this.state.search || ""}
                     onChange={(event) => { this.setState({search: event.target.value}); }}
                 />
-                <Option label="Disable files" name="disableFiles" checked={this.state.disableFiles} onChange={event => this.onOptionChange(event)}/>
                 <Option label="Exclude hidden" name="excludeHidden" checked={this.state.excludeHidden} onChange={event => this.onOptionChange(event)}/>
                 <Option label="Exclude symlinks" name="excludeSymlinks" checked={this.state.excludeSymlinks} onChange={event => this.onOptionChange(event)}/>
                 <Option label="Exclude inaccessible" name="excludeInaccessible" checked={this.state.excludeInaccessible} onChange={event => this.onOptionChange(event)}/>
                 <Option label="Exclude unknown" name="excludeUnknown" checked={this.state.excludeUnknown} onChange={event => this.onOptionChange(event)}/>
-                <Option label="Exclude files" name="excludeFiles" checked={this.state.excludeFiles} onChange={event => this.onOptionChange(event)}/>
+                <Divider/>
+                <Option label="Only folders" name="onlyFolders" checked={this.state.onlyFolders} onChange={event => this.onOptionChange(event)}/>
+                <Option label="Files disabled" name="filesDisabled" checked={this.state.filesDisabled} onChange={event => this.onOptionChange(event)}/>
             </List>
         );
 
@@ -209,7 +210,7 @@ export default class FileBrowser extends React.Component
     renderTiles()
     {
         var entries = this.state.files.filter(file =>
-            (!this.state.excludeFiles || file.type == "folder") &&
+            (!this.state.onlyFolders || file.type == "folder") &&
             (!this.state.excludeHidden || !file.hidden) &&
             (!this.state.excludeSymlinks || !file.symlink) &&
             (!this.state.excludeInaccessible || file.access) &&
@@ -225,7 +226,7 @@ export default class FileBrowser extends React.Component
                 {this.renderPath()}
                 <Box flexGrow={1} style={{overflowY: "auto"}}>
                     {this.renderCategory("Folders", folders)}
-                    {this.renderCategory("Files",   files, this.state.disableFiles)}
+                    {this.renderCategory("Files",   files, this.state.filesDisabled)}
                 </Box>
             </Box>
         );
@@ -235,18 +236,20 @@ export default class FileBrowser extends React.Component
     {
         if(!files.length) return ;
 
+        const header = (name) ? <ListItemText primary={name}/> : null;
+
         const content = (
             <Box display="flex" flexWrap="wrap">
-            {files.map(file => this.renderEntry(file, disabled))}
+            {files
+                .sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
+                .map(file => this.renderEntry(file, disabled))}
             </Box>
         );
-
-        const header = (name) ? <ListItemText primary={name}/> : null;
 
         return <Box>{header}{content}</Box>;
     }
 
-    renderEntry(file, disabled)
+    renderEntry(file, disabled=false)
     {
         const icon = {
             "folder":  (<TypeFolder />),
