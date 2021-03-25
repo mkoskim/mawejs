@@ -72,7 +72,7 @@ export default class FileBrowser extends React.Component
             splitpath: [],
             files: [],
             
-            search: "",
+            searchfor: "",
 
             filesDisabled: false,
             excludeHidden: true,
@@ -174,7 +174,7 @@ export default class FileBrowser extends React.Component
         return(
             <List>
                 <TextField type="search" variant="outlined" label="Find" margin="none"
-                    value={this.state.search || ""}
+                    value={this.state.searchfor || ""}
                     onChange={(event) => { this.setState({search: event.target.value}); }}
                 />
                 <Option label="Exclude hidden" name="excludeHidden" checked={this.state.excludeHidden} onChange={event => this.onOptionChange(event)}/>
@@ -210,12 +210,12 @@ export default class FileBrowser extends React.Component
     renderTiles()
     {
         var entries = this.state.files.filter(file =>
-            (!this.state.onlyFolders || file.type == "folder") &&
+            (!this.state.onlyFolders || file.type === "folder") &&
             (!this.state.excludeHidden || !file.hidden) &&
             (!this.state.excludeSymlinks || !file.symlink) &&
             (!this.state.excludeInaccessible || file.access) &&
             (!this.state.excludeUnknown || file.type) &&
-            (!this.state.search || file.name.toLowerCase().includes(this.state.search.toLowerCase()))
+            (!this.state.searchfor || file.name.toLowerCase().includes(this.state.searchfor.toLowerCase()))
         );
 
         const folders = entries.filter(file => file.type === "folder");
@@ -290,7 +290,7 @@ export default class FileBrowser extends React.Component
     {
         return (
         <SearchBar
-            value={this.state.search}
+            value={this.state.searchfor}
             cancelOnEscape
             onChange={(newValue) => this.setState({ search: newValue })}
         />);
