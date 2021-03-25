@@ -72,11 +72,14 @@ export default class FileBrowser extends React.Component
             splitpath: [],
             files: [],
             
-            includeHidden: false,
+            search: "",
+
             disableFiles: false,
+            excludeHidden: true,
             excludeSymlinks: false,
             excludeInaccessible: false,
             excludeUnknown: false,
+            excludeFiles: false,
         }
         this.storage = new LocalFS();
     }
@@ -124,7 +127,7 @@ export default class FileBrowser extends React.Component
     {
         return (
         <Box display="flex" flexDirection="row">
-            <Box>
+            <Box pl={1} pr={1}>
                 {this.renderPlaces()}
                 <Divider/>
                 {this.renderOptions()}
@@ -161,15 +164,25 @@ export default class FileBrowser extends React.Component
 
     //-------------------------------------------------------------------------
 
+    onOptionChange(event)
+    {
+        this.setState({...this.state, [event.target.name]: event.target.checked});
+    }
+
     renderOptions()
     {
         return(
             <List>
-                <Option name="Include hidden" checked={this.state.includeHidden} onChange={() => this.setState({includeHidden: !this.state.includeHidden})}/>
-                <Option name="Disable files" checked={this.state.disableFiles} onChange={() => this.setState({disableFiles: !this.state.disableFiles})}/>
-                <Option name="Exclude symlinks" checked={this.state.excludeSymlinks} onChange={() => this.setState({excludeSymlinks: !this.state.excludeSymlinks})}/>
-                <Option name="Exclude inaccessible" checked={this.state.excludeInaccessible} onChange={() => this.setState({excludeInaccessible: !this.state.excludeInaccessible})}/>
-                <Option name="Exclude unknown" checked={this.state.excludeUnknown} onChange={() => this.setState({excludeUnknown: !this.state.excludeUnknown})}/>
+                <TextField type="search" variant="outlined" label="Find" margin="none"
+                    value={this.state.search || ""}
+                    onChange={(event) => { this.setState({search: event.target.value}); }}
+                />
+                <Option label="Disable files" name="disableFiles" checked={this.state.disableFiles} onChange={event => this.onOptionChange(event)}/>
+                <Option label="Exclude hidden" name="excludeHidden" checked={this.state.excludeHidden} onChange={event => this.onOptionChange(event)}/>
+                <Option label="Exclude symlinks" name="excludeSymlinks" checked={this.state.excludeSymlinks} onChange={event => this.onOptionChange(event)}/>
+                <Option label="Exclude inaccessible" name="excludeInaccessible" checked={this.state.excludeInaccessible} onChange={event => this.onOptionChange(event)}/>
+                <Option label="Exclude unknown" name="excludeUnknown" checked={this.state.excludeUnknown} onChange={event => this.onOptionChange(event)}/>
+                <Option label="Exclude files" name="excludeFiles" checked={this.state.excludeFiles} onChange={event => this.onOptionChange(event)}/>
             </List>
         );
 
@@ -177,10 +190,11 @@ export default class FileBrowser extends React.Component
         {
             return (
                 <ListItem>
-                    <ListItemText primary={props.name} />
+                    <ListItemText primary={props.label} />
                     <ListItemSecondaryAction>
                     <Checkbox
                         edge="end"
+                        name={props.name}
                         checked={props.checked}
                         onChange={props.onChange}
                     />
@@ -195,10 +209,12 @@ export default class FileBrowser extends React.Component
     renderTiles()
     {
         var entries = this.state.files.filter(file =>
-            (this.state.includeHidden || !file.hidden) &&
+            (!this.state.excludeFiles || file.type == "folder") &&
+            (!this.state.excludeHidden || !file.hidden) &&
             (!this.state.excludeSymlinks || !file.symlink) &&
             (!this.state.excludeInaccessible || file.access) &&
-            (!this.state.excludeUnknown || file.type)
+            (!this.state.excludeUnknown || file.type) &&
+            (!this.state.search || file.name.toLowerCase().includes(this.state.search.toLowerCase()))
         );
 
         const folders = entries.filter(file => file.type === "folder");
@@ -252,6 +268,7 @@ export default class FileBrowser extends React.Component
     renderPath()
     {
         return (
+            <Box>
             <ButtonGroup>
             {this.state.splitpath.map(file =>
                 <Button
@@ -262,6 +279,7 @@ export default class FileBrowser extends React.Component
                 </Button>
             )}
             </ButtonGroup>
+            </Box>
         );
     }
 
@@ -291,6 +309,7 @@ export default class FileBrowser extends React.Component
         const splitted = await fs.splitpath(fileid);
 
         this.setState({
+            search: undefined,
             fileid: fileid,
             files: files,
             splitpath: splitted,
