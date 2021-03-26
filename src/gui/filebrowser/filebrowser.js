@@ -175,7 +175,7 @@ export default class FileBrowser extends React.Component
             <List>
                 <TextField type="search" variant="outlined" label="Find" margin="none"
                     value={this.state.searchfor || ""}
-                    onChange={(event) => { this.setState({search: event.target.value}); }}
+                    onChange={(event) => { this.setState({searchfor: event.target.value}); }}
                 />
                 <Option label="Exclude hidden" name="excludeHidden" checked={this.state.excludeHidden} onChange={event => this.onOptionChange(event)}/>
                 <Option label="Exclude symlinks" name="excludeSymlinks" checked={this.state.excludeSymlinks} onChange={event => this.onOptionChange(event)}/>
