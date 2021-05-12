@@ -257,8 +257,8 @@ export default class FileBrowser extends React.Component
         }[file.type] || (<TypeUnknown />);
 
         return (        
-        <Box width={200} p="4px"><Card variant="outlined">
-        <ListItem button disabled={!file.access || disabled} onClick={this.onFileActivate.bind(this, file.fileid, file.type)}>
+        <Box width={200} m="4px"><Card variant="outlined">
+        <ListItem key={file.fileid} button disabled={!file.access || disabled} onClick={this.onFileActivate.bind(this, file.fileid, file.type)}>
             <ListItemAvatar>{icon}</ListItemAvatar>
             <ListItemText primary={file.name}/>
             </ListItem>
