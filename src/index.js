@@ -24,11 +24,10 @@ import FileBrowser from "./gui/filebrowser/filebrowser";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {Box} from "@material-ui/core";
 
-const app = (
-    <FileBrowser />
+ReactDOM.render(
+  <FileBrowser location="home"/>,
+  document.getElementById('root')
 );
-
-ReactDOM.render(app, document.getElementById('root'));
 
 /**/
 

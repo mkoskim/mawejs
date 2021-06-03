@@ -10,7 +10,7 @@
 - Handle access right problems
 */
 
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 
 import {
     Card, CardContent,
@@ -56,7 +56,48 @@ import LocalFS from "../../storage/localfs"
 
 //-----------------------------------------------------------------------------
 
-export default class FileBrowser extends React.Component
+const fs = new LocalFS();
+
+const FileEntry = (props) => {
+  return <li>{props.file.name} ({props.file.type})</li>
+}
+
+const FileList = (props) => {
+  const [files, setFiles] = useState([]);
+
+  const getfiles = () => {
+    fs.getfileid(props.location)
+      .then(fileid => {
+        console.log("Directory:", fileid);
+        return fs.readdir(fileid);
+      })
+      .then(files => {
+        console.log("Files:", files);
+        setFiles(files);
+      });
+  }
+  
+  useEffect(getfiles, [props.location]);
+
+  return (
+    <div>
+      <p>Directory: {props.location}</p>
+      <ul>
+        {files.map(file => <FileEntry key={file.fileid} file={file} />)}
+      </ul>
+    </div>
+  )
+}
+
+const FileBrowser = (props) => {
+  return <FileList location={props.location} />
+}
+
+export default FileBrowser;
+
+//-----------------------------------------------------------------------------
+
+export class XFileBrowser extends React.Component
 {
     //-------------------------------------------------------------------------
 
