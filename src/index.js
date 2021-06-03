@@ -20,7 +20,7 @@ ReactDOM.render(<SceneListEditor />, document.getElementById("root"));
 
 //*
 
-import FileBrowser from "./gui/filebrowser/filebrowser";
+import {FileBrowser, XFileBrowser} from "./gui/filebrowser/filebrowser";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {Box} from "@material-ui/core";
 

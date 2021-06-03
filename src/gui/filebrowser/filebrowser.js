@@ -52,48 +52,76 @@ import SearchBar from "material-ui-search-bar";
 
 //-----------------------------------------------------------------------------
 
-import LocalFS from "../../storage/localfs"
+const fs = require("../../storage/localfs")
 
-//-----------------------------------------------------------------------------
-
-const fs = new LocalFS();
-
-const FileEntry = (props) => {
-  return <li>{props.file.name} ({props.file.type})</li>
+export function FileBrowser(props) {
+  return <FileList location={props.location} />
 }
 
-const FileList = (props) => {
+function FileList(props) {
+  const [directory, setDirectory] = useState(undefined);
   const [files, setFiles] = useState([]);
 
-  const getfiles = () => {
-    fs.getfileid(props.location)
-      .then(fileid => {
-        console.log("Directory:", fileid);
-        return fs.readdir(fileid);
+  // In case we get symbolic location (e.g. "home"), resolve directory
+  function getdirectory() {
+    if(props.directory == undefined) {
+      fs.getfileid(props.location).then(dirid => {
+        setDirectory(dirid);
       })
+    } else {
+      setDirectory(props.directory);
+    }
+  }
+
+  useEffect(getdirectory, [props.location, props.directory]);
+
+  // When directory changes, get list of files
+  function getfiles() {
+    console.log("Reading directory:", directory);
+    if(directory) fs.readdir(directory)
       .then(files => {
-        console.log("Files:", files);
+        console.log("Got files:", files);
         setFiles(files);
       });
   }
   
-  useEffect(getfiles, [props.location]);
+  useEffect(getfiles, [directory]);
 
+  return <RenderFileList
+    directory={directory}
+    files={files}
+  />
+}
+
+//-----------------------------------------------------------------------------
+
+function RenderFileList({directory, files}) {
   return (
-    <div>
-      <p>Directory: {props.location}</p>
-      <ul>
-        {files.map(file => <FileEntry key={file.fileid} file={file} />)}
-      </ul>
-    </div>
+    <Box display="flex" flexDirection="column" style={{maxHeight: "100vh"}} flexGrow={1}>
+        <p>Directory: {directory}</p>
+      <Box flexGrow={1} style={{overflowY: "auto"}}>
+        {files.map(file => <RenderFileEntry key={file.fileid} file={file} disabled={false}/>)}
+      </Box>
+      </Box>
   )
 }
 
-const FileBrowser = (props) => {
-  return <FileList location={props.location} />
-}
+function RenderFileEntry({file, disabled}) {
+  const icon = {
+    "folder":  (<TypeFolder />),
+    "file":    (<TypeFile />),
+  }[file.type] || (<TypeUnknown />);
 
-export default FileBrowser;
+  return (        
+    <Box width={200} m="4px">
+    <Card variant="outlined">
+    <ListItem button disabled={!file.access || disabled}>
+      <ListItemAvatar>{icon}</ListItemAvatar>
+      <ListItemText primary={file.name}/>
+      </ListItem>
+    </Card></Box>
+  );
+}
 
 //-----------------------------------------------------------------------------
 
@@ -122,7 +150,7 @@ export class XFileBrowser extends React.Component
             excludeUnknown: false,
             onlyFolders: false,
         }
-        this.storage = new LocalFS();
+        this.storage = fs;
     }
 
     //-------------------------------------------------------------------------

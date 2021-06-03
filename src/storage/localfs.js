@@ -6,27 +6,17 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import Storage from "./storage";
-
-export default class LocalFS extends Storage
+export function getfileid(location)
 {
-    constructor()
-    {
-        super();
-    }
+    return window.ipc.callMain("fs-getlocation", location);
+}
 
-    getfileid(location)
-    {
-        return window.ipc.callMain("fs-getlocation", location);
-    }
+export function readdir(fileid)
+{
+    return window.ipc.callMain("fs-readdir", fileid);
+}
 
-    readdir(fileid)
-    {
-        return window.ipc.callMain("fs-readdir", fileid);
-    }
-
-    splitpath(fileid)
-    {
-        return window.ipc.callMain("fs-splitpath", fileid);
-    }
+export function splitpath(fileid)
+{
+    return window.ipc.callMain("fs-splitpath", fileid);
 }
