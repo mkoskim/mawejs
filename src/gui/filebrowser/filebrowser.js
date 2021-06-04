@@ -54,37 +54,43 @@ import SearchBar from "material-ui-search-bar";
 
 const fs = require("../../storage/localfs")
 
-export function FileBrowser(props) {
-  return <FileList location={props.location} />
+export function FileBrowser({directory, location}) {
+  console.log("Directory:", directory);
+  console.log("Location:", location);
+  return <FileList
+    location={location}
+    directory={directory}
+  />
 }
 
-function FileList(props) {
+function FileList({location, dirid}) {
   const [directory, setDirectory] = useState(undefined);
   const [files, setFiles] = useState([]);
 
   // In case we get symbolic location (e.g. "home"), resolve directory
   function getdirectory() {
-    if(props.directory == undefined) {
-      fs.getfileid(props.location).then(dirid => {
-        setDirectory(dirid);
-      })
+    if(dirid === undefined) {
+      fs
+        .getfileid(location)
+        .then(id => setDirectory(id))
     } else {
-      setDirectory(props.directory);
+      setDirectory(dirid);
     }
   }
-
-  useEffect(getdirectory, [props.location, props.directory]);
+  useEffect(getdirectory, [location, dirid]);
 
   // When directory changes, get list of files
   function getfiles() {
     console.log("Reading directory:", directory);
-    if(directory) fs.readdir(directory)
-      .then(files => {
-        console.log("Got files:", files);
-        setFiles(files);
-      });
-  }
-  
+    if(directory) {
+      fs
+        .readdir(directory)
+        .then(files => {
+          console.log("Got files:", files);
+          setFiles(files);
+        });
+      }
+  }  
   useEffect(getfiles, [directory]);
 
   return <RenderFileList

@@ -26,6 +26,7 @@ import {Box} from "@material-ui/core";
 
 ReactDOM.render(
   <FileBrowser location="home"/>,
+  // <FileBrowser directory={undefined} />,
   document.getElementById('root')
 );
 
