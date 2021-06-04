@@ -25,8 +25,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import {Box} from "@material-ui/core";
 
 ReactDOM.render(
-  <FileBrowser location="home"/>,
+  // <FileBrowser location="home"/>,
   // <FileBrowser directory={undefined} />,
+  <FileBrowser directory="." />,
   document.getElementById('root')
 );
 

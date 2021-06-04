@@ -63,70 +63,40 @@ export function FileBrowser({directory, location}) {
   />
 }
 
-function FileList({location, dirid}) {
-  const [directory, setDirectory] = useState(undefined);
+function FileList({location, directory}) {
   const [files, setFiles] = useState([]);
 
   // In case we get symbolic location (e.g. "home"), resolve directory
-  function getdirectory() {
-    if(dirid === undefined) {
-      fs
-        .getfileid(location)
-        .then(id => setDirectory(id))
-    } else {
-      setDirectory(dirid);
-    }
-  }
-  useEffect(getdirectory, [location, dirid]);
-
-  // When directory changes, get list of files
-  function getfiles() {
-    console.log("Reading directory:", directory);
-    if(directory) {
-      fs
-        .readdir(directory)
-        .then(files => {
-          console.log("Got files:", files);
-          setFiles(files);
-        });
-      }
-  }  
-  useEffect(getfiles, [directory]);
+  useEffect(async () => {
+    setFiles(
+      await fs.readdir(
+        directory ? directory : await fs.getfileid(location)
+      )
+    );
+  }, [location, directory]);
 
   return <RenderFileList
-    directory={directory}
     files={files}
   />
 }
 
 //-----------------------------------------------------------------------------
 
-function RenderFileList({directory, files}) {
+function RenderFileList({files}) {
   return (
-    <Box display="flex" flexDirection="column" style={{maxHeight: "100vh"}} flexGrow={1}>
-        <p>Directory: {directory}</p>
-      <Box flexGrow={1} style={{overflowY: "auto"}}>
-        {files.map(file => <RenderFileEntry key={file.fileid} file={file} disabled={false}/>)}
-      </Box>
-      </Box>
+    <div>
+      {files
+        .sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
+        .map(file =>
+          <span key={file.fileid}><RenderFileEntry file={file} disabled={false}/> </span>
+          )
+      }
+    </div>
   )
 }
 
 function RenderFileEntry({file, disabled}) {
-  const icon = {
-    "folder":  (<TypeFolder />),
-    "file":    (<TypeFile />),
-  }[file.type] || (<TypeUnknown />);
-
-  return (        
-    <Box width={200} m="4px">
-    <Card variant="outlined">
-    <ListItem button disabled={!file.access || disabled}>
-      <ListItemAvatar>{icon}</ListItemAvatar>
-      <ListItemText primary={file.name}/>
-      </ListItem>
-    </Card></Box>
-  );
+  return file.name
 }
 
 //-----------------------------------------------------------------------------
