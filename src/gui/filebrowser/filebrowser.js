@@ -6,13 +6,30 @@
 //*****************************************************************************
 //*****************************************************************************
 
-/* TODO:
+/*
+-------------------------------------------------------------------------------
+
+The aim is to get a component which can be used for various file-related
+purposes: opening a file, saving a file, searching files, and performing
+basic file related operations like moving, removing and creating folders.
+
+I'm looking for Nautilus file manager look'n'feel to certain extent.
+
+It is intended that the backend for the browser is asynchronous and simple enough
+to be used also with network drives (dropbox, gdrive). At the moment, there is
+only local file system access provided via electron interface.
+
+TODO:
 - Handle access right problems
+- Handle errors
+
+-------------------------------------------------------------------------------
 */
 
 import React, {useState, useEffect} from 'react'
 
 import {
+    Dialog,
     Card, CardContent,
     Button, Checkbox, Icon,
     Switch,
@@ -25,7 +42,7 @@ import {
     Avatar,
     AppBar, Drawer,
     Toolbar, IconButton, Typography, ButtonGroup,
-    TextField, InputBase,
+    TextField, InputBase, CircularProgress,
 } from "@material-ui/core";
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -54,87 +71,108 @@ import SearchBar from "material-ui-search-bar";
 
 const fs = require("../../storage/localfs")
 
-export function FileBrowser({directory, location}) {
-  console.log("FileBrowser:", directory, location);
-
+export function FileBrowser({directory, location, contains}) {
   const [dir, setDir] = useState(undefined);
+  const [search, setSearch] = useState(".txt");
+
+  console.log("FileBrowser:", dir, directory, location);
 
   useEffect(() => {
-    async function resolveDir(directory, location) {
+    (async() => {
       setDir(directory ? directory : await fs.getfileid(location));
-    }
-    resolveDir();
+    })()
   }, [directory, location]);
-  
-  return <SearchFiles directory={directory} />
-  //return <FileList directory={directory} />
+
+  if(!dir) {
+    return <p>...</p>;
+  } else if(search !== undefined) {
+    return <SearchDir directory={dir} contains={search} onChange={setSearch}/>
+  } else {
+    return <ListDir directory={dir} />
+  }
 }
 
 //-----------------------------------------------------------------------------
 
-function sortFiles(files)
-{
+function sortFiles(files) {
   return files.sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
 }
 
-function FileList({directory}) {
+function filterFiles(files, contains) {
+  const keywords = contains.split(" ").filter(k => k.length)
+  if(keywords.length) {
+    return files.filter(f => keywords.some(k => f.name.includes(k)));
+  } else {
+    return files;
+  }
+}
+
+function ListDir({directory}) {
   console.log("Rendering: FileList");
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
-    async function readDir() {
+    (async() => {
         const files = (await fs.readdir(directory))
         setFiles(sortFiles(files));
-    }
-    readDir();
+    })();
   }, [directory]);
 
   return <RenderFileList files={files} />
 }
 
-function SearchFiles({directory}) {
+function SearchDir({directory, contains, onChange}) {
   console.log("Rendering: SearchFiles");
 
-  const [dir, setDir] = useState(
-    {
-      scan: [directory],
-      files: [],
-    }
-  );
+  const [dir, setDir] = useState({
+    scan: [directory],  // Directories ready for scanning
+    files: [],          // Files found
+  });
 
   useEffect(() => {
-    async function getdir() {
-      const files = (await Promise.all(
-        dir.scan.map(f => fs.readdir(f))
-      )).flat();
+    let running = true;
 
-      if(files.length) {
+    // Throttle scanning a bit to keep app responsive
+    const index = 100;
+    const [head, tail] = [dir.scan.slice(0, index), dir.scan.slice(index)]
+
+    const processing = head.map(f => fs.readdir(f));
+
+    Promise.all(processing).then(results => {
+      if(!running) return ;
+
+      const files = results. flat();
+
+      if(tail.length || files.length) {
         const folders = files
-          .filter(f => f.type === "folder")
-          .filter(f => f.access)
           .filter(f => !f.symlink)
+          .filter(f => f.access)
+          .filter(f => f.type === "folder")
           .map(f => f.fileid)
         ;
 
         setDir({
-          scan: folders,
+          scan: tail.concat(folders),
           files: dir.files.concat(files),
         })
       }
-    }
-
-    //console.log("Readdir")
-    getdir();
+    })
+    return () => running = false;
   }, [directory, dir]);
+
+  const scanning = dir.scan.length != 0;
 
   return (
     <div>
-      <p>Files: {dir.files.length}</p>
-      <p>Scanning: {dir.scan.length}</p>
-      <RenderFileList files={
-        dir.files
-          //.filter(f => f.name.endsWith(".txt"))
-        } />
+      <SearchBar
+        value={contains}
+        onChange={onChange}
+        onCancelSearch={() => onChange(undefined)}
+        cancelOnEscape
+        autoFocus
+      />
+      <p>Total: {dir.files.length} {scanning ? (`Dirs: ${dir.scan.length}`) : ""}</p>
+      <RenderFileList files={filterFiles(dir.files, contains)} />
       </div>
   )
 }
@@ -144,6 +182,7 @@ function SearchFiles({directory}) {
 function RenderFileList({files}) {
   return (
     <div>
+      <p>Files: {files.length}</p>
       {files
         .slice(0, 1000)
         .map(f =>
