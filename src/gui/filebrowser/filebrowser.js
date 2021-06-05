@@ -55,29 +55,88 @@ import SearchBar from "material-ui-search-bar";
 const fs = require("../../storage/localfs")
 
 export function FileBrowser({directory, location}) {
-  console.log("Directory:", directory);
-  console.log("Location:", location);
-  return <FileList
-    location={location}
-    directory={directory}
-  />
+  console.log("FileBrowser:", directory, location);
+
+  const [dir, setDir] = useState(undefined);
+
+  useEffect(() => {
+    async function resolveDir(directory, location) {
+      setDir(directory ? directory : await fs.getfileid(location));
+    }
+    resolveDir();
+  }, [directory, location]);
+  
+  return <SearchFiles directory={directory} />
+  //return <FileList directory={directory} />
 }
 
-function FileList({location, directory}) {
+//-----------------------------------------------------------------------------
+
+function sortFiles(files)
+{
+  return files.sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
+}
+
+function FileList({directory}) {
+  console.log("Rendering: FileList");
   const [files, setFiles] = useState([]);
 
-  // In case we get symbolic location (e.g. "home"), resolve directory
-  useEffect(async () => {
-    setFiles(
-      await fs.readdir(
-        directory ? directory : await fs.getfileid(location)
-      )
-    );
-  }, [location, directory]);
+  useEffect(() => {
+    async function readDir() {
+        const files = (await fs.readdir(directory))
+        setFiles(sortFiles(files));
+    }
+    readDir();
+  }, [directory]);
 
-  return <RenderFileList
-    files={files}
-  />
+  return <RenderFileList files={files} />
+}
+
+function SearchFiles({directory}) {
+  console.log("Rendering: SearchFiles");
+
+  const [dir, setDir] = useState(
+    {
+      scan: [directory],
+      files: [],
+    }
+  );
+
+  useEffect(() => {
+    async function getdir() {
+      const files = (await Promise.all(
+        dir.scan.map(f => fs.readdir(f))
+      )).flat();
+
+      if(files.length) {
+        const folders = files
+          .filter(f => f.type === "folder")
+          .filter(f => f.access)
+          .filter(f => !f.symlink)
+          .map(f => f.fileid)
+        ;
+
+        setDir({
+          scan: folders,
+          files: dir.files.concat(files),
+        })
+      }
+    }
+
+    //console.log("Readdir")
+    getdir();
+  }, [directory, dir]);
+
+  return (
+    <div>
+      <p>Files: {dir.files.length}</p>
+      <p>Scanning: {dir.scan.length}</p>
+      <RenderFileList files={
+        dir.files
+          //.filter(f => f.name.endsWith(".txt"))
+        } />
+      </div>
+  )
 }
 
 //-----------------------------------------------------------------------------
@@ -86,10 +145,10 @@ function RenderFileList({files}) {
   return (
     <div>
       {files
-        .sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
-        .map(file =>
-          <span key={file.fileid}><RenderFileEntry file={file} disabled={false}/> </span>
-          )
+        .slice(0, 1000)
+        .map(f =>
+          <span key={f.fileid}><RenderFileEntry file={f} disabled={false}/> </span>
+        )
       }
     </div>
   )
