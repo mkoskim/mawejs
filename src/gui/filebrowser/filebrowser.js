@@ -51,6 +51,7 @@ import {
 import { FixedSizeList } from "react-window";
 //import { AutoSizer } from "react-virtualized";
 import AutoSizer from "react-virtualized-auto-sizer";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 import MenuIcon from '@material-ui/icons/Menu';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -117,48 +118,6 @@ function filterFiles(files, contains) {
 
 function addRelPaths(directory, files) {
   return files.map(f => ({...f, relpath: path.relative(directory, f.fileid)}));
-}
-
-//-----------------------------------------------------------------------------
-// These helpers make AutoSizer working: Autosizer needs parent container
-// with dimensions. See:
-// https://github.com/bvaughn/react-window/issues/249#issuecomment-747412706
-//-----------------------------------------------------------------------------
-
-function FlexFull({style, children}) {
-  return (
-    <div style={{height: "100vh", width: "100vw", display: "flex", ...style}}>
-      {children}
-    </div>
-  )
-}
-
-function FlexFill({style, children}) {
-  return (
-    <div style={{display: "flex", flexGrow: 1, ...style}}>
-      {children}
-    </div>
-  )
-}
-
-function AutosizedList({itemSize, itemCount, Row}) {
-  return (
-  <FlexFill><AutoSizer>
-  {({height, width}) => {
-    //console.log("Area:", width, height);
-    return (
-      <FixedSizeList
-        height={height}
-        width={width}
-        itemSize={itemSize}
-        itemCount={itemCount}
-      >
-        {Row}
-      </FixedSizeList>
-    )
-  }}
-  </AutoSizer></FlexFill>
-  )
 }
 
 //-----------------------------------------------------------------------------
@@ -242,45 +201,134 @@ function SearchDir({directory, contains, onChange}) {
 //-----------------------------------------------------------------------------
 
 function RenderFileList({files}) {
-  /*
-  function RenderFile({index, style}) {
-    const f = files[index];
-    return <RenderFileEntry key={f.fileid} file={f} disabled={false} style={style}/>;
-  }
-  return <AutosizedList itemSize={48} itemCount={files.length} Row={RenderFile} />
-  /**/
+  return <VirtualFileList files={files}/>
+  //return <FetchLaterFileList files={files}/>
+  //return <InfiniteFileList files={files}/>
+}
 
+//-----------------------------------------------------------------------------
+// These helpers make AutoSizer working: Autosizer needs parent container
+// with dimensions. See:
+// https://github.com/bvaughn/react-window/issues/249#issuecomment-747412706
+//-----------------------------------------------------------------------------
+
+function FlexFull({style, children}) {
+  return (
+    <div style={{height: "100vh", width: "100vw", display: "flex", ...style}}>
+      {children}
+    </div>
+  )
+}
+
+function FlexFill({style, children}) {
+  return (
+    <div style={{display: "flex", flexGrow: 1, ...style}}>
+      {children}
+    </div>
+  )
+}
+
+function AutosizedList({itemSize, itemCount, Row}) {
+  return (
+  <FlexFill><AutoSizer>
+  {({height, width}) => {
+    //console.log("Area:", width, height);
+    return (
+      <FixedSizeList
+        height={height}
+        width={width}
+        itemSize={itemSize}
+        itemCount={itemCount}
+      >
+        {Row}
+      </FixedSizeList>
+    )
+  }}
+  </AutoSizer></FlexFill>
+  )
+}
+
+function VirtualFileList({files}) {
+  return <AutosizedList itemSize={48} itemCount={files.length} Row={
+    ({index, style}) => {
+      const f = files[index];
+      return <RenderFileEntry key={f.fileid} file={f} disabled={false} style={style}/>;
+    }
+  } />
+}
+
+//-----------------------------------------------------------------------------
+
+function FetchLaterFileList({files}) {
   // Can we do here so, that we add files bit-by-bit to the list? Would solve many
   // problems...
 
-  //*
-  const [render, setRender] = useState({
+  const [state, setState] = useState({
     waiting: [],  // Files waiting for rendering
     files: [],    // Rendered files
   });
 
-  useEffect(() => (setRender({waiting: files, files: []})), [files])
+  useEffect(() => (setState({waiting: files, files: []})), [files])
 
   useEffect(() => {
-    console.log("Waiting:", render.waiting)
+    console.log("Waiting:", state.waiting)
 
     const timer = setTimeout(() => {
+      console.log("Adding...")
       const index = 10;
-      const [head, tail] = [render.waiting.slice(0, index), render.waiting.slice(index)]
+      const [head, tail] = [state.waiting.slice(0, index), state.waiting.slice(index)]
 
-      if(head.length) setRender({
+      if(head.length) setState({
         waiting: tail,
-        files: render.files.concat(head),
+        files: state.files.concat(head),
       })
-    }, 0);
+    }, 10);
 
     return () => clearTimeout(timer);
-  }, [render]);
+  }, [state]);
 
-  console.log("RenderFileList", render.waiting.length)
-  return render.files.map(f => <RenderFileEntry key={f.fileid} file={f} disabled={false}/>)
-  /**/
+  console.log("RenderFileList", state.waiting.length)
+  return state.files.map(f => <RenderFileEntry key={f.fileid} file={f} disabled={false}/>)
 }
+
+//-----------------------------------------------------------------------------
+
+function InfiniteFileList({files}) {
+  const [state, setState] = useState({
+    rendered: 0,
+    hasMore: false,
+  })
+
+  useEffect(() => (setState({
+    rendered: Math.min(files.length, 20),
+    hasMore: files.length > 20
+  })), [files])
+
+  const fetchMoreData = () => {
+    console.log("fetchMore:", state.rendered, "/", files.length)
+    const items = Math.min(files.length, state.rendered + 10);
+    setState({rendered: items, hasMore: items < files.length});
+  }
+
+  return (
+    <div>
+    <InfiniteScroll
+    dataLength={state.rendered}
+    next={fetchMoreData}
+    hasMore={state.hasMore}
+    loader={<p>Loading...</p>}
+    endMessage={<p>Yay! You have seen it all</p>}
+    >
+    {files
+      .slice(0, state.rendered)
+      .map(f => <RenderFileEntry key={f.fileid} file={f} disabled={false}/>)
+    }
+  </InfiniteScroll>
+  </div>
+  )
+}
+
+//-----------------------------------------------------------------------------
 
 function RenderFileEntry({file, disabled, style}) {
   const icon = {
