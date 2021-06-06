@@ -6,7 +6,6 @@
 //*****************************************************************************
 //*****************************************************************************
 
-exports.getFileEntry = getFileEntry;
 exports.fsGetFiles = fsGetFiles;
 exports.fsGetLocation = fsGetLocation;
 exports.fsSplitPath = fsSplitPath;

@@ -22,6 +22,9 @@ only local file system access provided via electron interface.
 TODO:
 - Handle access right problems
 - Handle errors
+- Keyboard not working on react-window list:
+    https://github.com/bvaughn/react-window/issues/46
+    https://sung.codes/blog/2019/05/07/scrolling-with-page-up-down-keys-in-react-window/
 
 -------------------------------------------------------------------------------
 */
@@ -44,6 +47,10 @@ import {
     Toolbar, IconButton, Typography, ButtonGroup,
     TextField, InputBase, CircularProgress,
 } from "@material-ui/core";
+
+import { FixedSizeList } from "react-window";
+//import { AutoSizer } from "react-virtualized";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 import MenuIcon from '@material-ui/icons/Menu';
 import FolderIcon from '@material-ui/icons/Folder';
@@ -70,6 +77,7 @@ import SearchBar from "material-ui-search-bar";
 //-----------------------------------------------------------------------------
 
 const fs = require("../../storage/localfs")
+const path = require("path")
 
 export function FileBrowser({directory, location, contains}) {
   const [dir, setDir] = useState(undefined);
@@ -107,6 +115,54 @@ function filterFiles(files, contains) {
   }
 }
 
+function addRelPaths(directory, files) {
+  return files.map(f => ({...f, relpath: path.relative(directory, f.fileid)}));
+}
+
+//-----------------------------------------------------------------------------
+// These helpers make AutoSizer working: Autosizer needs parent container
+// with dimensions. See:
+// https://github.com/bvaughn/react-window/issues/249#issuecomment-747412706
+//-----------------------------------------------------------------------------
+
+function FlexFull({style, children}) {
+  return (
+    <div style={{height: "100vh", width: "100vw", display: "flex", ...style}}>
+      {children}
+    </div>
+  )
+}
+
+function FlexFill({style, children}) {
+  return (
+    <div style={{display: "flex", flexGrow: 1, ...style}}>
+      {children}
+    </div>
+  )
+}
+
+function AutosizedList({itemSize, itemCount, Row}) {
+  return (
+  <FlexFill><AutoSizer>
+  {({height, width}) => {
+    //console.log("Area:", width, height);
+    return (
+      <FixedSizeList
+        height={height}
+        width={width}
+        itemSize={itemSize}
+        itemCount={itemCount}
+      >
+        {Row}
+      </FixedSizeList>
+    )
+  }}
+  </AutoSizer></FlexFill>
+  )
+}
+
+//-----------------------------------------------------------------------------
+
 function ListDir({directory}) {
   console.log("Rendering: FileList");
   const [files, setFiles] = useState([]);
@@ -118,8 +174,14 @@ function ListDir({directory}) {
     })();
   }, [directory]);
 
-  return <RenderFileList files={files} />
+  return (
+    <FlexFull style={{flexDirection: "column"}}>
+      <RenderFileList files={files} />
+    </FlexFull>
+  )
 }
+
+//-----------------------------------------------------------------------------
 
 function SearchDir({directory, contains, onChange}) {
   console.log("Rendering: SearchFiles");
@@ -141,7 +203,7 @@ function SearchDir({directory, contains, onChange}) {
     Promise.all(processing).then(results => {
       if(!running) return ;
 
-      const files = results. flat();
+      const files = results.flat();
 
       if(tail.length || files.length) {
         const folders = files
@@ -163,7 +225,7 @@ function SearchDir({directory, contains, onChange}) {
   const scanning = dir.scan.length != 0;
 
   return (
-    <div>
+    <FlexFull style={{flexDirection: "column"}}>
       <SearchBar
         value={contains}
         onChange={onChange}
@@ -172,29 +234,70 @@ function SearchDir({directory, contains, onChange}) {
         autoFocus
       />
       <p>Total: {dir.files.length} {scanning ? (`Dirs: ${dir.scan.length}`) : ""}</p>
-      <RenderFileList files={filterFiles(dir.files, contains)} />
-      </div>
+      <RenderFileList files={addRelPaths(directory, filterFiles(dir.files, contains))} />
+      </FlexFull>
   )
 }
 
 //-----------------------------------------------------------------------------
 
 function RenderFileList({files}) {
-  return (
-    <div>
-      <p>Files: {files.length}</p>
-      {files
-        .slice(0, 1000)
-        .map(f =>
-          <span key={f.fileid}><RenderFileEntry file={f} disabled={false}/> </span>
-        )
-      }
-    </div>
-  )
+  /*
+  function RenderFile({index, style}) {
+    const f = files[index];
+    return <RenderFileEntry key={f.fileid} file={f} disabled={false} style={style}/>;
+  }
+  return <AutosizedList itemSize={48} itemCount={files.length} Row={RenderFile} />
+  /**/
+
+  // Can we do here so, that we add files bit-by-bit to the list? Would solve many
+  // problems...
+
+  //*
+  const [render, setRender] = useState({
+    waiting: [],  // Files waiting for rendering
+    files: [],    // Rendered files
+  });
+
+  useEffect(() => (setRender({waiting: files, files: []})), [files])
+
+  useEffect(() => {
+    console.log("Waiting:", render.waiting)
+
+    const timer = setTimeout(() => {
+      const index = 10;
+      const [head, tail] = [render.waiting.slice(0, index), render.waiting.slice(index)]
+
+      if(head.length) setRender({
+        waiting: tail,
+        files: render.files.concat(head),
+      })
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [render]);
+
+  console.log("RenderFileList", render.waiting.length)
+  return render.files.map(f => <RenderFileEntry key={f.fileid} file={f} disabled={false}/>)
+  /**/
 }
 
-function RenderFileEntry({file, disabled}) {
-  return file.name
+function RenderFileEntry({file, disabled, style}) {
+  const icon = {
+    "folder":  (<TypeFolder />),
+    "file":    (<TypeFile />),
+  }[file.type] || (<TypeUnknown />);
+
+  return (        
+    // <Box width={200} m="4px">
+    // <Card variant="outlined">
+    <ListItem button disabled={!file.access || disabled} dense divider style={style}>
+        <ListItemAvatar>{icon}</ListItemAvatar>
+        <ListItemText primary={file.name} secondary={file.relpath}/>
+        </ListItem>
+    // </Card>
+    //</Box>
+  );
 }
 
 //-----------------------------------------------------------------------------
