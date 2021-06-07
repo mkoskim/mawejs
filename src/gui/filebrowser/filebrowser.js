@@ -86,6 +86,11 @@ export function FileBrowser({directory, location, contains}) {
 
   console.log("FileBrowser:", dir, directory, location);
 
+  const hooks = {
+    setSearch: setSearch,
+    setDirectory: setDir,
+  }
+
   useEffect(() => {
     (async() => {
       setDir(directory ? directory : await fs.getfileid(location));
@@ -95,9 +100,9 @@ export function FileBrowser({directory, location, contains}) {
   if(!dir) {
     return <p>...</p>;
   } else if(search !== undefined) {
-    return <SearchDir directory={dir} contains={search} onChange={setSearch}/>
+    return <SearchDir directory={dir} contains={search} hooks={hooks}/>
   } else {
-    return <ListDir directory={dir} />
+    return <ListDir directory={dir} hooks={hooks}/>
   }
 }
 
@@ -108,9 +113,10 @@ function sortFiles(files) {
 }
 
 function filterFiles(files, contains) {
-  const keywords = contains.split(" ").filter(k => k.length)
+  const keywords = contains.toLowerCase().split(" ").filter(k => k.length)
+
   if(keywords.length) {
-    return files.filter(f => keywords.some(k => f.name.includes(k)));
+    return files.filter(f => keywords.some(k => f.name.toLowerCase().includes(k)));
   } else {
     return files;
   }
@@ -122,30 +128,32 @@ function addRelPaths(directory, files) {
 
 //-----------------------------------------------------------------------------
 
-function ListDir({directory}) {
+function ListDir({directory, hooks}) {
   console.log("Rendering: FileList");
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
     (async() => {
-        const files = (await fs.readdir(directory))
-        setFiles(sortFiles(files));
+        const entries = (await fs.readdir(directory))
+        const folders = sortFiles(entries.filter(f => f.type === "folder"))
+        const files   = sortFiles(entries.filter(f => f.type !== "folder"))
+        setFiles(folders.concat(files));
     })();
   }, [directory]);
 
   return (
     <FlexFull style={{flexDirection: "column"}}>
-      <RenderFileList files={files} />
+      <RenderFileList files={files} hooks={hooks}/>
     </FlexFull>
   )
 }
 
 //-----------------------------------------------------------------------------
 
-function SearchDir({directory, contains, onChange}) {
+function SearchDir({directory, contains, hooks}) {
   console.log("Rendering: SearchFiles");
 
-  const [dir, setDir] = useState({
+  const [state, setState] = useState({
     scan: [directory],  // Directories ready for scanning
     files: [],          // Files found
   });
@@ -155,7 +163,7 @@ function SearchDir({directory, contains, onChange}) {
 
     // Throttle scanning a bit to keep app responsive
     const index = 100;
-    const [head, tail] = [dir.scan.slice(0, index), dir.scan.slice(index)]
+    const [head, tail] = [state.scan.slice(0, index), state.scan.slice(index)]
 
     const processing = head.map(f => fs.readdir(f));
 
@@ -172,36 +180,37 @@ function SearchDir({directory, contains, onChange}) {
           .map(f => f.fileid)
         ;
 
-        setDir({
+        setState({
           scan: tail.concat(folders),
-          files: dir.files.concat(files),
+          files: state.files.concat(files),
         })
       }
     })
     return () => running = false;
-  }, [directory, dir]);
+  }, [directory, state]);
 
-  const scanning = dir.scan.length != 0;
+  const scanning = state.scan.length != 0;
+  const found    = filterFiles(state.files, contains);
 
   return (
     <FlexFull style={{flexDirection: "column"}}>
       <SearchBar
         value={contains}
-        onChange={onChange}
-        onCancelSearch={() => onChange(undefined)}
+        onChange={hooks.setSearch}
+        onCancelSearch={() => hooks.setSearch(undefined)}
         cancelOnEscape
         autoFocus
       />
-      <p>Total: {dir.files.length} {scanning ? (`Dirs: ${dir.scan.length}`) : ""}</p>
-      <RenderFileList files={addRelPaths(directory, filterFiles(dir.files, contains))} />
+      <p>Found: {found.length} (total: {state.files.length}) {scanning ? (`Dirs: ${state.scan.length}`) : ""}</p>
+      <RenderFileList files={addRelPaths(directory, found)} hooks={hooks} />
       </FlexFull>
   )
 }
 
 //-----------------------------------------------------------------------------
 
-function RenderFileList({files}) {
-  return <VirtualFileList files={files}/>
+function RenderFileList({files, hooks}) {
+  return <VirtualFileList files={files} hooks={hooks}/>
   //return <FetchLaterFileList files={files}/>
   //return <InfiniteFileList files={files}/>
 }
@@ -248,11 +257,17 @@ function AutosizedList({itemSize, itemCount, Row}) {
   )
 }
 
-function VirtualFileList({files}) {
+function VirtualFileList({files, hooks}) {
   return <AutosizedList itemSize={48} itemCount={files.length} Row={
     ({index, style}) => {
       const f = files[index];
-      return <RenderFileEntry key={f.fileid} file={f} disabled={false} style={style}/>;
+      return <RenderFileEntry
+        key={f.fileid}
+        file={f}
+        disabled={false}
+        style={style}
+        hooks={hooks}
+      />;
     }
   } />
 }
@@ -263,12 +278,17 @@ function FetchLaterFileList({files}) {
   // Can we do here so, that we add files bit-by-bit to the list? Would solve many
   // problems...
 
+  const index = 30;
+
   const [state, setState] = useState({
-    waiting: [],  // Files waiting for rendering
-    files: [],    // Rendered files
+    waiting: files.slice(index),      // Files waiting for rendering
+    files:   files.slice(0, index),   // Rendered files
   });
 
-  useEffect(() => (setState({waiting: files, files: []})), [files])
+  useEffect(() => (setState({
+    waiting: files.slice(index),
+    files:   files.slice(0, index),
+  })), [files])
 
   useEffect(() => {
     console.log("Waiting:", state.waiting)
@@ -295,8 +315,8 @@ function FetchLaterFileList({files}) {
 
 function InfiniteFileList({files}) {
   const [state, setState] = useState({
-    rendered: 0,
-    hasMore: false,
+    rendered: Math.min(files.length, 20),
+    hasMore: files.length > 20,
   })
 
   useEffect(() => (setState({
@@ -316,7 +336,7 @@ function InfiniteFileList({files}) {
     dataLength={state.rendered}
     next={fetchMoreData}
     hasMore={state.hasMore}
-    loader={<p>Loading...</p>}
+    //loader={<p>Loading...</p>}
     endMessage={<p>Yay! You have seen it all</p>}
     >
     {files
@@ -330,16 +350,18 @@ function InfiniteFileList({files}) {
 
 //-----------------------------------------------------------------------------
 
-function RenderFileEntry({file, disabled, style}) {
+function RenderFileEntry({file, disabled, style, hooks}) {
   const icon = {
     "folder":  (<TypeFolder />),
     "file":    (<TypeFile />),
   }[file.type] || (<TypeUnknown />);
 
+  const hook = file.type === "folder" ? () => (hooks.setDirectory(file.fileid)) : undefined;
+
   return (        
     // <Box width={200} m="4px">
     // <Card variant="outlined">
-    <ListItem button disabled={!file.access || disabled} dense divider style={style}>
+    <ListItem button disabled={!file.access || disabled} dense divider style={style} onClick={hook}>
         <ListItemAvatar>{icon}</ListItemAvatar>
         <ListItemText primary={file.name} secondary={file.relpath}/>
         </ListItem>
