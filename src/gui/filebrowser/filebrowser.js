@@ -31,6 +31,8 @@ TODO:
 
 import React, {useState, useEffect} from 'react'
 
+import isHotkey from "is-hotkey";
+
 import {
     Dialog,
     Card, CardContent,
@@ -48,6 +50,7 @@ import {
     Toolbar, IconButton, Typography, ButtonGroup,
     TextField, InputBase,
     CircularProgress, LinearProgress,
+    Tooltip,
 } from "@material-ui/core";
 
 import { DataGrid } from "@material-ui/data-grid";
@@ -66,6 +69,7 @@ import HomeIcon from  '@material-ui/icons/Home';
 import SearchIcon from  '@material-ui/icons/Search';
 import BlockIcon from '@material-ui/icons/Block';
 import WarnIcon from '@material-ui/icons/Warning';
+import OpenFolderIcon from '@material-ui/icons/FolderOpenOutlined';
 
 import TypeFolder from '@material-ui/icons/Folder';
 import TypeFile from '@material-ui/icons/DescriptionOutlined';
@@ -87,17 +91,25 @@ const path = require("path")
 
 export function FileBrowser({directory, location, contains}) {
   const [dir, setDir] = useState(undefined);
-  const [search, setSearch] = useState(contains);
+  const [search, setSearch] = useState(!!contains);
 
   console.log("FileBrowser:", dir, directory, location, contains);
 
   const hooks = {
     setSearch: setSearch,
-    chdir: (fid) => {
-      console.log("chdir:", fid);
+    chdir: fid => {
       setSearch(undefined);
       setDir(fid);
     },
+    open: f => {
+      if(f.type == "folder") {
+        hooks.chdir(f.id);
+      } else {
+        console.log("Open:", f.name);
+      }
+    },
+
+    excludeHidden: true,
   }
 
   useEffect(() => {
@@ -114,7 +126,7 @@ export function FileBrowser({directory, location, contains}) {
     } else if(!search) {
       return <ListDir directory={dir} hooks={hooks}/>
     } else {
-      return <SearchDir directory={dir} contains={search} hooks={hooks}/>
+      return <SearchDir directory={dir} contains={contains === undefined ? "" : contains} hooks={hooks}/>
     }
   }
 }
@@ -123,6 +135,13 @@ export function FileBrowser({directory, location, contains}) {
 
 function sortFiles(files) {
   return files.sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
+}
+
+function excludeFiles(files, hooks) {
+  return files.filter(f =>
+    (!f.hidden || !hooks.excludeHidden) &&
+    (f.type !== "folder" || !hooks.excludeFolders)
+  );
 }
 
 function filterFiles(files, contains) {
@@ -141,8 +160,7 @@ function filterFiles(files, contains) {
 function addRelPaths(directory, files) {
   function relpath(f) {
     const p = path.dirname(path.relative(directory, f.id));
-    if(p === ".") return undefined;
-    return p;
+    return (p === ".") ? undefined : p;
   }
 
   return files.map(f => ({...f, relpath: relpath(f)}));
@@ -152,13 +170,15 @@ function FileItemConfig(file, hooks) {
   return {
     "folder": {
       icon: (<TypeFolder />),
-      onClick: () => hooks.chdir(file.id),
+      disabled: !file.access,
     },
     "file": {
       icon: (<TypeFile />),
+      disabled: !file.access,
     },
   }[file.type] || {
-    icon: (<TypeUnknown />)
+    icon: (<TypeUnknown />),
+    disabled: true,
   };
 }
 
@@ -187,7 +207,7 @@ function ListDir({directory, hooks}) {
     setPage(1);
     (async() => {
       setPath(await fs.splitpath(directory));
-      const entries = await fs.readdir(directory);
+      const entries = excludeFiles(await fs.readdir(directory), hooks);
       const folders = sortFiles(entries.filter(f => f.type === "folder"));
       const files   = sortFiles(entries.filter(f => f.type !== "folder"));
       setState({
@@ -198,19 +218,27 @@ function ListDir({directory, hooks}) {
   }, [directory]);
 
   useEffect(() => {
-    document.addEventListener("keypress", startSearch);
-    return () => document.removeEventListener("keypress", startSearch)
+    document.addEventListener("keydown", startSearch);
+    return () => document.removeEventListener("keydown", startSearch)
+
+    function startSearch(event) {
+      //console.log(event.key);
+      if(isHotkey("ctrl+f", event)) {
+        hooks.setSearch(true);
+        event.preventDefault();
+      }
+    }  
   });
 
   const files = ((state.folders !== undefined) ? state.folders.concat(state.files) : []);
   const pagelength = 80;
   const pages = Math.ceil(files.length / pagelength)
-  console.log("Pages:", pages, "Files:", files.length)
-  console.log("Page:", page);
+  //console.log("Pages:", pages, "Files:", files.length)
+  //console.log("Page:", page);
 
   return (
     <FlexFull style={{flexDirection: "column"}}>
-      <Box p={"4pt"} pb={"6pt"} style={{backgroundColor: "#F8F8F8"}}>
+      <Box p={"4pt"} pb={"6pt"} style={{backgroundColor: "#F8F8F8", borderBottom: "1px solid #D8D8D8"}}>
         <PathButtons />
         <PageButtons />
         </Box>
@@ -220,17 +248,13 @@ function ListDir({directory, hooks}) {
     </FlexFull>
   )
 
-  function startSearch(event) {
-    //console.log(event.key);
-    if(event.key.length === 1) {
-      hooks.setSearch(event.key);
-      event.preventDefault();
-    }
-  }
-
   function PageButtons() {
     if(pages > 1) {
-      return <Box pt={"2pt"}><Pagination count={pages} page={page} onChange={(e, v) => setPage(v)}/></Box>
+      return (
+        <Box mt={"4pt"} pt={"4pt"} style={{borderTop: "1px solid #d8D8D8"}}>
+          <Pagination count={pages} page={page} onChange={(e, v) => setPage(v)}/>
+          </Box>
+      )
     } else {
       return <div/>
     }
@@ -247,39 +271,52 @@ function ListDir({directory, hooks}) {
     function Cell({file, hooks}) {
       return (
         <Box width={300} m={"2px"}><Card variant="outlined">
-          <RenderFileEntry file={file} disabled={false} hooks={hooks}/>
+          <RenderFileEntry file={file} hooks={hooks}/>
         </Card></Box>
       )
     }
 
     function RenderFileEntry({file, style, hooks}) {
       const config = FileItemConfig(file, hooks);
-    
+      const callback = Callbacks(file, hooks);
+
       return (        
-        <ListItem button disabled={!file.access} style={style} onClick={config.onClick}>
+        <ListItem button disabled={config.disabled} style={style} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
         <ListItemAvatar>{config.icon}</ListItemAvatar>
         <ListItemText primary={file.name} secondary={file.relpath}/>
         </ListItem>
       );
+
+      function Callbacks(file, hooks) {
+        return {
+          "folder": {
+            onClick: () => hooks.open(file),
+            onDoubleClick: undefined,
+          },
+          "file": {
+            onClick: undefined,
+            onDoubleClick: () => hooks.open(file),
+          },
+        }[file.type] || {
+        };
+      }      
     }    
   }
   
   function PathButtons()
   {
     return (
-      <Box>
       <ButtonGroup>
       {path.map(f =>
         <Button
           key={f.id}
+          onClick={() => (hooks.open(f))}
           style={{textTransform: "none"}}
-          onClick={() => (hooks.chdir(f.id))}
         >
         {f.name ? f.name : "/"}
         </Button>
       )}
       </ButtonGroup>
-      </Box>
     );
   }
 }
@@ -287,12 +324,13 @@ function ListDir({directory, hooks}) {
 //-----------------------------------------------------------------------------
 
 class FileScanner {
-  constructor(directory) {
-    console.log("FileScanner:", directory);
+  constructor(directory, hooks) {
+    console.log("Creating FileScanner:", directory);
 
     this.directory = directory;
     this.scan  = [directory];
     this.files = [];
+    this.hooks = hooks;
 
     this.setState = undefined;
     this.contains = undefined;
@@ -364,7 +402,7 @@ class FileScanner {
     this.setState = setState;
     this.amount = num;
     this.contains = contains;
-    this.partial = 0;
+    this.partial = -1;
 
     this.tryresolve();
   }
@@ -399,7 +437,7 @@ class FileScanner {
         ;
 
         this.scan.push(...folders)
-        this.files.push(...batch)
+        this.files.push(...excludeFiles(batch, this.hooks))
       }
       //console.log("Files", this.files.length, "Scan:", this.scan.length);
 
@@ -411,19 +449,35 @@ class FileScanner {
 
 function SearchDir({directory, contains, hooks}) {
   const [scanner, setScanner] = useState(undefined);
+  const [search, setSearch] = useState("");
 
-  useEffect(() => { setScanner(new FileScanner(directory, 100))}, [directory]);
+  useEffect(() => {
+    setScanner(new FileScanner(directory, { excludeFolders: true, ...hooks}))
+  }, [directory]);
+  useEffect(() => { setSearch(contains)}, [contains])
+  
+  useEffect(() => {
+    document.addEventListener("keydown", stopSearch);
+    return () => document.removeEventListener("keydown", stopSearch)
+
+    function stopSearch(event) {
+      //console.log(event.key);
+      if(isHotkey("escape", event)) {
+        hooks.setSearch(false);
+        event.preventDefault();
+      }
+    }  
+  });
 
   return (
     <FlexFull style={{flexDirection: "column"}}>
       <SearchBar
-        value={contains}
-        onChange={hooks.setSearch}
-        onCancelSearch={() => hooks.setSearch(undefined)}
-        cancelOnEscape
+        value={search}
+        onChange={setSearch}
+        onCancelSearch={() => hooks.setSearch(false)}
         autoFocus
       />
-      <InfiniteFileList scanner={scanner} contains={contains} hooks={hooks}/>
+      <InfiniteFileList scanner={scanner} contains={search} hooks={hooks}/>
       </FlexFull>
   )
 }
@@ -438,22 +492,22 @@ function InfiniteFileList({scanner, contains, hooks}) {
   useEffect(() => {
     if(scanner)
     {
-      fetch(40);
+      fetch(30);
       return () => scanner.stop();
     }
   }, [scanner, contains])
 
   const fetchMore = () => {
-    console.log("fetchMore");
     fetch(state.files.length + 20);
   }
 
   function fetch(num) {
+    console.log("Fetch:", contains, num)
     scanner.fetch(setState, contains, num);
   }
 
   return [
-    (scanner && scanner.more2come()) ? <LinearProgress/> : <div/>,
+    <StatusBar/>,
     <Box id="scrollbox" style={{overflowY: "auto"}}>
     <InfiniteScroll
     scrollableTarget="scrollbox"
@@ -464,8 +518,21 @@ function InfiniteFileList({scanner, contains, hooks}) {
     >
       <FileTable files={state.files} hooks={hooks} />
     </InfiniteScroll>
-    </Box>
+    </Box>,
   ]
+
+  function StatusBar() {
+    if(!scanner) return <div/>;
+    return (
+      <Box align="right" style={{padding: "4px", paddingTop: "8px", backgroundColor: "#F0F0F0"}}>
+        <Typography style={{fontSize: 14}}>Match: {state.files.length} Total: {scanner.files.length}</Typography>
+      </Box>
+    )
+
+    function Running() {
+      return (scanner && scanner.more2come()) ? <LinearProgress size={40} thickness={4}/> : <div/>;
+    }
+  }
 
   function FileTable({files, hooks}) {
     return (
@@ -477,13 +544,57 @@ function InfiniteFileList({scanner, contains, hooks}) {
 
   function Row({file, hooks}) {
     const config = FileItemConfig(file, hooks);
+    const folder = path.dirname(file.id);
+
+    /*
+    return (
+      <Box m={"2px"}><Card variant="outlined">
+        <ListItem button disabled={config.disabled} onDoubleClick={() => hooks.open(file)}>
+        <ListItemAvatar>{config.icon}</ListItemAvatar>
+        <ListItemText primary={file.name} secondary={file.relpath}/>
+        </ListItem>
+      </Card></Box>
+    )
+    /*/
+    return <TableRow
+      hover={true}
+      disabled={config.disabled}
+      onDoubleClick={() => hooks.open(file)}
+      >
+      <TableCell>{file.name}</TableCell>
+      <TableCell>{file.relpath}</TableCell>
+      </TableRow>;
+    /**/
+  }
+
+      /*
+      //<TableCell style={{padding: 0, paddingLeft: 16}}>{config.icon}</TableCell>
+      //<TableCell><Link onClick={() => hooks.chdir(folder)}>{file.relpath}</Link></TableCell>
+  function Row({file, hooks}) {
+
+    const cellstyle = {padding: "4px"};
 
     return (
-      <TableRow onClick={config.onClick} hover={true}>
-        <TableCell padding={"checkbox"}>{config.icon}</TableCell>
-        <TableCell >{file.name}</TableCell>
-        <TableCell >{file.relpath}</TableCell>
+      <TableRow
+        hover={true}
+        disabled={config.disabled}
+        onDoubleClick={() => hooks.open(file)}
+        >
+        <TableCell style={{paddingLeft: "8pt", ...cellstyle}}>{config.icon}</TableCell>
+        <TableCell style={cellstyle}>
+          {file.name}
+          </TableCell>
+        <TableCell style={cellstyle}>{file.relpath}</TableCell>
+        <TableCell style={cellstyle}>
+          <Tooltip title="Go to folder"><IconButton
+            style={{padding: "8px"}}
+            onClick={() => hooks.chdir(folder)}
+            >
+            <OpenFolderIcon width={32}/>
+            </IconButton></Tooltip>
+          </TableCell>
       </TableRow>
     )
   }
+*/
 }
