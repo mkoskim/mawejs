@@ -6,6 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
+exports.fsGetFileEntry = fsGetFileEntry;
 exports.fsGetFiles = fsGetFiles;
 exports.fsGetLocation = fsGetLocation;
 exports.fsSplitPath = fsSplitPath;
@@ -20,7 +21,7 @@ const {app} = require("electron");
 // Get file entry with info: name, type, real path as ID
 //-----------------------------------------------------------------------------
 
-async function getFileEntry(fileid)
+async function fsGetFileEntry(fileid)
 {
     async function hasaccess(fileid)
     {
@@ -36,7 +37,7 @@ async function getFileEntry(fileid)
 
     var entry = {
         name:    path.basename(fileid),
-        fileid:  fileid,
+        id:      path.resolve(fileid),
         type:    null,
         symlink: false,
         access:  false,
@@ -87,7 +88,7 @@ async function fsGetFiles(dirid)
     {
         var files = await fs.promises.readdir(dirid);
         files = files.map(file => path.resolve(dirid, file));
-        files = await Promise.all(files.map(getFileEntry));
+        files = await Promise.all(files.map(fsGetFileEntry));
         return files;
     } catch(err)
     {
@@ -129,7 +130,7 @@ async function fsGetLocation(name)
 
 async function fsSplitPath(fileid)
 {
-    var dirent = await getFileEntry(fileid);
+    var dirent = await fsGetFileEntry(fileid);
     if(dirent.type != "folder")
     {
         fileid = path.dirname(fileid);
@@ -138,7 +139,7 @@ async function fsSplitPath(fileid)
     dirs = [{
         name: path.basename(fileid),
         type: "folder",
-        fileid: fileid,
+        id: fileid,
     }];
 
     while(fileid != path.dirname(fileid))
@@ -147,7 +148,7 @@ async function fsSplitPath(fileid)
         dirs.push({
             name: path.basename(fileid),
             type: "folder",
-            fileid: fileid,
+            id: fileid,
         });
     } 
 

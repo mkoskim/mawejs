@@ -42,15 +42,20 @@ import {
     Chip, Link,
     Grid, GridList, GridListTile,
     List, ListItem, ListItemAvatar, ListItemText, ListItemIcon, ListItemSecondaryAction,
+    Table, 
     Avatar,
     AppBar, Drawer,
     Toolbar, IconButton, Typography, ButtonGroup,
-    TextField, InputBase, CircularProgress,
+    TextField, InputBase,
+    CircularProgress, LinearProgress,
 } from "@material-ui/core";
 
-import { FixedSizeList } from "react-window";
+import { DataGrid } from "@material-ui/data-grid";
+
+
+//import { FixedSizeList, FixedSizeGrid } from "react-window";
 //import { AutoSizer } from "react-virtualized";
-import AutoSizer from "react-virtualized-auto-sizer";
+//import AutoSizer from "react-virtualized-auto-sizer";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -84,21 +89,25 @@ export function FileBrowser({directory, location, contains}) {
   const [dir, setDir] = useState(undefined);
   const [search, setSearch] = useState(".txt");
 
-  console.log("FileBrowser:", dir, directory, location);
+  console.log("FileBrowser:", dir, directory, location, contains);
 
   const hooks = {
     setSearch: setSearch,
-    setDirectory: setDir,
+    chdir: (fid) => {
+      console.log("chdir:", fid);
+      setSearch(undefined);
+      setDir(fid);
+    },
   }
 
   useEffect(() => {
     (async() => {
-      setDir(directory ? directory : await fs.getfileid(location));
+      setDir(directory ? (await fs.fstat(directory)).id : await fs.getfileid(location ? location : "home"));
     })()
   }, [directory, location]);
 
   if(!dir) {
-    return <p>...</p>;
+    return <div/>;
   } else if(search !== undefined) {
     return <SearchDir directory={dir} contains={search} hooks={hooks}/>
   } else {
@@ -113,6 +122,8 @@ function sortFiles(files) {
 }
 
 function filterFiles(files, contains) {
+  return files.filter(f => f.name.toLowerCase().includes(contains.toLowerCase()));
+  /*
   const keywords = contains.toLowerCase().split(" ").filter(k => k.length)
 
   if(keywords.length) {
@@ -120,77 +131,82 @@ function filterFiles(files, contains) {
   } else {
     return files;
   }
+  */
 }
 
 function addRelPaths(directory, files) {
-  return files.map(f => ({...f, relpath: path.relative(directory, f.fileid)}));
+  function relpath(f) {
+    const p = path.dirname(path.relative(directory, f.id));
+    if(p === ".") return undefined;
+    return p;
+  }
+
+  return files.map(f => ({...f, relpath: relpath(f)}));
 }
 
 //-----------------------------------------------------------------------------
 
 function ListDir({directory, hooks}) {
-  console.log("Rendering: FileList");
-  const [files, setFiles] = useState([]);
+
+  const [state, setState] = useState({
+    path: [],
+    files: undefined,
+  });
 
   useEffect(() => {
+    setState({path: undefined, files: undefined});
     (async() => {
-        const entries = (await fs.readdir(directory))
+        const path    = await fs.splitpath(directory);
+        const entries = await fs.readdir(directory);
         const folders = sortFiles(entries.filter(f => f.type === "folder"))
         const files   = sortFiles(entries.filter(f => f.type !== "folder"))
-        setFiles(folders.concat(files));
+        setState({path: path, files: folders.concat(files)});
     })();
   }, [directory]);
 
-  return (
-    <FlexFull style={{flexDirection: "column"}}>
-      <RenderFileList files={files} hooks={hooks}/>
-    </FlexFull>
-  )
+  if(state.files !== undefined) {
+    return (
+      <FlexFull style={{flexDirection: "column"}}>
+        <PathButtons />
+        <List />
+      </FlexFull>
+    )
+  } else {
+    return <div/>
+  }
+
+  function List()
+  {
+    //return <RenderFileList files={state.files} hooks={hooks}/>;
+    return <RenderFileGrid files={state.files} hooks={hooks}/>;
+  }
+
+  function PathButtons()
+  {
+    return (
+      <Box>
+      <ButtonGroup>
+      {state.path.map(f =>
+        <Button
+          key={f.id}
+          style={{textTransform: "none"}}
+          onClick={() => (hooks.chdir(f.id))}
+        >
+        {f.name ? f.name : "/"}
+        </Button>
+      )}
+      </ButtonGroup>
+      </Box>
+    );
+  }
 }
 
 //-----------------------------------------------------------------------------
 
 function SearchDir({directory, contains, hooks}) {
-  console.log("Rendering: SearchFiles");
+  const [scanner, setScanner] = useState(undefined);
 
-  const [state, setState] = useState({
-    scan: [directory],  // Directories ready for scanning
-    files: [],          // Files found
-  });
-
-  useEffect(() => {
-    let running = true;
-
-    // Throttle scanning a bit to keep app responsive
-    const index = 100;
-    const [head, tail] = [state.scan.slice(0, index), state.scan.slice(index)]
-
-    const processing = head.map(f => fs.readdir(f));
-
-    Promise.all(processing).then(results => {
-      if(!running) return ;
-
-      const files = results.flat();
-
-      if(tail.length || files.length) {
-        const folders = files
-          .filter(f => !f.symlink)
-          .filter(f => f.access)
-          .filter(f => f.type === "folder")
-          .map(f => f.fileid)
-        ;
-
-        setState({
-          scan: tail.concat(folders),
-          files: state.files.concat(files),
-        })
-      }
-    })
-    return () => running = false;
-  }, [directory, state]);
-
-  const scanning = state.scan.length != 0;
-  const found    = filterFiles(state.files, contains);
+  useEffect(() => { setScanner(new FileScanner(directory, 100))}, [directory]);
 
   return (
     <FlexFull style={{flexDirection: "column"}}>
@@ -201,18 +217,137 @@ function SearchDir({directory, contains, hooks}) {
         cancelOnEscape
         autoFocus
       />
-      <p>Found: {found.length} (total: {state.files.length}) {scanning ? (`Dirs: ${state.scan.length}`) : ""}</p>
-      <RenderFileList files={addRelPaths(directory, found)} hooks={hooks} />
+      <InfiniteFileList scanner={scanner} contains={contains} hooks={hooks}/>
       </FlexFull>
   )
 }
 
+class FileScanner {
+  constructor(directory, num) {
+    console.log("FileScanner:", directory);
+
+    this.directory = directory;
+    this.scan  = [directory];
+    this.files = [];
+
+    this.setState = undefined;
+    this.contains = undefined;
+    this.amount  = undefined;
+    this.partial = undefined;
+  }
+
+  matches(contains) {
+    return filterFiles(this.files, contains);
+  }
+
+  progress()
+  {
+    const matched = this.matches(this.contains);
+    if(matched.length > this.partial) {
+      const state = {
+        files: matched.slice(0, this.amount),
+        hasMore: true,
+      }
+      console.log("Partial:", state);
+      this.partial = state.files.length;
+      this.setState(state);
+    }
+  }
+
+  reject()
+  {
+    clearTimeout(this.timer);
+    this.timer = undefined;
+    this.setState = undefined;
+    this.running = false;
+  }
+
+  resolve(files, num) {
+    const send = this.setState;
+    this.reject();
+
+    const state = {
+      files: files.slice(0, num),
+      hasMore: files.length > num,
+    }
+    console.log("Resolve:", state);
+    if(send) send(state);
+  }
+
+  tryresolve() {
+    const matched = this.matches(this.contains);
+
+    if(!this.scan.length || matched.length > this.amount) {
+      this.resolve(matched, this.amount);
+    } else {
+      this.walk(100);
+    }
+  }
+
+  fetch(setState, contains, num) {
+    //console.log("Fetch:", contains, num);
+    this.setState = setState;
+    this.amount = num;
+    this.contains = contains;
+    this.partial = 0;
+    this.running = true;
+
+    this.tryresolve();
+  }
+
+  walk(num) {
+
+    if(!this.timer) {
+      this.timer = setTimeout(() => {
+        this.progress();
+        this.timer = undefined;
+      }, 250);
+    }
+
+    const head = this.scan.splice(0, num);
+
+    const processing = head.map(f => fs.readdir(f));
+
+    Promise.all(processing).then(results => {
+      //const batch = results.flat();
+      const batch = addRelPaths(this.directory, results.flat());
+
+      if(batch.length) {
+
+        const folders = batch
+          .filter(f => !f.hidden)
+          .filter(f => !f.symlink)
+          .filter(f => f.access)
+          .filter(f => f.type === "folder")
+          .map(f => f.id)
+        ;
+
+        this.scan.push(...folders)
+        this.files.push(...batch)
+      }
+      //console.log("Files", this.files.length, "Scan:", this.scan.length);
+
+      this.tryresolve();
+    })
+  }
+}
+
 //-----------------------------------------------------------------------------
 
-function RenderFileList({files, hooks}) {
-  return <VirtualFileList files={files} hooks={hooks}/>
-  //return <FetchLaterFileList files={files}/>
-  //return <InfiniteFileList files={files}/>
+function RenderFileGrid({files, hooks}) {
+  return (
+    <Box display="flex" style={{overflowY: "auto"}} flexWrap="wrap">
+    {files.map(f => <Cell key={f.id} file={f} hooks={hooks} />)}
+    </Box>
+  )
+
+  function Cell({file, hooks}) {
+    return (
+      <Box width={300} m={"2px"}><Card variant="outlined">
+        <RenderFileEntry file={file} disabled={false} hooks={hooks}/>
+      </Card></Box>
+    )
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -229,409 +364,70 @@ function FlexFull({style, children}) {
   )
 }
 
-function FlexFill({style, children}) {
-  return (
-    <div style={{display: "flex", flexGrow: 1, ...style}}>
-      {children}
-    </div>
-  )
-}
-
-function AutosizedList({itemSize, itemCount, Row}) {
-  return (
-  <FlexFill><AutoSizer>
-  {({height, width}) => {
-    //console.log("Area:", width, height);
-    return (
-      <FixedSizeList
-        height={height}
-        width={width}
-        itemSize={itemSize}
-        itemCount={itemCount}
-      >
-        {Row}
-      </FixedSizeList>
-    )
-  }}
-  </AutoSizer></FlexFill>
-  )
-}
-
-function VirtualFileList({files, hooks}) {
-  return <AutosizedList itemSize={48} itemCount={files.length} Row={
-    ({index, style}) => {
-      const f = files[index];
-      return <RenderFileEntry
-        key={f.fileid}
-        file={f}
-        disabled={false}
-        style={style}
-        hooks={hooks}
-      />;
-    }
-  } />
-}
-
 //-----------------------------------------------------------------------------
 
-function FetchLaterFileList({files}) {
-  // Can we do here so, that we add files bit-by-bit to the list? Would solve many
-  // problems...
-
-  const index = 30;
+function InfiniteFileList({scanner, contains, hooks}) {
 
   const [state, setState] = useState({
-    waiting: files.slice(index),      // Files waiting for rendering
-    files:   files.slice(0, index),   // Rendered files
-  });
-
-  useEffect(() => (setState({
-    waiting: files.slice(index),
-    files:   files.slice(0, index),
-  })), [files])
-
-  useEffect(() => {
-    console.log("Waiting:", state.waiting)
-
-    const timer = setTimeout(() => {
-      console.log("Adding...")
-      const index = 10;
-      const [head, tail] = [state.waiting.slice(0, index), state.waiting.slice(index)]
-
-      if(head.length) setState({
-        waiting: tail,
-        files: state.files.concat(head),
-      })
-    }, 10);
-
-    return () => clearTimeout(timer);
-  }, [state]);
-
-  console.log("RenderFileList", state.waiting.length)
-  return state.files.map(f => <RenderFileEntry key={f.fileid} file={f} disabled={false}/>)
-}
-
-//-----------------------------------------------------------------------------
-
-function InfiniteFileList({files}) {
-  const [state, setState] = useState({
-    rendered: Math.min(files.length, 20),
-    hasMore: files.length > 20,
+    files: [],
+    hasMore: undefined,
   })
 
-  useEffect(() => (setState({
-    rendered: Math.min(files.length, 20),
-    hasMore: files.length > 20
-  })), [files])
+  useEffect(() => {
+    if(scanner)
+    {
+      fetch(20);
+      return () => scanner.reject();
+    }
+  }, [scanner, contains])
 
-  const fetchMoreData = () => {
-    console.log("fetchMore:", state.rendered, "/", files.length)
-    const items = Math.min(files.length, state.rendered + 10);
-    setState({rendered: items, hasMore: items < files.length});
+  const fetchMore = () => { fetch(state.files.length + 20); }
+
+  function fetch(num) {
+    scanner.fetch(setState, contains, num);
   }
 
-  return (
-    <div>
+  console.log("FileList", state.hasMore)
+
+  return [
+    (scanner && scanner.running) ? <LinearProgress/> : <div/>,
+    <Box id="scrollbox" style={{overflowY: "auto"}}>
     <InfiniteScroll
-    dataLength={state.rendered}
-    next={fetchMoreData}
+    scrollableTarget="scrollbox"
+    scrollThreshold={0.95}
+    dataLength={state.files.length}
+    next={fetchMore}
     hasMore={state.hasMore}
-    //loader={<p>Loading...</p>}
-    endMessage={<p>Yay! You have seen it all</p>}
+    //loader={<LinearProgress />}
+    //endMessage={<p>Yay! You have seen it all</p>}
     >
-    {files
-      .slice(0, state.rendered)
-      .map(f => <RenderFileEntry key={f.fileid} file={f} disabled={false}/>)
+    {state.files
+      .map(f => <RenderFileEntry key={f.id} file={f} hooks={hooks}/>)
     }
   </InfiniteScroll>
-  </div>
-  )
+  </Box>
+  ]
 }
 
 //-----------------------------------------------------------------------------
 
-function RenderFileEntry({file, disabled, style, hooks}) {
-  const icon = {
-    "folder":  (<TypeFolder />),
-    "file":    (<TypeFile />),
-  }[file.type] || (<TypeUnknown />);
-
-  const hook = file.type === "folder" ? () => (hooks.setDirectory(file.fileid)) : undefined;
+function RenderFileEntry({file, style, hooks}) {
+  const config = {
+    "folder": {
+      icon: (<TypeFolder />),
+      onClick: () => hooks.chdir(file.id),
+    },
+    "file": {
+      icon: (<TypeFile />),
+    },
+  }[file.type] || {
+    icon: (<TypeUnknown />)
+  };
 
   return (        
-    // <Box width={200} m="4px">
-    // <Card variant="outlined">
-    <ListItem button disabled={!file.access || disabled} dense divider style={style} onClick={hook}>
-        <ListItemAvatar>{icon}</ListItemAvatar>
-        <ListItemText primary={file.name} secondary={file.relpath}/>
-        </ListItem>
-    // </Card>
-    //</Box>
+    <ListItem button disabled={!file.access} style={style} onClick={config.onClick}>
+    <ListItemAvatar>{config.icon}</ListItemAvatar>
+    <ListItemText primary={file.name} secondary={file.relpath}/>
+    </ListItem>
   );
-}
-
-//-----------------------------------------------------------------------------
-
-export class XFileBrowser extends React.Component
-{
-    //-------------------------------------------------------------------------
-
-    constructor(props)
-    {
-        super(props);
-
-        this.state = {
-            places: [
-                { name: "Home", location: "home" },
-                { name: "Documents", location: "documents" },
-            ],
-            splitpath: [],
-            files: [],
-            
-            searchfor: "",
-
-            filesDisabled: false,
-            excludeHidden: true,
-            excludeSymlinks: false,
-            excludeInaccessible: false,
-            excludeUnknown: false,
-            onlyFolders: false,
-        }
-        this.storage = fs;
-    }
-
-    //-------------------------------------------------------------------------
-
-    componentDidMount()
-    {
-        this.storage.getfileid("home").then(fileid => this.readdir(fileid));
-    }
-    
-    componentWillUnmount()
-    {
-    }
-
-    //-------------------------------------------------------------------------
-
-    onFileActivate(fileid, type)
-    {
-        if(type === "folder")
-        {
-            //console.log("Folder:", fileid);
-            this.readdir(fileid);
-        }
-        else
-        {
-            //console.log("File:", fileid);
-            //this.readdir(fileid);
-        }
-    }
-
-    async onPlaceActivate(place)
-    {
-        if(!place.fileid)
-        {
-            place.fileid = await this.storage.getfileid(place.location);
-        }
-
-        this.readdir(place.fileid);
-    }
-
-    //-------------------------------------------------------------------------
-
-    render()
-    {
-        return (
-        <Box display="flex" flexDirection="row">
-            <Box pl={1} pr={1}>
-                {this.renderPlaces()}
-                <Divider/>
-                {this.renderOptions()}
-                </Box>
-            {this.renderTiles()}
-        </Box>
-        );
-    }
-
-    //-------------------------------------------------------------------------
-
-    renderPlaces()
-    {
-        return (
-            <List>
-                {this.state.places.map(place =>
-                    <Place
-                        name={place.name}
-                        onClick={() => this.onPlaceActivate(place)}
-                    />
-                )}
-            </List>
-        );
-
-        function Place(props)
-        {
-            return (
-                <ListItem button>
-                <ListItemText primary={props.name} onClick={props.onClick}/>
-                </ListItem>
-            );
-        }
-    }
-
-    //-------------------------------------------------------------------------
-
-    onOptionChange(event)
-    {
-        this.setState({...this.state, [event.target.name]: event.target.checked});
-    }
-
-    renderOptions()
-    {
-        return(
-            <List>
-                <TextField type="search" variant="outlined" label="Find" margin="none"
-                    value={this.state.searchfor || ""}
-                    onChange={(event) => { this.setState({searchfor: event.target.value}); }}
-                />
-                <Option label="Exclude hidden" name="excludeHidden" checked={this.state.excludeHidden} onChange={event => this.onOptionChange(event)}/>
-                <Option label="Exclude symlinks" name="excludeSymlinks" checked={this.state.excludeSymlinks} onChange={event => this.onOptionChange(event)}/>
-                <Option label="Exclude inaccessible" name="excludeInaccessible" checked={this.state.excludeInaccessible} onChange={event => this.onOptionChange(event)}/>
-                <Option label="Exclude unknown" name="excludeUnknown" checked={this.state.excludeUnknown} onChange={event => this.onOptionChange(event)}/>
-                <Divider/>
-                <Option label="Only folders" name="onlyFolders" checked={this.state.onlyFolders} onChange={event => this.onOptionChange(event)}/>
-                <Option label="Files disabled" name="filesDisabled" checked={this.state.filesDisabled} onChange={event => this.onOptionChange(event)}/>
-            </List>
-        );
-
-        function Option(props)
-        {
-            return (
-                <ListItem>
-                    <ListItemText primary={props.label} />
-                    <ListItemSecondaryAction>
-                    <Checkbox
-                        edge="end"
-                        name={props.name}
-                        checked={props.checked}
-                        onChange={props.onChange}
-                    />
-                    </ListItemSecondaryAction>
-                </ListItem>
-            );
-        }
-    }
-
-    //-------------------------------------------------------------------------
-
-    renderTiles()
-    {
-        var entries = this.state.files.filter(file =>
-            (!this.state.onlyFolders || file.type === "folder") &&
-            (!this.state.excludeHidden || !file.hidden) &&
-            (!this.state.excludeSymlinks || !file.symlink) &&
-            (!this.state.excludeInaccessible || file.access) &&
-            (!this.state.excludeUnknown || file.type) &&
-            (!this.state.searchfor || file.name.toLowerCase().includes(this.state.searchfor.toLowerCase()))
-        );
-
-        const folders = entries.filter(file => file.type === "folder");
-        const files = entries.filter(file => file.type !== "folder");
-
-        return (
-            <Box display="flex" flexDirection="column" style={{maxHeight: "100vh"}}>
-                {this.renderPath()}
-                <Box flexGrow={1} style={{overflowY: "auto"}}>
-                    {this.renderCategory("Folders", folders)}
-                    {this.renderCategory("Files",   files, this.state.filesDisabled)}
-                </Box>
-            </Box>
-        );
-        }
-
-    renderCategory(name, files, disabled=false)
-    {
-        if(!files.length) return ;
-
-        const header = (name) ? <ListItemText primary={name}/> : null;
-
-        const content = (
-            <Box display="flex" flexWrap="wrap">
-            {files
-                .sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
-                .map(file => this.renderEntry(file, disabled))}
-            </Box>
-        );
-
-        return <Box>{header}{content}</Box>;
-    }
-
-    renderEntry(file, disabled=false)
-    {
-        const icon = {
-            "folder":  (<TypeFolder />),
-            "file":    (<TypeFile />),
-        }[file.type] || (<TypeUnknown />);
-
-        return (        
-        <Box width={200} m="4px"><Card variant="outlined">
-        <ListItem key={file.fileid} button disabled={!file.access || disabled} onClick={this.onFileActivate.bind(this, file.fileid, file.type)}>
-            <ListItemAvatar>{icon}</ListItemAvatar>
-            <ListItemText primary={file.name}/>
-            </ListItem>
-        </Card></Box>
-        );
-    }
-    
-    //-------------------------------------------------------------------------
-
-    renderPath()
-    {
-        return (
-            <Box>
-            <ButtonGroup>
-            {this.state.splitpath.map(file =>
-                <Button
-                    style={{textTransform: "none"}}
-                    onClick={() => this.onFileActivate(file.fileid, file.type)}
-                >
-                {file.name ? file.name : "/"}
-                </Button>
-            )}
-            </ButtonGroup>
-            </Box>
-        );
-    }
-
-    renderSearchBar()
-    {
-        return (
-        <SearchBar
-            value={this.state.searchfor}
-            cancelOnEscape
-            onChange={(newValue) => this.setState({ search: newValue })}
-        />);
-    }
-
-    //-------------------------------------------------------------------------
-
-    async readdir(fileid)
-    {
-        const fs = this.storage;
-        const files = await fs.readdir(fileid);
-
-        if(!files)
-        {
-            // Add error message here
-            return ;
-        }
-
-        const splitted = await fs.splitpath(fileid);
-
-        this.setState({
-            search: undefined,
-            fileid: fileid,
-            files: files,
-            splitpath: splitted,
-        });    
-    }
 }

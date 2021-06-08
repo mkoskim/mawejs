@@ -9,7 +9,8 @@
 export {
     getfileid,
     readdir,
-    splitpath
+    splitpath,
+    fstat,
 }
 
 function getfileid(location)
@@ -25,4 +26,9 @@ function readdir(fileid)
 function splitpath(fileid)
 {
     return window.ipc.callMain("fs-splitpath", fileid);
+}
+
+function fstat(fileid)
+{
+    return window.ipc.callMain("fs-getentry", fileid);
 }

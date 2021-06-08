@@ -23,3 +23,4 @@ const hostfs = require("./hostfs");
 ipc.answerRenderer("fs-readdir", hostfs.fsGetFiles);
 ipc.answerRenderer("fs-splitpath", hostfs.fsSplitPath);
 ipc.answerRenderer("fs-getlocation", hostfs.fsGetLocation);
+ipc.answerRenderer("fs-getentry", hostfs.fsGetFileEntry);
