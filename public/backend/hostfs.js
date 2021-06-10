@@ -9,7 +9,7 @@
 exports.fsGetFileEntry = fsGetFileEntry;
 exports.fsGetFiles = fsGetFiles;
 exports.fsGetLocation = fsGetLocation;
-exports.fsSplitPath = fsSplitPath;
+exports.fsGetParentDir = fsGetParentDir;
 
 //-----------------------------------------------------------------------------
 
@@ -79,6 +79,15 @@ async function fsGetFileEntry(fileid)
 }
 
 //-----------------------------------------------------------------------------
+
+async function fsGetParentDir(fileid) {
+    const dirid = path.dirname(fileid);
+    
+    if(dirid == fileid) return undefined;
+    return fsGetFileEntry(dirid);
+}
+
+//-----------------------------------------------------------------------------
 // Get file entries from directory
 //-----------------------------------------------------------------------------
 
@@ -122,34 +131,4 @@ async function fsGetLocation(name)
     }
 
     return fileid;
-}
-
-//-----------------------------------------------------------------------------
-// This function splits the path to a list of directory entries.
-//-----------------------------------------------------------------------------
-
-async function fsGetParentDir(fileid) {
-    const dirid = path.dirname(fileid);
-    
-    if(dirid == fileid) return undefined;
-    return fsGetFileEntry(dirid);
-}
-
-async function fsSplitPath(fileid)
-{
-    var dirs = [];
-
-    var dirent = await fsGetFileEntry(fileid);
-
-    while(dirent)
-    {
-        if(dirent.type == "folder")
-        {
-            dirs.push(dirent);
-        }
-
-        dirent = await fsGetParentDir(dirent.id);
-    }
-
-    return dirs.reverse();
 }

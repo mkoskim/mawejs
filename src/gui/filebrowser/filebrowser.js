@@ -161,15 +161,6 @@ function excludeFiles(files, hooks) {
   );
 }
 
-function addRelPaths(directory, files) {
-  function relpath(f) {
-    const p = fs.dirname(fs.relpath(directory, f.id));
-    return (p === ".") ? undefined : p;
-  }
-
-  return files.map(f => ({...f, relpath: relpath(f)}));
-}
-
 function FileItemConfig(file, hooks) {
   return {
     "folder": {
@@ -394,8 +385,8 @@ function InfiniteFileList({scanner, contains, hooks}) {
     fetch(matches.files.length + 20);
   }
 
-  return [
-    <StatusBar/>,
+  return (<React.Fragment>
+    <StatusBar/>
     <Box id="scrollbox" style={{overflowY: "auto"}}>
     <InfiniteScroll
       scrollableTarget="scrollbox"
@@ -406,8 +397,8 @@ function InfiniteFileList({scanner, contains, hooks}) {
     >
       <FileTable files={matches.files} hooks={hooks} />
     </InfiniteScroll>
-    </Box>,
-  ]
+    </Box></React.Fragment>
+  );
 
   //---------------------------------------------------------------------------
 
@@ -478,30 +469,6 @@ class DirScanner {
   }
 
   //---------------------------------------------------------------------------
-  // By default:
-  // - we match only on file name, not its path
-  // - We search only for files, not for folders
-  // - We exclude both hidden files and folders from search
-  // - We exclude inaccessible files
-  // - We exclude files with unknown types
- 
-  processBatch(batch)
-  {
-    if(!batch.length) return;
-
-    const folders = batch
-      .filter(f => !f.hidden)
-      .filter(f => !f.symlink)
-      .filter(f => f.access)
-      .filter(f => f.type === "folder")
-      .map(f => f.id)
-    ;
-    const files = addRelPaths(this.directory, excludeFiles(batch, this.hooks));
-
-    this.scan.push(...folders)
-    this.files.push(...files)
-    //console.log("Files", this.files.length, "Scan:", this.scan.length);
-  }
 
   matches(contains) {
     return this.files.filter(f => f.name.toLowerCase().includes(contains.toLowerCase()));
@@ -579,6 +546,31 @@ class DirScanner {
     this.stop();
   }
 
+  // By default:
+  // - we match only on file name, not its path
+  // - We search only for files, not for folders
+  // - We exclude both hidden files and folders from search
+  // - We exclude inaccessible files
+  // - We exclude files with unknown types
+ 
+  processBatch(batch)
+  {
+    if(!batch.length) return;
+
+    const folders = batch
+      .filter(f => !f.hidden)
+      .filter(f => !f.symlink)
+      .filter(f => f.access)
+      .filter(f => f.type === "folder")
+      .map(f => f.id)
+    ;
+    const files = excludeFiles(batch, this.hooks);
+
+    this.scan.push(...folders)
+    this.files.push(...files)
+    //console.log("Files", this.files.length, "Scan:", this.scan.length);
+  }
+
   getmore(num) {
     // Do nothing if we are already processing directories
     if(this.processing) return ;
@@ -592,7 +584,14 @@ class DirScanner {
     }
 
     // Read contents of the work set
-    this.processing = head.map(f => fs.readdir(f));
+    this.processing = head.map(async d => {
+      const files = await fs.readdir(d);
+
+      const rp = fs.relpath(this.directory, d);
+      const relpath = rp !== "." ? rp : "";
+
+      return files.map(f => ({...f, relpath: relpath}));
+    });
 
     Promise.all(this.processing).then(results => {
       this.processing = undefined;

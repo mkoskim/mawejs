@@ -7,11 +7,10 @@
 //*****************************************************************************
 
 export {
-  fstat, dirname, relpath,
-  read,
-  write,
-  move,
-  remove,
+  fstat,
+  parent, relpath, dirname,
+  read, write,
+  move, remove,
   readdir,
   getlocation,
   getuser,
@@ -30,6 +29,10 @@ function callfs(cmd, ...args) {
 
 function fstat(fileid) {
   return callfs("fstat", fileid);
+}
+
+function parent(fileid) {
+  return callfs("parent", fileid);
 }
 
 function dirname(fileid) {
@@ -72,9 +75,20 @@ function getuser() {
 
 //-----------------------------------------------------------------------------
 
-function splitpath(fileid) {
-  // TODO: Implement this here in browser instance, so that it can be
-  // reused with other filesystems, too.
+async function splitpath(fileid) {
+  var dirs = [];
 
-  return callfs("splitpath", fileid);
+  var dirent = await fstat(fileid);
+
+  while(dirent)
+  {
+      if(dirent.type == "folder")
+      {
+          dirs.push(dirent);
+      }
+
+      dirent = await parent(dirent.id);
+  }
+
+  return dirs.reverse();
 }
