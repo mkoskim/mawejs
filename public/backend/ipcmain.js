@@ -23,9 +23,12 @@ const hostfs = require("./hostfs");
 ipc.answerRenderer("localfs", (params) => {
   const [cmd, args] = [params[0], params.slice(1)];
 
-  if(cmd === "fstat") return hostfs.fsGetFileEntry(args[0]);
-  else if(cmd == "parent") return hostfs.fsGetParentDir(args[0]);
-  else if(cmd == "readdir") return hostfs.fsGetFiles(args[0]);
-  else if(cmd == "getlocation") return hostfs.fsGetLocation(args[0]);
-  else return undefined;
+  const f = {
+    "fstat": hostfs.fsGetFileEntry,
+    "parent": hostfs.fsGetParentDir,
+    "readdir": hostfs.fsGetFiles,
+    "getlocation": hostfs.fsGetLocation,
+  }[cmd] || undefined;
+
+  return f ? f(...args) : undefined;
 })
