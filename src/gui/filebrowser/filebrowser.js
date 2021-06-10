@@ -230,7 +230,7 @@ function ListDir({directory, hooks, style}) {
   //console.log("Page:", page);
 
   return (
-    <VBox style={style}>
+    <VBox style={{width: "100%", ...style}}>
       <Box p={"4pt"} pb={"6pt"} style={{backgroundColor: "#F8F8F8", borderBottom: "1px solid #D8D8D8"}}>
         <PathButtons />
         <PageButtons />
