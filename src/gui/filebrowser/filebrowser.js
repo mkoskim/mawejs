@@ -49,6 +49,10 @@ import React, {useState, useEffect} from 'react'
 import isHotkey from "is-hotkey";
 
 import {
+  FlexBox, VBox,
+} from "../components/helpers";
+
+import {
     Dialog,
     Card, CardContent,
     Button, Checkbox, Icon,
@@ -99,12 +103,13 @@ import SearchBar from "material-ui-search-bar";
 //-----------------------------------------------------------------------------
 
 const fs = require("../../storage/localfs")
-const path = require("path")
 
-export function FileBrowser({directory, location, contains}) {
+export function FileBrowser({directory, location, contains, style}) {
   const [dir, setDir] = useState(undefined);
   const [search, setSearch] = useState(!!contains);
 
+  //window.ipc.callMain("localfs", "read", "fileid");
+  
   console.log("FileBrowser:", dir, directory, location, contains);
 
   const hooks = {
@@ -137,9 +142,9 @@ export function FileBrowser({directory, location, contains}) {
   if(!dir) {
     return <div/>;
   } else if(search) {
-    return <SearchDir directory={dir} contains={contains === undefined ? "" : contains} hooks={hooks}/>
+    return <SearchDir directory={dir} contains={contains ? contains : ""} hooks={hooks} style={style}/>
   } else {
-    return <ListDir directory={dir} hooks={hooks}/>
+    return <ListDir directory={dir} hooks={hooks} style={style}/>
   }
 }
 
@@ -158,7 +163,7 @@ function excludeFiles(files, hooks) {
 
 function addRelPaths(directory, files) {
   function relpath(f) {
-    const p = path.dirname(path.relative(directory, f.id));
+    const p = fs.dirname(fs.relpath(directory, f.id));
     return (p === ".") ? undefined : p;
   }
 
@@ -181,11 +186,6 @@ function FileItemConfig(file, hooks) {
   };
 }
 
-function FlexBox({style, children})
-{
-  return <Box display="flex" style={style}>{children}</Box>
-}
-
 //*****************************************************************************
 //*****************************************************************************
 //
@@ -194,7 +194,7 @@ function FlexBox({style, children})
 //*****************************************************************************
 //*****************************************************************************
 
-function ListDir({directory, hooks}) {
+function ListDir({directory, hooks, style}) {
 
   const [state, setState] = useState({
     folders: undefined,
@@ -239,15 +239,15 @@ function ListDir({directory, hooks}) {
   //console.log("Page:", page);
 
   return (
-    <FlexBox style={{flexDirection: "column"}}>
+    <VBox style={style}>
       <Box p={"4pt"} pb={"6pt"} style={{backgroundColor: "#F8F8F8", borderBottom: "1px solid #D8D8D8"}}>
         <PathButtons />
         <PageButtons />
         </Box>
-      <Box p={"4pt"} id="scrollbox" style={{overflowY: "auto"}}>
+      <Box p={"4pt"} style={{overflowY: "auto"}}>
         <Grid files={files.slice((page-1)*pagelength, pagelength*page-1)} hooks={hooks} />
         </Box>
-    </FlexBox>
+    </VBox>
   )
 
   //---------------------------------------------------------------------------
@@ -334,7 +334,7 @@ function ListDir({directory, hooks}) {
 //*****************************************************************************
 //*****************************************************************************
 
-function SearchDir({directory, contains, hooks}) {
+function SearchDir({directory, contains, hooks, style}) {
   const [scanner, setScanner] = useState(undefined);
   const [search, setSearch] = useState(undefined);
 
@@ -357,15 +357,16 @@ function SearchDir({directory, contains, hooks}) {
   });
 
   return (
-    <FlexBox style={{flexDirection: "column", width: "100%"}}>
+    <VBox style={{width: "100%", ...style}}>
       <SearchBar
         value={search}
         onChange={setSearch}
         onCancelSearch={() => hooks.setSearch(false)}
+        cancelOnEscape
         autoFocus
       />
       <InfiniteFileList scanner={scanner} contains={search} hooks={hooks}/>
-      </FlexBox>
+      </VBox>
   )
 }
 
@@ -438,7 +439,7 @@ function InfiniteFileList({scanner, contains, hooks}) {
 
   function Row({file, hooks}) {
     const config = FileItemConfig(file, hooks);
-    const folder = path.dirname(file.id);
+    const folder = fs.dirname(file.id);
 
     return <TableRow
       hover={true}

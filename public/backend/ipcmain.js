@@ -20,7 +20,12 @@ const {ipcMain: ipc} = require("electron-better-ipc");
 
 const hostfs = require("./hostfs");
 
-ipc.answerRenderer("fs-readdir", hostfs.fsGetFiles);
-ipc.answerRenderer("fs-splitpath", hostfs.fsSplitPath);
-ipc.answerRenderer("fs-getlocation", hostfs.fsGetLocation);
-ipc.answerRenderer("fs-getentry", hostfs.fsGetFileEntry);
+ipc.answerRenderer("localfs", (params) => {
+  const [cmd, args] = [params[0], params.slice(1)];
+
+  if(cmd === "fstat") return hostfs.fsGetFileEntry(args[0]);
+  else if(cmd == "readdir") return hostfs.fsGetFiles(args[0]);
+  else if(cmd == "getlocation") return hostfs.fsGetLocation(args[0]);
+  else if(cmd == "splitpath") return hostfs.fsSplitPath(args[0]);
+  else return undefined;
+})

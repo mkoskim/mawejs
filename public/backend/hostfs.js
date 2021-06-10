@@ -128,29 +128,28 @@ async function fsGetLocation(name)
 // This function splits the path to a list of directory entries.
 //-----------------------------------------------------------------------------
 
+async function fsGetParentDir(fileid) {
+    const dirid = path.dirname(fileid);
+    
+    if(dirid == fileid) return undefined;
+    return fsGetFileEntry(dirid);
+}
+
 async function fsSplitPath(fileid)
 {
+    var dirs = [];
+
     var dirent = await fsGetFileEntry(fileid);
-    if(dirent.type != "folder")
+
+    while(dirent)
     {
-        fileid = path.dirname(fileid);
+        if(dirent.type == "folder")
+        {
+            dirs.push(dirent);
+        }
+
+        dirent = await fsGetParentDir(dirent.id);
     }
-
-    dirs = [{
-        name: path.basename(fileid),
-        type: "folder",
-        id: fileid,
-    }];
-
-    while(fileid != path.dirname(fileid))
-    {
-        fileid = path.dirname(fileid);
-        dirs.push({
-            name: path.basename(fileid),
-            type: "folder",
-            id: fileid,
-        });
-    } 
 
     return dirs.reverse();
 }

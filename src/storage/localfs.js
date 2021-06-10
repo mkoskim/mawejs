@@ -7,7 +7,7 @@
 //*****************************************************************************
 
 export {
-  fstat,
+  fstat, dirname, relpath,
   read,
   write,
   move,
@@ -22,12 +22,26 @@ export {
 // Basic file system functions
 //-----------------------------------------------------------------------------
 
+const path = require("path");
+
+function callfs(cmd, ...args) {
+  return window.ipc.callMain("localfs", [cmd, ...args]);
+}
+
 function fstat(fileid) {
-  return window.ipc.callMain("fs-getentry", fileid);
+  return callfs("fstat", fileid);
+}
+
+function dirname(fileid) {
+  return path.dirname(fileid);
+}
+
+function relpath(directory, fileid) {
+  return path.relative(directory, fileid);
 }
 
 function readdir(fileid) {
-  return window.ipc.callMain("fs-readdir", fileid);
+  return callfs("readdir", fileid);
 }
 
 function read(fileid) {
@@ -49,7 +63,7 @@ function remove(fileid) {
 //-----------------------------------------------------------------------------
 
 function getlocation(location) {
-  return window.ipc.callMain("fs-getlocation", location);
+  return callfs("getlocation", location);
 }
 
 function getuser() {
@@ -62,5 +76,5 @@ function splitpath(fileid) {
   // TODO: Implement this here in browser instance, so that it can be
   // reused with other filesystems, too.
 
-  return window.ipc.callMain("fs-splitpath", fileid);
+  return callfs("splitpath", fileid);
 }
