@@ -8,24 +8,20 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.4",
-    "@material-ui/data-grid": "^4.0.0-alpha.30",
+    "@material-ui/data-grid": "^4.0.0-alpha.31",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.58",
-    "concurrently": "^6.2.0",
-    "cross-env": "^7.0.3",
-    "electron-better-ipc": "^1.1.1",
+    "electron-better-ipc": "^2.0.0",
     "electron-is-dev": "^2.0.0",
     "electron-window-state": "^5.0.3",
     "immutable": "^4.0.0-rc.12",
-    "is-hotkey": "^0.1.8",
+    "is-hotkey": "^0.2.0",
     "material-ui-search-bar": "^1.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-infinite-scroll-component": "^6.1.0",
-    "react-scripts": "^4.0.3",
-    "serve": "^11.3.2",
     "slate": "^0.63.0",
-    "slate-react": "^0.59.0",
+    "slate-react": "^0.65.2",
     "wait-on": "^5.3.0"
   },
   "scripts": {
@@ -54,7 +50,11 @@
     ]
   },
   "devDependencies": {
-    "electron": "^12.0.10",
-    "electron-builder": "^22.10.5"
+    "concurrently": "^6.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "^13.1.2",
+    "electron-builder": "^22.10.5",
+    "react-scripts": "^4.0.3",
+    "serve": "^12.0.0"
   }
 }
