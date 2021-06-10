@@ -31,9 +31,9 @@ Get dependencies:
 
     mawe.web$ npm install
 
-Running:
+Running (development version):
 
-    mawe.web$ npm start
+    mawe.web$ npm run dev
 
 If you update the project with 'git pull', you may need to update the libraries, too:
 
