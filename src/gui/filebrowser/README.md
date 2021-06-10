@@ -4,6 +4,7 @@ What features we need:
 
 - Choosing files (for opening)
 - Saving a file (giving a name and location for a saved file)
+- Creating new file
 - Creating folders
 - Renaming files
 - Deleting files

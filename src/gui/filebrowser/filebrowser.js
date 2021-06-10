@@ -19,12 +19,27 @@ It is intended that the backend for the browser is asynchronous and simple enoug
 to be used also with network drives (dropbox, gdrive). At the moment, there is
 only local file system access provided via electron interface.
 
+NOTES:
+
+- Overall, React/browser rendering seems to be slow, extremely slow in certain
+  circumstances. It can be a very difficult problem to solve.
+- Keyboard integration: this will be huge problem overall anyways. Web
+  interfaces are meant to be used with mouse or finger (phones, tablets), not
+  that much on keyboard. On the other hand, it is expected that writers will
+  have their hands on keyboard, not mouse.
+
 TODO:
+
 - Handle access right problems
 - Handle errors
-- Keyboard not working on react-window list:
-    https://github.com/bvaughn/react-window/issues/46
-    https://sung.codes/blog/2019/05/07/scrolling-with-page-up-down-keys-in-react-window/
+- Infinite scroll window do not initiate fetching more, if there is no
+  scroll bar. So, if we initially return too little amount of search results,
+  user can not fetch more.
+
+DONE:
+
+- Infinite scroll box seems good to show search results.
+- Paginated view seems good to show contents of large directories.
 
 -------------------------------------------------------------------------------
 */
@@ -55,10 +70,6 @@ import {
 
 import { DataGrid } from "@material-ui/data-grid";
 import {Pagination} from "@material-ui/lab";
-
-//import { FixedSizeList, FixedSizeGrid } from "react-window";
-//import { AutoSizer } from "react-virtualized";
-//import AutoSizer from "react-virtualized-auto-sizer";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -73,8 +84,9 @@ import OpenFolderIcon from '@material-ui/icons/FolderOpenOutlined';
 
 import TypeFolder from '@material-ui/icons/Folder';
 import TypeFile from '@material-ui/icons/DescriptionOutlined';
-import TypeUnknown from '@material-ui/icons/Close';
+//import TypeUnknown from '@material-ui/icons/Close';
 //import TypeUnknown from '@material-ui/icons/Help';
+import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
 //import TypeUnknown from '@material-ui/icons/BrokenImage';
 //import TypeUnknown from '@material-ui/icons/CancelPresentationOutlined';
 
@@ -123,10 +135,10 @@ export function FileBrowser({directory, location, contains}) {
   function View() {
     if(!dir) {
       return <div/>;
-    } else if(!search) {
-      return <ListDir directory={dir} hooks={hooks}/>
-    } else {
+    } else if(search) {
       return <SearchDir directory={dir} contains={contains === undefined ? "" : contains} hooks={hooks}/>
+    } else {
+      return <ListDir directory={dir} hooks={hooks}/>
     }
   }
 }
@@ -142,19 +154,6 @@ function excludeFiles(files, hooks) {
     (!f.hidden || !hooks.excludeHidden) &&
     (f.type !== "folder" || !hooks.excludeFolders)
   );
-}
-
-function filterFiles(files, contains) {
-  return files.filter(f => f.name.toLowerCase().includes(contains.toLowerCase()));
-  /*
-  const keywords = contains.toLowerCase().split(" ").filter(k => k.length)
-
-  if(keywords.length) {
-    return files.filter(f => keywords.some(k => f.name.toLowerCase().includes(k)));
-  } else {
-    return files;
-  }
-  */
 }
 
 function addRelPaths(directory, files) {
@@ -190,7 +189,13 @@ function FlexFull({style, children}) {
   )
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//*****************************************************************************
+//
+// Directory listing
+//
+//*****************************************************************************
+//*****************************************************************************
 
 function ListDir({directory, hooks}) {
 
@@ -248,61 +253,8 @@ function ListDir({directory, hooks}) {
     </FlexFull>
   )
 
-  function PageButtons() {
-    if(pages > 1) {
-      return (
-        <Box mt={"4pt"} pt={"4pt"} style={{borderTop: "1px solid #d8D8D8"}}>
-          <Pagination count={pages} page={page} onChange={(e, v) => setPage(v)}/>
-          </Box>
-      )
-    } else {
-      return <div/>
-    }
-  }
+  //---------------------------------------------------------------------------
 
-  function Grid({files, hooks}) {
-    if(files === undefined) return <div/>;
-    return (
-      <Box display="flex" style={{overflowY: "auto"}} flexWrap="wrap">
-      {files.map(f => <Cell key={f.id} file={f} hooks={hooks} />)}
-      </Box>
-    )
-  
-    function Cell({file, hooks}) {
-      return (
-        <Box width={300} m={"2px"}><Card variant="outlined">
-          <RenderFileEntry file={file} hooks={hooks}/>
-        </Card></Box>
-      )
-    }
-
-    function RenderFileEntry({file, style, hooks}) {
-      const config = FileItemConfig(file, hooks);
-      const callback = Callbacks(file, hooks);
-
-      return (        
-        <ListItem button disabled={config.disabled} style={style} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
-        <ListItemAvatar>{config.icon}</ListItemAvatar>
-        <ListItemText primary={file.name} secondary={file.relpath}/>
-        </ListItem>
-      );
-
-      function Callbacks(file, hooks) {
-        return {
-          "folder": {
-            onClick: () => hooks.open(file),
-            onDoubleClick: undefined,
-          },
-          "file": {
-            onClick: undefined,
-            onDoubleClick: () => hooks.open(file),
-          },
-        }[file.type] || {
-        };
-      }      
-    }    
-  }
-  
   function PathButtons()
   {
     return (
@@ -319,140 +271,78 @@ function ListDir({directory, hooks}) {
       </ButtonGroup>
     );
   }
-}
 
-//-----------------------------------------------------------------------------
-
-class FileScanner {
-  constructor(directory, hooks) {
-    console.log("Creating FileScanner:", directory);
-
-    this.directory = directory;
-    this.scan  = [directory];
-    this.files = [];
-    this.hooks = hooks;
-
-    this.setState = undefined;
-    this.contains = undefined;
-    this.amount  = undefined;
-    this.partial = undefined;
-    this.head = undefined;
-  }
-
-  matches(contains) {
-    return filterFiles(this.files, contains);
-  }
-
-  more2come() {
-    return this.head || this.scan.length;
-  }
-
-  stop()
-  {
-    clearTimeout(this.timer);
-    this.timer = undefined;
-    this.setState = undefined;
-  }
-
-  resolve(files, num) {
-    const send = this.setState;
-    this.stop();
-
-    if(send) {
-      const state = {
-        files: files.slice(0, num),
-        hasMore: files.length > num,
-      }
-      console.log("Resolve:", state);
-      send(state);  
-    }
-  }
-
-  progress()
-  {
-    if(!this.setState) return ;
-
-    const matched = this.matches(this.contains);
-    if(matched.length > this.partial) {
-      const state = {
-        files: matched.slice(0, this.amount),
-        hasMore: this.more2come(),
-      }
-      console.log("Partial:", state);
-      this.partial = state.files.length;
-      this.setState(state);
-    }
-  }
-
-  tryresolve() {
-    if(!this.setState) return;
-
-    const matched = this.matches(this.contains);
-    //console.log("Files:", this.files.length, "Scan", this.scan.length, "Contains", this.contains)
-
-    if(matched.length >= this.amount || !this.more2come()) {
-      this.resolve(matched, this.amount);
+  function PageButtons() {
+    if(pages > 1) {
+      return (
+        <Box mt={"4pt"} pt={"4pt"} style={{borderTop: "1px solid #d8D8D8"}}>
+          <Pagination count={pages} page={page} onChange={(e, v) => setPage(v)}/>
+          </Box>
+      )
     } else {
-      this.walk(100);
+      return <div/>
     }
   }
 
-  fetch(setState, contains, num) {
-    //console.log("Fetch:", contains, num);
-    this.setState = setState;
-    this.amount = num;
-    this.contains = contains;
-    this.partial = -1;
-
-    this.tryresolve();
-  }
-
-  walk(num) {
-    if(this.head) return ;
-
-    this.head = this.scan.splice(0, num)
-    if(!this.head.length) this.tryresolve();
-
-    if(!this.timer) {
-      this.timer = setTimeout(() => {
-        this.progress();
-        this.timer = undefined;
-      }, 250);
+  //---------------------------------------------------------------------------
+  
+  function Grid({files, hooks}) {
+    if(files === undefined) return <div/>;
+    return (
+      <Box display="flex" style={{overflowY: "auto"}} flexWrap="wrap">
+      {files.map(f => <Cell key={f.id} file={f} hooks={hooks} />)}
+      </Box>
+    )
+  
+    function Cell({file, hooks}) {
+      return (
+        <Box width={300} m={"2px"}><Card variant="outlined">
+          <FileEntry file={file} hooks={hooks}/>
+        </Card></Box>
+      )
     }
 
-    const processing = this.head.map(f => fs.readdir(f));
+    function FileEntry({file, hooks}) {
+      const config = FileItemConfig(file, hooks);
+      const callback = getCallbacks(file, hooks);
 
-    Promise.all(processing).then(results => {
-      //const batch = results.flat();
-      const batch = addRelPaths(this.directory, results.flat());
+      return (
+        <ListItem button disabled={config.disabled} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
+        <ListItemAvatar>{config.icon}</ListItemAvatar>
+        <ListItemText primary={file.name} secondary={file.relpath}/>
+        </ListItem>
+      );
 
-      if(batch.length) {
-
-        const folders = batch
-          .filter(f => !f.hidden)
-          .filter(f => !f.symlink)
-          .filter(f => f.access)
-          .filter(f => f.type === "folder")
-          .map(f => f.id)
-        ;
-
-        this.scan.push(...folders)
-        this.files.push(...excludeFiles(batch, this.hooks))
-      }
-      //console.log("Files", this.files.length, "Scan:", this.scan.length);
-
-      this.head = undefined;
-      this.tryresolve();
-    })
-  }
+      function getCallbacks(file, hooks) {
+        return {
+          "folder": {
+            onClick: () => hooks.open(file),
+            onDoubleClick: undefined,
+          },
+          "file": {
+            onClick: undefined,
+            onDoubleClick: () => hooks.open(file),
+          },
+        }[file.type] || {};
+      }      
+    }    
+  }  
 }
+
+//*****************************************************************************
+//*****************************************************************************
+//
+// File search view
+//
+//*****************************************************************************
+//*****************************************************************************
 
 function SearchDir({directory, contains, hooks}) {
   const [scanner, setScanner] = useState(undefined);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(undefined);
 
   useEffect(() => {
-    setScanner(new FileScanner(directory, { excludeFolders: true, ...hooks}))
+    setScanner(new DirScanner(directory, { excludeFolders: true, ...hooks}))
   }, [directory]);
   useEffect(() => { setSearch(contains)}, [contains])
   
@@ -484,10 +374,15 @@ function SearchDir({directory, contains, hooks}) {
 
 function InfiniteFileList({scanner, contains, hooks}) {
 
-  const [state, setState] = useState({
+  const [matches, setMatches] = useState({
     files: [],
     hasMore: undefined,
   })
+
+  function fetch(num) {
+    console.log("Fetch:", contains, num)
+    scanner.fetch(setMatches, contains, num);
+  }
 
   useEffect(() => {
     if(scanner)
@@ -498,34 +393,31 @@ function InfiniteFileList({scanner, contains, hooks}) {
   }, [scanner, contains])
 
   const fetchMore = () => {
-    fetch(state.files.length + 20);
-  }
-
-  function fetch(num) {
-    console.log("Fetch:", contains, num)
-    scanner.fetch(setState, contains, num);
+    fetch(matches.files.length + 20);
   }
 
   return [
     <StatusBar/>,
     <Box id="scrollbox" style={{overflowY: "auto"}}>
     <InfiniteScroll
-    scrollableTarget="scrollbox"
-    scrollThreshold={0.95}
-    dataLength={state.files.length}
-    next={fetchMore}
-    hasMore={state.hasMore}
+      scrollableTarget="scrollbox"
+      scrollThreshold={0.95}
+      dataLength={matches.files.length}
+      next={fetchMore}
+      hasMore={matches.hasMore}
     >
-      <FileTable files={state.files} hooks={hooks} />
+      <FileTable files={matches.files} hooks={hooks} />
     </InfiniteScroll>
     </Box>,
   ]
 
+  //---------------------------------------------------------------------------
+
   function StatusBar() {
     if(!scanner) return <div/>;
     return (
-      <Box align="right" style={{padding: "4px", paddingTop: "8px", backgroundColor: "#F0F0F0"}}>
-        <Typography style={{fontSize: 14}}>Match: {state.files.length} Total: {scanner.files.length}</Typography>
+      <Box style={{padding: "4px", paddingTop: "8px", backgroundColor: "#F0F0F0"}}>
+        <Typography style={{fontSize: 12}}>Files: {matches.files.length} (Scanned: {scanner.files.length})</Typography>
       </Box>
     )
 
@@ -534,6 +426,8 @@ function InfiniteFileList({scanner, contains, hooks}) {
     }
   }
 
+  //---------------------------------------------------------------------------
+  
   function FileTable({files, hooks}) {
     return (
       <Table><TableBody>
@@ -542,20 +436,13 @@ function InfiniteFileList({scanner, contains, hooks}) {
     )
   }
 
+  // We keep the row simple, so that it will be rendered fast enough to retain
+  // responsiveness.
+
   function Row({file, hooks}) {
     const config = FileItemConfig(file, hooks);
     const folder = path.dirname(file.id);
 
-    /*
-    return (
-      <Box m={"2px"}><Card variant="outlined">
-        <ListItem button disabled={config.disabled} onDoubleClick={() => hooks.open(file)}>
-        <ListItemAvatar>{config.icon}</ListItemAvatar>
-        <ListItemText primary={file.name} secondary={file.relpath}/>
-        </ListItem>
-      </Card></Box>
-    )
-    /*/
     return <TableRow
       hover={true}
       disabled={config.disabled}
@@ -564,37 +451,155 @@ function InfiniteFileList({scanner, contains, hooks}) {
       <TableCell>{file.name}</TableCell>
       <TableCell>{file.relpath}</TableCell>
       </TableRow>;
-    /**/
+  }
+}
+
+//*****************************************************************************
+//*****************************************************************************
+//
+// Directory scanner
+//
+//*****************************************************************************
+//*****************************************************************************
+
+class DirScanner {
+  constructor(directory, hooks) {
+    console.log("Creating FileScanner:", directory);
+
+    this.directory = directory;
+    this.hooks = hooks;
+
+    this.scan  = [directory];       // Directories for scanning
+    this.processing = undefined;    // Directories under scanning
+    this.files = [];                // Files retrieved
+
+    this.contains = undefined;      // Pattern to match
+    this.report = undefined;    // Function to report maches
+    this.requested  = undefined;    // Amount of matches requested
+    this.reported = undefined;
   }
 
-      /*
-      //<TableCell style={{padding: 0, paddingLeft: 16}}>{config.icon}</TableCell>
-      //<TableCell><Link onClick={() => hooks.chdir(folder)}>{file.relpath}</Link></TableCell>
-  function Row({file, hooks}) {
+  //---------------------------------------------------------------------------
+  // By default:
+  // - we match only on file name, not its path
+  // - We search only for files, not for folders
+  // - We exclude both hidden files and folders from search
+  // - We exclude inaccessible files
+  // - We exclude files with unknown types
+ 
+  processBatch(batch)
+  {
+    if(!batch.length) return;
 
-    const cellstyle = {padding: "4px"};
+    const folders = batch
+      .filter(f => !f.hidden)
+      .filter(f => !f.symlink)
+      .filter(f => f.access)
+      .filter(f => f.type === "folder")
+      .map(f => f.id)
+    ;
+    const files = addRelPaths(this.directory, excludeFiles(batch, this.hooks));
 
-    return (
-      <TableRow
-        hover={true}
-        disabled={config.disabled}
-        onDoubleClick={() => hooks.open(file)}
-        >
-        <TableCell style={{paddingLeft: "8pt", ...cellstyle}}>{config.icon}</TableCell>
-        <TableCell style={cellstyle}>
-          {file.name}
-          </TableCell>
-        <TableCell style={cellstyle}>{file.relpath}</TableCell>
-        <TableCell style={cellstyle}>
-          <Tooltip title="Go to folder"><IconButton
-            style={{padding: "8px"}}
-            onClick={() => hooks.chdir(folder)}
-            >
-            <OpenFolderIcon width={32}/>
-            </IconButton></Tooltip>
-          </TableCell>
-      </TableRow>
-    )
+    this.scan.push(...folders)
+    this.files.push(...files)
+    //console.log("Files", this.files.length, "Scan:", this.scan.length);
   }
-*/
+
+  matches(contains) {
+    return this.files.filter(f => f.name.toLowerCase().includes(contains.toLowerCase()));
+  }
+
+  more2come() {
+    return this.processing || this.scan.length;
+  }
+
+  //---------------------------------------------------------------------------
+
+  fetch(setMatches, contains, num) {
+    //console.log("Fetch:", contains, num);
+    this.report = setMatches;
+    this.requested = num;
+    this.contains = contains;
+    this.reported = { matched: -1, files: this.files.length };
+    this.timer = setInterval(this.progress.bind(this), 250);
+    this.tryresolve();
+  }
+
+  stop()
+  {
+    clearInterval(this.timer);
+    this.timer = undefined;
+    this.report = undefined;
+  }
+
+  tryresolve() {
+    if(!this.report) return;
+
+    const matched = this.matches(this.contains);
+    //console.log("Files:", this.files.length, "Scan", this.scan.length, "Contains", this.contains)
+
+    if(matched.length >= this.requested || !this.more2come()) {
+      this.resolve(matched, this.requested);
+    } else {
+      // Process 100 entries at time. We might need to adjust this based on the filesystem
+      // speed. The larger the amount, the faster the scan, but at the same time, it reports
+      // intermediate results slower.
+      this.getmore(100);
+    }
+  }
+
+  // Report progression
+  progress()
+  {
+    if(!this.report) return;
+
+    const matched = this.matches(this.contains);
+    if(matched.length > this.reported.matched || this.files.length > this.reported.files) {
+      const state = {
+        files: matched.slice(0, this.requested),
+        hasMore: this.more2come(),
+      }
+      this.report(state);
+      this.reported = {
+        matched: state.files.length,
+        files: this.files.length,
+      }
+      //console.log("Partial:", state);
+    }
+  }
+
+  // Resolve request
+  resolve(files, num) {
+    if(this.report) {
+      const state = {
+        files: files.slice(0, num),
+        hasMore: files.length > num,
+      }
+      console.log("Resolve:", state);
+      this.report(state);  
+    }
+    this.stop();
+  }
+
+  getmore(num) {
+    // Do nothing if we are already processing directories
+    if(this.processing) return ;
+
+    // Get directories for scanning
+    const head = this.scan.splice(0, num)
+
+    if(!head) {
+      this.tryresolve();
+      return ;
+    }
+
+    // Read contents of the work set
+    this.processing = head.map(f => fs.readdir(f));
+
+    Promise.all(this.processing).then(results => {
+      this.processing = undefined;
+      this.processBatch(results.flat());
+      this.tryresolve();
+    })
+  }
 }
