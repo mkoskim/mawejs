@@ -126,20 +126,20 @@ export function FileBrowser({directory, location, contains}) {
 
   useEffect(() => {
     (async() => {
-      setDir(directory ? (await fs.fstat(directory)).id : await fs.getfileid(location ? location : "home"));
+      setDir(
+        directory
+        ? (await fs.fstat(directory)).id
+        : await fs.getlocation(location ? location : "home")
+      );
     })()
   }, [directory, location]);
 
-  return <View />;
-
-  function View() {
-    if(!dir) {
-      return <div/>;
-    } else if(search) {
-      return <SearchDir directory={dir} contains={contains === undefined ? "" : contains} hooks={hooks}/>
-    } else {
-      return <ListDir directory={dir} hooks={hooks}/>
-    }
+  if(!dir) {
+    return <div/>;
+  } else if(search) {
+    return <SearchDir directory={dir} contains={contains === undefined ? "" : contains} hooks={hooks}/>
+  } else {
+    return <ListDir directory={dir} hooks={hooks}/>
   }
 }
 
@@ -181,12 +181,9 @@ function FileItemConfig(file, hooks) {
   };
 }
 
-function FlexFull({style, children}) {
-  return (
-    <div style={{height: "100vh", width: "100vw", display: "flex", ...style}}>
-      {children}
-    </div>
-  )
+function FlexBox({style, children})
+{
+  return <Box display="flex" style={style}>{children}</Box>
 }
 
 //*****************************************************************************
@@ -242,7 +239,7 @@ function ListDir({directory, hooks}) {
   //console.log("Page:", page);
 
   return (
-    <FlexFull style={{flexDirection: "column"}}>
+    <FlexBox style={{flexDirection: "column"}}>
       <Box p={"4pt"} pb={"6pt"} style={{backgroundColor: "#F8F8F8", borderBottom: "1px solid #D8D8D8"}}>
         <PathButtons />
         <PageButtons />
@@ -250,7 +247,7 @@ function ListDir({directory, hooks}) {
       <Box p={"4pt"} id="scrollbox" style={{overflowY: "auto"}}>
         <Grid files={files.slice((page-1)*pagelength, pagelength*page-1)} hooks={hooks} />
         </Box>
-    </FlexFull>
+    </FlexBox>
   )
 
   //---------------------------------------------------------------------------
@@ -360,7 +357,7 @@ function SearchDir({directory, contains, hooks}) {
   });
 
   return (
-    <FlexFull style={{flexDirection: "column"}}>
+    <FlexBox style={{flexDirection: "column", width: "100%"}}>
       <SearchBar
         value={search}
         onChange={setSearch}
@@ -368,7 +365,7 @@ function SearchDir({directory, contains, hooks}) {
         autoFocus
       />
       <InfiniteFileList scanner={scanner} contains={search} hooks={hooks}/>
-      </FlexFull>
+      </FlexBox>
   )
 }
 

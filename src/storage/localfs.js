@@ -7,28 +7,60 @@
 //*****************************************************************************
 
 export {
-    getfileid,
-    readdir,
-    splitpath,
-    fstat,
+  fstat,
+  read,
+  write,
+  move,
+  remove,
+  readdir,
+  getlocation,
+  getuser,
+  splitpath,
 }
 
-function getfileid(location)
-{
-    return window.ipc.callMain("fs-getlocation", location);
+//-----------------------------------------------------------------------------
+// Basic file system functions
+//-----------------------------------------------------------------------------
+
+function fstat(fileid) {
+  return window.ipc.callMain("fs-getentry", fileid);
 }
 
-function readdir(fileid)
-{
-    return window.ipc.callMain("fs-readdir", fileid);
+function readdir(fileid) {
+  return window.ipc.callMain("fs-readdir", fileid);
 }
 
-function splitpath(fileid)
-{
-    return window.ipc.callMain("fs-splitpath", fileid);
+function read(fileid) {
+  throw "Not implemented.";
 }
 
-function fstat(fileid)
-{
-    return window.ipc.callMain("fs-getentry", fileid);
+function write(fileid, content) {
+  throw "Not implemented.";
+}
+
+function move(fileid, dirid) {
+  throw "Not implemented.";
+}
+
+function remove(fileid) {
+  throw "Not implemented.";
+}
+
+//-----------------------------------------------------------------------------
+
+function getlocation(location) {
+  return window.ipc.callMain("fs-getlocation", location);
+}
+
+function getuser() {
+  throw "Not implemented."
+}
+
+//-----------------------------------------------------------------------------
+
+function splitpath(fileid) {
+  // TODO: Implement this here in browser instance, so that it can be
+  // reused with other filesystems, too.
+
+  return window.ipc.callMain("fs-splitpath", fileid);
 }
