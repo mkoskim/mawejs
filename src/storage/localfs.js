@@ -24,7 +24,7 @@ export {
 const path = require("path");
 
 function callfs(cmd, ...args) {
-  return window.ipc.callMain("localfs", [cmd, ...args]);
+  return window.ipc.callMain("hostfs", [cmd, ...args]);
 }
 
 function fstat(fileid) {
@@ -47,8 +47,8 @@ function readdir(fileid) {
   return callfs("readdir", fileid);
 }
 
-function read(fileid) {
-  throw "Not implemented.";
+function read(fileid, encoding="utf8", flags="r") {
+  return callfs("read", fileid, encoding, flags);
 }
 
 function write(fileid, content) {
@@ -82,7 +82,7 @@ async function splitpath(fileid) {
 
   while(dirent)
   {
-      if(dirent.type == "folder")
+      if(dirent.type === "folder")
       {
           dirs.push(dirent);
       }

@@ -107,13 +107,16 @@ const fs = require("../../storage/localfs")
 export function FileBrowser({directory, location, contains, style}) {
   const [dir, setDir] = useState(undefined);
   const [search, setSearch] = useState(!!contains);
+  const [error, setError] = useState(undefined);
 
-  //window.ipc.callMain("localfs", "read", "fileid");
-  
   console.log("FileBrowser:", dir, directory, location, contains);
 
   const hooks = {
     setSearch: setSearch,
+    error: (msg, err) => {
+      console.log("Error:", msg, err);
+      setError(msg);
+    },
     chdir: fid => {
       setSearch(undefined);
       setDir(fid);
@@ -123,6 +126,14 @@ export function FileBrowser({directory, location, contains, style}) {
         hooks.chdir(f.id);
       } else {
         console.log("Open:", f.name);
+        fs.read(f.id)
+        .then(result => {
+          console.log("File:", f.id, "Content:", result);
+          fs.parent(f.id).then(parent => hooks.chdir(parent.id));
+        })
+        .catch(error => {
+          hooks.error("Reading file", error);
+        });
       }
     },
 
@@ -169,7 +180,7 @@ function FileItemConfig(file, hooks) {
     }
     case "file": return {
       icon: (<TypeFile />),
-      disabled: !file.access,
+      //disabled: !file.access,
     }
     default: return {
       icon: (<TypeUnknown />),

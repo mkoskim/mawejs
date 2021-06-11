@@ -20,12 +20,13 @@ const {ipcMain: ipc} = require("electron-better-ipc");
 
 const hostfs = require("./hostfs");
 
-ipc.answerRenderer("localfs", (params) => {
+ipc.answerRenderer("hostfs", (params) => {
   const [cmd, args] = [params[0], params.slice(1)];
 
   switch(cmd) {
     case "fstat": return hostfs.fsGetFileEntry(...args);
     case "parent": return hostfs.fsGetParentDir(...args);
+    case "read": return hostfs.fsRead(...args);
     case "readdir": return hostfs.fsGetFiles(...args);
     case "getlocation": return hostfs.fsGetLocation(...args);
     default: return undefined;
