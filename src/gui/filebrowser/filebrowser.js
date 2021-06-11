@@ -49,7 +49,7 @@ import React, {useState, useEffect} from 'react'
 import isHotkey from "is-hotkey";
 
 import {
-  FlexBox, VBox,
+  FlexBox, VBox, HBox,
 } from "../components/helpers";
 
 import {
@@ -100,6 +100,8 @@ import SplitButton from "../components/splitbutton";
 
 import SearchBar from "material-ui-search-bar";
 
+import { useSnackbar } from 'notistack';
+
 //-----------------------------------------------------------------------------
 
 const fs = require("../../storage/localfs")
@@ -107,36 +109,42 @@ const fs = require("../../storage/localfs")
 export function FileBrowser({directory, location, contains, style}) {
   const [dir, setDir] = useState(undefined);
   const [search, setSearch] = useState(!!contains);
-  const [error, setError] = useState(undefined);
+
+  const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
   console.log("FileBrowser:", dir, directory, location, contains);
 
+  function showError(err) {
+    console.log(err);
+    enqueueSnackbar(String(err), {variant: "error"});
+  }
+
+  function chDir(dirid) {
+    setSearch(undefined);
+    setDir(dirid);
+  }
+
+  async function open(f) {
+    if(f.type == "folder") {
+      return chDir(f.id);
+    }
+
+    console.log("Open:", f.name);
+    try {
+      const content = await fs.read(f.id);
+      console.log("File:", f.id, "Content:", content.slice(0, 200), "...");
+      const parent = await fs.parent(f.id)
+      chDir(parent.id);
+    } catch(err) {
+      showError(err);
+    }
+  }
+
   const hooks = {
     setSearch: setSearch,
-    error: (msg, err) => {
-      console.log("Error:", msg, err);
-      setError(msg);
-    },
-    chdir: fid => {
-      setSearch(undefined);
-      setDir(fid);
-    },
-    open: f => {
-      if(f.type == "folder") {
-        hooks.chdir(f.id);
-      } else {
-        console.log("Open:", f.name);
-        fs.read(f.id)
-        .then(result => {
-          console.log("File:", f.id, "Content:", result);
-          fs.parent(f.id).then(parent => hooks.chdir(parent.id));
-        })
-        .catch(error => {
-          hooks.error("Reading file", error);
-        });
-      }
-    },
-
+    error: showError,
+    chdir: chDir,
+    open: open,
     excludeHidden: true,
   }
 
@@ -161,17 +169,6 @@ export function FileBrowser({directory, location, contains, style}) {
 
 //-----------------------------------------------------------------------------
 
-function sortFiles(files) {
-  return files.sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
-}
-
-function excludeFiles(files, hooks) {
-  return files.filter(f =>
-    (!f.hidden || !hooks.excludeHidden) &&
-    (f.type !== "folder" || !hooks.excludeFolders)
-  );
-}
-
 function FileItemConfig(file, hooks) {
   switch(file.type) {
     case "folder": return {
@@ -180,7 +177,7 @@ function FileItemConfig(file, hooks) {
     }
     case "file": return {
       icon: (<TypeFile />),
-      //disabled: !file.access,
+      disabled: !file.access,
     }
     default: return {
       icon: (<TypeUnknown />),
@@ -207,12 +204,18 @@ function ListDir({directory, hooks, style}) {
   const [path, setPath] = useState([]);
   const [page, setPage] = useState(1);
 
+  function sortFiles(files) {
+    return files.sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
+  }
+  
   useEffect(() => {
     setState({folders: undefined, files: undefined});
     setPage(1);
     (async() => {
       setPath(await fs.splitpath(directory));
-      const entries = excludeFiles(await fs.readdir(directory), hooks);
+      const entries = (await fs.readdir(directory))
+        .filter(f => !f.hidden)
+      ;
       const folders = sortFiles(entries.filter(f => f.type === "folder"));
       const files   = sortFiles(entries.filter(f => f.type !== "folder"));
       setState({
@@ -444,14 +447,14 @@ function InfiniteFileList({scanner, contains, hooks}) {
   function Row({file, hooks}) {
     const config = FileItemConfig(file, hooks);
     const folder = fs.dirname(file.id);
+    const style = config.disabled ? {color: "gray"} : undefined;
 
     return <TableRow
       hover={true}
-      disabled={config.disabled}
-      onDoubleClick={() => hooks.open(file)}
+      onDoubleClick={() => (config.disabled) ? undefined : hooks.open(file)}
       >
-      <TableCell>{file.name}</TableCell>
-      <TableCell>{file.relpath}</TableCell>
+      <TableCell style={style}>{file.name}</TableCell>
+      <TableCell style={style}>{file.relpath}</TableCell>
       </TableRow>;
   }
 }
@@ -484,7 +487,8 @@ class DirScanner {
   //---------------------------------------------------------------------------
 
   matches(contains) {
-    return this.files.filter(f => f.name.toLowerCase().includes(contains.toLowerCase()));
+    return this.files
+      .filter(f => f.name.toLowerCase().includes(contains.toLowerCase()));
   }
 
   more2come() {
@@ -577,7 +581,11 @@ class DirScanner {
       .filter(f => f.type === "folder")
       .map(f => f.id)
     ;
-    const files = excludeFiles(batch, this.hooks);
+    const files = batch
+      .filter(f => !f.hidden)
+      .filter(f => f.access)
+      .filter(f => f.type === "file")
+    ;
 
     this.scan.push(...folders)
     this.files.push(...files)

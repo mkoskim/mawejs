@@ -16,6 +16,7 @@
     "electron-window-state": "^5.0.3",
     "is-hotkey": "^0.2.0",
     "material-ui-search-bar": "^1.0.0",
+    "notistack": "^1.0.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-infinite-scroll-component": "^6.1.0",

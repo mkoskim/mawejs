@@ -2,6 +2,7 @@ import React from "react";
 
 import {FileBrowser} from "./filebrowser/filebrowser";
 import {FlexBox} from "./components/helpers";
+import {SnackbarProvider} from "notistack";
 
 import {
   Dialog,
@@ -12,9 +13,11 @@ export default function App(props) {
 
   //*
   return (
+    <SnackbarProvider maxSnack={3}>
     <FlexBox style={{height: "100vh", width: "100vw"}}>
       <View />
     </FlexBox>
+    </SnackbarProvider>
   );
   /*/
   return <Dialog open={true} maxWidth="lg" fullWidth={true} height="90vh">
