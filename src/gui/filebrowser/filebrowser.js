@@ -162,19 +162,20 @@ function excludeFiles(files, hooks) {
 }
 
 function FileItemConfig(file, hooks) {
-  return {
-    "folder": {
+  switch(file.type) {
+    case "folder": return {
       icon: (<TypeFolder />),
       disabled: !file.access,
-    },
-    "file": {
+    }
+    case "file": return {
       icon: (<TypeFile />),
       disabled: !file.access,
-    },
-  }[file.type] || {
-    icon: (<TypeUnknown />),
-    disabled: true,
-  };
+    }
+    default: return {
+      icon: (<TypeUnknown />),
+      disabled: true,
+    }
+  }
 }
 
 //*****************************************************************************
@@ -302,16 +303,17 @@ function ListDir({directory, hooks, style}) {
       );
 
       function getCallbacks(file, hooks) {
-        return {
-          "folder": {
+        switch(file.type) {
+          case "folder": return {
             onClick: () => hooks.open(file),
             onDoubleClick: undefined,
-          },
-          "file": {
+          }
+          case "file": return {
             onClick: undefined,
             onDoubleClick: () => hooks.open(file),
-          },
-        }[file.type] || {};
+          }
+          default: return {}
+        }
       }      
     }    
   }  
