@@ -80,10 +80,10 @@ async function fsGetFileEntry(fileid)
 //-----------------------------------------------------------------------------
 
 async function fsGetParentDir(fileid) {
-    const dirid = path.dirname(fileid);
-    
-    if(dirid == fileid) return undefined;
-    return fsGetFileEntry(dirid);
+  const dirid = path.dirname(fileid);
+  
+  if(dirid == fileid) return undefined;
+  return fsGetFileEntry(dirid);
 }
 
 //-----------------------------------------------------------------------------
@@ -92,16 +92,10 @@ async function fsGetParentDir(fileid) {
 
 async function fsGetFiles(dirid)
 {
-    try
-    {
-        var files = await fs.promises.readdir(dirid);
-        files = files.map(file => path.resolve(dirid, file));
-        files = await Promise.all(files.map(fsGetFileEntry));
-        return files;
-    } catch(err)
-    {
-        return null;
-    }
+  var files = await fs.promises.readdir(dirid);
+  files = files.map(file => path.resolve(dirid, file));
+  files = await Promise.all(files.map(fsGetFileEntry));
+  return files;
 }
 
 //-----------------------------------------------------------------------------
