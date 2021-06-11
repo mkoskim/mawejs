@@ -213,12 +213,12 @@ function ListDir({directory, hooks, style}) {
     const entries = (await fs.readdir(directory)).filter(f => !f.hidden);
     const folders = sortFiles(entries.filter(f => f.type === "folder"));
     const files   = sortFiles(entries.filter(f => f.type !== "folder"));
-    setState({
+    setState((state) => ({
+      ...state,
       directory: directory,
-      path: path,
       folders: folders,
       files: files,
-    })
+    }))
   }, [directory]);
 
   useEffect(() => {
@@ -239,7 +239,7 @@ function ListDir({directory, hooks, style}) {
       <Box p={"4pt"} pb={"6pt"} style={{backgroundColor: "#F8F8F8", borderBottom: "1px solid #D8D8D8"}}>
         <PathButtons state={state}/>
         </Box>
-      <FullList directory={directory} state={state}/>
+      <PagedList directory={directory} state={state}/>
     </VBox>
   )
 
@@ -264,6 +264,8 @@ function ListDir({directory, hooks, style}) {
   }
 
   //---------------------------------------------------------------------------
+  // Paged list renders extremely quickly.
+  //---------------------------------------------------------------------------
 
   function PagedList({directory, state}) {
     const [page, setPage] = useState(1);
@@ -273,7 +275,7 @@ function ListDir({directory, hooks, style}) {
     if(!state || state.directory !== directory) return null;
 
     const files = state.folders.concat(state.files);
-    const pagelength = 80;
+    const pagelength = 100;
     const pages = Math.ceil(files.length / pagelength)
     //console.log("Pages:", pages, "Files:", files.length)
     //console.log("Page:", page);
@@ -286,27 +288,38 @@ function ListDir({directory, hooks, style}) {
         </Box>
       </React.Fragment>
     )  
-  }
 
-  function PageButtons({page, pages, setPage}) {
-    if(pages > 1) {
-      return (
-        <Box pt={"4pt"}>
-          <Pagination count={pages} page={page} onChange={(e, v) => setPage(v)}/>
-          </Box>
-      )
-    } else {
-      return null
+    function PageButtons({page, pages, setPage}) {
+      if(pages > 1) {
+        return (
+          <Box pt={"4pt"}>
+            <Pagination count={pages} page={page} onChange={(e, v) => setPage(v)}/>
+            </Box>
+        )
+      } else {
+        return null
+      }
     }
   }
 
   //---------------------------------------------------------------------------
-  // Full list is not very efficient for large directories, but it looks
-  // the most practical.
+  // Full lists are not very efficient for large directories. Although most
+  // directories are small, if user goes to large directory, the app freezes
+  // for notably long time - that's bad...
+  //---------------------------------------------------------------------------
 
-  function FullList({directory, state}) {
-    //if(!state || state.directory !== directory) return null;
-    if(!state || !state.directory) return null;
+  function SimpleList({directory, state}) {
+    if(!state || state.directory !== directory) return null;
+    return (
+      <Box p={"4pt"} style={{overflowY: "auto"}}>
+        <Grid files={state.folders.concat(state.files)} hooks={hooks} />
+      </Box>
+    )
+  }
+
+  function SplitList({directory, state}) {
+    if(!state || state.directory !== directory) return null;
+    //if(!state || !state.directory) return null;
 
     console.log("render: FullList");
 
@@ -323,7 +336,7 @@ function ListDir({directory, hooks, style}) {
       } else {
         return (
           <React.Fragment>
-            <Typography style={{paddingTop: 16, paddingBottom: 8}}>Folders</Typography>
+            <Typography style={{paddingLeft: 2, paddingTop: 16, paddingBottom: 8}}>Folders</Typography>
             <Grid files={state.folders} hooks={hooks} />
             </React.Fragment>
         )
@@ -336,7 +349,7 @@ function ListDir({directory, hooks, style}) {
       } else {
         return (
           <React.Fragment>
-            <Typography style={{paddingTop: 16, paddingBottom: 8}}>Files</Typography>
+            <Typography style={{paddingLeft: 2, paddingTop: 16, paddingBottom: 8}}>Files</Typography>
             <Grid files={state.files} hooks={hooks} />
             </React.Fragment>
         )
@@ -345,7 +358,9 @@ function ListDir({directory, hooks, style}) {
   }
 
   //---------------------------------------------------------------------------
-  
+  // File grid
+  //---------------------------------------------------------------------------
+
   function Grid({files, hooks}) {
     if(files === undefined) return null;
     return (
@@ -370,7 +385,7 @@ function ListDir({directory, hooks, style}) {
         <FrameBox>
           <ListItem button disabled={config.disabled} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
           <ListItemAvatar>{config.icon}</ListItemAvatar>
-          <ListItemText primary={file.name} secondary={file.relpath}/>
+          <ListItemText primary={file.name}/>
           </ListItem>
           </FrameBox>
       );
