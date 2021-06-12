@@ -200,7 +200,7 @@ function ListDir({directory, hooks, style}) {
 
   const [state, setState] = useState(undefined);
   
-  console.log("render: ListDir", directory, state);
+  //console.log("render: ListDir", directory, state);
 
   function sortFiles(files) {
     return files.sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
