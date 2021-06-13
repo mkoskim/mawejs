@@ -20,7 +20,7 @@ const {app} = require("electron");
 
 //-----------------------------------------------------------------------------
 
-async function fsRead(fileid, encoding, flags) {
+function fsRead(fileid, encoding, flags) {
   return fs.promises.readFile(fileid, {encoding: encoding, flags: flags});
 }
 
@@ -47,9 +47,7 @@ async function fsGetFileEntry(fileid)
         type: gettype(dirent),
         access: await hasaccess(fileid)
       }
-    }
-
-    try {
+    } else try {
       const realid = await fs.promises.realpath(fileid);
       return {
         symlink: true,
@@ -82,7 +80,7 @@ async function fsGetFileEntry(fileid)
 
 //-----------------------------------------------------------------------------
 
-async function fsGetParentDir(fileid) {
+function fsGetParentDir(fileid) {
   const dirid = path.dirname(fileid);
   
   if(dirid == fileid) return undefined;
@@ -95,10 +93,11 @@ async function fsGetParentDir(fileid) {
 
 async function fsGetFiles(dirid)
 {
-  var files = await fs.promises.readdir(dirid);
-  files = files.map(file => path.resolve(dirid, file));
-  files = await Promise.all(files.map(fsGetFileEntry));
-  return files;
+  return await Promise.all(
+    (await fs.promises.readdir(dirid))
+    .map(file => path.resolve(dirid, file))
+    .map(file => fsGetFileEntry(file))
+  )
 }
 
 //-----------------------------------------------------------------------------
@@ -106,25 +105,9 @@ async function fsGetFiles(dirid)
 
 async function fsGetLocation(name)
 {
-    var fileid;
-
-    if(name == "appPath")
-    {
-        fileid = app.getAppPath();
-    }
-    else if(name == "root")
-    {
-        fileid = "/";
-    }
-    else
-    {
-        try {
-            fileid = app.getPath(name);
-        } catch(error)
-        {
-            fileid = null;
-        }
-    }
-
-    return fileid;
+  switch(name) {
+    case "appPath": return app.getAppPath();
+    case "root": return "/";
+    default: try { return app.getPath(name) } catch(e) { return undefined; }
+  }
 }
