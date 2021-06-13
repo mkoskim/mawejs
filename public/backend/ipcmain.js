@@ -27,8 +27,9 @@ ipc.answerRenderer("hostfs", (params) => {
     case "fstat": return hostfs.fsGetFileEntry(...args);
     case "parent": return hostfs.fsGetParentDir(...args);
     case "read": return hostfs.fsRead(...args);
+    case "write": return hostfs.fsWrite(...args);
     case "readdir": return hostfs.fsGetFiles(...args);
     case "getlocation": return hostfs.fsGetLocation(...args);
-    default: return undefined;
+    default: throw Error(`IPC: ${cmd}: Not implemented.`);
   }
 })

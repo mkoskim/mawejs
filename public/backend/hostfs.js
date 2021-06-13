@@ -11,6 +11,7 @@ exports.fsGetFiles = fsGetFiles;
 exports.fsGetLocation = fsGetLocation;
 exports.fsGetParentDir = fsGetParentDir;
 exports.fsRead = fsRead;
+exports.fsWrite = fsWrite;
 
 //-----------------------------------------------------------------------------
 
@@ -20,8 +21,12 @@ const {app} = require("electron");
 
 //-----------------------------------------------------------------------------
 
-function fsRead(fileid, encoding, flags) {
-  return fs.promises.readFile(fileid, {encoding: encoding, flags: flags});
+function fsRead(fileid, encoding) {
+  return fs.promises.readFile(fileid, {encoding: encoding});
+}
+
+function fsWrite(fileid, content, encoding) {
+  return fs.promises.writeFile(fileid, content, {encoding: encoding});
 }
 
 //-----------------------------------------------------------------------------

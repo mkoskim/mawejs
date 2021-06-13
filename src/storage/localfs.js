@@ -47,12 +47,12 @@ function readdir(fileid) {
   return callfs("readdir", fileid);
 }
 
-function read(fileid, encoding="utf8", flags="r") {
-  return callfs("read", fileid, encoding, flags);
+function read(fileid, encoding="utf8") {
+  return callfs("read", fileid, encoding);
 }
 
-function write(fileid, content) {
-  throw "Not implemented.";
+function write(fileid, content, encoding="utf8") {
+  return callfs("write", fileid, content, encoding);
 }
 
 function move(fileid, dirid) {
