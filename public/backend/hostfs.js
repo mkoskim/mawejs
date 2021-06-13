@@ -30,44 +30,47 @@ async function fsRead(fileid, encoding, flags) {
 
 async function fsGetFileEntry(fileid)
 {
-  var dirent = await fs.promises.lstat(fileid);
-
-  var entry = {
+  return {
     id:      path.resolve(fileid),
     name:    path.basename(fileid),
-    type:    undefined,
-    access:  undefined,
     hidden:  path.basename(fileid).startsWith("."),
-    symlink: dirent.isSymbolicLink(),
+    ...(await resolvetype(fileid)),
   }
 
-  if(entry.symlink) {
+  async function resolvetype(fileid)
+  {
+    const dirent = await fs.promises.lstat(fileid);
+
+    if(!dirent.isSymbolicLink()) {
+      return {
+        symlink: false,
+        type: gettype(dirent),
+        access: await hasaccess(fileid)
+      }
+    }
+
     try {
       const realid = await fs.promises.realpath(fileid);
-      dirent = await fs.promises.stat(realid);
-
-      entry.type = gettype(dirent);
-      entry.access = await hasaccess(realid);
-
+      return {
+        symlink: true,
+        type: gettype(await fs.promises.stat(realid)),
+        access: await hasaccess(realid)
+      }
     } catch(error) {
       // Broken link
-      entry.type = undefined;
-      entry.access = false;
+      return {
+        symlink: true,
+        type: undefined,
+        access: false
+      }
     }
-  } else {
-    entry.type = gettype(dirent);
-    entry.access = await hasaccess(fileid)
   }
 
-  return entry;
-
-  async function hasaccess(fileid) {
-    try {
-        await fs.promises.access(fileid, fs.constants.R_OK);
-    } catch(err) {
-        return false;
-    }
-    return true;
+  function hasaccess(fileid) {
+    return fs.promises.access(fileid, fs.constants.R_OK)
+      .then(r => true)
+      .catch(e => false)
+    ;
   }
 
   function gettype(dirent) {

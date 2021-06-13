@@ -213,6 +213,9 @@ function ListDir({directory, hooks, style}) {
     const entries = (await fs.readdir(directory)).filter(f => !f.hidden);
     const folders = sortFiles(entries.filter(f => f.type === "folder"));
     const files   = sortFiles(entries.filter(f => f.type !== "folder"));
+
+    //console.log(files, folders);
+
     setState((state) => ({
       ...state,
       directory: directory,
