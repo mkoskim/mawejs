@@ -12,6 +12,7 @@
 
 const electron = require('electron');
 const {BrowserWindow} = electron;
+const {globalShortcut} = electron;
 const windowStateKeeper = require('electron-window-state');
 
 const url = require('url') 
@@ -23,8 +24,6 @@ var mainWindow = null;
 
 async function createWindow()
 {
-  debug();
-
   var mainWindowState = windowStateKeeper({
     minWidth: 400,
     minHeight: 300
@@ -48,8 +47,10 @@ async function createWindow()
   mainWindow.on("closed", () => (mainWindow = null));
 
   mainWindow.setMenu(null);
+
   if(isDev)
   {
+    debug();
     mainWindow.webContents.openDevTools();
     mainWindow.loadURL('http://localhost:3000');
   }
@@ -63,29 +64,24 @@ async function createWindow()
 //-----------------------------------------------------------------------------
 
 const {app} = electron;
-const {globalShortcut} = electron;
 
-app.whenReady().then(() => {
-  const ret = globalShortcut.register('CommandOrControl+Q', () => {
-      console.log('Ctrl-Q pressed')
-      app.quit();
-    })
-})
-
-app.on("ready", createWindow);
+app.on("ready", () => {
+  createWindow();
+  globalShortcut.register('CommandOrControl+Q', () => { app.quit() });
+});
 
 app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") 
-    {
-        app.quit();
-    }
+  if (process.platform !== "darwin") 
+  {
+    app.quit();
+  }
 });
 
 app.on("activate", () => {
-    if (mainWindow === null)
-    {
-        createWindow();
-    }
+  if (mainWindow === null)
+  {
+    createWindow();
+  }
 });
 
 app.on("will-quit", () => {
