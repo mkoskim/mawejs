@@ -110,7 +110,7 @@ const fs = require("../../storage/localfs")
 export function FileBrowser({directory, location, contains, style}) {
   const [state, setState] = useState({dir: undefined, search: !!contains})
 
-  const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+  const {enqueueSnackbar} = useSnackbar();
 
   console.log("FileBrowser:", state.dir, directory, location, contains);
 

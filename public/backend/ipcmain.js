@@ -30,6 +30,6 @@ ipc.answerRenderer("hostfs", (params) => {
     case "write": return hostfs.fsWrite(...args);
     case "readdir": return hostfs.fsGetFiles(...args);
     case "getlocation": return hostfs.fsGetLocation(...args);
-    default: throw Error(`IPC: ${cmd}: Not implemented.`);
+    default: throw Error(`IPC: hostfs/${cmd}: Not implemented.`);
   }
 })
