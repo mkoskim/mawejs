@@ -55,9 +55,6 @@ export function FileEditor({fileid}) {
 
   if(!content) return <p>Loading: {fileid}</p>;
 
-  console.log("Body:", content.story.body.part);
-  console.log("Notes:", content.story.body.part);
-
   //return <pre>{JSON.stringify(content, null, 2)}</pre>;
   return (
     <VBox style={{

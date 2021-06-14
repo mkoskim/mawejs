@@ -4,6 +4,7 @@ import {FileBrowser} from "./filebrowser/filebrowser";
 import {FileEditor} from "./editor/editor";
 import {FlexBox} from "./components/helpers";
 import {SnackbarProvider} from "notistack";
+import {Grow, Slide, Fade} from '@material-ui/core';
 
 import {
   Dialog,
@@ -14,7 +15,7 @@ export default function App(props) {
 
   //*
   return (
-    <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
+    <SnackbarProvider maxSnack={3} autoHideDuration={2500} TransitionComponent={Slide}>
     <FlexBox style={{height: "100vh", width: "100vw"}}>
       <EditFile />
     </FlexBox>

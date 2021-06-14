@@ -150,13 +150,10 @@ function mawe(file, compressed, buffer) {
   }
 
   function parseBody(elem) {
-    const bodyname = elem.get("name")
-    const head  = parseHead(elem.find("head"));
-
     return withextras({
-      name: bodyname ? bodyname : head.version,
-      modified: elem.get("modified"),
-      head: head,
+      name: elem.get("name", ""),
+      modified: elem.get("modified", ""),
+      head: parseHead(elem.find("head")),
       part: parseParts(elem),
     }, elem);
   }
