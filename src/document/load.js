@@ -91,7 +91,7 @@ function mawe(file, compressed, buffer) {
       name: root.get("name", name),
       body: parseBody(root.find("body")),
       notes: parseNotes(root.find("notes")),
-      //version: root.findall("version").map(parseBody),
+      version: root.findall("version", []).map(parseBody),
     }
     return {...story, extra: getextras(root, story)};
   }

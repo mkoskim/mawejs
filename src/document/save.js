@@ -21,21 +21,36 @@ export async function mawe(file, story, compress) {
     uuid: story.uuid
   });
 
-  root.append(Comment("==============================================================================="));
+  root.append(Comment(" ============================================================================= "));
   root.append(Comment(" "));
-  root.append(Comment(`STORY: ${story.name}`));
+  root.append(Comment(` STORY: ${story.name} `));
   root.append(Comment(" "));
-  root.append(Comment("==============================================================================="));
+  root.append(Comment(" ============================================================================= "));
 
   addBody(root, story.body);
 
-  root.append(Comment("==============================================================================="));
+  root.append(Comment(" ============================================================================= "));
   root.append(Comment(" "));
-  root.append(Comment("NOTES"));
+  root.append(Comment(" NOTES "));
   root.append(Comment(" "));
-  root.append(Comment("==============================================================================="));
+  root.append(Comment(" ============================================================================= "));
 
   addNotes(root, story.notes);
+
+  root.append(Comment(" ============================================================================= "));
+  root.append(Comment(" "));
+  root.append(Comment(" VERSIONS "));
+  root.append(Comment(" "));
+  root.append(Comment(" ============================================================================= "));
+
+  addVersion(root, story.version);
+
+  root.append(Comment(" ============================================================================= "));
+  root.append(Comment(" "));
+  root.append(Comment(" EXTRAS "));
+  root.append(Comment(" "));
+  root.append(Comment(" ============================================================================= "));
+
   addExtra(root, story.extra);
 
   const etree = new ElementTree(root);
@@ -54,7 +69,7 @@ function addBody(parent, body) {
     modified: Date.now().toString(),
   });
   addHead(elem, body.head);
-  elem.append(Comment("==============================================================================="));
+  elem.append(Comment(" ============================================================================= "));
   addPart(elem, body.part);
   addExtra(elem, body.extra);
 }
@@ -66,7 +81,7 @@ function addNotes(parent, notes) {
 }
 
 function addVersion(parent, version) {
-
+  if(version) version.forEach(v => addBody(parent, v));
 }
 
 function addHead(parent, head) {
@@ -90,11 +105,11 @@ function addHead(parent, head) {
 }
 
 function addPart(parent, part) {
-  part.map(p => {
+  part.forEach(p => {
     const elem = SubElement(parent, "part");
-    p.scene.map(s => {
+    p.scene.forEach(s => {
       const scene = SubElement(elem, "scene", {name: s.name});
-      s.content.map(c => {
+      s.content.forEach(c => {
         scene.append(c);
       })
     })
