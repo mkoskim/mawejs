@@ -6,33 +6,22 @@
 //*****************************************************************************
 //*****************************************************************************
 
-const xmljs = require("xml-js")
-
 const et = require("elementtree");
 const {Element, SubElement, ElementTree, Comment} = et;
+
 const fs = require("../storage/localfs");
 const util = require("util");
 const zlib = require("zlib");
 const gzip = util.promisify(zlib.gzip);
 
-//*
 export async function mawe(file, story, compress) {
 
-  //story.story.body._comment = "=====";
-  //story.story.body.part._comment = "=====";
-  //story.story.notes._comment = "=====";
-
-  const content = xmljs.js2xml(story, {compact: true, spaces: 2});
-  const buffer  = compress ? await gzip(content, {level: 9}) : content;
-  fs.write(file, buffer);
-}
-/*/
-export async function mawe(file, story, compress) {
   const root = Element("story", {
     format: story.format,
     name: story.name,
     uuid: story.uuid
   });
+  console.log(root);
 
   root.append(Comment(" ============================================================================= "));
   root.append(Comment(" "));
@@ -40,7 +29,7 @@ export async function mawe(file, story, compress) {
   root.append(Comment(" "));
   root.append(Comment(" ============================================================================= "));
 
-  addBody(root, "body", story.body);
+  addBody(root, story.body);
 
   root.append(Comment(" ============================================================================= "));
   root.append(Comment(" "));
@@ -56,7 +45,7 @@ export async function mawe(file, story, compress) {
   root.append(Comment(" "));
   root.append(Comment(" ============================================================================= "));
 
-  addVersions(root, story.version);
+  story.version.forEach(v => addVersion(root, v));
 
   root.append(Comment(" ============================================================================= "));
   root.append(Comment(" "));
@@ -64,43 +53,54 @@ export async function mawe(file, story, compress) {
   root.append(Comment(" "));
   root.append(Comment(" ============================================================================= "));
 
-  addExtra(root, story.extra);
+  js2et_all(root, story.extra);
 
-  console.log(root)
   const etree = new ElementTree(root);
   const content = etree.write({xml_declaration: false, indent: 0});
   const buffer  = compress ? await gzip(content, {level: 9}) : content;
   fs.write(file, buffer);
 }
 
-function addExtra(elem, extra) {
-  extra.forEach(e => elem.append(e));
+function js2et(obj) {
+  let elem = new Element(obj.tag, obj.attr);
+  elem.text = obj.text;
+  elem.tail = obj.tail;
+  if(obj.children) obj.children.forEach(child => {
+    elem.append(js2et(child));
+  })
+  return elem;
 }
 
-function addBody(parent, tag, body) {
-  const elem = SubElement(parent, tag, {
+function js2et_all(elem, objs)
+{
+  return objs.forEach(o => elem.append(js2et(o)));
+}
+
+function addBody(parent, body) {
+  const elem = SubElement(parent, "body", {
     name: body.name,
     modified: Date.now().toString(),
   });
+  addBodyElems(elem, body);
+}
+
+function addVersion(parent, version) {
+  const elem = SubElement(parent, "version", {
+    name: version.name,
+    modified: version.modified,
+  });
+  addBodyElems(elem, version);
+}
+
+function addBodyElems(elem, body) {
   addHead(elem, body.head);
-  elem.append(Comment(" ============================================================================= "));
-  addPart(elem, body.part);
-  addExtra(elem, body.extra);
-}
-
-function addNotes(parent, notes) {
-  const elem = SubElement(parent, "notes");
-  addPart(elem, notes.part);
-  addExtra(elem, notes.extra);
-}
-
-function addVersions(parent, version) {
-  version.forEach(v => addBody(parent, "version", v));
+  //elem.append(Comment(" ============================================================================= "));
+  js2et_all(elem, body.part);
+  js2et_all(elem, body.extra);
 }
 
 function addHead(parent, head) {
   const elem = SubElement(parent, "head");
-  //SubElement(elem, "version").text = head.version;
   SubElement(elem, "title").text = head.title;
   SubElement(elem, "subtitle").text = head.subtitle;
   SubElement(elem, "nickname").text = head.nickname;
@@ -115,18 +115,11 @@ function addHead(parent, head) {
   SubElement(words, "comments").text = head.words.comments;
   SubElement(words, "missing").text = head.words.missing;
 
-  addExtra(elem, head.extra)
+  js2et_all(elem, head.extra);
 }
 
-function addPart(parent, part) {
-  part.forEach(p => {
-    const elem = SubElement(parent, "part");
-    p.scene.forEach(s => {
-      const scene = SubElement(elem, "scene", {name: s.name});
-      s.content.forEach(c => {
-        scene.append(c);
-      })
-    })
-  });
+function addNotes(parent, notes) {
+  const elem = SubElement(parent, "notes");
+  js2et_all(elem, notes.part);
+  js2et_all(elem, notes.extra);
 }
-/**/

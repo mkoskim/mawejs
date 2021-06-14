@@ -41,8 +41,8 @@ export default function App(props) {
     return (
       //<FileEditor fileid="local/Dinosauruspuisto.mawe" />
       //<FileEditor fileid="local/test.mawe.gz" />
-      //<FileEditor fileid="local/test2.mawe" />
-      <FileEditor fileid="local/Beltane.mawe" />
+      <FileEditor fileid="local/test2.mawe" />
+      //<FileEditor fileid="local/Beltane.mawe" />
       //<FileEditor fileid="local/Beltane.mawe.gz" />
       //<FileEditor fileid="local/donotexist" />
       //<FileEditor fileid="local/cantread.txt" />

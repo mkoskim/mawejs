@@ -6,15 +6,13 @@
 //*****************************************************************************
 //*****************************************************************************
 
-const xmljs = require("xml-js")
-
 const et = require("elementtree");
+
 const fs = require("../storage/localfs");
 const util = require("util");
 const isGzip = require("is-gzip");
 const zlib = require("zlib");
 const gunzip = util.promisify(zlib.gunzip);
-
 const utf8decoder = new TextDecoder();
 
 //-----------------------------------------------------------------------------
@@ -52,7 +50,7 @@ export async function load(fileid)
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
-//*
+/*
 function mawe(file, compressed, buffer) {
   const {name, ext} = splitname(file.name);
 
@@ -85,17 +83,18 @@ function mawe(file, compressed, buffer) {
 
 function mawe(file, compressed, buffer) {
   const {name, ext} = splitname(file.name);
-  const root = parseRoot(et.parse(buffer).getroot());
 
-  return {
-    file: file,
-    name: name,
-    ext: ext,
-    compressed: compressed,
-    story: root,
+  function et2js(elem) {
+    const obj = {
+      tag: elem.tag,
+      attr: {...elem.attrib},
+      text: elem.text,
+      tail: elem.tail,
+      children: elem.getchildren().map(e => et2js(e)),
+    }
+
+    return obj;
   }
-
-  //---------------------------------------------------------------------------
 
   function splitname(name) {
     if(fs.extname(name) === ".gz") {
@@ -105,16 +104,28 @@ function mawe(file, compressed, buffer) {
     }
   }
 
-  function withextras(elem, obj) {
-    const elems = elem.getchildren()
-      .map(e => (obj[e.tag] == undefined) ? e : undefined)
-      .filter(e => e)
-    ;
+  // We first convert element tree to JS objects. This way we can make
+  // copies of the trees e.g. when making versions. After that, we parse
+  // the tree to make it more compact and easier to use.
 
+  const root = et.parse(buffer).getroot();
+
+  return {
+    file: file,
+    name: name,
+    ext: ext,
+    compressed: compressed,
+    story: parseRoot(root),
+  }
+
+  //---------------------------------------------------------------------------
+
+  function withextras(obj, elem) {
+    const extra = elem.getchildren().filter(child => obj[child.tag] === undefined);
     return {
       ...obj,
-      extra: elems,
-    };
+      extra: extra.map(et2js),
+    }
   }
 
   //---------------------------------------------------------------------------
@@ -123,40 +134,34 @@ function mawe(file, compressed, buffer) {
     if(root.tag !== "story") throw Error();
     if(root.get("format") !== "mawe") throw Error();
 
-    const story = {
+    const body  = parseBody(root.find("body"));
+    const notes = parseNotes(root.find("notes"));
+    const versions = root.findall("version").map(parseBody);
+
+    return withextras({
       ...root.attrib,
       name: root.get("name", name),
-      body: parseBody(root.find("body")),
-      notes: parseNotes(root.find("notes")),
-      version: root.findall("version", []).map(parseBody),
-    }
-    return withextras(root, story);
+      body: body,
+      notes: notes,
+      version: versions,
+    }, root);
   }
 
   function parseBody(elem) {
-    const body = {
-      modified: elem.get("modified"),
-      head: parseHead(elem.find("head")),
-      part: elem.findall("part", []).map(parsePart),
-    }
-
     const bodyname = elem.get("name")
+    const head  = parseHead(elem.find("head"));
+    const parts = elem.findall("part", []).map(et2js);
 
-    return withextras(elem, {
-      name: bodyname ? bodyname : body.head.version,
-      ...body,
-    });
-  }
-
-  function parseNotes(elem) {
-    const notes = {
-      part: elem.findall("part", []).map(parsePart),
-    }
-    return withextras(elem, notes);
+    return withextras({
+      name: bodyname ? bodyname : head.version,
+      modified: elem.get("modified"),
+      head: head,
+      part: parts,
+    }, elem);
   }
 
   function parseHead(elem) {
-    const head = {
+    return withextras({
       version: elem.findtext("version"),
       title: elem.findtext("title"),
       subtitle: elem.findtext("subtitle"),
@@ -172,23 +177,13 @@ function mawe(file, compressed, buffer) {
         missing: elem.findtext("words/missing"),
         comments: elem.findtext("words/comments"),
       },
-    }
-    return withextras(elem, head);
+    }, elem);
   }
 
-  function parsePart(elem) {
-    const part = {
-      name: elem.get("name"),
-      scene: elem.findall("scene", []).map(parseScene),
-    }
-    return withextras(elem, part);
-  }
-
-  function parseScene(elem) {
-    return {
-      name: elem.get("name"),
-      content: elem.getchildren(),
-    }
+  function parseNotes(elem) {
+    return withextras({
+      head: null,
+      part: elem.findall("part", []).map(et2js),
+    }, elem);
   }
 }
-/**/
