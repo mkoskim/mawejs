@@ -6,14 +6,27 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import { AddPhotoAlternateSharp, NoteTwoTone } from "@material-ui/icons";
+const xmljs = require("xml-js")
 
-const {Element, SubElement, ElementTree, Comment} = require("elementtree");
+const et = require("elementtree");
+const {Element, SubElement, ElementTree, Comment} = et;
 const fs = require("../storage/localfs");
 const util = require("util");
 const zlib = require("zlib");
 const gzip = util.promisify(zlib.gzip);
 
+//*
+export async function mawe(file, story, compress) {
+
+  //story.story.body._comment = "=====";
+  //story.story.body.part._comment = "=====";
+  //story.story.notes._comment = "=====";
+
+  const content = xmljs.js2xml(story, {compact: true, spaces: 2});
+  const buffer  = compress ? await gzip(content, {level: 9}) : content;
+  fs.write(file, buffer);
+}
+/*/
 export async function mawe(file, story, compress) {
   const root = Element("story", {
     format: story.format,
@@ -27,7 +40,7 @@ export async function mawe(file, story, compress) {
   root.append(Comment(" "));
   root.append(Comment(" ============================================================================= "));
 
-  addBody(root, story.body);
+  addBody(root, "body", story.body);
 
   root.append(Comment(" ============================================================================= "));
   root.append(Comment(" "));
@@ -43,7 +56,7 @@ export async function mawe(file, story, compress) {
   root.append(Comment(" "));
   root.append(Comment(" ============================================================================= "));
 
-  addVersion(root, story.version);
+  addVersions(root, story.version);
 
   root.append(Comment(" ============================================================================= "));
   root.append(Comment(" "));
@@ -53,6 +66,7 @@ export async function mawe(file, story, compress) {
 
   addExtra(root, story.extra);
 
+  console.log(root)
   const etree = new ElementTree(root);
   const content = etree.write({xml_declaration: false, indent: 0});
   const buffer  = compress ? await gzip(content, {level: 9}) : content;
@@ -60,11 +74,11 @@ export async function mawe(file, story, compress) {
 }
 
 function addExtra(elem, extra) {
-  if(extra) extra.forEach(e => elem.append(e));
+  extra.forEach(e => elem.append(e));
 }
 
-function addBody(parent, body) {
-  const elem = SubElement(parent, "body", {
+function addBody(parent, tag, body) {
+  const elem = SubElement(parent, tag, {
     name: body.name,
     modified: Date.now().toString(),
   });
@@ -80,8 +94,8 @@ function addNotes(parent, notes) {
   addExtra(elem, notes.extra);
 }
 
-function addVersion(parent, version) {
-  if(version) version.forEach(v => addBody(parent, v));
+function addVersions(parent, version) {
+  version.forEach(v => addBody(parent, "version", v));
 }
 
 function addHead(parent, head) {
@@ -115,3 +129,4 @@ function addPart(parent, part) {
     })
   });
 }
+/**/

@@ -17,12 +17,14 @@ export function FileEditor({fileid}) {
 
   useEffect(() => {
     document.load(fileid)
-      .then(story => {
-        //story.version.push(JSON.parse(JSON.stringify(story.body)));
-        setContent(story);
-        document.save.mawe("./local/test2.mawe", story.story);
+      .then(doc => {
+        //doc.story.version.push(document.copybody(doc.story.body));
+        setContent(doc);
+        document.save.mawe("./local/test2.mawe", doc.story)
+        //.catch(e => { console.log(e); })
+        ;
         //document.print.rtf();
-        enqueueSnackbar(`Loaded ${story.file.name}`, {variant: "success"});
+        enqueueSnackbar(`Loaded ${doc.file.name}`, {variant: "success"});
       })
       .catch(err => enqueueSnackbar(String(err), {variant: "error"}));
   }, [fileid]);

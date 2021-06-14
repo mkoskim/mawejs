@@ -6,6 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
+const xmljs = require("xml-js")
+
 const et = require("elementtree");
 const fs = require("../storage/localfs");
 const util = require("util");
@@ -48,6 +50,36 @@ export async function load(fileid)
 }
 
 //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+
+//*
+function mawe(file, compressed, buffer) {
+  const {name, ext} = splitname(file.name);
+
+  return {
+    file: file,
+    name: name,
+    ext: ext,
+    compressed: compressed,
+    story: xmljs.xml2js(buffer, {compact: true, ignoreComment: false}),
+    //story: xmljs.xml2js(buffer, {compact: true, ignoreComment: true}),
+    //story: xmljs.xml2js(buffer, {compact: true}),
+  }
+
+  //---------------------------------------------------------------------------
+
+  function splitname(name) {
+    if(fs.extname(name) === ".gz") {
+      return {name: fs.basename(name, ".mawe.gz"), ext: ".mawe.gz"}
+    } else {
+      return {name: fs.basename(name, ".mawe"), ext: ".mawe"}
+    }
+  }
+
+}
+/*/
+
+//-----------------------------------------------------------------------------
 // Extract mawe file from buffer
 //-----------------------------------------------------------------------------
 
@@ -73,11 +105,16 @@ function mawe(file, compressed, buffer) {
     }
   }
 
-  function getextras(elem, obj) {
-    return elem.getchildren()
+  function withextras(elem, obj) {
+    const elems = elem.getchildren()
       .map(e => (obj[e.tag] == undefined) ? e : undefined)
       .filter(e => e)
     ;
+
+    return {
+      ...obj,
+      extra: elems,
+    };
   }
 
   //---------------------------------------------------------------------------
@@ -93,25 +130,29 @@ function mawe(file, compressed, buffer) {
       notes: parseNotes(root.find("notes")),
       version: root.findall("version", []).map(parseBody),
     }
-    return {...story, extra: getextras(root, story)};
+    return withextras(root, story);
   }
 
   function parseBody(elem) {
     const body = {
-      name: elem.get("name", ""),
       modified: elem.get("modified"),
       head: parseHead(elem.find("head")),
       part: elem.findall("part", []).map(parsePart),
     }
-    return { ...body, extra: getextras(elem, body) };
+
+    const bodyname = elem.get("name")
+
+    return withextras(elem, {
+      name: bodyname ? bodyname : body.head.version,
+      ...body,
+    });
   }
 
   function parseNotes(elem) {
     const notes = {
-      head: elem.find("head"),
       part: elem.findall("part", []).map(parsePart),
     }
-    return { ...notes, extra: getextras(elem, notes) };
+    return withextras(elem, notes);
   }
 
   function parseHead(elem) {
@@ -132,16 +173,15 @@ function mawe(file, compressed, buffer) {
         comments: elem.findtext("words/comments"),
       },
     }
-    return { ...head, extra: getextras(elem, head) }
+    return withextras(elem, head);
   }
 
   function parsePart(elem) {
     const part = {
       name: elem.get("name"),
       scene: elem.findall("scene", []).map(parseScene),
-      extra: [],
     }
-    return { ...part, extra: getextras(elem, part) };
+    return withextras(elem, part);
   }
 
   function parseScene(elem) {
@@ -151,3 +191,4 @@ function mawe(file, compressed, buffer) {
     }
   }
 }
+/**/
