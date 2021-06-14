@@ -19,6 +19,11 @@ const utf8decoder = new TextDecoder();
 // Determine file type
 //-----------------------------------------------------------------------------
 
+// TODO: Extract file "peeking" for project scanning purposes. It returns the
+// element tree for mawe/moe files to extract header information.
+// TODO: Add file directory to file entry - we basically get it automatically
+// when scanning directories.
+
 export async function load(fileid)
 {
   const file = await fs.fstat(fileid);
