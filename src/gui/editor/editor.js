@@ -19,7 +19,7 @@ export function FileEditor({fileid}) {
     document.load(fileid)
       .then(content => {
         setContent(content);
-        document.save.mawe("./local/test.mawe", content.story);
+        document.save.mawe("./local/test2.mawe", content.story);
         //document.print.rtf();
         enqueueSnackbar(`Loaded ${content.file.name}`, {variant: "success"});
       })
@@ -28,6 +28,5 @@ export function FileEditor({fileid}) {
 
   if(!content) return <p>Loading: {fileid}</p>;
 
-  console.log(content);
-  return <pre>{content.file.name}</pre>;
+  return <pre>{JSON.stringify(content, null, 2)}</pre>;
 }

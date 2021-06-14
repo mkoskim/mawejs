@@ -9,6 +9,7 @@
 export {
   fstat,
   parent, relpath, dirname,
+  basename, extname,
   read, write,
   move, remove,
   readdir,
@@ -23,6 +24,26 @@ export {
 
 const path = require("path");
 
+//-----------------------------------------------------------------------------
+
+function dirname(fileid) {
+  return path.dirname(fileid);
+}
+
+function relpath(directory, fileid) {
+  return path.relative(directory, fileid);
+}
+
+function basename(filename, ext) {
+  return path.basename(filename, ext);
+}
+
+function extname(filename) {
+  return path.extname(filename);
+}
+
+//-----------------------------------------------------------------------------
+
 function callfs(cmd, ...args) {
   return window.ipc.callMain("hostfs", [cmd, ...args]);
 }
@@ -33,14 +54,6 @@ function fstat(fileid) {
 
 function parent(fileid) {
   return callfs("parent", fileid);
-}
-
-function dirname(fileid) {
-  return path.dirname(fileid);
-}
-
-function relpath(directory, fileid) {
-  return path.relative(directory, fileid);
 }
 
 function readdir(fileid) {
