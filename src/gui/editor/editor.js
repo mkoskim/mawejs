@@ -10,6 +10,10 @@ import React, {useState, useEffect} from 'react';
 import { useSnackbar } from 'notistack';
 
 import {
+  FlexBox, VBox, HBox,
+} from "../components/helpers";
+
+import {
   Dialog,
   Card, CardContent,
   Button, Checkbox, Icon,
@@ -52,23 +56,37 @@ export function FileEditor({fileid}) {
   if(!content) return <p>Loading: {fileid}</p>;
 
   //return <pre>{JSON.stringify(content, null, 2)}</pre>;
-  return <Box><ViewPart part={content.story.body.part[0]}/></Box>
+  return (
+    <VBox style={{
+      paddingLeft: "2cm",
+      paddingRight: "2cm",
+      paddingTop: "1cm",
+      paddingBottom: "3cm",
+      overflowY: "auto",
+      }}>
+      <ViewPart part={content.story.notes.part[0]}/>
+      <ViewPart part={content.story.body.part[0]}/>
+    </VBox>
+  );
 }
 
 function ViewPart({part}) {
-  return part.children.map(s => <RenderScene scene={s} />);
+  return (
+    part.children.map((s, i) => <RenderScene key={i} scene={s} />)
+  )
   //return <pre>{JSON.stringify(part, null, 2)}</pre>;
 
   function RenderScene({scene}) {
     return (
-      <div>
+      <div style={{fontFamily: "Times", fontSize: "13pt"}}>
         <p><b>{scene.attr.name}</b></p>
-        {scene.children.map(p => <RenderParagraph p={p}/>)}
+        {scene.children.map((p, i) => <RenderParagraph key={i} p={p} firstline={!i}/>)}
       </div>
     );
 
-    function RenderParagraph({p}) {
-      return <p>{p.text}</p>;
+    function RenderParagraph({p, firstline}) {
+      const style = firstline ? {} : {textIndent: "1cm"};
+      return <p style={style}>{p.text}</p>;
     }
   }
 }
