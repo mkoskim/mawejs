@@ -44,7 +44,7 @@ export function FileEditor({fileid}) {
       .then(doc => {
         //doc.story.version.push(JSON.parse(JSON.stringify(doc.story.body)));
         setContent(doc);
-        //document.save.mawe("./local/test2.mawe", doc.story)
+        document.save.mawe("./local/test2.mawe", doc.story)
         //.catch(e => { console.log(e); })
         ;
         //document.print.rtf();
@@ -55,13 +55,16 @@ export function FileEditor({fileid}) {
 
   if(!content) return <p>Loading: {fileid}</p>;
 
+  console.log("Body:", content.story.body.part);
+  console.log("Notes:", content.story.body.part);
+
   //return <pre>{JSON.stringify(content, null, 2)}</pre>;
   return (
     <VBox style={{
-      paddingLeft: "2cm",
-      paddingRight: "2cm",
+      paddingLeft: "1.5cm",
+      paddingRight: "1.5cm",
       paddingTop: "1cm",
-      paddingBottom: "3cm",
+      paddingBottom: "2cm",
       overflowY: "auto",
       }}>
       <ViewPart part={content.story.notes.part[0]}/>

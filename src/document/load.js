@@ -33,7 +33,11 @@ export async function load(fileid)
       utf8decoder.decode(compressed ? await gunzip(buffer) : buffer)
     ];
   }
-  
+
+  //---------------------------------------------------------------------------
+  // Detecting file
+  //---------------------------------------------------------------------------
+
   if(file.name.endsWith(".mawe") || file.name.endsWith(".mawe.gz"))
   {
     try {
@@ -48,54 +52,12 @@ export async function load(fileid)
 }
 
 //-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-
-/*
-function mawe(file, compressed, buffer) {
-  const {name, ext} = splitname(file.name);
-
-  return {
-    file: file,
-    name: name,
-    ext: ext,
-    compressed: compressed,
-    story: xmljs.xml2js(buffer, {compact: true, ignoreComment: false}),
-    //story: xmljs.xml2js(buffer, {compact: true, ignoreComment: true}),
-    //story: xmljs.xml2js(buffer, {compact: true}),
-  }
-
-  //---------------------------------------------------------------------------
-
-  function splitname(name) {
-    if(fs.extname(name) === ".gz") {
-      return {name: fs.basename(name, ".mawe.gz"), ext: ".mawe.gz"}
-    } else {
-      return {name: fs.basename(name, ".mawe"), ext: ".mawe"}
-    }
-  }
-
-}
-/*/
-
-//-----------------------------------------------------------------------------
 // Extract mawe file from buffer
 //-----------------------------------------------------------------------------
 
 function mawe(file, compressed, buffer) {
   const {name, ext} = splitname(file.name);
 
-  function et2js(elem) {
-    const obj = {
-      tag: elem.tag,
-      attr: {...elem.attrib},
-      text: elem.text,
-      tail: elem.tail,
-      children: elem.getchildren().map(e => et2js(e)),
-    }
-
-    return obj;
-  }
-
   function splitname(name) {
     if(fs.extname(name) === ".gz") {
       return {name: fs.basename(name, ".mawe.gz"), ext: ".mawe.gz"}
@@ -104,12 +66,8 @@ function mawe(file, compressed, buffer) {
     }
   }
 
-  // We first convert element tree to JS objects. This way we can make
-  // copies of the trees e.g. when making versions. After that, we parse
-  // the tree to make it more compact and easier to use.
-
   const root = et.parse(buffer).getroot();
-
+  
   return {
     file: file,
     name: name,
@@ -118,6 +76,26 @@ function mawe(file, compressed, buffer) {
     story: parseRoot(root),
   }
 
+  //---------------------------------------------------------------------------
+  // We convert element tree to JS objects. This way we can make
+  // copies of the trees e.g. when making versions.
+  //---------------------------------------------------------------------------
+
+  function et2js(elem) {
+    return {
+      tag: elem.tag,
+      attr: {...elem.attrib},
+      text: elem.text,
+      tail: elem.tail,
+      children: elem.getchildren().map(et2js),
+    }
+  }
+
+  //---------------------------------------------------------------------------
+  // withextras() adds XML elements not processed by the loader to the end
+  // of the block. This may be used to implement new features that not all
+  // editors support yet. This could be extended so that you could apply
+  // attributes to tags that would be preserved by editors.
   //---------------------------------------------------------------------------
 
   function withextras(obj, elem) {
@@ -129,7 +107,31 @@ function mawe(file, compressed, buffer) {
   }
 
   //---------------------------------------------------------------------------
-  
+  // File structure:
+  //
+  // <story format="mawe" uuid="xxx">
+  //    <body name="v2.2">
+  //      <head> ... </head>
+  //      <part> ... </part>
+  //      <part> ... </part>
+  //      ...
+  //    </body>
+  //    <notes>
+  //      <part> ... </part>
+  //      <part> ... </part>
+  //      ...
+  //    </notes>
+  //    <version name="v1.0">
+  //      <head> ... </head>
+  //      <part> ... </part>
+  //      <part> ... </part>
+  //      ...
+  //    </version>
+  //    <version name="v0.3"> ... </version>
+  //    ...
+  //  
+  //---------------------------------------------------------------------------
+
   function parseRoot(root) {
     if(root.tag !== "story") throw Error();
     if(root.get("format") !== "mawe") throw Error();
@@ -150,13 +152,12 @@ function mawe(file, compressed, buffer) {
   function parseBody(elem) {
     const bodyname = elem.get("name")
     const head  = parseHead(elem.find("head"));
-    const parts = elem.findall("part", []).map(et2js);
 
     return withextras({
       name: bodyname ? bodyname : head.version,
       modified: elem.get("modified"),
       head: head,
-      part: parts,
+      part: parseParts(elem),
     }, elem);
   }
 
@@ -183,7 +184,11 @@ function mawe(file, compressed, buffer) {
   function parseNotes(elem) {
     return withextras({
       head: null,
-      part: elem.findall("part", []).map(et2js),
+      part: parseParts(elem),
     }, elem);
+  }
+
+  function parseParts(elem) {
+    return elem.findall("part", []).map(et2js);
   }
 }

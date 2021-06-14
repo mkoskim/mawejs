@@ -14,14 +14,22 @@ const util = require("util");
 const zlib = require("zlib");
 const gzip = util.promisify(zlib.gzip);
 
+//-----------------------------------------------------------------------------
+// Save stories in .mawe format
+//-----------------------------------------------------------------------------
+
 export async function mawe(file, story, compress) {
+
+  //---------------------------------------------------------------------------
+  // Build tree. Add some comment blocks to make XML bit more readable.
+  // Helps debugging, too.
+  //---------------------------------------------------------------------------
 
   const root = Element("story", {
     format: story.format,
     name: story.name,
     uuid: story.uuid
   });
-  console.log(root);
 
   root.append(Comment(" ============================================================================= "));
   root.append(Comment(" "));
@@ -55,26 +63,31 @@ export async function mawe(file, story, compress) {
 
   js2et_all(root, story.extra);
 
+  //---------------------------------------------------------------------------
+  // Serialize and write
+  //---------------------------------------------------------------------------
+
   const etree = new ElementTree(root);
   const content = etree.write({xml_declaration: false, indent: 0});
   const buffer  = compress ? await gzip(content, {level: 9}) : content;
   fs.write(file, buffer);
 }
 
+//-----------------------------------------------------------------------------
+
 function js2et(obj) {
   let elem = new Element(obj.tag, obj.attr);
   elem.text = obj.text;
   elem.tail = obj.tail;
-  if(obj.children) obj.children.forEach(child => {
-    elem.append(js2et(child));
-  })
+  js2et_all(elem, obj.children);
   return elem;
 }
 
-function js2et_all(elem, objs)
-{
-  return objs.forEach(o => elem.append(js2et(o)));
+function js2et_all(elem, objs) {
+  objs.map(js2et).forEach(o => elem.append(o));
 }
+
+//-----------------------------------------------------------------------------
 
 function addBody(parent, body) {
   const elem = SubElement(parent, "body", {
@@ -94,7 +107,6 @@ function addVersion(parent, version) {
 
 function addBodyElems(elem, body) {
   addHead(elem, body.head);
-  //elem.append(Comment(" ============================================================================= "));
   js2et_all(elem, body.part);
   js2et_all(elem, body.extra);
 }
