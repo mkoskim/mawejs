@@ -6,6 +6,23 @@
 //*****************************************************************************
 //*****************************************************************************
 
+/*
+-------------------------------------------------------------------------------
+
+TODO: Things to think:
+
+- Save as: when we create a copy of a file, should we generate a new UUID?
+
+- Move file: I would like to encourage this instead of "save as"
+
+- Compressing / decompressing a file: Basically we don't want to keep
+  copies of files around, so one file has either .mawe or .mawe.gz suffix.
+  .gz helps operating with the file with gzip/gunzip, but it is basically
+  not needed.
+
+-------------------------------------------------------------------------------
+*/
+
 const et = require("elementtree");
 const {Element, SubElement, ElementTree, Comment} = et;
 

@@ -33,19 +33,17 @@ and such attached to the scene. Or something similar.
 
 Things to remember:
 
-- name of the story is different thing than title of the story.
+- name of the story is different thing than title of the story. We now
+  have work name stored in <story> -tag (name attribute).
 
--------------------------------------------------------------------------------
+- some kind of internal wiki.
 
-NOTE: It might be better to allow in-content comments. Then, when
-there starts to be a huge comment block, you could move them to separate
-sketch element. Note: in-text comments will be visible when text is visible
-(but of course not printed to draft). It is encouraged to get rid of them
-when working towards final draft.
+- we might move one step back to old moe. That it means that by default
+  all the content is visible, you just hide something while editing.
 
-NOTE: Now when we have version groups, we might need to move <head> containing
-title and formatting options inside <body> and <version>. This would allow you
-to get the draft out as it was when you versioned it.
+DONE: NOTE: Now when we have version groups, we might need to move <head>
+containing title and formatting options inside <body> and <version>. This
+would allow you to get the draft out as it was when you versioned it.
 
 Let's consider this very carefully. Is there need to keep <head> information
 alone? Could the project manager read the information from <body> section?
@@ -55,27 +53,36 @@ inside one file. It assumes that versions are close enough to each other: they
 tell the same story. If they are not telling the same story, they would better be
 separate stories.
 
+NOTE: It might be better to allow in-content comments. Then, when
+there starts to be a huge comment block, you could move them to separate
+sketch element. Note: in-text comments will be visible when text is visible
+(but of course not printed to draft). It is encouraged to get rid of them
+when working towards final draft.
+
 -------------------------------------------------------------------------------
 
 Simplified structure of a file:
 
-    <story>
-        <!-- Story information -->
-        <head> ... </head>
-
+    <story name="Workname">
         <!-- Ordered list of scenes -->
-        <body>
+        <body name="v2">
+            <head> ... </head>
             <scene> ... </scene>
             <scene> ... </scene>
             <scene> ... </scene>
             ...
         </body>
+        <version name="v1">
+            <head> ... </head>
+            <scene> ... </scene>
+            <scene> ... </scene>
+            <scene> ... </scene>
+            ...
+        </version>
     </story>
 
-NOTE: We remove the scene "visibility" attribute. Every scene in body is visible.
-No scene in other groups is visible. This will simplify the system. If writer
-wants to make some scenes hidden, s/he cuts them to another group. If writer
-wants to make some scenes visible, s/he cuts them to body group.
+NOTE: We take back scene visibility tags. You can make entire scene as
+comment.
 
 NOTE! I need to think closer, if <scene>, <chapter> and <part> elements are
 groups, or if they are breaks. More about this later. <scene> is a group by
@@ -114,9 +121,9 @@ This file format would get rid of <body> element. The version attribute at
 information would be stored inside <version> blocks, so that you could recall
 also title, author and draft print settings when switching version.
 
-No, we don't do that. I want to preserve the Ctrl-S (Save) as a "commit" to
-certain version. So, we keep the <body> block. But we might do better to move
-<head> inside <body>.
+NOTE: We preserve <body> tag for current version. It simplifies retrieving
+information from the story. So, we keep the <body> block. But we might do
+better to move <head> inside <body>.
 
     <story>
         <body version="B">
@@ -137,7 +144,6 @@ certain version. So, we keep the <body> block. But we might do better to move
         <group> ... </group>
         ...
     </story>
-
 
 -------------------------------------------------------------------------------
 
