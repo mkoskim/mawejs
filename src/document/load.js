@@ -23,6 +23,16 @@ export async function load(fileid)
 {
   const file = await fs.fstat(fileid);
   const [isCompressed, buffer] = await readbuf(fileid);
+
+  async function readbuf(fileid) {
+    const buffer = await fs.read(fileid, null);
+    const compressed = isGzip(buffer);
+  
+    return [
+      compressed,
+      utf8decoder.decode(compressed ? await gunzip(buffer) : buffer)
+    ];
+  }
   
   if(file.name.endsWith(".mawe") || file.name.endsWith(".mawe.gz"))
   {
@@ -34,13 +44,6 @@ export async function load(fileid)
   }
 
   throw new Error(`${file.name}: Unknown type.`);
-
-  async function readbuf(fileid) {
-    const buffer = await fs.read(fileid, null);
-    const compressed = isGzip(buffer);
-  
-    return [compressed, compressed ? await gunzip(buffer) : buffer];
-  }
 }
 
 //-----------------------------------------------------------------------------
@@ -48,7 +51,7 @@ export async function load(fileid)
 //-----------------------------------------------------------------------------
 
 function mawe(file, compressed, buffer) {
-  const story = et.parse(utf8decoder.decode(buffer));
+  const story = et.parse(buffer);
   
   const root = story.getroot();
   console.log(root);

@@ -19,7 +19,7 @@ export function FileEditor({fileid}) {
     document.load(fileid)
       .then(content => {
         setContent(content);
-        //document.save.mawe("./local/test.mawe", content.story);
+        document.save.mawe("./local/test.mawe", content.story);
         //document.print.rtf();
         enqueueSnackbar(`Loaded ${content.file.name}`, {variant: "success"});
       })
