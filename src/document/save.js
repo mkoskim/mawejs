@@ -37,12 +37,14 @@ const gzip = util.promisify(zlib.gzip);
 // Save stories in .mawe format
 //-----------------------------------------------------------------------------
 
-async function mawe(file, story, compress) {
+async function mawe(doc) {
 
   //---------------------------------------------------------------------------
   // Build tree. Add some comment blocks to make XML bit more readable.
   // Helps debugging, too.
   //---------------------------------------------------------------------------
+
+  const story = doc.story;
 
   const root = Element("story", {
     format: story.format,
@@ -88,8 +90,8 @@ async function mawe(file, story, compress) {
 
   const etree = new ElementTree(root);
   const content = etree.write({xml_declaration: false, indent: 0});
-  const buffer  = compress ? await gzip(content, {level: 9}) : content;
-  fs.write(file, buffer);
+  const buffer  = doc.compress ? await gzip(content, {level: 9}) : content;
+  return fs.write(doc.file.id, buffer);
 }
 
 //-----------------------------------------------------------------------------

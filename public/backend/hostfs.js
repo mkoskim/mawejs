@@ -9,11 +9,9 @@
 module.exports = {
   fsGetFileEntry, fsGetParentDir,
   fsGetLocation,
-  fsGetFiles,
-  fsRead, fsWrite,
+  fsRead, fsWrite, fsReadDir,
+  fsRename,
 }
-
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 
@@ -21,18 +19,22 @@ const fs = require("fs");
 const path = require('path');
 
 //-----------------------------------------------------------------------------
-
-function fsRead(fileid, encoding) {
-  return fs.promises.readFile(fileid, {encoding: encoding});
-}
-
-function fsWrite(fileid, content, encoding) {
-  return fs.promises.writeFile(fileid, content, {encoding: encoding});
-}
-
-//-----------------------------------------------------------------------------
 // Get file entry with info: name, type, real path as ID
 //-----------------------------------------------------------------------------
+
+function exists(fileid) {
+  return fs.promises.access(fileid, fs.constants.F_OK)
+    .then(r => true)
+    .catch(e => false)
+  ;
+}
+
+function hasaccess(fileid) {
+  return fs.promises.access(fileid, fs.constants.R_OK)
+    .then(r => true)
+    .catch(e => false)
+  ;
+}
 
 async function fsGetFileEntry(fileid)
 {
@@ -70,13 +72,6 @@ async function fsGetFileEntry(fileid)
     }
   }
 
-  function hasaccess(fileid) {
-    return fs.promises.access(fileid, fs.constants.R_OK)
-      .then(r => true)
-      .catch(e => false)
-    ;
-  }
-
   function gettype(dirent) {
     if(dirent.isDirectory()) return "folder";
     if(dirent.isFile()) return "file";
@@ -93,22 +88,6 @@ function fsGetParentDir(fileid) {
   return fsGetFileEntry(dirid);
 }
 
-//-----------------------------------------------------------------------------
-// Get file entries from directory
-//-----------------------------------------------------------------------------
-
-async function fsGetFiles(dirid)
-{
-  return await Promise.all(
-    (await fs.promises.readdir(dirid))
-    .map(file => path.resolve(dirid, file))
-    .map(file => fsGetFileEntry(file))
-  )
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-
 async function fsGetLocation(name)
 {
   const os = require("os");
@@ -120,4 +99,38 @@ async function fsGetLocation(name)
     case "appPath": return app.getAppPath();
   }
   return app.getPath(name);
+}
+
+//-----------------------------------------------------------------------------
+
+function fsRead(fileid, encoding) {
+  return fs.promises.readFile(fileid, {encoding: encoding});
+}
+
+function fsWrite(fileid, content, encoding) {
+  console.log("Write:", fileid)
+  return fs.promises.writeFile(fileid, content, {encoding: encoding});
+}
+
+async function fsReadDir(dirid)
+{
+  return await Promise.all(
+    (await fs.promises.readdir(dirid))
+    .map(file => path.resolve(dirid, file))
+    .map(file => fsGetFileEntry(file))
+  )
+}
+
+//-----------------------------------------------------------------------------
+
+async function fsRename(fileid, name) {
+  name = path.join(path.dirname(fileid), name)
+  console.log("Rename:", fileid, "=>", name)
+
+  if(await exists(name)) {
+    throw new Error(`Rename failed: ${name} already exists.`)
+  }
+
+  await fs.promises.rename(fileid, name)
+  return fsGetFileEntry(name);
 }

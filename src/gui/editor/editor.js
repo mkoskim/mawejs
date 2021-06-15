@@ -44,7 +44,6 @@ export function FileEditor({fileid}) {
       .then(doc => {
         //doc.story.version.push(JSON.parse(JSON.stringify(doc.story.body)));
         setContent(doc);
-        document.save.mawe("./local/test2.mawe", doc.story)
         //.catch(e => { console.log(e); })
         ;
         //document.print.rtf();

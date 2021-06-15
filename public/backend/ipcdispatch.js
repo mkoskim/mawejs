@@ -21,10 +21,11 @@ function ipcDispatch(channel, params) {
       switch(cmd) {
         case "fstat": return hostfs.fsGetFileEntry(...args);
         case "parent": return hostfs.fsGetParentDir(...args);
+        case "getlocation": return hostfs.fsGetLocation(...args);
         case "read": return hostfs.fsRead(...args);
         case "write": return hostfs.fsWrite(...args);
         case "readdir": return hostfs.fsGetFiles(...args);
-        case "getlocation": return hostfs.fsGetLocation(...args);
+        case "rename": return hostfs.fsRename(...args);
       }
       throw Error(`IPC: hostfs/${cmd}: Not implemented.`);
     }

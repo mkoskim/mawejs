@@ -8,7 +8,8 @@
 
 module.exports = {load}
 
-const et = require("elementtree");
+const {getsuffix} = require("./util")
+const {Document} = require("./Document")
 
 const fs = require("../storage/localfs");
 const util = require("util");
@@ -17,38 +18,21 @@ const zlib = require("zlib");
 const gunzip = util.promisify(zlib.gunzip);
 const utf8decoder = new TextDecoder();
 
-//-----------------------------------------------------------------------------
-// Determine file type
-//-----------------------------------------------------------------------------
+const et = require("elementtree");
 
 // TODO: Extract file "peeking" for project scanning purposes. It returns the
 // element tree for mawe/moe files to extract header information.
 // TODO: Add file directory to file entry - we basically get it automatically
 // when scanning directories.
 
-async function load(fileid)
+async function load(file)
 {
-  const file = await fs.fstat(fileid);
-  const [isCompressed, buffer] = await readbuf(fileid);
+  if(typeof file === "string") file = await fs.fstat(file);
 
-  async function readbuf(fileid) {
-    const buffer = await fs.read(fileid, null);
-    const compressed = isGzip(buffer);
-  
-    return [
-      compressed,
-      utf8decoder.decode(compressed ? await gunzip(buffer) : buffer)
-    ];
-  }
-
-  //---------------------------------------------------------------------------
-  // Detecting file
-  //---------------------------------------------------------------------------
-
-  if(file.name.endsWith(".mawe") || file.name.endsWith(".mawe.gz"))
-  {
-    try {
-      return mawe(file, isCompressed, buffer)
+  switch(getsuffix(file)) {
+    case ".mawe":
+    case ".mawe.gz": try {
+      return mawe(file);
     } catch(e) {
       console.log(e);
       throw Error(`${file.name}: Invalid .mawe file.`);
@@ -59,29 +43,29 @@ async function load(fileid)
 }
 
 //-----------------------------------------------------------------------------
-// Extract mawe file from buffer
+
+async function getroot(file) {
+  const buffer = await readbuf(file)
+  return et.parse(buffer).getroot();
+
+  async function readbuf(f) {
+    var buffer = await fs.read(f.id, null);
+    if(isGzip(buffer)) {
+      f.compressed = true;
+      buffer = await gunzip(buffer);
+    }
+    return utf8decoder.decode(buffer)
+  }  
+}
+
+//-----------------------------------------------------------------------------
+// Extract mawe from file
 //-----------------------------------------------------------------------------
 
-function mawe(file, compressed, buffer) {
-  const {name, ext} = splitname(file.name);
+async function mawe(file) {
+  const root = await getroot(file)
 
-  function splitname(name) {
-    if(fs.extname(name) === ".gz") {
-      return {name: fs.basename(name, ".mawe.gz"), ext: ".mawe.gz"}
-    } else {
-      return {name: fs.basename(name, ".mawe"), ext: ".mawe"}
-    }
-  }
-
-  const root = et.parse(buffer).getroot();
-  
-  return {
-    file: file,
-    name: name,
-    ext: ext,
-    compressed: compressed,
-    story: parseRoot(root),
-  }
+  return new Document(file, parseRoot(root));
 
   //---------------------------------------------------------------------------
   // We convert element tree to JS objects. This way we can make
@@ -149,7 +133,6 @@ function mawe(file, compressed, buffer) {
 
     return withextras({
       ...root.attrib,
-      name: root.get("name", name),
       body: body,
       notes: notes,
       version: versions,

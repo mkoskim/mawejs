@@ -10,7 +10,7 @@ module.exports = {
   fstat, parent, relpath,
   dirname, basename, extname,
   read, write,
-  move, remove,
+  rename, move, remove,
   readdir,
   getlocation,
   getuser,
@@ -70,6 +70,10 @@ function read(fileid, encoding="utf8") {
 
 function write(fileid, content, encoding="utf8") {
   return fscall("write", fileid, content, encoding);
+}
+
+function rename(fileid, name) {
+  return fscall("rename", fileid, name);
 }
 
 function move(fileid, dirid) {

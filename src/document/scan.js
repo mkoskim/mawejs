@@ -10,6 +10,7 @@ module.exports = {scan}
 
 const fs = require("../storage/localfs");
 const {Scanner} = require("../storage/scanner");
+const {findsuffix} = require("./load")
 
 async function scan(directory)
 {
@@ -21,9 +22,7 @@ async function scan(directory)
   );
   scanner.filter.file = f => {
     if(f.hidden || !f.access) return false;
-    if(f.name.endsWith(".moe")) { f.format = "moe"; return true; }
-    if(f.name.endsWith(".mawe")) { f.format = "mawe"; return true; }
-    if(f.name.endsWith(".mawe.gz")) { f.format = "mawe"; return true; }
+    if(findsuffix(f)) return true;
     if(f.name === "Makefile") { f.format = "latex"; return true; }
     return false;
   }
@@ -34,7 +33,7 @@ async function scan(directory)
     const files = await scanner.getmore();
     if(files.length) {
       count = count + files.length;
-      files.map(f => console.log(f.format, f.name));
+      files.map(f => console.log(f.format, f.name, f.relpath));
     }
   }
   console.log("Documents:", count);
