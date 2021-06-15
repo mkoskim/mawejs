@@ -551,6 +551,12 @@ function InfiniteFileList({scanner, contains, hooks}) {
 //*****************************************************************************
 //*****************************************************************************
 
+// TODO: We need this scanner for other purposes, too! So, take this to
+// storage side and make it generic directory scanner.
+
+// TODO: Sketch "adaptive" batch sizes? So that the scanner takes time
+// how long it took to get the bunch done, and adapts the bunch size to that.
+
 class DirScanner {
   constructor(directory, hooks) {
     console.log("Creating FileScanner:", directory);

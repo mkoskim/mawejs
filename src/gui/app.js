@@ -17,7 +17,7 @@ export default function App(props) {
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={2500} TransitionComponent={Slide}>
     <FlexBox style={{height: "100vh", width: "100vw"}}>
-      <EditFile />
+      <OpenFile />
     </FlexBox>
     </SnackbarProvider>
   );
