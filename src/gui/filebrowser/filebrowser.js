@@ -554,19 +554,14 @@ function InfiniteFileList({scanner, contains, hooks}) {
 // TODO: We need this scanner for other purposes, too! So, take this to
 // storage side and make it generic directory scanner.
 
-// TODO: Sketch "adaptive" batch sizes? So that the scanner takes time
-// how long it took to get the bunch done, and adapts the bunch size to that.
+const {Scanner} = require("../../storage/scanner")
 
-class DirScanner {
+class DirScanner extends Scanner {
   constructor(directory, hooks) {
     console.log("Creating FileScanner:", directory);
+    super(directory);
 
-    this.directory = directory;
     this.hooks = hooks;
-
-    this.scan  = [directory];       // Directories for scanning
-    this.processing = undefined;    // Directories under scanning
-    this.files = [];                // Files retrieved
 
     this.contains = undefined;      // Pattern to match
     this.report = undefined;    // Function to report maches
@@ -660,47 +655,23 @@ class DirScanner {
   // - We exclude inaccessible files
   // - We exclude files with unknown types
  
-  processBatch(batch)
-  {
-    const files = batch
+  filterfolders(batch) {
+    return super.filterfolders(batch)
+      .filter(f => !f.hidden)
+      .filter(f => f.access)
+    ;
+  }
+
+  filterfiles(batch) {
+    return super.filterfiles(batch)
       .filter(f => !f.hidden)
       .filter(f => f.access)
       .filter(f => ["file", "folder"].includes(f.type))
     ;
-
-    const folders = files
-      .filter(f => !f.symlink)
-      .filter(f => f.type === "folder")
-      .map(f => f.id)
-    ;
-
-    this.scan.push(...folders)
-    this.files.push(...files)
-    //console.log("Files", this.files.length, "Scan:", this.scan.length);
   }
 
-  getmore(num) {
-    // Do nothing if we are already processing directories
-    if(this.processing) return ;
-
-    // Get directories for scanning
-    const head = this.scan.splice(0, num)
-
-    if(!head) return this.tryresolve();
-
-    // Read contents of the work set
-    this.processing = head.map(async d => {
-      const rp = fs.relpath(this.directory, d);
-      const relpath = rp !== "." ? rp : "";
-
-      const files = await fs.readdir(d).catch(e => [])
-      return files.map(f => ({...f, relpath: relpath}));
-    });
-
-    Promise.all(this.processing).then(results => {
-      this.processing = undefined;
-      this.processBatch(results.flat());
-      this.tryresolve();
-    })
+  processbatch(batch) {
+    super.processbatch(batch);
+    this.tryresolve();
   }
 }

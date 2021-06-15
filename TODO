@@ -1,0 +1,14 @@
+
+TODO:
+
+- Some kind of test bench for e.g. file operations would be great! That is,
+  testing file loading & saving, directory scanning and so on.
+      
+--> it would be great, if file & document operations would work also
+    in plain node (that is, without electron). I am sure that at Some
+    point I like to have command line tools for e.g. exporting stories
+    in different format.
+
+-------------------------------------------------------------------------------
+
+DONE:

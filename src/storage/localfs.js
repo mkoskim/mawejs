@@ -6,16 +6,23 @@
 //*****************************************************************************
 //*****************************************************************************
 
-export {
-  fstat,
-  parent, relpath, dirname,
-  basename, extname,
+module.exports = {
+  fstat, parent, relpath,
+  dirname, basename, extname,
   read, write,
   move, remove,
   readdir,
   getlocation,
   getuser,
   splitpath,
+}
+
+//-----------------------------------------------------------------------------
+// Bridge
+//-----------------------------------------------------------------------------
+
+function fscall(cmd, ...args) {
+  return window.ipc.callMain("hostfs", [cmd, ...args]);
 }
 
 //-----------------------------------------------------------------------------
@@ -44,28 +51,24 @@ function extname(filename) {
 
 //-----------------------------------------------------------------------------
 
-function callfs(cmd, ...args) {
-  return window.ipc.callMain("hostfs", [cmd, ...args]);
-}
-
 function fstat(fileid) {
-  return callfs("fstat", fileid);
+  return fscall("fstat", fileid);
 }
 
 function parent(fileid) {
-  return callfs("parent", fileid);
+  return fscall("parent", fileid);
 }
 
 function readdir(fileid) {
-  return callfs("readdir", fileid);
+  return fscall("readdir", fileid);
 }
 
 function read(fileid, encoding="utf8") {
-  return callfs("read", fileid, encoding);
+  return fscall("read", fileid, encoding);
 }
 
 function write(fileid, content, encoding="utf8") {
-  return callfs("write", fileid, content, encoding);
+  return fscall("write", fileid, content, encoding);
 }
 
 function move(fileid, dirid) {
@@ -79,7 +82,7 @@ function remove(fileid) {
 //-----------------------------------------------------------------------------
 
 function getlocation(location) {
-  return callfs("getlocation", location);
+  return fscall("getlocation", location);
 }
 
 function getuser() {

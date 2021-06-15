@@ -6,12 +6,17 @@
 //*****************************************************************************
 //*****************************************************************************
 
-exports.fsGetFileEntry = fsGetFileEntry;
-exports.fsGetFiles = fsGetFiles;
-exports.fsGetLocation = fsGetLocation;
-exports.fsGetParentDir = fsGetParentDir;
-exports.fsRead = fsRead;
-exports.fsWrite = fsWrite;
+module.exports = {
+  fsGetFileEntry, fsGetFiles,
+  fsGetLocation, fsGetParentDir,
+  fsRead, fsWrite,
+}
+
+//-----------------------------------------------------------------------------
+
+const os = require("os");
+console.log("Platform:", os.platform());
+console.log("UserInfo:", os.userInfo());
 
 //-----------------------------------------------------------------------------
 
@@ -111,8 +116,9 @@ async function fsGetFiles(dirid)
 async function fsGetLocation(name)
 {
   switch(name) {
-    case "appPath": return app.getAppPath();
     case "root": return "/";
-    default: try { return app.getPath(name) } catch(e) { return undefined; }
+    case "home": return os.userInfo().homedir;
+    case "appPath": return app.getAppPath();
   }
+  return app.getPath(name);
 }
