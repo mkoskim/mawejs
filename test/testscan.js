@@ -10,23 +10,30 @@
 require("./fakewindow");
 const fs = require("../src/storage/localfs");
 const {Scanner} = require("../src/storage/scanner");
+const document = require("../src/document")
+
+//testscan();
+scandocs("/home/markus/Dropbox/tarinat");
+
+//-----------------------------------------------------------------------------
 
 async function testscan() {
   const dir = await fs.getlocation("home");
   console.log(dir);
   const scanner = new Scanner(dir);
+  let files = [];
 
-  while(scanner.files.length < 50e3)
+  while(files.length < 50e3)
   {
-    await scanner.getmore();
+    const results = await scanner.getmore();
+    files.push(...results);
   }
-  console.log(scanner.files.length);
+  console.log(files.length);
 }
 
-testscan();
+//-----------------------------------------------------------------------------
 
-/*
-fs.readdir("..").then(result => {
-    console.log(result);
-})
-*/
+function scandocs(directory) {
+  console.log("Scanning:", directory);
+  document.scan(directory);
+}

@@ -563,10 +563,38 @@ class DirScanner extends Scanner {
 
     this.hooks = hooks;
 
+    this.files = [];
     this.contains = undefined;      // Pattern to match
     this.report = undefined;    // Function to report maches
     this.requested  = undefined;    // Amount of matches requested
     this.reported = undefined;
+
+    // By default:
+    // - we match only on file name, not its path
+    // - We search only for files, not for folders
+    // - We exclude both hidden files and folders from search
+    // - We exclude inaccessible files
+    // - We exclude files with unknown types
+ 
+    this.filter.folder = f => (
+      !f.hidden &&
+      f.access
+    );
+
+    this.filter.file = f => (
+      !f.hidden &&
+      f.access &&
+      ["file", "folder"].includes(f.type)
+    )
+  }
+
+  //---------------------------------------------------------------------------
+  // Inherited methods
+  //---------------------------------------------------------------------------
+
+  processbatch(batch) {
+    this.files.push(...super.processbatch(batch));
+    this.tryresolve();
   }
 
   //---------------------------------------------------------------------------
@@ -575,12 +603,6 @@ class DirScanner extends Scanner {
     return this.files
       .filter(f => f.name.toLowerCase().includes(contains.toLowerCase()));
   }
-
-  more2come() {
-    return this.processing || this.scan.length;
-  }
-
-  //---------------------------------------------------------------------------
 
   fetch(setMatches, contains, num) {
     //console.log("Fetch:", contains, num);
@@ -605,13 +627,10 @@ class DirScanner extends Scanner {
     const matched = this.matches(this.contains);
     //console.log("Files:", this.files.length, "Scan", this.scan.length, "Contains", this.contains)
 
-    if(matched.length >= this.requested || !this.more2come()) {
+    if(matched.length >= this.requested || this.isfinished()) {
       this.resolve(matched, this.requested);
     } else {
-      // Process 100 entries at time. We might need to adjust this based on the filesystem
-      // speed. The larger the amount, the faster the scan, but at the same time, it reports
-      // intermediate results slower.
-      this.getmore(100);
+      this.getmore();
     }
   }
 
@@ -624,7 +643,7 @@ class DirScanner extends Scanner {
     if(matched.length > this.reported.matched || this.files.length > this.reported.files) {
       const state = {
         files: matched.slice(0, this.requested),
-        hasMore: this.more2come(),
+        hasMore: !this.isfinished(),
       }
       this.report(state);
       this.reported = {
@@ -646,32 +665,5 @@ class DirScanner extends Scanner {
       this.report(state);  
     }
     this.stop();
-  }
-
-  // By default:
-  // - we match only on file name, not its path
-  // - We search only for files, not for folders
-  // - We exclude both hidden files and folders from search
-  // - We exclude inaccessible files
-  // - We exclude files with unknown types
- 
-  filterfolders(batch) {
-    return super.filterfolders(batch)
-      .filter(f => !f.hidden)
-      .filter(f => f.access)
-    ;
-  }
-
-  filterfiles(batch) {
-    return super.filterfiles(batch)
-      .filter(f => !f.hidden)
-      .filter(f => f.access)
-      .filter(f => ["file", "folder"].includes(f.type))
-    ;
-  }
-
-  processbatch(batch) {
-    super.processbatch(batch);
-    this.tryresolve();
   }
 }

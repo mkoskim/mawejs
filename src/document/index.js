@@ -9,5 +9,6 @@
 const {load} = require("./load")
 const save = require("./save")
 const print = require("./print")
+const {scan} = require("./scan")
 
-export {load, save, print}
+module.exports = {load, save, print, scan}

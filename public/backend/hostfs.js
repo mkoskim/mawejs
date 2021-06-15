@@ -7,22 +7,18 @@
 //*****************************************************************************
 
 module.exports = {
-  fsGetFileEntry, fsGetFiles,
-  fsGetLocation, fsGetParentDir,
+  fsGetFileEntry, fsGetParentDir,
+  fsGetLocation,
+  fsGetFiles,
   fsRead, fsWrite,
 }
 
 //-----------------------------------------------------------------------------
 
-const os = require("os");
-console.log("Platform:", os.platform());
-console.log("UserInfo:", os.userInfo());
-
 //-----------------------------------------------------------------------------
 
 const fs = require("fs");
 const path = require('path');
-const {app} = require("electron");
 
 //-----------------------------------------------------------------------------
 
@@ -115,6 +111,9 @@ async function fsGetFiles(dirid)
 
 async function fsGetLocation(name)
 {
+  const os = require("os");
+  const {app} = require("electron");
+
   switch(name) {
     case "root": return "/";
     case "home": return os.userInfo().homedir;

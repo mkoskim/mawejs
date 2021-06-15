@@ -6,6 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
-export async function rtf() {
+module.exports = {rtf}
+
+async function rtf() {
     throw new Error("print.rtf: Not yet implemented.")
 }

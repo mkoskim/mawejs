@@ -6,6 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
+module.exports = {load}
+
 const et = require("elementtree");
 
 const fs = require("../storage/localfs");
@@ -24,7 +26,7 @@ const utf8decoder = new TextDecoder();
 // TODO: Add file directory to file entry - we basically get it automatically
 // when scanning directories.
 
-export async function load(fileid)
+async function load(fileid)
 {
   const file = await fs.fstat(fileid);
   const [isCompressed, buffer] = await readbuf(fileid);

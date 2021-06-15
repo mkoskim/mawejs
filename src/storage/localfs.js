@@ -29,6 +29,7 @@ function fscall(cmd, ...args) {
 // Basic file system functions
 //-----------------------------------------------------------------------------
 
+const os = require("os");
 const path = require("path");
 
 //-----------------------------------------------------------------------------
@@ -86,7 +87,7 @@ function getlocation(location) {
 }
 
 function getuser() {
-  throw "Not implemented."
+  return os.userInfo().username;
 }
 
 //-----------------------------------------------------------------------------

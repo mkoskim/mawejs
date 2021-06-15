@@ -23,6 +23,8 @@ TODO: Things to think:
 -------------------------------------------------------------------------------
 */
 
+module.exports = {mawe}
+
 const et = require("elementtree");
 const {Element, SubElement, ElementTree, Comment} = et;
 
@@ -35,7 +37,7 @@ const gzip = util.promisify(zlib.gzip);
 // Save stories in .mawe format
 //-----------------------------------------------------------------------------
 
-export async function mawe(file, story, compress) {
+async function mawe(file, story, compress) {
 
   //---------------------------------------------------------------------------
   // Build tree. Add some comment blocks to make XML bit more readable.
