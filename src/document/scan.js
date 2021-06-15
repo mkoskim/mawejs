@@ -10,7 +10,7 @@ module.exports = {scan}
 
 const fs = require("../storage/localfs");
 const {Scanner} = require("../storage/scanner");
-const {findsuffix} = require("./load")
+const {getsuffix} = require("./util")
 
 async function scan(directory)
 {
@@ -22,7 +22,7 @@ async function scan(directory)
   );
   scanner.filter.file = f => {
     if(f.hidden || !f.access) return false;
-    if(findsuffix(f)) return true;
+    if(getsuffix(f)) return true;
     if(f.name === "Makefile") { f.format = "latex"; return true; }
     return false;
   }
