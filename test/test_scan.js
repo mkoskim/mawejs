@@ -11,8 +11,10 @@ const fs = require("../src/storage/localfs");
 const {Scanner} = require("../src/storage/scanner");
 const document = require("../src/document")
 
+const args = process.argv.slice(2)
+
 //testscan();
-scandocs("/home/markus/Dropbox/tarinat");
+scandocs(args[0]);
 
 //-----------------------------------------------------------------------------
 
