@@ -36,18 +36,24 @@ async function testwrite_2() {
   const doc1 = await document.load("../local/Beltane.mawe");
   console.log("Original file:", doc1.file);
 
-  // Hack
-  doc1.file = {id: "../local/Beltane.A.mawe", name: "Beltane.A.mawe"}
-  doc1.compress = true;
+  // Hack: we have already loaded the file. Change the file which is used
+  // to store the doc to .gz file, and we get compressed file.
+
+  doc1.file = {id: "../local/Beltane.A.mawe.gz"}
   await doc1.save();
   console.log("File A:", doc1.file);
 
+  // We load the compressed file, hack the file to get uncompressed
+  // version.
+  
   const doc2 = await document.load("../local/Beltane.A.mawe.gz");
-  doc2.file = {id: "../local/Beltane.B.mawe.gz", name: "Beltane.B.mawe.gz"}
-  doc2.compress = false;
+  doc2.file = {id: "../local/Beltane.B.mawe"}
   await doc2.save();
   console.log("File B:", doc2.file);
 
+  // Load both files to buffers, and compare the buffers. They should be
+  // equal.
+  
   const {file2buf} = require("../src/document/util");
 
   const buf1 = await file2buf(doc1.file);

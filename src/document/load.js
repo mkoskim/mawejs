@@ -8,7 +8,7 @@
 
 module.exports = {load}
 
-const {getsuffix, file2buf, buf2tree} = require("./util")
+const {suffix2format, file2buf, buf2tree} = require("./util")
 const {Document} = require("./Document")
 const fs = require("../storage/localfs")
 
@@ -21,9 +21,10 @@ async function load(file)
 {
   if(typeof file === "string") file = await fs.fstat(file);
 
-  switch(getsuffix(file)) {
-    case ".mawe":
-    case ".mawe.gz": try {
+  suffix2format(file);
+
+  switch(file.format) {
+    case "mawe": try {
       return mawe(file);
     } catch(e) {
       console.log(e);

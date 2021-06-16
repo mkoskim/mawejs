@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-const {getsuffix} = require("./util")
+const {suffix2format} = require("./util")
 const fs = require("../storage/localfs");
 const save = require("./save")
 
@@ -19,13 +19,9 @@ class Document {
   get file() { return this._file; }
 
   set file(f) {
-    if(this._file == undefined) {
-      this._file = f;
-    } else {
-      this._file = {...this._file, ...f}
-    }
-    this.suffix = getsuffix(f, [".mawe", ".mawe.gz"]);
-    this.basename = fs.basename(f.name, this.suffix);
+    this._file = {...this._file, ...f}
+    this.suffix = suffix2format(this._file, [".mawe", ".mawe.gz"]);
+    this.basename = fs.basename(this._file.name, this.suffix);
   }
 
   //---------------------------------------------------------------------------
@@ -34,7 +30,6 @@ class Document {
     this.file = file;
     this.story = story;
 
-    this.compress = file.compressed;
     if(!this.story.name) this.story.name = this.basename;
   }
 
@@ -49,15 +44,6 @@ class Document {
 
   async save() {
     this.file = await save.mawe(this);
-
-    if(this.compress)
-    {
-      if(this.suffix !== ".mawe.gz") {
-        await this.rename(null, ".mawe.gz");
-      }
-    } else if(this.suffix !== ".mawe") {
-      await this.rename(null, ".mawe");
-    }
   }
 }
 

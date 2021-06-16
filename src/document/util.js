@@ -7,15 +7,15 @@
 //*****************************************************************************
 
 module.exports = {
-  getsuffix,
+  suffix2format,
   file2buf, buf2file,
   buf2tree, tree2buf,
 }
 
 const et = require("elementtree");
 
-const fs = require("../storage/localfs");
 const util = require("util");
+const fs = require("../storage/localfs");
 const isGzip = require("is-gzip");
 const zlib = require("zlib");
 const gunzip = util.promisify(zlib.gunzip);
@@ -23,10 +23,10 @@ const gzip = util.promisify(zlib.gzip);
 const utf8decoder = new TextDecoder();
 
 //-----------------------------------------------------------------------------
-// Determine file type
+// Determine file type by extension
 //-----------------------------------------------------------------------------
 
-function getsuffix(f, suffixes = [".mawe", ".mawe.gz", ".moe"]) {
+function suffix2format(f, suffixes = [".mawe", ".mawe.gz", ".moe"]) {
   const suffix = suffixes.find(suffix => f.name.endsWith(suffix))
   f.format = {
     ".mawe": "mawe",
@@ -42,11 +42,7 @@ function getsuffix(f, suffixes = [".mawe", ".mawe.gz", ".moe"]) {
 
 async function file2buf(file) {
   var buffer = await fs.read(file.id, null);
-  if(isGzip(buffer)) {
-    file.compressed = true;
-    buffer = await gunzip(buffer);
-  }
-  return utf8decoder.decode(buffer)
+  return utf8decoder.decode(isGzip(buffer) ? await gunzip(buffer) : buffer);
 }
 
 function buf2tree(buffer) {
@@ -59,8 +55,12 @@ function tree2buf(root) {
   return content;
 }
 
-async function buf2file(file, content, compress) {
+async function buf2file(file, buffer, compress) {
   //console.log(file)
-  const buffer = compress ? await gzip(content, {level: 9}) : content;
-  return await fs.write(file.id, buffer);
+  
+  if(file.id.endsWith(".gz")) {
+    return await fs.write(file.id, await gzip(buffer, {level: 9}));
+  } else {
+    return await fs.write(file.id, buffer);
+  }
 }
