@@ -242,7 +242,7 @@ function ListDir({directory, hooks, style}) {
       <Box p={"4pt"} pb={"6pt"} style={{backgroundColor: "#F8F8F8", borderBottom: "1px solid #D8D8D8"}}>
         <PathButtons state={state}/>
         </Box>
-      <PagedList directory={directory} state={state}/>
+      <SplitList directory={directory} state={state}/>
     </VBox>
   )
 
@@ -286,7 +286,7 @@ function ListDir({directory, hooks, style}) {
     return (
       <React.Fragment>
         <PageButtons page={page} pages={pages} setPage={setPage}/>
-        <Box p={"4pt"} style={{overflowY: "auto"}}>
+        <Box p={"4px"} style={{overflowY: "auto"}}>
           <Grid files={files.slice((page-1)*pagelength, pagelength*page-1)} hooks={hooks} />
         </Box>
       </React.Fragment>
@@ -339,7 +339,7 @@ function ListDir({directory, hooks, style}) {
       } else {
         return (
           <React.Fragment>
-            <Typography style={{paddingLeft: 2, paddingTop: 16, paddingBottom: 8}}>Folders</Typography>
+            <Typography style={{paddingLeft: 4, paddingTop: 16, paddingBottom: 8}}>Folders</Typography>
             <Grid files={state.folders} hooks={hooks} />
             </React.Fragment>
         )
@@ -352,7 +352,7 @@ function ListDir({directory, hooks, style}) {
       } else {
         return (
           <React.Fragment>
-            <Typography style={{paddingLeft: 2, paddingTop: 16, paddingBottom: 8}}>Files</Typography>
+            <Typography style={{paddingLeft: 4, paddingTop: 16, paddingBottom: 8}}>Files</Typography>
             <Grid files={state.files} hooks={hooks} />
             </React.Fragment>
         )
@@ -372,25 +372,23 @@ function ListDir({directory, hooks, style}) {
       </Box>
     )
 
-    function FrameBox({children}) {
-      return (
-        <Box width={300} m={"2px"}><Card variant="outlined">
-          {children}
-          </Card></Box>
-      )
-    }
-
     function Cell({file, hooks}) {
       const config = FileItemConfig(file, hooks);
       const callback = getCallbacks(file, hooks);
 
+      const style = {
+        margin: "4px",
+        border: "1px solid lightgrey",
+        borderRadius: 4,
+        paddingTop: 12, paddingBottom: 12,
+        width: 300,
+      }
+
       return (
-        <FrameBox>
-          <ListItem button disabled={config.disabled} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
-          <ListItemAvatar>{config.icon}</ListItemAvatar>
-          <ListItemText primary={file.name}/>
-          </ListItem>
-          </FrameBox>
+        <ListItem style={style} button disabled={config.disabled} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
+        <ListItemAvatar>{config.icon}</ListItemAvatar>
+        <Typography>{file.name}</Typography>
+        </ListItem>
       );
 
       function getCallbacks(file, hooks) {
@@ -538,7 +536,7 @@ function InfiniteFileList({scanner, contains, hooks}) {
       >
       <TableCell style={cellstyle} width="5%">{config.icon}</TableCell>
       <TableCell style={cellstyle} width="35%">{file.name}</TableCell>
-      <TableCell style={cellstyle} width="60%">{file.relpath}</TableCell>
+      <TableCell style={{...cellstyle, color: "grey"}} width="60%">{file.relpath}</TableCell>
       </TableRow>;
   }
 }
