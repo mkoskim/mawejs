@@ -11,12 +11,23 @@ module.exports = {
   fsGetLocation,
   fsRead, fsWrite, fsReadDir,
   fsRename,
+  fsOpenExternal,
 }
 
 //-----------------------------------------------------------------------------
 
 const fs = require("fs-extra");
 const path = require('path');
+
+//-----------------------------------------------------------------------------
+
+const {shell} = require('electron')
+
+// Shell module has some nice commands, like "trashItem", see:
+// https://github.com/electron/electron/blob/main/docs/api/shell.md
+
+// See also system dialog interface:
+// https://www.electronjs.org/docs/api/dialog
 
 //-----------------------------------------------------------------------------
 // Get file entry with info: name, type, real path as ID
@@ -135,4 +146,13 @@ async function fsRename(fileid, name) {
 
   await fs.promises.rename(fileid, name)
   return fsGetFileEntry(name);
+}
+
+//-----------------------------------------------------------------------------
+
+function fsOpenExternal(fileid) {
+  console.log("open:", fileid);
+  return shell.openPath(fileid)
+
+  //shell.showItemInFolder('filepath') // Show the given file in a file manager. If possible, select the file.
 }

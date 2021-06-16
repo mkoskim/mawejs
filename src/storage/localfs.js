@@ -14,6 +14,7 @@ module.exports = {
   readdir,
   getlocation,
   getuser,
+  openexternal,
   splitpath,
 }
 
@@ -92,6 +93,10 @@ function getlocation(location) {
 
 function getuser() {
   return os.userInfo().username;
+}
+
+function openexternal(fileid) {
+  return fscall("openexternal", fileid);
 }
 
 //-----------------------------------------------------------------------------

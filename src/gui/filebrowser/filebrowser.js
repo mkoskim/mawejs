@@ -132,10 +132,13 @@ export function FileBrowser({directory, location, contains, style}) {
     }
 
     try {
+      fs.openexternal(f.id);
+      /*
       const content = await fs.read(f.id);
       console.log("File:", f.id, "Content:", content.slice(0, 200), "...");
       const parent = await fs.parent(f.id)
       chDir(parent.id);
+      */
     } catch(err) {
       showError(err);
     }
