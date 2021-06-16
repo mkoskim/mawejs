@@ -50,9 +50,9 @@ But unlike some of its "competitors", mawe's main design principle is *"Just sta
 
 All the tools that later help you to keep track with the text mass are taken into use just when you need it, without need for configuring them beforehand. Thus, you don't first create scene list, but you later split text to scenes. You don't need to write synopses or tag scenes, until you feel that you need them.
 
-**License**
+- - -
 
-MIT License
+**MIT License**
 
 Copyright (c) 2021 Markus Koskimies
 
