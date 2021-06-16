@@ -11,7 +11,7 @@ import { useSnackbar } from 'notistack';
 
 import {
   FlexBox, VBox, HBox,
-} from "../components/helpers";
+} from "../components/factory";
 
 import {
   Dialog,

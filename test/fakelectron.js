@@ -3,8 +3,7 @@
 //-----------------------------------------------------------------------------
 
 global.window = {
-    ipc: {
-      callMain: require("../public/backend/ipcdispatch").ipcDispatch,
-    },
-  }
-  
+  ipc: {
+    callMain: require("../public/backend/ipcdispatch").ipcDispatch,
+  },
+}

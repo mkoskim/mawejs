@@ -2,7 +2,7 @@ import React from "react";
 
 import {FileBrowser} from "./filebrowser/filebrowser";
 import {FileEditor} from "./editor/editor";
-import {FlexBox} from "./components/helpers";
+import {FlexBox} from "./components/factory";
 import {SnackbarProvider} from "notistack";
 import {Grow, Slide, Fade} from '@material-ui/core';
 

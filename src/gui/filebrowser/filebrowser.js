@@ -49,13 +49,14 @@ import React, {useState, useEffect} from 'react'
 import isHotkey from "is-hotkey";
 
 import {
-  FlexBox, VBox, HBox,
-} from "../components/helpers";
+  FlexBox, VBox, HBox, Filler,
+  ToolBox, Button, Input,
+} from "../components/factory";
 
 import {
     Dialog,
     Card, CardContent,
-    Button, Checkbox, Icon,
+    Checkbox, Icon,
     Switch,
     Breadcrumbs,
     Paper, Box,
@@ -66,10 +67,11 @@ import {
     TableContainer, Table, TableHead, TableRow, TableCell, TableBody,
     Avatar,
     AppBar, Drawer,
-    Toolbar, IconButton, Typography, ButtonGroup,
-    TextField, InputBase,
+    Toolbar, IconButton, ButtonGroup,
+    TextField, InputBase, Typography, 
     CircularProgress, LinearProgress,
     Tooltip,
+    OutlinedInput,
 } from "@material-ui/core";
 
 import { DataGrid } from "@material-ui/data-grid";
@@ -86,6 +88,7 @@ import BlockIcon from '@material-ui/icons/Block';
 import WarnIcon from '@material-ui/icons/Warning';
 import OpenFolderIcon from '@material-ui/icons/FolderOpenOutlined';
 import IconAdd from '@material-ui/icons/AddCircleOutline';
+import TrashIcon from '@material-ui/icons/DeleteOutline';
 
 import TypeFolder from '@material-ui/icons/Folder';
 import TypeFile from '@material-ui/icons/DescriptionOutlined';
@@ -98,8 +101,6 @@ import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 
 import SplitButton from "../components/splitbutton";
-
-import SearchBar from "material-ui-search-bar";
 
 import { useSnackbar } from 'notistack';
 
@@ -124,11 +125,12 @@ export function FileBrowser({directory, location, contains, style}) {
   }
 
   async function open(f) {
+    console.log("Open:", f.name);
+
     if(f.type == "folder") {
       return chDir(f.id);
     }
 
-    console.log("Open:", f.name);
     try {
       const content = await fs.read(f.id);
       console.log("File:", f.id, "Content:", content.slice(0, 200), "...");
@@ -174,11 +176,11 @@ export function FileBrowser({directory, location, contains, style}) {
 function FileItemConfig(file, hooks) {
   switch(file.type) {
     case "folder": return {
-      icon: (<TypeFolder fontSize="small"/>),
+      icon: (<TypeFolder fontSize="small" style={{color: "lightblue"}}/>),
       disabled: !file.access,
     }
     case "file": return {
-      icon: (<TypeFile fontSize="small"/>),
+      icon: (<TypeFile fontSize="small" style={{color: "#51585b"}}/>),
       disabled: !file.access,
     }
     default: return {
@@ -235,29 +237,34 @@ function ListDir({directory, hooks, style}) {
         event.preventDefault();
       }
     }  
+  
   });
 
   return (
     <VBox style={{width: "100%", ...style}}>
-      <Box p={"4pt"} pb={"6pt"} style={{backgroundColor: "#F8F8F8", borderBottom: "1px solid #D8D8D8"}}>
+      <ToolBox flexGrow={1}>
         <PathButtons state={state}/>
-        </Box>
+        <IconButton size="small" style={{marginLeft: 8}}><StarIcon /></IconButton>
+        <Filler/>
+        <Button><SearchIcon onClick={() => hooks.setSearch(true)}/></Button>
+        </ToolBox>
       <SplitList directory={directory} state={state}/>
     </VBox>
   )
 
   //---------------------------------------------------------------------------
 
-  function PathButtons({state})
+  //---------------------------------------------------------------------------
+
+  function PathButtons({state, style})
   {
     if(!state || !state.path) return null;
     return (
-      <ButtonGroup>
-      {state.path.map(f =>
+      <ButtonGroup style={{style}}>
+      {state.path.map((f, i) =>
         <Button
           key={f.id}
-          onClick={() => (hooks.open(f))}
-          style={{textTransform: "none"}}
+          onClick={() => hooks.open(f)}
         >
         {f.name ? f.name : "/"}
         </Button>
@@ -321,39 +328,26 @@ function ListDir({directory, hooks, style}) {
   }
 
   function SplitList({directory, state}) {
-    if(!state || state.directory !== directory) return null;
-    //if(!state || !state.directory) return null;
 
-    console.log("render: FullList");
+    //console.log("render: SplitList");
+
+    if(!state || state.directory !== directory) return null;
 
     return (
         <Box p={"4pt"} style={{overflowY: "auto"}}>
-          <Folders />
-          <Files />
+          <Section name="Folders" items={state.folders}/>
+          <Section name="Files" items={state.files}/>
         </Box>
     )
 
-    function Folders() {
-      if(!state.folders.length) {
+    function Section({name, items}) {
+      if(!items.length) {
         return null;
       } else {
         return (
           <React.Fragment>
-            <Typography style={{paddingLeft: 4, paddingTop: 16, paddingBottom: 8}}>Folders</Typography>
-            <Grid files={state.folders} hooks={hooks} />
-            </React.Fragment>
-        )
-      }
-    }
-
-    function Files() {
-      if(!state.files.length) {
-        return null;
-      } else {
-        return (
-          <React.Fragment>
-            <Typography style={{paddingLeft: 4, paddingTop: 16, paddingBottom: 8}}>Files</Typography>
-            <Grid files={state.files} hooks={hooks} />
+            <Typography style={{paddingLeft: 4, paddingTop: 16, paddingBottom: 8}}>{name}</Typography>
+            <Grid files={items} hooks={hooks} />
             </React.Fragment>
         )
       }
@@ -425,10 +419,15 @@ function SearchDir({directory, contains, hooks, style}) {
   const [scanner, setScanner] = useState(undefined);
   const [search, setSearch] = useState(undefined);
 
+  //console.log("render: SearchDir")
+
   useEffect(() => {
     setScanner(new DirScanner(directory, { excludeFolders: true, ...hooks}))
   }, [directory]);
-  useEffect(() => { setSearch(contains)}, [contains])
+  
+  useEffect(() => {
+    setSearch(contains)
+  }, [scanner, contains])
   
   useEffect(() => {
     document.addEventListener("keydown", stopSearch);
@@ -443,31 +442,10 @@ function SearchDir({directory, contains, hooks, style}) {
     }  
   });
 
-  return (
-    <VBox style={{width: "100%", ...style}}>
-      <SearchBar
-        value={search}
-        onChange={setSearch}
-        onCancelSearch={() => hooks.setSearch(false)}
-        cancelOnEscape
-        autoFocus
-      />
-      <InfiniteFileList scanner={scanner} contains={search} hooks={hooks}/>
-      </VBox>
-  )
-}
-
-function InfiniteFileList({scanner, contains, hooks}) {
-
   const [matches, setMatches] = useState({
     files: [],
     hasMore: undefined,
   })
-
-  function fetch(num) {
-    console.log("Fetch:", contains, num)
-    scanner.fetch(setMatches, contains, num);
-  }
 
   useEffect(() => {
     if(scanner)
@@ -475,14 +453,28 @@ function InfiniteFileList({scanner, contains, hooks}) {
       fetch(30);
       return () => scanner.stop();
     }
-  }, [scanner, contains])
+  }, [search]);
+
+  function fetch(num) {
+    console.log("Fetch:", search, num)
+    scanner.fetch(setMatches, search, num);
+  }
 
   const fetchMore = () => {
     fetch(matches.files.length + 20);
   }
 
-  return (<React.Fragment>
-    <StatusBar/>
+  return (
+    <VBox style={{width: "100%", ...style}}>
+      <ToolBox>
+        <Input
+        placeholder="Search"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        autoFocus
+        />
+      <Status style={{marginLeft: 16}}/>
+      </ToolBox>
     <Box id="scrollbox" style={{overflowY: "auto"}}>
     <InfiniteScroll
       scrollableTarget="scrollbox"
@@ -493,17 +485,16 @@ function InfiniteFileList({scanner, contains, hooks}) {
     >
       <FileTable files={matches.files} hooks={hooks} />
     </InfiniteScroll>
-    </Box></React.Fragment>
-  );
+    </Box>
+    </VBox>
+  )
 
   //---------------------------------------------------------------------------
 
-  function StatusBar() {
+  function Status({style}) {
     if(!scanner) return null;
     return (
-      <Box style={{padding: "4px", paddingTop: "8px", backgroundColor: "#F0F0F0"}}>
-        <Typography style={{fontSize: 12}}>Files: {matches.files.length} (Scanned: {scanner.files.length})</Typography>
-      </Box>
+        <Typography variant="body2" style={style}>Matches: {matches.files.length} (out of {scanner.files.length})</Typography>
     )
 
     function Running() {
