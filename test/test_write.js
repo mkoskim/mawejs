@@ -38,13 +38,15 @@ async function testwrite_2() {
 
   // Hack
   doc1.file = {id: "../local/Beltane.A.mawe", name: "Beltane.A.mawe"}
+  doc1.compress = true;
   await doc1.save();
   console.log("File A:", doc1.file);
 
-  const doc2 = await document.load("../local/Beltane.A.mawe");
-  doc2.file = {id: "../local/Beltane.B.mawe", name: "Beltane.B.mawe"}
+  const doc2 = await document.load("../local/Beltane.A.mawe.gz");
+  doc2.file = {id: "../local/Beltane.B.mawe.gz", name: "Beltane.B.mawe.gz"}
+  doc2.compress = false;
   await doc2.save();
-  console.log("File B:", doc1.file);
+  console.log("File B:", doc2.file);
 
   const {file2buf} = require("../src/document/util");
 

@@ -53,10 +53,10 @@ class Document {
     if(this.compress)
     {
       if(this.suffix !== ".mawe.gz") {
-        this.file = await this.rename(null, ".mawe.gz");
+        await this.rename(null, ".mawe.gz");
       }
     } else if(this.suffix !== ".mawe") {
-      this.file = await this.rename(null, ".mawe");
+      await this.rename(null, ".mawe");
     }
   }
 }

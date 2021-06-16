@@ -116,7 +116,7 @@ async function fsWrite(fileid, content, encoding) {
 
 async function fsReadDir(dirid)
 {
-  return await Promise.all(
+  return Promise.all(
     (await fs.promises.readdir(dirid))
     .map(file => path.resolve(dirid, file))
     .map(file => fsGetFileEntry(file))
