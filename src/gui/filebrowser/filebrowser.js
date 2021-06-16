@@ -376,7 +376,7 @@ function ListDir({directory, hooks, style}) {
       const config = FileItemConfig(file, hooks);
       const callback = getCallbacks(file, hooks);
 
-      const style = {
+      const itemstyle = {
         margin: "4px",
         border: "1px solid lightgrey",
         borderRadius: 4,
@@ -384,9 +384,14 @@ function ListDir({directory, hooks, style}) {
         width: 300,
       }
 
+      const avatarstyle = {
+        minWidth: 0,
+        marginRight: 16,
+      }
+
       return (
-        <ListItem style={style} button disabled={config.disabled} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
-        <ListItemAvatar>{config.icon}</ListItemAvatar>
+        <ListItem style={itemstyle} button disabled={config.disabled} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
+        <ListItemAvatar style={avatarstyle}>{config.icon}</ListItemAvatar>
         <Typography>{file.name}</Typography>
         </ListItem>
       );
