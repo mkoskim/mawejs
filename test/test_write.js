@@ -10,8 +10,8 @@ require("./fakenv");
 const fs = require("../src/storage/localfs");
 const document = require("../src/document")
 
-//testwrite_2();
-testwatch();
+testwrite_2();
+//testwatch();
 
 async function testwrite_1() {
   const doc = await document.load("../local/Beltane.mawe");
@@ -27,14 +27,35 @@ async function testwrite_1() {
   doc.save();
 }
 
-async function testwrite_2() {
-  const doc = await document.load("../local/Beltane.A.mawe");
-  console.log(doc.file);
+//-----------------------------------------------------------------------------
+// Sanity check: check that if you load a file and save it unchanged, you
+// get equal results.
+//-----------------------------------------------------------------------------
 
-  doc.file = {id: "../local/Beltane.B.mawe", name: "Beltane.B.mawe"}
-  doc.save();
-  console.log(doc.file);
+async function testwrite_2() {
+  const doc1 = await document.load("../local/Beltane.mawe");
+  console.log("Original file:", doc1.file);
+
+  // Hack
+  doc1.file = {id: "../local/Beltane.A.mawe", name: "Beltane.A.mawe"}
+  await doc1.save();
+  console.log("File A:", doc1.file);
+
+  const doc2 = await document.load("../local/Beltane.A.mawe");
+  doc2.file = {id: "../local/Beltane.B.mawe", name: "Beltane.B.mawe"}
+  await doc2.save();
+  console.log("File B:", doc1.file);
+
+  const {file2buf} = require("../src/document/util");
+
+  const buf1 = await file2buf(doc1.file);
+  const buf2 = await file2buf(doc2.file);
+
+  console.log(buf1 === buf2 ? "Good: files are equal" : "ERROR: Files differ!");
 }
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 async function testwatch() {
   const nodefs = require('fs');
