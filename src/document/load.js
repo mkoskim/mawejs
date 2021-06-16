@@ -8,17 +8,9 @@
 
 module.exports = {load}
 
-const {getsuffix} = require("./util")
+const {getsuffix, file2buf, buf2tree} = require("./util")
 const {Document} = require("./Document")
-
-const fs = require("../storage/localfs");
-const util = require("util");
-const isGzip = require("is-gzip");
-const zlib = require("zlib");
-const gunzip = util.promisify(zlib.gunzip);
-const utf8decoder = new TextDecoder();
-
-const et = require("elementtree");
+const fs = require("../storage/localfs")
 
 // TODO: Extract file "peeking" for project scanning purposes. It returns the
 // element tree for mawe/moe files to extract header information.
@@ -43,27 +35,11 @@ async function load(file)
 }
 
 //-----------------------------------------------------------------------------
-
-async function getroot(file) {
-  const buffer = await readbuf(file)
-  return et.parse(buffer).getroot();
-
-  async function readbuf(f) {
-    var buffer = await fs.read(f.id, null);
-    if(isGzip(buffer)) {
-      f.compressed = true;
-      buffer = await gunzip(buffer);
-    }
-    return utf8decoder.decode(buffer)
-  }  
-}
-
-//-----------------------------------------------------------------------------
 // Extract mawe from file
 //-----------------------------------------------------------------------------
 
 async function mawe(file) {
-  const root = await getroot(file)
+  const root = buf2tree(await file2buf(file))
 
   return new Document(file, parseRoot(root));
 
@@ -142,7 +118,7 @@ async function mawe(file) {
   function parseBody(elem) {
     return withextras({
       name: elem.get("name", ""),
-      modified: elem.get("modified", ""),
+      modified: null,
       head: parseHead(elem.find("head")),
       part: parseParts(elem),
     }, elem);

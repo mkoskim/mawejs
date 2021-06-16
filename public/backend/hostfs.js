@@ -104,13 +104,14 @@ async function fsGetLocation(name)
 
 //-----------------------------------------------------------------------------
 
-function fsRead(fileid, encoding) {
+async function fsRead(fileid, encoding) {
   return fs.promises.readFile(fileid, {encoding: encoding});
 }
 
-function fsWrite(fileid, content, encoding) {
+async function fsWrite(fileid, content, encoding) {
   console.log("Write:", fileid)
-  return fs.promises.writeFile(fileid, content, {encoding: encoding});
+  await fs.promises.writeFile(fileid, content, {encoding: encoding});
+  return fsGetFileEntry(fileid);
 }
 
 async function fsReadDir(dirid)

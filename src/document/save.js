@@ -25,13 +25,9 @@ TODO: Things to think:
 
 module.exports = {mawe}
 
-const et = require("elementtree");
-const {Element, SubElement, ElementTree, Comment} = et;
+const {tree2buf, buf2file} = require("./util")
 
-const fs = require("../storage/localfs");
-const util = require("util");
-const zlib = require("zlib");
-const gzip = util.promisify(zlib.gzip);
+const {Element, SubElement, ElementTree, Comment} = require("elementtree");
 
 //-----------------------------------------------------------------------------
 // Save stories in .mawe format
@@ -88,10 +84,8 @@ async function mawe(doc) {
   // Serialize and write
   //---------------------------------------------------------------------------
 
-  const etree = new ElementTree(root);
-  const content = etree.write({xml_declaration: false, indent: 0});
-  const buffer  = doc.compress ? await gzip(content, {level: 9}) : content;
-  return fs.write(doc.file.id, buffer);
+  //console.log("save.mawe:", doc.file)
+  return buf2file(doc.file, tree2buf(root), doc.compress);
 }
 
 //-----------------------------------------------------------------------------
@@ -113,7 +107,6 @@ function js2et_all(elem, objs) {
 function addBody(parent, body) {
   const elem = SubElement(parent, "body", {
     name: body.name,
-    modified: Date.now().toString(),
   });
   addBodyElems(elem, body);
 }

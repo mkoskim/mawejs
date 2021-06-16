@@ -10,9 +10,9 @@ require("./fakenv");
 const fs = require("../src/storage/localfs");
 const document = require("../src/document")
 
-testwrite();
+testwrite_2();
 
-async function testwrite() {
+async function testwrite_1() {
   const doc = await document.load("../local/Beltane.mawe");
 
   const head = doc.story.body.head;
@@ -24,4 +24,13 @@ async function testwrite() {
   doc.compress = false;
 
   doc.save();
+}
+
+async function testwrite_2() {
+  const doc = await document.load("../local/Beltane.A.mawe");
+  console.log(doc.file);
+
+  doc.file = {id: "../local/Beltane.B.mawe", name: "Beltane.B.mawe"}
+  doc.save();
+  console.log(doc.file);
 }

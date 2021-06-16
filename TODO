@@ -10,6 +10,10 @@ TODO:
 
 - Make fake app for node test bench
 
+- Get rid of body.modified - it makes version control very difficult.
+
+- Check: load -> save --> produces same buffer
+
 -------------------------------------------------------------------------------
 
 IDEAS:

@@ -13,6 +13,23 @@ const save = require("./save")
 //-----------------------------------------------------------------------------
 
 class Document {
+
+  //---------------------------------------------------------------------------
+
+  get file() { return this._file; }
+
+  set file(f) {
+    if(this._file == undefined) {
+      this._file = f;
+    } else {
+      this._file = {...this._file, ...f}
+    }
+    this.suffix = getsuffix(f, [".mawe", ".mawe.gz"]);
+    this.basename = fs.basename(f.name, this.suffix);
+  }
+
+  //---------------------------------------------------------------------------
+  
   constructor(file, story) {
     this.file = file;
     this.story = story;
@@ -21,14 +38,8 @@ class Document {
     if(!this.story.name) this.story.name = this.basename;
   }
 
-  get file() { return this._file; }
-
-  set file(f) {
-    this._file = f;
-    this.suffix = getsuffix(f, [".mawe", ".mawe.gz"]);
-    this.basename = fs.basename(f.name, this.suffix);
-  }
-
+  //---------------------------------------------------------------------------
+  
   async rename(name, suffix) {
     name   = name ? name : this.basename;
     suffix = suffix ? suffix : this.suffix;
@@ -37,15 +48,15 @@ class Document {
   }
 
   async save() {
-    await save.mawe(this);
+    this.file = await save.mawe(this);
 
     if(this.compress)
     {
       if(this.suffix !== ".mawe.gz") {
-        await this.rename(null, ".mawe.gz");
+        this.file = await this.rename(null, ".mawe.gz");
       }
     } else if(this.suffix !== ".mawe") {
-      await this.rename(null, ".mawe");
+      this.file = await this.rename(null, ".mawe");
     }
   }
 }

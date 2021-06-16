@@ -8,7 +8,6 @@
 
 require("./fakenv");
 const fs = require("../src/storage/localfs");
-const document = require("../src/document")
 
 teststat();
 
