@@ -15,26 +15,12 @@ module.exports = {
 
 //-----------------------------------------------------------------------------
 
-const fs = require("fs");
+const fs = require("fs-extra");
 const path = require('path');
 
 //-----------------------------------------------------------------------------
 // Get file entry with info: name, type, real path as ID
 //-----------------------------------------------------------------------------
-
-function exists(fileid) {
-  return fs.promises.access(fileid, fs.constants.F_OK)
-    .then(r => true)
-    .catch(e => false)
-  ;
-}
-
-function hasaccess(fileid) {
-  return fs.promises.access(fileid, fs.constants.R_OK)
-    .then(r => true)
-    .catch(e => false)
-  ;
-}
 
 async function fsGetFileEntry(fileid)
 {
@@ -52,15 +38,15 @@ async function fsGetFileEntry(fileid)
     if(!dirent.isSymbolicLink()) {
       return {
         symlink: false,
-        type: gettype(dirent),
-        access: await hasaccess(fileid)
+        access: await hasaccess(fileid),
+        ...getfields(dirent),
       }
     } else try {
       const realid = await fs.promises.realpath(fileid);
       return {
         symlink: true,
-        type: gettype(await fs.promises.stat(realid)),
-        access: await hasaccess(realid)
+        access: await hasaccess(realid),
+        ...getfields(await fs.promises.stat(realid)),
       }
     } catch(error) {
       // Broken link
@@ -72,11 +58,26 @@ async function fsGetFileEntry(fileid)
     }
   }
 
+  function getfields(dirent) {
+    return {
+      type: gettype(dirent),
+      size: dirent.size,
+      modified: dirent.mtimeMs,
+    }
+  }
+
   function gettype(dirent) {
     if(dirent.isDirectory()) return "folder";
     if(dirent.isFile()) return "file";
     return undefined;  
   }
+
+  function hasaccess(fileid) {
+    return fs.promises.access(fileid, fs.constants.R_OK)
+      .then(r => true)
+      .catch(e => false)
+    ;
+  }  
 }
 
 //-----------------------------------------------------------------------------
@@ -127,7 +128,7 @@ async function fsRename(fileid, name) {
   name = path.join(path.dirname(fileid), name)
   console.log("Rename:", fileid, "=>", name)
 
-  if(await exists(name)) {
+  if(await fs.pathExists(name)) {
     throw new Error(`Rename failed: ${name} already exists.`)
   }
 

@@ -10,18 +10,13 @@ require("./fakenv");
 const fs = require("../src/storage/localfs");
 const document = require("../src/document")
 
-testwrite();
+teststat();
 
-async function testwrite() {
-  const doc = await document.load("../local/Beltane.mawe");
+async function teststat() {
+  console.log(await fs.fstat("../local/README.md"));
+  console.log(await fs.fstat("../local/Beltane.mawe"));
+  console.log(await fs.fstat("../local/Beltane.mawe.gz"));
 
-  const head = doc.story.body.head;
-  console.log(`${head.author}: ${head.title}`);    
-  console.log(doc.basename, doc.suffix);
-
-  // Hack
-  doc.file = {id: "../local/testwrite.mawe.gz", name: "testwrite.mawe.gz"}
-  doc.compress = false;
-
-  doc.save();
+  const file = await fs.fstat("../local/Beltane.mawe.gz");
+  console.log("Modified:", new Date(file.modified).toISOString())
 }

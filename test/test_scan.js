@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-require("./fakelectron");
+require("./fakenv");
 const fs = require("../src/storage/localfs");
 const {Scanner} = require("../src/storage/scanner");
 const document = require("../src/document")

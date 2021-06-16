@@ -16,6 +16,7 @@
     "electron-is-dev": "^2.0.0",
     "electron-window-state": "^5.0.3",
     "elementtree": "^0.1.7",
+    "fs-extra": "^10.0.0",
     "is-gzip": "^2.0.0",
     "is-hotkey": "^0.2.0",
     "notistack": "^1.0.9",
