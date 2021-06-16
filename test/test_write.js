@@ -10,7 +10,8 @@ require("./fakenv");
 const fs = require("../src/storage/localfs");
 const document = require("../src/document")
 
-testwrite_2();
+//testwrite_2();
+testwatch();
 
 async function testwrite_1() {
   const doc = await document.load("../local/Beltane.mawe");
@@ -33,4 +34,26 @@ async function testwrite_2() {
   doc.file = {id: "../local/Beltane.B.mawe", name: "Beltane.B.mawe"}
   doc.save();
   console.log(doc.file);
+}
+
+async function testwatch() {
+  const nodefs = require('fs');
+  
+  const fileid = '../local/watchthis';
+  
+  console.log(`Watching for file changes on ${fileid}`);
+  
+  /*
+  const watcher = nodefs.promises.watch(fileid);
+
+  for await (const event of watcher) console.log(event);
+
+  /*/
+  nodefs.watch(fileid, (event, filename) => {
+    //if (filename) {
+      console.log(`${event} -> ${filename}`);
+      return true;
+    //}
+  });
+  /**/
 }
