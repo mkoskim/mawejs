@@ -68,35 +68,6 @@ settings and such with automation.
 
 -------------------------------------------------------------------------------
 
-Versions:
-
-- We might decide so, that <body> has always a version tag. So, by default:
-
-        <body version="master"> ... </body>
-
-        <version name="master"> ... </version>
-        <version name="X"> ... </version>
-
-  ...You are editing "master" version of the story.
-
-- This would allow us few things:
-
-  1. "Saving" body to a version: Pressing Ctrl-S would update the corresponding
-     version.
-     
-  2. Switching version: in this case, your <body> is changed to specific version,
-     and its version-attribute is changed.
-     
-  3. Creating new versions: In this case, your <body> stays in the version it was
-     but its content is copied as a new version.
-     
-  4. Version rename: for example, if you rename "master" to "1.0", if <body>
-     is using that version, rename <body> tag, too.
-
-- Initially, this sounds pretty consistent mechanism?
-
--------------------------------------------------------------------------------
-
 Integration:
 
 - First things first: we can develop the editor by using browser local
@@ -122,8 +93,6 @@ Publishing:
 
 Import & Export:
 
-- Loading and storing stories to Google Drive and similar.
-
 - Export RTF
 
 - Export EPUB
@@ -146,4 +115,3 @@ TODO: Small things:
 
   - Maybe Alt-G (grab) enters a state where you can move scene around with
     cursor keys? Alt-G again would revert back to normal mode.
-

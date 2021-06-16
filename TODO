@@ -1,37 +1,30 @@
+NOTES
+
+- Discussion about file types (.mawe, .mawe.gz, versioned file) moved
+  to separate document (docs/FileTypes.txt).
+
+-------------------------------------------------------------------------------
 
 TODO:
 
 - Import RTF: https://www.npmjs.com/package/rtf-parser - many writers Use
   Word or similar, and they can make RTFs.
 
-- If story body does not have mod time, take it from file item.
-
 - Borrow ideas to file browser from Dropbox web browser.
 
-- Make fake app for node test bench
+- Can we do / do we need fake app for test bench?
 
-- Get rid of body.modified - it makes version control very difficult.
-
-- Check: load -> save --> produces same buffer
+- Command line usage? It would be great if you could run the software without
+  window, just from command line. It would give all sorts of great opportunities
+  to integrate editor to other systems (e.g. automatic exports and other
+  operations). You could basically make some automatic imports, too?
 
 -------------------------------------------------------------------------------
 
-IDEAS:
+VERSIONS:
 
-- Use temp files in application directory to make "version control", that is,
-  retrieving some older version of a file in case of extreme damage. Make it
-  so that app can keep track of temp files - that is, rebuild index and link
-  if crashing. Too old versions can be deleted.
-
-  - NOTE: If editing on multiple computers, it works imperfectly. Cannot help.
-
-- Track word counts in application directory. This way it would be possible
-  to see, how many words you have been written in specific week or month.
-
-  - NOTE: If editing on multiple computers, it works imperfectly. Maybe it is
-    better create some sort of database to project tree root (that is, where
-    the projects are scanned). So the database is located at the same place
-    as the stories.
+- Modification time needed mainly when saving versions (so that you know
+  when that version was modified last time) needs to be thought...
 
 -------------------------------------------------------------------------------
 
@@ -44,3 +37,10 @@ DONE:
     in plain node (that is, without electron). I am sure that at Some
     point I like to have command line tools for e.g. exporting stories
     in different format.
+
+- Make fake window to test code on plain node
+
+- Get rid of body.modified - it makes version control very difficult.
+
+- Check: load -> save --> produces same buffer. A more precise test
+  needs to be created later.

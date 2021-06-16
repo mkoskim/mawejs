@@ -1,7 +1,7 @@
 
 
-                File Format (Story structure) for moe editor
-                --------------------------------------------
+                File Format (Story structure) for mawe editor
+                ---------------------------------------------
 
 File format is needed to export stories to external places for editing.
 Although in long run we may consider similar system to googledocs - stories
