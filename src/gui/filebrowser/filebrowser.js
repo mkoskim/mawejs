@@ -115,9 +115,14 @@ export function FileBrowser({directory, location, contains, style}) {
 
   console.log("FileBrowser:", state.dir, directory, location, contains);
 
-  async function showError(err) {
-    console.log(err);
-    enqueueSnackbar(String(err), {variant: "error"});
+  const inform = {
+    error: async (err) => {
+      console.log(err);
+      enqueueSnackbar(String(err), {variant: "error"});
+    },
+    success: async (msg) => {
+      enqueueSnackbar(String(msg), {variant: "success"});
+    }
   }
 
   async function chDir(dirid) {
@@ -130,23 +135,30 @@ export function FileBrowser({directory, location, contains, style}) {
     if(f.type == "folder") {
       return chDir(f.id);
     }
+    fs.openexternal(f.id)
+    .then(err => {
+      if(!err) {
+        inform.success(`Open '${f.name}': ok`)
+      } else {
+        inform.error(`Open '${f.name}': ${err}`);
+      }
+    })
 
+    /*
     try {
-      fs.openexternal(f.id);
-      /*
       const content = await fs.read(f.id);
       console.log("File:", f.id, "Content:", content.slice(0, 200), "...");
       const parent = await fs.parent(f.id)
       chDir(parent.id);
-      */
     } catch(err) {
-      showError(err);
+      inform.error(err);
     }
+    */
   }
 
   const hooks = {
     setSearch: (search) => setState({...state, search: search}),
-    error: showError,
+    error: inform.error,
     chdir: chDir,
     open: open,
     excludeHidden: true,
