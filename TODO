@@ -20,6 +20,11 @@ fancier features later. Basically, I first need editor to replace current Python
 version - in fact, not even that, as I can use the Python version for tasks that 
 can not be done with Electron version yet.
 
+FIX:
+
+- Infinite scroll bar on find stopped working, it won't fetch more items anymore.
+  BUT WHY?!?
+
 TODO:
 
 - Editor component needs Document, not file name. Loading of the document needs

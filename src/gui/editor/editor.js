@@ -103,7 +103,8 @@ export function EditFile({fileid, hooks}) {
   }, [fileid]);
   
   const hotkeys = {
-    "mod+w": hooks.closeFile,
+    "mod+w": hooks.closeFile,   // Close this file
+    "mod+o": hooks.closeFile,   // Go to file browser to open new file
   }
 
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
