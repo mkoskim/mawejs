@@ -1,7 +1,7 @@
 //*****************************************************************************
 //*****************************************************************************
 //
-// Different document utilities
+// Document utilities
 //
 //*****************************************************************************
 //*****************************************************************************
@@ -51,8 +51,7 @@ function buf2tree(buffer) {
 
 function tree2buf(root) {
   const etree = new et.ElementTree(root);
-  const content = etree.write({xml_declaration: false, indent: 0});
-  return content;
+  return etree.write({xml_declaration: false, indent: 0});
 }
 
 async function buf2file(file, buffer, compress) {

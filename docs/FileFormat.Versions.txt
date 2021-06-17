@@ -1,4 +1,4 @@
-VERSIONS INSIDE .MAWE FILES
+STORY VERSIONS INSIDE .MAWE FILES
 
 There is also discussion about the subject in MAWE.FileFormat.txt document.
 

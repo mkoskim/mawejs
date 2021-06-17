@@ -3,31 +3,39 @@
                 File Format (Story structure) for mawe editor
                 ---------------------------------------------
 
-File format is needed to export stories to external places for editing.
-Although in long run we may consider similar system to googledocs - stories
-are stored to network and shared between collaborators - meantime we need
-a format to package the stories to be delivered forward.
+For some time I have been thinking of making an editor, which stores stories
+as linked objects in database. This would give great flexibility to use
+text pieces to form a story. Furthermore, if stories would be stored as 
+a database in a server, sharing them with others would be easy.
 
-We borrow the basic concept from existing Python implementation, with
-certain modifications. For example, Python implementation works with
-trees: you can have nested groups of scenes. I think we really don't need
-this. It mainly helps in certain operations, but I'd like to concentrate on
-basics, and we could trust to rich text and HTTP links in meta text. We
-could try to simplify the structure.
+That may happen in future, but before that, we need a file format to save 
+stories to disk or send to someone.
 
-NOTE! By default, our net application could store stories to a database - all
-together. That could simplify certain operations, like project manager, and
-shared tags. File format is (1) to determine how the story is stored to database,
-and (2) exporting and importing stories to database.
+MAWE format is based on previous MOE file format. MOE format is an XML file
+with a heading, and a tree of nested groups and scenes. Although MOE file 
+is flexible in that matter, it is too flexible - whenever making improvements 
+to editor, you need to take care that it can handle infinitely deep group
+trees.
+
+With MAWE format, I am trying to place more restrictions to the file format 
+to make it easier to implement editors for it.
 
 NOTE! We will keep native file format as XML, for two reasons: (1) we can then
-load files created by previous moe version, and (2) browsers have built-in XML
-parser.
+load files created by previous moe version, and (2) in the end, XML sort of 
+stands for structured document, and that is what MOE and MAWE files are in the
+end. That is, even though we could have other options like JSON or so, XML is 
+mark up language meant for structured documents.
 
-NOTE! We could now prepare for future needs. This means that in general,
-editor preserves blocks it can not edit. For example, our first version might
-not be able to edit anything but content, but it will still preserve synopses
-and such attached to the scene. Or something similar.
+-------------------------------------------------------------------------------
+
+FORWARD COMPATIBILITY CONSIDERATIONS
+
+Some thoughts about this subject.
+
+We could now prepare for future needs. This means that in general, editor
+preserves blocks and tags it does not recognize. For example, our first version
+might not be able to edit anything but content, but it will still preserve
+synopses and such attached to the scene. Or something similar.
 
 -------------------------------------------------------------------------------
 

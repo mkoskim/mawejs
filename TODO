@@ -5,7 +5,36 @@ NOTES
 
 -------------------------------------------------------------------------------
 
+SHORT TERM TODO:
+
+The main objective is to make versions working! That is needed urgently! It 
+won't take long time when I need an editor, where I can store the existing 
+version as a version, and use it to create new one.
+
+So, aim for single-part editor, supporting body and notes sections, very
+similar to current Python version. Support for multiple parts can be added 
+later.
+
+We can make very simple, notepad-like editor as a starting point! We can add
+fancier features later. Basically, I first need editor to replace current Python 
+version - in fact, not even that, as I can use the Python version for tasks that 
+can not be done with Electron version yet.
+
 TODO:
+
+- Integrate file browser and editor parts together: file browser can be 
+  used to select file, editor to edit it.
+
+-------------------------------------------------------------------------------
+
+VERSIONS:
+
+- Modification time needed mainly when saving versions (so that you know
+  when that version was modified last time) needs to be thought...
+
+-------------------------------------------------------------------------------
+
+FUTURE:
 
 - Import RTF: https://www.npmjs.com/package/rtf-parser - many writers Use
   Word or similar, and they can make RTFs.
@@ -18,13 +47,6 @@ TODO:
   window, just from command line. It would give all sorts of great opportunities
   to integrate editor to other systems (e.g. automatic exports and other
   operations). You could basically make some automatic imports, too?
-
--------------------------------------------------------------------------------
-
-VERSIONS:
-
-- Modification time needed mainly when saving versions (so that you know
-  when that version was modified last time) needs to be thought...
 
 -------------------------------------------------------------------------------
 

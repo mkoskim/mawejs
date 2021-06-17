@@ -89,13 +89,13 @@ async function mawe(file) {
   //      <part> ... </part>
   //      ...
   //    </notes>
-  //    <version name="v1.0">
+  //    <version name="A">
   //      <head> ... </head>
   //      <part> ... </part>
   //      <part> ... </part>
   //      ...
   //    </version>
-  //    <version name="v0.3"> ... </version>
+  //    <version name="B"> ... </version>
   //    ...
   //  
   //---------------------------------------------------------------------------
