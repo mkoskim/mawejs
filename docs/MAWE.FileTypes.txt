@@ -13,7 +13,7 @@ FILE FORMAT TYPES:
 
 .MAWE / .MAWE.GZ:
 
-- .mawe is the default file format.
+- .mawe is the default file format. It is structured XML file.
 
 - .mawe.gz is created by compressing the .mawe file with gzip. You can return
   the file back to uncompressed .mawe file by gunzip'ing it.
@@ -28,6 +28,17 @@ FILE FORMAT TYPES:
 
 - Maintaining file extension helps working with gzip/gunzip, if there is
   need for that.
+
+About compression:
+
+- We might add support to other compression formats (bzip2, xz, ...) later.
+
+- Probably not needed, as gzip is good enough to shave off the overhead of
+  ASCII XML format. In general, files are less than half of their size.
+
+- Possible compression methods: gzip, bzip2, ...
+
+- Compressed archives: zip - these are different story.
 
 -------------------------------------------------------------------------------
 

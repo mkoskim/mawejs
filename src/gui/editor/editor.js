@@ -35,6 +35,8 @@ import {
 
 const document = require("../../document");
 
+//-----------------------------------------------------------------------------
+
 export function FileEditor({fileid}) {
   const [content, setContent] = useState(undefined);
   const {enqueueSnackbar} = useSnackbar();

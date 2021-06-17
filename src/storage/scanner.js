@@ -15,9 +15,6 @@ general purpose scanner for different needs.
 // TODO: We need this scanner for other purposes, too! So, take this to
 // storage side and make it generic directory scanner.
 
-// TODO: Sketch "adaptive" batch sizes? So that the scanner takes time
-// how long it took to get the bunch done, and adapts the bunch size to that.
-
 -------------------------------------------------------------------------------
 */
 
@@ -72,14 +69,31 @@ class Scanner {
     return batch.filter(this.filter.file);
   }
 
+  //---------------------------------------------------------------------------
+  //
+  // Batch size: The larger is the bunch of directories we process at once,
+  // the quicker the tree is walked. But at the same time, it takes longer
+  // to wait for results (Promise.all) and it hurts responsiveness. So, we
+  // want to keep the batch size as large as possible, but small enough to
+  // get frequent progress updates and maintain responsiveness.
+  //
+  // Adaptive tuning: we target to 100 ms execution time of a batch. If it
+  // took longer, we decrease the batch size. If the processing were
+  // substantially quick, we increase the batch size to make scanning
+  // quicker.
+  //
+  //---------------------------------------------------------------------------
+  
   tunebatchsize(elapsed) {
     this.average = this.average + (elapsed - this.average) / 10;
 
-    if(this.average > 250) this.batchsize = this.batchsize / 1.5;
-    else if(this.average > 120) this.batchsize = this.batchsize - 5;
-    else if(this.average <  50) this.batchsize = this.batchsize * 1.5;
-    else if(this.average < 80) this.batchsize = this.batchsize + 5;
+    if     (this.average > 250) this.batchsize = this.batchsize / 1.5;
+    else if(this.average > 150) this.batchsize = this.batchsize - 5;
+    else if(this.average > 80)  ;
+    else if(this.average > 50)  this.batchsize = this.batchsize + 5;
+    else                        this.batchsize = this.batchsize * 1.5;
 
+    // Hard limits
     this.batchsize = Math.max(10, Math.min(150, this.batchsize));
   }
 }

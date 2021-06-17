@@ -36,6 +36,10 @@ VERSIONS:
 
 FUTURE:
 
+- Slack has nice feature: when you press arrow up at first line, it creates
+  new empty line, if the first line has some formatting (e.g. <pre></pre>). We 
+  could incorporate this feature to the editor, too.
+
 - Import RTF: https://www.npmjs.com/package/rtf-parser - many writers Use
   Word or similar, and they can make RTFs.
 

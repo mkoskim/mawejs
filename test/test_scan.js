@@ -11,10 +11,12 @@ const fs = require("../src/storage/localfs");
 const {Scanner} = require("../src/storage/scanner");
 const document = require("../src/document")
 
+//-----------------------------------------------------------------------------
+
 const args = process.argv.slice(2)
 
 //testscan();
-scandocs(args[0]);
+scandocs(args);
 
 //-----------------------------------------------------------------------------
 
@@ -34,7 +36,13 @@ async function testscan() {
 
 //-----------------------------------------------------------------------------
 
-function scandocs(directory) {
+function scandocs(args) {
+  if(!args.length) {
+    console.log("Usage: node test_scan.js <dir> <options>")
+    return ;
+  }
+  const [directory, _] = args;
+
   console.log("Scanning:", directory);
   document.scan(directory);
 }
