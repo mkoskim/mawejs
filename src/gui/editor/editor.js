@@ -14,13 +14,14 @@ import { createEditor } from "slate"
 import { withHistory } from "slate-history"
 
 import {
-  FlexBox, VBox, HBox,
+  FlexBox, VBox, HBox, Filler,
+  ToolBox, Button, Input,
 } from "../components/factory";
 
 import {
   Dialog,
   Card, CardContent,
-  Button, Checkbox, Icon,
+  Checkbox, Icon,
   Switch,
   Breadcrumbs,
   Paper, Box,
@@ -37,12 +38,34 @@ import {
   Tooltip,
 } from "@material-ui/core";
 
+import MenuIcon from '@material-ui/icons/Menu';
+import FolderIcon from '@material-ui/icons/Folder';
+import FileIcon from '@material-ui/icons/Description';
+import StarIcon from '@material-ui/icons/StarOutline';
+import HomeIcon from  '@material-ui/icons/Home';
+import SearchIcon from  '@material-ui/icons/Search';
+import BlockIcon from '@material-ui/icons/Block';
+import WarnIcon from '@material-ui/icons/Warning';
+import OpenFolderIcon from '@material-ui/icons/FolderOpenOutlined';
+import IconAdd from '@material-ui/icons/AddCircleOutline';
+import TrashIcon from '@material-ui/icons/DeleteOutline';
+
+import TypeFolder from '@material-ui/icons/Folder';
+import TypeFile from '@material-ui/icons/DescriptionOutlined';
+//import TypeUnknown from '@material-ui/icons/Close';
+//import TypeUnknown from '@material-ui/icons/Help';
+import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
+//import TypeUnknown from '@material-ui/icons/BrokenImage';
+//import TypeUnknown from '@material-ui/icons/CancelPresentationOutlined';
+
+import isHotkey from 'is-hotkey';
+
 const document = require("../../document");
 
 //-----------------------------------------------------------------------------
 
-export function EditFile({fileid}) {
-  const [content, setContent] = useState(undefined);
+export function EditFile({fileid, hooks}) {
+  const [content, setContent] = useState();
   const {enqueueSnackbar} = useSnackbar();
   
   useEffect(() => {
@@ -52,36 +75,72 @@ export function EditFile({fileid}) {
         //enqueueSnackbar(`Loaded ${doc.file.name}`, {variant: "success"});
         enqueueSnackbar(`Loaded ${fileid}`, {variant: "success"});
       })
-      .catch(err => enqueueSnackbar(String(err), {variant: "error"}));
+      .catch(err => {
+        // TODO: Improve!!!
+        enqueueSnackbar(String(err), {variant: "error"});
+        setContent([{type: "paragraph", children: [{text: ""}]}])
+        //hooks.closeFile();
+      });
   }, [fileid]);
   
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
   //const renderElement = useCallback(props => <Element {...props} />, [])
   //const renderLeaf = useCallback(props => <Leaf {...props} />, [])
 
-  if(!content) return <p>Loading: {fileid}</p>;
+  const hotkeys = {
+    "mod+w": hooks.closeFile,
+  }
 
   return (
-    <Slate editor={editor} value={content} onChange={content => setContent(content)}>
-    <Editable
-      spellCheck={false} // Keep false until you find out how to change language
-      renderElement={renderElement}
-      renderLeaf={renderLeaf}
-      autoFocus
-      style={{
-        overflowY: "auto",
-        paddingLeft: "1.5cm",
-        paddingRight: "1.5cm",
-        paddingTop: "1cm",
-        paddingBottom: "2cm",
-        fontFamily: "Times",
-        fontSize: "13pt",
-      }}
-    />
-    </Slate>
+    <React.Fragment>
+      <ToolBar />
+      <Content />
+    </React.Fragment>
   );
 
+  function ToolBar() {
+    return (
+      <ToolBox flexGrow={1}>
+        <Typography>{content ? "File" : "Loading"}: {fileid}</Typography>
+        <Filler/>
+        <IconButton size="small" style={{marginLeft: 8}}><StarIcon /></IconButton>
+        <Button><SearchIcon onClick={() => hooks.setSearch(true)}/></Button>
+      </ToolBox>
+    )
+  }
 
+  function Content() {
+    if(!content) return null;
+    return (
+      <Slate editor={editor} value={content} onChange={content => setContent(content)}>
+        <Editable
+          autoFocus
+          spellCheck={false} // Keep false until you find out how to change language
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+          onKeyDown={onKeyDown}
+          style={{
+            overflowY: "auto",
+            paddingLeft: "1.5cm",
+            paddingRight: "1.5cm",
+            paddingTop: "1cm",
+            paddingBottom: "2cm",
+            fontFamily: "Times",
+            fontSize: "13pt",
+          }}
+        />
+      </Slate>
+    )
+  }
+
+  function onKeyDown(event) {
+    for(const key in hotkeys) {
+      if(isHotkey(key, event)) {
+        event.preventDefault();
+        hotkeys[key]();
+      }
+    }
+  }
   /*
   return (
     <VBox style={{

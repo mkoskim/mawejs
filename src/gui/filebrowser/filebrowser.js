@@ -103,12 +103,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import SplitButton from "../components/splitbutton";
 
 import { useSnackbar } from 'notistack';
+import { suffix2format } from '../../document/util';
 
 //-----------------------------------------------------------------------------
 
 const fs = require("../../storage/localfs")
 
-export function FileBrowser({directory, location, contains, style}) {
+export function FileBrowser({directory, location, contains, hooks, style}) {
   const [state, setState] = useState({dir: undefined, search: !!contains})
 
   const {enqueueSnackbar} = useSnackbar();
@@ -134,29 +135,21 @@ export function FileBrowser({directory, location, contains, style}) {
 
     if(f.type == "folder") {
       return chDir(f.id);
+    } else if(suffix2format(f)) {
+      hooks.openFile(f.id);
+    } else {
+      fs.openexternal(f.id)
+      .then(err => {
+        if(!err) {
+          inform.success(`Open '${f.name}': ok`)
+        } else {
+          inform.error(`Open '${f.name}': ${err}`);
+        }
+      })
     }
-    fs.openexternal(f.id)
-    .then(err => {
-      if(!err) {
-        inform.success(`Open '${f.name}': ok`)
-      } else {
-        inform.error(`Open '${f.name}': ${err}`);
-      }
-    })
-
-    /*
-    try {
-      const content = await fs.read(f.id);
-      console.log("File:", f.id, "Content:", content.slice(0, 200), "...");
-      const parent = await fs.parent(f.id)
-      chDir(parent.id);
-    } catch(err) {
-      inform.error(err);
-    }
-    */
   }
 
-  const hooks = {
+  const _hooks = {
     setSearch: (search) => setState({...state, search: search}),
     error: inform.error,
     chdir: chDir,
@@ -180,9 +173,9 @@ export function FileBrowser({directory, location, contains, style}) {
   if(!state.dir) {
     return null;
   } else if(state.search) {
-    return <SearchDir directory={state.dir} contains={contains ? contains : ""} hooks={hooks} style={style}/>
+    return <SearchDir directory={state.dir} contains={contains ? contains : ""} hooks={_hooks} style={style}/>
   } else {
-    return <ListDir directory={state.dir} hooks={hooks} style={style}/>
+    return <ListDir directory={state.dir} hooks={_hooks} style={style}/>
   }
 }
 
@@ -256,7 +249,7 @@ function ListDir({directory, hooks, style}) {
   });
 
   return (
-    <VBox style={{width: "100%", ...style}}>
+    <React.Fragment>
       <ToolBox flexGrow={1}>
         <PathButtons state={state}/>
         <IconButton size="small" style={{marginLeft: 8}}><StarIcon /></IconButton>
@@ -264,7 +257,7 @@ function ListDir({directory, hooks, style}) {
         <Button><SearchIcon onClick={() => hooks.setSearch(true)}/></Button>
         </ToolBox>
       <SplitList directory={directory} state={state}/>
-    </VBox>
+    </React.Fragment>
   )
 
   //---------------------------------------------------------------------------

@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 
 import {FileBrowser} from "./filebrowser/filebrowser";
 import {EditFile} from "./editor/editor";
-import {FlexBox} from "./components/factory";
+import {VBox, HBox} from "./components/factory";
 import {SnackbarProvider} from "notistack";
 import {Grow, Slide, Fade} from '@material-ui/core';
 
@@ -17,9 +17,14 @@ export default class App extends React.Component {
     super(props);
 
     this.state = {
-      //file: undefined,
+      file: undefined,
       //file: "./local/Beltane.mawe",
-      file: "./local/Dinosauruspuisto.mawe",
+      //file: "./local/Dinosauruspuisto.mawe",
+    }
+
+    this.hooks = {
+      closeFile: () => { this.setState({...this.state, file: undefined}); },
+      openFile: (fileid) => { this.setState({...this.state, file: fileid}); }
     }
   }
 
@@ -28,9 +33,9 @@ export default class App extends React.Component {
     //*
     return (
       <SnackbarProvider maxSnack={3} autoHideDuration={2500} TransitionComponent={Slide}>
-      <FlexBox style={{height: "100vh", width: "100vw"}}>
+      <VBox style={{height: "100vh", width: "100vw"}}>
         {this.View()}
-      </FlexBox>
+      </VBox>
       </SnackbarProvider>
     );
     /*/
@@ -42,9 +47,10 @@ export default class App extends React.Component {
 
   View() {
     if(this.state.file) {
-      return <EditFile fileid={this.state.file} />
+      return <EditFile fileid={this.state.file} hooks={this.hooks}/>
     } else {
-      return <FileBrowser location="home"/>
+      //return <FileBrowser location="home" hooks={this.hooks}/>
+      return <FileBrowser directory="./local" hooks={this.hooks}/>
     }
   }
 
