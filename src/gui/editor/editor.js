@@ -11,9 +11,13 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import { useSnackbar } from 'notistack';
 
+//import {SlateEditor} from "@react-force/slate-editor";
+
+//*
 import { Slate, Editable, withReact } from 'slate-react'
 import { createEditor } from "slate"
 import { withHistory } from "slate-history"
+/**/
 
 import {
   FlexBox, VBox, HBox, Filler,
@@ -67,59 +71,45 @@ const document = require("../../document");
 //-----------------------------------------------------------------------------
 
 export function EditFile({fileid, hooks}) {
-  const [content, setContent] = useState();
+  const [content, setContent] = useState([
+    { type: "paragraph", children: [{text: ""}] }
+  ]);
   const {enqueueSnackbar} = useSnackbar();
   
   useEffect(() => {
-    loadContent(fileid)
-      .then(content => {
-        setContent(content);
-        //enqueueSnackbar(`Loaded ${doc.file.name}`, {variant: "success"});
-        enqueueSnackbar(`Loaded ${fileid}`, {variant: "success"});
-      })
-      .catch(err => {
-        // TODO: Improve!!!
-        enqueueSnackbar(String(err), {variant: "error"});
-        setContent([{type: "paragraph", children: [{text: ""}]}])
-        //hooks.closeFile();
-      });
+    if(fileid) {
+      loadContent(fileid)
+        .then(content => {
+          setContent(content);
+          //enqueueSnackbar(`Loaded ${doc.file.name}`, {variant: "success"});
+          enqueueSnackbar(`Loaded ${fileid}`, {variant: "success"});
+        })
+        .catch(err => {
+          // TODO: Improve!!!
+          enqueueSnackbar(String(err), {variant: "error"});
+          setContent([{type: "paragraph", children: [{text: ""}]}])
+          //hooks.closeFile();
+        });
+    }
   }, [fileid]);
   
-  const editor = useMemo(() => withHistory(withReact(createEditor())), [])
-  //const renderElement = useCallback(props => <Element {...props} />, [])
-  //const renderLeaf = useCallback(props => <Leaf {...props} />, [])
-
   const hotkeys = {
     "mod+w": hooks.closeFile,
   }
 
+  const editor = useMemo(() => withHistory(withReact(createEditor())), [])
+  const renderElement = useCallback(props => <Element {...props} />, [])
+  const renderLeaf = useCallback(props => <Leaf {...props} />, [])
+
   return (
     <React.Fragment>
       <ToolBar />
-      <Content />
-    </React.Fragment>
-  );
-
-  function ToolBar() {
-    return (
-      <ToolBox flexGrow={1}>
-        <Typography>{content ? "File" : "Loading"}: {fileid}</Typography>
-        <Filler/>
-        <IconButton size="small" style={{marginLeft: 8}}><StarIcon /></IconButton>
-        <Button><SearchIcon onClick={() => hooks.setSearch(true)}/></Button>
-      </ToolBox>
-    )
-  }
-
-  function Content() {
-    if(!content) return null;
-    return (
       <Slate editor={editor} value={content} onChange={setContent}>
         <Editable
           autoFocus
           spellCheck={false} // Keep false until you find out how to change language
-          renderElement={Element}
-          renderLeaf={Leaf}
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
           onKeyDown={onKeyDown}
           style={{
             overflowY: "auto",
@@ -132,6 +122,17 @@ export function EditFile({fileid, hooks}) {
           }}
         />
       </Slate>
+    </React.Fragment>
+  )
+
+  function ToolBar(props) {
+    return (
+      <ToolBox flexGrow={1}>
+        <Typography>{content ? "File" : "Loading"}: {fileid}</Typography>
+        <Filler/>
+        <IconButton size="small" style={{marginLeft: 8}}><StarIcon /></IconButton>
+        <Button><SearchIcon /></Button>
+      </ToolBox>
     )
   }
 

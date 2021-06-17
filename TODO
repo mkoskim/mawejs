@@ -22,8 +22,10 @@ can not be done with Electron version yet.
 
 TODO:
 
-- Integrate file browser and editor parts together: file browser can be 
-  used to select file, editor to edit it.
+- Editor component needs Document, not file name. Loading of the document needs
+  to be handled elsewhere.
+
+- Serialize doc from Slate editor
 
 -------------------------------------------------------------------------------
 
@@ -72,3 +74,6 @@ DONE:
 
 - Check: load -> save --> produces same buffer. A more precise test
   needs to be created later.
+
+- Integrate file browser and editor parts together: file browser can be 
+  used to select file, editor to edit it.

@@ -1,10 +1,26 @@
+VERSIONED FILE FORMAT FOR MAWE
+
+Versioned file format means a file format, that stores the versions of the
+file internally. This would be great for certain things, amongst the best
+is that the user can be freed from saving files: that is, Ctrl-S is just
+advisory, the system itself keeps data safe.
+
+NOTE: Even if we don't implement versioned file formats immediately, we can
+make the editor to use it internally! That means, that as long as the editor
+is open, you can revert back to earlier versions. Then later we can make 
+the editor to save & load these versioned files from disk.
+
+NOTE: Not all file systems need versioned files. If we later can integrate 
+MAWE to google drive or dropbox, those file systems have versioning already,
+and thus you can keep using plain mawe formats.
+
 -------------------------------------------------------------------------------
 
 FILE FORMAT TYPES:
 
-(1) Let's implement .mawe / .mawe.gz file formats separately. These are plain
-    and simple file formats which can be exchanged between writers. Also,
-    these form the fundamentals to the versioning format, too.
+(1) .mawe / .mawe.gz file formats are plain and simple file formats which can
+    be exchanged between writers. Also, these form the fundamentals to the
+    versioning format, too.
 
 (2) Versioning file format. This is meant for cases, where there is no other
     versioning available. This is first experimental.

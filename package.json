@@ -37,7 +37,8 @@
     "electron-builder": "^22.11.7",
     "esm": "^3.2.25",
     "react-scripts": "^4.0.3",
-    "wait-on": "^5.3.0"
+    "wait-on": "^5.3.0",
+    "@react-force/slate-editor": "^1.1.1"
   },
   "scripts": {
     "dev": "concurrently \"cross-env BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",

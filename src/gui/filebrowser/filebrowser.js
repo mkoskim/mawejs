@@ -166,7 +166,7 @@ export function FileBrowser({directory, location, contains, hooks, style}) {
         ? (await fs.fstat(directory)).id
         : await fs.getlocation(location ? location : "home");
       console.log("dir", d);
-      setState({...state, dir: d});
+      setState(state => ({...state, dir: d}));
     }
   
     resolvedir();
@@ -214,11 +214,7 @@ function ListDir({directory, hooks, style}) {
   
   //console.log("render: ListDir", directory, state);
 
-  function sortFiles(files) {
-    return files.sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
-  }
-
-  useEffect(async () => {
+  async function getContent() {
     const path = await fs.splitpath(directory);
     setState({path: path});
 
@@ -228,13 +224,20 @@ function ListDir({directory, hooks, style}) {
 
     //console.log(files, folders);
 
-    setState((state) => ({
+    setState(state => ({
       ...state,
       directory: directory,
       folders: folders,
       files: files,
     }))
-  }, [directory]);
+
+    function sortFiles(files) {
+      return files.sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
+    }
+  
+  }
+
+  useEffect(() => { getContent(); }, [directory]);
 
   useEffect(() => {
     document.addEventListener("keydown", startSearch);
