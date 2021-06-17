@@ -68,7 +68,17 @@ import isHotkey from 'is-hotkey';
 
 const document = require("../../document");
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//*****************************************************************************
+//
+// NOTE!!! Slate is very picky that all its components are together. So, do
+// not separate Slate from its state and such things. If you do that, it will
+// not work!
+//
+// IT WILL NOT WORK!
+//
+//*****************************************************************************
+//*****************************************************************************
 
 export function EditFile({fileid, hooks}) {
   const [content, setContent] = useState([
@@ -88,7 +98,6 @@ export function EditFile({fileid, hooks}) {
           // TODO: Improve!!!
           enqueueSnackbar(String(err), {variant: "error"});
           setContent([{type: "paragraph", children: [{text: ""}]}])
-          //hooks.closeFile();
         });
     }
   }, [fileid]);
