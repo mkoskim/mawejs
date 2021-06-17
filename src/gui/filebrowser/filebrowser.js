@@ -44,6 +44,8 @@ DONE:
 -------------------------------------------------------------------------------
 */
 
+/* eslint-disable no-unused-vars */
+
 import React, {useState, useEffect} from 'react'
 
 import isHotkey from "is-hotkey";
@@ -133,7 +135,7 @@ export function FileBrowser({directory, location, contains, hooks, style}) {
   async function open(f) {
     console.log("Open:", f.name);
 
-    if(f.type == "folder") {
+    if(f.type === "folder") {
       return chDir(f.id);
     } else if(suffix2format(f)) {
       hooks.openFile(f.id);

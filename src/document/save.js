@@ -23,17 +23,14 @@ TODO: Things to think:
 -------------------------------------------------------------------------------
 */
 
-module.exports = {mawe}
-
-const {tree2buf, buf2file} = require("./util")
-
-const {Element, SubElement, ElementTree, Comment} = require("elementtree");
+import {tree2buf, buf2file} from "./util.js";
+import {Element, SubElement, Comment} from "elementtree";
 
 //-----------------------------------------------------------------------------
 // Save stories in .mawe format
 //-----------------------------------------------------------------------------
 
-async function mawe(doc) {
+export async function mawe(doc) {
 
   //---------------------------------------------------------------------------
   // Build tree. Add some comment blocks to make XML bit more readable.

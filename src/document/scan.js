@@ -6,13 +6,10 @@
 //*****************************************************************************
 //*****************************************************************************
 
-module.exports = {scan}
+import {Scanner} from "../storage/scanner";
+import {suffix2format} from "./util.js";
 
-const fs = require("../storage/localfs");
-const {Scanner} = require("../storage/scanner");
-const {suffix2format} = require("./util")
-
-async function scan(directory)
+export async function scan(directory)
 {
   const scanner = new Scanner(directory);
 

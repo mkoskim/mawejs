@@ -1,20 +1,23 @@
-import React, {useState, useEffect} from 'react'
+/* eslint-disable no-unused-vars */
+
+import React from 'react'
 
 import {FileBrowser} from "./filebrowser/filebrowser";
 import {EditFile} from "./editor/editor";
-import {VBox, HBox} from "./components/factory";
+import {VBox} from "./components/factory";
 import {SnackbarProvider} from "notistack";
-import {Grow, Slide, Fade} from '@material-ui/core';
+import {Slide, Grow, Fade} from '@material-ui/core';
 
 import {
   Dialog,
 } from "@material-ui/core";
-import { render } from 'react-dom';
 
 export default class App extends React.Component {
 
   constructor(props) {
     super(props);
+
+    console.log("constructor: App")
 
     this.state = {
       file: undefined,

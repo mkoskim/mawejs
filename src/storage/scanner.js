@@ -20,7 +20,7 @@ general purpose scanner for different needs.
 
 const fs = require("./localfs");
 
-class Scanner {
+export class Scanner {
 
   constructor(directory) {
     this.directory = directory;
@@ -61,7 +61,7 @@ class Scanner {
 
   processbatch(batch) {
     const folders = batch
-      .filter(f => !f.symlink && f.type == "folder")
+      .filter(f => !f.symlink && f.type === "folder")
       .filter(this.filter.folder)
   
     this.scan.push(...folders.map(f => f.id))
@@ -97,5 +97,3 @@ class Scanner {
     this.batchsize = Math.max(10, Math.min(150, this.batchsize));
   }
 }
-
-module.exports = {Scanner}

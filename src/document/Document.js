@@ -6,13 +6,13 @@
 //*****************************************************************************
 //*****************************************************************************
 
-const {suffix2format} = require("./util")
+import {suffix2format} from "./util.js";
 const fs = require("../storage/localfs");
 const save = require("./save")
 
 //-----------------------------------------------------------------------------
 
-class Document {
+export class Document {
 
   //---------------------------------------------------------------------------
   // File object of this document. Setting it will update its fields, so
@@ -51,5 +51,3 @@ class Document {
     this.file = await fs.rename(this.file.id, name + suffix);
   }
 }
-
-module.exports={Document}

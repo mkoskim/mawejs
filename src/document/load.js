@@ -6,10 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
-module.exports = {load}
-
-const {suffix2format, file2buf, buf2tree} = require("./util")
-const {Document} = require("./Document")
+import {suffix2format, file2buf, buf2tree} from "./util";
+import {Document} from "./Document";
 const fs = require("../storage/localfs")
 
 // TODO: Extract file "peeking" for project scanning purposes. It returns the
@@ -17,7 +15,7 @@ const fs = require("../storage/localfs")
 // TODO: Add file directory to file entry - we basically get it automatically
 // when scanning directories.
 
-async function load(file)
+export async function load(file)
 {
   if(typeof file === "string") file = await fs.fstat(file);
 
@@ -30,6 +28,7 @@ async function load(file)
       console.log(e);
       throw Error(`${file.name}: Invalid .mawe file.`);
     }
+    default: break;
   }
 
   throw new Error(`${file.name}: Unknown type.`);

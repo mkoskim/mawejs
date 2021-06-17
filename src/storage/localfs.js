@@ -6,6 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
+/*
 module.exports = {
   fstat, parent, relpath,
   dirname, basename, extname,
@@ -17,6 +18,7 @@ module.exports = {
   openexternal,
   splitpath,
 }
+/**/
 
 //-----------------------------------------------------------------------------
 // Bridge
@@ -35,73 +37,73 @@ const path = require("path");
 
 //-----------------------------------------------------------------------------
 
-function dirname(fileid) {
+export function dirname(fileid) {
   return path.dirname(fileid);
 }
 
-function relpath(directory, fileid) {
+export function relpath(directory, fileid) {
   return path.relative(directory, fileid);
 }
 
-function basename(filename, ext) {
+export function basename(filename, ext) {
   return path.basename(filename, ext);
 }
 
-function extname(filename) {
+export function extname(filename) {
   return path.extname(filename);
 }
 
 //-----------------------------------------------------------------------------
 
-function fstat(fileid) {
+export function fstat(fileid) {
   return fscall("fstat", fileid);
 }
 
-function parent(fileid) {
+export function parent(fileid) {
   return fscall("parent", fileid);
 }
 
-function readdir(fileid) {
+export function readdir(fileid) {
   return fscall("readdir", fileid);
 }
 
-function read(fileid, encoding="utf8") {
+export function read(fileid, encoding="utf8") {
   return fscall("read", fileid, encoding);
 }
 
-function write(fileid, content, encoding="utf8") {
+export function write(fileid, content, encoding="utf8") {
   return fscall("write", fileid, content, encoding);
 }
 
-function rename(fileid, name) {
+export function rename(fileid, name) {
   return fscall("rename", fileid, name);
 }
 
-function move(fileid, dirid) {
-  throw "Not implemented.";
+export function move(fileid, dirid) {
+  throw new Error("Not implemented.");
 }
 
-function remove(fileid) {
-  throw "Not implemented.";
+export function remove(fileid) {
+  throw new Error("Not implemented.");
 }
 
 //-----------------------------------------------------------------------------
 
-function getlocation(location) {
+export function getlocation(location) {
   return fscall("getlocation", location);
 }
 
-function getuser() {
+export function getuser() {
   return os.userInfo().username;
 }
 
-function openexternal(fileid) {
+export function openexternal(fileid) {
   return fscall("openexternal", fileid);
 }
 
 //-----------------------------------------------------------------------------
 
-async function splitpath(fileid) {
+export async function splitpath(fileid) {
   var dirs = [];
 
   var dirent = await fstat(fileid);
