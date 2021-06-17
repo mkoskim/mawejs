@@ -36,6 +36,8 @@ VERSIONS:
 
 FUTURE:
 
+- I might switch render functions to classes. They work nicer with states.
+
 - Slack has nice feature: when you press arrow up at first line, it creates
   new empty line, if the first line has some formatting (e.g. <pre></pre>). We 
   could incorporate this feature to the editor, too.

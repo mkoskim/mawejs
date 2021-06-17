@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 
 import {FileBrowser} from "./filebrowser/filebrowser";
-import {FileEditor} from "./editor/editor";
+import {EditFile} from "./editor/editor";
 import {FlexBox} from "./components/factory";
 import {SnackbarProvider} from "notistack";
 import {Grow, Slide, Fade} from '@material-ui/core';
@@ -18,7 +18,8 @@ export default class App extends React.Component {
 
     this.state = {
       //file: undefined,
-      file: "./local/Beltane.mawe",
+      //file: "./local/Beltane.mawe",
+      file: "./local/Dinosauruspuisto.mawe",
     }
   }
 
@@ -40,19 +41,16 @@ export default class App extends React.Component {
   }
 
   View() {
-    return (this.state.file) ? this.EditFile(this.state.file) : this.OpenFile();
+    if(this.state.file) {
+      return <EditFile fileid={this.state.file} />
+    } else {
+      return <FileBrowser location="home"/>
+    }
   }
 
-  OpenFile() {
-    return <FileBrowser location="home"/>
-  }
-
-  EditFile(file) {
-    return <FileEditor fileid={file} />
     // TODO: Use these to make test cases:
       //<FileEditor fileid="local/donotexist" />
       //<FileEditor fileid="local/cantread.txt" />
       //<FileEditor fileid="local/README.md" />
       //<FileEditor fileid="local/invalid.mawe" />
-  }
 }
