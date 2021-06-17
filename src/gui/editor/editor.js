@@ -6,6 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
+/* eslint-disable no-unused-vars */
+
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import { useSnackbar } from 'notistack';
 
@@ -112,12 +114,12 @@ export function EditFile({fileid, hooks}) {
   function Content() {
     if(!content) return null;
     return (
-      <Slate editor={editor} value={content} onChange={content => setContent(content)}>
+      <Slate editor={editor} value={content} onChange={setContent}>
         <Editable
           autoFocus
           spellCheck={false} // Keep false until you find out how to change language
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
+          renderElement={Element}
+          renderLeaf={Leaf}
           onKeyDown={onKeyDown}
           style={{
             overflowY: "auto",
@@ -141,41 +143,18 @@ export function EditFile({fileid, hooks}) {
       }
     }
   }
-  /*
-  return (
-    <VBox style={{
-      overflowY: "auto",
-      paddingLeft: "1.5cm",
-      paddingRight: "1.5cm",
-      paddingTop: "1cm",
-      paddingBottom: "2cm",
-      fontFamily: "Times",
-      fontSize: "13pt",
-      }}>
-      <Slate editor={editor} value={content} onChange={content => setContent(content)}>
-        <p>{fileid}</p>
-        <Editable
-          spellCheck={false} // Keep false until you find out how to change language
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-          autoFocus
-          //style={{paddingTop: "1cm"}}
-        />
-      </Slate>
-    </VBox>
-  )
-  */
-}
 
-function renderElement({element, attributes, children}) {
-  switch(element.type) {
-    case "scene": return <p {...attributes}><b>{children}</b></p>
-    default: return <p {...attributes}>{children}</p>
+  function Element({element, attributes, children}) {
+    switch(element.type) {
+      case "scene": return <p {...attributes}><b>{children}</b></p>
+      default: return <p {...attributes}>{children}</p>
+    }
   }
-}
-
-function renderLeaf({leaf, attributes, children}) {
-  return <span {...attributes}>{children}</span>
+  
+  function Leaf({leaf, attributes, children}) {
+    return <span {...attributes}>{children}</span>
+  }
+  
 }
 
 //-----------------------------------------------------------------------------

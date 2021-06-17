@@ -15,7 +15,6 @@ const {BrowserWindow} = electron;
 const {globalShortcut} = electron;
 const windowStateKeeper = require('electron-window-state');
 
-const url = require('url') 
 const path = require('path')
 const isDev = require("electron-is-dev");
 const debug = require("electron-debug")
@@ -47,11 +46,11 @@ async function createWindow()
   mainWindow.on("closed", () => (mainWindow = null));
 
   mainWindow.setMenu(null);
+  mainWindow.webContents.openDevTools();
 
   if(isDev)
   {
     debug();
-    mainWindow.webContents.openDevTools();
     mainWindow.loadURL('http://localhost:3000');
   }
   else{
