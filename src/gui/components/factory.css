@@ -1,3 +1,8 @@
+/* ----------------------------------------------------------------------------
+// Styles for Separator depending if it is horizontal or vertical box.
+// ----------------------------------------------------------------------------
+*/
+
 .HBox > .Separator {
     height: 100%;
     border-right: 1pt solid lightgrey;

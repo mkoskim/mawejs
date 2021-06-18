@@ -9,7 +9,6 @@
 /* eslint-disable no-unused-vars */
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import { useSnackbar } from 'notistack';
 
 //import {SlateEditor} from "@react-force/slate-editor";
 
@@ -22,6 +21,7 @@ import { withHistory } from "slate-history"
 import {
   FlexBox, VBox, HBox, Filler,
   ToolBox, Button, Input,
+  SearchBox, Inform,
 } from "../components/factory";
 
 import {
@@ -41,9 +41,10 @@ import {
   Toolbar, IconButton, Typography, ButtonGroup,
   TextField, InputBase,
   CircularProgress, LinearProgress,
-  Tooltip,
+  Tooltip, Snackbar,
 } from "@material-ui/core";
 
+import CloseIcon from '@material-ui/icons/Close' 
 import MenuIcon from '@material-ui/icons/Menu';
 import FolderIcon from '@material-ui/icons/Folder';
 import FileIcon from '@material-ui/icons/Description';
@@ -66,8 +67,6 @@ import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
 
 import isHotkey from 'is-hotkey';
 
-const document = require("../../document");
-
 //*****************************************************************************
 //*****************************************************************************
 //
@@ -84,7 +83,7 @@ export function EditFile({doc, hooks}) {
   const [content, setContent] = useState([
     { type: "paragraph", children: [{text: ""}] }
   ]);
-  const {enqueueSnackbar} = useSnackbar();
+  const inform = Inform();
   
   useEffect(() => {
     setContent(deserialize(doc));
@@ -127,10 +126,10 @@ export function EditFile({doc, hooks}) {
   function ToolBar(props) {
     return (
       <ToolBox flexGrow={1}>
-        <Typography>File: {doc.file.name}</Typography>
+        <Typography>{doc.file.name}</Typography>
+        <SearchBox style={{marginLeft: 8, marginRight: 8}}/>
         <Filler/>
-        <IconButton size="small" style={{marginLeft: 8}}><StarIcon /></IconButton>
-        <Button><SearchIcon /></Button>
+        <Button size="small"><SearchIcon /></Button>
       </ToolBox>
     )
   }

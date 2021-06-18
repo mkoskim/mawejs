@@ -10,9 +10,38 @@ import "./factory.css"
 
 /* eslint-disable no-unused-vars */
 
+//-----------------------------------------------------------------------------
+
+import CloseIcon from '@material-ui/icons/Close' 
+import MenuIcon from '@material-ui/icons/Menu';
+import FolderIcon from '@material-ui/icons/Folder';
+import FileIcon from '@material-ui/icons/Description';
+import StarIcon from '@material-ui/icons/StarOutline';
+import HomeIcon from  '@material-ui/icons/Home';
+import SearchIcon from  '@material-ui/icons/Search';
+import BlockIcon from '@material-ui/icons/Block';
+import WarnIcon from '@material-ui/icons/Warning';
+import OpenFolderIcon from '@material-ui/icons/FolderOpenOutlined';
+import IconAdd from '@material-ui/icons/AddCircleOutline';
+import TrashIcon from '@material-ui/icons/DeleteOutline';
+
+import TypeFolder from '@material-ui/icons/Folder';
+import TypeFile from '@material-ui/icons/DescriptionOutlined';
+//import TypeUnknown from '@material-ui/icons/Close';
+//import TypeUnknown from '@material-ui/icons/Help';
+import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
+//import TypeUnknown from '@material-ui/icons/BrokenImage';
+//import TypeUnknown from '@material-ui/icons/CancelPresentationOutlined';
+
+//-----------------------------------------------------------------------------
+
+import isHotkey from 'is-hotkey';
+import { useSnackbar } from 'notistack';
+
 const {
   Button: MuiButton,
-  Input: MuiInput,
+  Input: MuiInput, InputAdornment,
+  IconButton: MuiIconButton,
   //Box: MuiBox,
   ButtonGroup: MuiButtonGroup,
 } = require("@material-ui/core")
@@ -107,4 +136,56 @@ export function Input(props) {
     }}
     />
   )
+}
+
+export function SearchBox(props)
+{
+  return <Input
+    {...props}
+    placeholder="Search"
+    style={{marginLeft: 8, marginRight: 8}}
+    endAdornment={
+      <InputAdornment position="end">
+        <MuiIconButton
+          onClick={props.onCancel}
+          size="small"
+          style={{fontSize: "12pt", marginLeft: 2, marginRight: 2}}
+          >
+          <CloseIcon fontSize="inherit"/>
+          </MuiIconButton>
+      </InputAdornment>
+    }
+    onKeyDown={e => {
+      //console.log(event.key);
+      if(isHotkey("escape", e) && props.onCancel) {
+        console.log("Cancel")
+        props.onCancel();
+        e.preventDefault();
+      }
+    }}
+  />
+}
+
+//-----------------------------------------------------------------------------
+
+export function Inform() {
+  const snackbar = useSnackbar();
+  const enqueue = snackbar.enqueueSnackbar;
+  const close = snackbar.closeSnackbar;
+  return {
+    process: msg => {
+      return enqueue(String(msg), {variant: "info", persist: true});
+    },
+    success: msg => {
+      return enqueue(String(msg), {variant: "success"});
+    },
+    warning: msg => {
+      return enqueue(String(msg), {variant: "warning"});
+    },
+    error: err => {
+      console.log(err);
+      return enqueue(String(err), {variant: "error"});
+    },
+    dismiss: key => close(key),
+  }
 }

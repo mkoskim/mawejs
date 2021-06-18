@@ -52,7 +52,7 @@ import isHotkey from "is-hotkey";
 
 import {
   FlexBox, VBox, HBox, Filler, Separator,
-  ToolBox, Button, Input,
+  ToolBox, Button, Input, SearchBox, Inform,
 } from "../components/factory";
 
 import {
@@ -104,36 +104,21 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import SplitButton from "../components/splitbutton";
 
-import { useSnackbar } from 'notistack';
-import { suffix2format } from '../../document/util';
-
 //-----------------------------------------------------------------------------
 
 const fs = require("../../storage/localfs")
 const mawe = require("../../document")
+const {suffix2format} = require('../../document/util');
 
 //-----------------------------------------------------------------------------
 
 export function FileBrowser({directory, location, contains, hooks, style}) {
   const [state, setState] = useState({dir: undefined, search: !!contains})
 
-  const {enqueueSnackbar, closeSnackbar} = useSnackbar();
+  //const inform = Inform(useSnackbar());
+  const inform = Inform();
 
   console.log("FileBrowser:", state.dir, directory, location, contains);
-
-  const inform = {
-    error: err => {
-      console.log(err);
-      return enqueueSnackbar(String(err), {variant: "error"});
-    },
-    success: msg => {
-      return enqueueSnackbar(String(msg), {variant: "success"});
-    },
-    process: msg => {
-      return enqueueSnackbar(String(msg), {variant: "info", persist: true});
-    },
-    dismiss: key => closeSnackbar(key),
-  }
 
   async function chDir(dirid) {
     setState({dir: dirid, search: false});
@@ -142,15 +127,15 @@ export function FileBrowser({directory, location, contains, hooks, style}) {
   async function open(f) {
     console.log("Open:", f.name);
 
-    if(f.type == "folder") return chDir(f.id);
+    if(f.type === "folder") return chDir(f.id);
 
     if(suffix2format(f)) {
       // TODO: Implement something to show that we are doing something
       //const key = inform.process(`Loading ${f.name}`);
       try {
         const doc = await mawe.load(f.id);
-        inform.success(`Loaded ${f.name}`)
         hooks.openFile(doc);
+        inform.success(`Loaded ${f.name}`)
       } catch(err) {
         inform.error(`Open '${f.name}': ${err}`);
       } finally {
@@ -458,19 +443,6 @@ function SearchDir({directory, contains, hooks, style}) {
   useEffect(() => {
     setSearch(contains)
   }, [scanner, contains])
-  
-  useEffect(() => {
-    document.addEventListener("keydown", stopSearch);
-    return () => document.removeEventListener("keydown", stopSearch)
-
-    function stopSearch(event) {
-      //console.log(event.key);
-      if(isHotkey("escape", event)) {
-        hooks.setSearch(false);
-        event.preventDefault();
-      }
-    }  
-  });
 
   const [matches, setMatches] = useState({
     files: [],
@@ -496,10 +468,10 @@ function SearchDir({directory, contains, hooks, style}) {
 
   return (<React.Fragment>
     <ToolBox>
-      <Input
-      placeholder="Search"
+      <SearchBox
       value={search}
       onChange={e => setSearch(e.target.value)}
+      onCancel={e => hooks.setSearch(false)}
       autoFocus
       />
       <Status style={{marginLeft: 16}}/>
