@@ -33,9 +33,13 @@ FORWARD COMPATIBILITY CONSIDERATIONS
 Some thoughts about this subject.
 
 We could now prepare for future needs. This means that in general, editor
-preserves blocks and tags it does not recognize. For example, our first version
-might not be able to edit anything but content, but it will still preserve
-synopses and such attached to the scene. Or something similar.
+preserves blocks and attributes it does not recognize. For example, our first
+version might not be able to edit anything but content, but it will still
+preserve synopses and such attached to the scene. Or something similar.
+
+Extra elements and attributes can be in <story>, <body>, <head>, <version>
+elements. They can not be in <part>, <scene> and such elements, because
+editors are free to delete and create them.
 
 -------------------------------------------------------------------------------
 

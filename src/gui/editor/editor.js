@@ -6,6 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
+import "./editor.css"
+
 /* eslint-disable no-unused-vars */
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
@@ -85,9 +87,7 @@ export function EditFile({doc, hooks}) {
   ]);
   const inform = Inform();
   
-  useEffect(() => {
-    setContent(deserialize(doc));
-  }, [doc]);
+  useEffect(() => { setContent(deserialize(doc)); }, [doc]);
   
   const hotkeys = {
     "mod+w": hooks.closeFile,   // Close this file
@@ -102,6 +102,7 @@ export function EditFile({doc, hooks}) {
   return (
     <React.Fragment>
       <ToolBar />
+      <div className="Board">
       <Slate editor={editor} value={content} onChange={setContent}>
         <Editable
           autoFocus
@@ -109,17 +110,10 @@ export function EditFile({doc, hooks}) {
           renderElement={renderElement}
           renderLeaf={renderLeaf}
           onKeyDown={onKeyDown}
-          style={{
-            overflowY: "auto",
-            paddingLeft: "1.5cm",
-            paddingRight: "1.5cm",
-            paddingTop: "1cm",
-            paddingBottom: "2cm",
-            fontFamily: "Times",
-            fontSize: "13pt",
-          }}
+          className="Sheet"
         />
       </Slate>
+      </div>
     </React.Fragment>
   )
 
@@ -145,7 +139,12 @@ export function EditFile({doc, hooks}) {
 
   function Element({element, attributes, children}) {
     switch(element.type) {
-      case "scene": return <p {...attributes}><b>{children}</b></p>
+      case "title": return <h1 {...attributes}>{children}</h1>
+      case "scene":   
+      case "missing": 
+      case "comment":
+      case "synopsis":
+        return <p className={element.type} {...attributes}>{children}</p>
       default: return <p {...attributes}>{children}</p>
     }
   }
@@ -158,14 +157,18 @@ export function EditFile({doc, hooks}) {
 //-----------------------------------------------------------------------------
 
 function deserialize(doc) {
+  console.log("Doc:", doc)
   const content = Story2Slate(doc.story);
   console.log("Content:", content)
   return content;
 
   function Story2Slate(story) {
-    return []
+    return [
+      { type: "title", children: [{text: story.body.head.title}] },
+      ]
       //.concat(Part2Slate(story.notes.part[0]))
       .concat(Part2Slate(story.body.part[0]))
+      .concat([{type: "p", children: [{text: ""}]}])
   }
 
   function Part2Slate(part) {
@@ -180,8 +183,9 @@ function deserialize(doc) {
   }
 
   function Paragraph2Slate(p) {
+    const type = p.tag;
     return {
-      type: "paragraph",
+      type: type,
       children: [{ text: p.text }]
     }
   }

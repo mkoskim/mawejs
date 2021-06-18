@@ -50,16 +50,16 @@ const {
 // Manipulate <style> elements in document <head>
 //-----------------------------------------------------------------------------
 
-export function HeadStyle(name) {
-  function byid(name) { return document.head.querySelector(`style#${name}`) }
-  function create(name) {
+export function HeadStyle(id) {
+  function byid(id) { return document.head.querySelector(`style#${id}`) }
+  function create(id) {
     const style = document.createElement("style")
-    style.setAttribute("id", name);
+    style.setAttribute("id", id);
     document.head.appendChild(style);
     return style;  
   }
   return {
-    style: byid(name) ? byid(name) : create(name),
+    style: byid(id) ? byid(id) : create(id),
     set: function(...lines) {
       this.style.textContent = lines.join("\n");
     }
@@ -82,8 +82,8 @@ export function HBox({style, children}) {
   return <FlexBox className="HBox" style={{flexDirection: "row", ...style}}>{children}</FlexBox>
 }
 
-export function Filler() {
-  return <div style={{flexGrow: 1}}/>
+export function Filler(weight = 1) {
+  return <div style={{flexGrow: weight}}/>
 }
 
 export function Separator({style}) {
@@ -166,6 +166,8 @@ export function SearchBox(props)
   />
 }
 
+//-----------------------------------------------------------------------------
+// Inform user about things that are happening or happened.
 //-----------------------------------------------------------------------------
 
 export function Inform() {

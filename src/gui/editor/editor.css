@@ -1,0 +1,81 @@
+/* ----------------------------------------------------------------------------
+//
+// Styles for story elements in the editor.
+//
+// ----------------------------------------------------------------------------
+*/
+
+.Board {
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.Sheet {
+  /* Center sheet horizontally to board */
+  margin: 0.5cm auto;
+  /*
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1cm;
+  margin-bottom: 1cm;
+*/
+
+  background-color: white;
+  box-shadow: 2px 2px 8px 0 rgba(0, 0, 0, 0.2);
+
+  padding-left: 1.5cm;
+  padding-right: 1.5cm;
+  padding-top: 1cm;
+  padding-bottom: 2cm;
+
+  font-size: 12pt;
+  line-height: 180%;
+
+  font-family: 'Times New Roman', Times, serif;
+  /*
+  font-family: 'Courier New', Courier, monospace;
+  font-family:Arial, Helvetica, sans-serif;
+  */
+
+  min-width: 5in;
+  max-width: 6in;
+}
+
+/* ----------------------------------------------------------------------------
+// Subelements
+// ----------------------------------------------------------------------------
+*/
+
+.Sheet h1 {
+  font-size: 17pt;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2cm;
+}
+
+.Sheet p {
+  margin: 0pt;
+  text-indent: 1.0cm;
+}
+
+.Sheet p.noident {
+  text-indent: 0;
+}
+
+.Sheet p.missing {
+  color: #B22;
+}
+
+.Sheet p.comment {
+  color: #272;
+}
+
+.Sheet p.synopsis {
+}
+
+.Sheet p.scene {
+  margin-top: 0.5cm;
+  margin-bottom: 0.5cm;
+  font-weight: bold;
+  text-indent: 0;
+}

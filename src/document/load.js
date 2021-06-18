@@ -107,8 +107,10 @@ async function mawe(file) {
     const notes = parseNotes(root.find("notes"));
     const versions = root.findall("version").map(parseBody);
 
+    const {uuid, name, format, ...extra} = root.attrib;
+
     return withextras({
-      ...root.attrib,
+      ...{uuid, name, ...extra},
       body: body,
       notes: notes,
       version: versions,
@@ -116,9 +118,10 @@ async function mawe(file) {
   }
 
   function parseBody(elem) {
+    const {name, modified, ...extra} = elem.attrib;
+
     return withextras({
-      name: elem.get("name", ""),
-      modified: null,
+      name: name,
       head: parseHead(elem.find("head")),
       part: parseParts(elem),
     }, elem);

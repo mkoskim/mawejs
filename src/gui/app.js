@@ -46,11 +46,14 @@ export default class App extends React.Component {
     function SlideDown(props) { return <Slide {...props} direction="down" /> }
 
     console.log("File:", this.state.file);
+
+    const {style, view} = this.chooseView();
+
     //*
     return (
       <SnackbarProvider maxSnack={3} autoHideDuration={2500} TransitionComponent={Fade}>
-      <VBox style={{height: "100vh", width: "100vw"}}>
-        {this.View()}
+      <VBox style={{...style, height: "100vh", width: "100vw"}}>
+        {view}
       </VBox>
       </SnackbarProvider>
     );
@@ -61,12 +64,17 @@ export default class App extends React.Component {
     /**/
   }
 
-  View() {
+  chooseView() {
     if(this.state.doc) {
-      return <EditFile doc={this.state.doc} hooks={this.hooks}/>
+      return {
+        style: {backgroundColor: "#EEE"},
+        view: <EditFile doc={this.state.doc} hooks={this.hooks}/>,
+      }
     } else {
-      //return <FileBrowser location="home" hooks={this.hooks}/>
-      return <FileBrowser directory="./local" hooks={this.hooks}/>
+      return {
+        style: undefined,
+        view: <FileBrowser directory="./local" hooks={this.hooks}/>,
+      }
     }
   }
 

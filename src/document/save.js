@@ -40,9 +40,10 @@ export async function mawe(doc) {
   const story = doc.story;
 
   const root = Element("story", {
-    format: story.format,
+    format: "mawe",
     name: story.name,
-    uuid: story.uuid
+    uuid: story.uuid,
+    ...story.extra,
   });
 
   root.append(Comment(" ============================================================================= "));
