@@ -6,6 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
+import "./factory.css"
+
 /* eslint-disable no-unused-vars */
 
 const {
@@ -19,29 +21,20 @@ const {
 // Manipulate <style> elements in document <head>
 //-----------------------------------------------------------------------------
 
-export function findStyle(name) {
-  return document.head.querySelector(`style#${name}`)
-}
-
-export function createStyle(name) {
-  const style = document.createElement("style")
-  style.setAttribute("id", name);
-  document.head.appendChild(style);
-  return style;
-}
-
-export function injectStyle(name, ...lines) {
-  function get() {
-    const style = findStyle(name);
-    if(style) {
-      console.log("Updating style:", name)
-      return style;
-    }
-    console.log("Creating style:", name)
-    return createStyle(name);  
+export function HeadStyle(name) {
+  function byid(name) { return document.head.querySelector(`style#${name}`) }
+  function create(name) {
+    const style = document.createElement("style")
+    style.setAttribute("id", name);
+    document.head.appendChild(style);
+    return style;  
   }
-
-  get(name).textContent = lines.join("\n")
+  return {
+    style: byid(name) ? byid(name) : create(name),
+    set: function(...lines) {
+      this.style.textContent = lines.join("\n");
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -68,11 +61,12 @@ export function Separator({style}) {
   return <div className="Separator" style={style}/>;
 }
 
-injectStyle("Separator",
-  ".Separator { margin: 2pt; }",
+/*
+HeadStyle("Separator").set(
   ".HBox > .Separator { height: 100%; border-right: 1pt solid lightgrey; }",
   ".VBox > .Separator { width:  100%; border-bottom: 1pt solid lightgrey; }",
 );
+*/
 
 //-----------------------------------------------------------------------------
 
