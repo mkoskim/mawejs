@@ -27,6 +27,10 @@ TODO:
 
 - Serialize doc from Slate editor
 
+- When file is opened from search, change directory accordingly (probably the
+  best is to use the directory where the search was initiated? Or the directory
+  where the opened file is?)
+
 -------------------------------------------------------------------------------
 
 VERSIONS:
@@ -81,4 +85,7 @@ DONE:
 - Infinite scroll bar on find stopped working, it won't fetch more items anymore.
   BUT WHY?!? Because the outer element was extending to the content and so the
   infinite scroll didn't have its scrollbar.
+
+- TODO: Implement a separator, which takes its orientation from the surrounding
+  box.
 

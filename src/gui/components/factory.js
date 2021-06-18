@@ -11,37 +11,56 @@
 const {
   Button: MuiButton,
   Input: MuiInput,
-  Box: MuiBox,
+  //Box: MuiBox,
   ButtonGroup: MuiButtonGroup,
 } = require("@material-ui/core")
 
+//-----------------------------------------------------------------------------
+
+export function injectStyle(...lines) {
+  var style = document.createElement("style");
+  style.textContent = lines.join("\n")
+  document.head.appendChild(style);
+}
 
 //-----------------------------------------------------------------------------
 
-export function FlexBox({style, children}) {
-  return <div style={{display: "flex", ...style}}>{children}</div>;
+export function FlexBox({className, style, children}) {
+  return <div className={className} style={{display: "flex", ...style}}>{children}</div>;
 }
 
 export function VBox({style, children}) {
-  return <FlexBox style={{flexDirection: "column", ...style}}>{children}</FlexBox>
+  return <FlexBox className="VBox" style={{flexDirection: "column", ...style}}>{children}</FlexBox>
 }
 
 export function HBox({style, children}) {
-  return <FlexBox style={{flexDirection: "row", ...style}}>{children}</FlexBox>
+  return <FlexBox className="HBox" style={{flexDirection: "row", ...style}}>{children}</FlexBox>
 }
+
+export function Filler() {
+  return <FlexBox style={{flexGrow: 1}}/>
+}
+
+export function Separator({style}) {
+  return <div className="Separator" style={style}/>;
+}
+
+injectStyle(
+  ".Separator { margin: 2pt; }",
+  ".HBox > .Separator { height: 100%; border-right: 1pt solid lightgrey; }",
+  ".VBox > .Separator { width:  100%; border-bottom: 1pt solid lightgrey; }",
+);
+  
+//-----------------------------------------------------------------------------
 
 export function ToolBox({children}) {
   const style={
     padding: 4,
     backgroundColor: "#F8F8F8",
-    borderBottom: "1px solid #D8D8D8",
     alignItems: "center",
+    borderBottom: "1pt solid lightgray",
   }
   return <HBox style={style}>{children}</HBox>
-}
-
-export function Filler() {
-  return <MuiBox flexGrow={1}/>
 }
 
 //-----------------------------------------------------------------------------

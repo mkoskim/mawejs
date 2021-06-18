@@ -105,6 +105,7 @@ export function EditFile({fileid, hooks}) {
   const hotkeys = {
     "mod+w": hooks.closeFile,   // Close this file
     "mod+o": hooks.closeFile,   // Go to file browser to open new file
+    "mod+s": null,              // Serialize and save
   }
 
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
@@ -164,8 +165,7 @@ export function EditFile({fileid, hooks}) {
   
   function Leaf({leaf, attributes, children}) {
     return <span {...attributes}>{children}</span>
-  }
-  
+  }  
 }
 
 //-----------------------------------------------------------------------------

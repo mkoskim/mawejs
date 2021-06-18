@@ -51,7 +51,7 @@ import React, {useState, useEffect} from 'react'
 import isHotkey from "is-hotkey";
 
 import {
-  FlexBox, VBox, HBox, Filler,
+  FlexBox, VBox, HBox, Filler, Separator,
   ToolBox, Button, Input,
 } from "../components/factory";
 
@@ -258,14 +258,13 @@ function ListDir({directory, hooks, style}) {
       <ToolBox flexGrow={1}>
         <PathButtons state={state}/>
         <IconButton size="small" style={{marginLeft: 8}}><StarIcon /></IconButton>
+        <Separator />
         <Filler/>
         <Button><SearchIcon onClick={() => hooks.setSearch(true)}/></Button>
         </ToolBox>
       <SplitList directory={directory} state={state}/>
     </React.Fragment>
   )
-
-  //---------------------------------------------------------------------------
 
   //---------------------------------------------------------------------------
 
