@@ -477,17 +477,16 @@ function SearchDir({directory, contains, hooks, style}) {
     fetch(matches.files.length + 20);
   }
 
-  return (
-    <VBox style={{width: "100%", ...style}}>
-      <ToolBox>
-        <Input
-        placeholder="Search"
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        autoFocus
-        />
+  return (<React.Fragment>
+    <ToolBox>
+      <Input
+      placeholder="Search"
+      value={search}
+      onChange={e => setSearch(e.target.value)}
+      autoFocus
+      />
       <Status style={{marginLeft: 16}}/>
-      </ToolBox>
+    </ToolBox>
     <Box id="scrollbox" style={{overflowY: "auto"}}>
     <InfiniteScroll
       scrollableTarget="scrollbox"
@@ -499,8 +498,7 @@ function SearchDir({directory, contains, hooks, style}) {
       <FileTable files={matches.files} hooks={hooks} />
     </InfiniteScroll>
     </Box>
-    </VBox>
-  )
+  </React.Fragment>)
 
   //---------------------------------------------------------------------------
 
