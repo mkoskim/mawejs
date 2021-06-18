@@ -80,27 +80,15 @@ const document = require("../../document");
 //*****************************************************************************
 //*****************************************************************************
 
-export function EditFile({fileid, hooks}) {
+export function EditFile({doc, hooks}) {
   const [content, setContent] = useState([
     { type: "paragraph", children: [{text: ""}] }
   ]);
   const {enqueueSnackbar} = useSnackbar();
   
   useEffect(() => {
-    if(fileid) {
-      loadContent(fileid)
-        .then(content => {
-          setContent(content);
-          //enqueueSnackbar(`Loaded ${doc.file.name}`, {variant: "success"});
-          enqueueSnackbar(`Loaded ${fileid}`, {variant: "success"});
-        })
-        .catch(err => {
-          // TODO: Improve!!!
-          enqueueSnackbar(String(err), {variant: "error"});
-          setContent([{type: "paragraph", children: [{text: ""}]}])
-        });
-    }
-  }, [fileid]);
+    setContent(deserialize(doc));
+  }, [doc]);
   
   const hotkeys = {
     "mod+w": hooks.closeFile,   // Close this file
@@ -139,7 +127,7 @@ export function EditFile({fileid, hooks}) {
   function ToolBar(props) {
     return (
       <ToolBox flexGrow={1}>
-        <Typography>{content ? "File" : "Loading"}: {fileid}</Typography>
+        <Typography>File: {doc.file.name}</Typography>
         <Filler/>
         <IconButton size="small" style={{marginLeft: 8}}><StarIcon /></IconButton>
         <Button><SearchIcon /></Button>
@@ -170,12 +158,9 @@ export function EditFile({fileid, hooks}) {
 
 //-----------------------------------------------------------------------------
 
-async function loadContent(fileid) {
-  const doc = await document.load(fileid);
-  console.log("Doc:", doc);
+function deserialize(doc) {
   const content = Story2Slate(doc.story);
   console.log("Content:", content)
-
   return content;
 
   function Story2Slate(story) {

@@ -110,22 +110,29 @@ import { suffix2format } from '../../document/util';
 //-----------------------------------------------------------------------------
 
 const fs = require("../../storage/localfs")
+const mawe = require("../../document")
+
+//-----------------------------------------------------------------------------
 
 export function FileBrowser({directory, location, contains, hooks, style}) {
   const [state, setState] = useState({dir: undefined, search: !!contains})
 
-  const {enqueueSnackbar} = useSnackbar();
+  const {enqueueSnackbar, closeSnackbar} = useSnackbar();
 
   console.log("FileBrowser:", state.dir, directory, location, contains);
 
   const inform = {
-    error: async (err) => {
+    error: err => {
       console.log(err);
-      enqueueSnackbar(String(err), {variant: "error"});
+      return enqueueSnackbar(String(err), {variant: "error"});
     },
-    success: async (msg) => {
-      enqueueSnackbar(String(msg), {variant: "success"});
-    }
+    success: msg => {
+      return enqueueSnackbar(String(msg), {variant: "success"});
+    },
+    process: msg => {
+      return enqueueSnackbar(String(msg), {variant: "info", persist: true});
+    },
+    dismiss: key => closeSnackbar(key),
   }
 
   async function chDir(dirid) {
@@ -135,20 +142,30 @@ export function FileBrowser({directory, location, contains, hooks, style}) {
   async function open(f) {
     console.log("Open:", f.name);
 
-    if(f.type === "folder") {
-      return chDir(f.id);
-    } else if(suffix2format(f)) {
-      hooks.openFile(f.id);
-    } else {
-      fs.openexternal(f.id)
-      .then(err => {
-        if(!err) {
-          inform.success(`Open '${f.name}': ok`)
-        } else {
-          inform.error(`Open '${f.name}': ${err}`);
-        }
-      })
+    if(f.type == "folder") return chDir(f.id);
+
+    if(suffix2format(f)) {
+      // TODO: Implement something to show that we are doing something
+      //const key = inform.process(`Loading ${f.name}`);
+      try {
+        const doc = await mawe.load(f.id);
+        inform.success(`Loaded ${f.name}`)
+        hooks.openFile(doc);
+      } catch(err) {
+        inform.error(`Open '${f.name}': ${err}`);
+      } finally {
+        //inform.dismiss(key)
+      }
+      return;
     }
+    fs.openexternal(f.id)
+    .then(err => {
+      if(!err) {
+        inform.success(`Open '${f.name}': ok`)
+      } else {
+        inform.error(`Open '${f.name}': ${err}`);
+      }
+    })    
   }
 
   const _hooks = {
@@ -260,6 +277,7 @@ function ListDir({directory, hooks, style}) {
         <IconButton size="small" style={{marginLeft: 8}}><StarIcon /></IconButton>
         <Separator />
         <Filler/>
+        <Separator />
         <Button><SearchIcon onClick={() => hooks.setSearch(true)}/></Button>
         </ToolBox>
       <SplitList directory={directory} state={state}/>
