@@ -16,13 +16,36 @@ const {
 } = require("@material-ui/core")
 
 //-----------------------------------------------------------------------------
+// Manipulate <style> elements in document <head>
+//-----------------------------------------------------------------------------
 
-export function injectStyle(...lines) {
-  var style = document.createElement("style");
-  style.textContent = lines.join("\n")
-  document.head.appendChild(style);
+export function findStyle(name) {
+  return document.head.querySelector(`style#${name}`)
 }
 
+export function createStyle(name) {
+  const style = document.createElement("style")
+  style.setAttribute("id", name);
+  document.head.appendChild(style);
+  return style;
+}
+
+export function injectStyle(name, ...lines) {
+  function get() {
+    const style = findStyle(name);
+    if(style) {
+      console.log("Updating style:", name)
+      return style;
+    }
+    console.log("Creating style:", name)
+    return createStyle(name);  
+  }
+
+  get(name).textContent = lines.join("\n")
+}
+
+//-----------------------------------------------------------------------------
+// Nice guide: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 //-----------------------------------------------------------------------------
 
 export function FlexBox({className, style, children}) {
@@ -38,19 +61,19 @@ export function HBox({style, children}) {
 }
 
 export function Filler() {
-  return <FlexBox style={{flexGrow: 1}}/>
+  return <div style={{flexGrow: 1}}/>
 }
 
 export function Separator({style}) {
   return <div className="Separator" style={style}/>;
 }
 
-injectStyle(
+injectStyle("Separator",
   ".Separator { margin: 2pt; }",
   ".HBox > .Separator { height: 100%; border-right: 1pt solid lightgrey; }",
   ".VBox > .Separator { width:  100%; border-bottom: 1pt solid lightgrey; }",
 );
-  
+
 //-----------------------------------------------------------------------------
 
 export function ToolBox({children}) {
