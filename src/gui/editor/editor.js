@@ -82,12 +82,9 @@ import isHotkey from 'is-hotkey';
 //*****************************************************************************
 
 export function EditFile({doc, hooks}) {
-  const [content, setContent] = useState([
-    { type: "paragraph", children: [{text: ""}] }
-  ]);
+  const [content, setContent] = useState(deserialize(doc));
+
   const inform = Inform();
-  
-  useEffect(() => { setContent(deserialize(doc)); }, [doc]);
   
   const hotkeys = {
     "mod+w": hooks.closeFile,   // Close this file

@@ -44,6 +44,8 @@ DONE:
 -------------------------------------------------------------------------------
 */
 
+import "./filebrowser.css"
+
 /* eslint-disable no-unused-vars */
 
 import React, {useState, useEffect} from 'react'
@@ -76,8 +78,6 @@ import {
     OutlinedInput,
 } from "@material-ui/core";
 
-import { DataGrid } from "@material-ui/data-grid";
-import {Pagination} from "@material-ui/lab";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -112,13 +112,42 @@ const {suffix2format} = require('../../document/util');
 
 //-----------------------------------------------------------------------------
 
-export function FileBrowser({directory, location, contains, hooks, style}) {
-  const [state, setState] = useState({dir: undefined, search: !!contains})
+export function FileBrowser({directory, location, contains, hooks}) {
+  const [state, setState] = useState({dir: directory, search: !!contains})
 
   //const inform = Inform(useSnackbar());
   const inform = Inform();
 
-  console.log("FileBrowser:", state.dir, directory, location, contains);
+  console.log("render: FileBrowser:", state.dir, directory, location, contains);
+
+  useEffect(() => {
+    if(state.dir !== directory) resolvedir();
+
+    async function resolvedir() {
+      console.log("set dir:", directory, location);
+      const d = directory
+        ? (await fs.fstat(directory)).id
+        : await fs.getlocation(location ? location : "home");
+      console.log("dir", d);
+      setState(state => ({...state, dir: d}));
+    }  
+  }, [directory, location]);
+
+  const _hooks = {
+    setSearch: (search) => setState({...state, search: search}),
+    error: inform.error,
+    chdir: chDir,
+    open: open,
+    excludeHidden: true,
+  }
+
+  if(state.search) {
+    return <SearchDir directory={state.dir} contains={contains ? contains : ""} hooks={_hooks}/>
+  } else {
+    return <ListDir directory={state.dir} hooks={_hooks}/>
+  }
+
+  //---------------------------------------------------------------------------
 
   async function chDir(dirid) {
     setState({dir: dirid, search: false});
@@ -152,35 +181,6 @@ export function FileBrowser({directory, location, contains, hooks, style}) {
       }
     })    
   }
-
-  const _hooks = {
-    setSearch: (search) => setState({...state, search: search}),
-    error: inform.error,
-    chdir: chDir,
-    open: open,
-    excludeHidden: true,
-  }
-
-  useEffect(() => {
-    async function resolvedir() {
-      console.log("set dir:", directory, location);
-      const d = directory
-        ? (await fs.fstat(directory)).id
-        : await fs.getlocation(location ? location : "home");
-      console.log("dir", d);
-      setState(state => ({...state, dir: d}));
-    }
-  
-    resolvedir();
-  }, [directory, location]);
-
-  if(!state.dir) {
-    return null;
-  } else if(state.search) {
-    return <SearchDir directory={state.dir} contains={contains ? contains : ""} hooks={_hooks} style={style}/>
-  } else {
-    return <ListDir directory={state.dir} hooks={_hooks} style={style}/>
-  }
 }
 
 //-----------------------------------------------------------------------------
@@ -188,7 +188,7 @@ export function FileBrowser({directory, location, contains, hooks, style}) {
 function FileItemConfig(file, hooks) {
   switch(file.type) {
     case "folder": return {
-      icon: (<TypeFolder fontSize="small" style={{color: "lightblue"}}/>),
+      icon: (<TypeFolder fontSize="small" style={{color: "#88c4f2"}}/>),
       disabled: !file.access,
     }
     case "file": return {
@@ -212,26 +212,27 @@ function FileItemConfig(file, hooks) {
 
 function ListDir({directory, hooks, style}) {
 
-  const [state, setState] = useState(undefined);
+  const [path, setPath] = useState()
+  const [state, setState] = useState();
   
+  console.log("render: ListDir", path, state)
+
   //console.log("render: ListDir", directory, state);
 
   async function getContent() {
-    const path = await fs.splitpath(directory);
-    setState({path: path});
+    const [splitted, entries] = await Promise.all([
+      fs.splitpath(directory),
+      fs.readdir(directory)
+    ]);
 
-    const entries = (await fs.readdir(directory)).filter(f => !f.hidden);
     const folders = sortFiles(entries.filter(f => f.type === "folder"));
     const files   = sortFiles(entries.filter(f => f.type !== "folder"));
 
-    //console.log(files, folders);
-
-    setState(state => ({
-      ...state,
-      directory: directory,
+    setPath(splitted)
+    setState({
       folders: folders,
       files: files,
-    }))
+    })
 
     function sortFiles(files) {
       return files.sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
@@ -251,19 +252,15 @@ function ListDir({directory, hooks, style}) {
         hooks.setSearch(true);
         event.preventDefault();
       }
-    }  
-  
+    }    
   });
 
   return (
     <React.Fragment>
-      <ToolBox flexGrow={1}>
-        <PathButtons state={state}/>
-        <IconButton size="small" style={{marginLeft: 8}}><StarIcon /></IconButton>
-        <Separator />
-        <Filler/>
-        <Separator />
+      <ToolBox>
+        <PathButtons path={path} style={{marginRight: 8}}/>
         <Button><SearchIcon onClick={() => hooks.setSearch(true)}/></Button>
+        <Button><StarIcon /></Button>
         </ToolBox>
       <SplitList directory={directory} state={state}/>
     </React.Fragment>
@@ -271,12 +268,14 @@ function ListDir({directory, hooks, style}) {
 
   //---------------------------------------------------------------------------
 
-  function PathButtons({state, style})
+  function PathButtons({path, style})
   {
-    if(!state || !state.path) return null;
+    // TODO: Last button (current directory) should open "context" menu.
+    if(!path) return null;
+
     return (
-      <ButtonGroup style={{style}}>
-      {state.path.map((f, i) =>
+      <ButtonGroup style={style}>
+      {path.map((f, i) =>
         <Button
           key={f.id}
           onClick={() => hooks.open(f)}
@@ -289,64 +288,16 @@ function ListDir({directory, hooks, style}) {
   }
 
   //---------------------------------------------------------------------------
-  // Paged list renders extremely quickly.
-  //---------------------------------------------------------------------------
-
-  function PagedList({directory, state}) {
-    const [page, setPage] = useState(1);
-
-    useEffect(() => setPage(1), [state]);
-
-    if(!state || state.directory !== directory) return null;
-
-    const files = state.folders.concat(state.files);
-    const pagelength = 100;
-    const pages = Math.ceil(files.length / pagelength)
-    //console.log("Pages:", pages, "Files:", files.length)
-    //console.log("Page:", page);
-
-    return (
-      <React.Fragment>
-        <PageButtons page={page} pages={pages} setPage={setPage}/>
-        <Box p={"4px"} style={{overflowY: "auto"}}>
-          <Grid files={files.slice((page-1)*pagelength, pagelength*page-1)} hooks={hooks} />
-        </Box>
-      </React.Fragment>
-    )  
-
-    function PageButtons({page, pages, setPage}) {
-      if(pages > 1) {
-        return (
-          <Box pt={"4pt"}>
-            <Pagination count={pages} page={page} onChange={(e, v) => setPage(v)}/>
-            </Box>
-        )
-      } else {
-        return null
-      }
-    }
-  }
-
-  //---------------------------------------------------------------------------
   // Full lists are not very efficient for large directories. Although most
   // directories are small, if user goes to large directory, the app freezes
   // for notably long time - that's bad...
   //---------------------------------------------------------------------------
 
-  function SimpleList({directory, state}) {
-    if(!state || state.directory !== directory) return null;
-    return (
-      <Box p={"4pt"} style={{overflowY: "auto"}}>
-        <Grid files={state.folders.concat(state.files)} hooks={hooks} />
-      </Box>
-    )
-  }
-
   function SplitList({directory, state}) {
 
     //console.log("render: SplitList");
 
-    if(!state || state.directory !== directory) return null;
+    if(!state) return null;
 
     return (
         <Box p={"4pt"} style={{overflowY: "auto"}}>
@@ -356,13 +307,14 @@ function ListDir({directory, hooks, style}) {
     )
 
     function Section({name, items}) {
-      if(!items.length) {
+      const visible = items.filter(f => !f.hidden)
+      if(!visible.length) {
         return null;
       } else {
         return (
           <React.Fragment>
             <Typography style={{paddingLeft: 4, paddingTop: 16, paddingBottom: 8}}>{name}</Typography>
-            <Grid files={items} hooks={hooks} />
+            <Grid files={visible} hooks={hooks} />
             </React.Fragment>
         )
       }
@@ -376,34 +328,29 @@ function ListDir({directory, hooks, style}) {
   function Grid({files, hooks}) {
     if(files === undefined) return null;
     return (
-      <Box display="flex" style={{overflowY: "auto"}} flexWrap="wrap">
+      <HBox style={{overflowY: "auto", flexWrap: "wrap"}}>
       {files.map(f => <Cell key={f.id} file={f} hooks={hooks} />)}
-      </Box>
+      </HBox>
     )
 
     function Cell({file, hooks}) {
       const config = FileItemConfig(file, hooks);
       const callback = getCallbacks(file, hooks);
 
-      const itemstyle = {
-        margin: "4px",
-        border: "1px solid lightgrey",
-        borderRadius: 4,
-        paddingTop: 12, paddingBottom: 12,
-        width: 300,
-      }
-
-      const avatarstyle = {
-        minWidth: 0,
-        marginRight: 16,
-      }
-
       return (
-        <ListItem style={itemstyle} button disabled={config.disabled} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
-        <ListItemAvatar style={avatarstyle}>{config.icon}</ListItemAvatar>
+        <div id="FileCard" disabled={config.disabled} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
+          {config.icon} {file.name}
+        </div>
+      );
+
+      /*
+      return (
+        <ListItem id="FileCard" button disabled={config.disabled} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
+        <ListItemAvatar id="FileAvatar">{config.icon}</ListItemAvatar>
         <Typography>{file.name}</Typography>
         </ListItem>
       );
+*/
 
       function getCallbacks(file, hooks) {
         switch(file.type) {
@@ -518,21 +465,16 @@ function SearchDir({directory, contains, hooks, style}) {
   function Row({file, hooks}) {
     const config = FileItemConfig(file, hooks);
     const folder = fs.dirname(file.id);
-    const cellstyle = {
-      paddingTop: "6px",
-      paddingBottom: "6px",
-      paddingLeft: "8px",
-      paddingRight: "2px",
-      color: config.disabled ? "gray" : undefined,
-    };
+    const disabled = config.disabled ? "disabled" : undefined;
 
     return <TableRow
+      className={["File", disabled].join(" ")}
       hover={true}
       onDoubleClick={() => (config.disabled) ? undefined : hooks.open(file)}
       >
-      <TableCell style={cellstyle} width="5%">{config.icon}</TableCell>
-      <TableCell style={cellstyle} width="35%">{file.name}</TableCell>
-      <TableCell style={{...cellstyle, color: "grey"}} width="60%">{file.relpath}</TableCell>
+      <TableCell className="FileIcon">{config.icon}</TableCell>
+      <TableCell className="FileName">{file.name}</TableCell>
+      <TableCell className="FileDir">{file.relpath}</TableCell>
       </TableRow>;
   }
 }
@@ -576,9 +518,9 @@ class DirScanner extends Scanner {
     );
 
     this.filter.file = f => (
-      !f.hidden &&
-      f.access &&
-      ["file", "folder"].includes(f.type)
+      !f.hidden
+      //f.access &&
+      //["file", "folder"].includes(f.type)
     )
   }
 

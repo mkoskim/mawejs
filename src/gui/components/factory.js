@@ -37,6 +37,7 @@ import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
 
 import isHotkey from 'is-hotkey';
 import { useSnackbar } from 'notistack';
+import { useEffect } from "react";
 
 const {
   Button: MuiButton,
@@ -82,8 +83,8 @@ export function HBox({style, children}) {
   return <FlexBox className="HBox" style={{flexDirection: "row", ...style}}>{children}</FlexBox>
 }
 
-export function Filler(weight = 1) {
-  return <div style={{flexGrow: weight}}/>
+export function Filler({weight = 1, style}) {
+  return <div style={{flexGrow: weight, ...style}}/>
 }
 
 export function Separator({style}) {
@@ -140,6 +141,20 @@ export function Input(props) {
 
 export function SearchBox(props)
 {
+  function onKeyDown(e) {
+    //console.log(event.key);
+    if(isHotkey("escape", e) && props.onCancel) {
+      console.log("Cancel")
+      props.onCancel();
+      e.preventDefault();
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [])
+
   return <Input
     {...props}
     placeholder="Search"
@@ -155,14 +170,6 @@ export function SearchBox(props)
           </MuiIconButton>
       </InputAdornment>
     }
-    onKeyDown={e => {
-      //console.log(event.key);
-      if(isHotkey("escape", e) && props.onCancel) {
-        console.log("Cancel")
-        props.onCancel();
-        e.preventDefault();
-      }
-    }}
   />
 }
 

@@ -121,6 +121,7 @@ async function mawe(file) {
     const {name, modified, ...extra} = elem.attrib;
 
     return withextras({
+      ...extra,
       name: name,
       head: parseHead(elem.find("head")),
       part: parseParts(elem),

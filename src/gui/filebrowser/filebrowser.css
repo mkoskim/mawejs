@@ -1,0 +1,37 @@
+/* ----------------------------------------------------------------------------
+//
+// Styles for file browser
+//
+// ----------------------------------------------------------------------------
+*/
+
+/* Material UI elements accessed by ID */
+#FileCard {
+  margin: 4px;
+  border: 1px solid lightgrey;
+  border-radius: 4px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  width: 300px;
+}
+
+#FileAvatar {
+  min-width: 0;
+  margin-right: 16px;
+}
+
+/* Search file list */
+
+tr.File {
+}
+
+tr.File > td {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+tr.disabled > td { color: grey; }
+
+td.FileIcon { width: 5%; }
+td.FileName { width: 35%; }
+td.FileDir  { width: 60%; color:grey; }
