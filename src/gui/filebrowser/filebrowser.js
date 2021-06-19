@@ -93,7 +93,7 @@ import IconAdd from '@material-ui/icons/AddCircleOutline';
 import TrashIcon from '@material-ui/icons/DeleteOutline';
 
 import TypeFolder from '@material-ui/icons/Folder';
-import TypeFile from '@material-ui/icons/DescriptionOutlined';
+import TypeFile from '@material-ui/icons/Description';
 //import TypeUnknown from '@material-ui/icons/Close';
 //import TypeUnknown from '@material-ui/icons/Help';
 import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
@@ -336,11 +336,13 @@ function ListDir({directory, hooks, style}) {
     function Cell({file, hooks}) {
       const config = FileItemConfig(file, hooks);
       const callback = getCallbacks(file, hooks);
+      const color = (config.disabled) ? "grey" : undefined;
 
       return (
-        <div id="FileCard" disabled={config.disabled} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
-          {config.icon} {file.name}
-        </div>
+        <HBox className="FileCard" onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
+          <span style={{marginRight: 8}}>{config.icon}</span>
+          <span style={{color: color}}>{file.name}</span>
+        </HBox>
       );
 
       /*

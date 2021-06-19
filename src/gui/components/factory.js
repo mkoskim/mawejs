@@ -68,27 +68,41 @@ export function HeadStyle(id) {
 }
 
 //-----------------------------------------------------------------------------
+
+function addClass(...classNames) {
+  return classNames.join(" ");
+}
+
+//-----------------------------------------------------------------------------
 // Nice guide: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 //-----------------------------------------------------------------------------
 
-export function FlexBox({className, style, children}) {
-  return <div className={className} style={{display: "flex", ...style}}>{children}</div>;
+export function FlexBox({style, ...props}) {
+  return <div style={{display: "flex", ...style}} {...props} />;
 }
 
-export function VBox({style, children}) {
-  return <FlexBox className="VBox" style={{flexDirection: "column", ...style}}>{children}</FlexBox>
+export function VBox({className, style, ...props}) {
+  return <FlexBox
+    className={addClass(className, "VBox")}
+    style={{flexDirection: "column", ...style}}
+    {...props}
+  />
 }
 
-export function HBox({style, children}) {
-  return <FlexBox className="HBox" style={{flexDirection: "row", ...style}}>{children}</FlexBox>
+export function HBox({className, style, ...props}) {
+  return <FlexBox
+    className={addClass(className, "HBox")}
+    style={{flexDirection: "row", ...style}}
+    {...props}
+  />
 }
 
-export function Filler({weight = 1, style}) {
-  return <div style={{flexGrow: weight, ...style}}/>
+export function Filler({weight = 1, style, ...props}) {
+  return <div style={{flexGrow: weight, ...style}} {...props}/>
 }
 
-export function Separator({style}) {
-  return <div className="Separator" style={style}/>;
+export function Separator({className, ...props}) {
+  return <div className={addClass(className, "Separator")} {...props}/>;
 }
 
 /*
@@ -159,16 +173,15 @@ export function SearchBox(props)
     {...props}
     placeholder="Search"
     style={{marginLeft: 8, marginRight: 8}}
+    startAdornment={<SearchIcon fontSize="small" style={{color: "gray", marginRight: 4}}/>}
     endAdornment={
-      <InputAdornment position="end">
-        <MuiIconButton
-          onClick={props.onCancel}
-          size="small"
-          style={{fontSize: "12pt", marginLeft: 2, marginRight: 2}}
-          >
-          <CloseIcon fontSize="inherit"/>
-          </MuiIconButton>
-      </InputAdornment>
+      <MuiIconButton
+        onClick={props.onCancel}
+        size="small"
+        style={{fontSize: "12pt", marginLeft: 2, marginRight: 2}}
+        >
+        <CloseIcon fontSize="inherit"/>
+      </MuiIconButton>
     }
   />
 }
