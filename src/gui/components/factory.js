@@ -69,7 +69,7 @@ export function HeadStyle(id) {
 
 //-----------------------------------------------------------------------------
 
-function addClass(...classNames) {
+export function addClass(...classNames) {
   return classNames.join(" ");
 }
 
@@ -114,43 +114,40 @@ HeadStyle("Separator").set(
 
 //-----------------------------------------------------------------------------
 
-export function ToolBox({children}) {
-  const style={
+export function ToolBox({style, ...props}) {
+  return <HBox style={{
     padding: 4,
     backgroundColor: "#F8F8F8",
     alignItems: "center",
     borderBottom: "1pt solid lightgray",
-  }
-  return <HBox style={style}>{children}</HBox>
+    ...style}}
+    {...props}
+  />
 }
 
 //-----------------------------------------------------------------------------
 
-export function Button(props) {
+export function Button({style, ...props}) {
   //console.log(className)
   return <MuiButton
+    style={{minWidth: 32, textTransform: "none", ...style}}
     {...props}
-    style={{minWidth: 32, textTransform: "none", ...props.style}}
-    >
-      {props.children}
-    </MuiButton>
+  />
 }
 
-export function Input(props) {
-  return (
-    <MuiInput
-    {...props}
+export function Input({style, ...props}) {
+  return <MuiInput
     disableUnderline={true}
     style={{
-      margin:0, marginLeft: 4, 
+      margin: 0, //marginLeft: 4, 
       padding: 0, paddingLeft: 8,
       border: "1px solid lightgrey",
       borderRadius: 4,
       backgroundColor: "white",
-      ...props.style,
+      ...style,
     }}
-    />
-  )
+    {...props}
+  />
 }
 
 export function SearchBox(props)
@@ -170,19 +167,18 @@ export function SearchBox(props)
   }, [])
 
   return <Input
-    {...props}
     placeholder="Search"
-    style={{marginLeft: 8, marginRight: 8}}
     startAdornment={<SearchIcon fontSize="small" style={{color: "gray", marginRight: 4}}/>}
     endAdornment={
       <MuiIconButton
         onClick={props.onCancel}
         size="small"
-        style={{fontSize: "12pt", marginLeft: 2, marginRight: 2}}
+        style={{fontSize: "inherit", marginRight: 2}}
         >
         <CloseIcon fontSize="inherit"/>
       </MuiIconButton>
     }
+    {...props}
   />
 }
 
@@ -194,6 +190,7 @@ export function Inform() {
   const snackbar = useSnackbar();
   const enqueue = snackbar.enqueueSnackbar;
   const close = snackbar.closeSnackbar;
+
   return {
     process: msg => {
       return enqueue(String(msg), {variant: "info", persist: true});

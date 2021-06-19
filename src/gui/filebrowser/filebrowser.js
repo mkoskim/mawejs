@@ -55,6 +55,7 @@ import isHotkey from "is-hotkey";
 import {
   FlexBox, VBox, HBox, Filler, Separator,
   ToolBox, Button, Input, SearchBox, Inform,
+  addClass,
 } from "../components/factory";
 
 import {
@@ -68,7 +69,6 @@ import {
     Chip, Link,
     Grid, GridList, GridListTile,
     List, ListItem, ListItemAvatar, ListItemText, ListItemIcon, ListItemSecondaryAction,
-    TableContainer, Table, TableHead, TableRow, TableCell, TableBody,
     Avatar,
     AppBar, Drawer,
     Toolbar, IconButton, ButtonGroup,
@@ -81,8 +81,6 @@ import {
 import InfiniteScroll from "react-infinite-scroll-component";
 
 import MenuIcon from '@material-ui/icons/Menu';
-import FolderIcon from '@material-ui/icons/Folder';
-import FileIcon from '@material-ui/icons/Description';
 import StarIcon from '@material-ui/icons/StarOutline';
 import HomeIcon from  '@material-ui/icons/Home';
 import SearchIcon from  '@material-ui/icons/Search';
@@ -91,9 +89,12 @@ import WarnIcon from '@material-ui/icons/Warning';
 import OpenFolderIcon from '@material-ui/icons/FolderOpenOutlined';
 import IconAdd from '@material-ui/icons/AddCircleOutline';
 import TrashIcon from '@material-ui/icons/DeleteOutline';
+import CreateFolderIcon from '@material-ui/icons/CreateNewFolderOutlined';
 
 import TypeFolder from '@material-ui/icons/Folder';
-import TypeFile from '@material-ui/icons/Description';
+//import TypeFile from '@material-ui/icons/Description';
+import TypeFile from '@material-ui/icons/InsertDriveFileOutlined';
+
 //import TypeUnknown from '@material-ui/icons/Close';
 //import TypeUnknown from '@material-ui/icons/Help';
 import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
@@ -261,6 +262,7 @@ function ListDir({directory, hooks, style}) {
         <PathButtons path={path} style={{marginRight: 8}}/>
         <Button><SearchIcon onClick={() => hooks.setSearch(true)}/></Button>
         <Button><StarIcon /></Button>
+        <Button><CreateFolderIcon /></Button>
         </ToolBox>
       <SplitList directory={directory} state={state}/>
     </React.Fragment>
@@ -455,9 +457,9 @@ function SearchDir({directory, contains, hooks, style}) {
   
   function FileTable({files, hooks}) {
     return (
-      <Table><TableBody>
+      <table className="File">
       {files.map(f => <Row key={f.id} file={f} hooks={hooks}/>)}
-      </TableBody></Table>
+      </table>
     )
   }
 
@@ -467,17 +469,15 @@ function SearchDir({directory, contains, hooks, style}) {
   function Row({file, hooks}) {
     const config = FileItemConfig(file, hooks);
     const folder = fs.dirname(file.id);
-    const disabled = config.disabled ? "disabled" : undefined;
 
-    return <TableRow
-      className={["File", disabled].join(" ")}
-      hover={true}
+    return <tr
+      className={addClass("File", config.disabled ? "disabled" : undefined)}
       onDoubleClick={() => (config.disabled) ? undefined : hooks.open(file)}
       >
-      <TableCell className="FileIcon">{config.icon}</TableCell>
-      <TableCell className="FileName">{file.name}</TableCell>
-      <TableCell className="FileDir">{file.relpath}</TableCell>
-      </TableRow>;
+      <td className="FileIcon">{config.icon}</td>
+      <td className="FileName">{file.name}</td>
+      <td className="FileDir">{file.relpath}</td>
+      </tr>;
   }
 }
 
@@ -520,9 +520,9 @@ class DirScanner extends Scanner {
     );
 
     this.filter.file = f => (
-      !f.hidden
-      //f.access &&
-      //["file", "folder"].includes(f.type)
+      !f.hidden &&
+      f.access &&
+      ["file", "folder"].includes(f.type)
     )
   }
 
