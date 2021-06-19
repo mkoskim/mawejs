@@ -116,7 +116,7 @@ export function EditFile({doc, hooks}) {
 
   function ToolBar(props) {
     return (
-      <ToolBox flexGrow={1}>
+      <ToolBox>
         <Typography>{doc.file.name}</Typography>
         <SearchBox style={{marginLeft: 8, marginRight: 8}}/>
         <Filler/>

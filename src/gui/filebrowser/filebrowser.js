@@ -457,9 +457,9 @@ function SearchDir({directory, contains, hooks, style}) {
   
   function FileTable({files, hooks}) {
     return (
-      <table className="File">
+      <table className="File"><tbody>
       {files.map(f => <Row key={f.id} file={f} hooks={hooks}/>)}
-      </table>
+      </tbody></table>
     )
   }
 
