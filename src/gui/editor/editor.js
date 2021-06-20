@@ -78,6 +78,9 @@ import isHotkey from 'is-hotkey';
 //
 // IT WILL NOT WORK!
 //
+// NOTE! Do not put the same state to two editor instances. It will not work.
+// Find out ways to do split'd editing views.
+//
 //*****************************************************************************
 //*****************************************************************************
 
@@ -115,22 +118,13 @@ export function EditFile({doc, hooks}) {
     <React.Fragment>
       <ToolBar />
       <HBox style={{overflow: "auto"}}>
-        <div className="Outline"/>
-        <div className="Scroll Primary">
+        <div className="Outline">
+        </div>
+        <div className="Primary Scroll">
           <Slate editor={editor1} value={content.body} onChange={setBody}>
             <Editable
               className="Sheet"
               autoFocus
-              spellCheck={false} // Keep false until you find out how to change language
-              renderElement={renderElement}
-              renderLeaf={renderLeaf}
-            />
-          </Slate>
-        </div>
-        <div className="Scroll Secondary">
-          <Slate editor={editor2} value={content.body} onChange={setBody}>
-            <Editable
-              className="Sheet"
               spellCheck={false} // Keep false until you find out how to change language
               renderElement={renderElement}
               renderLeaf={renderLeaf}
