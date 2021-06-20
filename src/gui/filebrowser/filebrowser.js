@@ -53,36 +53,17 @@ import React, {useState, useEffect} from 'react'
 import isHotkey from "is-hotkey";
 
 import {
+  Icon,
   Box, FlexBox, VBox, HBox, Filler, Separator,
   Button, ButtonGroup, Input, SearchBox,
+  Breadcrumb,
   ToolBox, Inform,
   Label,
   addClass,
   addHotkeys,
+  InfiniteScroll,
+  Breadcrumbs,
 } from "../component/factory";
-
-import InfiniteScroll from "react-infinite-scroll-component";
-
-import MenuIcon from '@material-ui/icons/Menu';
-import StarIcon from '@material-ui/icons/StarOutline';
-import HomeIcon from  '@material-ui/icons/Home';
-import SearchIcon from  '@material-ui/icons/Search';
-import BlockIcon from '@material-ui/icons/Block';
-import WarnIcon from '@material-ui/icons/Warning';
-import OpenFolderIcon from '@material-ui/icons/FolderOpenOutlined';
-import IconAdd from '@material-ui/icons/AddCircleOutline';
-import TrashIcon from '@material-ui/icons/DeleteOutline';
-import CreateFolderIcon from '@material-ui/icons/CreateNewFolderOutlined';
-
-import TypeFolder from '@material-ui/icons/Folder';
-//import TypeFile from '@material-ui/icons/Description';
-import TypeFile from '@material-ui/icons/InsertDriveFileOutlined';
-
-//import TypeUnknown from '@material-ui/icons/Close';
-//import TypeUnknown from '@material-ui/icons/Help';
-import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
-//import TypeUnknown from '@material-ui/icons/BrokenImage';
-//import TypeUnknown from '@material-ui/icons/CancelPresentationOutlined';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -173,15 +154,15 @@ export function FileBrowser({directory, location, contains, hooks}) {
 function FileItemConfig(file, hooks) {
   switch(file.type) {
     case "folder": return {
-      icon: (<TypeFolder fontSize="small" style={{color: "#88c4f2"}}/>),
+      icon: (<Icon.FileType.Folder fontSize="small" style={{color: "#88c4f2"}}/>),
       disabled: !file.access,
     }
     case "file": return {
-      icon: (<TypeFile fontSize="small" style={{color: "#51585b"}}/>),
+      icon: (<Icon.FileType.File fontSize="small" style={{color: "#51585b"}}/>),
       disabled: !file.access,
     }
     default: return {
-      icon: (<TypeUnknown fontSize="small"/>),
+      icon: (<Icon.FileType.Unknown fontSize="small"/>),
       disabled: true,
     }
   }
@@ -231,9 +212,11 @@ function ListDir({directory, hooks}) {
     <React.Fragment>
       <ToolBox>
         <PathButtons path={path}/>
-        <Button><SearchIcon onClick={() => hooks.setSearch(true)}/></Button>
-        <Button><StarIcon /></Button>
-        <Button><CreateFolderIcon /></Button>
+        <ButtonGroup>
+          <Button><Icon.Search onClick={() => hooks.setSearch(true)}/></Button>
+          <Button><Icon.Star /></Button>
+          <Button><Icon.CreateFolder /></Button>
+          </ButtonGroup>
         </ToolBox>
       <SplitList directory={directory} state={state}/>
     </React.Fragment>
@@ -247,18 +230,22 @@ function ListDir({directory, hooks}) {
     if(!path) return null;
 
     return (
-      <ButtonGroup style={style}>
-      {path.map((f, i) =>
-        <Button
-          key={f.id}
-          onClick={() => hooks.open(f)}
-          style={{paddingLeft: 8, paddingRight: 8}}
-        >
-        {f.name ? f.name : "/"}
-        </Button>
-      )}
-      </ButtonGroup>
+      <React.Fragment>
+        {path.map((f, i) => entry(i, f))}
+      </React.Fragment>
     );
+
+    function open(f) { hooks.open(f); }
+
+    function menu(f) {
+      console.log("Open menu:", f.name);
+    }
+
+    function entry(index, file) {
+      const name = index ? (file.name + "/") : "xxx@local:";
+      const callback = (index < path.length - 1) ? (() => open(file)) : (() => menu(file));
+      return <Button key={index} onClick={callback}>{name}</Button>
+    }
   }
 
   //---------------------------------------------------------------------------

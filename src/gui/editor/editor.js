@@ -21,32 +21,12 @@ import { withHistory } from "slate-history"
 /**/
 
 import {
+  Icon,
   FlexBox, VBox, HBox, Filler,
   ToolBox, Button, Input,
   SearchBox, Inform, addHotkeys,
   Label,
 } from "../component/factory";
-
-import CloseIcon from '@material-ui/icons/Close' 
-import MenuIcon from '@material-ui/icons/Menu';
-import FolderIcon from '@material-ui/icons/Folder';
-import FileIcon from '@material-ui/icons/Description';
-import StarIcon from '@material-ui/icons/StarOutline';
-import HomeIcon from  '@material-ui/icons/Home';
-import SearchIcon from  '@material-ui/icons/Search';
-import BlockIcon from '@material-ui/icons/Block';
-import WarnIcon from '@material-ui/icons/Warning';
-import OpenFolderIcon from '@material-ui/icons/FolderOpenOutlined';
-import IconAdd from '@material-ui/icons/AddCircleOutline';
-import TrashIcon from '@material-ui/icons/DeleteOutline';
-
-import TypeFolder from '@material-ui/icons/Folder';
-import TypeFile from '@material-ui/icons/DescriptionOutlined';
-//import TypeUnknown from '@material-ui/icons/Close';
-//import TypeUnknown from '@material-ui/icons/Help';
-import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
-//import TypeUnknown from '@material-ui/icons/BrokenImage';
-//import TypeUnknown from '@material-ui/icons/CancelPresentationOutlined';
 
 import isHotkey from 'is-hotkey';
 
@@ -122,7 +102,7 @@ export function EditFile({doc, hooks}) {
         <Label>{doc.file.name}</Label>
         <SearchBox style={{marginLeft: 8, marginRight: 8}}/>
         <Filler/>
-        <Button size="small"><SearchIcon /></Button>
+        <Button size="small"><Icon.Search /></Button>
       </ToolBox>
     )
   }

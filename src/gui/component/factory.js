@@ -12,39 +12,45 @@ import "./factory.css"
 
 //-----------------------------------------------------------------------------
 
-import CloseIcon from '@material-ui/icons/Close' 
-import MenuIcon from '@material-ui/icons/Menu';
-import FolderIcon from '@material-ui/icons/Folder';
-import FileIcon from '@material-ui/icons/Description';
-import StarIcon from '@material-ui/icons/StarOutline';
-import HomeIcon from  '@material-ui/icons/Home';
-import SearchIcon from  '@material-ui/icons/Search';
-import BlockIcon from '@material-ui/icons/Block';
-import WarnIcon from '@material-ui/icons/Warning';
-import OpenFolderIcon from '@material-ui/icons/FolderOpenOutlined';
-import IconAdd from '@material-ui/icons/AddCircleOutline';
-import TrashIcon from '@material-ui/icons/DeleteOutline';
-
-import TypeFolder from '@material-ui/icons/Folder';
-import TypeFile from '@material-ui/icons/DescriptionOutlined';
-//import TypeUnknown from '@material-ui/icons/Close';
-//import TypeUnknown from '@material-ui/icons/Help';
-import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
-//import TypeUnknown from '@material-ui/icons/BrokenImage';
-//import TypeUnknown from '@material-ui/icons/CancelPresentationOutlined';
-
-//-----------------------------------------------------------------------------
-
 import isHotkey from 'is-hotkey';
 import { useSnackbar } from 'notistack';
 import { useEffect } from "react";
 
+export {default as InfiniteScroll} from "react-infinite-scroll-component";
+
 const {
-  Button: MuiButton,
-  Input: MuiInput, InputAdornment,
-  IconButton: MuiIconButton,
-  ButtonGroup: MuiButtonGroup,
+  Button: XButton,
+  Input: XInput,
+  IconButton: XIconButton,
+  ButtonGroup: XButtonGroup,
+  Breadcrumbs: XBreadcrumbs,
 } = require("@material-ui/core")
+
+//-----------------------------------------------------------------------------
+// Icons
+//-----------------------------------------------------------------------------
+
+//console.log("Icons", require("@material-ui/icons/"))
+
+export const Icon = {
+  Close: require("@material-ui/icons/").Close,
+  Search: require("@material-ui/icons/").Search,
+
+  //Menu: require("@material-ui/icons/Menu"),
+  Star: require("@material-ui/icons/").StarOutlineOutlined,
+  CreateFolder: require("@material-ui/icons/").CreateNewFolderOutlined,
+
+  FileType: {
+    File: require("@material-ui/icons/").InsertDriveFileOutlined,
+    //import TypeFile from '@material-ui/icons/Description';
+    Folder: require("@material-ui/icons/").Folder,
+    Unknown: require("@material-ui/icons/").BrokenImageOutlined,
+    //import TypeUnknown from '@material-ui/icons/Close';
+    //import TypeUnknown from '@material-ui/icons/Help';
+    //import TypeUnknown from '@material-ui/icons/BrokenImage';
+    //import TypeUnknown from '@material-ui/icons/CancelPresentationOutlined';
+  }
+}
 
 //-----------------------------------------------------------------------------
 // Manipulate <style> elements in document <head>
@@ -147,6 +153,10 @@ export function ToolBox({style, ...props}) {
   />
 }
 
+export function ButtonGroup(props) {
+  return <XButtonGroup {...props} />
+}
+
 //-----------------------------------------------------------------------------
 
 export function Label({style, ...props}) {
@@ -155,18 +165,14 @@ export function Label({style, ...props}) {
 
 export function Button({style, ...props}) {
   //console.log(className)
-  return <MuiButton
+  return <XButton
     style={{minWidth: 32, textTransform: "none", ...style}}
     {...props}
   />
 }
 
-export function ButtonGroup(props) {
-  return <MuiButtonGroup {...props} />
-}
-
 export function Input({style, ...props}) {
-  return <MuiInput
+  return <XInput
     disableUnderline={true}
     style={{
       margin: 0, //marginLeft: 4, 
@@ -184,15 +190,15 @@ export function SearchBox(props)
 {
   return <Input
     placeholder="Search"
-    startAdornment={<SearchIcon fontSize="small" style={{color: "gray", marginRight: 4}}/>}
+    startAdornment={<Icon.Search fontSize="small" style={{color: "gray", marginRight: 4}}/>}
     endAdornment={
-      <MuiIconButton
+      <XIconButton
         onClick={props.onCancel}
         size="small"
         style={{fontSize: "inherit", marginRight: 2}}
         >
-        <CloseIcon fontSize="inherit"/>
-      </MuiIconButton>
+        <Icon.Close fontSize="inherit"/>
+      </XIconButton>
     }
     {...props}
   />
