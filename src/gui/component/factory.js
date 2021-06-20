@@ -43,7 +43,6 @@ const {
   Button: MuiButton,
   Input: MuiInput, InputAdornment,
   IconButton: MuiIconButton,
-  //Box: MuiBox,
   ButtonGroup: MuiButtonGroup,
 } = require("@material-ui/core")
 
@@ -96,6 +95,10 @@ export function addHotkeys(hotkeys) {
 // Nice guide: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 //-----------------------------------------------------------------------------
 
+export function Box({style, ...props}) {
+  return <div style={style} {...props}/>
+}
+
 export function FlexBox({style, ...props}) {
   return <div style={{display: "flex", ...style}} {...props} />;
 }
@@ -146,12 +149,20 @@ export function ToolBox({style, ...props}) {
 
 //-----------------------------------------------------------------------------
 
+export function Label({style, ...props}) {
+  return <div display="span" style={style} {...props}/>
+}
+
 export function Button({style, ...props}) {
   //console.log(className)
   return <MuiButton
     style={{minWidth: 32, textTransform: "none", ...style}}
     {...props}
   />
+}
+
+export function ButtonGroup(props) {
+  return <MuiButtonGroup {...props} />
 }
 
 export function Input({style, ...props}) {

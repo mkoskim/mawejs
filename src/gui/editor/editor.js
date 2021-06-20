@@ -24,27 +24,8 @@ import {
   FlexBox, VBox, HBox, Filler,
   ToolBox, Button, Input,
   SearchBox, Inform, addHotkeys,
-} from "../components/factory";
-
-import {
-  Dialog,
-  Card, CardContent,
-  Checkbox, Icon,
-  Switch,
-  Breadcrumbs,
-  Paper, Box,
-  Divider,
-  Chip, Link,
-  Grid, GridList, GridListTile,
-  List, ListItem, ListItemAvatar, ListItemText, ListItemIcon, ListItemSecondaryAction,
-  TableContainer, Table, TableHead, TableRow, TableCell, TableBody,
-  Avatar,
-  AppBar, Drawer,
-  Toolbar, IconButton, Typography, ButtonGroup,
-  TextField, InputBase,
-  CircularProgress, LinearProgress,
-  Tooltip, Snackbar,
-} from "@material-ui/core";
+  Label,
+} from "../component/factory";
 
 import CloseIcon from '@material-ui/icons/Close' 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -138,7 +119,7 @@ export function EditFile({doc, hooks}) {
   function ToolBar(props) {
     return (
       <ToolBox>
-        <Typography>{doc.file.name}</Typography>
+        <Label>{doc.file.name}</Label>
         <SearchBox style={{marginLeft: 8, marginRight: 8}}/>
         <Filler/>
         <Button size="small"><SearchIcon /></Button>

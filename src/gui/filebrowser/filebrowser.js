@@ -53,31 +53,13 @@ import React, {useState, useEffect} from 'react'
 import isHotkey from "is-hotkey";
 
 import {
-  FlexBox, VBox, HBox, Filler, Separator,
-  ToolBox, Button, Input, SearchBox, Inform,
+  Box, FlexBox, VBox, HBox, Filler, Separator,
+  Button, ButtonGroup, Input, SearchBox,
+  ToolBox, Inform,
+  Label,
   addClass,
   addHotkeys,
-} from "../components/factory";
-
-import {
-    Dialog,
-    Card, CardContent,
-    Checkbox, Icon,
-    Switch,
-    Breadcrumbs,
-    Paper, Box,
-    Divider,
-    Chip, Link,
-    Grid, GridList, GridListTile,
-    List, ListItem, ListItemAvatar, ListItemText, ListItemIcon, ListItemSecondaryAction,
-    Avatar,
-    AppBar, Drawer,
-    Toolbar, IconButton, ButtonGroup,
-    TextField, InputBase, Typography, 
-    CircularProgress, LinearProgress,
-    Tooltip,
-    OutlinedInput,
-} from "@material-ui/core";
+} from "../component/factory";
 
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -104,7 +86,7 @@ import TypeUnknown from '@material-ui/icons/BrokenImageOutlined';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import SplitButton from "../components/splitbutton";
+import SplitButton from "../component/splitbutton";
 
 //-----------------------------------------------------------------------------
 
@@ -292,7 +274,7 @@ function ListDir({directory, hooks}) {
     if(!state) return null;
 
     return (
-        <Box p={"4pt"} style={{overflowY: "auto"}}>
+        <Box style={{padding: 4, overflowY: "auto"}}>
           <Section name="Folders" items={state.folders}/>
           <Section name="Files" items={state.files}/>
         </Box>
@@ -305,7 +287,7 @@ function ListDir({directory, hooks}) {
       } else {
         return (
           <React.Fragment>
-            <Typography style={{paddingLeft: 4, paddingTop: 16, paddingBottom: 8}}>{name}</Typography>
+            <Label style={{paddingLeft: 4, paddingTop: 16, paddingBottom: 8}}>{name}</Label>
             <Grid files={visible} hooks={hooks} />
             </React.Fragment>
         )
@@ -440,12 +422,14 @@ function SearchDir({directory, contains, hooks, style}) {
   function Status({style}) {
     if(!scanner) return null;
     return (
-        <Typography variant="body2" style={style}>Matches: {matches.files.length} (out of {scanner.files.length})</Typography>
+        <Label variant="body2" style={style}>Matches: {matches.files.length} (out of {scanner.files.length})</Label>
     )
 
+    /*
     function Running() {
       return (scanner && scanner.more2come()) ? <LinearProgress size={40} thickness={4}/> : null;
     }
+    */
   }
 
   //---------------------------------------------------------------------------

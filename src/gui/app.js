@@ -12,15 +12,12 @@ import "./app.css"
 
 import React from 'react'
 
+import {VBox} from "./component/factory";
+
 import {FileBrowser} from "./filebrowser/filebrowser";
 import {EditFile} from "./editor/editor";
-import {VBox} from "./components/factory";
 import {SnackbarProvider} from "notistack";
 import {Slide, Grow, Fade, Zoom} from '@material-ui/core';
-
-import {
-  Dialog,
-} from "@material-ui/core";
 
 export default class App extends React.Component {
 
