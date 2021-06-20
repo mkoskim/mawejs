@@ -56,6 +56,7 @@ import {
   FlexBox, VBox, HBox, Filler, Separator,
   ToolBox, Button, Input, SearchBox, Inform,
   addClass,
+  addHotkeys,
 } from "../components/factory";
 
 import {
@@ -116,7 +117,6 @@ const {suffix2format} = require('../../document/util');
 export function FileBrowser({directory, location, contains, hooks}) {
   const [state, setState] = useState({dir: directory, search: !!contains})
 
-  //const inform = Inform(useSnackbar());
   const inform = Inform();
 
   console.log("render: FileBrowser:", state.dir, directory, location, contains);
@@ -141,6 +141,8 @@ export function FileBrowser({directory, location, contains, hooks}) {
     open: open,
     excludeHidden: true,
   }
+
+  //---------------------------------------------------------------------------
 
   if(state.search) {
     return <SearchDir directory={state.dir} contains={contains ? contains : ""} hooks={_hooks}/>
@@ -211,25 +213,19 @@ function FileItemConfig(file, hooks) {
 //*****************************************************************************
 //*****************************************************************************
 
-function ListDir({directory, hooks, style}) {
+function ListDir({directory, hooks}) {
 
   const [path, setPath] = useState()
   const [state, setState] = useState();
   
-  console.log("render: ListDir", path, state)
-
-  //console.log("render: ListDir", directory, state);
-
   async function getContent() {
-    const [splitted, entries] = await Promise.all([
-      fs.splitpath(directory),
-      fs.readdir(directory)
-    ]);
+    const splitted = await fs.splitpath(directory);
+    setPath(splitted)
 
+    const entries = await fs.readdir(directory);
     const folders = sortFiles(entries.filter(f => f.type === "folder"));
     const files   = sortFiles(entries.filter(f => f.type !== "folder"));
 
-    setPath(splitted)
     setState({
       folders: folders,
       files: files,
@@ -244,22 +240,15 @@ function ListDir({directory, hooks, style}) {
   useEffect(() => { getContent(); }, [directory]);
 
   useEffect(() => {
-    document.addEventListener("keydown", startSearch);
-    return () => document.removeEventListener("keydown", startSearch)
-
-    function startSearch(event) {
-      //console.log(event.key);
-      if(isHotkey("ctrl+f", event)) {
-        hooks.setSearch(true);
-        event.preventDefault();
-      }
-    }    
+    return addHotkeys({
+      "mod+f": () => hooks.setSearch(true),
+    })
   });
 
   return (
     <React.Fragment>
       <ToolBox>
-        <PathButtons path={path} style={{marginRight: 8}}/>
+        <PathButtons path={path}/>
         <Button><SearchIcon onClick={() => hooks.setSearch(true)}/></Button>
         <Button><StarIcon /></Button>
         <Button><CreateFolderIcon /></Button>
@@ -281,6 +270,7 @@ function ListDir({directory, hooks, style}) {
         <Button
           key={f.id}
           onClick={() => hooks.open(f)}
+          style={{paddingLeft: 8, paddingRight: 8}}
         >
         {f.name ? f.name : "/"}
         </Button>
@@ -388,6 +378,12 @@ function SearchDir({directory, contains, hooks, style}) {
   //console.log("render: SearchDir")
 
   useEffect(() => {
+    return addHotkeys({
+      "escape": () => hooks.setSearch(false),
+    })
+  })
+
+  useEffect(() => {
     setScanner(new DirScanner(directory, { excludeFolders: true, ...hooks}))
   }, [directory]);
   
@@ -422,7 +418,6 @@ function SearchDir({directory, contains, hooks, style}) {
       <SearchBox
       value={search}
       onChange={e => setSearch(e.target.value)}
-      onCancel={e => hooks.setSearch(false)}
       autoFocus
       />
       <Status style={{marginLeft: 16}}/>

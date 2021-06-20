@@ -45,8 +45,6 @@ export default class App extends React.Component {
     function SlideUp(props) { return <Slide {...props} direction="up" /> }
     function SlideDown(props) { return <Slide {...props} direction="down" /> }
 
-    console.log("File:", this.state.file);
-
     //*
     return (
       <SnackbarProvider maxSnack={3} autoHideDuration={2500} TransitionComponent={Fade}>

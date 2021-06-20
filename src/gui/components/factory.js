@@ -73,6 +73,25 @@ export function addClass(...classNames) {
   return classNames.join(" ");
 }
 
+export function addHotkeys(hotkeys) {
+  const handler = event => {
+    for(const key in hotkeys) {
+      if(isHotkey(key, event)) {
+        event.preventDefault();
+        hotkeys[key]();
+      }
+    }
+  }
+
+  //console.log("Adding hotkeys")
+  document.addEventListener("keydown", handler);
+
+  return () => {
+    //console.log("Removing hotkeys")
+    document.removeEventListener("keydown", handler)
+  }
+}
+
 //-----------------------------------------------------------------------------
 // Nice guide: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 //-----------------------------------------------------------------------------
@@ -152,20 +171,6 @@ export function Input({style, ...props}) {
 
 export function SearchBox(props)
 {
-  function onKeyDown(e) {
-    //console.log(event.key);
-    if(isHotkey("escape", e) && props.onCancel) {
-      console.log("Cancel")
-      props.onCancel();
-      e.preventDefault();
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown)
-  }, [])
-
   return <Input
     placeholder="Search"
     startAdornment={<SearchIcon fontSize="small" style={{color: "gray", marginRight: 4}}/>}

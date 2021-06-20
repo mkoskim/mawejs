@@ -23,7 +23,7 @@ import { withHistory } from "slate-history"
 import {
   FlexBox, VBox, HBox, Filler,
   ToolBox, Button, Input,
-  SearchBox, Inform,
+  SearchBox, Inform, addHotkeys,
 } from "../components/factory";
 
 import {
@@ -82,35 +82,62 @@ import isHotkey from 'is-hotkey';
 //*****************************************************************************
 
 export function EditFile({doc, hooks}) {
+
+  console.log("Doc:", doc)
+
   const [content, setContent] = useState(deserialize(doc));
+
+  console.log("Content:", content);
+  console.log("Body:", content.body);
+
+  function setBody(part) {
+    setContent({...content, body: part})
+  }
+
+  function setNotes(part) {
+    setContent({...content, notes: part})
+  }
 
   const inform = Inform();
   
-  const hotkeys = {
+  const editor1 = useMemo(() => withHistory(withReact(createEditor())), [])
+  const editor2 = useMemo(() => withHistory(withReact(createEditor())), [])
+  const renderElement = useCallback(props => <Element {...props} />, [])
+  const renderLeaf = useCallback(props => <Leaf {...props} />, [])
+
+  addHotkeys({
     "mod+w": hooks.closeFile,   // Close this file
     "mod+o": hooks.closeFile,   // Go to file browser to open new file
     "mod+s": null,              // Serialize and save
-  }
-
-  const editor = useMemo(() => withHistory(withReact(createEditor())), [])
-  const renderElement = useCallback(props => <Element {...props} />, [])
-  const renderLeaf = useCallback(props => <Leaf {...props} />, [])
+  })
 
   return (
     <React.Fragment>
       <ToolBar />
-      <div className="Board">
-      <Slate editor={editor} value={content} onChange={setContent}>
-        <Editable
-          autoFocus
-          spellCheck={false} // Keep false until you find out how to change language
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-          onKeyDown={onKeyDown}
-          className="Sheet"
-        />
-      </Slate>
-      </div>
+      <HBox style={{overflow: "auto"}}>
+        <div className="Outline"/>
+        <div className="Scroll Primary">
+          <Slate editor={editor1} value={content.body} onChange={setBody}>
+            <Editable
+              className="Sheet"
+              autoFocus
+              spellCheck={false} // Keep false until you find out how to change language
+              renderElement={renderElement}
+              renderLeaf={renderLeaf}
+            />
+          </Slate>
+        </div>
+        <div className="Scroll Secondary">
+          <Slate editor={editor2} value={content.body} onChange={setBody}>
+            <Editable
+              className="Sheet"
+              spellCheck={false} // Keep false until you find out how to change language
+              renderElement={renderElement}
+              renderLeaf={renderLeaf}
+            />
+          </Slate>
+        </div>
+      </HBox>
     </React.Fragment>
   )
 
@@ -123,15 +150,6 @@ export function EditFile({doc, hooks}) {
         <Button size="small"><SearchIcon /></Button>
       </ToolBox>
     )
-  }
-
-  function onKeyDown(event) {
-    for(const key in hotkeys) {
-      if(isHotkey(key, event)) {
-        event.preventDefault();
-        hotkeys[key]();
-      }
-    }
   }
 
   function Element({element, attributes, children}) {
@@ -154,16 +172,18 @@ export function EditFile({doc, hooks}) {
 //-----------------------------------------------------------------------------
 
 function deserialize(doc) {
-  console.log("Doc:", doc)
-  const content = Story2Slate(doc.story);
-  console.log("Content:", content)
-  return content;
+  const body = Story2Slate(doc.story);
+  const notes = Part2Slate(doc.story.notes.part[0]);
+
+  return {
+    body: body,
+    notes: notes,
+  }
 
   function Story2Slate(story) {
     return [
       { type: "title", children: [{text: story.body.head.title}] },
       ]
-      //.concat(Part2Slate(story.notes.part[0]))
       .concat(Part2Slate(story.body.part[0]))
       .concat([{type: "p", children: [{text: ""}]}])
   }

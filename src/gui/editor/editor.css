@@ -5,44 +5,76 @@
 // ----------------------------------------------------------------------------
 */
 
-.Board {
-  overflow-y: auto;
+/* ---------------------------------------------------------------------------- */
+/* Visibility (for debugging) */
+
+/*
+.Secondary { display: none; }
+.Outline { display: none; }
+*/
+
+/* ---------------------------------------------------------------------------- */
+
+.Outline {
+  width: 200px;
+  background-color: lightgray;
+  /*
+  background-color: #EEE;
+  */
+}
+
+.Primary {
   flex-grow: 1;
 }
 
+.Scroll {
+  overflow: auto;
+}
+
+/* ---------------------------------------------------------------------------- */
+
 .Sheet {
-  /* Center sheet horizontally to board */
-  margin-left: auto;
-  margin-right: auto;
-
-  background-color: white;
-
-  padding-left: 1.5cm;
-  padding-right: 1.5cm;
-  padding-top: 1cm;
-  padding-bottom: 2cm;
-
-  font-size: 12pt;
-  line-height: 180%;
-
   font-family: 'Times New Roman', Times, serif;
   /*
   font-family: 'Courier New', Courier, monospace;
   font-family:Arial, Helvetica, sans-serif;
   */
+  font-size: 12pt;
+  line-height: 180%;
+  padding-top: 1cm;
+  padding-bottom: 2cm;
+}
+
+.Primary .Sheet {
+  /* Center sheet horizontally to board */
+  margin-left: 0.5cm;
+  margin-right: auto;
+
+  background-color: white;
+
+  padding-left: 1.0cm;
+  padding-right: 1.0cm;
+  padding-top: 1cm;
+  padding-bottom: 2cm;
 
   min-width: 5in;
   max-width: 6in;
 }
 
-/* Uncomment in case you want sheet to look bit like paper: */
-/* .Board {
-  background-color: lightgray;
+.Secondary .Sheet {
+  background-color: white;
+  padding-left: 0.5cm;
+  padding-right: 0.5cm;
+
+  max-width: 6in;
 }
-.Sheet {
+
+/* Uncomment in case you want sheet to look bit like paper: */
+.Primary { background-color: #EEE }
+.Primary .Sheet {
   box-shadow: 2px 2px 8px 0 rgba(0, 0, 0, 0.2);
-  margin-top: 1cm;
-  margin-bottom: 1cm;
+  margin-top: 0.5cm;
+  margin-bottom: 0.5cm;
 }
 /**/
 
@@ -83,4 +115,5 @@
   margin-bottom: 0.5cm;
   font-weight: bold;
   text-indent: 0;
+  color:gray;
 }
