@@ -11,7 +11,7 @@ The main objective is to make versions working! That is needed urgently! It
 won't take long time when I need an editor, where I can store the existing 
 version as a version, and use it to create new one.
 
-So, aim for single-part editor, supporting body and notes sections, very
+So, aim to single-part editor, supporting body and notes sections, very
 similar to current Python version. Support for multiple parts can be added 
 later.
 
@@ -22,10 +22,11 @@ can not be done with Electron version yet.
 
 TODO:
 
-- Editor component needs Document, not file name. Loading of the document needs
-  to be handled elsewhere.
+- Content editing: support for standard features
 
-- Serialize doc from Slate editor
+- Work toward saving the edited content: Serialize doc from Slate editor
+
+- Move CWD to application level, so that app remembers in which directory it was
 
 - When file is opened from search, change directory accordingly (probably the
   best is to use the directory where the search was initiated? Or the directory
@@ -88,4 +89,7 @@ DONE:
 
 - TODO: Implement a separator, which takes its orientation from the surrounding
   box.
+
+- Editor component needs Document, not file name. Loading of the document needs
+  to be handled elsewhere.
 
