@@ -70,9 +70,9 @@ export function EditFile({doc, hooks}) {
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
 
   addHotkeys({
-    "mod+w": hooks.closeFile,   // Close this file
     "mod+o": hooks.closeFile,   // Go to file browser to open new file
     "mod+s": null,              // Serialize and save
+    "mod+w": hooks.closeFile,   // Close file
   })
 
   return (

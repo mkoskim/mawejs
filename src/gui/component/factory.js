@@ -19,8 +19,7 @@ import { useEffect } from "react";
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 
 const {
-  Button: XButton,
-  Input: XInput,
+  Button: XButton, Input: XInput, Tooltip: XTooltip,
   IconButton: XIconButton,
   ButtonGroup: XButtonGroup,
   Breadcrumbs: XBreadcrumbs,
@@ -144,7 +143,8 @@ HeadStyle("Separator").set(
 
 export function ToolBox({style, ...props}) {
   return <HBox style={{
-    padding: 4,
+    paddingLeft: 4, paddingRight: 4,
+    paddingTop: 2, paddingBottom: 2,
     backgroundColor: "#F8F8F8",
     alignItems: "center",
     borderBottom: "1pt solid lightgray",
@@ -163,12 +163,13 @@ export function Label({style, ...props}) {
   return <div display="span" style={style} {...props}/>
 }
 
-export function Button({style, ...props}) {
-  //console.log(className)
-  return <XButton
+export function Button({tooltip, style, ...props}) {
+  const button = <XButton
     style={{minWidth: 32, textTransform: "none", ...style}}
     {...props}
   />
+  
+  return tooltip ? <XTooltip title={tooltip}>{button}</XTooltip> : button;
 }
 
 export function Input({style, ...props}) {
@@ -186,14 +187,14 @@ export function Input({style, ...props}) {
   />
 }
 
-export function SearchBox(props)
+export function SearchBox({onCancel, ...props})
 {
   return <Input
     placeholder="Search"
     startAdornment={<Icon.Search fontSize="small" style={{color: "gray", marginRight: 4}}/>}
     endAdornment={
       <XIconButton
-        onClick={props.onCancel}
+        onClick={onCancel}
         size="small"
         style={{fontSize: "inherit", marginRight: 2}}
         >

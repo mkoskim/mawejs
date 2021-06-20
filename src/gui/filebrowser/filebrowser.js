@@ -212,10 +212,11 @@ function ListDir({directory, hooks}) {
     <React.Fragment>
       <ToolBox>
         <PathButtons path={path}/>
+        <Filler/>
         <ButtonGroup>
-          <Button><Icon.Search onClick={() => hooks.setSearch(true)}/></Button>
-          <Button><Icon.Star /></Button>
-          <Button><Icon.CreateFolder /></Button>
+          <Button tooltip="Add to favorites"><Icon.Star /></Button>
+          <Button tooltip="Create new folder"><Icon.CreateFolder /></Button>
+          <Button tooltip="Search files"><Icon.Search onClick={() => hooks.setSearch(true)}/></Button>
           </ButtonGroup>
         </ToolBox>
       <SplitList directory={directory} state={state}/>
@@ -242,9 +243,17 @@ function ListDir({directory, hooks}) {
     }
 
     function entry(index, file) {
-      const name = index ? (file.name + "/") : "xxx@local:";
+      const name = index ? (file.name + "/") : "xxx@local:/";
       const callback = (index < path.length - 1) ? (() => open(file)) : (() => menu(file));
-      return <Button key={index} onClick={callback}>{name}</Button>
+      return (
+        <Button
+        key={index}
+        onClick={callback}
+        style={{paddingLeft: 4, paddingRight: 6}}
+        >
+          {name}
+        </Button>
+      )
     }
   }
 
@@ -348,7 +357,7 @@ function SearchDir({directory, contains, hooks, style}) {
 
   useEffect(() => {
     return addHotkeys({
-      "escape": () => hooks.setSearch(false),
+      "escape": cancelSearch,
     })
   })
 
@@ -373,12 +382,16 @@ function SearchDir({directory, contains, hooks, style}) {
     }
   }, [search]);
 
+  function cancelSearch() {
+    hooks.setSearch(false)
+  }
+
   function fetch(num) {
     console.log("Fetch:", search, num)
     scanner.fetch(setMatches, search, num);
   }
 
-  const fetchMore = () => {
+  function fetchMore() {
     fetch(matches.files.length + 20);
   }
 
@@ -387,6 +400,7 @@ function SearchDir({directory, contains, hooks, style}) {
       <SearchBox
       value={search}
       onChange={e => setSearch(e.target.value)}
+      onCancel={cancelSearch}
       autoFocus
       />
       <Status style={{marginLeft: 16}}/>
