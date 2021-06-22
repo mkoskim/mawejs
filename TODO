@@ -28,9 +28,16 @@ TODO:
 
 - Move CWD to application level, so that app remembers in which directory it was
 
-- When file is opened from search, change directory accordingly (probably the
+- When directory is opened from search, change directory accordingly (probably the
   best is to use the directory where the search was initiated? Or the directory
   where the opened file is?)
+
+- Project manager: dirs to scan, scan dirs and extract headers etc.
+
+- Organizer? An own view to move parts and scenes around stories.
+
+- Cards or something alike. Main feature: card has a tag, that can be scanned
+  through text to recognize things.
 
 -------------------------------------------------------------------------------
 
