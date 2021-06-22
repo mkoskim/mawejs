@@ -63,6 +63,7 @@ import {
   addHotkeys,
   InfiniteScroll,
   Breadcrumbs,
+  isEmpty, isNotEmpty,
 } from "../component/factory";
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -78,7 +79,7 @@ const {suffix2format} = require('../../document/util');
 //-----------------------------------------------------------------------------
 
 export function FileBrowser({directory, location, contains, hooks}) {
-  const [state, setState] = useState({dir: directory, search: !!contains})
+  const [state, setState] = useState({dir: directory, search: isNotEmpty(contains)})
 
   const inform = Inform();
 

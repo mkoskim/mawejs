@@ -73,8 +73,13 @@ export function HeadStyle(id) {
 
 //-----------------------------------------------------------------------------
 
+export const isEmpty = x => !x;
+export const isNotEmpty = x => !!x;
+
+//-----------------------------------------------------------------------------
+
 export function addClass(...classNames) {
-  return classNames.join(" ");
+  return classNames.filter(isNotEmpty).join(" ");
 }
 
 export function addHotkeys(hotkeys) {

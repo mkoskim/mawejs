@@ -54,18 +54,12 @@ export function EditFile({doc, hooks}) {
   console.log("Content:", content);
   console.log("Body:", content.body);
 
-  function setBody(part) {
-    setContent({...content, body: part})
-  }
-
-  function setNotes(part) {
-    setContent({...content, notes: part})
-  }
+  function setBody(part)  { setContent({...content, body: part}) }
+  function setNotes(part) { setContent({...content, notes: part}) }
 
   const inform = Inform();
   
-  const editor1 = useMemo(() => withHistory(withReact(createEditor())), [])
-  const editor2 = useMemo(() => withHistory(withReact(createEditor())), [])
+  const editor = useMemo(() => withHistory(withReact(createEditor())), [])
   const renderElement = useCallback(props => <Element {...props} />, [])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
 
@@ -75,14 +69,15 @@ export function EditFile({doc, hooks}) {
     "mod+w": hooks.closeFile,   // Close file
   })
 
+  const mode="Centered";
+
   return (
     <React.Fragment>
       <ToolBar />
       <HBox style={{overflow: "auto"}}>
-        <div className="Outline">
-        </div>
-        <div className="Primary Scroll">
-          <Slate editor={editor1} value={content.body} onChange={setBody}>
+        <div className="Outline"></div>
+        <div className={`Board ${mode}`}>
+          <Slate editor={editor} value={content.body} onChange={setBody}>
             <Editable
               className="Sheet"
               autoFocus

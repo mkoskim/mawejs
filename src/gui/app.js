@@ -10,64 +10,60 @@ import "./app.css"
 
 /* eslint-disable no-unused-vars */
 
-import React from 'react'
+import React, {useState} from 'react'
 
 import {VBox} from "./component/factory";
 
 import {FileBrowser} from "./filebrowser/filebrowser";
-import {EditFile} from "./editor/editor";
+import {EditFile} from "./editor/editorSlate";
 import {SnackbarProvider} from "notistack";
 import {Slide, Grow, Fade, Zoom} from '@material-ui/core';
 
-export default class App extends React.Component {
+//-----------------------------------------------------------------------------
 
-  constructor(props) {
-    super(props);
+export default function App(props) {
 
-    console.log("constructor: App")
+  console.log("render: App");
 
-    this.state = {
-      doc: undefined,
-      //file: "./local/Beltane.mawe",
-      //file: "./local/Dinosauruspuisto.mawe",
-    }
+  const [state, setState] = useState({
+    doc: undefined,
+    //file: "./local/Beltane.mawe",
+    //file: "./local/Dinosauruspuisto.mawe",
+  })
 
-    this.hooks = {
-      closeFile: () => { this.setState({...this.state, doc: undefined}); },
-      openFile: (doc) => { this.setState({...this.state, doc: doc}); },
-    }
+  const hooks = {
+    closeFile: () => { setState({...state, doc: undefined}); },
+    openFile: (doc) => { setState({...state, doc: doc}); },
   }
 
-  render() {
-    function SlideUp(props) { return <Slide {...props} direction="up" /> }
-    function SlideDown(props) { return <Slide {...props} direction="down" /> }
+  function SlideUp(props) { return <Slide {...props} direction="up" /> }
+  function SlideDown(props) { return <Slide {...props} direction="down" /> }
 
-    //*
-    return (
-      <SnackbarProvider maxSnack={3} autoHideDuration={2500} TransitionComponent={Fade}>
-      <VBox style={{height: "100vh", width: "100vw"}}>
-        {this.View()}
-      </VBox>
-      </SnackbarProvider>
-    );
-    /*/
-    return <Dialog open={true} maxWidth="lg" fullWidth={true} height="90vh">
-      <View style={{width: "100%", height: "90vh"}}/>
-      </Dialog>;
-    /**/
-  }
+  //*
+  return (
+    <SnackbarProvider maxSnack={3} autoHideDuration={2500} TransitionComponent={Fade}>
+    <VBox style={{height: "100vh", width: "100vw"}}>
+      <View />
+    </VBox>
+    </SnackbarProvider>
+  );
+  /*/
+  return <Dialog open={true} maxWidth="lg" fullWidth={true} height="90vh">
+    <View style={{width: "100%", height: "90vh"}}/>
+    </Dialog>;
+  /**/
 
-  View() {
-    if(this.state.doc) {
-      return <EditFile doc={this.state.doc} hooks={this.hooks}/>
+  function View(props) {
+    if(state.doc) {
+      return <EditFile doc={state.doc} hooks={hooks}/>
     } else {
-      return <FileBrowser directory="./local" hooks={this.hooks}/>
+      return <FileBrowser directory="./local" hooks={hooks}/>
     }
   }
 
-    // TODO: Use these to make test cases:
-      //<FileEditor fileid="local/donotexist" />
-      //<FileEditor fileid="local/cantread.txt" />
-      //<FileEditor fileid="local/README.md" />
-      //<FileEditor fileid="local/invalid.mawe" />
+  // TODO: Use these to make test cases:
+    //<FileEditor fileid="local/donotexist" />
+    //<FileEditor fileid="local/cantread.txt" />
+    //<FileEditor fileid="local/README.md" />
+    //<FileEditor fileid="local/invalid.mawe" />
 }

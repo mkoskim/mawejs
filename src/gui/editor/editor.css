@@ -23,17 +23,15 @@
   */
 }
 
-.Primary {
-  flex-grow: 1;
-}
+.Board { overflow: auto; background-color: #EEE; }
 
-.Scroll {
-  overflow: auto;
-}
+.Centered { flex-grow: 1; }
+.Primary { flex-grow: 1; }
 
 /* ---------------------------------------------------------------------------- */
 
 .Sheet {
+  background-color: white;
   font-family: 'Times New Roman', Times, serif;
   /*
   font-family: 'Courier New', Courier, monospace;
@@ -43,22 +41,22 @@
   line-height: 180%;
   padding-top: 1cm;
   padding-bottom: 2cm;
-}
-
-.Primary .Sheet {
-  /* Center sheet horizontally to board */
-  margin-left: 0.5cm;
-  margin-right: auto;
-
-  background-color: white;
-
-  padding-left: 1.0cm;
-  padding-right: 1.0cm;
-  padding-top: 1cm;
-  padding-bottom: 2cm;
 
   min-width: 5in;
   max-width: 6in;
+}
+
+.Centered .Sheet {
+  /* Center sheet horizontally to board */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5cm;
+  padding-right: 1.5cm;
+}
+
+.Primary .Sheet {
+  padding-left: 1.0cm;
+  padding-right: 1.0cm;
 }
 
 .Secondary .Sheet {
@@ -71,8 +69,7 @@
 
 /* Uncomment in case you want sheet to look bit like paper: */
 
-.Primary { background-color: #EEE }
-.Primary .Sheet {
+.Centered .Sheet {
   box-shadow: 2px 2px 8px 0 rgba(0, 0, 0, 0.2);
   margin-top: 0.5cm;
   margin-bottom: 0.5cm;
@@ -80,7 +77,7 @@
 /**/
 
 /* ----------------------------------------------------------------------------
-// Subelements
+// Sheet Subelements
 // ----------------------------------------------------------------------------
 */
 
