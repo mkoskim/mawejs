@@ -103,17 +103,13 @@ async function mawe(file) {
     if(root.tag !== "story") throw Error();
     if(root.get("format") !== "mawe") throw Error();
 
-    const body  = parseBody(root.find("body"));
-    const notes = parseNotes(root.find("notes"));
-    const versions = root.findall("version").map(parseBody);
-
     const {uuid, name, format, ...extra} = root.attrib;
 
     return withextras({
       ...{uuid, name, ...extra},
-      body: body,
-      notes: notes,
-      version: versions,
+      body: parseBody(root.find("body")),
+      notes: parseNotes(root.find("notes")),
+      version: root.findall("version").map(parseBody),
     }, root);
   }
 
@@ -130,16 +126,16 @@ async function mawe(file) {
 
   function parseHead(elem) {
     return withextras({
-      version: elem.findtext("version"),
+      //version: elem.findtext("version"),
+      status: elem.findtext("status"),
+      deadline: elem.findtext("deadline"),
+      year: elem.findtext("year"),
       title: elem.findtext("title"),
       subtitle: elem.findtext("subtitle"),
       author: elem.findtext("author"),
       nickname: elem.findtext("nickname"),
       translated: elem.findtext("translated"),
-      status: elem.findtext("status"),
-      deadline: elem.findtext("deadline"),
       covertext: elem.findtext("covertext"),
-      year: elem.findtext("year"),
       words: {
         text: elem.findtext("words/text"),
         missing: elem.findtext("words/missing"),
