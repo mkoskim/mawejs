@@ -49,9 +49,13 @@ export function tree2buf(root) {
   return etree.write({xml_declaration: false, indent: 0});
 }
 
-export async function buf2file(file, buffer, compress) {
+export async function buf2file(doc, buffer) {
+  const file = doc.file;
+
+  // Sanity check here: make sure that buffer is extracted to the same doc as
+  // sent for saving.
   //console.log(file)
-  
+
   if(file.id.endsWith(".gz")) {
     return await fs.write(file.id, await gzip(buffer, {level: 9}));
   } else {

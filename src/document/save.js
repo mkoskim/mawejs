@@ -83,7 +83,7 @@ export async function mawe(doc) {
   //---------------------------------------------------------------------------
 
   //console.log("save.mawe:", doc.file)
-  return buf2file(doc.file, tree2buf(root), doc.compress);
+  return buf2file(doc, tree2buf(root));
 }
 
 //-----------------------------------------------------------------------------

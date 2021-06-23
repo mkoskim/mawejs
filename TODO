@@ -22,8 +22,13 @@ can not be done with Electron version yet.
 
 TODO:
 
-- Content editing: support for standard features
+- Content editing: support for standard features. It is doable, if you can:
 
+  - apply scene header, comments, missing,
+  - save in readable format,
+  - maybe have clickable index.
+  - other features can be added later.
+ 
 - Work toward saving the edited content: Serialize doc from Slate editor
 
 - Move CWD to application level, so that app remembers in which directory it was
@@ -32,12 +37,39 @@ TODO:
   best is to use the directory where the search was initiated? Or the directory
   where the opened file is?)
 
-- Project manager: dirs to scan, scan dirs and extract headers etc.
-
 - Organizer? An own view to move parts and scenes around stories.
 
 - Cards or something alike. Main feature: card has a tag, that can be scanned
   through text to recognize things.
+
+-------------------------------------------------------------------------------
+
+PROJECT MANAGEMENT
+
+It would be best to remove project management fields from the story itself.
+It would be safer, if fields like status and deadline would be saved in their
+own database. That way we could change the field values without touching the
+story itself.
+
+- The PM fields would be saved to the file itself once it is loaded and 
+  saved (that is, when loading, PM fields would override the fields in the 
+  file)
+
+- Project manager: dirs to scan, scan dirs and extract headers etc.
+
+-------------------------------------------------------------------------------
+
+SAVING FILES
+
+I am a bit paranoid about saving files, because if there are bugs in the
+saving process, it may lead to great losses. I might need to reinforce
+the saving process:
+
+- When buffer is done, try to open it and compare it to the doc that
+  was given to be saved. If they differ, don't save.
+
+- I might need to go to some kind of versioning file system just to make
+  myself to feel more relaxed...
 
 -------------------------------------------------------------------------------
 

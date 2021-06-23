@@ -12,10 +12,22 @@ const document = require("../src/document")
 
 //-----------------------------------------------------------------------------
 
-const args = process.argv.slice(2)
+export function run(args) {
+  //testscan();
+  scandocs(...args);
+}
 
-//testscan();
-scandocs(args);
+//-----------------------------------------------------------------------------
+
+function scandocs(directory, ...args) {
+  if(!directory) {
+    console.log("Usage: node run.js test_scan.js <dir>")
+    return ;
+  }
+
+  console.log("Scanning:", directory);
+  document.scan(directory);
+}
 
 //-----------------------------------------------------------------------------
 
@@ -31,17 +43,4 @@ async function testscan() {
     files.push(...results);
   }
   console.log(files.length);
-}
-
-//-----------------------------------------------------------------------------
-
-function scandocs(args) {
-  if(!args.length) {
-    console.log("Usage: node test_scan.js <dir> <options>")
-    return ;
-  }
-  const [directory, _] = args;
-
-  console.log("Scanning:", directory);
-  document.scan(directory);
 }
