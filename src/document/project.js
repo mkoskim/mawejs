@@ -22,6 +22,11 @@ What do we want?
 - Collections would be absolutely great! That is, you could make workset and
   make a collection from that.
 
+- We might store the project database to local storage: we could update that
+  from disk, and sync it on disk, so that you could access the same info
+  from different browser, too. But first, we could build that for local
+  storage.
+
 -------------------------------------------------------------------------------
 */
 

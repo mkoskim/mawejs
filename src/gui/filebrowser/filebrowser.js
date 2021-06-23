@@ -99,9 +99,9 @@ export function FileBrowser({directory, location, contains, hooks}) {
   }, [directory, location]);
 
   const _hooks = {
-    setSearch: (search) => setState({...state, search: search}),
+    setSearch: search => setState(state => ({...state, search: search})),
     error: inform.error,
-    chdir: chDir,
+    chdir: dirid => setState({dir: dirid, search: false}),
     open: open,
     excludeHidden: true,
   }
@@ -116,14 +116,10 @@ export function FileBrowser({directory, location, contains, hooks}) {
 
   //---------------------------------------------------------------------------
 
-  async function chDir(dirid) {
-    setState({dir: dirid, search: false});
-  }
-
   async function open(f) {
     console.log("Open:", f.name);
 
-    if(f.type === "folder") return chDir(f.id);
+    if(f.type === "folder") return _hooks.chdir(f.id);
 
     if(suffix2format(f)) {
       // TODO: Implement something to show that we are doing something
@@ -198,16 +194,13 @@ function ListDir({directory, hooks}) {
     function sortFiles(files) {
       return files.sort((a, b) => a.name.localeCompare(b.name, {sensitivity: 'base'}))
     }
-  
   }
 
   useEffect(() => { getContent(); }, [directory]);
 
-  useEffect(() => {
-    return addHotkeys({
-      "mod+f": () => hooks.setSearch(true),
-    })
-  });
+  useEffect(() => addHotkeys({
+    "mod+f": () => hooks.setSearch(true),
+  }));
 
   return (
     <React.Fragment>

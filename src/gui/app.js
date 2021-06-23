@@ -23,17 +23,23 @@ import {Slide, Grow, Fade, Zoom} from '@material-ui/core';
 
 export default function App(props) {
 
-  console.log("render: App");
-
   const [state, setState] = useState({
     doc: undefined,
     //file: "./local/Beltane.mawe",
     //file: "./local/Dinosauruspuisto.mawe",
   })
 
+  console.log("render: App", state);
+
   const hooks = {
-    closeFile: () => { setState({...state, doc: undefined}); },
-    openFile: (doc) => { setState({...state, doc: doc}); },
+    closeFile: () => {
+      console.log("closeFile");
+      setState(state => ({...state, doc: undefined}))
+    },
+    openFile: doc => {
+      console.log("openFile")
+      setState(state => ({...state, doc: doc}))
+    },
   }
 
   function SlideUp(props) { return <Slide {...props} direction="up" /> }
