@@ -90,11 +90,10 @@
 
 .Sheet p {
   margin: 0pt;
-  text-indent: 1.0cm;
 }
 
-.Sheet p.noident {
-  text-indent: 0;
+.Sheet p + p {
+  text-indent: 1.0cm;
 }
 
 .Sheet p.missing {
@@ -108,10 +107,11 @@
 .Sheet p.synopsis {
 }
 
-.Sheet p.scene {
-  margin-top: 0.5cm;
-  margin-bottom: 0.5cm;
+.Sheet div.scene {
+  margin-top: 0.25cm;
+  margin-bottom: 0.25cm;
   font-weight: bold;
+  font-family: inherit;
   text-indent: 0;
   color:gray;
 }

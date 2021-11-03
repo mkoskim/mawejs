@@ -86,8 +86,9 @@ export function addHotkeys(hotkeys) {
   const handler = event => {
     for(const key in hotkeys) {
       if(isHotkey(key, event)) {
-        event.preventDefault();
-        hotkeys[key]();
+        //event.preventDefault();
+        event.stopPropagation();
+        if(hotkeys[key]) hotkeys[key]();
       }
     }
   }

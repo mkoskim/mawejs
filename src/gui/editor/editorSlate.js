@@ -50,12 +50,12 @@ import isHotkey from 'is-hotkey';
 
 export function EditFile({doc, hooks}) {
 
-  console.log("Doc:", doc)
+  //console.log("Doc:", doc)
 
   const [content, setContent] = useState(deserialize(doc));
 
-  console.log("Content:", content);
-  console.log("Body:", content.body);
+  //console.log("Content:", content);
+  //console.log("Body:", content.body);
 
   function setBody(part)  { setContent({...content, body: part}) }
   function setNotes(part) { setContent({...content, notes: part}) }
@@ -108,7 +108,8 @@ export function EditFile({doc, hooks}) {
   function Element({element, attributes, children}) {
     switch(element.type) {
       case "title": return <h1 {...attributes}>{children}</h1>
-      case "scene":   
+      case "scene": return <div className="scene" {...attributes}>{children}</div>
+      case "br": return <br {...attributes}/>
       case "missing": 
       case "comment":
       case "synopsis":
