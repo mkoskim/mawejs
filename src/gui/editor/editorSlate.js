@@ -72,17 +72,18 @@ export function EditFile({doc, hooks}) {
     "mod+w": hooks.closeFile,   // Close file
   }));
 
-  const mode="Centered";
+  //const mode="Centered";
+  const mode="Primary";
 
   return (
     <React.Fragment>
       <ToolBar />
-      <HBox style={{overflow: "auto"}}>
-        <div className="Outline"></div>
+      <HBox style={{overflow: "auto", background: "#EEE"}}>
+        <Outline />
         <div className={`Board ${mode}`}>
           <Slate editor={editor} value={content.body} onChange={setBody}>
             <Editable
-              className="Sheet"
+              className="Sheet Shadow"
               autoFocus
               spellCheck={false} // Keep false until you find out how to change language
               renderElement={renderElement}
@@ -105,10 +106,23 @@ export function EditFile({doc, hooks}) {
     )
   }
 
+  function Outline(props) {
+    return (
+      <div className="Outline">
+      {content.body.filter(n => n.type === "scenename").map(n => <Entry text={n.children[0].text}/>)}
+      </div>
+    )
+
+    function Entry(props) {
+      return <div className="entry">{props.text}</div>
+    }
+  }
+
   function Element({element, attributes, children}) {
     switch(element.type) {
       case "title": return <h1 {...attributes}>{children}</h1>
-      case "scene": return <div className="scene" {...attributes}>{children}</div>
+      //case "scene": return <div className="scene" {...attributes}>{children}</div>
+      case "scenename": return <h2 className="scene" {...attributes}>{children}</h2>
       case "br": return <br {...attributes}/>
       case "missing": 
       case "comment":
@@ -148,8 +162,8 @@ function deserialize(doc) {
 
   function Scene2Slate(scene) {
     return [{
-      type: "scene",
-      children: [{text: scene.attr.name}],
+      type: "scenename",
+      children: [{text: scene.attr.name}]
     }].concat(scene.children.map(Paragraph2Slate))
   }
 

@@ -16,17 +16,29 @@
 /* ---------------------------------------------------------------------------- */
 
 .Outline {
-  width: 250px;
-  background-color: lightgray;
+  width: 300px;
   /*
-  background-color: #EEE;
+  background-color: lightgray;
   */
+  overflow: auto;
+  padding-top: 0.5cm;
+  padding-left: 4px;
 }
 
-.Board { overflow: auto; background-color: #EEE; }
+.Outline .entry {
+  padding: 6px;
+  padding-left: 16px;
+  cursor: default;
+}
+
+.Outline .entry:hover {
+  background-color: lightgrey;
+}
+
+.Board { overflow: auto; }
 
 .Centered { flex-grow: 1; }
-.Primary { flex-grow: 1; }
+.Primary { flex-grow: 1; padding-left: 0.5cm; }
 
 /* ---------------------------------------------------------------------------- */
 
@@ -67,14 +79,14 @@
   max-width: 6in;
 }
 
-/* Uncomment in case you want sheet to look bit like paper: */
-
-.Centered .Sheet {
-  box-shadow: 2px 2px 8px 0 rgba(0, 0, 0, 0.2);
+.Sheet.Shadow {
+  /*
+  box-shadow: rgb(0 0 0 / 10%) 1px 1px 0px inset, rgb(0 0 0 / 7%) 0px -1px 0px inset;
+  */
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   margin-top: 0.5cm;
   margin-bottom: 0.5cm;
 }
-/**/
 
 /* ----------------------------------------------------------------------------
 // Sheet Subelements
@@ -97,21 +109,36 @@
 }
 
 .Sheet p.missing {
-  color: #B22;
+  color: #A22;
+  background-color: #FFF2F2;
+  /* border-left: 4px solid #D88; */
+  padding-left: 1cm;
+  text-indent: 0;
 }
 
 .Sheet p.comment {
-  color: #272;
+  color: #171;
+  background-color: #F8FFF8;
+  /* border-left: 4px solid #8D8; */
+  padding-left: 1cm;
+  text-indent: 0;
 }
 
 .Sheet p.synopsis {
 }
 
-.Sheet div.scene {
+.Sheet h2.scene {
   margin-top: 0.25cm;
   margin-bottom: 0.25cm;
   font-weight: bold;
   font-family: inherit;
+  font-size: inherit;
   text-indent: 0;
   color:gray;
+}
+
+.Sheet div.scene {
+  border: 1pt solid lightgray;
+  border-radius: 4px;
+  margin-bottom: 4px;
 }
