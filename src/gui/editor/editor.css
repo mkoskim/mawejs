@@ -108,20 +108,21 @@
   text-indent: 1.0cm;
 }
 
+.Sheet p.missing, p.comment {
+  padding-left: 1cm;
+  text-indent: 0;
+}
+
 .Sheet p.missing {
   color: #A22;
   background-color: #FFF2F2;
   /* border-left: 4px solid #D88; */
-  padding-left: 1cm;
-  text-indent: 0;
 }
 
 .Sheet p.comment {
   color: #171;
   background-color: #F8FFF8;
   /* border-left: 4px solid #8D8; */
-  padding-left: 1cm;
-  text-indent: 0;
 }
 
 .Sheet p.synopsis {
