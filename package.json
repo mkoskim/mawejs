@@ -38,7 +38,6 @@
     "react-dom": "^18.2.0",
     "react-infinite-scroll-component": "^6.1.0",
     "react-redux": "^8.0.2",
-    "redux": "^4.2.0",
     "slate": "^0.81.0",
     "slate-history": "^0.66.0",
     "slate-react": "^0.81.0",

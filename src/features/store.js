@@ -12,6 +12,5 @@ import cwdReducer from "./cwd/cwdSlice"
 export default configureStore({
   reducer: {
     cwd: cwdReducer,
-  },
-  devTools: true,
+  }
 })
