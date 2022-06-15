@@ -13,7 +13,7 @@ import "./app.css"
 import React from 'react'
 import { useSelector, useDispatch } from "react-redux";
 
-import {VBox} from "./component/factory";
+import {VBox, HBox} from "./component/factory";
 import {FileBrowser} from "./filebrowser/filebrowser";
 import {EditFile} from "./editor/editorSlate";
 import {SnackbarProvider} from "notistack";
@@ -39,9 +39,6 @@ export default function App(props) {
   function SlideUp(props) { return <Slide {...props} direction="up" /> }
   function SlideDown(props) { return <Slide {...props} direction="down" /> }
 
-  const uuid = useSelector((state) => state.doc.uuid)
-  var {docs} = require("../features/store")
-
   //*
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={2500} TransitionComponent={Fade}>
@@ -57,17 +54,21 @@ export default function App(props) {
   /**/
 
   function View(props) {
+    const uuid = useSelector((state) => state.doc.uuid)
+
     if(uuid) {
-      return <EditFile doc={docs[uuid]}/>
+      return <Editor uuid={uuid}/>
       //return (<pre>{JSON.stringify(state.doc, null, 2)}</pre>)
     } else {
-      return <FileBrowser/>
+      return <BrowseFiles/>
     }
   }
 
-  // TODO: Use these to make test cases:
-    //<FileEditor fileid="local/donotexist" />
-    //<FileEditor fileid="local/cantread.txt" />
-    //<FileEditor fileid="local/README.md" />
-    //<FileEditor fileid="local/invalid.mawe" />
+  function Editor({uuid}) {
+    return <EditFile uuid={uuid}/>
+  }
+
+  function BrowseFiles() {
+    return <FileBrowser/>
+  }
 }

@@ -8,7 +8,7 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-const fs = require("../../storage/localfs")
+const fs = require("../storage/localfs")
 
 /* Set by location (home, root, ...) or from favorites */
 /*

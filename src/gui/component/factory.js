@@ -117,17 +117,17 @@ export function FlexBox({style, ...props}) {
 }
 
 export function VBox({className, style, ...props}) {
-  return <FlexBox
+  return <div
     className={addClass(className, "VBox")}
-    style={{flexDirection: "column", ...style}}
+    style={{display: "flex", flexDirection: "column", ...style}}
     {...props}
   />
 }
 
 export function HBox({className, style, ...props}) {
-  return <FlexBox
+  return <div
     className={addClass(className, "HBox")}
-    style={{flexDirection: "row", ...style}}
+    style={{display: "flex", flexDirection: "row", ...style}}
     {...props}
   />
 }

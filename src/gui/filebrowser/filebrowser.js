@@ -50,8 +50,8 @@ import "./filebrowser.css"
 
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { CWD } from "../../features/cwd/cwdSlice"
-import { document } from "../../features/doc/docSlice"
+import { CWD } from "../../features/cwdSlice"
+import { document } from "../../features/docSlice"
 
 import isHotkey from "is-hotkey";
 
@@ -84,14 +84,22 @@ export function FileBrowser({ contains, hooks }) {
   const dir = useSelector((state) => state.cwd.path)
   const search = useSelector((state) => state.cwd.search)
 
+  const inform = Inform()
+
   console.log("render: FileBrowser:", dir, contains);
 
   //---------------------------------------------------------------------------
 
+  const options = {
+    inform,
+  }
+
+  //---------------------------------------------------------------------------
+
   if (search !== null) {
-    return <SearchDir directory={dir} search={search} />
+    return <SearchDir directory={dir} search={search} options={options}/>
   } else {
-    return <ListDir directory={dir} />
+    return <ListDir directory={dir} options={options}/>
   }
 }
 
@@ -103,7 +111,7 @@ export function FileBrowser({ contains, hooks }) {
 //*****************************************************************************
 //*****************************************************************************
 
-function ListDir({ directory }) {
+function ListDir({ directory, options }) {
   const dispatch = useDispatch()
 
   useEffect(() => addHotkeys({
@@ -148,7 +156,7 @@ function ListDir({ directory }) {
   return (
     <React.Fragment>
       <ToolBox>
-        <PathButtons path={splitted} />
+        <PathButtons path={splitted} options={options}/>
         <Filler />
         <ButtonGroup>
           <Button tooltip="Add to favorites"><Icon.Star /></Button>
@@ -156,14 +164,14 @@ function ListDir({ directory }) {
           <Button tooltip="Search files"><Icon.Search onClick={() => true} /></Button>
         </ButtonGroup>
       </ToolBox>
-      <SplitList directory={directory} content={{ files, folders }} />
+      <SplitList directory={directory} content={{files, folders}} options={options}/>
     </React.Fragment>
   )
 }
 
 //---------------------------------------------------------------------------
 
-function PathButtons({ path }) {
+function PathButtons({path, options}) {
   const dispatch = useDispatch();
 
   if (!path) return null;
@@ -202,7 +210,7 @@ function PathButtons({ path }) {
 // for notably long time - that's bad...
 //---------------------------------------------------------------------------
 
-function SplitList({ directory, content }) {
+function SplitList({directory, content, options}) {
 
   console.log("SplitList:", content);
 
@@ -225,17 +233,17 @@ function SplitList({ directory, content }) {
       return (
         <React.Fragment>
           <Label style={{ paddingLeft: 4, paddingTop: 16, paddingBottom: 8 }}>{name}</Label>
-          <Grid entries={visible} />
+          <Grid entries={visible} options={options}/>
         </React.Fragment>
       )
     }
   }
 
-  function Grid({ entries }) {
+  function Grid({entries, options}) {
     if (entries === undefined) return null;
     return (
       <HBox style={{ overflowY: "auto", flexWrap: "wrap" }}>
-        {entries.map(f => <FileEntry key={f.id} file={f} type="card" />)}
+        {entries.map(f => <FileEntry key={f.id} file={f} type="card" options={options}/>)}
       </HBox>
     )
   }
@@ -260,7 +268,7 @@ function FileItemConfig(file) {
   }
 }
 
-function FileEntry({ file, type }) {
+function FileEntry({file, type, options}) {
   const { icon, disabled } = FileItemConfig(file);
   const color = (disabled) ? "grey" : undefined;
   const dispatch = useDispatch();
@@ -302,6 +310,8 @@ function FileEntry({ file, type }) {
       return
     }
 
+    const {inform} = options;
+
     if(suffix2format(file)) {
       // TODO: Implement something to show that we are doing something
       //const key = inform.process(`Loading ${f.name}`);
@@ -313,10 +323,10 @@ function FileEntry({ file, type }) {
           docs[uuid] = content;
           dispatch(document.open(uuid))
           dispatch(CWD.search(null))
-          //Inform().success(`Loaded ${file.name}`)
+          inform.success(`Loaded ${file.name}`)
         })
         .catch(err => {
-          //Inform().error(`Open '${file.name}': ${err}`);
+          inform.error(`Open '${file.name}': ${err}`);
         })
       return;
     }
@@ -324,9 +334,9 @@ function FileEntry({ file, type }) {
     fs.openexternal(file.id)
       .then(err => {
         if(!err) {
-          //Inform().success(`Open '${file.name}': ok`)
+          inform.success(`Open '${file.name}': ok`)
         } else {
-          //Inform().error(`Open '${file.name}': ${err}`);
+          inform.error(`Open '${file.name}': ${err}`);
         }
       })
   }
@@ -367,7 +377,7 @@ return (
 //*****************************************************************************
 //*****************************************************************************
 
-function SearchDir({ directory, search, style }) {
+function SearchDir({directory, search, options, style}) {
 
   const dispatch = useDispatch()
 
@@ -436,7 +446,7 @@ function SearchDir({ directory, search, style }) {
         next={fetchMore}
         hasMore={matches.hasMore}
       >
-        <FileTable files={matches.files}/>
+        <FileTable files={matches.files} options={options}/>
       </InfiniteScroll>
     </Box>
   </React.Fragment>)
@@ -458,10 +468,10 @@ function SearchDir({ directory, search, style }) {
 
   //---------------------------------------------------------------------------
 
-  function FileTable({ files }) {
+  function FileTable({files, options}) {
     return (
       <table className="File"><tbody>
-        {files.map(f => <FileEntry key={f.id} file={f} type="row" />)}
+        {files.map(f => <FileEntry key={f.id} file={f} type="row" options={options}/>)}
       </tbody></table>
     )
   }

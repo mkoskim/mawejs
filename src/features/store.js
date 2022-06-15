@@ -7,8 +7,8 @@
 //*****************************************************************************
 
 import { configureStore } from "@reduxjs/toolkit";
-import cwdReducer from "./cwd/cwdSlice"
-import docReducer from "./doc/docSlice"
+import cwdReducer from "./cwdSlice"
+import docReducer from "./docSlice"
 
 export default configureStore({
   reducer: {
