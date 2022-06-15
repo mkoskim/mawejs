@@ -61,7 +61,7 @@ export function HeadStyle(id) {
     const style = document.createElement("style")
     style.setAttribute("id", id);
     document.head.appendChild(style);
-    return style;  
+    return style;
   }
   return {
     style: byid(id) ? byid(id) : create(id),
@@ -174,7 +174,7 @@ export function Button({tooltip, style, ...props}) {
     style={{minWidth: 32, textTransform: "none", ...style}}
     {...props}
   />
-  
+
   return tooltip ? <XTooltip title={tooltip}>{button}</XTooltip> : button;
 }
 
@@ -182,7 +182,7 @@ export function Input({style, ...props}) {
   return <XInput
     disableUnderline={true}
     style={{
-      margin: 0, //marginLeft: 4, 
+      margin: 0, //marginLeft: 4,
       padding: 0, paddingLeft: 8,
       border: "1px solid lightgrey",
       borderRadius: 4,

@@ -61,7 +61,8 @@ export default function App(props) {
 
   function View(props) {
     if(state.doc) {
-      return <EditFile doc={state.doc} hooks={hooks}/>
+      //return <EditFile doc={state.doc} hooks={hooks}/>
+      return (<pre>{JSON.stringify(state.doc, null, 2)}</pre>)
     } else {
       return <FileBrowser directory="./local" hooks={hooks}/>
     }
