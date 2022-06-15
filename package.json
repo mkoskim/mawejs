@@ -16,7 +16,8 @@
     "react-start": "react-scripts start",
     "react-build": "react-scripts build",
     "react-test": "react-scripts test",
-    "react-eject": "react-scripts eject"
+    "react-eject": "react-scripts eject",
+    "fresh": "rm -rf build node_modules package-lock.json && npm install"
   },
   "dependencies": {
     "@material-ui/core": "^4.12.4",
