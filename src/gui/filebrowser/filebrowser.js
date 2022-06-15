@@ -51,6 +51,7 @@ import "./filebrowser.css"
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { CWD } from "../../features/cwd/cwdSlice"
+import { document } from "../../features/doc/docSlice"
 
 import isHotkey from "is-hotkey";
 
@@ -165,10 +166,7 @@ function ListDir({ directory }) {
 function PathButtons({ path }) {
   const dispatch = useDispatch();
 
-  // TODO: Last button (current directory) should open "context" menu.
   if (!path) return null;
-
-  //dispatch(CWD.chdir(f.id))
 
   return (
     <React.Fragment>
@@ -178,6 +176,7 @@ function PathButtons({ path }) {
 
   function open(f) { dispatch(CWD.chdir(f.id)) }
 
+  // TODO: Last button (current directory) should open "context" menu.
   function menu(f) {
     console.log("Open menu:", f.name);
   }
@@ -236,49 +235,11 @@ function SplitList({ directory, content }) {
     if (entries === undefined) return null;
     return (
       <HBox style={{ overflowY: "auto", flexWrap: "wrap" }}>
-        {entries.map(f => <FileEntry key={f.id} file={f} type="box" />)}
+        {entries.map(f => <FileEntry key={f.id} file={f} type="card" />)}
       </HBox>
     )
   }
 }
-
-//-----------------------------------------------------------------------------
-
-/*
-async function open(f) {
-  console.log("Open:", f.name);
-
-  if(f.type === "folder") {
-    //return _hooks.chdir(f.id);
-    //const dispatch = useDispatch();
-    //dispatch(CWD.chdir(f.id))
-    return ;
-  }
-
-  if(suffix2format(f)) {
-    // TODO: Implement something to show that we are doing something
-    //const key = inform.process(`Loading ${f.name}`);
-    try {
-      const doc = await mawe.load(f.id);
-      hooks.openFile(doc);
-      inform.success(`Loaded ${f.name}`)
-    } catch(err) {
-      inform.error(`Open '${f.name}': ${err}`);
-    } finally {
-      //inform.dismiss(key)
-    }
-    return;
-  }
-  fs.openexternal(f.id)
-  .then(err => {
-    if(!err) {
-      inform.success(`Open '${f.name}': ok`)
-    } else {
-      inform.error(`Open '${f.name}': ${err}`);
-    }
-  })
-}
-*/
 
 //-----------------------------------------------------------------------------
 
@@ -303,28 +264,16 @@ function FileEntry({ file, type }) {
   const { icon, disabled } = FileItemConfig(file);
   const color = (disabled) ? "grey" : undefined;
   const dispatch = useDispatch();
-  /*
-  const callback = getCallbacks(file, hooks);
-  */
-
-  function callback() {
-    console.log("Click:", file.id)
-    if (disabled) return;
-    if (file.type === "folder") {
-      dispatch(CWD.chdir(file.id));
-      return
-    }
-  }
 
   switch(type) {
-    case "box": return Card();
+    case "card": return Card();
     case "row": return Row();
   }
   return null;
 
   function Card() {
     return (
-      <HBox className="FileCard" onDoubleClick={callback}>
+      <HBox className="FileCard" onDoubleClick={onOpen}>
         <span style={{ marginRight: 8 }}>{icon}</span>
         <span style={{ color: color }}>{file.name}</span>
       </HBox>
@@ -336,12 +285,50 @@ function FileEntry({ file, type }) {
 
     return <tr
       className={addClass("File", disabled ? "disabled" : undefined)}
-      onDoubleClick={callback}
+      onDoubleClick={onOpen}
     >
       <td className="FileIcon">{icon}</td>
       <td className="FileName">{file.name}</td>
       <td className="FileDir">{file.relpath}</td>
     </tr>;
+  }
+
+  function onOpen() {
+    console.log("Click:", file.id)
+    if (disabled) return;
+
+    if (file.type === "folder") {
+      dispatch(CWD.chdir(file.id));
+      return
+    }
+
+    if(suffix2format(file)) {
+      // TODO: Implement something to show that we are doing something
+      //const key = inform.process(`Loading ${f.name}`);
+
+      mawe.load(file.id)
+        .then(content => {
+          var {docs} = require("../../features/store")
+          const {uuid} = content.story;
+          docs[uuid] = content;
+          dispatch(document.open(uuid))
+          dispatch(CWD.search(null))
+          //Inform().success(`Loaded ${file.name}`)
+        })
+        .catch(err => {
+          //Inform().error(`Open '${file.name}': ${err}`);
+        })
+      return;
+    }
+
+    fs.openexternal(file.id)
+      .then(err => {
+        if(!err) {
+          //Inform().success(`Open '${file.name}': ok`)
+        } else {
+          //Inform().error(`Open '${file.name}': ${err}`);
+        }
+      })
   }
 }
 

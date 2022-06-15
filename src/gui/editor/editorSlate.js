@@ -14,8 +14,8 @@ import "./editor.css"
 /* eslint-disable no-unused-vars */
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-
-//import {SlateEditor} from "@react-force/slate-editor";
+import { useSelector, useDispatch } from "react-redux";
+import { document } from "../../features/doc/docSlice"
 
 //*
 import { Slate, Editable, withReact } from 'slate-react'
@@ -48,28 +48,29 @@ import isHotkey from 'is-hotkey';
 //*****************************************************************************
 //*****************************************************************************
 
-export function EditFile({doc, hooks}) {
+export function EditFile({doc}) {
 
-  //console.log("Doc:", doc)
+  console.log("Doc:", doc)
+  const dispatch = useDispatch();
 
   const [content, setContent] = useState(deserialize(doc));
 
-  //console.log("Content:", content);
-  //console.log("Body:", content.body);
+  console.log("Content:", content);
+  console.log("Body:", content.body);
 
   function setBody(part)  { setContent({...content, body: part}) }
   function setNotes(part) { setContent({...content, notes: part}) }
 
   const inform = Inform();
-  
+
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
   const renderElement = useCallback(props => <Element {...props} />, [])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
 
   useEffect(() => addHotkeys({
-    "mod+o": hooks.closeFile,   // Go to file browser to open new file
+    "mod+o": () => dispatch(document.close()),   // Go to file browser to open new file
     "mod+s": null,              // Serialize and save
-    "mod+w": hooks.closeFile,   // Close file
+    "mod+w": () => dispatch(document.close()),   // Close file
   }));
 
   //const mode="Centered";
@@ -124,17 +125,17 @@ export function EditFile({doc, hooks}) {
       //case "scene": return <div className="scene" {...attributes}>{children}</div>
       case "scenename": return <h2 className="scene" {...attributes}>{children}</h2>
       case "br": return <br {...attributes}/>
-      case "missing": 
+      case "missing":
       case "comment":
       case "synopsis":
         return <p className={element.type} {...attributes}>{children}</p>
       default: return <p {...attributes}>{children}</p>
     }
   }
-  
+
   function Leaf({leaf, attributes, children}) {
     return <span {...attributes}>{children}</span>
-  }  
+  }
 }
 
 //-----------------------------------------------------------------------------

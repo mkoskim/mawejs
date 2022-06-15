@@ -10,10 +10,10 @@ import "./app.css"
 
 /* eslint-disable no-unused-vars */
 
-import React, {useState} from 'react'
+import React from 'react'
+import { useSelector, useDispatch } from "react-redux";
 
 import {VBox} from "./component/factory";
-
 import {FileBrowser} from "./filebrowser/filebrowser";
 import {EditFile} from "./editor/editorSlate";
 import {SnackbarProvider} from "notistack";
@@ -22,14 +22,6 @@ import {Slide, Grow, Fade, Zoom} from '@mui/material';
 //-----------------------------------------------------------------------------
 
 export default function App(props) {
-
-  const [state, setState] = useState({
-    doc: undefined,
-    //file: "./local/Beltane.mawe",
-    //file: "./local/Dinosauruspuisto.mawe",
-  })
-
-  console.log("render: App", state);
 
   /*
   const hooks = {
@@ -47,6 +39,9 @@ export default function App(props) {
   function SlideUp(props) { return <Slide {...props} direction="up" /> }
   function SlideDown(props) { return <Slide {...props} direction="down" /> }
 
+  const uuid = useSelector((state) => state.doc.uuid)
+  var {docs} = require("../features/store")
+
   //*
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={2500} TransitionComponent={Fade}>
@@ -62,9 +57,9 @@ export default function App(props) {
   /**/
 
   function View(props) {
-    if(state.doc) {
-      //return <EditFile doc={state.doc} hooks={hooks}/>
-      return (<pre>{JSON.stringify(state.doc, null, 2)}</pre>)
+    if(uuid) {
+      return <EditFile doc={docs[uuid]}/>
+      //return (<pre>{JSON.stringify(state.doc, null, 2)}</pre>)
     } else {
       return <FileBrowser/>
     }
