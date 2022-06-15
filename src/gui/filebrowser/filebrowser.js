@@ -229,14 +229,14 @@ function SplitList({directory, content, options}) {
     const visible = items.filter(f => !f.hidden)
     if (!visible.length) {
       return null;
-    } else {
-      return (
-        <React.Fragment>
-          <Label style={{ paddingLeft: 4, paddingTop: 16, paddingBottom: 8 }}>{name}</Label>
-          <Grid entries={visible} options={options}/>
-        </React.Fragment>
-      )
     }
+
+    return (
+      <React.Fragment>
+        <Label style={{ paddingLeft: 4, paddingTop: 16, paddingBottom: 8 }}>{name}</Label>
+        <Grid entries={visible} options={options}/>
+      </React.Fragment>
+    )
   }
 
   function Grid({entries, options}) {
@@ -270,7 +270,6 @@ function FileItemConfig(file) {
 
 function FileEntry({file, type, options}) {
   const { icon, disabled } = FileItemConfig(file);
-  const color = (disabled) ? "grey" : undefined;
   const dispatch = useDispatch();
 
   switch(type) {
@@ -280,6 +279,7 @@ function FileEntry({file, type, options}) {
   return null;
 
   function Card() {
+    const color = (disabled) ? "grey" : undefined;
     return (
       <HBox className="FileCard" onDoubleClick={onOpen}>
         <span style={{ marginRight: 8 }}>{icon}</span>
@@ -341,33 +341,6 @@ function FileEntry({file, type, options}) {
       })
   }
 }
-
-/*
-return (
-  <ListItem id="FileCard" button disabled={config.disabled} onClick={callback.onClick} onDoubleClick={callback.onDoubleClick}>
-  <ListItemAvatar id="FileAvatar">{config.icon}</ListItemAvatar>
-  <Typography>{file.name}</Typography>
-  </ListItem>
-);
-*/
-/*
-      function getCallbacks(file, hooks) {
-        switch(file.type) {
-          case "folder": return {
-            onClick: undefined,
-            onDoubleClick: () => dispatch(CWD.chdir(file.id)),
-          }
-          case "file": return {
-            onClick: undefined,
-            onDoubleClick: () => hooks.open(file),
-          }
-          default: return {}
-        }
-      }
-    }
-  }
-}
-*/
 
 //*****************************************************************************
 //*****************************************************************************
