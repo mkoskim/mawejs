@@ -23,7 +23,9 @@ const {
   IconButton: XIconButton,
   ButtonGroup: XButtonGroup,
   Breadcrumbs: XBreadcrumbs,
-} = require("@material-ui/core")
+} = require("@mui/material")
+
+const Icons = require("@mui/icons-material/")
 
 //-----------------------------------------------------------------------------
 // Icons
@@ -32,18 +34,18 @@ const {
 //console.log("Icons", require("@material-ui/icons/"))
 
 export const Icon = {
-  Close: require("@material-ui/icons/").Close,
-  Search: require("@material-ui/icons/").Search,
+  Close: Icons.Close,
+  Search: Icons.Search,
 
   //Menu: require("@material-ui/icons/Menu"),
-  Star: require("@material-ui/icons/").StarOutlineOutlined,
-  CreateFolder: require("@material-ui/icons/").CreateNewFolderOutlined,
+  Star: Icons.StarOutlineOutlined,
+  CreateFolder: Icons.CreateNewFolderOutlined,
 
   FileType: {
-    File: require("@material-ui/icons/").InsertDriveFileOutlined,
+    File: Icons.InsertDriveFileOutlined,
     //import TypeFile from '@material-ui/icons/Description';
-    Folder: require("@material-ui/icons/").Folder,
-    Unknown: require("@material-ui/icons/").BrokenImageOutlined,
+    Folder: Icons.Folder,
+    Unknown: Icons.BrokenImageOutlined,
     //import TypeUnknown from '@material-ui/icons/Close';
     //import TypeUnknown from '@material-ui/icons/Help';
     //import TypeUnknown from '@material-ui/icons/BrokenImage';

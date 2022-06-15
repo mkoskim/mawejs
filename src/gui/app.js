@@ -17,7 +17,7 @@ import {VBox} from "./component/factory";
 import {FileBrowser} from "./filebrowser/filebrowser";
 import {EditFile} from "./editor/editorSlate";
 import {SnackbarProvider} from "notistack";
-import {Slide, Grow, Fade, Zoom} from '@material-ui/core';
+import {Slide, Grow, Fade, Zoom} from '@mui/material';
 
 //-----------------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ export default function App(props) {
 
   console.log("render: App", state);
 
+  /*
   const hooks = {
     closeFile: () => {
       console.log("closeFile");
@@ -41,6 +42,7 @@ export default function App(props) {
       setState(state => ({...state, doc: doc}))
     },
   }
+  */
 
   function SlideUp(props) { return <Slide {...props} direction="up" /> }
   function SlideDown(props) { return <Slide {...props} direction="down" /> }
@@ -64,7 +66,7 @@ export default function App(props) {
       //return <EditFile doc={state.doc} hooks={hooks}/>
       return (<pre>{JSON.stringify(state.doc, null, 2)}</pre>)
     } else {
-      return <FileBrowser directory="./local" hooks={hooks}/>
+      return <FileBrowser/>
     }
   }
 

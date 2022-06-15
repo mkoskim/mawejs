@@ -44,6 +44,8 @@ TODO:
 
 -------------------------------------------------------------------------------
 
+- Make electron-devtools-installer to work
+
 - Update to react-scripts v5: Needs huge amount of work. Zlib, path and os
   stop working and needs to be tweaked. Also, elementtree does not work
   with webpack v5, as it uses stream library. Some day, but not today.

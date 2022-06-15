@@ -15,6 +15,7 @@ const {BrowserWindow} = electron;
 const {globalShortcut} = electron;
 const windowStateKeeper = require('electron-window-state');
 
+const os = require("os")
 const path = require('path')
 const isDev = require("electron-is-dev");
 const debug = require("electron-debug")
@@ -60,12 +61,28 @@ async function createWindow()
 }
 
 //-----------------------------------------------------------------------------
+// Chrome extensions
+//-----------------------------------------------------------------------------
+
+const reactDevToolsPath = path.join(
+  os.homedir(),
+  "/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.24.7_0"
+)
+
+const reduxDevToolsPath = path.join(
+  os.homedir(),
+  "/.config/google-chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/3.0.11_0"
+)
+
+//-----------------------------------------------------------------------------
 // Application
 //-----------------------------------------------------------------------------
 
-const {app} = electron;
+const {app, session} = electron;
 
-app.on("ready", () => {
+app.on("ready", async () => {
+  await session.defaultSession.loadExtension(reactDevToolsPath)
+  await session.defaultSession.loadExtension(reduxDevToolsPath)
   createWindow();
   globalShortcut.register('CommandOrControl+Q', () => { app.quit() });
 });
