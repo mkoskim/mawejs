@@ -44,7 +44,6 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@react-force/slate-editor": "^1.1.1",
     "concurrently": "^7.2.1",
     "cross-env": "^7.0.3",
     "electron": "^19.0.4",
