@@ -38,7 +38,7 @@ Running (development version):
 If you update the project with 'git pull', you may need to update the libraries, too:
 
     mawe.web$ git pull
-    mawe.web$ npm update
+    mawe.web$ npm install
 
 - - -
 

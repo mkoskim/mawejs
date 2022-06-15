@@ -7,17 +7,17 @@ NOTES
 
 SHORT TERM TODO:
 
-The main objective is to make versions working! That is needed urgently! It 
-won't take long time when I need an editor, where I can store the existing 
+The main objective is to make versions working! That is needed urgently! It
+won't take long time when I need an editor, where I can store the existing
 version as a version, and use it to create new one.
 
 So, aim to single-part editor, supporting body and notes sections, very
-similar to current Python version. Support for multiple parts can be added 
+similar to current Python version. Support for multiple parts can be added
 later.
 
 We can make very simple, notepad-like editor as a starting point! We can add
-fancier features later. Basically, I first need editor to replace current Python 
-version - in fact, not even that, as I can use the Python version for tasks that 
+fancier features later. Basically, I first need editor to replace current Python
+version - in fact, not even that, as I can use the Python version for tasks that
 can not be done with Electron version yet.
 
 TODO:
@@ -28,7 +28,7 @@ TODO:
   - save in readable format,
   - maybe have clickable index.
   - other features can be added later.
- 
+
 - Work toward saving the edited content: Serialize doc from Slate editor
 
 - Move CWD to application level, so that app remembers in which directory it was
@@ -44,6 +44,14 @@ TODO:
 
 -------------------------------------------------------------------------------
 
+- Update to react-scripts v5: Needs huge amount of work. Zlib, path and os
+  stop working and needs to be tweaked. Also, elementtree does not work
+  with webpack v5, as it uses stream library. Some day, but not today.
+
+- notistack: currently using latest for material UI.
+
+-------------------------------------------------------------------------------
+
 PROJECT MANAGEMENT
 
 It would be best to remove project management fields from the story itself.
@@ -51,8 +59,8 @@ It would be safer, if fields like status and deadline would be saved in their
 own database. That way we could change the field values without touching the
 story itself.
 
-- The PM fields would be saved to the file itself once it is loaded and 
-  saved (that is, when loading, PM fields would override the fields in the 
+- The PM fields would be saved to the file itself once it is loaded and
+  saved (that is, when loading, PM fields would override the fields in the
   file)
 
 - Project manager: dirs to scan, scan dirs and extract headers etc.
@@ -85,7 +93,7 @@ FUTURE:
 - I might switch render functions to classes. They work nicer with states.
 
 - Slack has nice feature: when you press arrow up at first line, it creates
-  new empty line, if the first line has some formatting (e.g. <pre></pre>). We 
+  new empty line, if the first line has some formatting (e.g. <pre></pre>). We
   could incorporate this feature to the editor, too.
 
 - Import RTF: https://www.npmjs.com/package/rtf-parser - many writers Use
@@ -106,7 +114,7 @@ DONE:
 
 - Some kind of test bench for e.g. file operations would be great! That is,
   testing file loading & saving, directory scanning and so on.
-      
+
 --> it would be great, if file & document operations would work also
     in plain node (that is, without electron). I am sure that at Some
     point I like to have command line tools for e.g. exporting stories
@@ -119,7 +127,7 @@ DONE:
 - Check: load -> save --> produces same buffer. A more precise test
   needs to be created later.
 
-- Integrate file browser and editor parts together: file browser can be 
+- Integrate file browser and editor parts together: file browser can be
   used to select file, editor to edit it.
 
 - Infinite scroll bar on find stopped working, it won't fetch more items anymore.

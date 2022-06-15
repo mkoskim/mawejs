@@ -27,12 +27,13 @@ async function createWindow()
     minWidth: 400,
     minHeight: 300
   });
-  
+
   mainWindow = new BrowserWindow({
     x: mainWindowState.x,
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
+    icon: path.join(__dirname, "./favicon.png"),
     webPreferences: {
         nodeIntegration: false,
         contextIsolation: true,
@@ -70,7 +71,7 @@ app.on("ready", () => {
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") 
+  if (process.platform !== "darwin")
   {
     app.quit();
   }
