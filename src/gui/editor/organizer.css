@@ -1,18 +1,47 @@
 
 .SectionCard {
-  border: 1pt solid lightgray;
   margin: 4pt;
+  /*
+  border: 1pt solid lightgray;
   padding: 4pt;
+  */
 }
 
 .PartCard {
-  border: 1pt solid lightgray;
-  margin: 4pt;
+  border: 2pt solid lightgray;
+  background: lightgoldenrodyellow;
   padding: 4pt;
+
+  margin-top: 8pt;
+  margin-bottom: 8pt;
+  /*
+  margin: 4pt;
+  */
 }
 
 .SceneCard {
+  background: white;
   border: 1pt solid lightgray;
-  margin: 4pt;
   padding: 4pt;
+  padding-top: 8pt;
+  padding-bottom: 8pt;
+  margin-top: 2pt;
+  margin-bottom: 2pt;
+  /*
+  margin: 4pt;
+  */
+}
+
+.sceneGhost {
+  border: 2pt dotted grey;
+  /*
+  background-color: rgba(149, 184, 172, 0.226);
+  margin: 0pt;
+  */
+}
+
+.sceneDrag {
+  border-width: 3pt;
+  padding-top: 8pt;
+  padding-bottom: 8pt;
 }

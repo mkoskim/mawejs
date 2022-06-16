@@ -28,9 +28,9 @@ import {Stash} from "./common/stash";
 export default function App(props) {
 
   const dispatch = useDispatch()
-  //dispatch(CWD.resolve("./local"))
+  dispatch(CWD.resolve("./local"))
   //dispatch(CWD.location("home"))
-  dispatch(onOpen({id: "./local/Beltane.A.mawe.gz", name: "Beltane.A.mawe.gz"}))
+  //dispatch(onOpen({id: "./local/Beltane.A.mawe.gz", name: "Beltane.A.mawe.gz"}))
 
   //*
   return (
@@ -53,8 +53,8 @@ export default function App(props) {
     const uuid = useSelector((state) => state.doc.uuid)
 
     if(uuid) {
-      return <Organizer uuid={uuid}/>
-      //return <EditFile uuid={uuid}/>
+      //return <Organizer uuid={uuid}/>
+      return <EditFile uuid={uuid}/>
       //return (<pre>{JSON.stringify(state.doc, null, 2)}</pre>)
     } else {
       return <FileBrowser/>

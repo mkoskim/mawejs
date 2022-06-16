@@ -34,7 +34,8 @@ export function Organizer({uuid}) {
   console.log("Doc:", doc)
   const dispatch = useDispatch();
 
-  return <HFiller>
+  return <HFiller style={{overflow: "auto"}}>
+    <VBox style={{width: "200px"}}/>
     <VFiller>
       <ViewSection section={doc.story.body}/>
       </VFiller>
@@ -65,24 +66,36 @@ function ViewPart({part}) {
 
   function onDrop(dropResult) {
     const { removedIndex, addedIndex, payload, element } = dropResult;
-    console.log(removedIndex)
-    console.log(addedIndex)
-    console.log(payload)
-    console.log(element)
+    console.log("Remove:", removedIndex)
+    console.log("Add:", addedIndex)
+    console.log("Payload", payload)
+    console.log("Element", element)
   }
 
-  return <Container onDrop={onDrop} groupName="scenes">
+  return <div className="PartCard">
+    <div>Part:</div>
+    <Container
+      onDrop={onDrop}
+      groupName="scenes"
+      animationDuration={50}
+      dragClass="sceneDrag"
+      behaviour="contains"
+      dropPlaceholder={{
+        animationDuration: 150,
+        showOnTop: false,
+        className: "sceneGhost"
+      }}
+    >
     {scenes.map(item => {
       return <Draggable key={item.uuid}>
         <ViewScene scene={item}/>
         </Draggable>
       })
     }
-    </Container>
+    </Container></div>
 
   /*
   return <DnDTarget className="PartCard" accepts={[DnDTypes.SCENE]}>
-    <div>Part:</div>
     {scenes.map(s => <ViewScene key={s.uuid} scene={s}/>)}
   </DnDTarget>
   */

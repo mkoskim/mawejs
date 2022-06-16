@@ -71,19 +71,16 @@ export function FileEntry({file, options}) {
 export function FileItemConfig(file) {
   switch (file.type) {
     case "folder": return {
-      type: DnDTypes.FOLDER,
       icon: Icons.FileType.Folder,
       color: "#666", //"#77b4e2",
       disabled: !file.access,
     }
     case "file": return {
-      type: DnDTypes.FILE,
       icon: Icons.FileType.File,
       color: "#666", //"#51585b",
       disabled: !file.access,
     }
     default: return {
-      type: DnDTypes.NONE,
       icon: Icons.FileType.Unknown,
       color: "#666", //"grey",
       disabled: true,
