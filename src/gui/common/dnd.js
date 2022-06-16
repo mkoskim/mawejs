@@ -12,5 +12,6 @@ import "./dnd.css"
 
 export const ItemTypes = {
   FILE: "file",
-  FOLDER: "folder,"
+  FOLDER: "folder",
+  NONE: "none",
 }

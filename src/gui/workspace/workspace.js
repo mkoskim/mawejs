@@ -27,6 +27,7 @@ import {
   addClass,
   addHotkeys,
 } from "../common/factory";
+import React from "react";
 
 //-----------------------------------------------------------------------------
 
@@ -47,8 +48,10 @@ export function Workspace() {
     isActive ? "canDrop" : undefined,
   )
 
-  return (
-    <div ref={drop} className={className}>
-
-    </div>)
+  return <VBox style={{flexGrow: 1}}>
+    <ToolBox>
+      <Button text="Home"/>
+    </ToolBox>
+    <div ref={drop} className={className}></div>
+  </VBox>
 }

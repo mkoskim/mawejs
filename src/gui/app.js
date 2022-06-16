@@ -33,7 +33,7 @@ export default function App(props) {
   return (
     <HBox style={{height: "100vh", width: "100vw"}}>
       <Workspace />
-      <VBox style={{flexGrow: 1.0}}><View /></VBox>
+      <VBox className="ViewBox"><View /></VBox>
     </HBox>
   );
 

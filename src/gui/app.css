@@ -5,3 +5,10 @@ html, body {
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   font-size: 12pt;
 }
+
+.ViewBox {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  border-left: 1pt solid lightgray;
+}

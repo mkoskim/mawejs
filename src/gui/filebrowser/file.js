@@ -43,6 +43,8 @@ export function FileEntry({file, options}) {
 
   const { icon, color: iconcolor, disabled, type } = FileItemConfig(file)
 
+  // Drag source
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type,
     item: file,
@@ -58,23 +60,38 @@ export function FileEntry({file, options}) {
     }),
   }))
 
+  // Drag target
+  const canAccept = type == ItemTypes.FOLDER && options.type == "card";
+
+  const [{ canDrop, isOver }, drop] = useDrop(() => ({
+    accept: canAccept ? [ItemTypes.FILE, ItemTypes.FOLDER] : [],
+    drop: () => (file),
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  }))
+
+  const isActive = canDrop && isOver
+
+  // Class
   const className = addClass(
     options.type == "card" ? "FileCard" : undefined,
     options.type == "row" ? "File" : undefined,
     disabled ? "disabled" : undefined,
     isDragging ? "isDragged" : undefined,
+    canDrop ? "canAccept" : undefined,
+    isActive ? "canDrop" : undefined,
   )
 
   const dispatch = useDispatch();
 
   if(options.type == "card") {
-    return <div
-      ref={drag}
-      className={className}
-      onDoubleClick={() => !disabled && dispatch(onOpen(file))}
-    >
-      <Icon icon={icon} style={{ marginRight: 16 }} color={iconcolor} />
-      <span>{file.name}</span>
+    return <div ref={drop} className={className}>
+        <div ref={drag} onDoubleClick={() => !disabled && dispatch(onOpen(file))}>
+        <Icon icon={icon} style={{ marginRight: 16 }} color={iconcolor} />
+        <span>{file.name}</span>
+      </div>
     </div>;
   }
   if(options.type == "row") {
@@ -108,6 +125,7 @@ function FileItemConfig(file) {
       disabled: !file.access,
     }
     default: return {
+      type: ItemTypes.NONE,
       icon: Icons.FileType.Unknown,
       color: "#666", //"grey",
       disabled: true,
