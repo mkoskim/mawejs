@@ -14,6 +14,9 @@ import { useDispatch } from "react-redux";
 import { CWD } from "../../features/cwdSlice"
 import { document } from "../../features/docSlice"
 
+import { ItemTypes } from '../common/dnd'
+import { useDrop } from 'react-dnd'
+
 import {
   Icons, Icon, IconSize,
   Box, FlexBox, VBox, HBox, Filler, Separator,
@@ -23,10 +26,29 @@ import {
   Label,
   addClass,
   addHotkeys,
-} from "../component/factory";
+} from "../common/factory";
 
 //-----------------------------------------------------------------------------
 
 export function Workspace() {
-  return <VBox className="Workspace"></VBox>
+  const [{ canDrop, isOver }, drop] = useDrop(() => ({
+    accept: ItemTypes.FILE,
+    drop: () => ({ name: 'Workspace' }),
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  }))
+  const isActive = canDrop && isOver
+
+  const className = addClass(
+    "Workspace",
+    canDrop ? "canAccept" : undefined,
+    isActive ? "canDrop" : undefined,
+  )
+
+  return (
+    <div ref={drop} className={className}>
+
+    </div>)
 }

@@ -1,0 +1,13 @@
+.isDragged {
+  opacity: 0.4;
+  border: 3px dashed black !important;
+}
+
+.canAccept {
+  border: 3pt dashed lightblue !important;
+}
+
+.canDrop {
+  background: lightblue !important;
+  border: 3pt dashed grey !important;
+}

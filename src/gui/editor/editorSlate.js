@@ -29,7 +29,7 @@ import {
   ToolBox, Button, Input,
   SearchBox, addHotkeys,
   Label,
-} from "../component/factory";
+} from "../common/factory";
 
 import isHotkey from 'is-hotkey';
 

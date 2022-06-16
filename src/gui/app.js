@@ -11,11 +11,12 @@ import "./app.css"
 /* eslint-disable no-unused-vars */
 
 import React from 'react'
+
 import { useSelector, useDispatch } from "react-redux";
 import {CWD} from "../features/cwdSlice"
 import {onOpen} from "./filebrowser/file"
 
-import {VBox, HBox} from "./component/factory";
+import {VBox, HBox} from "./common/factory";
 import {FileBrowser} from "./filebrowser/filebrowser";
 import {EditFile} from "./editor/editorSlate";
 import {Workspace} from "./workspace/workspace";
@@ -25,9 +26,9 @@ import {Workspace} from "./workspace/workspace";
 export default function App(props) {
 
   const dispatch = useDispatch()
-  //dispatch(CWD.resolve("."))
-  dispatch(CWD.location("home"))
-  dispatch(onOpen({id: "./local/Beltane.A.mawe.gz", name: "Beltane.A.mawe.gz"}))
+  dispatch(CWD.resolve("./local"))
+  //dispatch(CWD.location("home"))
+  //dispatch(onOpen({id: "./local/Beltane.A.mawe.gz", name: "Beltane.A.mawe.gz"}))
 
   return (
     <HBox style={{height: "100vh", width: "100vw"}}>

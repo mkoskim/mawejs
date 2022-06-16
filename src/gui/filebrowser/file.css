@@ -5,7 +5,7 @@
 // ----------------------------------------------------------------------------
 */
 
-.FileCard {
+div.FileCard {
   margin: 4px;
   border: 1px solid lightgrey;
   border-radius: 6px;
@@ -16,6 +16,7 @@
   width: 250px;
   align-items: center;
   cursor:pointer;
+  background-color: white;
 }
 
 .FileCard:hover {

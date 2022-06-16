@@ -10,9 +10,13 @@
 
 import "./file.css"
 
+import React from "react"
 import { useDispatch } from "react-redux";
 import { CWD } from "../../features/cwdSlice"
 import { document } from "../../features/docSlice"
+
+import { ItemTypes } from '../common/dnd'
+import { useDrag, useDrop } from 'react-dnd'
 
 import {
   Icons, Icon, IconSize,
@@ -23,7 +27,7 @@ import {
   Label,
   addClass,
   addHotkeys,
-} from "../component/factory";
+} from "../common/factory";
 
 const fs = require("../../storage/localfs")
 const mawe = require("../../document")
@@ -31,36 +35,60 @@ const { suffix2format } = require('../../document/util');
 
 //-----------------------------------------------------------------------------
 
-export const File = {
+export function FileEntry({file, options}) {
+  //const {file, options} = props;
+  //this.file = file;
+  //this.options = options;
+  //this.type = file.type == "folder" ?
 
-  Card: function ({ file, options }) {
-    const { icon, color: iconcolor, disabled } = FileItemConfig(file)
-    const color = (disabled) ? "grey" : undefined;
-    const dispatch = useDispatch();
+  const { icon, color: iconcolor, disabled, type } = FileItemConfig(file)
 
-    return (
-      <HBox className="FileCard" onDoubleClick={() => !disabled && dispatch(onOpen(file))}>
-        <Icon icon={icon} style={{ marginRight: 16 }} color={iconcolor} />
-        <span style={{ color: color }}>{file.name}</span>
-      </HBox>
-    );
-  },
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type,
+    item: file,
+    end: (item, monitor) => {
+      const dropResult = monitor.getDropResult()
+      if (item && dropResult) {
+        console.log(`You dropped ${item.name} into ${dropResult.name}!`)
+      }
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+      handlerId: monitor.getHandlerId(),
+    }),
+  }))
 
-  TableRow: function ({ file, options }) {
-    //const folder = fs.dirname(file.id);
-    const { icon, color: iconcolor, disabled } = FileItemConfig(file)
-    const dispatch = useDispatch();
+  const className = addClass(
+    options.type == "card" ? "FileCard" : undefined,
+    options.type == "row" ? "File" : undefined,
+    disabled ? "disabled" : undefined,
+    isDragging ? "isDragged" : undefined,
+  )
 
+  const dispatch = useDispatch();
+
+  if(options.type == "card") {
+    return <div
+      ref={drag}
+      className={className}
+      onDoubleClick={() => !disabled && dispatch(onOpen(file))}
+    >
+      <Icon icon={icon} style={{ marginRight: 16 }} color={iconcolor} />
+      <span>{file.name}</span>
+    </div>;
+  }
+  if(options.type == "row") {
     return <tr
-      className={addClass("File", disabled ? "disabled" : undefined)}
+      ref={drag}
+      className={addClass(className, disabled ? "disabled" : undefined)}
       onDoubleClick={() => !disabled && dispatch(onOpen(file))}
     >
       <td className="FileIcon"><Icon icon={icon} color={iconcolor} /></td>
       <td className="FileName">{file.name}</td>
       <td className="FileDir">{file.relpath}</td>
     </tr>;
-
   }
+  return null;
 }
 
 //-----------------------------------------------------------------------------
@@ -68,11 +96,13 @@ export const File = {
 function FileItemConfig(file) {
   switch (file.type) {
     case "folder": return {
+      type: ItemTypes.FOLDER,
       icon: Icons.FileType.Folder,
       color: "#666", //"#77b4e2",
       disabled: !file.access,
     }
     case "file": return {
+      type: ItemTypes.FILE,
       icon: Icons.FileType.File,
       color: "#666", //"#51585b",
       disabled: !file.access,

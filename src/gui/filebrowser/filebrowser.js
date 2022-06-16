@@ -65,11 +65,9 @@ import {
   addClass,
   addHotkeys,
   InfiniteScroll,
-} from "../component/factory";
+} from "../common/factory";
 
-import {
-  File,
-} from "./file"
+import {FileEntry} from "./file"
 
 //import { makeStyles } from '@material-ui/core/styles';
 //import SplitButton from "../component/splitbutton";
@@ -148,7 +146,7 @@ function ListDir({ directory, options }) {
     }
   }
 
-  useEffect(() => { getContent(); }, [directory])
+  useEffect(() => { if(directory) getContent(); }, [directory])
 
   const { fetched } = state;
   const { splitted, files, folders } = (fetched === directory) ? state : {}
@@ -267,7 +265,7 @@ function SplitList({directory, content, options}) {
     if (entries === undefined) return null;
     return (
       <HBox style={{ overflowY: "auto", flexWrap: "wrap" }}>
-        {entries.map(f => <File.Card key={f.id} file={f} options={options}/>)}
+        {entries.map(f => <FileEntry key={f.id} file={f} options={{...options, type: "card"}}/>)}
       </HBox>
     )
   }
@@ -375,7 +373,7 @@ function SearchDir({directory, search, options, style}) {
   function FileTable({files, options}) {
     return (
       <table className="File"><tbody>
-        {files.map(f => <File.TableRow key={f.id} file={f} options={options}/>)}
+        {files.map(f => <FileEntry key={f.id} file={f} options={{...options, type: "row"}}/>)}
       </tbody></table>
     )
   }
