@@ -46,6 +46,13 @@ export function Organizer({uuid}) {
 }
 
 //-----------------------------------------------------------------------------
+//
+// Scene is the smallest individable unit of text. On the other hand, part
+// is the largest amount of text you can edit at once. So lets encourage that
+// writers keep parts flexible - it is just a division line you can change
+// anytime you lie.
+//
+//-----------------------------------------------------------------------------
 
 function ViewSection({section}) {
   return <div className="SectionCard">
