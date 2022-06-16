@@ -50,8 +50,8 @@ import "./filebrowser.css"
 
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { CWD } from "../../features/cwdSlice"
-import { document } from "../../features/docSlice"
+import { CWD } from "../store/cwdSlice"
+import { document } from "../store/docSlice"
 
 import isHotkey from "is-hotkey";
 

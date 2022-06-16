@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import App from "./gui/app.js"
-import store from "./features/store"
+import store from "./gui/store/store"
 import {Provider} from "react-redux"
 
 import { DndProvider } from 'react-dnd'

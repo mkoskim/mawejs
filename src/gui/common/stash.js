@@ -12,9 +12,9 @@ import "./stash.css"
 
 import React from "react"
 import { useSelector, useDispatch } from "react-redux";
-import { CWD } from "../../features/cwdSlice"
-import { document } from "../../features/docSlice"
-import { stash } from "../../features/stashSlice"
+import { CWD } from "../store/cwdSlice"
+import { document } from "../store/docSlice"
+import { stash } from "../store/stashSlice"
 
 import { ItemTypes } from '../common/dnd'
 import { useDrag, useDrop } from 'react-dnd'

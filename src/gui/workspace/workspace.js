@@ -11,8 +11,8 @@
 import "./workspace.css"
 
 import { useDispatch } from "react-redux";
-import { CWD } from "../../features/cwdSlice"
-import { document } from "../../features/docSlice"
+import { CWD } from "../store/cwdSlice"
+import { document } from "../store/docSlice"
 
 import { ItemTypes } from '../common/dnd'
 import { useDrop } from 'react-dnd'

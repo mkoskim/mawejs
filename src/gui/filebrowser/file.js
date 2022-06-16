@@ -12,9 +12,9 @@ import "./file.css"
 
 import React from "react"
 import { useDispatch } from "react-redux";
-import { CWD } from "../../features/cwdSlice"
-import { document } from "../../features/docSlice"
-import { stash } from "../../features/stashSlice"
+import { CWD } from "../store/cwdSlice"
+import { document } from "../store/docSlice"
+import { stash } from "../store/stashSlice"
 
 import { ItemTypes } from '../common/dnd'
 import { useDrag, useDrop } from 'react-dnd'
@@ -149,7 +149,7 @@ export function onOpen(file) {
 
       mawe.load(file.id)
         .then(content => {
-          var { docs } = require("../../features/store")
+          var { docs } = require("../store/store")
           const { uuid } = content.story;
           docs[uuid] = content;
           dispatch(document.open(uuid))
