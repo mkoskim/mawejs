@@ -81,8 +81,12 @@ const reduxDevToolsPath = path.join(
 const {app, session} = electron;
 
 app.on("ready", async () => {
-  await session.defaultSession.loadExtension(reactDevToolsPath)
-  await session.defaultSession.loadExtension(reduxDevToolsPath)
+  try {
+    session.defaultSession.loadExtension(reactDevToolsPath)
+    session.defaultSession.loadExtension(reduxDevToolsPath)
+  } catch(e) {
+    console.log("Error:", e)
+  }
   createWindow();
   globalShortcut.register('CommandOrControl+Q', () => { app.quit() });
 });
