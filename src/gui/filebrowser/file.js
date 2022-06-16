@@ -16,7 +16,7 @@ import { CWD } from "../store/cwdSlice"
 import { document } from "../store/docSlice"
 import { stash } from "../store/stashSlice"
 
-import { ItemTypes } from '../common/dnd'
+import { DnDTypes } from '../common/dnd'
 import { useDrag, useDrop } from 'react-dnd'
 
 import {
@@ -60,10 +60,10 @@ export function FileEntry({file, options}) {
   }))
 
   // Drag target
-  const canAccept = type == ItemTypes.FOLDER && options.type == "card";
+  const canAccept = type == DnDTypes.FOLDER && options.type == "card";
 
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    accept: canAccept ? [ItemTypes.FILE, ItemTypes.FOLDER] : [],
+    accept: canAccept ? [DnDTypes.FILE, DnDTypes.FOLDER] : [],
     drop: () => (file),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -110,19 +110,19 @@ export function FileEntry({file, options}) {
 export function FileItemConfig(file) {
   switch (file.type) {
     case "folder": return {
-      type: ItemTypes.FOLDER,
+      type: DnDTypes.FOLDER,
       icon: Icons.FileType.Folder,
       color: "#666", //"#77b4e2",
       disabled: !file.access,
     }
     case "file": return {
-      type: ItemTypes.FILE,
+      type: DnDTypes.FILE,
       icon: Icons.FileType.File,
       color: "#666", //"#51585b",
       disabled: !file.access,
     }
     default: return {
-      type: ItemTypes.NONE,
+      type: DnDTypes.NONE,
       icon: Icons.FileType.Unknown,
       color: "#666", //"grey",
       disabled: true,

@@ -16,7 +16,7 @@ import { CWD } from "../store/cwdSlice"
 import { document } from "../store/docSlice"
 import { stash } from "../store/stashSlice"
 
-import { ItemTypes } from '../common/dnd'
+import { DnDTypes } from '../common/dnd'
 import { useDrag, useDrop } from 'react-dnd'
 
 import {
@@ -38,7 +38,7 @@ export function Stash({color}) {
   const dispatch = useDispatch();
 
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    accept: ItemTypes.FILE,
+    accept: DnDTypes.FILE,
     drop: () => ({ name: 'Stash' }),
     collect: (monitor) => ({
       isOver: monitor.isOver(),

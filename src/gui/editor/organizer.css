@@ -1,0 +1,18 @@
+
+.SectionCard {
+  border: 1pt solid lightgray;
+  margin: 4pt;
+  padding: 4pt;
+}
+
+.PartCard {
+  border: 1pt solid lightgray;
+  margin: 4pt;
+  padding: 4pt;
+}
+
+.SceneCard {
+  border: 1pt solid lightgray;
+  margin: 4pt;
+  padding: 4pt;
+}

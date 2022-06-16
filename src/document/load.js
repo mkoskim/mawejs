@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {suffix2format, file2buf, buf2tree} from "./util";
+import {uuid, suffix2format, file2buf, buf2tree} from "./util";
 import {Document} from "./Document";
 const fs = require("../storage/localfs")
 
@@ -50,6 +50,7 @@ async function mawe(file) {
 
   function et2js(elem) {
     return {
+      uuid: uuid(),
       tag: elem.tag,
       attr: {...elem.attrib},
       text: elem.text,
@@ -96,7 +97,7 @@ async function mawe(file) {
   //    </version>
   //    <version name="B"> ... </version>
   //    ...
-  //  
+  //
   //---------------------------------------------------------------------------
 
   function parseRoot(root) {
@@ -118,6 +119,8 @@ async function mawe(file) {
 
     return withextras({
       ...extra,
+      uuid: uuid(),
+      tag: "body",
       name: name,
       head: parseHead(elem.find("head")),
       part: parseParts(elem),
@@ -146,6 +149,8 @@ async function mawe(file) {
 
   function parseNotes(elem) {
     return withextras({
+      uuid: uuid(),
+      tag: "notes",
       head: null,
       part: parseParts(elem),
     }, elem);

@@ -1,7 +1,7 @@
 /******************************************************************************/
 /* Drag sources */
 
-.dragSource {
+.DnDSource {
 
 }
 
@@ -19,18 +19,23 @@
 /******************************************************************************/
 /* Drag targets */
 
-.dragTarget {
+.DnDTarget {
+  border: 2pt solid lightgray;
+  /*
   min-width: 0.0cm;
   min-height: 0.0cm;
+  */
 }
 
 .canAccept {
   border-style: dashed !important;
   border-color: lightblue !important;
 
+  /*
   min-width: 1.0cm;
   min-height: 1.0cm;
   transition: min-width 0.15s, min-height 0.15s;
+  */
 }
 
 .canDrop {

@@ -14,7 +14,7 @@ import { useDispatch } from "react-redux";
 import { CWD } from "../store/cwdSlice"
 import { document } from "../store/docSlice"
 
-import { ItemTypes } from '../common/dnd'
+import { DnDTypes } from '../common/dnd'
 import { useDrop } from 'react-dnd'
 
 import {
@@ -35,7 +35,7 @@ import React from "react";
 
 export function Workspace() {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    accept: ItemTypes.FILE,
+    accept: DnDTypes.FILE,
     drop: () => ({ name: 'Workspace' }),
     collect: (monitor) => ({
       isOver: monitor.isOver(),
