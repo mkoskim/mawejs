@@ -16,9 +16,6 @@ import { CWD } from "../store/cwdSlice"
 import { document } from "../store/docSlice"
 import { stash } from "../store/stashSlice"
 
-import { DnDTypes } from '../common/dnd'
-import { useDrag, useDrop } from 'react-dnd'
-
 import {
   Icons, Icon, IconSize,
   Box, FlexBox, VBox, HBox, Filler, Separator,
@@ -41,51 +38,16 @@ export function FileEntry({file, options}) {
 
   const dispatch = useDispatch();
 
-  // Drag source
-
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type,
-    item: file,
-    end: (item, monitor) => {
-      const dropResult = monitor.getDropResult()
-      if (item && dropResult?.name == "Stash") {
-        console.log(`You dropped ${item.name} into ${dropResult.name}!`)
-        dispatch(stash.push(item))
-      }
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-      handlerId: monitor.getHandlerId(),
-    }),
-  }))
-
-  // Drag target
-  const canAccept = type == DnDTypes.FOLDER && options.type == "card";
-
-  const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    accept: canAccept ? [DnDTypes.FILE, DnDTypes.FOLDER] : [],
-    drop: () => (file),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  }))
-
-  const isActive = canDrop && isOver
-
   // Class
   const className = addClass(
     options.type == "card" ? "FileCard" : undefined,
     options.type == "row" ? "File" : undefined,
     disabled ? "disabled" : undefined,
-    isDragging ? "isDragged" : undefined,
-    canDrop ? "canAccept" : undefined,
-    isActive ? "canDrop" : undefined,
   )
 
   if(options.type == "card") {
-    return <div ref={drop} className={className}>
-        <div ref={drag} onDoubleClick={() => !disabled && dispatch(onOpen(file))}>
+    return <div className={className}>
+        <div onDoubleClick={() => !disabled && dispatch(onOpen(file))}>
         <Icon icon={icon} style={{ marginRight: 16 }} color={iconcolor} />
         <span>{file.name}</span>
       </div>
@@ -93,7 +55,6 @@ export function FileEntry({file, options}) {
   }
   if(options.type == "row") {
     return <tr
-      ref={drag}
       className={addClass(className, disabled ? "disabled" : undefined)}
       onDoubleClick={() => !disabled && dispatch(onOpen(file))}
     >

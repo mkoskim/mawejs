@@ -23,7 +23,6 @@ import {
   Label,
 } from "../common/factory";
 
-import { DnDFrame, DnDSource, DnDTarget, DnDTypes } from "../common/dnd";
 import {Container, Draggable} from "react-smooth-dnd"
 
 //-----------------------------------------------------------------------------
@@ -91,9 +90,9 @@ function ViewPart({part}) {
 
 function ViewScene({scene}) {
   //return <div>{scene.attr.name}</div>
-  return <DnDSource className="SceneCard" type={DnDTypes.SCENE}>
+  return <div className="SceneCard">
     {scene.name}
-    </DnDSource>
+    </div>
 /*
 return <div>
     <div>{scene.attr.name}</div>

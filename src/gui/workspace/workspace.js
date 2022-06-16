@@ -14,9 +14,6 @@ import { useDispatch } from "react-redux";
 import { CWD } from "../store/cwdSlice"
 import { document } from "../store/docSlice"
 
-import { DnDTypes } from '../common/dnd'
-import { useDrop } from 'react-dnd'
-
 import {
   Icons, Icon, IconSize,
   Box, FlexBox,
@@ -29,25 +26,12 @@ import {
   addClass,
   addHotkeys,
 } from "../common/factory";
-import React from "react";
 
 //-----------------------------------------------------------------------------
 
 export function Workspace() {
-  const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    accept: DnDTypes.FILE,
-    drop: () => ({ name: 'Workspace' }),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  }))
-  const isActive = canDrop && isOver
-
   const className = addClass(
     "Workspace dragTarget",
-    canDrop ? "canAccept" : undefined,
-    isActive ? "canDrop" : undefined,
   )
 
   return <div ref={drop} className={className}></div>
