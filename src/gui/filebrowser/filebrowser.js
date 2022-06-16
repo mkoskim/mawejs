@@ -76,6 +76,13 @@ import {FileEntry} from "./file"
 
 //-----------------------------------------------------------------------------
 
+// Let's examine this: https://stackoverflow.com/questions/4814398/how-can-i-check-if-a-scrollbar-is-visible
+
+// Infinite scrollbar works, if it first gets that scrollbar. So, we might want
+// to feed items to window as long as there is no scrollbar.
+
+//-----------------------------------------------------------------------------
+
 const fs = require("../../storage/localfs")
 
 //-----------------------------------------------------------------------------
@@ -123,30 +130,32 @@ function ListDir({ directory, options }) {
     folders: undefined,
   })
 
-  async function getContent() {
-    const [splitted, entries] = await Promise.all([
-      fs.splitpath(directory),
-      fs.readdir(directory)
-    ])
+  useEffect(() => {
+    if(directory) getContent();
 
-    const folders = sortFiles(entries.filter(f => f.type === "folder"));
-    const files = sortFiles(entries.filter(f => f.type !== "folder"));
+    async function getContent() {
+      const [splitted, entries] = await Promise.all([
+        fs.splitpath(directory),
+        fs.readdir(directory)
+      ])
 
-    console.log("Fetched:", directory)
+      const folders = sortFiles(entries.filter(f => f.type === "folder"));
+      const files = sortFiles(entries.filter(f => f.type !== "folder"));
 
-    setState({
-      splitted,
-      files,
-      folders,
-      fetched: directory
-    })
+      console.log("Fetched:", directory)
 
-    function sortFiles(files) {
-      return files.sort((a, b) => a.name.localeCompare(b.name, { sensitivity: 'base' }))
+      setState({
+        splitted,
+        files,
+        folders,
+        fetched: directory
+      })
+
+      function sortFiles(files) {
+        return files.sort((a, b) => a.name.localeCompare(b.name, { sensitivity: 'base' }))
+      }
     }
-  }
-
-  useEffect(() => { if(directory) getContent(); }, [directory])
+  }, [directory])
 
   const { fetched } = state;
   const { splitted, files, folders } = (fetched === directory) ? state : {}
@@ -308,7 +317,7 @@ function SearchDir({directory, search, options, style}) {
     scanner.fetch(setMatches, search, 30);
     setScanner(scanner)
     return () => scanner.stop();
-  }, [directory]);
+  }, [directory]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [matches, setMatches] = useState({
     files: [],
@@ -321,7 +330,7 @@ function SearchDir({directory, search, options, style}) {
       fetch(30);
       //return () => scanner.stop();
     }
-  }, [search]);
+  }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function fetch(num) {
     console.log(`Fetch: <${search}>`, num)

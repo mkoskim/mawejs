@@ -5,7 +5,6 @@
   "version": "0.0.1",
   "main": "./public/electron.js",
   "homepage": "./",
-  "private": true,
   "scripts": {
     "dev": "concurrently npm:dev:react npm:dev:electron",
     "dev:electron": "wait-on http://localhost:3000 && electron .",

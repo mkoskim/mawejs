@@ -40,12 +40,12 @@ export function FileEntry({file, options}) {
 
   // Class
   const className = addClass(
-    options.type == "card" ? "FileCard" : undefined,
-    options.type == "row" ? "File" : undefined,
+    options.type === "card" ? "FileCard" : undefined,
+    options.type === "row" ? "File" : undefined,
     disabled ? "disabled" : undefined,
   )
 
-  if(options.type == "card") {
+  if(options.type === "card") {
     return <div className={className}>
         <div onDoubleClick={() => !disabled && dispatch(onOpen(file))}>
         <Icon icon={icon} style={{ marginRight: 16 }} color={iconcolor} />
@@ -53,7 +53,7 @@ export function FileEntry({file, options}) {
       </div>
     </div>;
   }
-  if(options.type == "row") {
+  if(options.type === "row") {
     return <tr
       className={addClass(className, disabled ? "disabled" : undefined)}
       onDoubleClick={() => !disabled && dispatch(onOpen(file))}
