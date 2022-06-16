@@ -19,7 +19,9 @@ import { useDrop } from 'react-dnd'
 
 import {
   Icons, Icon, IconSize,
-  Box, FlexBox, VBox, HBox, Filler, Separator,
+  Box, FlexBox,
+  VBox, HBox, VFiller, HFiller,
+  Filler, Separator,
   Button, ButtonGroup, Input, SearchBox,
   Breadcrumbs,
   ToolBox,
@@ -43,15 +45,10 @@ export function Workspace() {
   const isActive = canDrop && isOver
 
   const className = addClass(
-    "Workspace",
+    "Workspace dragTarget",
     canDrop ? "canAccept" : undefined,
     isActive ? "canDrop" : undefined,
   )
 
-  return <VBox style={{flexGrow: 1}}>
-    <ToolBox>
-      <Button text="Home"/>
-    </ToolBox>
-    <div ref={drop} className={className}></div>
-  </VBox>
+  return <div ref={drop} className={className}></div>
 }

@@ -1,3 +1,10 @@
+/******************************************************************************/
+/* Drag sources */
+
+.dragSource {
+
+}
+
 .isDragged {
   border-style: dashed !important;
   background: transparent !important;
@@ -9,9 +16,21 @@
   /*border: 3px dashed black !important;*/
 }
 
+/******************************************************************************/
+/* Drag targets */
+
+.dragTarget {
+  min-width: 0.0cm;
+  min-height: 0.0cm;
+}
+
 .canAccept {
   border-style: dashed !important;
   border-color: lightblue !important;
+
+  min-width: 1.0cm;
+  min-height: 1.0cm;
+  transition: min-width 0.15s, min-height 0.15s;
 }
 
 .canDrop {

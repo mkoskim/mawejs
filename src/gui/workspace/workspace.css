@@ -7,8 +7,9 @@
 
 .Workspace {
   display: flex;
-  flex-grow: 1;
-  min-width: 5cm;
+  /*flex-grow: 1;*/
   background: #eee;
   border: 2pt none grey;
 }
+
+/**/

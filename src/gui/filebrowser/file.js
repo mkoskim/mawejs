@@ -14,6 +14,7 @@ import React from "react"
 import { useDispatch } from "react-redux";
 import { CWD } from "../../features/cwdSlice"
 import { document } from "../../features/docSlice"
+import { stash } from "../../features/stashSlice"
 
 import { ItemTypes } from '../common/dnd'
 import { useDrag, useDrop } from 'react-dnd'
@@ -36,12 +37,9 @@ const { suffix2format } = require('../../document/util');
 //-----------------------------------------------------------------------------
 
 export function FileEntry({file, options}) {
-  //const {file, options} = props;
-  //this.file = file;
-  //this.options = options;
-  //this.type = file.type == "folder" ?
-
   const { icon, color: iconcolor, disabled, type } = FileItemConfig(file)
+
+  const dispatch = useDispatch();
 
   // Drag source
 
@@ -50,8 +48,9 @@ export function FileEntry({file, options}) {
     item: file,
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult()
-      if (item && dropResult) {
+      if (item && dropResult?.name == "Stash") {
         console.log(`You dropped ${item.name} into ${dropResult.name}!`)
+        dispatch(stash.push(item))
       }
     },
     collect: (monitor) => ({
@@ -84,8 +83,6 @@ export function FileEntry({file, options}) {
     isActive ? "canDrop" : undefined,
   )
 
-  const dispatch = useDispatch();
-
   if(options.type == "card") {
     return <div ref={drop} className={className}>
         <div ref={drag} onDoubleClick={() => !disabled && dispatch(onOpen(file))}>
@@ -110,7 +107,7 @@ export function FileEntry({file, options}) {
 
 //-----------------------------------------------------------------------------
 
-function FileItemConfig(file) {
+export function FileItemConfig(file) {
   switch (file.type) {
     case "folder": return {
       type: ItemTypes.FOLDER,

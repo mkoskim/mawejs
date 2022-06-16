@@ -3,15 +3,30 @@
 // ----------------------------------------------------------------------------
 */
 
-.HBox > .Separator {
-    height: 100%;
-    border-right: 1pt solid lightgrey;
-    margin-left: 4pt;
-    margin-right: 4pt;
+.VBox {
+  display: flex;
+  flex-direction: column;
 }
+
+.HBox {
+  display: flex;
+  flex-direction: row;
+}
+
+.Filler {
+  flex-grow: 1;
+}
+
+.HBox > .Separator {
+  height: 100%;
+  border-right: 1pt solid lightgrey;
+  margin-left: 4pt;
+  margin-right: 4pt;
+}
+
 .VBox > .Separator {
-    width:  100%;
-    border-bottom: 1pt solid lightgrey;
-    margin-top: 4pt;
-    margin-bottom: 4pt;
+  width:  100%;
+  border-bottom: 1pt solid lightgrey;
+  margin-top: 4pt;
+  margin-bottom: 4pt;
 }

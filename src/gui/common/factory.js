@@ -133,29 +133,29 @@ export function FlexBox({style, ...props}) {
   return <div style={{display: "flex", ...style}} {...props} />;
 }
 
-export function VBox({className, style, ...props}) {
-  return <div
-    className={addClass(className, "VBox")}
-    style={{display: "flex", flexDirection: "column", ...style}}
-    {...props}
-  />
-}
-
-export function HBox({className, style, ...props}) {
-  return <div
-    className={addClass(className, "HBox")}
-    style={{display: "flex", flexDirection: "row", ...style}}
-    {...props}
-  />
-}
-
 export function Filler({weight = 1, style, ...props}) {
   return <div style={{flexGrow: weight, ...style}} {...props}/>
 }
 
+export function VBox({className, ...props}) {
+  return <div className={addClass(className, "VBox")} {...props} />
+}
+
+export function HBox({className, ...props}) {
+  return <div className={addClass(className, "HBox")} {...props}/>
+}
+
+export function VFiller({className, ...props}) {
+  return <div className={addClass(className, "VBox Filler")} {...props} />
+}
+
+export function HFiller({className, ...props}) {
+  return <div className={addClass(className, "HBox Filler")} {...props} />
+}
+
 //*
-export function Separator({className, style, ...props}) {
-  return <div className={addClass(className, "Separator")} style={style} {...props}/>;
+export function Separator({className, ...props}) {
+  return <div className={addClass(className, "Separator")} {...props}/>;
 }
 /*/
 export {Divider as Separator}

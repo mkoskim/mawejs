@@ -20,6 +20,7 @@ import {VBox, HBox} from "./common/factory";
 import {FileBrowser} from "./filebrowser/filebrowser";
 import {EditFile} from "./editor/editorSlate";
 import {Workspace} from "./workspace/workspace";
+import {Stash} from "./common/stash";
 
 //-----------------------------------------------------------------------------
 
@@ -30,12 +31,22 @@ export default function App(props) {
   //dispatch(CWD.location("home"))
   //dispatch(onOpen({id: "./local/Beltane.A.mawe.gz", name: "Beltane.A.mawe.gz"}))
 
+  //*
+  return (
+    <VBox style={{height: "100vh", width: "100vw"}}>
+      <View />
+    </VBox>
+  );
+
+  /*/
   return (
     <HBox style={{height: "100vh", width: "100vw"}}>
       <Workspace />
       <VBox className="ViewBox"><View /></VBox>
+      <Stash/>
     </HBox>
   );
+  /**/
 
   function View(props) {
     const uuid = useSelector((state) => state.doc.uuid)

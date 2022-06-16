@@ -57,7 +57,8 @@ import isHotkey from "is-hotkey";
 
 import {
   Icons, Icon, IconSize,
-  Box, FlexBox, VBox, HBox, Filler, Separator,
+  Box, FlexBox, VBox, HBox, HFiller, VFiller,
+  Filler, Separator,
   Button, ButtonGroup, Input, SearchBox,
   Breadcrumbs,
   ToolBox,
@@ -67,6 +68,7 @@ import {
   InfiniteScroll,
 } from "../common/factory";
 
+import {Stash} from "../common/stash"
 import {FileEntry} from "./file"
 
 //import { makeStyles } from '@material-ui/core/styles';
@@ -91,8 +93,6 @@ export function FileBrowser({contains}) {
   const options = {
     //inform,
   }
-
-  //---------------------------------------------------------------------------
 
   if (search !== null) {
     return <SearchDir directory={dir} search={search} options={options}/>
@@ -164,14 +164,16 @@ function ListDir({ directory, options }) {
       <ButtonGroup minimal={true} style={{marginLeft: "8pt"}}>
       <Button icon={Icons.Star} tooltip="Add to favorites"/>
       </ButtonGroup>
-      <Filler />
-      <Separator/>
-      <ButtonGroup minimal={true}>
-      <Button icon={Icons.Star} text="Favorites" />
-      <Button icon={Icons.Location.Home} text="Home" onClick={() => dispatch(CWD.location("home"))}/>
-      </ButtonGroup>
     </ToolBox>
   }
+/*
+  <Filler />
+  <Separator/>
+  <ButtonGroup minimal={true}>
+  <Button icon={Icons.Star} text="Favorites" />
+  <Button icon={Icons.Location.Home} text="Home" onClick={() => dispatch(CWD.location("home"))}/>
+  </ButtonGroup>
+*/
 
   /*
   function ToolBar() {
@@ -340,7 +342,7 @@ function SearchDir({directory, search, options, style}) {
       />
       <Status style={{ marginLeft: 16 }} />
     </ToolBox>
-    <Box id="scrollbox" style={{ overflowY: "auto" }}>
+    <VFiller id="scrollbox" style={{ overflowY: "auto" }}>
       <InfiniteScroll
         scrollableTarget="scrollbox"
         scrollThreshold={0.95}
@@ -350,7 +352,7 @@ function SearchDir({directory, search, options, style}) {
       >
         <FileTable files={matches.files} options={options}/>
       </InfiniteScroll>
-    </Box>
+    </VFiller>
   </React.Fragment>)
 
   //---------------------------------------------------------------------------
