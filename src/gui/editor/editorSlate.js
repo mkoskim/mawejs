@@ -74,13 +74,13 @@ export function EditFile({uuid}) {
     "mod+w": () => dispatch(document.close()),   // Close file
   }));
 
-  //const mode="Centered";
-  const mode="Primary";
+  const mode="Centered";
+  //const mode="Primary";
 
   return (
     <React.Fragment>
       <ToolBar />
-      <HBox style={{overflow: "auto", background: "#EEE"}}>
+      <HBox className="EditArea">
         <Outline />
         <div className={`Board ${mode}`}>
           <Slate editor={editor} value={content.body} onChange={setBody}>

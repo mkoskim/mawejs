@@ -13,10 +13,12 @@ import "./app.css"
 import React from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import {CWD} from "../features/cwdSlice"
+import {onOpen} from "./filebrowser/file"
 
 import {VBox, HBox} from "./component/factory";
 import {FileBrowser} from "./filebrowser/filebrowser";
 import {EditFile} from "./editor/editorSlate";
+import {Workspace} from "./workspace/workspace";
 
 //-----------------------------------------------------------------------------
 
@@ -25,18 +27,14 @@ export default function App(props) {
   const dispatch = useDispatch()
   //dispatch(CWD.resolve("."))
   dispatch(CWD.location("home"))
+  dispatch(onOpen({id: "./local/Beltane.A.mawe.gz", name: "Beltane.A.mawe.gz"}))
 
   return (
-    <VBox style={{height: "100vh", width: "100vw"}}>
-      <View />
-    </VBox>
+    <HBox style={{height: "100vh", width: "100vw"}}>
+      <Workspace />
+      <VBox style={{flexGrow: 1.0}}><View /></VBox>
+    </HBox>
   );
-
-  /*/
-  return <Dialog open={true} maxWidth="lg" fullWidth={true} height="90vh">
-    <View style={{width: "100%", height: "90vh"}}/>
-    </Dialog>;
-  /**/
 
   function View(props) {
     const uuid = useSelector((state) => state.doc.uuid)

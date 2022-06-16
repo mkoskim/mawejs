@@ -63,7 +63,7 @@ export class Scanner {
     const folders = batch
       .filter(f => !f.symlink && f.type === "folder")
       .filter(this.filter.folder)
-  
+
     this.scan.push(...folders.map(f => f.id))
     this.processing = undefined;
     return batch.filter(this.filter.file);
@@ -83,7 +83,7 @@ export class Scanner {
   // quicker.
   //
   //---------------------------------------------------------------------------
-  
+
   tunebatchsize(elapsed) {
     this.average = this.average + (elapsed - this.average) / 10;
 

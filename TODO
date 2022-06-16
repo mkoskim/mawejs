@@ -50,7 +50,7 @@ TODO:
   stop working and needs to be tweaked. Also, elementtree does not work
   with webpack v5, as it uses stream library. Some day, but not today.
 
-- notistack: currently using latest for material UI.
+- During scanning, it can be hard to double-click a file. Figure out something.
 
 -------------------------------------------------------------------------------
 

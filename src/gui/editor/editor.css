@@ -15,14 +15,23 @@
 
 /* ---------------------------------------------------------------------------- */
 
+.EditArea {
+  flex-grow: 1;
+  overflow: hidden;
+  background-color: #f8f8f8;
+}
+
+/* ---------------------------------------------------------------------------- */
+
 .Outline {
-  width: 300px;
   /*
+  width: 300px;
   background-color: lightgray;
   */
   overflow: auto;
   padding-top: 0.5cm;
   padding-left: 4px;
+  border-right: 1pt dashed lightgray;
 }
 
 .Outline .entry {
@@ -35,10 +44,9 @@
   background-color: lightgrey;
 }
 
-.Board { overflow: auto; }
+/* ---------------------------------------------------------------------------- */
 
-.Centered { flex-grow: 1; }
-.Primary { flex-grow: 1; padding-left: 0.5cm; }
+.Board { overflow: auto; }
 
 /* ---------------------------------------------------------------------------- */
 
@@ -55,20 +63,31 @@
   padding-bottom: 2cm;
 
   min-width: 5in;
-  max-width: 6in;
+  min-height: 12in;
 }
+
+.Centered { flex-grow: 1; }
+.Primary { flex-grow: 1; padding-left: 0.5cm; }
 
 .Centered .Sheet {
   /* Center sheet horizontally to board */
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1.5cm;
-  padding-right: 1.5cm;
+  /*
+  */
+  /*
+  margin-left: 0.5cm;
+  margin-right: 0.5cm;
+  */
+  padding-left: 1in;
+  padding-right: 1in;
+  max-width: 8in;
 }
 
 .Primary .Sheet {
   padding-left: 1.0cm;
   padding-right: 1.0cm;
+  max-width: 6in;
 }
 
 .Secondary .Sheet {

@@ -67,18 +67,20 @@ import {
   InfiniteScroll,
 } from "../component/factory";
 
+import {
+  File,
+} from "./file"
+
 //import { makeStyles } from '@material-ui/core/styles';
 //import SplitButton from "../component/splitbutton";
 
 //-----------------------------------------------------------------------------
 
 const fs = require("../../storage/localfs")
-const mawe = require("../../document")
-const { suffix2format } = require('../../document/util');
 
 //-----------------------------------------------------------------------------
 
-export function FileBrowser({ contains, hooks }) {
+export function FileBrowser({contains}) {
   const dir = useSelector((state) => state.cwd.path)
   const search = useSelector((state) => state.cwd.search)
 
@@ -265,105 +267,9 @@ function SplitList({directory, content, options}) {
     if (entries === undefined) return null;
     return (
       <HBox style={{ overflowY: "auto", flexWrap: "wrap" }}>
-        {entries.map(f => <FileEntry key={f.id} file={f} type="card" options={options}/>)}
+        {entries.map(f => <File.Card key={f.id} file={f} options={options}/>)}
       </HBox>
     )
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-function FileItemConfig(file) {
-  switch (file.type) {
-    case "folder": return {
-      icon: Icons.FileType.Folder,
-      color: "#666", //"#77b4e2",
-      disabled: !file.access,
-    }
-    case "file": return {
-      icon: Icons.FileType.File,
-      color: "#666", //"#51585b",
-      disabled: !file.access,
-    }
-    default: return {
-      icon: Icons.FileType.Unknown,
-      color: "#666", //"grey",
-      disabled: true,
-    }
-  }
-}
-
-function FileEntry({file, type, options}) {
-  const { icon, color: iconcolor, disabled } = FileItemConfig(file);
-  const dispatch = useDispatch();
-
-  switch(type) {
-    case "card": return Card();
-    case "row": return Row();
-  }
-  return null;
-
-  function Card() {
-    const color = (disabled) ? "grey" : undefined;
-    return (
-      <HBox className="FileCard" onDoubleClick={onOpen}>
-        <Icon icon={icon} style={{marginRight: 16}} color={iconcolor}/>
-        <span style={{ color: color }}>{file.name}</span>
-      </HBox>
-    );
-  }
-
-  function Row() {
-    //const folder = fs.dirname(file.id);
-
-    return <tr
-      className={addClass("File", disabled ? "disabled" : undefined)}
-      onDoubleClick={onOpen}
-    >
-      <td className="FileIcon"><Icon icon={icon} color={iconcolor}/></td>
-      <td className="FileName">{file.name}</td>
-      <td className="FileDir">{file.relpath}</td>
-    </tr>;
-  }
-
-  function onOpen() {
-    console.log("Click:", file.id)
-    if (disabled) return;
-
-    if (file.type === "folder") {
-      dispatch(CWD.chdir(file.id));
-      return
-    }
-
-    //const {inform} = options;
-
-    if(suffix2format(file)) {
-      // TODO: Implement something to show that we are doing something
-      //const key = inform.process(`Loading ${f.name}`);
-
-      mawe.load(file.id)
-        .then(content => {
-          var {docs} = require("../../features/store")
-          const {uuid} = content.story;
-          docs[uuid] = content;
-          dispatch(document.open(uuid))
-          dispatch(CWD.search(null))
-          //inform.success(`Loaded ${file.name}`)
-        })
-        .catch(err => {
-          //inform.error(`Open '${file.name}': ${err}`);
-        })
-      return;
-    }
-
-    fs.openexternal(file.id)
-      .then(err => {
-        if(!err) {
-          //inform.success(`Open '${file.name}': ok`)
-        } else {
-          //inform.error(`Open '${file.name}': ${err}`);
-        }
-      })
   }
 }
 
@@ -469,7 +375,7 @@ function SearchDir({directory, search, options, style}) {
   function FileTable({files, options}) {
     return (
       <table className="File"><tbody>
-        {files.map(f => <FileEntry key={f.id} file={f} type="row" options={options}/>)}
+        {files.map(f => <File.TableRow key={f.id} file={f} options={options}/>)}
       </tbody></table>
     )
   }
@@ -489,11 +395,9 @@ function SearchDir({directory, search, options, style}) {
 const { Scanner } = require("../../storage/scanner")
 
 class DirScanner extends Scanner {
-  constructor(directory, hooks) {
+  constructor(directory) {
     console.log("Creating FileScanner:", directory);
     super(directory);
-
-    this.hooks = hooks;
 
     this.files = [];
     this.contains = undefined;      // Pattern to match
