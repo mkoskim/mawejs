@@ -24,10 +24,10 @@ import { withHistory } from "slate-history"
 /**/
 
 import {
-  Icon,
+  Icons,
   FlexBox, VBox, HBox, Filler,
   ToolBox, Button, Input,
-  SearchBox, Inform, addHotkeys,
+  SearchBox, addHotkeys,
   Label,
 } from "../component/factory";
 
@@ -63,8 +63,6 @@ export function EditFile({uuid}) {
 
   function setBody(part)  { setContent({...content, body: part}) }
   function setNotes(part) { setContent({...content, notes: part}) }
-
-  const inform = Inform();
 
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
   const renderElement = useCallback(props => <Element {...props} />, [])
@@ -102,10 +100,10 @@ export function EditFile({uuid}) {
   function ToolBar(props) {
     return (
       <ToolBox>
-        <Label>{doc.file.name}</Label>
-        <SearchBox style={{marginLeft: 8, marginRight: 8}}/>
+        <Label style={{marginRight: 8}}>{doc.file.name}</Label>
+        <SearchBox/>
         <Filler/>
-        <Button size="small"><Icon.Search /></Button>
+        <Button size="small"><Icons.Search /></Button>
       </ToolBox>
     )
   }

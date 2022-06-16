@@ -56,17 +56,15 @@ import { document } from "../../features/docSlice"
 import isHotkey from "is-hotkey";
 
 import {
-  Icon,
+  Icons, Icon, IconSize,
   Box, FlexBox, VBox, HBox, Filler, Separator,
   Button, ButtonGroup, Input, SearchBox,
-  Breadcrumb,
-  ToolBox, Inform,
+  Breadcrumbs,
+  ToolBox,
   Label,
   addClass,
   addHotkeys,
   InfiniteScroll,
-  Breadcrumbs,
-  isEmpty, isNotEmpty,
 } from "../component/factory";
 
 //import { makeStyles } from '@material-ui/core/styles';
@@ -84,14 +82,14 @@ export function FileBrowser({ contains, hooks }) {
   const dir = useSelector((state) => state.cwd.path)
   const search = useSelector((state) => state.cwd.search)
 
-  const inform = Inform()
+  //const inform = Inform()
 
   console.log("render: FileBrowser:", dir, contains);
 
   //---------------------------------------------------------------------------
 
   const options = {
-    inform,
+    //inform,
   }
 
   //---------------------------------------------------------------------------
@@ -155,18 +153,39 @@ function ListDir({ directory, options }) {
 
   return (
     <React.Fragment>
-      <ToolBox>
-        <PathButtons path={splitted} options={options}/>
-        <Filler />
-        <ButtonGroup>
-          <Button tooltip="Add to favorites"><Icon.Star /></Button>
-          <Button tooltip="Create new folder"><Icon.CreateFolder /></Button>
-          <Button tooltip="Search files"><Icon.Search onClick={() => true} /></Button>
-        </ButtonGroup>
-      </ToolBox>
+      <ToolBar />
       <SplitList directory={directory} content={{files, folders}} options={options}/>
     </React.Fragment>
   )
+
+  function ToolBar() {
+    return <ToolBox>
+      <PathButtons path={splitted} options={options} style={{marginRight: "8pt"}}/>
+      <ButtonGroup minimal={true} style={{marginLeft: "8pt"}}>
+      <Button icon={Icons.Star} tooltip="Add to favorites"/>
+      </ButtonGroup>
+      <Filler />
+      <Separator/>
+      <ButtonGroup minimal={true}>
+      <Button icon={Icons.Star} text="Favorites" />
+      <Button icon={Icons.Location.Home} text="Home" />
+      </ButtonGroup>
+    </ToolBox>
+  }
+
+  /*
+  function ToolBar() {
+    return <ToolBox>
+      <PathButtons path={splitted} options={options}/>
+      <Button tooltip="Add to favorites" icon={Icons.Star} minimal={true} style={{marginLeft: 12}}/>
+      <Filler />
+      <ButtonGroup>
+        <Button tooltip="Create new folder" icon={Icons.CreateFolder} />
+        <Button tooltip="Search files" icon={Icons.Search}/>
+      </ButtonGroup>
+    </ToolBox>
+  }
+  */
 }
 
 //---------------------------------------------------------------------------
@@ -176,12 +195,6 @@ function PathButtons({path, options}) {
 
   if (!path) return null;
 
-  return (
-    <React.Fragment>
-      {path.map((f, i) => entry(i, f))}
-    </React.Fragment>
-  );
-
   function open(f) { dispatch(CWD.chdir(f.id)) }
 
   // TODO: Last button (current directory) should open "context" menu.
@@ -189,6 +202,14 @@ function PathButtons({path, options}) {
     console.log("Open menu:", f.name);
   }
 
+  const items = path.map(file => ({
+    text: file.name !== "" ? file.name : "xxx@local:/",
+    onClick: () => open(file),
+  }))
+
+  return <Breadcrumbs items={items}/>
+
+  /*
   function entry(index, file) {
     const name = index ? (file.name + "/") : "xxx@local:/";
     const callback = (index < path.length - 1) ? (() => open(file)) : (() => menu(file));
@@ -202,6 +223,7 @@ function PathButtons({path, options}) {
       </Button>
     )
   }
+  */
 }
 
 //---------------------------------------------------------------------------
@@ -254,22 +276,25 @@ function SplitList({directory, content, options}) {
 function FileItemConfig(file) {
   switch (file.type) {
     case "folder": return {
-      icon: (<Icon.FileType.Folder fontSize="small" style={{ color: "#88c4f2" }} />),
+      icon: Icons.FileType.Folder,
+      color: "#666", //"#77b4e2",
       disabled: !file.access,
     }
     case "file": return {
-      icon: (<Icon.FileType.File fontSize="small" style={{ color: "#51585b" }} />),
+      icon: Icons.FileType.File,
+      color: "#666", //"#51585b",
       disabled: !file.access,
     }
     default: return {
-      icon: (<Icon.FileType.Unknown fontSize="small" />),
+      icon: Icons.FileType.Unknown,
+      color: "#666", //"grey",
       disabled: true,
     }
   }
 }
 
 function FileEntry({file, type, options}) {
-  const { icon, disabled } = FileItemConfig(file);
+  const { icon, color: iconcolor, disabled } = FileItemConfig(file);
   const dispatch = useDispatch();
 
   switch(type) {
@@ -282,7 +307,7 @@ function FileEntry({file, type, options}) {
     const color = (disabled) ? "grey" : undefined;
     return (
       <HBox className="FileCard" onDoubleClick={onOpen}>
-        <span style={{ marginRight: 8 }}>{icon}</span>
+        <Icon icon={icon} style={{marginRight: 16}} color={iconcolor}/>
         <span style={{ color: color }}>{file.name}</span>
       </HBox>
     );
@@ -295,7 +320,7 @@ function FileEntry({file, type, options}) {
       className={addClass("File", disabled ? "disabled" : undefined)}
       onDoubleClick={onOpen}
     >
-      <td className="FileIcon">{icon}</td>
+      <td className="FileIcon"><Icon icon={icon} color={iconcolor}/></td>
       <td className="FileName">{file.name}</td>
       <td className="FileDir">{file.relpath}</td>
     </tr>;
@@ -310,7 +335,7 @@ function FileEntry({file, type, options}) {
       return
     }
 
-    const {inform} = options;
+    //const {inform} = options;
 
     if(suffix2format(file)) {
       // TODO: Implement something to show that we are doing something
@@ -323,10 +348,10 @@ function FileEntry({file, type, options}) {
           docs[uuid] = content;
           dispatch(document.open(uuid))
           dispatch(CWD.search(null))
-          inform.success(`Loaded ${file.name}`)
+          //inform.success(`Loaded ${file.name}`)
         })
         .catch(err => {
-          inform.error(`Open '${file.name}': ${err}`);
+          //inform.error(`Open '${file.name}': ${err}`);
         })
       return;
     }
@@ -334,9 +359,9 @@ function FileEntry({file, type, options}) {
     fs.openexternal(file.id)
       .then(err => {
         if(!err) {
-          inform.success(`Open '${file.name}': ok`)
+          //inform.success(`Open '${file.name}': ok`)
         } else {
-          inform.error(`Open '${file.name}': ${err}`);
+          //inform.error(`Open '${file.name}': ${err}`);
         }
       })
   }

@@ -13,44 +13,61 @@ import "./factory.css"
 //-----------------------------------------------------------------------------
 
 import isHotkey from 'is-hotkey';
-import { useSnackbar } from 'notistack';
-import { useEffect } from "react";
+
+import "@blueprintjs/core/lib/css/blueprint.css";
+import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
+
+import {
+  Button as XButton, ButtonGroup,
+  Breadcrumbs,
+  InputGroup,
+  Icon, IconSize,
+  Divider,
+} from "@blueprintjs/core"
+
+import {
+  Classes,
+  Popover2 as Popover,
+  Tooltip2 as Tooltip
+} from "@blueprintjs/popover2"
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
-
-const {
-  Button: XButton, Input: XInput, Tooltip: XTooltip,
-  IconButton: XIconButton,
-  ButtonGroup: XButtonGroup,
-  Breadcrumbs: XBreadcrumbs,
-} = require("@mui/material")
-
-const Icons = require("@mui/icons-material/")
+export {Breadcrumbs}
+export {Icon, IconSize}
 
 //-----------------------------------------------------------------------------
 // Icons
 //-----------------------------------------------------------------------------
 
+//const Icons = require("@mui/icons-material/")
 //console.log("Icons", require("@material-ui/icons/"))
 
-export const Icon = {
-  Close: Icons.Close,
-  Search: Icons.Search,
+export const Icons = {
+  Close: "cross",
+  Search: "search",
 
-  //Menu: require("@material-ui/icons/Menu"),
-  Star: Icons.StarOutlineOutlined,
-  CreateFolder: Icons.CreateNewFolderOutlined,
+  Star: "star-empty",
+  Starred: "star",
+
+  CreateFolder: "folder-new",
 
   FileType: {
-    File: Icons.InsertDriveFileOutlined,
+    File: "document",
     //import TypeFile from '@material-ui/icons/Description';
-    Folder: Icons.Folder,
-    Unknown: Icons.BrokenImageOutlined,
+    Folder: "folder-close",
+    //Unknown: "lock",
+    //Unknown: "error",
+    Unknown: "warning-sign",
     //import TypeUnknown from '@material-ui/icons/Close';
     //import TypeUnknown from '@material-ui/icons/Help';
     //import TypeUnknown from '@material-ui/icons/BrokenImage';
     //import TypeUnknown from '@material-ui/icons/CancelPresentationOutlined';
-  }
+  },
+
+  Location: {
+    Home: "home",
+  },
 }
 
 //-----------------------------------------------------------------------------
@@ -136,24 +153,28 @@ export function Filler({weight = 1, style, ...props}) {
   return <div style={{flexGrow: weight, ...style}} {...props}/>
 }
 
-export function Separator({className, ...props}) {
-  return <div className={addClass(className, "Separator")} {...props}/>;
+//*
+export function Separator({className, style, ...props}) {
+  return <div className={addClass(className, "Separator")} style={style} {...props}/>;
 }
+/*/
+export {Divider as Separator}
+/**/
 
 /*
 HeadStyle("Separator").set(
   ".HBox > .Separator { height: 100%; border-right: 1pt solid lightgrey; }",
   ".VBox > .Separator { width:  100%; border-bottom: 1pt solid lightgrey; }",
 );
-*/
+/**/
 
 //-----------------------------------------------------------------------------
 
 export function ToolBox({style, ...props}) {
   return <HBox style={{
     paddingLeft: 4, paddingRight: 4,
-    paddingTop: 2, paddingBottom: 2,
-    backgroundColor: "#F8F8F8",
+    paddingTop: 4, paddingBottom: 4,
+    //backgroundColor: "#F8F8F8",
     alignItems: "center",
     borderBottom: "1pt solid lightgray",
     ...style}}
@@ -161,9 +182,27 @@ export function ToolBox({style, ...props}) {
   />
 }
 
+//-----------------------------------------------------------------------------
+
+export {ButtonGroup}
+/*
 export function ButtonGroup(props) {
   return <XButtonGroup {...props} />
 }
+*/
+
+/*
+export {Button}
+/*/
+export function Button({tooltip, style, ...props}) {
+  const button = <XButton
+    style={{...style}}
+    {...props}
+  />
+
+  return tooltip ? <Tooltip content={tooltip}>{button}</Tooltip> : button;
+}
+/**/
 
 //-----------------------------------------------------------------------------
 
@@ -171,44 +210,14 @@ export function Label({style, ...props}) {
   return <div display="span" style={style} {...props}/>
 }
 
-export function Button({tooltip, style, ...props}) {
-  const button = <XButton
-    style={{minWidth: 32, textTransform: "none", ...style}}
-    {...props}
-  />
-
-  return tooltip ? <XTooltip title={tooltip}>{button}</XTooltip> : button;
-}
-
 export function Input({style, ...props}) {
-  return <XInput
-    disableUnderline={true}
-    style={{
-      margin: 0, //marginLeft: 4,
-      padding: 0, paddingLeft: 8,
-      border: "1px solid lightgrey",
-      borderRadius: 4,
-      backgroundColor: "white",
-      ...style,
-    }}
-    {...props}
-  />
+  return <InputGroup {...props}/>
 }
 
 export function SearchBox({onCancel, ...props})
 {
-  return <Input
-    placeholder="Search"
-    startAdornment={<Icon.Search fontSize="small" style={{color: "gray", marginRight: 4}}/>}
-    endAdornment={
-      <XIconButton
-        onClick={onCancel}
-        size="small"
-        style={{fontSize: "inherit", marginRight: 2}}
-        >
-        <Icon.Close fontSize="inherit"/>
-      </XIconButton>
-    }
+  return <InputGroup
+    leftElement={<Icon icon="search"/>}
     {...props}
   />
 }
@@ -217,6 +226,7 @@ export function SearchBox({onCancel, ...props})
 // Inform user about things that are happening or happened.
 //-----------------------------------------------------------------------------
 
+/*
 export function Inform() {
   const snackbar = useSnackbar();
   const enqueue = snackbar.enqueueSnackbar;
@@ -239,3 +249,4 @@ export function Inform() {
     dismiss: key => close(key),
   }
 }
+*/

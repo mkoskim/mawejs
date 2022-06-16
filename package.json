@@ -20,10 +20,9 @@
     "fresh": "rm -rf build node_modules package-lock.json && npm install"
   },
   "dependencies": {
-    "@emotion/react": "^11.9.3",
-    "@emotion/styled": "^11.9.3",
-    "@mui/icons-material": "^5.8.4",
-    "@mui/material": "^5.8.4",
+    "@blueprintjs/core": "^4.5.0",
+    "@blueprintjs/icons": "^4.3.0",
+    "@blueprintjs/popover2": "^1.4.0",
     "@reduxjs/toolkit": "^1.8.2",
     "electron-better-ipc": "^2.0.1",
     "electron-debug": "^3.2.0",
@@ -33,7 +32,6 @@
     "fs-extra": "^10.1.0",
     "is-gzip": "^2.0.0",
     "is-hotkey": "^0.2.0",
-    "notistack": "^2.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-infinite-scroll-component": "^6.1.0",
