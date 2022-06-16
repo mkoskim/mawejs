@@ -10,26 +10,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const fs = require("../storage/localfs")
 
-/* Set by location (home, root, ...) or from favorites */
-/*
-useEffect(() => {
-  if(dir !== directory) resolvedir();
-
-  async function resolvedir() {
-    console.log("set dir:", directory, location);
-    const d = directory
-      ? (await fs.fstat(directory)).id
-      : await fs.getlocation(location ? location : "home");
-    console.log("dir", d);
-    setState(state => ({...state, dir: d}));
-  }
-}, [directory, location]);
-*/
-
 export const cwdSlice = createSlice({
   name: "cwd",
   initialState: {
-    path: ".",
+    path: null,
     search: null,
     showHidden: false,
   },
@@ -48,8 +32,23 @@ export const cwdSlice = createSlice({
   }
 })
 
-export const CWD = {
-  ...cwdSlice.actions
-}
-
 export default cwdSlice.reducer
+
+export const CWD = {
+  ...cwdSlice.actions,
+
+  resolve: (directory) => {
+    return async (dispatch, getState) => {
+      const dir = await fs.fstat(directory)
+      console.log("Dir:", directory, "->", dir.id);
+      dispatch(CWD.chdir(dir.id))
+    }
+  },
+  location: (location) => {
+    return async (dispatch, getState) => {
+      const dir = await fs.getlocation(location ?? "home");
+      console.log("Location:", location, "->", dir);
+      dispatch(CWD.chdir(dir))
+    }
+  },
+}

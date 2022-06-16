@@ -12,6 +12,7 @@ import "./app.css"
 
 import React from 'react'
 import { useSelector, useDispatch } from "react-redux";
+import {CWD} from "../features/cwdSlice"
 
 import {VBox, HBox} from "./component/factory";
 import {FileBrowser} from "./filebrowser/filebrowser";
@@ -20,6 +21,10 @@ import {EditFile} from "./editor/editorSlate";
 //-----------------------------------------------------------------------------
 
 export default function App(props) {
+
+  const dispatch = useDispatch()
+  //dispatch(CWD.resolve("."))
+  dispatch(CWD.location("home"))
 
   return (
     <VBox style={{height: "100vh", width: "100vw"}}>

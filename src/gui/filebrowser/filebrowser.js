@@ -168,7 +168,7 @@ function ListDir({ directory, options }) {
       <Separator/>
       <ButtonGroup minimal={true}>
       <Button icon={Icons.Star} text="Favorites" />
-      <Button icon={Icons.Location.Home} text="Home" />
+      <Button icon={Icons.Location.Home} text="Home" onClick={() => dispatch(CWD.location("home"))}/>
       </ButtonGroup>
     </ToolBox>
   }

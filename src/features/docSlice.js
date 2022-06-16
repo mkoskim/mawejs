@@ -25,8 +25,19 @@ export const docSlice = createSlice({
   }
 })
 
-export const document = {
-  ...docSlice.actions
-}
-
 export default docSlice.reducer
+
+export const document = {
+  ...docSlice.actions,
+
+  /*
+  load: (fileid) => {
+    return async (dispatch, getState) => {
+      console.log("Loading:", fileid)
+      //const dir = await fs.fstat(directory)
+      //console.log("Dir:", directory, "->", dir.id);
+      //dispatch(CWD.chdir(dir.id))
+    }
+  },
+  */
+}
