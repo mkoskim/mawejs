@@ -53,8 +53,8 @@ export default function App(props) {
     const uuid = useSelector((state) => state.doc.uuid)
 
     if(uuid) {
-      //return <Organizer uuid={uuid}/>
-      return <EditFile uuid={uuid}/>
+      return <Organizer uuid={uuid}/>
+      //return <EditFile uuid={uuid}/>
       //return (<pre>{JSON.stringify(state.doc, null, 2)}</pre>)
     } else {
       return <FileBrowser/>

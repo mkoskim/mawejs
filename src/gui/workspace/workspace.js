@@ -34,5 +34,5 @@ export function Workspace() {
     "Workspace dragTarget",
   )
 
-  return <div ref={drop} className={className}></div>
+  return <div className={className}></div>
 }

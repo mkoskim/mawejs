@@ -1,4 +1,4 @@
-Editor GUI
-----------
+GUI
+---
 
 GUI related stuff.

@@ -86,7 +86,7 @@ function ViewPart({part}) {
       groupName="scenes"
       animationDuration={50}
       dragClass="sceneDrag"
-      behaviour="contains"
+      //behaviour="drop-zone"
       dropPlaceholder={{
         animationDuration: 150,
         showOnTop: false,
