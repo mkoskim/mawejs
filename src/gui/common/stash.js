@@ -12,9 +12,7 @@ import "./stash.css"
 
 import React from "react"
 import { useSelector, useDispatch } from "react-redux";
-import { CWD } from "../store/cwdSlice"
-import { document } from "../store/docSlice"
-import { stash } from "../store/stashSlice"
+import { stash } from "../app/store"
 
 import {
   Icons, Icon, IconSize,

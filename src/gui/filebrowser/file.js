@@ -12,9 +12,9 @@ import "./file.css"
 
 import React from "react"
 import { useDispatch } from "react-redux";
-import { CWD } from "../store/cwdSlice"
-import { document } from "../store/docSlice"
-import { stash } from "../store/stashSlice"
+import { CWD } from "../app/store"
+import { document } from "../app/store"
+import { stash } from "../app/store"
 
 import {
   Icons, Icon, IconSize,
@@ -107,7 +107,7 @@ export function onOpen(file) {
 
       mawe.load(file.id)
         .then(content => {
-          var { docs } = require("../store/store")
+          var { docs } = require("../workspace/workspace")
           const { uuid } = content.story;
           docs[uuid] = content;
           dispatch(document.open(uuid))

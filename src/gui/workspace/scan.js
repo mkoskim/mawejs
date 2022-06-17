@@ -6,8 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {Scanner} from "../storage/scanner";
-import {suffix2format} from "./util.js";
+import {Scanner} from "../../storage/scanner";
+import {suffix2format} from "../../document/util.js";
 
 export async function scan(directory)
 {

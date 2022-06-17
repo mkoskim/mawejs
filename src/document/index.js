@@ -6,9 +6,11 @@
 //*****************************************************************************
 //*****************************************************************************
 
-const {load} = require("./load")
-const {scan} = require("./scan")
+import {load} from "./load"
+
+//const {load} = require("./load")
+//const {scan} = require("./scan")
 //const save = require("./save")
 //const print = require("./print")
 
-module.exports = {load, scan}
+export {load}

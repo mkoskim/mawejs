@@ -15,7 +15,7 @@ import "./editor.css"
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { document } from "../store/docSlice"
+import { document } from "../app/store"
 
 //*
 import { Slate, Editable, withReact } from 'slate-react'
@@ -50,8 +50,8 @@ import isHotkey from 'is-hotkey';
 
 export function EditFile({uuid}) {
 
-  var {docs} = require("../store/store")
-  const doc = docs[uuid]
+  const {docByUUID} = require("../app/store")
+  const doc = docByUUID[uuid]
 
   console.log("Doc:", doc)
   const dispatch = useDispatch();

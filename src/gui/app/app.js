@@ -13,15 +13,15 @@ import "./app.css"
 import React from 'react'
 
 import { useSelector, useDispatch } from "react-redux";
-import {CWD} from "./store/cwdSlice"
-import {onOpen} from "./filebrowser/file"
+import {CWD} from "./store"
+import {onOpen} from "../filebrowser/file"
 
-import {VBox, HBox} from "./common/factory";
-import {FileBrowser} from "./filebrowser/filebrowser";
-import {EditFile} from "./editor/editorSlate";
-import {Organizer} from "./editor/organizer";
-import {Workspace} from "./workspace/workspace";
-import {Stash} from "./common/stash";
+import {VBox, HBox} from "../common/factory";
+import {FileBrowser} from "../filebrowser/filebrowser";
+import {EditFile} from "../editor/editorSlate";
+import {Organizer} from "../editor/organizer";
+import {Workspace} from "../workspace/workspace";
+import {Stash} from "../common/stash";
 
 //-----------------------------------------------------------------------------
 
@@ -34,9 +34,9 @@ export default function App(props) {
 
   //*
   return (
-    <VBox style={{height: "100vh", width: "100vw"}}>
-      <View />
-    </VBox>
+      <VBox style={{height: "100vh", width: "100vw"}}>
+        <View />
+      </VBox>
   );
 
   /*/

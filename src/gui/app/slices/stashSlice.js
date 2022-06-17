@@ -1,7 +1,7 @@
 //*****************************************************************************
 //*****************************************************************************
 //
-// Current working directory
+// Stashing files for later use
 //
 //*****************************************************************************
 //*****************************************************************************
@@ -10,27 +10,24 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-const fs = require("../../storage/localfs")
+const fs = require("../../../storage/localfs")
 
-export const docSlice = createSlice({
-  name: "doc",
+export const stashSlice = createSlice({
+  name: "stash",
   initialState: {
-    uuid: null,
+    stashed: [],
   },
   reducers: {
-    open: (state, action) => {
-      state.uuid = action.payload
-    },
-    close: (state) => {
-      state.uuid = null
+    push: (state, action) => {
+      state.stashed.push(action.payload)
     },
   }
 })
 
-export default docSlice.reducer
+export default stashSlice.reducer
 
-export const document = {
-  ...docSlice.actions,
+export const stash = {
+  ...stashSlice.actions,
 
   /*
   load: (fileid) => {

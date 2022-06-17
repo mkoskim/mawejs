@@ -32,9 +32,16 @@ TODO:
 
 - Handle access right problems
 - Handle errors
+
 - Infinite scroll window do not initiate fetching more, if there is no
   scroll bar. So, if we initially return too little amount of search results,
   user can not fetch more.
+
+// Let's examine this: https://stackoverflow.com/questions/4814398/how-can-i-check-if-a-scrollbar-is-visible
+
+// Infinite scrollbar works, if it first gets that scrollbar. So, we might want
+// to feed items to window as long as there is no scrollbar.
+
 
 DONE:
 
@@ -50,8 +57,9 @@ import "./filebrowser.css"
 
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { CWD } from "../store/cwdSlice"
-import { document } from "../store/docSlice"
+import { CWD } from "../app/store"
+import { document } from "../app/store"
+import {Stash} from "../app/store"
 
 import isHotkey from "is-hotkey";
 
@@ -68,18 +76,7 @@ import {
   InfiniteScroll,
 } from "../common/factory";
 
-import {Stash} from "../common/stash"
 import {FileEntry} from "./file"
-
-//import { makeStyles } from '@material-ui/core/styles';
-//import SplitButton from "../component/splitbutton";
-
-//-----------------------------------------------------------------------------
-
-// Let's examine this: https://stackoverflow.com/questions/4814398/how-can-i-check-if-a-scrollbar-is-visible
-
-// Infinite scrollbar works, if it first gets that scrollbar. So, we might want
-// to feed items to window as long as there is no scrollbar.
 
 //-----------------------------------------------------------------------------
 

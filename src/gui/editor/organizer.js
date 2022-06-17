@@ -24,12 +24,12 @@ import {
 } from "../common/factory";
 
 import {Container, Draggable} from "react-smooth-dnd"
+import {docByUUID} from "../app/store"
 
 //-----------------------------------------------------------------------------
 
 export function Organizer({uuid}) {
-  var {docs} = require("../store/store")
-  const doc = docs[uuid]
+  const doc = docByUUID[uuid]
 
   console.log("Doc:", doc)
   const dispatch = useDispatch();
