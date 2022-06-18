@@ -24,7 +24,6 @@ import { withHistory } from "slate-history"
 /**/
 
 import {
-  Icons,
   FlexBox, VBox, HBox, Filler, VFiller,
   ToolBox, Button, Input,
   SearchBox, addHotkeys,
@@ -52,7 +51,7 @@ export function EditFile({id}) {
 
   const doc = docByID(id)
 
-  console.log("Doc:", doc)
+  console.log("ID", id, "Doc:", doc)
   const dispatch = useDispatch();
 
   const [content, setContent] = useState(deserialize(doc));
@@ -78,8 +77,6 @@ export function EditFile({id}) {
 
   return <VFiller>
       <ToolBar />
-      <HBox className="EditArea">
-        <Outline />
         <div className={`Board ${mode}`}>
           <Slate editor={editor} value={content.body} onChange={setBody}>
             <Editable
@@ -91,7 +88,6 @@ export function EditFile({id}) {
             />
           </Slate>
         </div>
-      </HBox>
     </VFiller>
 
   function ToolBar(props) {
@@ -99,8 +95,6 @@ export function EditFile({id}) {
       <ToolBox>
         <Label style={{marginRight: 8}}>{doc.file.name}</Label>
         <SearchBox/>
-        <Filler/>
-        <Button size="small" icon={Icons.Search}/>
       </ToolBox>
     )
   }

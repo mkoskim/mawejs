@@ -17,20 +17,22 @@ import {docByID, workspace} from "../app/store"
 
 import {FileBrowser} from "../filebrowser";
 import {EditFile} from "../editor/editorSlate";
-import {Container, Draggable} from "react-smooth-dnd"
+import {Organizer} from "../editor/organizer";
+
+import {Dropzone} from "../common/dnd"
 
 import {
-  Icons, Icon, IconSize,
   Box, FlexBox,
   VBox, HBox, VFiller, HFiller,
   Filler, Separator,
-  Tooltip, Button, ButtonGroup, Input, SearchBox,
+  Tooltip, Button, IconButton, ButtonGroup, Input, SearchBox,
   Breadcrumbs,
   ToolBox,
   Label,
   addClass,
   Spinner,
   addHotkeys,
+  Icon,
 } from "../common/factory";
 
 //-----------------------------------------------------------------------------
@@ -62,10 +64,17 @@ export function Workspace() {
     </React.Fragment>
   }
 
+  /*
   return <React.Fragment>
     <LeftSide current={current} edit={edit} container={itemtype}/>
     <EditFile id={edit.id}/>
   </React.Fragment>
+  /*/
+  return <React.Fragment>
+    <LeftSide current={current} edit={edit} container={itemtype}/>
+    <Organizer id={edit.id}/>
+  </React.Fragment>
+  /**/
 }
 
 //-----------------------------------------------------------------------------
@@ -86,19 +95,18 @@ function LeftSide({current, edit, container, style}) {
       {current.name}
       <Filler/>
       <ButtonGroup>
-        <Button minimal={true} icon={Icons.NewFile} tooltip="New file"/>
-        <Button minimal={true} icon={Icons.AddFiles} tooltip="Open file" onClick={() => dispatch(workspace.unsetEdit({}))}/>
+        <IconButton size="small"><Icon.NewFile/></IconButton>
+        <IconButton size="small" onClick={() => dispatch(workspace.unsetEdit({}))}><Icon.AddFiles/></IconButton>
         </ButtonGroup>
       </ToolBox>
-    <Container
-      style={{flexGrow: 1}}
-      groupName={container}
-      behaviour="move"
-      onDrop={onDrop}
-      getChildPayload={i => current.files[i]}
+    <div
+      //accept="File"
+      //onDrop={(item, monitor) => console.log("Drop:", item)}
+      //onHover={(item, monitor) => console.log("Hover:", item)}
+      style={{display: "flex", flexDirection: "column", minHeight: "70%"}}
       >
-      {current.files.map(f => <Draggable key={f.id}><WorkspaceItem file={f} edit={edit}/></Draggable>)}
-    </Container>
+      {current.files.map(f => <WorkspaceItem key={f.id} file={f} edit={edit}/>)}
+    </div>
     </VBox>
 
   function onDrop(dragResult) {
@@ -148,9 +156,9 @@ function LeftSide({current, edit, container, style}) {
       {file.name}
       <Button
         style={{marginLeft: "auto"}}
-        minimal={true}
-        small={true}
-        icon={Icons.Close}
+        //minimal={true}
+        //small={true}
+        //icon={Icons.Close}
         onClick={(e) => onRemove(e, file)}
       />
     </div>

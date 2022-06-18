@@ -14,7 +14,23 @@ import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import { useSelector, useDispatch } from "react-redux";
 
 import {
-  Icons,
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {useSortable} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
+
+import {
   FlexBox,
   VBox, HBox, HFiller, VFiller,
   Filler,
@@ -23,7 +39,6 @@ import {
   Label,
 } from "../common/factory";
 
-import {Container, Draggable} from "react-smooth-dnd"
 import {docByID} from "../app/store"
 
 //-----------------------------------------------------------------------------
@@ -35,7 +50,6 @@ export function Organizer({id}) {
   const dispatch = useDispatch();
 
   return <HFiller style={{overflow: "auto"}}>
-    <VBox style={{width: "200px"}}/>
     <VFiller>
       <ViewSection section={doc.story.body}/>
       </VFiller>
@@ -58,7 +72,7 @@ function ViewSection({section}) {
   return <div className="SectionCard">
     <div>Section: {section.tag}</div>
     <div>Name: {`[${section.name}]`}</div>
-    {section.part.map(p => <ViewPart key={p.uuid} part={p}/>)}
+    <div>{section.part.map(p => <ViewPart key={p.id} part={p}/>)}</div>
   </div>
 }
 
@@ -66,59 +80,51 @@ function ViewPart({part}) {
 
   const [scenes, setScenes] = useState(
     part.children.map(scene => ({
-      uuid: scene.uuid,
+      id: scene.id,
       name: scene.attr.name,
     }))
   )
 
-  function onDrop(dropResult) {
-    const { removedIndex, addedIndex, payload, element } = dropResult;
-    console.log("Remove:", removedIndex)
-    console.log("Add:", addedIndex)
-    console.log("Payload", payload)
-    console.log("Element", element)
+  function onDrop(event) {
+    const { active, over } = event;
+    console.log("Active", active)
+    console.log("Over", over)
   }
 
   return <div className="PartCard">
-    <div>Part:</div>
-    <Container
-      onDrop={onDrop}
-      groupName="scenes"
-      animationDuration={50}
-      dragClass="sceneDrag"
-      //behaviour="drop-zone"
-      dropPlaceholder={{
-        animationDuration: 150,
-        showOnTop: false,
-        className: "sceneGhost"
-      }}
-    >
-    {scenes.map(item => {
-      return <Draggable key={item.uuid}>
-        <ViewScene scene={item}/>
-        </Draggable>
-      })
-    }
-    </Container></div>
-
-  /*
-  return <DnDTarget className="PartCard" accepts={[DnDTypes.SCENE]}>
-    {scenes.map(s => <ViewScene key={s.uuid} scene={s}/>)}
-  </DnDTarget>
-  */
+      <div>Part:</div>
+      <DndContext onDragEnd={onDrop}>
+        <SortableContext items={scenes}>
+          {scenes.map(scene => <ViewScene key={scene.id} id={scene.id} scene={scene}/>)}
+        </SortableContext>
+      </DndContext>
+    </div>
 }
 
-function ViewScene({scene}) {
-  //return <div>{scene.attr.name}</div>
-  return <div className="SceneCard">
+function ViewScene({id, scene, ...props}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({id: id});
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  };
+
+  return (
+    <div
+      className="SceneCard"
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}>
     {scene.name}
     </div>
-/*
-return <div>
-    <div>{scene.attr.name}</div>
-    {scene.children.map(p => <ViewParagraph p={p}/>)}
-  </div>
-*/
+  );
 }
 
 function ViewParagraph({p}) {

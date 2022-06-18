@@ -15,7 +15,6 @@ import { useDispatch } from "react-redux";
 import { CWD, workspace } from "../app/store"
 
 import {
-  Icons, Icon, IconSize,
   Box, FlexBox, VBox, HBox, Filler, Separator,
   Button, ButtonGroup, Input, SearchBox,
   Breadcrumbs,
@@ -24,8 +23,6 @@ import {
   addClass,
   addHotkeys,
 } from "../common/factory";
-
-import {Container, Draggable} from "react-smooth-dnd"
 
 const fs = require("../../storage/localfs")
 const { suffix2format } = require('../../document/util');
@@ -50,10 +47,11 @@ export function FileEntry({file, options}) {
 
   if(options.type === "card") {
     return <div
+      item={file}
+      itemtype="File"
       className={className}
       onDoubleClick={callback}
       >
-      <Icon icon={icon} style={{ marginRight: 16 }} color={iconcolor} />
       <span>{file.name}</span>
     </div>;
   }
@@ -62,7 +60,7 @@ export function FileEntry({file, options}) {
       className={addClass(className, disabled ? "disabled" : undefined)}
       onDoubleClick={callback}
     >
-      <td className="FileIcon"><Icon icon={icon} color={iconcolor} /></td>
+      <td className="FileIcon"></td>
       <td className="FileName">{file.name}</td>
       <td className="FileDir">{file.relpath}</td>
     </tr>;
@@ -75,17 +73,17 @@ export function FileEntry({file, options}) {
 export function FileItemConfig(file) {
   switch (file.type) {
     case "folder": return {
-      icon: Icons.FileType.Folder,
+      //icon: Icons.FileType.Folder,
       color: "#666", //"#77b4e2",
       disabled: !file.access,
     }
     case "file": return {
-      icon: Icons.FileType.File,
+      //icon: Icons.FileType.File,
       color: "#666", //"#51585b",
       disabled: !file.access,
     }
     default: return {
-      icon: Icons.FileType.Unknown,
+      //icon: Icons.FileType.Unknown,
       color: "#666", //"grey",
       disabled: true,
     }

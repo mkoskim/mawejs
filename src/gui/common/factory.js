@@ -14,39 +14,52 @@ import "./factory.css"
 
 import isHotkey from 'is-hotkey';
 
+/*
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
+*/
 
 import {
-  Button as XButton, ButtonGroup,
+  Button, IconButton, ButtonGroup,
   Breadcrumbs,
-  InputGroup,
-  Icon, IconSize,
-  Divider, Spinner,
-} from "@blueprintjs/core"
+  TextField,
+  Tooltip,
+  Divider, CircularProgress as Spinner,
+} from "@mui/material"
 
-import {
-  Classes,
-  Popover2 as Popover,
-  Tooltip2 as Tooltip
-} from "@blueprintjs/popover2"
+import DeleteIcon from "@mui/icons-material/Delete"
+import HomeIcon from '@mui/icons-material/Home';
+export {DeleteIcon}
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export {
-  Breadcrumbs,
-  Icon, IconSize,
   Tooltip,
-  Spinner
+  Spinner,
 }
 
 //-----------------------------------------------------------------------------
 // Icons
 //-----------------------------------------------------------------------------
 
-//const Icons = require("@mui/icons-material/")
+const muiIcons = require("@mui/icons-material/")
 //console.log("Icons", require("@material-ui/icons/"))
 
+// Material icons
+export const Icon = {
+  Star: muiIcons.StarOutlineOutlined,
+  Starred: muiIcons.Star,
+
+  NewFile: muiIcons.NoteAddOutlined,
+  AddFiles: muiIcons.FolderOpenOutlined,
+
+  Location: {
+    Home: muiIcons.Home,
+  },
+}
+
+/*
+// Blueprint icons
 export const Icons = {
   Close: "cross",
   Search: "search",
@@ -75,6 +88,7 @@ export const Icons = {
     Home: "home",
   },
 }
+/**/
 
 //-----------------------------------------------------------------------------
 // Manipulate <style> elements in document <head>
@@ -190,6 +204,10 @@ export function ToolBox({style, ...props}) {
 
 //-----------------------------------------------------------------------------
 
+export {Breadcrumbs}
+
+//-----------------------------------------------------------------------------
+
 export {ButtonGroup}
 /*
 export function ButtonGroup(props) {
@@ -197,8 +215,8 @@ export function ButtonGroup(props) {
 }
 */
 
-/*
-export {Button}
+//*
+export {Button, IconButton}
 /*/
 export function Button({tooltip, style, ...props}) {
   const button = <XButton
@@ -217,13 +235,13 @@ export function Label({style, ...props}) {
 }
 
 export function Input({style, ...props}) {
-  return <InputGroup {...props}/>
+  return <TextField {...props}/>
 }
 
 export function SearchBox({onCancel, ...props})
 {
-  return <InputGroup
-    leftElement={<Icon icon="search"/>}
+  return <TextField
+    //leftElement={<Icon icon="search"/>}
     {...props}
   />
 }

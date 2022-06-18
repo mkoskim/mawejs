@@ -51,7 +51,7 @@ async function mawe(file) {
 
   function et2js(elem) {
     return {
-      uuid: uuid(),
+      id: uuid(),
       tag: elem.tag,
       attr: {...elem.attrib},
       text: elem.text,

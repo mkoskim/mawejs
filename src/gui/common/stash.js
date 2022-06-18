@@ -15,7 +15,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { stash } from "../app/store"
 
 import {
-  Icons, Icon, IconSize,
   Box, FlexBox, VBox, HBox, Filler, Separator,
   Button, ButtonGroup, Input, SearchBox,
   Breadcrumbs,

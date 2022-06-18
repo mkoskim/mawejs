@@ -61,10 +61,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { CWD } from "../app/store"
 
 import {
-  Icons, Icon, IconSize,
   Box, FlexBox, VBox, HBox, HFiller, VFiller,
   Filler, Separator,
-  Button, ButtonGroup, Input, SearchBox,
+  Button, IconButton, Icon, ButtonGroup,
+  Input, SearchBox,
   Breadcrumbs,
   ToolBox,
   Label,
@@ -74,7 +74,6 @@ import {
 } from "../common/factory";
 
 import {FileEntry} from "./file"
-import {Container, Draggable} from "react-smooth-dnd"
 
 //-----------------------------------------------------------------------------
 
@@ -176,14 +175,12 @@ function ListDir({ directory, options }) {
   function ToolBar() {
     return <ToolBox>
       <PathButtons path={splitted} options={options} style={{marginRight: "8pt"}}/>
-      <ButtonGroup minimal={true} style={{marginLeft: "8pt"}}>
-      <Button icon={Icons.Star} tooltip="Add to favorites"/>
-      </ButtonGroup>
+      <IconButton size="small"><Icon.Star fontSize="small"/></IconButton>
       <Filler />
       <Separator/>
-      <ButtonGroup minimal={true}>
-      <Button icon={Icons.Star} text="Favorites" />
-      <Button icon={Icons.Location.Home} text="Home" onClick={() => dispatch(CWD.location("home"))}/>
+      <ButtonGroup>
+      <Button startIcon={<Icon.Starred/>}>Favorites</Button>
+      <Button startIcon={<Icon.Location.Home />} onClick={() => dispatch(CWD.location("home"))}>Home</Button>
       </ButtonGroup>
     </ToolBox>
   }
@@ -210,19 +207,23 @@ function PathButtons({path, options}) {
 
   if (!path) return null;
 
+  /*
+  const items = path.map(file => ({
+    text: file.name !== "" ? file.name : "xxx@local:/",
+    onClick: () => open(file),
+  }))
+  */
+
+  return <Breadcrumbs>
+    {path.map(file => <Label key={file.id}>{file.name}</Label>)}
+    </Breadcrumbs>
+
   function open(f) { dispatch(CWD.chdir(f.id)) }
 
   // TODO: Last button (current directory) should open "context" menu.
   function menu(f) {
     console.log("Open menu:", f.name);
   }
-
-  const items = path.map(file => ({
-    text: file.name !== "" ? file.name : "xxx@local:/",
-    onClick: () => open(file),
-  }))
-
-  return <Breadcrumbs items={items}/>
 }
 
 //---------------------------------------------------------------------------
@@ -263,27 +264,6 @@ function SplitList({directory, content, options}) {
   function Grid({entries, options}) {
     if (entries === undefined) return null;
 
-    const {dndGroup} = options;
-
-    /*
-    const {dndAccept, dndGroup} = options;
-    if(dndAccept) {
-      if(dndAccept(file)) {
-        return <Draggable>{entry}</Draggable>
-      }
-    }
-    */
-
-    if(dndGroup) {
-      return <Container
-        groupName={dndGroup}
-        behaviour="copy"
-        getChildPayload={i => entries[i]}
-        onDrop={({removedIndex, addedIndex, payload}) => console.log(payload)}
-        style={{display: "flex", overflowY: "auto", flexWrap: "wrap" }}>
-          {entries.map(f => <Draggable key={f.id}><FileEntry file={f} options={{...options, type: "card"}}/></Draggable>)}
-        </Container>
-    }
     return <HBox style={{ overflowY: "auto", flexWrap: "wrap" }}>
       {entries.map(f => <FileEntry key={f.id} file={f} options={{...options, type: "card"}}/>)}
     </HBox>
