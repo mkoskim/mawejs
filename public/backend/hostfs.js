@@ -10,6 +10,7 @@ module.exports = {
   fsGetFileEntry, fsGetParentDir,
   fsGetLocation,
   fsRead, fsWrite, fsReadDir,
+  fsSettingsRead, fsSettingsWrite,
   fsRename,
   fsOpenExternal,
 }
@@ -80,7 +81,7 @@ async function fsGetFileEntry(fileid)
   function gettype(dirent) {
     if(dirent.isDirectory()) return "folder";
     if(dirent.isFile()) return "file";
-    return undefined;  
+    return undefined;
   }
 
   function hasaccess(fileid) {
@@ -88,14 +89,14 @@ async function fsGetFileEntry(fileid)
       .then(r => true)
       .catch(e => false)
     ;
-  }  
+  }
 }
 
 //-----------------------------------------------------------------------------
 
 function fsGetParentDir(fileid) {
   const dirid = path.dirname(fileid);
-  
+
   if(dirid == fileid) return undefined;
   return fsGetFileEntry(dirid);
 }
@@ -120,7 +121,7 @@ async function fsRead(fileid, encoding) {
 }
 
 async function fsWrite(fileid, content, encoding) {
-  console.log("Write:", fileid)
+  console.log("fsWrite:", fileid)
   await fs.promises.writeFile(fileid, content, {encoding: encoding});
   return fsGetFileEntry(fileid);
 }
@@ -132,6 +133,18 @@ async function fsReadDir(dirid)
     .map(file => path.resolve(dirid, file))
     .map(file => fsGetFileEntry(file))
   )
+}
+
+//-----------------------------------------------------------------------------
+
+async function fsSettingsRead(fileid, encoding) {
+  const settingsDir = await fsGetLocation("userData")
+  return fsRead(path.join(settingsDir, "/" + fileid), encoding)
+}
+
+async function fsSettingsWrite(fileid, content, encoding) {
+  const settingsDir = await fsGetLocation("userData")
+  return fsWrite(path.join(settingsDir, "/" + fileid), content, encoding)
 }
 
 //-----------------------------------------------------------------------------

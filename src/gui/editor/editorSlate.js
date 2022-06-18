@@ -15,7 +15,7 @@ import "./editor.css"
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { document } from "../app/store"
+import { document, docByID } from "../app/store"
 
 //*
 import { Slate, Editable, withReact } from 'slate-react'
@@ -25,7 +25,7 @@ import { withHistory } from "slate-history"
 
 import {
   Icons,
-  FlexBox, VBox, HBox, Filler,
+  FlexBox, VBox, HBox, Filler, VFiller,
   ToolBox, Button, Input,
   SearchBox, addHotkeys,
   Label,
@@ -48,10 +48,9 @@ import isHotkey from 'is-hotkey';
 //*****************************************************************************
 //*****************************************************************************
 
-export function EditFile({uuid}) {
+export function EditFile({id}) {
 
-  const {docByUUID} = require("../app/store")
-  const doc = docByUUID[uuid]
+  const doc = docByID(id)
 
   console.log("Doc:", doc)
   const dispatch = useDispatch();
@@ -77,8 +76,7 @@ export function EditFile({uuid}) {
   const mode="Centered";
   //const mode="Primary";
 
-  return (
-    <React.Fragment>
+  return <VFiller>
       <ToolBar />
       <HBox className="EditArea">
         <Outline />
@@ -94,8 +92,7 @@ export function EditFile({uuid}) {
           </Slate>
         </div>
       </HBox>
-    </React.Fragment>
-  )
+    </VFiller>
 
   function ToolBar(props) {
     return (
@@ -103,7 +100,7 @@ export function EditFile({uuid}) {
         <Label style={{marginRight: 8}}>{doc.file.name}</Label>
         <SearchBox/>
         <Filler/>
-        <Button size="small"><Icons.Search /></Button>
+        <Button size="small" icon={Icons.Search}/>
       </ToolBox>
     )
   }

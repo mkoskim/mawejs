@@ -6,20 +6,6 @@
 //*****************************************************************************
 //*****************************************************************************
 
-/*
-module.exports = {
-  fstat, parent, relpath,
-  dirname, basename, extname,
-  read, write,
-  rename, move, remove,
-  readdir,
-  getlocation,
-  getuser,
-  openexternal,
-  splitpath,
-}
-/**/
-
 //-----------------------------------------------------------------------------
 // Bridge
 //-----------------------------------------------------------------------------
@@ -73,6 +59,14 @@ export function read(fileid, encoding="utf8") {
 
 export function write(fileid, content, encoding="utf8") {
   return fscall("write", fileid, content, encoding);
+}
+
+export function settingsread(fileid, encoding="utf8") {
+  return fscall("settingsread", fileid, encoding);
+}
+
+export function settingswrite(fileid, content, encoding="utf8") {
+  return fscall("settingswrite", fileid, content, encoding);
 }
 
 export function rename(fileid, name) {

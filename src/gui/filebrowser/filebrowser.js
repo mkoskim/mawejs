@@ -55,13 +55,10 @@ import "./filebrowser.css"
 
 /* eslint-disable no-unused-vars */
 
-import React, { useState, useEffect } from 'react'
+import React from "react"
+import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { CWD } from "../app/store"
-import { document } from "../app/store"
-import {Stash} from "../app/store"
-
-import isHotkey from "is-hotkey";
 
 import {
   Icons, Icon, IconSize,
@@ -77,6 +74,7 @@ import {
 } from "../common/factory";
 
 import {FileEntry} from "./file"
+import {Container, Draggable} from "react-smooth-dnd"
 
 //-----------------------------------------------------------------------------
 
@@ -84,17 +82,30 @@ const fs = require("../../storage/localfs")
 
 //-----------------------------------------------------------------------------
 
-export function FileBrowser({contains}) {
+export function PickFiles({container}) {
+  return <FileBrowser
+    dndGroup={container}
+  />
+}
+
+//-----------------------------------------------------------------------------
+
+function FileBrowser(props) {
   const dir = useSelector((state) => state.cwd.path)
   const search = useSelector((state) => state.cwd.search)
 
   //const inform = Inform()
 
-  console.log("render: FileBrowser:", dir, contains);
+  console.log("FileBrowser:", dir, search);
+
+  //---------------------------------------------------------------------------
+
+  const {dndGroup} = props;
 
   //---------------------------------------------------------------------------
 
   const options = {
+    dndGroup,
     //inform,
   }
 
@@ -157,12 +168,10 @@ function ListDir({ directory, options }) {
   const { fetched } = state;
   const { splitted, files, folders } = (fetched === directory) ? state : {}
 
-  return (
-    <React.Fragment>
-      <ToolBar />
-      <SplitList directory={directory} content={{files, folders}} options={options}/>
-    </React.Fragment>
-  )
+  return <VBox>
+    <ToolBar />
+    <SplitList directory={directory} content={{files, folders}} options={options}/>
+    </VBox>
 
   function ToolBar() {
     return <ToolBox>
@@ -170,16 +179,14 @@ function ListDir({ directory, options }) {
       <ButtonGroup minimal={true} style={{marginLeft: "8pt"}}>
       <Button icon={Icons.Star} tooltip="Add to favorites"/>
       </ButtonGroup>
+      <Filler />
+      <Separator/>
+      <ButtonGroup minimal={true}>
+      <Button icon={Icons.Star} text="Favorites" />
+      <Button icon={Icons.Location.Home} text="Home" onClick={() => dispatch(CWD.location("home"))}/>
+      </ButtonGroup>
     </ToolBox>
   }
-/*
-  <Filler />
-  <Separator/>
-  <ButtonGroup minimal={true}>
-  <Button icon={Icons.Star} text="Favorites" />
-  <Button icon={Icons.Location.Home} text="Home" onClick={() => dispatch(CWD.location("home"))}/>
-  </ButtonGroup>
-*/
 
   /*
   function ToolBar() {
@@ -216,22 +223,6 @@ function PathButtons({path, options}) {
   }))
 
   return <Breadcrumbs items={items}/>
-
-  /*
-  function entry(index, file) {
-    const name = index ? (file.name + "/") : "xxx@local:/";
-    const callback = (index < path.length - 1) ? (() => open(file)) : (() => menu(file));
-    return (
-      <Button
-        key={index}
-        onClick={callback}
-        style={{ paddingLeft: 4, paddingRight: 6 }}
-      >
-        {name}
-      </Button>
-    )
-  }
-  */
 }
 
 //---------------------------------------------------------------------------
@@ -271,11 +262,31 @@ function SplitList({directory, content, options}) {
 
   function Grid({entries, options}) {
     if (entries === undefined) return null;
-    return (
-      <HBox style={{ overflowY: "auto", flexWrap: "wrap" }}>
-        {entries.map(f => <FileEntry key={f.id} file={f} options={{...options, type: "card"}}/>)}
-      </HBox>
-    )
+
+    const {dndGroup} = options;
+
+    /*
+    const {dndAccept, dndGroup} = options;
+    if(dndAccept) {
+      if(dndAccept(file)) {
+        return <Draggable>{entry}</Draggable>
+      }
+    }
+    */
+
+    if(dndGroup) {
+      return <Container
+        groupName={dndGroup}
+        behaviour="copy"
+        getChildPayload={i => entries[i]}
+        onDrop={({removedIndex, addedIndex, payload}) => console.log(payload)}
+        style={{display: "flex", overflowY: "auto", flexWrap: "wrap" }}>
+          {entries.map(f => <Draggable key={f.id}><FileEntry file={f} options={{...options, type: "card"}}/></Draggable>)}
+        </Container>
+    }
+    return <HBox style={{ overflowY: "auto", flexWrap: "wrap" }}>
+      {entries.map(f => <FileEntry key={f.id} file={f} options={{...options, type: "card"}}/>)}
+    </HBox>
   }
 }
 
@@ -338,7 +349,7 @@ function SearchDir({directory, search, options, style}) {
     fetch(matches.files.length + 20);
   }
 
-  return (<React.Fragment>
+  return <VFiller>
     <ToolBox>
       <SearchBox
         value={search}
@@ -359,7 +370,7 @@ function SearchDir({directory, search, options, style}) {
         <FileTable files={matches.files} options={options}/>
       </InfiniteScroll>
     </VFiller>
-  </React.Fragment>)
+  </VFiller>
 
   //---------------------------------------------------------------------------
 

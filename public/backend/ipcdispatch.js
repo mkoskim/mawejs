@@ -24,6 +24,8 @@ function ipcDispatch(channel, params) {
         case "getlocation": return hostfs.fsGetLocation(...args);
         case "read": return hostfs.fsRead(...args);
         case "write": return hostfs.fsWrite(...args);
+        case "settingsread": return hostfs.fsSettingsRead(...args);
+        case "settingswrite": return hostfs.fsSettingsWrite(...args);
         case "readdir": return hostfs.fsReadDir(...args);
         case "rename": return hostfs.fsRename(...args);
         case "openexternal": return hostfs.fsOpenExternal(...args);

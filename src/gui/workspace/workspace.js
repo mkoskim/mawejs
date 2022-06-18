@@ -10,22 +10,152 @@
 
 import "./workspace.css"
 
-import { useDispatch } from "react-redux";
-import { CWD } from "../app/store"
-import { document } from "../app/store"
+import React from "react";
+import {useState, useEffect} from 'react'
+import {useSelector, useDispatch} from "react-redux";
+import {docByID, workspace} from "../app/store"
+
+import {FileBrowser} from "../filebrowser";
+import {EditFile} from "../editor/editorSlate";
+import {Container, Draggable} from "react-smooth-dnd"
 
 import {
   Icons, Icon, IconSize,
   Box, FlexBox,
   VBox, HBox, VFiller, HFiller,
   Filler, Separator,
-  Button, ButtonGroup, Input, SearchBox,
+  Tooltip, Button, ButtonGroup, Input, SearchBox,
   Breadcrumbs,
   ToolBox,
   Label,
   addClass,
+  Spinner,
   addHotkeys,
 } from "../common/factory";
+
+//-----------------------------------------------------------------------------
+
+// Pick files to workspace
+
+export function Workspace() {
+  console.log("Workspace")
+  const dispatch = useDispatch()
+
+  const current = useSelector(state => state.workspace.workspaces[state.workspace.current])
+  if(!current) return null;
+  const edit = current.edit;
+
+  const itemtype = "file"
+
+  if(!edit) {
+    return <React.Fragment>
+      <LeftSide current={current} container={itemtype}/>
+      <FileBrowser.PickFiles container={itemtype} />
+    </React.Fragment>
+  }
+
+  if(!current.loaded) {
+    dispatch(workspace.open(edit))
+    return <React.Fragment>
+      <LeftSide current={current} edit={edit} container={itemtype}/>
+      <Filler><Spinner style={{margin: "auto"}}/></Filler>
+    </React.Fragment>
+  }
+
+  return <React.Fragment>
+    <LeftSide current={current} edit={edit} container={itemtype}/>
+    <EditFile id={edit.id}/>
+  </React.Fragment>
+}
+
+//-----------------------------------------------------------------------------
+
+function LeftSide({current, edit, container, style}) {
+  const dispatch = useDispatch()
+
+  //const current = useSelector(state => state.workspace.workspaces[state.workspace.current])
+
+  console.log("Workspace:", current)
+
+  const className = addClass(
+    "Workspace",
+  )
+
+  return <VBox className={className} style={style}>
+    <ToolBox>
+      {current.name}
+      <Filler/>
+      <ButtonGroup>
+        <Button minimal={true} icon={Icons.NewFile} tooltip="New file"/>
+        <Button minimal={true} icon={Icons.AddFiles} tooltip="Open file" onClick={() => dispatch(workspace.unsetEdit({}))}/>
+        </ButtonGroup>
+      </ToolBox>
+    <Container
+      style={{flexGrow: 1}}
+      groupName={container}
+      behaviour="move"
+      onDrop={onDrop}
+      getChildPayload={i => current.files[i]}
+      >
+      {current.files.map(f => <Draggable key={f.id}><WorkspaceItem file={f} edit={edit}/></Draggable>)}
+    </Container>
+    </VBox>
+
+  function onDrop(dragResult) {
+    const { removedIndex, addedIndex, payload } = dragResult;
+    if (removedIndex === null && addedIndex === null) return;
+
+    const {id} = payload
+
+    //let itemToAdd = payload;
+    var result = [...current.files]
+    if(removedIndex !== null) result.splice(removedIndex, 1)
+
+    // Sanity check: Ensure we don't save the same file two times
+    if(result.filter(f => f.id === id).length) {
+      console.log("Duplicate:", id)
+      return;
+    }
+
+    if(addedIndex !== null) result.splice(addedIndex, 0, payload)
+
+    dispatch(workspace.setFiles({files: result}))
+  }
+
+  function onRemove(event, file) {
+    event.stopPropagation()
+    console.log("Removing:", file)
+    dispatch(workspace.setFiles({files: current.files.filter(f => f.id !== file.id)}))
+    return true
+  }
+
+  function onOpen(event, file) {
+    event.stopPropagation()
+    console.log("Opening:", file)
+    dispatch(workspace.setEdit({file}))
+    return true
+  }
+
+  function WorkspaceItem({file, edit}) {
+    const className = addClass(
+      "WorkspaceItem",
+      (edit && edit.id === file.id) ? "selected" : null
+    )
+
+    console.log("Item:", file, edit)
+
+    return <div className={className} onClick={(e) => onOpen(e, file)}>
+      {file.name}
+      <Button
+        style={{marginLeft: "auto"}}
+        minimal={true}
+        small={true}
+        icon={Icons.Close}
+        onClick={(e) => onRemove(e, file)}
+      />
+    </div>
+  }
+}
 
 //-----------------------------------------------------------------------------
 // Sketching structure
@@ -45,15 +175,20 @@ What to put local storage? What to put to session storage? Sync'ing between stor
 account file? For settings? So, that we can place it to shared drive and share
 (certain) settings between different computers.
 
+When there is no settings at all - fresh installation - give some initial
+screen to choose what to do: start writing or do something else?
+
 local = {
   // Window settings are always local
 }
 
+// It would be best, if workspace files are merged together like a database
+
 account = {
-  projectfiles: {
+  projectfiles: [
     file1,
     file2
-  },
+  ],
   current: file   <-- Which one to load first
 }
 
@@ -70,7 +205,7 @@ workspaces = {
       files: [
         "fdsfds", // <-- Use UUID
       ],
-      supportive: [ // Supportive files (docs, sketches, ...)
+      related: [ // Related files (docs, sketches, ...)
 
       ]
     }
@@ -87,19 +222,3 @@ workspaces = {
   // files are managed in workspaces
 }
 */
-
-//-----------------------------------------------------------------------------
-
-function openProjectFile(fileid) {
-  // Open project file, which contains workspaces
-}
-
-//-----------------------------------------------------------------------------
-
-export function Workspace() {
-  const className = addClass(
-    "Workspace dragTarget",
-  )
-
-  return <div className={className}></div>
-}

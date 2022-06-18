@@ -19,9 +19,10 @@ export async function load(file)
 {
   if(typeof file === "string") file = await fs.fstat(file);
 
-  suffix2format(file);
+  console.log("File:", file)
+  const format = suffix2format(file);
 
-  switch(file.format) {
+  switch(format) {
     case "mawe": try {
       return mawe(file);
     } catch(e) {

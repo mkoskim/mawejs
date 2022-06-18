@@ -23,7 +23,7 @@ import {
   Breadcrumbs,
   InputGroup,
   Icon, IconSize,
-  Divider,
+  Divider, Spinner,
 } from "@blueprintjs/core"
 
 import {
@@ -33,8 +33,12 @@ import {
 } from "@blueprintjs/popover2"
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
-export {Breadcrumbs}
-export {Icon, IconSize}
+export {
+  Breadcrumbs,
+  Icon, IconSize,
+  Tooltip,
+  Spinner
+}
 
 //-----------------------------------------------------------------------------
 // Icons
@@ -51,6 +55,8 @@ export const Icons = {
   Starred: "star",
 
   CreateFolder: "folder-new",
+  NewFile: "insert",
+  AddFiles: "folder-open",
 
   FileType: {
     File: "document",
@@ -134,7 +140,7 @@ export function FlexBox({style, ...props}) {
 }
 
 export function Filler({weight = 1, style, ...props}) {
-  return <div style={{flexGrow: weight, ...style}} {...props}/>
+  return <div style={{display: "flex", flexGrow: weight, ...style}} {...props}/>
 }
 
 export function VBox({className, ...props}) {

@@ -6,8 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {v4 as uuid} from "uuid"
-
+import {uuid} from "../util"
 export {uuid}
 
 const et = require("elementtree");
@@ -27,12 +26,11 @@ const utf8decoder = new TextDecoder();
 
 export function suffix2format(f, suffixes = [".mawe", ".mawe.gz", ".moe"]) {
   const suffix = suffixes.find(suffix => f.name.endsWith(suffix))
-  f.format = {
+  return {
     ".mawe": "mawe",
     ".mawe.gz": "mawe",
     ".moe": "moe",
   }[suffix]
-  return suffix;
 }
 
 //-----------------------------------------------------------------------------

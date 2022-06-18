@@ -12,9 +12,7 @@ import "./file.css"
 
 import React from "react"
 import { useDispatch } from "react-redux";
-import { CWD } from "../app/store"
-import { document } from "../app/store"
-import { stash } from "../app/store"
+import { CWD, workspace } from "../app/store"
 
 import {
   Icons, Icon, IconSize,
@@ -27,36 +25,42 @@ import {
   addHotkeys,
 } from "../common/factory";
 
+import {Container, Draggable} from "react-smooth-dnd"
+
 const fs = require("../../storage/localfs")
-const mawe = require("../../document")
 const { suffix2format } = require('../../document/util');
 
 //-----------------------------------------------------------------------------
 
 export function FileEntry({file, options}) {
-  const { icon, color: iconcolor, disabled, type } = FileItemConfig(file)
-
   const dispatch = useDispatch();
 
-  // Class
+  const {
+    icon, color: iconcolor,
+    disabled
+  } = FileItemConfig(file, options)
+
   const className = addClass(
     options.type === "card" ? "FileCard" : undefined,
     options.type === "row" ? "File" : undefined,
     disabled ? "disabled" : undefined,
   )
 
+  const callback = file.access ? (() => dispatch(onOpen(file))) : undefined
+
   if(options.type === "card") {
-    return <div className={className}>
-        <div onDoubleClick={() => !disabled && dispatch(onOpen(file))}>
-        <Icon icon={icon} style={{ marginRight: 16 }} color={iconcolor} />
-        <span>{file.name}</span>
-      </div>
+    return <div
+      className={className}
+      onDoubleClick={callback}
+      >
+      <Icon icon={icon} style={{ marginRight: 16 }} color={iconcolor} />
+      <span>{file.name}</span>
     </div>;
   }
   if(options.type === "row") {
     return <tr
       className={addClass(className, disabled ? "disabled" : undefined)}
-      onDoubleClick={() => !disabled && dispatch(onOpen(file))}
+      onDoubleClick={callback}
     >
       <td className="FileIcon"><Icon icon={icon} color={iconcolor} /></td>
       <td className="FileName">{file.name}</td>
@@ -104,18 +108,8 @@ export function onOpen(file) {
     if (suffix2format(file)) {
       // TODO: Implement something to show that we are doing something
       //const key = inform.process(`Loading ${f.name}`);
-
-      mawe.load(file.id)
-        .then(content => {
-          var { docs } = require("../workspace/workspace")
-          const { uuid } = content.story;
-          docs[uuid] = content;
-          dispatch(document.open(uuid))
-          //inform.success(`Loaded ${file.name}`)
-        })
-        .catch(err => {
-          //inform.error(`Open '${file.name}': ${err}`);
-        })
+      dispatch(workspace.setEdit({file}))
+      dispatch(workspace.open({file}))
       return;
     }
 

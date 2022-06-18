@@ -14,14 +14,15 @@ import React from 'react'
 
 import { useSelector, useDispatch } from "react-redux";
 import {CWD} from "./store"
+import {workspace} from "./store"
 import {onOpen} from "../filebrowser/file"
 
 import {VBox, HBox} from "../common/factory";
-import {FileBrowser} from "../filebrowser/filebrowser";
-import {EditFile} from "../editor/editorSlate";
+import {FileBrowser} from "../filebrowser";
 import {Organizer} from "../editor/organizer";
-import {Workspace} from "../workspace/workspace";
-import {Stash} from "../common/stash";
+import {Workspace} from "../workspace";
+
+//const fs = require("../../storage/localfs")
 
 //-----------------------------------------------------------------------------
 
@@ -29,10 +30,12 @@ export default function App(props) {
 
   const dispatch = useDispatch()
   dispatch(CWD.resolve("./local"))
+  dispatch(workspace.init())
+
   //dispatch(CWD.location("home"))
   //dispatch(onOpen({id: "./local/Beltane.A.mawe.gz", name: "Beltane.A.mawe.gz"}))
 
-  //*
+  /*
   return (
       <VBox style={{height: "100vh", width: "100vw"}}>
         <View />
@@ -43,8 +46,6 @@ export default function App(props) {
   return (
     <HBox style={{height: "100vh", width: "100vw"}}>
       <Workspace />
-      <VBox className="ViewBox"><View /></VBox>
-      <Stash/>
     </HBox>
   );
   /**/

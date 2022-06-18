@@ -10,6 +10,30 @@
   /*flex-grow: 1;*/
   background: #eee;
   border: 2pt none grey;
+  /*
+  min-width: 100px;
+  width: 200px;
+  /*
+  */
 }
 
-/**/
+.WorkspaceItem {
+  display: flex;
+  align-items: center;
+
+  margin: 4px;
+  border: 2px solid lightgrey;
+  border-radius: 4px;
+
+  cursor:pointer;
+  width: 200px;
+
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.selected {
+  background: white;
+}
