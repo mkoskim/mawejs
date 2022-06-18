@@ -68,7 +68,20 @@
 }
 
 .Centered { flex-grow: 1; }
+.Split { flex-grow: 1; overflow: auto }
 .Primary { flex-grow: 1; padding-left: 0.5cm; }
+
+.Split .Sheet {
+  margin-left: auto;
+  margin-right: auto;
+
+  /*
+  margin-left: 0.5cm;
+  margin-right: 0.5cm;
+  */
+  padding-left: 0.5in;
+  padding-right: 0.5in;
+}
 
 .Centered .Sheet {
   /* Center sheet horizontally to board */

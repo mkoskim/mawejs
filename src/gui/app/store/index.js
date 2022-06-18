@@ -8,10 +8,10 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 
-import cwdReducer, {CWD} from "./slices/cwdSlice"
-import docReducer, {document} from "./slices/docSlice"
-import stashReducer, {stash} from "./slices/stashSlice"
-import workspaceReducer, {workspace, docByID} from "./slices/workspaceSlice"
+import cwdReducer, {CWD} from "./cwdSlice"
+import docReducer, {document} from "./docSlice"
+import stashReducer, {stash} from "./stashSlice"
+import workspaceReducer, {workspace, docByID} from "./workspaceSlice"
 
 //-----------------------------------------------------------------------------
 // Export store

@@ -16,7 +16,7 @@ import {useSelector, useDispatch} from "react-redux";
 import {docByID, workspace} from "../app/store"
 
 import {FileBrowser} from "../filebrowser";
-import {EditFile} from "../editor/editorSlate";
+import {EditFile, SplitEdit} from "../editor/editorSlate";
 import {Organizer} from "../editor/organizer";
 
 import {Dropzone} from "../common/dnd"
@@ -66,13 +66,22 @@ export function Workspace() {
 
   /*
   return <React.Fragment>
-    <LeftSide current={current} edit={edit} container={itemtype}/>
     <EditFile id={edit.id}/>
+  </React.Fragment>
+  /*
+  return <React.Fragment>
+    <SplitEdit id={edit.id}/>
+  </React.Fragment>
+  /**/
+
+  /*
+  return <React.Fragment>
+    <Organizer id={edit.id}/>
   </React.Fragment>
   /*/
   return <React.Fragment>
-    <LeftSide current={current} edit={edit} container={itemtype}/>
-    <Organizer id={edit.id}/>
+  <LeftSide current={current} edit={edit} container={itemtype}/>
+  <Organizer id={edit.id}/>
   </React.Fragment>
   /**/
 }

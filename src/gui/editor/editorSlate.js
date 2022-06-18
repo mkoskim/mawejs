@@ -24,7 +24,7 @@ import { withHistory } from "slate-history"
 /**/
 
 import {
-  FlexBox, VBox, HBox, Filler, VFiller,
+  FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Input,
   SearchBox, addHotkeys,
   Label,
@@ -72,62 +72,133 @@ export function EditFile({id}) {
     "mod+w": () => dispatch(document.close()),   // Close file
   }));
 
-  const mode="Centered";
+  const mode="Split";
   //const mode="Primary";
 
   return <VFiller>
-      <ToolBar />
-        <div className={`Board ${mode}`}>
-          <Slate editor={editor} value={content.body} onChange={setBody}>
-            <Editable
-              className="Sheet Shadow"
-              autoFocus
-              spellCheck={false} // Keep false until you find out how to change language
-              renderElement={renderElement}
-              renderLeaf={renderLeaf}
-            />
-          </Slate>
-        </div>
-    </VFiller>
+    <ToolBar doc={doc}/>
+    <div className={`Board ${mode}`}>
+      <Slate editor={editor} value={content.body} onChange={setBody}>
+        <Editable
+          className="Sheet Shadow"
+          autoFocus
+          spellCheck={false} // Keep false until you find out how to change language
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+        />
+      </Slate>
+    </div>
+  </VFiller>
+}
 
-  function ToolBar(props) {
-    return (
-      <ToolBox>
-        <Label style={{marginRight: 8}}>{doc.file.name}</Label>
-        <SearchBox/>
-      </ToolBox>
-    )
-  }
+//-----------------------------------------------------------------------------
 
-  function Outline(props) {
-    return (
-      <div className="Outline">
-      {content.body.filter(n => n.type === "scenename").map(n => <Entry text={n.children[0].text}/>)}
+export function SplitEdit({id}) {
+
+  const doc = docByID(id)
+
+  console.log("ID", id, "Doc:", doc)
+  const dispatch = useDispatch();
+
+  const [content, setContent] = useState(deserialize(doc));
+
+  console.log("Content:", content);
+  console.log("Body:", content.body);
+
+  const renderElement = useCallback(props => <Element {...props} />, [])
+  const renderLeaf = useCallback(props => <Leaf {...props} />, [])
+
+  function setBody(part)  { setContent({...content, body: part}) }
+  function setNotes(part) { setContent({...content, notes: part}) }
+
+  const bodyeditor = useMemo(() => withHistory(withReact(createEditor())), [])
+  const noteeditor = useMemo(() => withHistory(withReact(createEditor())), [])
+
+  useEffect(() => addHotkeys({
+    "mod+o": () => dispatch(document.close()),   // Go to file browser to open new file
+    "mod+s": null,              // Serialize and save
+    "mod+w": () => dispatch(document.close()),   // Close file
+  }));
+
+  //const mode="Centered";
+  //const mode="Primary";
+  const mode = "Split"
+
+  return <VFiller>
+    <ToolBar doc={doc}/>
+      <HBox>
+      <div className={`Board ${mode}`}>
+        <Slate editor={bodyeditor} value={content.body} onChange={setBody}>
+          <Editable
+            className="Sheet Shadow"
+            autoFocus
+            spellCheck={false} // Keep false until you find out how to change language
+            renderElement={renderElement}
+            renderLeaf={renderLeaf}
+          />
+        </Slate>
       </div>
-    )
+      <div className={`Board ${mode}`}>
+        <Slate editor={noteeditor} value={content.body} onChange={setNotes}>
+          <Editable
+            className="Sheet Shadow"
+            autoFocus
+            spellCheck={false} // Keep false until you find out how to change language
+            renderElement={renderElement}
+            renderLeaf={renderLeaf}
+          />
+        </Slate>
+      </div>
+      </HBox>
+    </VFiller>
+}
 
-    function Entry(props) {
-      return <div className="entry">{props.text}</div>
-    }
-  }
+//-----------------------------------------------------------------------------
 
-  function Element({element, attributes, children}) {
-    switch(element.type) {
-      case "title": return <h1 {...attributes}>{children}</h1>
-      //case "scene": return <div className="scene" {...attributes}>{children}</div>
-      case "scenename": return <h2 className="scene" {...attributes}>{children}</h2>
-      case "br": return <br {...attributes}/>
-      case "missing":
-      case "comment":
-      case "synopsis":
-        return <p className={element.type} {...attributes}>{children}</p>
-      default: return <p {...attributes}>{children}</p>
-    }
-  }
+function ToolBar({doc}) {
+  return (
+    <ToolBox>
+      <Label style={{marginRight: 8}}>{doc.file.name}</Label>
+      <SearchBox/>
+    </ToolBox>
+  )
+}
 
-  function Leaf({leaf, attributes, children}) {
-    return <span {...attributes}>{children}</span>
+function Outline({content}) {
+  return (
+    <div className="Outline">
+    {content.body.filter(n => n.type === "scenename").map(n => <Entry text={n.children[0].text}/>)}
+    </div>
+  )
+
+  function Entry(props) {
+    return <div className="entry">{props.text}</div>
   }
+}
+
+//-----------------------------------------------------------------------------
+
+function renderPlain({doc}) {
+
+}
+
+
+function Element({element, attributes, children}) {
+  switch(element.type) {
+    case "title": return <h1 {...attributes}>{children}</h1>
+    //case "scene": return <div className="scene" {...attributes}>{children}</div>
+    case "scenename": return <h2 className="scene" {...attributes}>{children}</h2>
+    case "br": return <br {...attributes}/>
+    case "missing":
+    case "comment":
+    case "synopsis":
+      return <p className={element.type} {...attributes}>{children}</p>
+    default: return <p {...attributes}>{children}</p>
+  }
+}
+
+function Leaf({leaf, attributes, children}) {
+  return <span {...attributes}>{children}</span>
 }
 
 //-----------------------------------------------------------------------------
