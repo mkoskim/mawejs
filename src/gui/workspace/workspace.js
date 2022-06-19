@@ -13,7 +13,7 @@ import "./workspace.css"
 import React from "react";
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { docByID, workspace } from "../app/store"
+import {action, docByID } from "../app/store"
 
 import { FileBrowser } from "../filebrowser";
 import { EditFile, ViewDoc } from "../editor/editorSlate";
@@ -21,21 +21,9 @@ import { Organizer } from "../editor/organizer";
 
 import {
   DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  MouseSensor,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+  useSensors, useSensor, MouseSensor,
+  SortableContext, SortableItem
+} from "../common/dnd"
 
 import {
   Box, FlexBox,
@@ -75,20 +63,12 @@ export function Workspace() {
     return <React.Fragment>
       <DndContext onDragEnd={onDrop} sensors={sensors}>
         <SideBar workspace={current} />
-        <FileBrowser.PickFiles container={itemtype} selected={current.files} />
+        <FileBrowser.PickFiles selected={current.files} />
       </DndContext>
     </React.Fragment>
   }
 
   /*
-  if(!current.loaded) {
-    dispatch(workspace.open(edit))
-    return <React.Fragment>
-      <SideBar current={current} container={itemtype}/>
-      <Loading/>
-    </React.Fragment>
-  }
-
   return <ViewDoc id={edit.id}/>
   /*
   return <React.Fragment>
@@ -113,10 +93,10 @@ export function Workspace() {
 
   //---------------------------------------------------------------------------
 
-  function SideBar({ workspace: ws, style }) {
+  function SideBar({ workspace, style }) {
     const dispatch = useDispatch()
 
-    const { files, selected } = ws;
+    const { files, selected } = workspace;
 
     const className = addClass(
       "Workspace",
@@ -124,18 +104,22 @@ export function Workspace() {
 
     return <VBox className={className} style={style}>
       <ToolBox>
-        {ws.name}
+        {workspace.name}
         <Filler />
         <ButtonGroup>
           <IconButton size="small"><Icon.NewFile /></IconButton>
-          <IconButton size="small" onClick={() => dispatch(ws.selectFile({}))}><Icon.AddFiles /></IconButton>
+          <IconButton size="small" onClick={() => dispatch(action.workspace.selectFile({}))}><Icon.AddFiles /></IconButton>
         </ButtonGroup>
       </ToolBox>
-      <div style={{ background: "lightgreen", display: "flex", flexDirection: "column" }}>
+      <div class="TabName">Files</div>
+      <VBox className="FilesTab">
         <SortableContext items={files}>
           {files.map(f => <WorkspaceItem key={f.id} id={f.id} file={f} selected={selected} />)}
         </SortableContext>
-      </div>
+      </VBox>
+      <div class="TabName">Related</div>
+      <VBox className="RelatedTab">
+      </VBox>
     </VBox>
   }
 
@@ -151,8 +135,8 @@ export function Workspace() {
     const where = current.files.findIndex(file => file.id === over.id)
     console.log("Index:", where)
 
-    dispatch(workspace.moveFile({
-      file: active.data.current.file,
+    dispatch(action.workspace.moveFile({
+      file: active.data.current.content,
       index: where,
     }))
   }
@@ -160,50 +144,38 @@ export function Workspace() {
   function onRemove(event, file) {
     event.stopPropagation()
     console.log("Removing:", file)
-    dispatch(workspace.removeFile({ file }))
+    dispatch(action.workspace.removeFile({ file }))
   }
 
   function onOpen(event, file) {
     event.stopPropagation()
     console.log("Opening:", file)
-    dispatch(workspace.selectFile({ file }))
+    dispatch(action.workspace.selectFile({ file }))
   }
 
   //---------------------------------------------------------------------------
 
   function WorkspaceItem({ file, selected }) {
-    const {
-      attributes,
-      listeners,
-      setNodeRef,
-      transform,
-      transition,
-    } = useSortable({ id: file.id, data: { file } });
-
     const className = addClass(
       "WorkspaceItem",
       (selected?.id === file.id) ? "selected" : null
     )
 
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition
-    };
-
     return (
-      <div
+      <SortableItem
+        id={file.id}
+        type="Doc"
+        content={file}
         className={className}
         onClick={(e) => onOpen(e, file)}
-        ref={setNodeRef}
-        style={style}
-        {...attributes}
-        {...listeners}>
-        {file.name}
+      >
+        <span className="Name">{file.name}</span>
+        <Filler />
         <IconButton size="small" onClick={(e) => onRemove(e, file)}>
           <Icon.Close fontSize="small" />
         </IconButton>
-      </div>
-    );
+      </SortableItem>
+    )
   }
 }
 

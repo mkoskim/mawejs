@@ -35,7 +35,7 @@ export const workspaceSlice = createSlice({
 })
 
 export default workspaceSlice.reducer
-export const workspace = {
+export const workspaceAction = {
   ...workspaceSlice.actions,
   init,
   open,
@@ -133,14 +133,14 @@ function init() {
         ...JSON.parse(content),
         status: true,
       }
-      dispatch(workspace.reset({value, nosync: true}))
+      dispatch(workspaceAction.reset({value, nosync: true}))
     }
     catch(err) {
       console.log("ERROR: workspaces.js:", err)
 
       const id = uuid()
 
-      dispatch(workspace.reset({value: {
+      dispatch(workspaceAction.reset({value: {
         status: true,
         selected: id,
         [id]: {

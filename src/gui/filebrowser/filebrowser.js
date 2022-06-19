@@ -6,51 +6,6 @@
 //*****************************************************************************
 //*****************************************************************************
 
-/*
--------------------------------------------------------------------------------
-
-The aim is to get a component which can be used for various file-related
-purposes: opening a file, saving a file, searching files, and performing
-basic file related operations like moving, removing and creating folders.
-
-I'm looking for Nautilus file manager look'n'feel to certain extent.
-
-It is intended that the backend for the browser is asynchronous and simple enough
-to be used also with network drives (dropbox, gdrive). At the moment, there is
-only local file system access provided via electron interface.
-
-NOTES:
-
-- Overall, React/browser rendering seems to be slow, extremely slow in certain
-  circumstances. It can be a very difficult problem to solve.
-- Keyboard integration: this will be huge problem overall anyways. Web
-  interfaces are meant to be used with mouse or finger (phones, tablets), not
-  that much on keyboard. On the other hand, it is expected that writers will
-  have their hands on keyboard, not mouse.
-
-TODO:
-
-- Handle access right problems
-- Handle errors
-
-- Infinite scroll window do not initiate fetching more, if there is no
-  scroll bar. So, if we initially return too little amount of search results,
-  user can not fetch more.
-
-// Let's examine this: https://stackoverflow.com/questions/4814398/how-can-i-check-if-a-scrollbar-is-visible
-
-// Infinite scrollbar works, if it first gets that scrollbar. So, we might want
-// to feed items to window as long as there is no scrollbar.
-
-
-DONE:
-
-- Infinite scroll box seems good to show search results.
-- Paginated view seems good to show contents of large directories.
-
--------------------------------------------------------------------------------
-*/
-
 import "./filebrowser.css"
 
 /* eslint-disable no-unused-vars */
@@ -58,14 +13,20 @@ import "./filebrowser.css"
 import React from "react"
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { CWD } from "../app/store"
+import { action } from "../app/store"
+
+import {
+  DndContext, DragOverlay,
+  useSensors, useSensor, MouseSensor,
+  DraggableItem,
+} from "../common/dnd"
 
 import {
   Box, FlexBox, VBox, HBox, HFiller, VFiller,
   Filler, Separator,
   Button, IconButton, Icon, ButtonGroup,
   Input, SearchBox,
-  Breadcrumbs,
+  Breadcrumbs, Chip,
   ToolBox,
   Label,
   addClass,
@@ -81,11 +42,8 @@ const fs = require("../../storage/localfs")
 
 //-----------------------------------------------------------------------------
 
-export function PickFiles({selected, container}) {
-  return <FileBrowser
-    dndGroup={container}
-    selected={selected}
-  />
+export function PickFiles({selected}) {
+  return <FileBrowser selected={selected}/>
 }
 
 //-----------------------------------------------------------------------------
@@ -124,8 +82,12 @@ function ListDir({ directory, options }) {
   const dispatch = useDispatch()
 
   useEffect(() => addHotkeys({
-    "mod+f": () => dispatch(CWD.search("")),
+    "mod+f": () => dispatch(action.CWD.search("")),
   }));
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 15 } })
+  )
 
   const [state, setState] = useState({
     fetched: undefined,
@@ -164,37 +126,24 @@ function ListDir({ directory, options }) {
   const { fetched } = state;
   const { splitted, files, folders } = (fetched === directory) ? state : {}
 
-  return <VBox>
+  return <VFiller>
     <ToolBar />
-    <SplitList directory={directory} content={{files, folders}} options={options}/>
-    </VBox>
+    <DndContext sensors={sensors}>
+      <SplitList directory={directory} content={{files, folders}} options={options}/>
+    </DndContext>
+    <DragOverlay></DragOverlay>
+    </VFiller>
 
-  function ToolBar() {
-    return <ToolBox>
-      <PathButtons path={splitted} options={options} style={{marginRight: "8pt"}}/>
-      <IconButton size="small"><Icon.Star fontSize="small"/></IconButton>
-      <Filler />
-      <Separator/>
-      <ButtonGroup>
-      <Button startIcon={<Icon.Starred/>}>Favorites</Button>
-      <Button startIcon={<Icon.Location.Home />} onClick={() => dispatch(CWD.location("home"))}>Home</Button>
-      </ButtonGroup>
-    </ToolBox>
-  }
-
-  /*
   function ToolBar() {
     return <ToolBox>
       <PathButtons path={splitted} options={options}/>
-      <Button tooltip="Add to favorites" icon={Icons.Star} minimal={true} style={{marginLeft: 12}}/>
       <Filler />
       <ButtonGroup>
-        <Button tooltip="Create new folder" icon={Icons.CreateFolder} />
-        <Button tooltip="Search files" icon={Icons.Search}/>
+      <Button startIcon={<Icon.Starred/>}>Favorites</Button>
+      <Button startIcon={<Icon.Location.Home />} onClick={() => dispatch(action.CWD.location("home"))}>Home</Button>
       </ButtonGroup>
     </ToolBox>
   }
-  */
 }
 
 //---------------------------------------------------------------------------
@@ -204,18 +153,23 @@ function PathButtons({path, options}) {
 
   if (!path) return null;
 
-  /*
-  const items = path.map(file => ({
-    text: file.name !== "" ? file.name : "xxx@local:/",
-    onClick: () => open(file),
-  }))
-  */
-
-  return <Breadcrumbs>
-    {path.map(file => <Label key={file.id}>{file.name}</Label>)}
+  return <React.Fragment>
+    <Breadcrumbs>
+    {path.map(file => (
+      <Chip
+        key={file.id}
+        onClick={(e) => onOpen(e, file)}
+        label={file.name ? file.name : "Local:"}
+      />)
+    )}
     </Breadcrumbs>
+    <IconButton size="small"><Icon.Star fontSize="small"/></IconButton>
+  </React.Fragment>
 
-  function open(f) { dispatch(CWD.chdir(f.id)) }
+  function onOpen(e, f) {
+    e.preventDefault()
+    dispatch(action.CWD.chdir(f.id))
+  }
 
   // TODO: Last button (current directory) should open "context" menu.
   function menu(f) {
@@ -253,17 +207,34 @@ function SplitList({directory, content, options}) {
     return (
       <React.Fragment>
         <Label style={{ paddingLeft: 4, paddingTop: 16, paddingBottom: 8 }}>{name}</Label>
-        <Grid entries={visible} options={options}/>
+        {visible ? <Grid entries={visible} options={options}/> : null}
       </React.Fragment>
     )
   }
 
   function Grid({entries, options}) {
-    if (entries === undefined) return null;
+    const style = {
+      overflowY: "auto",
+      flexWrap: "wrap",
+    };
 
-    return <HBox style={{ overflowY: "auto", flexWrap: "wrap" }}>
-      {entries.map(f => <FileEntry key={f.id} file={f} options={{...options, type: "card"}}/>)}
+    return <HBox style={style}>
+      {entries.map(f => <DraggableEntry key={f.id} id={f.id} file={f} options={options}/>)}
     </HBox>
+  }
+
+  function DraggableEntry({file, options}) {
+    return <DraggableItem
+        type="File"
+        id={file.id}
+        content={file}
+      >
+        <Entry file={file} options={{...options, type: "card"}}/>
+      </DraggableItem>
+  }
+
+  function Entry({file, options}) {
+    return  <FileEntry file={file} options={{...options, type: "card"}}/>
   }
 }
 
@@ -282,11 +253,11 @@ function SearchDir({directory, search, options, style}) {
   //console.log("render: SearchDir")
 
   function cancelSearch() {
-    dispatch(CWD.search(null))
+    dispatch(action.CWD.search(null))
   }
 
   function setSearch(text) {
-    dispatch(CWD.search(text))
+    dispatch(action.CWD.search(text))
   }
 
   useEffect(() => {

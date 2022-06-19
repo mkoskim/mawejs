@@ -8,19 +8,19 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 
-import cwdReducer, {CWD} from "./cwdSlice"
-import docReducer, {document} from "./docSlice"
-import stashReducer, {stash} from "./stashSlice"
-import workspaceReducer, {workspace, docByID} from "./workspaceSlice"
+import cwdReducer, {CWDAction} from "./cwdSlice"
+import docReducer, {docAction} from "./docSlice"
+import workspaceReducer, {workspaceAction, docByID} from "./workspaceSlice"
+
+export{docByID}
 
 //-----------------------------------------------------------------------------
 // Export store
 
-export default configureStore({
+export const store = configureStore({
   reducer: {
     cwd: cwdReducer,
     doc: docReducer,
-    stash: stashReducer,
     workspace: workspaceReducer,
   }
 })
@@ -28,9 +28,8 @@ export default configureStore({
 //-----------------------------------------------------------------------------
 // Export actions
 
-export {
-  CWD,
-  document,
-  stash,
-  workspace, docByID,
+export const action = {
+  workspace: workspaceAction,
+  CWD: CWDAction,
+  doc: docAction,
 }

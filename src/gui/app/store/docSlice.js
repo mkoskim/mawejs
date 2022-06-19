@@ -29,7 +29,7 @@ export const docSlice = createSlice({
 
 export default docSlice.reducer
 
-export const document = {
+export const docAction = {
   ...docSlice.actions,
 
   /*

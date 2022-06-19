@@ -13,7 +13,7 @@ import "./file.css"
 import React from "react"
 import { useDispatch } from "react-redux";
 import { CSS } from "@dnd-kit/utilities"
-import { CWD, workspace } from "../app/store"
+import { action } from "../app/store"
 
 import {
   Box, FlexBox, VBox, HBox, Filler, Separator,
@@ -94,17 +94,17 @@ function onOpen(file) {
   return (dispatch, getState) => {
     console.log("Click:", file.id)
 
-    dispatch(CWD.search(null))
+    dispatch(action.CWD.search(null))
 
     if (file.type === "folder") {
-      dispatch(CWD.chdir(file.id));
+      dispatch(action.CWD.chdir(file.id));
       return
     }
 
     //const {inform} = options;
 
     if (suffix2format(file)) {
-      dispatch(workspace.selectFile({file}))
+      dispatch(action.workspace.selectFile({file}))
       return
     }
 

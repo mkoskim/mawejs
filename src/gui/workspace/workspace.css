@@ -10,28 +10,46 @@
   /*flex-grow: 1;*/
   background: #eee;
   border: 2pt none grey;
-  /*
-  min-width: 100px;
-  width: 200px;
-  /*
-  */
+  width: 250px;
+}
+
+.Workspace .TabName {
+  margin: 4pt;
+}
+
+.Workspace .FilesTab {
+  border: 1px solid lightgrey;
+  background: rgb(218, 240, 218);
+  padding: 2pt;
+  margin-bottom: 8pt;
+}
+
+.Workspace .RelatedTab {
+  border: 1px solid lightgrey;
+  padding: 4pt;
 }
 
 .WorkspaceItem {
   display: flex;
   align-items: center;
 
-  margin: 4px;
   border: 2px solid lightgrey;
   border-radius: 4px;
+  background: white;
 
   cursor:pointer;
-  width: 200px;
 
+  margin: 1pt;
   padding-top: 12px;
   padding-bottom: 12px;
   padding-left: 12px;
   padding-right: 12px;
+}
+
+.WorkspaceItem .Name {
+	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .selected {

@@ -15,7 +15,7 @@ import "./editor.css"
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { document, docByID } from "../app/store"
+import { action, docByID } from "../app/store"
 
 //*
 import { Slate, Editable, withReact } from 'slate-react'
@@ -85,9 +85,9 @@ export function EditFile({id}) {
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
 
   useEffect(() => addHotkeys({
-    "mod+o": () => dispatch(document.close()),   // Go to file browser to open new file
+    "mod+o": () => dispatch(action.doc.close()),   // Go to file browser to open new file
     "mod+s": null,              // Serialize and save
-    "mod+w": () => dispatch(document.close()),   // Close file
+    "mod+w": () => dispatch(action.doc.close()),   // Close file
   }));
 
   const mode="Centered";
@@ -133,9 +133,9 @@ export function SplitEdit({id}) {
   const noteeditor = useMemo(() => withHistory(withReact(createEditor())), [])
 
   useEffect(() => addHotkeys({
-    "mod+o": () => dispatch(document.close()),   // Go to file browser to open new file
+    "mod+o": () => dispatch(action.doc.close()),   // Go to file browser to open new file
     "mod+s": null,              // Serialize and save
-    "mod+w": () => dispatch(document.close()),   // Close file
+    "mod+w": () => dispatch(action.doc.close()),   // Close file
   }));
 
   //const mode="Centered";

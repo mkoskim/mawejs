@@ -23,7 +23,7 @@ import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
 import {
   Button, IconButton, ButtonGroup,
   Breadcrumbs,
-  TextField,
+  Chip, TextField,
   Tooltip,
   Divider, CircularProgress as Spinner,
   Grid,
@@ -38,6 +38,7 @@ export {
   Tooltip,
   Spinner,
   Grid,
+  Chip,
 }
 
 //-----------------------------------------------------------------------------
