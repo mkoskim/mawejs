@@ -28,9 +28,27 @@ import {
   ToolBox, Button, Input,
   SearchBox, addHotkeys,
   Label,
+  Grid,
 } from "../common/factory";
 
 import isHotkey from 'is-hotkey';
+
+//-----------------------------------------------------------------------------
+
+export function ViewDoc({id}) {
+  const doc = docByID(id)
+
+  return <Grid container>
+    <Grid item xs={6}>
+      <pre style={{fontSize: "10pt"}}>{`${JSON.stringify(doc, null, 2)}`}</pre>
+    </Grid>
+    <Grid item xs={6}>
+      <div className="Sheet">
+        Testi.
+      </div>
+    </Grid>
+  </Grid>
+}
 
 //*****************************************************************************
 //*****************************************************************************
@@ -72,7 +90,7 @@ export function EditFile({id}) {
     "mod+w": () => dispatch(document.close()),   // Close file
   }));
 
-  const mode="Split";
+  const mode="Centered";
   //const mode="Primary";
 
   return <VFiller>

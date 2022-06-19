@@ -12,6 +12,7 @@ import "./file.css"
 
 import React from "react"
 import { useDispatch } from "react-redux";
+import { CSS } from "@dnd-kit/utilities"
 import { CWD, workspace } from "../app/store"
 
 import {
@@ -41,14 +42,13 @@ export function FileEntry({file, options}) {
     options.type === "card" ? "FileCard" : undefined,
     options.type === "row" ? "File" : undefined,
     disabled ? "disabled" : undefined,
+    (options.selected && file.id in options.selected) ? "selected" : undefined,
   )
 
   const callback = file.access ? (() => dispatch(onOpen(file))) : undefined
 
   if(options.type === "card") {
     return <div
-      item={file}
-      itemtype="File"
       className={className}
       onDoubleClick={callback}
       >
@@ -57,7 +57,7 @@ export function FileEntry({file, options}) {
   }
   if(options.type === "row") {
     return <tr
-      className={addClass(className, disabled ? "disabled" : undefined)}
+      className={className}
       onDoubleClick={callback}
     >
       <td className="FileIcon"></td>
@@ -90,7 +90,7 @@ export function FileItemConfig(file) {
   }
 }
 
-export function onOpen(file) {
+function onOpen(file) {
   return (dispatch, getState) => {
     console.log("Click:", file.id)
 
@@ -104,11 +104,8 @@ export function onOpen(file) {
     //const {inform} = options;
 
     if (suffix2format(file)) {
-      // TODO: Implement something to show that we are doing something
-      //const key = inform.process(`Loading ${f.name}`);
-      dispatch(workspace.setEdit({file}))
-      dispatch(workspace.open({file}))
-      return;
+      dispatch(workspace.selectFile({file}))
+      return
     }
 
     fs.openexternal(file.id)

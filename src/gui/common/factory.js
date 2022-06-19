@@ -26,6 +26,7 @@ import {
   TextField,
   Tooltip,
   Divider, CircularProgress as Spinner,
+  Grid,
 } from "@mui/material"
 
 import DeleteIcon from "@mui/icons-material/Delete"
@@ -36,6 +37,7 @@ export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export {
   Tooltip,
   Spinner,
+  Grid,
 }
 
 //-----------------------------------------------------------------------------
@@ -47,6 +49,7 @@ const muiIcons = require("@mui/icons-material/")
 
 // Material icons
 export const Icon = {
+  Close: muiIcons.Close,
   Star: muiIcons.StarOutlineOutlined,
   Starred: muiIcons.Star,
 
@@ -244,6 +247,12 @@ export function SearchBox({onCancel, ...props})
     //leftElement={<Icon icon="search"/>}
     {...props}
   />
+}
+
+export function Loading({className, style}) {
+  return <Filler className={className} style={style}>
+    <Spinner style={{margin: "auto"}}/>
+    </Filler>
 }
 
 //-----------------------------------------------------------------------------

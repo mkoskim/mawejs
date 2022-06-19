@@ -1,7 +1,0 @@
-.isDragging {
-  opacity: 0.5;
-}
-
-.canDrop {
-  border: 2px dashed green;
-}

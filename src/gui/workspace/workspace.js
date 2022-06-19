@@ -11,15 +11,31 @@
 import "./workspace.css"
 
 import React from "react";
-import {useState, useEffect} from 'react'
-import {useSelector, useDispatch} from "react-redux";
-import {docByID, workspace} from "../app/store"
+import { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from "react-redux";
+import { docByID, workspace } from "../app/store"
 
-import {FileBrowser} from "../filebrowser";
-import {EditFile, SplitEdit} from "../editor/editorSlate";
-import {Organizer} from "../editor/organizer";
+import { FileBrowser } from "../filebrowser";
+import { EditFile, ViewDoc } from "../editor/editorSlate";
+import { Organizer } from "../editor/organizer";
 
-import {Dropzone} from "../common/dnd"
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  MouseSensor,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 import {
   Box, FlexBox,
@@ -30,7 +46,7 @@ import {
   ToolBox,
   Label,
   addClass,
-  Spinner,
+  Spinner, Loading,
   addHotkeys,
   Icon,
 } from "../common/factory";
@@ -43,27 +59,37 @@ export function Workspace() {
   console.log("Workspace")
   const dispatch = useDispatch()
 
-  const current = useSelector(state => state.workspace.workspaces[state.workspace.current])
-  if(!current) return null;
-  const edit = current.edit;
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 15 } })
+  )
+
+  const current = useSelector(state => state.workspace[state.workspace.selected])
+  console.log("Current=", current)
+  if (!current) return null;
+  const edit = current.selected;
 
   const itemtype = "file"
 
-  if(!edit) {
+  //if(!edit)
+  {
     return <React.Fragment>
-      <LeftSide current={current} container={itemtype}/>
-      <FileBrowser.PickFiles container={itemtype} />
+      <DndContext onDragEnd={onDrop} sensors={sensors}>
+        <SideBar workspace={current} />
+        <FileBrowser.PickFiles container={itemtype} selected={current.files} />
+      </DndContext>
     </React.Fragment>
   }
 
+  /*
   if(!current.loaded) {
     dispatch(workspace.open(edit))
     return <React.Fragment>
-      <LeftSide current={current} edit={edit} container={itemtype}/>
-      <Filler><Spinner style={{margin: "auto"}}/></Filler>
+      <SideBar current={current} container={itemtype}/>
+      <Loading/>
     </React.Fragment>
   }
 
+  return <ViewDoc id={edit.id}/>
   /*
   return <React.Fragment>
     <EditFile id={edit.id}/>
@@ -78,99 +104,106 @@ export function Workspace() {
   return <React.Fragment>
     <Organizer id={edit.id}/>
   </React.Fragment>
-  /*/
+  /*
   return <React.Fragment>
   <LeftSide current={current} edit={edit} container={itemtype}/>
   <Organizer id={edit.id}/>
   </React.Fragment>
   /**/
-}
 
-//-----------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 
-function LeftSide({current, edit, container, style}) {
-  const dispatch = useDispatch()
+  function SideBar({ workspace: ws, style }) {
+    const dispatch = useDispatch()
 
-  //const current = useSelector(state => state.workspace.workspaces[state.workspace.current])
+    const { files, selected } = ws;
 
-  console.log("Workspace:", current)
+    const className = addClass(
+      "Workspace",
+    )
 
-  const className = addClass(
-    "Workspace",
-  )
-
-  return <VBox className={className} style={style}>
-    <ToolBox>
-      {current.name}
-      <Filler/>
-      <ButtonGroup>
-        <IconButton size="small"><Icon.NewFile/></IconButton>
-        <IconButton size="small" onClick={() => dispatch(workspace.unsetEdit({}))}><Icon.AddFiles/></IconButton>
+    return <VBox className={className} style={style}>
+      <ToolBox>
+        {ws.name}
+        <Filler />
+        <ButtonGroup>
+          <IconButton size="small"><Icon.NewFile /></IconButton>
+          <IconButton size="small" onClick={() => dispatch(ws.selectFile({}))}><Icon.AddFiles /></IconButton>
         </ButtonGroup>
       </ToolBox>
-    <div
-      //accept="File"
-      //onDrop={(item, monitor) => console.log("Drop:", item)}
-      //onHover={(item, monitor) => console.log("Hover:", item)}
-      style={{display: "flex", flexDirection: "column", minHeight: "70%"}}
-      >
-      {current.files.map(f => <WorkspaceItem key={f.id} file={f} edit={edit}/>)}
-    </div>
+      <div style={{ background: "lightgreen", display: "flex", flexDirection: "column" }}>
+        <SortableContext items={files}>
+          {files.map(f => <WorkspaceItem key={f.id} id={f.id} file={f} selected={selected} />)}
+        </SortableContext>
+      </div>
     </VBox>
+  }
 
-  function onDrop(dragResult) {
-    const { removedIndex, addedIndex, payload } = dragResult;
-    if (removedIndex === null && addedIndex === null) return;
+  //---------------------------------------------------------------------------
 
-    const {id} = payload
+  function onDrop({ active, over }) {
+    if (!over) return;
+    if (active.id === over.id) return;
 
-    //let itemToAdd = payload;
-    var result = [...current.files]
-    if(removedIndex !== null) result.splice(removedIndex, 1)
+    console.log("Move:", active.id, "->", over.id)
+    console.log("Active:", active)
 
-    // Sanity check: Ensure we don't save the same file two times
-    if(result.filter(f => f.id === id).length) {
-      console.log("Duplicate:", id)
-      return;
-    }
+    const where = current.files.findIndex(file => file.id === over.id)
+    console.log("Index:", where)
 
-    if(addedIndex !== null) result.splice(addedIndex, 0, payload)
-
-    dispatch(workspace.setFiles({files: result}))
+    dispatch(workspace.moveFile({
+      file: active.data.current.file,
+      index: where,
+    }))
   }
 
   function onRemove(event, file) {
     event.stopPropagation()
     console.log("Removing:", file)
-    dispatch(workspace.setFiles({files: current.files.filter(f => f.id !== file.id)}))
-    return true
+    dispatch(workspace.removeFile({ file }))
   }
 
   function onOpen(event, file) {
     event.stopPropagation()
     console.log("Opening:", file)
-    dispatch(workspace.setEdit({file}))
-    return true
+    dispatch(workspace.selectFile({ file }))
   }
 
-  function WorkspaceItem({file, edit}) {
+  //---------------------------------------------------------------------------
+
+  function WorkspaceItem({ file, selected }) {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+    } = useSortable({ id: file.id, data: { file } });
+
     const className = addClass(
       "WorkspaceItem",
-      (edit && edit.id === file.id) ? "selected" : null
+      (selected?.id === file.id) ? "selected" : null
     )
 
-    console.log("Item:", file, edit)
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition
+    };
 
-    return <div className={className} onClick={(e) => onOpen(e, file)}>
-      {file.name}
-      <Button
-        style={{marginLeft: "auto"}}
-        //minimal={true}
-        //small={true}
-        //icon={Icons.Close}
-        onClick={(e) => onRemove(e, file)}
-      />
-    </div>
+    return (
+      <div
+        className={className}
+        onClick={(e) => onOpen(e, file)}
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
+        {...listeners}>
+        {file.name}
+        <IconButton size="small" onClick={(e) => onRemove(e, file)}>
+          <Icon.Close fontSize="small" />
+        </IconButton>
+      </div>
+    );
   }
 }
 

@@ -1,4 +1,10 @@
-File browser for editor, similar to e.g. Nautilus. To be used to open and save files.
+FILE BROWSING
+=============
+
+Stories are stored in files, so we need a tool to find them.
+
+My intent is to have file browser similar to e.g. Nautilus, that is, you can perform
+all sorts of file operations with it. To be used to open and save files.
 
 What features we need:
 

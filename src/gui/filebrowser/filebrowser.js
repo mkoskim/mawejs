@@ -81,15 +81,16 @@ const fs = require("../../storage/localfs")
 
 //-----------------------------------------------------------------------------
 
-export function PickFiles({container}) {
+export function PickFiles({selected, container}) {
   return <FileBrowser
     dndGroup={container}
+    selected={selected}
   />
 }
 
 //-----------------------------------------------------------------------------
 
-function FileBrowser(props) {
+function FileBrowser({selected, ...props}) {
   const dir = useSelector((state) => state.cwd.path)
   const search = useSelector((state) => state.cwd.search)
 
@@ -99,12 +100,8 @@ function FileBrowser(props) {
 
   //---------------------------------------------------------------------------
 
-  const {dndGroup} = props;
-
-  //---------------------------------------------------------------------------
-
   const options = {
-    dndGroup,
+    selected: selected.reduce((lookup, file) => ({[file.id]: file, ...lookup}), {}),
     //inform,
   }
 

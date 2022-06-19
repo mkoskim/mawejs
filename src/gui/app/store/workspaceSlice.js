@@ -15,7 +15,7 @@
 
 /* eslint-disable no-unused-vars */
 
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 import { uuid } from "../../../util";
 
 const fs = require("../../../storage/localfs")
@@ -24,85 +24,24 @@ const mawe = require("../../../document")
 
 export const workspaceSlice = createSlice({
   name: "workspace",
-  initialState: {
-    current: undefined,
-    workspaces: {}
-  },
+  initialState: { status: false },
   reducers: {
-    create: (state, action) => {
-      const {payload} = action;
-      const id = payload.id ?? uuid()
-      state.workspaces[id] = { ...payload, id};
-      if(!payload.nosync) sync(state)
-    },
-    switchto: (state, action) => {
-      const {id, nosync} = action.payload
-      state.current = id
-      if(!nosync) sync(state)
-    },
-    setName: (state, action) => {
-      const { name, nosync } = action.payload
-      const id = action.payload.id ?? state.current
-      state.workspaces[id].name = name
-      if(!nosync) sync(state)
-    },
-    setFiles: (state, action) => {
-      //console.log("setFiles:", action.payload)
-      const { files, nosync } = action.payload
-      const id = action.payload.id ?? state.current
-      state.workspaces[id].files = files
-      if(!files.filter(f => f.id === state.workspaces[id].edit?.id).length) {
-        state.workspaces[id].edit = undefined
-        state.workspaces[id].loaded = undefined
-      }
-      if(!nosync) sync(state)
-    },
-    setEdit: (state, action) => {
-      const {file, nosync} = action.payload;
-      const id = action.payload.id ?? state.current
-      const files = [...state.workspaces[id].files]
-      if(!files.filter(f => f.id === file.id).length) {
-        state.workspaces[id].files = [...files, file]
-      }
-      state.workspaces[id].edit = file
-      state.workspaces[id].loaded = false
-      if(!nosync) sync(state)
-    },
-    unsetEdit: (state, action) => {
-      const {nosync} = action.payload;
-      const id = action.payload.id ?? state.current
-      state.workspaces[id].edit = undefined
-      state.workspaces[id].loaded = undefined
-      if(!nosync) sync(state)
-    },
-    setLoaded: (state, action) => {
-      const {status} = action.payload;
-      const id = action.payload.id ?? state.current
-      state.workspaces[id].loaded = status
-    }
+    reset,
+    addFile,
+    removeFile,
+    moveFile,
+    selectFile,
   }
 })
 
-async function sync(state) {
-  var item = {
-    current: state.current,
-    workspaces: {}
-  }
-
-  for(const id in state.workspaces) {
-    const {name, edit, files} = state.workspaces[id]
-    item.workspaces[id] = {
-      id,
-      name,
-      edit: edit ? edit.id : undefined,
-      files: files.map(f => f.id)
-    }
-  }
-
-  fs.settingswrite("workspaces.json", JSON.stringify(item, null, 2))
+export default workspaceSlice.reducer
+export const workspace = {
+  ...workspaceSlice.actions,
+  init,
+  open,
 }
 
-export default workspaceSlice.reducer
+//-----------------------------------------------------------------------------
 
 var docs = {}
 
@@ -112,61 +51,130 @@ export function docByID(id) {
   return docs[id]
 }
 
-export const workspace = {
-  ...workspaceSlice.actions,
+//-----------------------------------------------------------------------------
 
-  //---------------------------------------------------------------------------
-  // Load workspaces from settings file
+function reset(state, {payload}) {
+  const {value, nosync} = payload
+  if(!nosync) sync(value)
+  return value
+}
 
-  init: () => {
-    return async (dispatch, getState) => {
+function findFile(state, id, file) {
+  return state[id].files.find(f => f.id === file.id)
+}
+
+function fileIndex(state, id, file) {
+  return state[id].files.findIndex(elem => elem.id === file.id)
+}
+
+function removeFile(state, {payload}) {
+  const {file, nosync} = payload;
+  const id = payload.id ?? state.selected
+
+  const index = fileIndex(state, id, file)
+  if(index !== -1) {
+    state[id].files.splice(index, 1)
+  }
+
+  if(state[id].selected?.id === file.id) {
+    state[id].selected = undefined
+  }
+
+  if(!nosync) sync(state)
+}
+
+function addFile(state, {payload}) {
+  const {file, nosync} = payload;
+  const id = payload.id ?? state.selected
+
+  if(!findFile(state, id, file)) {
+    state[id].files = [...state[id].files, file]
+    if(!nosync) sync(state)
+  }
+}
+
+function moveFile(state, {payload}) {
+  const {file, index, nosync} = payload;
+  const id = payload.id ?? state.selected
+
+  const srcindex = fileIndex(state, id, file);
+  if(srcindex === -1) return;
+
+  state[id].files.splice(srcindex, 1)
+  state[id].files.splice(index, 0, file)
+
+  if(!nosync) sync(state)
+}
+
+function selectFile(state, action) {
+  const {file, nosync} = action.payload;
+  const id = action.payload.id ?? state.selected
+  const ws = state[id]
+
+  if(ws.selected?.id === file.id) return
+
+  if(file) addFile(state, {payload: {id, file, nosync: true}})
+
+  ws.selected = file
+  if(!nosync) sync(state)
+}
+
+//-----------------------------------------------------------------------------
+
+async function sync(state) {
+  fs.settingswrite("workspaces.json", JSON.stringify(state, null, 2))
+}
+
+function init() {
+  return async(dispatch, getState) => {
+    try {
+      const content = await fs.settingsread("workspaces.json")
+      const value = {
+        ...JSON.parse(content),
+        status: true,
+      }
+      dispatch(workspace.reset({value, nosync: true}))
+    }
+    catch(err) {
+      console.log("ERROR: workspaces.js:", err)
+
+      const id = uuid()
+
+      dispatch(workspace.reset({value: {
+        status: true,
+        selected: id,
+        [id]: {
+          id: id,
+          name: "<New>",
+          files: []
+        },
+      }}))
+    }
+    finally {
+      console.log("Workspace initialized.")
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+function open(file) {
+  return async (dispatch, getState) => {
+    console.log("workspace.open:", file);
+
+    if(!(file.id in docs)) {
+      console.log("Loading:", file)
       try {
-        const content = await fs.settingsread("workspaces.json")
-        const parsed = JSON.parse(content)
-        //console.log("Loaded workspaces:", parsed)
-        for(const id in parsed.workspaces) {
-          const {name, edit, files} = parsed.workspaces[id]
-          const statd = await Promise.all(files.map(f => fs.fstat(f)))
-          //console.log(edit)
-          //console.log(statd)
-          //console.log("Stat'd:", statd)
-          dispatch(workspace.create({
-            id,
-            name,
-            edit: edit ? statd.filter(f => f.id === edit)[0] : undefined,
-            files: statd,
-            nosync: true
-          }))
-        }
-        dispatch(workspace.switchto({id: parsed.current, nosync: true}))
-      } catch(err) {
-        console.log("ERROR: workspaces.js:", err)
-        const id = uuid()
-        dispatch(workspace.create({id, name: "<New>", files: [], nosync: true}))
-        dispatch(workspace.switchto({id}))
+        const content = await mawe.load(file)
+        docs[file.id] = content;
+      }
+      catch(err) {
+        console.log("Trying to open:", file)
+        console.log("ERROR:", err)
       }
     }
-  },
 
-  //---------------------------------------------------------------------------
-  // Open a doc
-  open: (file) => {
-    return async (dispatch, getState) => {
-      console.log("workspace.open:", file);
-
-      try {
-        if(!(file.id in docs)) {
-          console.log("Loading")
-          const content = await mawe.load(file)
-          docs[file.id] = content;
-          //console.log("Docs:", docs);
-        }
-
-        dispatch(workspace.setLoaded({status: true}))
-        //dispatch(workspace.setEdit({file}))
-      } catch(err) {
-        console.log("ERROR: workspace.open:", err)
-      }
-    }
-  },
+    //dispatch(workspace.setLoaded({status: true}))
+    //dispatch(workspace.setEdit({file}))
+  }
 }
