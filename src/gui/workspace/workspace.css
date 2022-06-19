@@ -7,10 +7,9 @@
 
 .Workspace {
   display: flex;
-  /*flex-grow: 1;*/
+  flex-grow: 1;
   background: #eee;
   border: 2pt none grey;
-  width: 250px;
 }
 
 .Workspace .TabName {
@@ -26,7 +25,8 @@
 
 .Workspace .RelatedTab {
   border: 1px solid lightgrey;
-  padding: 4pt;
+  background: rgb(218, 240, 218);
+  padding: 2pt;
 }
 
 .WorkspaceItem {

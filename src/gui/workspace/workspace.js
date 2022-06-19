@@ -26,7 +26,7 @@ import {
 } from "../common/dnd"
 
 import {
-  Box, FlexBox,
+  Grid, Box, FlexBox,
   VBox, HBox, VFiller, HFiller,
   Filler, Separator,
   Tooltip, Button, IconButton, ButtonGroup, Input, SearchBox,
@@ -62,8 +62,8 @@ export function Workspace() {
   {
     return <React.Fragment>
       <DndContext onDragEnd={onDrop} sensors={sensors}>
-        <SideBar workspace={current} />
-        <FileBrowser.PickFiles selected={current.files} />
+        <SideBar workspace={current} style={{minWidth: "25%", maxWidth: "25%"}}/>
+        <FileBrowser.PickFiles selected={current.files} style={{width: "75%"}}/>
       </DndContext>
     </React.Fragment>
   }

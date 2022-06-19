@@ -20,7 +20,7 @@ import {
   Button, ButtonGroup, Input, SearchBox,
   Breadcrumbs,
   ToolBox,
-  Label,
+  Label, Icon,
   addClass,
   addHotkeys,
 } from "../common/factory";
@@ -34,33 +34,34 @@ export function FileEntry({file, options}) {
   const dispatch = useDispatch();
 
   const {
-    icon, color: iconcolor,
-    disabled
+    icon,
+    disabled, selected,
   } = FileItemConfig(file, options)
 
   const className = addClass(
     options.type === "card" ? "FileCard" : undefined,
     options.type === "row" ? "File" : undefined,
     disabled ? "disabled" : undefined,
-    (options.selected && file.id in options.selected) ? "selected" : undefined,
+    selected ? "selected" : undefined,
   )
 
   const callback = file.access ? (() => dispatch(onOpen(file))) : undefined
 
   if(options.type === "card") {
-    return <div
+    return <HBox
       className={className}
       onDoubleClick={callback}
       >
-      <span>{file.name}</span>
-    </div>;
+      {icon}
+      <div style={{marginLeft: "8pt"}}>{file.name}</div>
+    </HBox>;
   }
   if(options.type === "row") {
     return <tr
       className={className}
       onDoubleClick={callback}
     >
-      <td className="FileIcon"></td>
+      <td className="FileIcon">{icon}</td>
       <td className="FileName">{file.name}</td>
       <td className="FileDir">{file.relpath}</td>
     </tr>;
@@ -70,21 +71,24 @@ export function FileEntry({file, options}) {
 
 //-----------------------------------------------------------------------------
 
-export function FileItemConfig(file) {
+export function FileItemConfig(file, options) {
+  if(options.selected && file.id in options.selected) {
+    return {
+      icon: <Icon.FileType.Selected style={{color: "#51585b"}}/>,
+      selected: true,
+    }
+  }
   switch (file.type) {
     case "folder": return {
-      //icon: Icons.FileType.Folder,
-      color: "#666", //"#77b4e2",
+      icon: <Icon.FileType.Folder style={{color: "grey" /*"#51585b"*/ /*"#77b4e2"*/}}/>,
       disabled: !file.access,
     }
     case "file": return {
-      //icon: Icons.FileType.File,
-      color: "#666", //"#51585b",
+      icon: <Icon.FileType.File style={{color: "#51585b"}}/>,
       disabled: !file.access,
     }
     default: return {
-      //icon: Icons.FileType.Unknown,
-      color: "#666", //"grey",
+      icon: <Icon.FileType.Unknown style={{color: "grey"}}/>,
       disabled: true,
     }
   }

@@ -59,40 +59,16 @@ export const Icon = {
 
   Location: {
     Home: muiIcons.Home,
+    Favorites: muiIcons.Favorite,
   },
-}
-
-/*
-// Blueprint icons
-export const Icons = {
-  Close: "cross",
-  Search: "search",
-
-  Star: "star-empty",
-  Starred: "star",
-
-  CreateFolder: "folder-new",
-  NewFile: "insert",
-  AddFiles: "folder-open",
 
   FileType: {
-    File: "document",
-    //import TypeFile from '@material-ui/icons/Description';
-    Folder: "folder-close",
-    //Unknown: "lock",
-    //Unknown: "error",
-    Unknown: "warning-sign",
-    //import TypeUnknown from '@material-ui/icons/Close';
-    //import TypeUnknown from '@material-ui/icons/Help';
-    //import TypeUnknown from '@material-ui/icons/BrokenImage';
-    //import TypeUnknown from '@material-ui/icons/CancelPresentationOutlined';
-  },
-
-  Location: {
-    Home: "home",
-  },
+    Folder: muiIcons.Folder,
+    File: muiIcons.InsertDriveFileOutlined,
+    Unknown: muiIcons.BrokenImageOutlined,
+    Selected: muiIcons.CheckBox,
+  }
 }
-/**/
 
 //-----------------------------------------------------------------------------
 // Manipulate <style> elements in document <head>

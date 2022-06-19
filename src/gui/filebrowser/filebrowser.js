@@ -138,8 +138,8 @@ function ListDir({ directory, options }) {
     return <ToolBox>
       <PathButtons path={splitted} options={options}/>
       <Filler />
-      <ButtonGroup>
-      <Button startIcon={<Icon.Starred/>}>Favorites</Button>
+      <ButtonGroup size="small">
+      <Button startIcon={<Icon.Location.Favorites/>}>Favorites</Button>
       <Button startIcon={<Icon.Location.Home />} onClick={() => dispatch(action.CWD.location("home"))}>Home</Button>
       </ButtonGroup>
     </ToolBox>
@@ -153,18 +153,38 @@ function PathButtons({path, options}) {
 
   if (!path) return null;
 
+  const last = path[path.length-1];
+  const head = path.slice(0, path.length-1)
+
   return <React.Fragment>
-    <Breadcrumbs>
-    {path.map(file => (
-      <Chip
+    <Breadcrumbs
+      maxItems={6}
+      itemsBeforeCollapse={1}
+      itemsAfterCollapse={5}
+    >
+    {head.map(file => (
+      <Button
+        style={{textTransform: "unset"}}
         key={file.id}
         onClick={(e) => onOpen(e, file)}
-        label={file.name ? file.name : "Local:"}
-      />)
+        variant="text"
+      >
+        {file.name ? file.name : "Local:"}
+      </Button>)
+    )}
+    <Button
+        style={{textTransform: "unset"}}
+        key={last.id}
+        variant="text"
+        onClick={(e) => onMenu(e, last)}
+      >
+        {last.name ? last.name : "Local:"}
+      </Button>)
     )}
     </Breadcrumbs>
-    <IconButton size="small"><Icon.Star fontSize="small"/></IconButton>
   </React.Fragment>
+
+  /* <IconButton size="small"><Icon.Star fontSize="small"/></IconButton> */
 
   function onOpen(e, f) {
     e.preventDefault()
@@ -172,7 +192,8 @@ function PathButtons({path, options}) {
   }
 
   // TODO: Last button (current directory) should open "context" menu.
-  function menu(f) {
+  function onMenu(e, f) {
+    e.preventDefault()
     console.log("Open menu:", f.name);
   }
 }
@@ -192,10 +213,10 @@ function SplitList({directory, content, options}) {
   if (!files && !folders) return null;
 
   return (
-    <Box style={{ padding: 4, overflowY: "auto" }}>
+    <VBox style={{ padding: 4, overflowY: "auto" }}>
       <Section name="Folders" items={folders} />
       <Section name="Files" items={files} />
-    </Box>
+    </VBox>
   )
 
   function Section({ name, items }) {
@@ -214,7 +235,6 @@ function SplitList({directory, content, options}) {
 
   function Grid({entries, options}) {
     const style = {
-      overflowY: "auto",
       flexWrap: "wrap",
     };
 

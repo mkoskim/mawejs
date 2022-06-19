@@ -12,9 +12,7 @@
 
   cursor:pointer;
   width: 250px;
-  /*
   align-items: center;
-  */
 
   padding-top: 12px;
   padding-bottom: 12px;
@@ -23,10 +21,11 @@
 }
 
 .FileCard.disabled {
+  opacity: 50%;
 }
 
 .FileCard.selected {
-  background: lightgreen;
+  background: rgb(218, 240, 218);
 }
 
 .FileCard:hover {
