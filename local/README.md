@@ -1,1 +1,1 @@
-Local files for testing, not versioned.
+Local files for testing, not (generally) versioned.

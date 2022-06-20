@@ -36,6 +36,8 @@ import {
 import isHotkey from 'is-hotkey';
 
 //-----------------------------------------------------------------------------
+// Choose the view
+//-----------------------------------------------------------------------------
 
 export function EditView({id}) {
   const dispatch = useDispatch();
