@@ -23,8 +23,14 @@ TODO: Things to think:
 -------------------------------------------------------------------------------
 */
 
-import {tree2buf, buf2file} from "./util.js";
+import {buf2file} from "../util.js";
 import {Element, SubElement, Comment} from "elementtree";
+const et = require("elementtree");
+
+function tree2buf(root) {
+  const etree = new et.ElementTree(root);
+  return etree.write({xml_declaration: false, indent: 0});
+}
 
 //-----------------------------------------------------------------------------
 // Save stories in .mawe format

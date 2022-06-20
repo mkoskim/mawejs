@@ -38,58 +38,11 @@ import isHotkey from 'is-hotkey';
 //-----------------------------------------------------------------------------
 
 export function EditView({id}) {
+  const dispatch = useDispatch();
+
   const doc = docByID(id)
 
-  console.log("ID", id, "Doc:", doc)
-
-  //return <RawDoc doc={doc}/>
-  //return <SlateDoc doc={doc}/>
-  return <EditFile doc={doc}/>
-}
-
-//-----------------------------------------------------------------------------
-
-export function RawDoc({doc}) {
-  return <Grid container>
-    <Grid item xs={6}>
-      <pre style={{fontSize: "10pt"}}>{`${JSON.stringify(doc, null, 2)}`}</pre>
-    </Grid>
-    <Grid item xs={6}>
-      <div className="Sheet">
-        Testi.
-      </div>
-    </Grid>
-  </Grid>
-}
-
-export function SlateDoc({doc}) {
-  const content = deserialize(doc).body;
-
-  const printout = content;
-  //const printout = wordcount(content)
-
-  return <React.Fragment>
-    <pre style={{fontSize: "10pt"}}>{`${JSON.stringify(printout, null, 2)}`}</pre>
-  </React.Fragment>
-}
-
-//*****************************************************************************
-//*****************************************************************************
-//
-// NOTE!!! Slate is very picky that all its components are together. So, do
-// not separate Slate from its state and such things. If you do that, it will
-// not work!
-//
-// IT WILL NOT WORK!
-//
-// NOTE! Do not put the same state to two editor instances. It will not work.
-// Find out ways to do split'd editing views.
-//
-//*****************************************************************************
-//*****************************************************************************
-
-function EditFile({doc}) {
-  const dispatch = useDispatch();
+  //console.log("ID", id, "Doc:", doc)
 
   useEffect(() => addHotkeys({
     "mod+o": (e) => onClose(e, dispatch),
@@ -97,7 +50,28 @@ function EditFile({doc}) {
     "mod+s": null,
   }));
 
+  //return <RawDoc doc={doc}/>
+  //return <SlateDoc doc={doc}/>
+  return <SingleEdit doc={doc}/>
+}
+
+//-----------------------------------------------------------------------------
+
+function onClose(e, dispatch) {
+  if(e) e.preventDefault()
+  // Move modifications to doc
+  dispatch(action.doc.close({}))
+}
+
+//-----------------------------------------------------------------------------
+// Single edit with sidebars
+
+function SingleEdit({doc, left, right, center}) {
+
   const [content, setContent] = useState(deserialize(doc).body);
+
+  const info = getinfo(content)
+
   //function setBody(part)  { setContent({...content, body: part}) }
   //function setNotes(part) { setContent({...content, notes: part}) }
 
@@ -105,7 +79,7 @@ function EditFile({doc}) {
   //const mode="Primary";
 
   return <VFiller>
-    <ToolBar doc={doc} content={content}/>
+    <ToolBar doc={doc} info={info}/>
     <HFiller style={{overflow: "auto", background: "#F8F8F8"}}>
       <ViewSection
         section={doc.story.body}
@@ -118,22 +92,64 @@ function EditFile({doc}) {
         </div>
       </HFiller>
   </VFiller>
+}
 
+// Extract info from (living) slate buffer.
+
+function getinfo(content) {
+  // Word count from Slate buffer
+  const chars = content
+    .filter(elem => elem.type === "p")
+    .map(elem => elem.children)
+    .flat()
+    .map(elem => elem.text)
+    .join(" ")
+    .replace(/\s+/g, ' ').trim()
+    ;
+  const words = chars
+    .split(' ')
+    ;
+  return {
+    words: words.length,
+    chars: chars.length
+  }
 }
 
 //-----------------------------------------------------------------------------
 
-function onClose(e, dispatch) {
-  if(e) e.preventDefault()
-  dispatch(action.doc.close({}))
+function Empty() {
+  return null;
+}
+
+function RawDoc({doc}) {
+  return <Grid container>
+    <Grid item xs={6}>
+      <pre style={{fontSize: "10pt"}}>{`${JSON.stringify(doc, null, 2)}`}</pre>
+    </Grid>
+    <Grid item xs={6}>
+      <div className="Sheet">
+        Testi.
+      </div>
+    </Grid>
+  </Grid>
+}
+
+function SlateDoc({doc}) {
+  const content = deserialize(doc).body;
+
+  const printout = content;
+  //const printout = wordcount(content)
+
+  return <React.Fragment>
+    <pre style={{fontSize: "10pt"}}>{`${JSON.stringify(printout, null, 2)}`}</pre>
+  </React.Fragment>
 }
 
 //-----------------------------------------------------------------------------
 
-function ToolBar({doc, content}) {
+function ToolBar({doc, info}) {
   const dispatch = useDispatch();
-
-  const {words, chars} = wordcount(content)
+  const {words, chars} = info;
 
   return (
     <ToolBox>
@@ -171,26 +187,7 @@ function SlateEdit({content, setContent}) {
 
 //-----------------------------------------------------------------------------
 
-function wordcount(content) {
-  // Word count from Slate buffer
-  const chars = content
-    .filter(elem => elem.type === "p")
-    .map(elem => elem.children)
-    .flat()
-    .map(elem => elem.text)
-    .join(" ")
-    .replace(/\s+/g, ' ').trim()
-    ;
-  const words = chars
-    .split(' ')
-    ;
-  return {
-    words: words.length,
-    chars: chars.length
-  }
-}
-
-function renderPlain({doc}) {
+function renderPlain({content}) {
 }
 
 

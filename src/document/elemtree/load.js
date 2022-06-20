@@ -6,40 +6,19 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid, suffix2format, file2buf, buf2tree} from "./util";
-import {Document} from "./Document";
-const fs = require("../storage/localfs")
-
-// TODO: Extract file "peeking" for project scanning purposes. It returns the
-// element tree for mawe/moe files to extract header information.
-// TODO: Add file directory to file entry - we basically get it automatically
-// when scanning directories.
-
-export async function load(file)
-{
-  if(typeof file === "string") file = await fs.fstat(file);
-
-  console.log("Load file:", file)
-  const format = suffix2format(file);
-
-  switch(format) {
-    case "mawe": try {
-      return mawe(file);
-    } catch(e) {
-      console.log(e);
-      throw Error(`${file.name}: Invalid .mawe file.`);
-    }
-    default: break;
-  }
-
-  throw new Error(`${file.name}: Unknown type.`);
-}
+import {uuid, file2buf} from "../util";
+import {Document} from "../Document";
+const et = require("elementtree");
 
 //-----------------------------------------------------------------------------
 // Extract mawe from file
 //-----------------------------------------------------------------------------
 
-async function mawe(file) {
+function buf2tree(buffer) {
+  return et.parse(buffer).getroot();
+}
+
+export async function mawe(file) {
   const root = buf2tree(await file2buf(file))
 
   return new Document(file, parseRoot(root));
@@ -56,7 +35,7 @@ async function mawe(file) {
     );
 
     return {
-      id: uuid(),
+      id: elem.id ?? uuid(),
       tag: elem.tag,
       attr: {...elem.attrib},
       text,
@@ -125,7 +104,7 @@ async function mawe(file) {
 
     return withextras({
       ...extra,
-      id: uuid(),
+      id: elem.id ?? uuid(),
       tag: "body",
       name: name,
       head: parseHead(elem.find("head")),
@@ -155,7 +134,7 @@ async function mawe(file) {
 
   function parseNotes(elem) {
     return withextras({
-      id: uuid(),
+      id: elem.id ?? uuid(),
       tag: "notes",
       head: null,
       parts: parseParts(elem),
