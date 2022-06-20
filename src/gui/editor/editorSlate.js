@@ -17,15 +17,16 @@ import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import { action, docByID } from "../app/store"
 
-//*
 import { Slate, Editable, withReact } from 'slate-react'
 import { createEditor } from "slate"
 import { withHistory } from "slate-history"
-/**/
+
+import {ViewSection} from "./organizer"
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Input,
+  ToolBox, Button, Icon,
+  Input,
   SearchBox, addHotkeys,
   Label,
   Grid,
@@ -72,10 +73,60 @@ export function EditFile({id}) {
   console.log("ID", id, "Doc:", doc)
   const dispatch = useDispatch();
 
+  useEffect(() => addHotkeys({
+    "mod+o": (e) => onClose(e, dispatch),
+    "mod+w": (e) => onClose(e, dispatch),
+    "mod+s": null,
+  }));
+
+  const mode="Centered";
+  //const mode="Primary";
+
+  return <VFiller>
+    <ToolBar doc={doc}/>
+    <HFiller style={{overflow: "auto", background: "#F8F8F8"}}>
+      <ViewSection
+        section={doc.story.body}
+        style={{minWidth: "25%", maxWidth: "25%", background: "#EEE"}}
+      />
+      <div
+        style={{overflow: "auto"}}
+        className={`Board ${mode}`}>
+          <SlateEdit doc={doc}/>
+        </div>
+      </HFiller>
+  </VFiller>
+
+}
+
+//-----------------------------------------------------------------------------
+
+function onClose(e, dispatch) {
+  if(e) e.preventDefault()
+  dispatch(action.doc.close({}))
+}
+
+//-----------------------------------------------------------------------------
+
+function ToolBar({doc}) {
+  const dispatch = useDispatch();
+
+  return (
+    <ToolBox>
+      <Label>{doc.file.name}</Label>
+      <Filler/>
+      <Button onClick={(e) => onClose(e, dispatch)}><Icon.Close/></Button>
+    </ToolBox>
+  )
+}
+
+//-----------------------------------------------------------------------------
+
+function SlateEdit({doc}) {
   const [content, setContent] = useState(deserialize(doc));
 
-  console.log("Content:", content);
-  console.log("Body:", content.body);
+  //console.log("Content:", content);
+  //console.log("Body:", content.body);
 
   function setBody(part)  { setContent({...content, body: part}) }
   function setNotes(part) { setContent({...content, notes: part}) }
@@ -84,120 +135,22 @@ export function EditFile({id}) {
   const renderElement = useCallback(props => <Element {...props} />, [])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
 
-  useEffect(() => addHotkeys({
-    "mod+o": () => dispatch(action.doc.close()),   // Go to file browser to open new file
-    "mod+s": null,              // Serialize and save
-    "mod+w": () => dispatch(action.doc.close()),   // Close file
-  }));
-
-  const mode="Centered";
-  //const mode="Primary";
-
-  return <VFiller>
-    <ToolBar doc={doc}/>
-    <div className={`Board ${mode}`}>
-      <Slate editor={editor} value={content.body} onChange={setBody}>
-        <Editable
-          className="Sheet Shadow"
-          autoFocus
-          spellCheck={false} // Keep false until you find out how to change language
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-        />
-      </Slate>
-    </div>
-  </VFiller>
-}
-
-//-----------------------------------------------------------------------------
-
-export function SplitEdit({id}) {
-
-  const doc = docByID(id)
-
-  console.log("ID", id, "Doc:", doc)
-  const dispatch = useDispatch();
-
-  const [content, setContent] = useState(deserialize(doc));
-
-  console.log("Content:", content);
-  console.log("Body:", content.body);
-
-  const renderElement = useCallback(props => <Element {...props} />, [])
-  const renderLeaf = useCallback(props => <Leaf {...props} />, [])
-
-  function setBody(part)  { setContent({...content, body: part}) }
-  function setNotes(part) { setContent({...content, notes: part}) }
-
-  const bodyeditor = useMemo(() => withHistory(withReact(createEditor())), [])
-  const noteeditor = useMemo(() => withHistory(withReact(createEditor())), [])
-
-  useEffect(() => addHotkeys({
-    "mod+o": () => dispatch(action.doc.close()),   // Go to file browser to open new file
-    "mod+s": null,              // Serialize and save
-    "mod+w": () => dispatch(action.doc.close()),   // Close file
-  }));
-
-  //const mode="Centered";
-  //const mode="Primary";
-  const mode = "Split"
-
-  return <VFiller>
-    <ToolBar doc={doc}/>
-      <HBox>
-      <div className={`Board ${mode}`}>
-        <Slate editor={bodyeditor} value={content.body} onChange={setBody}>
-          <Editable
-            className="Sheet Shadow"
-            autoFocus
-            spellCheck={false} // Keep false until you find out how to change language
-            renderElement={renderElement}
-            renderLeaf={renderLeaf}
-          />
-        </Slate>
-      </div>
-      <div className={`Board ${mode}`}>
-        <Slate editor={noteeditor} value={content.body} onChange={setNotes}>
-          <Editable
-            className="Sheet Shadow"
-            autoFocus
-            spellCheck={false} // Keep false until you find out how to change language
-            renderElement={renderElement}
-            renderLeaf={renderLeaf}
-          />
-        </Slate>
-      </div>
-      </HBox>
-    </VFiller>
-}
-
-//-----------------------------------------------------------------------------
-
-function ToolBar({doc}) {
   return (
-    <ToolBox>
-      <Label style={{marginRight: 8}}>{doc.file.name}</Label>
-      <SearchBox/>
-    </ToolBox>
+    <Slate editor={editor} value={content.body} onChange={setBody}>
+    <Editable
+      className="Sheet Shadow"
+      autoFocus
+      spellCheck={false} // Keep false until you find out how to change language
+      renderElement={renderElement}
+      renderLeaf={renderLeaf}
+    />
+  </Slate>
   )
-}
-
-function Outline({content}) {
-  return (
-    <div className="Outline">
-    {content.body.filter(n => n.type === "scenename").map(n => <Entry text={n.children[0].text}/>)}
-    </div>
-  )
-
-  function Entry(props) {
-    return <div className="entry">{props.text}</div>
-  }
 }
 
 //-----------------------------------------------------------------------------
 
 function renderPlain({doc}) {
-
 }
 
 

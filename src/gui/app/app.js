@@ -16,55 +16,65 @@ import {useEffect} from "react"
 import { useSelector, useDispatch } from "react-redux";
 import {action} from "./store"
 
-import {VBox, HBox} from "../common/factory";
-import {FileBrowser} from "../filebrowser";
 import {Organizer} from "../editor/organizer";
+import {EditFile} from "../editor/editorSlate";
 import {Workspace} from "../workspace";
-
 import View from "../views"
 
-//const fs = require("../../storage/localfs")
+import {VBox, HBox, Loading} from "../common/factory";
 
 //-----------------------------------------------------------------------------
 
 export default function App(props) {
+
+  console.log("App")
 
   const dispatch = useDispatch()
 
   //---------------------------------------------------------------------------
   // Run initializes & wait them to finish
 
-  useEffect(() => dispatch(action.workspace.init()))
-  useEffect(() => dispatch(action.CWD.resolve("./local")))
+  useEffect(() => {
+    console.log("Initializing...")
+    dispatch(action.CWD.resolve("./local"))
     //dispatch(CWD.location("home"))
     //dispatch(onOpen({id: "./local/Beltane.A.mawe.gz", name: "Beltane.A.mawe.gz"}))
+    dispatch(action.workspace.init())
+    dispatch(action.doc.init())
+  }, [])
 
-  const status = useSelector(state => state.workspace.status)
+  const status = [
+    useSelector(state => state.workspace.status),
+    useSelector(state => state.doc.status),
+  ]
 
-  if(!status)
+  console.log("Status:", status)
+
+  if(!status.reduce((a, b) => (a && !!b), true))
   {
     return <View.Starting />
   }
 
-  // Some sort of view chooser... But it is not always possible, we can't
-  // edit a file if we don't have one...
+  return <HBox className="ViewPort"><ChooseView /></HBox>
+}
 
-  //---------------------------------------------------------------------------
-  // Choose view
+//-----------------------------------------------------------------------------
 
-  /*
-  return (
-      <VBox style={{height: "100vh", width: "100vw"}}>
-        <View />
-      </VBox>
-  );
+function ChooseView() {
 
-  /*/
-  return (
-    <HBox className="ViewPort">
-      <Workspace />
-    </HBox>
-  );
-  /**/
+  console.log("Choose view")
 
+  const edit = useSelector(state => state.doc.edit)
+  const loading = useSelector(state => state.doc.loading)
+
+  console.log("Edit:", edit, loading)
+
+  if(edit) {
+    if(loading) {
+      return <Loading />
+    }
+    return <EditFile id={edit.id}/>
+  }
+
+  return <Workspace />
 }

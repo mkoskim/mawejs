@@ -19,8 +19,6 @@ import { createSlice, current } from "@reduxjs/toolkit";
 import { uuid } from "../../../util";
 
 const fs = require("../../../storage/localfs")
-const path = require("path")
-const mawe = require("../../../document")
 
 export const workspaceSlice = createSlice({
   name: "workspace",
@@ -38,17 +36,6 @@ export default workspaceSlice.reducer
 export const workspaceAction = {
   ...workspaceSlice.actions,
   init,
-  open,
-}
-
-//-----------------------------------------------------------------------------
-
-var docs = {}
-
-export function docByID(id) {
-  //console.log("docByID:", id)
-  //console.log("Docs:", docs)
-  return docs[id]
 }
 
 //-----------------------------------------------------------------------------
@@ -121,14 +108,16 @@ function selectFile(state, action) {
 
 //-----------------------------------------------------------------------------
 
+const settingsfile = "settings_ws.json"
+
 async function sync(state) {
-  fs.settingswrite("workspaces.json", JSON.stringify(state, null, 2))
+  fs.settingswrite(settingsfile, JSON.stringify(state, null, 2))
 }
 
 function init() {
   return async(dispatch, getState) => {
     try {
-      const content = await fs.settingsread("workspaces.json")
+      const content = await fs.settingsread(settingsfile)
       const value = {
         ...JSON.parse(content),
         status: true,
@@ -136,7 +125,7 @@ function init() {
       dispatch(workspaceAction.reset({value, nosync: true}))
     }
     catch(err) {
-      console.log("ERROR: workspaces.js:", err)
+      console.log(err)
 
       const id = uuid()
 
@@ -145,7 +134,7 @@ function init() {
         selected: id,
         [id]: {
           id: id,
-          name: "<New>",
+          name: "<Unnamed workspace>",
           files: []
         },
       }}))
@@ -153,28 +142,5 @@ function init() {
     finally {
       console.log("Workspace initialized.")
     }
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-function open(file) {
-  return async (dispatch, getState) => {
-    console.log("workspace.open:", file);
-
-    if(!(file.id in docs)) {
-      console.log("Loading:", file)
-      try {
-        const content = await mawe.load(file)
-        docs[file.id] = content;
-      }
-      catch(err) {
-        console.log("Trying to open:", file)
-        console.log("ERROR:", err)
-      }
-    }
-
-    //dispatch(workspace.setLoaded({status: true}))
-    //dispatch(workspace.setEdit({file}))
   }
 }

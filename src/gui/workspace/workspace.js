@@ -45,6 +45,7 @@ import {
 
 export function Workspace() {
   console.log("Workspace")
+
   const dispatch = useDispatch()
 
   const sensors = useSensors(
@@ -54,9 +55,6 @@ export function Workspace() {
   const current = useSelector(state => state.workspace[state.workspace.selected])
   console.log("Current=", current)
   if (!current) return null;
-  const edit = current.selected;
-
-  const itemtype = "file"
 
   //if(!edit)
   {
@@ -68,33 +66,9 @@ export function Workspace() {
     </React.Fragment>
   }
 
-  /*
-  return <ViewDoc id={edit.id}/>
-  /*
-  return <React.Fragment>
-    <EditFile id={edit.id}/>
-  </React.Fragment>
-  /*
-  return <React.Fragment>
-    <SplitEdit id={edit.id}/>
-  </React.Fragment>
-  /**/
-
-  /*
-  return <React.Fragment>
-    <Organizer id={edit.id}/>
-  </React.Fragment>
-  /*
-  return <React.Fragment>
-  <LeftSide current={current} edit={edit} container={itemtype}/>
-  <Organizer id={edit.id}/>
-  </React.Fragment>
-  /**/
-
   //---------------------------------------------------------------------------
 
   function SideBar({ workspace, style }) {
-    const dispatch = useDispatch()
 
     const { files, selected } = workspace;
 
@@ -108,16 +82,15 @@ export function Workspace() {
         <Filler />
         <ButtonGroup>
           <IconButton size="small"><Icon.NewFile /></IconButton>
-          <IconButton size="small" onClick={() => dispatch(action.workspace.selectFile({}))}><Icon.AddFiles /></IconButton>
         </ButtonGroup>
       </ToolBox>
-      <div class="TabName">Files</div>
+      <div className="TabName">Files</div>
       <VBox className="FilesTab">
         <SortableContext items={files}>
           {files.map(f => <WorkspaceItem key={f.id} id={f.id} file={f} selected={selected} />)}
         </SortableContext>
       </VBox>
-      <div class="TabName">Related</div>
+      <div className="TabName">Related</div>
       <VBox className="RelatedTab">
       </VBox>
     </VBox>
@@ -151,6 +124,7 @@ export function Workspace() {
     event.stopPropagation()
     console.log("Opening:", file)
     dispatch(action.workspace.selectFile({ file }))
+    dispatch(action.doc.open({ file }))
   }
 
   //---------------------------------------------------------------------------
@@ -167,7 +141,7 @@ export function Workspace() {
         type="Doc"
         content={file}
         className={className}
-        onClick={(e) => onOpen(e, file)}
+        onDoubleClick={(e) => onOpen(e, file)}
       >
         <span className="Name">{file.name}</span>
         <Filler />

@@ -1,47 +1,53 @@
 
 .SectionCard {
-  margin: 4pt;
+  display: flex;
+
+  overflow-y: auto;
+  overflow-x: hidden;
   /*
+  margin: 4pt;
   border: 1pt solid lightgray;
   padding: 4pt;
   */
 }
 
 .PartCard {
-  border: 2pt solid lightgray;
-  background: lightgoldenrodyellow;
-  padding: 4pt;
-
-  margin-top: 8pt;
+  border-bottom: 1pt dashed grey;
   margin-bottom: 8pt;
+
+  padding-left: 4pt;
   /*
+  margin-top: 4pt;
+  border: 2pt solid lightgray;
+  padding: 4pt;
+  background: lightgoldenrodyellow;
   margin: 4pt;
   */
 }
 
 .SceneCard {
-  background: white;
-  border: 1pt solid lightgray;
-  padding: 4pt;
-  padding-top: 8pt;
-  padding-bottom: 8pt;
+  display: flex;
+  cursor:pointer;
+
   margin-top: 2pt;
   margin-bottom: 2pt;
+
+  padding: 4pt;
+  padding-top: 6pt;
+  padding-bottom: 6pt;
   /*
+  background: white;
+  border: 1pt solid lightgray;
   margin: 4pt;
   */
 }
 
-.sceneGhost {
-  border: 2pt dotted grey;
-  /*
-  background-color: rgba(149, 184, 172, 0.226);
-  margin: 0pt;
-  */
+.SceneCard:hover {
+  background: lightgrey;
 }
 
-.sceneDrag {
-  border-width: 3pt;
-  padding-top: 8pt;
-  padding-bottom: 8pt;
+.SceneCard .Name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

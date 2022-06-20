@@ -11,18 +11,31 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const fs = require("../../../storage/localfs")
+const mawe = require("../../../document")
 
 export const docSlice = createSlice({
   name: "doc",
   initialState: {
-    uuid: null,
+    status: false,
   },
   reducers: {
-    open: (state, action) => {
-      state.uuid = action.payload
+    reset,
+    loading: (state, {payload}) => {
+      const {file, nosync} = payload
+      state.loading = true
+      state.edit = file;
     },
-    close: (state) => {
-      state.uuid = null
+    loaded: (state, {payload}) => {
+      const {file, nosync} = payload
+      state.loading = null
+      state.edit = file;
+      if(!nosync) sync(state)
+    },
+    close: (state, {payload}) => {
+      const {nosync} = payload
+      state.loading = null
+      state.edit = null
+      if(!nosync) sync(state)
     },
   }
 })
@@ -31,15 +44,92 @@ export default docSlice.reducer
 
 export const docAction = {
   ...docSlice.actions,
+  init,
+  open,
+}
 
-  /*
-  load: (fileid) => {
-    return async (dispatch, getState) => {
-      console.log("Loading:", fileid)
-      //const dir = await fs.fstat(directory)
-      //console.log("Dir:", directory, "->", dir.id);
-      //dispatch(CWD.chdir(dir.id))
+//-----------------------------------------------------------------------------
+
+function reset(state, {payload}) {
+  const {value, nosync} = payload
+  if(!nosync) sync(value)
+  return value
+}
+
+//-----------------------------------------------------------------------------
+
+var docs = {}
+
+export function docByID(id) {
+  //console.log("docByID:", id)
+  //console.log("Docs:", docs)
+  return docs[id]
+}
+
+//-----------------------------------------------------------------------------
+
+function open({file}) {
+  return async (dispatch, getState) => {
+    console.log("doc.open:", file);
+    const {id} = file;
+
+    if(!(id in docs)) {
+      console.log("Loading:", file)
+      dispatch(docAction.loading({file}))
+      try {
+        const content = await mawe.load(file)
+        docs[id] = content;
+        dispatch(docAction.loaded({file}))
+        console.log("Loaded")
+      }
+      catch(err) {
+        console.log(err)
+      }
+    } else {
+      dispatch(docAction.loaded({file}))
     }
-  },
-  */
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+const settingsfile = "settings_doc.json"
+
+async function sync(state) {
+  fs.settingswrite(settingsfile, JSON.stringify(state, null, 2))
+}
+
+function init() {
+  return async(dispatch, getState) => {
+    try {
+      const content = await fs.settingsread(settingsfile)
+      const {edit, loading, ...parsed} = JSON.parse(content)
+      if(edit) {
+        const value = {
+          ...parsed,
+          status: true,
+          loading: true,
+          edit,
+        }
+        dispatch(docAction.reset({value, nosync: true}))
+        dispatch(docAction.open({file: edit}))
+      } else {
+        const value = {
+          ...parsed,
+          status: true,
+        }
+        dispatch(docAction.reset({value, nosync: true}))
+      }
+    }
+    catch(err) {
+      console.log(err)
+
+      dispatch(docAction.reset({value: {
+        status: true,
+      }}))
+    }
+    finally {
+      console.log("Docs initialized.")
+    }
+  }
 }

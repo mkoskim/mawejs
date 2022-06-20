@@ -34,7 +34,7 @@ import {
   InfiniteScroll,
 } from "../common/factory";
 
-import {FileEntry} from "./file"
+import { FileEntry } from "./file"
 
 //-----------------------------------------------------------------------------
 
@@ -42,13 +42,13 @@ const fs = require("../../storage/localfs")
 
 //-----------------------------------------------------------------------------
 
-export function PickFiles({selected}) {
-  return <FileBrowser selected={selected}/>
+export function PickFiles({ selected }) {
+  return <FileBrowser selected={selected} />
 }
 
 //-----------------------------------------------------------------------------
 
-function FileBrowser({selected, ...props}) {
+function FileBrowser({ selected, ...props }) {
   const dir = useSelector((state) => state.cwd.path)
   const search = useSelector((state) => state.cwd.search)
 
@@ -59,14 +59,14 @@ function FileBrowser({selected, ...props}) {
   //---------------------------------------------------------------------------
 
   const options = {
-    selected: selected.reduce((lookup, file) => ({[file.id]: file, ...lookup}), {}),
+    selected: selected.reduce((lookup, file) => ({ [file.id]: file, ...lookup }), {}),
     //inform,
   }
 
   if (search !== null) {
-    return <SearchDir directory={dir} search={search} options={options}/>
+    return <SearchDir directory={dir} search={search} options={options} />
   } else {
-    return <ListDir directory={dir} options={options}/>
+    return <ListDir directory={dir} options={options} />
   }
 }
 
@@ -97,7 +97,7 @@ function ListDir({ directory, options }) {
   })
 
   useEffect(() => {
-    if(directory) getContent();
+    if (directory) getContent();
 
     async function getContent() {
       const [splitted, entries] = await Promise.all([
@@ -129,32 +129,40 @@ function ListDir({ directory, options }) {
   return <VFiller>
     <ToolBar />
     <DndContext sensors={sensors}>
-      <SplitList directory={directory} content={{files, folders}} options={options}/>
+      <SplitList directory={directory} content={{ files, folders }} options={options} />
     </DndContext>
     <DragOverlay></DragOverlay>
-    </VFiller>
+  </VFiller>
 
   function ToolBar() {
     return <ToolBox>
-      <PathButtons path={splitted} options={options}/>
+      <PathButtons path={splitted} options={options} />
+      <IconButton size="small"><Icon.Star fontSize="small"/></IconButton>
       <Filler />
       <ButtonGroup size="small">
-      <Button startIcon={<Icon.Location.Favorites/>}>Favorites</Button>
-      <Button startIcon={<Icon.Location.Home />} onClick={() => dispatch(action.CWD.location("home"))}>Home</Button>
+        <Button startIcon={<Icon.Location.Favorites />}>Favorites</Button>
+        <Button startIcon={<Icon.Location.Home />} onClick={() => dispatch(action.CWD.location("home"))}>Home</Button>
       </ButtonGroup>
     </ToolBox>
+
+    /*
+      <ButtonGroup size="small">
+      <Button size="small"><Icon.NewFolder fontSize="small"/></Button>
+      <Button size="small"><Icon.Settings fontSize="small"/></Button>
+      </ButtonGroup>
+      */
   }
 }
 
 //---------------------------------------------------------------------------
 
-function PathButtons({path, options}) {
+function PathButtons({ path, options }) {
   const dispatch = useDispatch();
 
   if (!path) return null;
 
-  const last = path[path.length-1];
-  const head = path.slice(0, path.length-1)
+  const last = path[path.length - 1];
+  const head = path.slice(0, path.length - 1)
 
   return <React.Fragment>
     <Breadcrumbs
@@ -162,29 +170,26 @@ function PathButtons({path, options}) {
       itemsBeforeCollapse={1}
       itemsAfterCollapse={5}
     >
-    {head.map(file => (
+      {head.map(file => (
+        <Button
+          style={{ textTransform: "unset" }}
+          key={file.id}
+          onClick={(e) => onOpen(e, file)}
+          variant="text"
+        >
+          {file.name ? file.name : "Local:"}
+        </Button>)
+      )}
       <Button
-        style={{textTransform: "unset"}}
-        key={file.id}
-        onClick={(e) => onOpen(e, file)}
-        variant="text"
-      >
-        {file.name ? file.name : "Local:"}
-      </Button>)
-    )}
-    <Button
-        style={{textTransform: "unset"}}
+        style={{ textTransform: "unset" }}
         key={last.id}
         variant="text"
         onClick={(e) => onMenu(e, last)}
       >
         {last.name ? last.name : "Local:"}
-      </Button>)
-    )}
+      </Button>
     </Breadcrumbs>
   </React.Fragment>
-
-  /* <IconButton size="small"><Icon.Star fontSize="small"/></IconButton> */
 
   function onOpen(e, f) {
     e.preventDefault()
@@ -204,7 +209,7 @@ function PathButtons({path, options}) {
 // for notably long time - that's bad...
 //---------------------------------------------------------------------------
 
-function SplitList({directory, content, options}) {
+function SplitList({ directory, content, options }) {
 
   console.log("SplitList:", content);
 
@@ -228,33 +233,33 @@ function SplitList({directory, content, options}) {
     return (
       <React.Fragment>
         <Label style={{ paddingLeft: 4, paddingTop: 16, paddingBottom: 8 }}>{name}</Label>
-        {visible ? <Grid entries={visible} options={options}/> : null}
+        {visible ? <Grid entries={visible} options={options} /> : null}
       </React.Fragment>
     )
   }
 
-  function Grid({entries, options}) {
+  function Grid({ entries, options }) {
     const style = {
       flexWrap: "wrap",
     };
 
     return <HBox style={style}>
-      {entries.map(f => <DraggableEntry key={f.id} id={f.id} file={f} options={options}/>)}
+      {entries.map(f => <DraggableEntry key={f.id} id={f.id} file={f} options={options} />)}
     </HBox>
   }
 
-  function DraggableEntry({file, options}) {
+  function DraggableEntry({ file, options }) {
     return <DraggableItem
-        type="File"
-        id={file.id}
-        content={file}
-      >
-        <Entry file={file} options={{...options, type: "card"}}/>
-      </DraggableItem>
+      type="File"
+      id={file.id}
+      content={file}
+    >
+      <Entry file={file} options={{ ...options, type: "card" }} />
+    </DraggableItem>
   }
 
-  function Entry({file, options}) {
-    return  <FileEntry file={file} options={{...options, type: "card"}}/>
+  function Entry({ file, options }) {
+    return <FileEntry file={file} options={{ ...options, type: "card" }} />
   }
 }
 
@@ -266,7 +271,7 @@ function SplitList({directory, content, options}) {
 //*****************************************************************************
 //*****************************************************************************
 
-function SearchDir({directory, search, options, style}) {
+function SearchDir({ directory, search, options, style }) {
 
   const dispatch = useDispatch()
 
@@ -335,7 +340,7 @@ function SearchDir({directory, search, options, style}) {
         next={fetchMore}
         hasMore={matches.hasMore}
       >
-        <FileTable files={matches.files} options={options}/>
+        <FileTable files={matches.files} options={options} />
       </InfiniteScroll>
     </VFiller>
   </VFiller>
@@ -357,10 +362,10 @@ function SearchDir({directory, search, options, style}) {
 
   //---------------------------------------------------------------------------
 
-  function FileTable({files, options}) {
+  function FileTable({ files, options }) {
     return (
       <table className="File"><tbody>
-        {files.map(f => <FileEntry key={f.id} file={f} options={{...options, type: "row"}}/>)}
+        {files.map(f => <FileEntry key={f.id} file={f} options={{ ...options, type: "row" }} />)}
       </tbody></table>
     )
   }

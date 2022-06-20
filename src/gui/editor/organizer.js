@@ -68,12 +68,20 @@ export function Organizer({id}) {
 //
 //-----------------------------------------------------------------------------
 
-function ViewSection({section}) {
-  return <div className="SectionCard">
-    <div>Section: {section.tag}</div>
-    <div>Name: {`[${section.name}]`}</div>
-    <div>{section.part.map(p => <ViewPart key={p.id} part={p}/>)}</div>
+export function ViewSection({section, ...props}) {
+  return <div className="SectionCard" {...props}>
+    <DndContext onDragEnd={onDrop}>
+      <div style={{width: "95%"}}>
+        {section.part.map(p => <ViewPart key={p.id} part={p}/>)}
+        </div>
+    </DndContext>
   </div>
+
+  function onDrop(event) {
+    const { active, over } = event;
+    console.log("Active", active)
+    console.log("Over", over)
+  }
 }
 
 function ViewPart({part}) {
@@ -85,20 +93,13 @@ function ViewPart({part}) {
     }))
   )
 
-  function onDrop(event) {
-    const { active, over } = event;
-    console.log("Active", active)
-    console.log("Over", over)
-  }
-
-  return <div className="PartCard">
-      <div>Part:</div>
-      <DndContext onDragEnd={onDrop}>
-        <SortableContext items={scenes}>
-          {scenes.map(scene => <ViewScene key={scene.id} id={scene.id} scene={scene}/>)}
-        </SortableContext>
-      </DndContext>
-    </div>
+  return (
+    <SortableContext items={scenes}>
+      <div className="PartCard">
+        {scenes.map(scene => <ViewScene key={scene.id} id={scene.id} scene={scene}/>)}
+        </div>
+    </SortableContext>
+  )
 }
 
 function ViewScene({id, scene, ...props}) {
@@ -122,7 +123,7 @@ function ViewScene({id, scene, ...props}) {
       style={style}
       {...attributes}
       {...listeners}>
-    {scene.name}
+    <span className="Name">{scene.name}</span>
     </div>
   );
 }

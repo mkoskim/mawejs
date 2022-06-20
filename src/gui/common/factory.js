@@ -55,7 +55,10 @@ export const Icon = {
   Starred: muiIcons.Star,
 
   NewFile: muiIcons.NoteAddOutlined,
+  NewFolder: muiIcons.CreateNewFolderOutlined,
   AddFiles: muiIcons.FolderOpenOutlined,
+
+  Settings: muiIcons.SettingsOutlined,
 
   Location: {
     Home: muiIcons.Home,
