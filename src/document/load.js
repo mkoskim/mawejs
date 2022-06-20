@@ -50,12 +50,17 @@ async function mawe(file) {
   //---------------------------------------------------------------------------
 
   function et2js(elem) {
+    const [text, tail] = [elem.text, elem.tail].map(
+      text => text.replace(/\s+/g, ' ').trim()
+      //.replace(/^\s+|\s+$/gm,'')
+    );
+
     return {
       id: uuid(),
       tag: elem.tag,
       attr: {...elem.attrib},
-      text: elem.text,
-      tail: elem.tail,
+      text,
+      tail,
       children: elem.getchildren().map(et2js),
     }
   }

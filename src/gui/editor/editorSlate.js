@@ -30,6 +30,7 @@ import {
   SearchBox, addHotkeys,
   Label,
   Grid,
+  Separator,
 } from "../common/factory";
 
 import isHotkey from 'is-hotkey';
@@ -62,9 +63,15 @@ export function RawDoc({doc}) {
 }
 
 export function SlateDoc({doc}) {
-  return <pre style={{fontSize: "10pt"}}>{`${JSON.stringify(deserialize(doc), null, 2)}`}</pre>
-}
+  const content = deserialize(doc).body;
 
+  const printout = content;
+  //const printout = wordcount(content)
+
+  return <React.Fragment>
+    <pre style={{fontSize: "10pt"}}>{`${JSON.stringify(printout, null, 2)}`}</pre>
+  </React.Fragment>
+}
 
 //*****************************************************************************
 //*****************************************************************************
@@ -90,11 +97,15 @@ function EditFile({doc}) {
     "mod+s": null,
   }));
 
+  const [content, setContent] = useState(deserialize(doc).body);
+  //function setBody(part)  { setContent({...content, body: part}) }
+  //function setNotes(part) { setContent({...content, notes: part}) }
+
   const mode="Centered";
   //const mode="Primary";
 
   return <VFiller>
-    <ToolBar doc={doc}/>
+    <ToolBar doc={doc} content={content}/>
     <HFiller style={{overflow: "auto", background: "#F8F8F8"}}>
       <ViewSection
         section={doc.story.body}
@@ -103,10 +114,11 @@ function EditFile({doc}) {
       <div
         style={{overflow: "auto"}}
         className={`Board ${mode}`}>
-          <SlateEdit doc={doc}/>
+          <SlateEdit content={content} setContent={setContent}/>
         </div>
       </HFiller>
   </VFiller>
+
 }
 
 //-----------------------------------------------------------------------------
@@ -118,12 +130,19 @@ function onClose(e, dispatch) {
 
 //-----------------------------------------------------------------------------
 
-function ToolBar({doc}) {
+function ToolBar({doc, content}) {
   const dispatch = useDispatch();
+
+  const {words, chars} = wordcount(content)
 
   return (
     <ToolBox>
       <Label>{doc.file.name}</Label>
+      <Separator/>
+      <Label>{`Words: ${words}`}</Label>
+      <Separator/>
+      <Label>{`Chars: ${chars}`}</Label>
+      <Separator/>
       <Filler/>
       <Button onClick={(e) => onClose(e, dispatch)}><Icon.Close/></Button>
     </ToolBox>
@@ -132,21 +151,13 @@ function ToolBar({doc}) {
 
 //-----------------------------------------------------------------------------
 
-function SlateEdit({doc}) {
-  const [content, setContent] = useState(deserialize(doc));
-
-  //console.log("Content:", content);
-  //console.log("Body:", content.body);
-
-  function setBody(part)  { setContent({...content, body: part}) }
-  function setNotes(part) { setContent({...content, notes: part}) }
-
+function SlateEdit({content, setContent}) {
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
   const renderElement = useCallback(props => <Element {...props} />, [])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
 
   return (
-    <Slate editor={editor} value={content.body} onChange={setBody}>
+    <Slate editor={editor} value={content} onChange={setContent}>
     <Editable
       className="Sheet Shadow"
       autoFocus
@@ -159,6 +170,25 @@ function SlateEdit({doc}) {
 }
 
 //-----------------------------------------------------------------------------
+
+function wordcount(content) {
+  // Word count from Slate buffer
+  const chars = content
+    .filter(elem => elem.type === "p")
+    .map(elem => elem.children)
+    .flat()
+    .map(elem => elem.text)
+    .join(" ")
+    .replace(/\s+/g, ' ').trim()
+    ;
+  const words = chars
+    .split(' ')
+    ;
+  return {
+    words: words.length,
+    chars: chars.length
+  }
+}
 
 function renderPlain({doc}) {
 }
