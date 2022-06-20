@@ -120,11 +120,11 @@ async function mawe(file) {
 
     return withextras({
       ...extra,
-      uuid: uuid(),
+      id: uuid(),
       tag: "body",
       name: name,
       head: parseHead(elem.find("head")),
-      part: parseParts(elem),
+      parts: parseParts(elem),
     }, elem);
   }
 
@@ -150,10 +150,10 @@ async function mawe(file) {
 
   function parseNotes(elem) {
     return withextras({
-      uuid: uuid(),
+      id: uuid(),
       tag: "notes",
       head: null,
-      part: parseParts(elem),
+      parts: parseParts(elem),
     }, elem);
   }
 

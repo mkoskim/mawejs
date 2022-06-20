@@ -36,9 +36,19 @@ import isHotkey from 'is-hotkey';
 
 //-----------------------------------------------------------------------------
 
-export function ViewDoc({id}) {
+export function EditView({id}) {
   const doc = docByID(id)
 
+  console.log("ID", id, "Doc:", doc)
+
+  //return <RawDoc doc={doc}/>
+  //return <SlateDoc doc={doc}/>
+  return <EditFile doc={doc}/>
+}
+
+//-----------------------------------------------------------------------------
+
+export function RawDoc({doc}) {
   return <Grid container>
     <Grid item xs={6}>
       <pre style={{fontSize: "10pt"}}>{`${JSON.stringify(doc, null, 2)}`}</pre>
@@ -50,6 +60,11 @@ export function ViewDoc({id}) {
     </Grid>
   </Grid>
 }
+
+export function SlateDoc({doc}) {
+  return <pre style={{fontSize: "10pt"}}>{`${JSON.stringify(deserialize(doc), null, 2)}`}</pre>
+}
+
 
 //*****************************************************************************
 //*****************************************************************************
@@ -66,11 +81,7 @@ export function ViewDoc({id}) {
 //*****************************************************************************
 //*****************************************************************************
 
-export function EditFile({id}) {
-
-  const doc = docByID(id)
-
-  console.log("ID", id, "Doc:", doc)
+function EditFile({doc}) {
   const dispatch = useDispatch();
 
   useEffect(() => addHotkeys({
@@ -96,7 +107,6 @@ export function EditFile({id}) {
         </div>
       </HFiller>
   </VFiller>
-
 }
 
 //-----------------------------------------------------------------------------
@@ -175,19 +185,23 @@ function Leaf({leaf, attributes, children}) {
 //-----------------------------------------------------------------------------
 
 function deserialize(doc) {
-  const body = Story2Slate(doc.story);
-  const notes = Part2Slate(doc.story.notes.part[0]);
+  const head = Head2Slate(doc.story);
+  const body = Section2Slate(doc.story.body);
+  const notes = Section2Slate(doc.story.notes);
 
   return {
-    body: body,
+    body: head.concat(body),
     notes: notes,
   }
 
-  function Story2Slate(story) {
+  function Head2Slate(story) {
     return [
       { type: "title", children: [{text: story.body.head.title}] },
-      ]
-      .concat(Part2Slate(story.body.part[0]))
+    ]
+  }
+
+  function Section2Slate(section) {
+    return section.parts.map(Part2Slate).flat(1)
       .concat([{type: "p", children: [{text: ""}]}])
   }
 

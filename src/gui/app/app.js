@@ -16,8 +16,7 @@ import {useEffect} from "react"
 import { useSelector, useDispatch } from "react-redux";
 import {action} from "./store"
 
-import {Organizer} from "../editor/organizer";
-import {EditFile} from "../editor/editorSlate";
+import {EditView} from "../editor/editorSlate";
 import {Workspace} from "../workspace";
 import View from "../views"
 
@@ -73,7 +72,7 @@ function ChooseView() {
     if(loading) {
       return <Loading />
     }
-    return <EditFile id={edit.id}/>
+    return <EditView id={edit.id}/>
   }
 
   return <Workspace />

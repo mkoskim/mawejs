@@ -72,7 +72,7 @@ export function ViewSection({section, ...props}) {
   return <div className="SectionCard" {...props}>
     <DndContext onDragEnd={onDrop}>
       <div style={{width: "95%"}}>
-        {section.part.map(p => <ViewPart key={p.id} part={p}/>)}
+        {section.parts.map(p => <ViewPart key={p.id} part={p}/>)}
         </div>
     </DndContext>
   </div>
