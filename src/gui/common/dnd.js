@@ -57,12 +57,12 @@ export function SortableItem({id, type, content, ...props}) {
   };
 
   return <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      {...props}
-    />
+    ref={setNodeRef}
+    style={style}
+    {...attributes}
+    {...listeners}
+    {...props}
+  />
 }
 
 export function DraggableItem({id, type, content, ...props}) {
