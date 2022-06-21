@@ -77,20 +77,12 @@ function SingleEdit({id, left, right, center, refresh}) {
     "mod+s": null,
   }));
 
-  console.log("Edit:", id)
+  //console.log("Edit:", id)
 
   const mode="Centered";
   //const mode="Primary";
 
-  /*
-  return <React.Fragment>
-    <ToolBar doc={doc} info={info}/>
-    <HBox>
-      <SlateEdit style={{minWidth: "50%"}} content={content} setContent={setContent}/>
-      <SlateDoc content={content}/>
-      </HBox>
-  </React.Fragment>
-  /*/
+  //*
   return <React.Fragment>
     <ToolBar doc={doc} info={info}/>
     <HFiller style={{overflow: "auto", background: "#F8F8F8"}}>
@@ -104,6 +96,14 @@ function SingleEdit({id, left, right, center, refresh}) {
         <SlateEdit content={content} setContent={setContent}/>
         </div>
       </HFiller>
+  </React.Fragment>
+  /*/
+  return <React.Fragment>
+    <ToolBar doc={doc} info={info}/>
+    <HBox>
+      <SlateEdit style={{minWidth: "50%", padding: "0.5cm"}} content={content} setContent={setContent}/>
+      <SlateDoc content={content}/>
+      </HBox>
   </React.Fragment>
   /**/
 }
@@ -216,8 +216,17 @@ function onClose(e, dispatch) {
 //-----------------------------------------------------------------------------
 
 function SlateEdit({doc, content, setContent, refresh, ...props}) {
-  //const editor = useMemo(() => withHistory(withReact(createEditor())), [])
-  const [editor] = useState(() => withReact(withHistory(createEditor())))
+  const editor = useMemo(() => withHistory(withReact(createEditor())), [])
+  //const [editor] = useState(() => withReact(withHistory(createEditor())))
+
+  const {normalizeNode} = editor
+  editor.normalizeNode = entry => {
+    const [node, path] = entry
+
+    //console.log("Node/path:", node, path)
+
+    return normalizeNode(entry)
+  }
 
   const renderElement = useCallback(props => <Element {...props} />, [])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
@@ -240,7 +249,6 @@ function SlateEdit({doc, content, setContent, refresh, ...props}) {
 
 function renderPlain({content}) {
 }
-
 
 function Element({element, attributes, children}) {
   switch(element.type) {

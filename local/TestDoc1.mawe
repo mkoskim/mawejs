@@ -34,6 +34,9 @@ Story: New Story
 <missing>Mauris tempus varius orci in cursus.</missing>
 <synopsis>Pellentesque non molestie enim, ullamcorper suscipit sem.</synopsis>
 <p>Mauris sed nunc efficitur, tempus est eu, ornare arcu.</p>
+<br/>
+<p>Interdum et malesuada fames ac ante ipsum primis in faucibus.</p>
+<p>Suspendisse sit amet tortor a lacus sollicitudin viverra.</p>
 </scene>
 
 <scene name="B">
