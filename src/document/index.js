@@ -45,8 +45,8 @@ async function load(file) {
       basename,
       suffix,
       story: {
-        name: basename,
-        ...story
+        ...story,
+        name: story.name ?? basename,
       }
     }
   } catch (e) {
