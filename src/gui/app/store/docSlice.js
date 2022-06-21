@@ -74,13 +74,13 @@ function open({file}) {
     const {id} = file;
 
     if(!(id in docs)) {
-      console.log("Loading:", file)
+      console.log("doc.open: Loading:", file)
       dispatch(docAction.loading({file}))
       try {
         const content = await mawe.load(file)
         docs[id] = content;
         dispatch(docAction.loaded({file}))
-        console.log("Loaded")
+        console.log("doc.open: Loaded")
       }
       catch(err) {
         console.log(err)

@@ -93,12 +93,9 @@ export default function App(props) {
 
 function ChooseView() {
 
-  console.log("Choose view")
-
   const edit = useSelector(state => state.doc.edit)
-  const loading = useSelector(state => state.doc.loading)
 
-  console.log("Edit:", edit, loading)
+  console.log("ChooseView:", edit?.id)
 
   if(edit) {
     return <EditView/>

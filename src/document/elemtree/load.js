@@ -53,10 +53,12 @@ export async function mawe(file) {
     if(root.tag !== "story") throw Error();
     if(root.get("format") !== "mawe") throw Error();
 
-    const {uuid, name, format, ...extra} = root.attrib;
+    const {uuid, name, version = 1, format, ...extra} = root.attrib;
+
+    if(version > 2) throw Error(`File version ${version} is too new.`)
 
     return withextras({
-      ...{uuid, name, ...extra},
+      ...{uuid, name, version, ...extra},
       body: parseBody(root.find("body")),
       notes: parseNotes(root.find("notes")),
       version: root.findall("version").map(parseBody),

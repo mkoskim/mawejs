@@ -42,22 +42,19 @@ export function EditView() {
   const edit = useSelector(state => state.doc.edit)
   const loading = useSelector(state => state.doc.loading)
 
-  console.log("Edit:", edit, loading)
+  console.log("EditView:", loading, edit.id)
 
   // Force (slate) re-render when ID changes
   const [id, setID] = useState(edit.id)
-  useEffect(
-    () => setID(edit.id),
-    [edit.id]
-  )
+  useEffect(() => setID(edit.id), [edit.id])
 
-  const refresh = id !== edit.id
+  const refresh = (id !== edit.id)
 
   //return <RawDoc doc={doc}/>
   //return <SlateDoc doc={doc}/>
   return <VFiller>
     <WorkspaceTab/>
-    {loading || refresh ? <Loading/> : <SingleEdit id={id} /> }
+    {loading || refresh ? null : <SingleEdit id={id} /> }
     </VFiller>
 }
 
@@ -80,6 +77,8 @@ function SingleEdit({id, left, right, center, refresh}) {
     "mod+s": null,
   }));
 
+  console.log("Edit:", id)
+
   const mode="Centered";
   //const mode="Primary";
 
@@ -97,7 +96,7 @@ function SingleEdit({id, left, right, center, refresh}) {
     <HFiller style={{overflow: "auto", background: "#F8F8F8"}}>
       <ViewSection
         section={doc.story.body}
-        style={{minWidth: "25%", maxWidth: "25%", background: "#EEE"}}
+        style={{width: "25%", maxWidth: "25%", background: "#EEE"}}
       />
       <div
         style={{overflow: "auto"}}
@@ -164,9 +163,10 @@ function SlateDoc({style, content}) {
 function WorkspaceTab() {
   const dispatch = useDispatch()
   const current = useSelector(state => state.workspace[state.workspace.selected])
-  const { files, selected } = current;
+  const { name, files, selected } = current;
 
-  return <HBox style={{background: "#EEE"}}>
+  return <HBox style={{background: "#EEE", alignItems: "center"}}>
+    <Button onClick={(e) => onClose(e, dispatch)}>{`${name}:`}</Button>
     {files.map(f => <Button
       key={f.id} id={f.id}
       style={{background: (f.id === selected.id) ? "white" : null}}
@@ -174,7 +174,6 @@ function WorkspaceTab() {
       >
         {getName(f)}
       </Button>)}
-    <Button onClick={(e) => onClose(e, dispatch)}><Icon.AddFiles/></Button>
   </HBox>
 
   function getName(file) {
@@ -217,9 +216,8 @@ function onClose(e, dispatch) {
 //-----------------------------------------------------------------------------
 
 function SlateEdit({doc, content, setContent, refresh, ...props}) {
-  const editor = useMemo(() => withHistory(withReact(createEditor())), [])
-  //const editor = useMemo(() => withHistory(withReact(createEditor())), [doc])
-  //const [editor] = useState(() => withReact(withHistory(createEditor())))
+  //const editor = useMemo(() => withHistory(withReact(createEditor())), [])
+  const [editor] = useState(() => withReact(withHistory(createEditor())))
 
   const renderElement = useCallback(props => <Element {...props} />, [])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
