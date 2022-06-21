@@ -6,8 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid, file2buf} from "../util";
-import {Document} from "../Document";
+import { uuid, file2buf } from "../util";
 const et = require("elementtree");
 
 //-----------------------------------------------------------------------------
@@ -40,25 +39,24 @@ const et = require("elementtree");
 // Extract mawe from file
 //-----------------------------------------------------------------------------
 
-function buf2tree(buffer) {
-  return et.parse(buffer).getroot();
-}
-
-export async function mawe(file) {
+export async function loadmawe(file) {
   const root = buf2tree(await file2buf(file))
+  return parseRoot(root)
 
-  return new Document(file, parseRoot(root));
+  function buf2tree(buffer) {
+    return et.parse(buffer).getroot();
+  }
 
   function parseRoot(root) {
-    if(root.tag !== "story") throw Error();
-    if(root.get("format") !== "mawe") throw Error();
+    if (root.tag !== "story") throw Error();
+    if (root.get("format") !== "mawe") throw Error();
 
-    const {uuid, name, version = 1, format, ...extra} = root.attrib;
+    const { uuid, name, version = 1, format, ...extra } = root.attrib;
 
-    if(version > 2) throw Error(`File version ${version} is too new.`)
+    if (version > 2) throw Error(`File version ${version} is too new.`)
 
     return withextras({
-      ...{uuid, name, version, ...extra},
+      ...{ uuid, name, version, ...extra },
       body: parseBody(root.find("body")),
       notes: parseNotes(root.find("notes")),
       version: root.findall("version").map(parseBody),
@@ -66,7 +64,7 @@ export async function mawe(file) {
   }
 
   function parseBody(elem) {
-    const {name, modified, ...extra} = elem.attrib;
+    const { name, modified, ...extra } = elem.attrib;
 
     return withextras({
       ...extra,
@@ -125,7 +123,7 @@ export async function mawe(file) {
     return {
       id: elem.id ?? uuid(),
       tag: elem.tag,
-      attr: {...elem.attrib},
+      attr: { ...elem.attrib },
       text,
       tail,
       children: elem.getchildren().map(et2js),

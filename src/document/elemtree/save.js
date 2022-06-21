@@ -36,7 +36,7 @@ function tree2buf(root) {
 // Save stories in .mawe format
 //-----------------------------------------------------------------------------
 
-export async function mawe(doc) {
+export async function savemawe(doc) {
 
   //---------------------------------------------------------------------------
   // Build tree. Add some comment blocks to make XML bit more readable.

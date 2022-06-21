@@ -9,9 +9,9 @@
 /* eslint-disable no-unused-vars */
 
 import { createSlice } from "@reduxjs/toolkit";
+import {mawe} from "../../../document"
 
 const fs = require("../../../storage/localfs")
-const mawe = require("../../../document")
 
 export const docSlice = createSlice({
   name: "doc",
@@ -80,7 +80,7 @@ function open({file}) {
         const content = await mawe.load(file)
         docs[id] = content;
         dispatch(docAction.loaded({file}))
-        console.log("doc.open: Loaded")
+        console.log("doc.open: Loaded", content)
       }
       catch(err) {
         console.log(err)
