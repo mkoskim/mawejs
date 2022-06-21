@@ -35,7 +35,7 @@ export class Document {
     this.file = file;
     this.story = story;
 
-    //if(!this?.story.name) this.story.name = this.basename;
+    if(!this.story.name) this.story.name = this.basename;
   }
 
   //---------------------------------------------------------------------------

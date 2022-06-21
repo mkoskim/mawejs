@@ -124,20 +124,11 @@ function ListDir({ directory, options }) {
   function ToolBar() {
     return <ToolBox>
       <PathButtons path={splitted} options={options} />
-      <IconButton size="small"><Icon.Star fontSize="small"/></IconButton>
+      <Button variant="text"><Icon.Star/></Button>
       <Filler />
-      <ButtonGroup size="small">
-        <Button startIcon={<Icon.Location.Favorites />}>Favorites</Button>
-        <Button startIcon={<Icon.Location.Home />} onClick={() => dispatch(action.CWD.location("home"))}>Home</Button>
-      </ButtonGroup>
+      <Button variant="text" startIcon={<Icon.Location.Favorites />}>Favorites</Button>
+      <Button variant="text" startIcon={<Icon.Location.Home />} onClick={() => dispatch(action.CWD.location("home"))}>Home</Button>
     </ToolBox>
-
-    /*
-      <ButtonGroup size="small">
-      <Button size="small"><Icon.NewFolder fontSize="small"/></Button>
-      <Button size="small"><Icon.Settings fontSize="small"/></Button>
-      </ButtonGroup>
-      */
   }
 }
 
@@ -219,7 +210,7 @@ function SplitList({ directory, content, options }) {
 
     return (
       <React.Fragment>
-        <Label style={{ paddingLeft: 4, paddingTop: 16, paddingBottom: 8 }}>{name}</Label>
+        <Label style={{paddingLeft: 4, paddingTop: 16, paddingBottom: 8 }} text={name}/>
         {visible ? <Grid entries={visible} options={options} /> : null}
       </React.Fragment>
     )

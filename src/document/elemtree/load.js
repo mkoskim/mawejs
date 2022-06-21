@@ -11,6 +11,32 @@ import {Document} from "../Document";
 const et = require("elementtree");
 
 //-----------------------------------------------------------------------------
+// File structure:
+//
+// <story format="mawe" uuid="xxx">
+//    <body name="v2.2">
+//      <head> ... </head>
+//      <part> ... </part>
+//      <part> ... </part>
+//      ...
+//    </body>
+//    <notes>
+//      <part> ... </part>
+//      <part> ... </part>
+//      ...
+//    </notes>
+//    <version name="A">
+//      <head> ... </head>
+//      <part> ... </part>
+//      <part> ... </part>
+//      ...
+//    </version>
+//    <version name="B"> ... </version>
+//    ...
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
 // Extract mawe from file
 //-----------------------------------------------------------------------------
 
@@ -22,68 +48,6 @@ export async function mawe(file) {
   const root = buf2tree(await file2buf(file))
 
   return new Document(file, parseRoot(root));
-
-  //---------------------------------------------------------------------------
-  // We convert element tree to JS objects. This way we can make
-  // copies of the trees e.g. when making versions.
-  //---------------------------------------------------------------------------
-
-  function et2js(elem) {
-    const [text, tail] = [elem.text, elem.tail].map(
-      text => text.replace(/\s+/g, ' ').trim()
-      //.replace(/^\s+|\s+$/gm,'')
-    );
-
-    return {
-      id: elem.id ?? uuid(),
-      tag: elem.tag,
-      attr: {...elem.attrib},
-      text,
-      tail,
-      children: elem.getchildren().map(et2js),
-    }
-  }
-
-  //---------------------------------------------------------------------------
-  // withextras() adds XML elements not processed by the loader to the end
-  // of the block. This may be used to implement new features that not all
-  // editors support yet. This could be extended so that you could apply
-  // attributes to tags that would be preserved by editors.
-  //---------------------------------------------------------------------------
-
-  function withextras(obj, elem) {
-    const extra = elem.getchildren().filter(child => obj[child.tag] === undefined);
-    return {
-      ...obj,
-      extra: extra.map(et2js),
-    }
-  }
-
-  //---------------------------------------------------------------------------
-  // File structure:
-  //
-  // <story format="mawe" uuid="xxx">
-  //    <body name="v2.2">
-  //      <head> ... </head>
-  //      <part> ... </part>
-  //      <part> ... </part>
-  //      ...
-  //    </body>
-  //    <notes>
-  //      <part> ... </part>
-  //      <part> ... </part>
-  //      ...
-  //    </notes>
-  //    <version name="A">
-  //      <head> ... </head>
-  //      <part> ... </part>
-  //      <part> ... </part>
-  //      ...
-  //    </version>
-  //    <version name="B"> ... </version>
-  //    ...
-  //
-  //---------------------------------------------------------------------------
 
   function parseRoot(root) {
     if(root.tag !== "story") throw Error();
@@ -144,4 +108,41 @@ export async function mawe(file) {
   function parseParts(elem) {
     return elem.findall("part", []).map(et2js);
   }
+
+  //---------------------------------------------------------------------------
+  // We convert element tree to JS objects. This way we can make
+  // copies of the trees e.g. when making versions.
+  //---------------------------------------------------------------------------
+
+  function et2js(elem) {
+    const [text, tail] = [elem.text, elem.tail].map(
+      text => text.replace(/\s+/g, ' ').trim()
+      //.replace(/^\s+|\s+$/gm,'')
+    );
+
+    return {
+      id: elem.id ?? uuid(),
+      tag: elem.tag,
+      attr: {...elem.attrib},
+      text,
+      tail,
+      children: elem.getchildren().map(et2js),
+    }
+  }
+
+  //---------------------------------------------------------------------------
+  // withextras() adds XML elements not processed by the loader to the end
+  // of the block. This may be used to implement new features that not all
+  // editors support yet. This could be extended so that you could apply
+  // attributes to tags that would be preserved by editors.
+  //---------------------------------------------------------------------------
+
+  function withextras(obj, elem) {
+    const extra = elem.getchildren().filter(child => obj[child.tag] === undefined);
+    return {
+      ...obj,
+      extra: extra.map(et2js),
+    }
+  }
+
 }

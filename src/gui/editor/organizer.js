@@ -123,7 +123,7 @@ function ViewScene({id, scene, ...props}) {
       style={style}
       {...attributes}
       {...listeners}>
-    <span className="Name">{scene.name}</span>
+    <Label className="Name" text={scene.name}/>
     </div>
   );
 }

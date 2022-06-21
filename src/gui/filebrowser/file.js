@@ -53,7 +53,7 @@ export function FileEntry({file, options}) {
       onDoubleClick={callback}
       >
       {icon}
-      <div style={{marginLeft: "8pt"}}>{file.name}</div>
+      <Label style={{marginLeft: "8pt"}} text={file.name}/>
     </HBox>;
   }
   if(options.type === "row") {
@@ -62,8 +62,8 @@ export function FileEntry({file, options}) {
       onDoubleClick={callback}
     >
       <td className="FileIcon">{icon}</td>
-      <td className="FileName">{file.name}</td>
-      <td className="FileDir">{file.relpath}</td>
+      <td className="FileName"><Label text={file.name}/></td>
+      <td className="FileDir"><Label text={file.relpath}/></td>
     </tr>;
   }
   return null;

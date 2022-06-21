@@ -28,6 +28,7 @@ import {
   Tooltip,
   Divider, CircularProgress as Spinner,
   Grid,
+  Typography,
 } from "@mui/material"
 
 import DeleteIcon from "@mui/icons-material/Delete"
@@ -215,11 +216,17 @@ export function Button({tooltip, style, ...props}) {
 
 //-----------------------------------------------------------------------------
 
-export function Label({style, ...props}) {
-  return <div display="span" style={style} {...props}/>
+export function Label({text, variant="body1", style, children, ...props}) {
+  return <Typography
+    variant={variant}
+    style={{...style}}
+    {...props}
+    >
+      {text}{children}
+    </Typography>
 }
 
-export function Input({style, ...props}) {
+export function Input(props) {
   return <TextField {...props}/>
 }
 

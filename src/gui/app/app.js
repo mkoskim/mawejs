@@ -22,6 +22,34 @@ import View from "../views"
 
 import {VBox, HBox, Loading} from "../common/factory";
 
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const myTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#222",
+    },
+  },
+  typography: {
+    fontSize: 12,
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          minWidth: 0,
+          fontSize: 14,
+        },
+      }
+    },
+    MuiBreadcrumbs: {
+      styleOverrides: {
+      }
+    }
+  },
+});
+
 //-----------------------------------------------------------------------------
 
 export default function App(props) {
@@ -54,7 +82,11 @@ export default function App(props) {
     return <View.Starting />
   }
 
-  return <HBox className="ViewPort"><ChooseView /></HBox>
+  return <HBox className="ViewPort">
+    <ThemeProvider theme={myTheme}>
+      <ChooseView />
+    </ThemeProvider>
+  </HBox>
 }
 
 //-----------------------------------------------------------------------------

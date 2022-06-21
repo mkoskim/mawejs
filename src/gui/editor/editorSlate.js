@@ -166,23 +166,23 @@ function WorkspaceTab() {
   const current = useSelector(state => state.workspace[state.workspace.selected])
   const { files, selected } = current;
 
-  return <HBox>
-    <ToggleButtonGroup
-      value={selected.id}
-      exclusive
-      //onChange={handleAlignment}
-    >
-    {files.map(f => <ToggleButton
-      size="small"
-      key={f.id} id={f.id} value={f.id}
+  return <HBox style={{background: "#EEE"}}>
+    {files.map(f => <Button
+      key={f.id} id={f.id}
+      style={{background: (f.id === selected.id) ? "white" : null}}
       onClick={(e) => onOpen(e, dispatch, f)}
       >
-        {f.name}
-      </ToggleButton>)}
-    </ToggleButtonGroup>
+        {getName(f)}
+      </Button>)}
     <Button onClick={(e) => onClose(e, dispatch)}><Icon.AddFiles/></Button>
   </HBox>
+
+  function getName(file) {
+    const doc = docByID(file.id)
+    if(doc) return doc.story.name
+    return file.name
   }
+}
 
 function ToolBar({doc, info}) {
   const dispatch = useDispatch();

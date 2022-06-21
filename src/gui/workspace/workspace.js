@@ -79,19 +79,17 @@ export function Workspace() {
 
     return <VBox className={className} style={style}>
       <ToolBox>
-        {workspace.name}
+        <Label text={workspace.name}/>
         <Filler />
-        <ButtonGroup>
-          <IconButton size="small"><Icon.NewFile /></IconButton>
-        </ButtonGroup>
+        <Button variant="text"><Icon.NewFile /></Button>
       </ToolBox>
-      <div className="TabName">Files</div>
+      <div className="TabName"><Label text="Files"/></div>
       <VBox className="FilesTab">
         <SortableContext items={files}>
           {files.map(f => <WorkspaceItem key={f.id} id={f.id} file={f} selected={selected} />)}
         </SortableContext>
       </VBox>
-      <div className="TabName">Related</div>
+      <div className="TabName"><Label text="Related"/></div>
       <VBox className="RelatedTab">
       </VBox>
     </VBox>
@@ -144,7 +142,7 @@ export function Workspace() {
         className={className}
         onClick={(e) => onOpen(e, file)}
       >
-        <span className="Name">{file.name}</span>
+        <Label className="Name" text={file.name}/>
         <Filler />
         <IconButton size="small" onClick={(e) => onRemove(e, file)}>
           <Icon.Close fontSize="small" />
