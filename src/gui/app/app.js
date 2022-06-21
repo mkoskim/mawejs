@@ -69,10 +69,7 @@ function ChooseView() {
   console.log("Edit:", edit, loading)
 
   if(edit) {
-    if(loading) {
-      return <Loading />
-    }
-    return <EditView id={edit.id}/>
+    return <EditView/>
   }
 
   return <Workspace />

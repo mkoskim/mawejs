@@ -16,12 +16,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { action } from "../app/store"
 
 import {
-  DndContext, DragOverlay,
-  useSensors, useSensor, MouseSensor,
-  DraggableItem,
-} from "../common/dnd"
-
-import {
   Box, FlexBox, VBox, HBox, HFiller, VFiller,
   Filler, Separator,
   Button, IconButton, Icon, ButtonGroup,
@@ -85,10 +79,6 @@ function ListDir({ directory, options }) {
     "mod+f": () => dispatch(action.CWD.search("")),
   }));
 
-  const sensors = useSensors(
-    useSensor(MouseSensor, { activationConstraint: { distance: 15 } })
-  )
-
   const [state, setState] = useState({
     fetched: undefined,
     splitted: undefined,
@@ -128,11 +118,8 @@ function ListDir({ directory, options }) {
 
   return <VFiller>
     <ToolBar />
-    <DndContext sensors={sensors}>
       <SplitList directory={directory} content={{ files, folders }} options={options} />
-    </DndContext>
-    <DragOverlay></DragOverlay>
-  </VFiller>
+    </VFiller>
 
   function ToolBar() {
     return <ToolBox>
@@ -244,18 +231,8 @@ function SplitList({ directory, content, options }) {
     };
 
     return <HBox style={style}>
-      {entries.map(f => <DraggableEntry key={f.id} id={f.id} file={f} options={options} />)}
+      {entries.map(f => <Entry key={f.id} id={f.id} file={f} options={options} />)}
     </HBox>
-  }
-
-  function DraggableEntry({ file, options }) {
-    return <DraggableItem
-      type="File"
-      id={file.id}
-      content={file}
-    >
-      <Entry file={file} options={{ ...options, type: "card" }} />
-    </DraggableItem>
   }
 
   function Entry({ file, options }) {

@@ -3,9 +3,6 @@
 //
 // File editor
 //
-// List of different editor frameworks:
-// https://gist.github.com/manigandham/65543a0bc2bf7006a487
-//
 //*****************************************************************************
 //*****************************************************************************
 
@@ -26,11 +23,12 @@ import {ViewSection} from "./organizer"
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Icon,
+  ToggleButton, ToggleButtonGroup,
   Input,
   SearchBox, addHotkeys,
   Label,
   Grid,
-  Separator,
+  Separator, Loading,
 } from "../common/factory";
 
 import isHotkey from 'is-hotkey';
@@ -39,12 +37,42 @@ import isHotkey from 'is-hotkey';
 // Choose the view
 //-----------------------------------------------------------------------------
 
-export function EditView({id}) {
-  const dispatch = useDispatch();
+export function EditView() {
+
+  const edit = useSelector(state => state.doc.edit)
+  const loading = useSelector(state => state.doc.loading)
+
+  console.log("Edit:", edit, loading)
+
+  // Force (slate) re-render when ID changes
+  const [id, setID] = useState(edit.id)
+  useEffect(
+    () => setID(edit.id),
+    [edit.id]
+  )
+
+  const refresh = id !== edit.id
+
+  //return <RawDoc doc={doc}/>
+  //return <SlateDoc doc={doc}/>
+  return <VFiller>
+    <WorkspaceTab/>
+    {loading || refresh ? <Loading/> : <SingleEdit id={id} /> }
+    </VFiller>
+}
+
+//-----------------------------------------------------------------------------
+// Single edit with sidebars
+
+function SingleEdit({id, left, right, center, refresh}) {
 
   const doc = docByID(id)
 
-  //console.log("ID", id, "Doc:", doc)
+  const [content, setContent] = useState(deserialize(doc).body);
+
+  const info = getinfo(content)
+
+  const dispatch = useDispatch();
 
   useEffect(() => addHotkeys({
     "mod+o": (e) => onClose(e, dispatch),
@@ -52,35 +80,19 @@ export function EditView({id}) {
     "mod+s": null,
   }));
 
-  //return <RawDoc doc={doc}/>
-  //return <SlateDoc doc={doc}/>
-  return <SingleEdit doc={doc}/>
-}
-
-//-----------------------------------------------------------------------------
-
-function onClose(e, dispatch) {
-  if(e) e.preventDefault()
-  // Move modifications to doc
-  dispatch(action.doc.close({}))
-}
-
-//-----------------------------------------------------------------------------
-// Single edit with sidebars
-
-function SingleEdit({doc, left, right, center}) {
-
-  const [content, setContent] = useState(deserialize(doc).body);
-
-  const info = getinfo(content)
-
-  //function setBody(part)  { setContent({...content, body: part}) }
-  //function setNotes(part) { setContent({...content, notes: part}) }
-
   const mode="Centered";
   //const mode="Primary";
 
-  return <VFiller>
+  /*
+  return <React.Fragment>
+    <ToolBar doc={doc} info={info}/>
+    <HBox>
+      <SlateEdit style={{minWidth: "50%"}} content={content} setContent={setContent}/>
+      <SlateDoc content={content}/>
+      </HBox>
+  </React.Fragment>
+  /*/
+  return <React.Fragment>
     <ToolBar doc={doc} info={info}/>
     <HFiller style={{overflow: "auto", background: "#F8F8F8"}}>
       <ViewSection
@@ -90,12 +102,14 @@ function SingleEdit({doc, left, right, center}) {
       <div
         style={{overflow: "auto"}}
         className={`Board ${mode}`}>
-          <SlateEdit content={content} setContent={setContent}/>
+        <SlateEdit content={content} setContent={setContent}/>
         </div>
       </HFiller>
-  </VFiller>
+  </React.Fragment>
+  /**/
 }
 
+//-----------------------------------------------------------------------------
 // Extract info from (living) slate buffer.
 
 function getinfo(content) {
@@ -136,18 +150,39 @@ function RawDoc({doc}) {
   </Grid>
 }
 
-function SlateDoc({doc}) {
-  const content = deserialize(doc).body;
-
+function SlateDoc({style, content}) {
   const printout = content;
   //const printout = wordcount(content)
 
   return <React.Fragment>
-    <pre style={{fontSize: "10pt"}}>{`${JSON.stringify(printout, null, 2)}`}</pre>
+    <pre style={{fontSize: "10pt", ...style}}>{`${JSON.stringify(printout, null, 2)}`}</pre>
   </React.Fragment>
 }
 
 //-----------------------------------------------------------------------------
+
+function WorkspaceTab() {
+  const dispatch = useDispatch()
+  const current = useSelector(state => state.workspace[state.workspace.selected])
+  const { files, selected } = current;
+
+  return <HBox>
+    <ToggleButtonGroup
+      value={selected.id}
+      exclusive
+      //onChange={handleAlignment}
+    >
+    {files.map(f => <ToggleButton
+      size="small"
+      key={f.id} id={f.id} value={f.id}
+      onClick={(e) => onOpen(e, dispatch, f)}
+      >
+        {f.name}
+      </ToggleButton>)}
+    </ToggleButtonGroup>
+    <Button onClick={(e) => onClose(e, dispatch)}><Icon.AddFiles/></Button>
+  </HBox>
+  }
 
 function ToolBar({doc, info}) {
   const dispatch = useDispatch();
@@ -162,15 +197,30 @@ function ToolBar({doc, info}) {
       <Label>{`Chars: ${chars}`}</Label>
       <Separator/>
       <Filler/>
-      <Button onClick={(e) => onClose(e, dispatch)}><Icon.Close/></Button>
     </ToolBox>
   )
 }
 
+function onOpen(event, dispatch, file) {
+  event.stopPropagation()
+  console.log("Opening:", file)
+  dispatch(action.workspace.selectFile({ file }))
+  dispatch(action.doc.open({ file }))
+}
+
+function onClose(e, dispatch) {
+  if(e) e.preventDefault()
+  // Move modifications to doc
+  dispatch(action.doc.close({}))
+}
+
 //-----------------------------------------------------------------------------
 
-function SlateEdit({content, setContent}) {
+function SlateEdit({doc, content, setContent, refresh, ...props}) {
   const editor = useMemo(() => withHistory(withReact(createEditor())), [])
+  //const editor = useMemo(() => withHistory(withReact(createEditor())), [doc])
+  //const [editor] = useState(() => withReact(withHistory(createEditor())))
+
   const renderElement = useCallback(props => <Element {...props} />, [])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
 
@@ -182,6 +232,7 @@ function SlateEdit({content, setContent}) {
       spellCheck={false} // Keep false until you find out how to change language
       renderElement={renderElement}
       renderLeaf={renderLeaf}
+      {...props}
     />
   </Slate>
   )

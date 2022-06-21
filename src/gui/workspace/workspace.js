@@ -53,6 +53,7 @@ export function Workspace() {
   )
 
   const current = useSelector(state => state.workspace[state.workspace.selected])
+
   console.log("Current=", current)
   if (!current) return null;
 
@@ -141,7 +142,7 @@ export function Workspace() {
         type="Doc"
         content={file}
         className={className}
-        onDoubleClick={(e) => onOpen(e, file)}
+        onClick={(e) => onOpen(e, file)}
       >
         <span className="Name">{file.name}</span>
         <Filler />
