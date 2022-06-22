@@ -138,12 +138,58 @@ pre {
 // ----------------------------------------------------------------------------
 */
 
-.Sheet h1 {
+.Sheet h1, h2, h3 {
+  padding: 0;
+  margin: 0;
+}
+
+/* Title */ .Sheet h1 {
   font-size: 17pt;
   font-weight: bold;
   text-align: center;
   margin-bottom: 2cm;
 }
+
+/* Part */ .Sheet h2 {
+  font-weight: bold;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: center;
+  color:gray;
+}
+
+/* Scene */ .Sheet h3 {
+  font-weight: bold;
+  font-family: inherit;
+  font-size: inherit;
+  color:gray;
+  /*
+  text-indent: 0;
+  margin-top: 0.5cm;
+  */
+}
+
+.Sheet div.part {
+  margin-left: 4pt;
+  margin-right: 4pt;
+  padding-bottom: 2cm;
+  border-bottom: 1pt dashed gray;
+  /*
+  border: 1pt dashed gray;
+  */
+}
+
+.Sheet div.scene {
+  margin-left: 4pt;
+  margin-right: 4pt;
+  padding-left: 4pt;
+  padding-right: 4pt;
+  margin-bottom: 0.5cm;
+  /*
+  border: 1pt dotted lightgray;
+  */
+}
+
 
 .Sheet p {
   margin: 0pt;
@@ -153,43 +199,24 @@ pre {
   text-indent: 1.0cm;
 }
 
-.Sheet p.missing, p.comment {
-  /*
-  padding-left: 1cm;
-  text-indent: 0;
-  */
+.Sheet .missing, .comment, .synopsis {
+  padding-top: 4pt;
+  padding-bottom: 4pt;
 }
 
-.Sheet p.missing {
-  color: rgb(155, 28, 28);
-  background-color: #FFF2F2;
+.Sheet .missing {
+  /* color: rgb(155, 28, 28); */
+  background-color: #fce4e4;
   /* border-left: 4px solid #D88; */
 }
 
-.Sheet p.comment {
-  color: rgb(8, 58, 8);
-  background-color: #F8FFF8;
+.Sheet .comment {
+  /* color: rgb(8, 58, 8); */
+  background-color: #d6f8d6;
   /* border-left: 4px solid #8D8; */
 }
 
-.Sheet p.synopsis {
-  color: rgb(46, 49, 7);
+.Sheet .synopsis {
+  /* color: rgb(46, 49, 7); */
   background-color: #faf9c9;
-}
-
-.Sheet h2.scene {
-  padding: 0;
-  margin: 0;
-  margin-top: 0.5cm;
-  font-weight: bold;
-  font-family: inherit;
-  font-size: inherit;
-  text-indent: 0;
-  color:gray;
-}
-
-.Sheet div.scene {
-  border: 1pt solid lightgray;
-  border-radius: 4px;
-  margin-bottom: 4px;
 }

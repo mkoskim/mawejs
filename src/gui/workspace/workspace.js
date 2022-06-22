@@ -16,8 +16,6 @@ import { useSelector, useDispatch } from "react-redux";
 import {action, docByID } from "../app/store"
 
 import { FileBrowser } from "../filebrowser";
-import { EditFile, ViewDoc } from "../editor/editorSlate";
-import { Organizer } from "../editor/organizer";
 
 import {
   DndContext,

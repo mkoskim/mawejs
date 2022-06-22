@@ -16,7 +16,7 @@ import {useEffect} from "react"
 import { useSelector, useDispatch } from "react-redux";
 import {action} from "./store"
 
-import {EditView} from "../editor/editorSlate";
+import {EditView} from "../editor";
 import {Workspace} from "../workspace";
 import View from "../views"
 
