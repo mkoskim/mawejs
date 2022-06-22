@@ -6,9 +6,18 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import { Slate, Editable, withReact, DefaultPlaceholder } from 'slate-react'
-import { createEditor } from "slate"
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Slate, Editable, withReact } from 'slate-react'
+import {
+  Editor,
+  Transforms,
+  Range,
+  Point,
+  createEditor,
+  Element as SlateElement,
+  Descendant,
+} from 'slate'
+
 import { withHistory } from "slate-history"
 import { Icon } from '../common/factory';
 
@@ -22,19 +31,19 @@ function elem2text(block) {
     .replace(/\s+/g, ' ').trim()
 }
 
-export function renderPlain({content}) {
+export function renderPlain({ content }) {
 }
 
 export function Element(props) {
-  const {element, attributes, children} = props;
+  const { element, attributes, children } = props;
 
-  switch(element.type) {
+  switch (element.type) {
     case "title": return <h1 {...attributes}>{children}</h1>
     case "br.part": return <h2 {...attributes}>{children}</h2>
     case "br.scene": return <h3 {...attributes}>{children}</h3>
     case "part": return <div className="part">{children}</div>
     case "scene": return <div className="scene">{children}</div>
-    case "br": return <br {...attributes}/>
+    case "br": return <br {...attributes} />
     /*
     case "float": return (
       <p className="FloatHandle">
@@ -47,11 +56,14 @@ export function Element(props) {
     case "missing":
     case "synopsis":
       return <p className={element.type} {...attributes}>{children}</p>
-    default: return <p {...attributes}>{children}</p>
+
+    case "paragraph":
+    default:
+      return <p {...attributes}>{children}</p>
   }
 }
 
-export function Leaf({leaf, attributes, children}) {
+export function Leaf({ leaf, attributes, children }) {
   return <span {...attributes}>{children}</span>
 }
 
@@ -69,7 +81,7 @@ export function section2edit(doc) {
 
   function Head2Slate(story) {
     return [
-      { type: "title", children: [{text: story.body.head?.title ?? ""}] },
+      { type: "title", children: [{ text: story.body.head?.title ?? "" }] },
     ]
   }
 
@@ -82,14 +94,18 @@ export function section2edit(doc) {
   }
 
   function Part2Slate(part, num_parts) {
+    // Part support disabled
+    /*
     const hasname = part.attr.name
     const head = {
       type: "br.part",
-      children: [{text: part.attr.name ?? ""}]
+      children: [{ text: part.attr.name ?? "" }]
     }
     const num_scenes = part.children.length
     const scenes = part.children.map(scene => Scene2Slate(scene, num_scenes)).flat(1)
     const content = (hasname || num_parts > 1) ? [head, ...scenes] : scenes
+    */
+    const content = part.children.map(scene => Scene2Slate(scene)).flat(1)
 
     /*
     return {
@@ -102,14 +118,14 @@ export function section2edit(doc) {
     /**/
   }
 
-  function Scene2Slate(scene, num_scenes) {
+  function Scene2Slate(scene) {
     const hasname = scene.attr.name
     const head = {
       type: "br.scene",
-      children: [{text: scene.attr.name ?? ""}]
+      children: [{ text: scene.attr.name ?? "" }]
     }
     const para = scene.children.map(Paragraph2Slate)
-    const content = (hasname || num_scenes > 1) ? [head, ...para] : para
+    const content = [head, ...para]
 
     /*
     return {
@@ -126,7 +142,7 @@ export function section2edit(doc) {
     const type = p.tag;
     return {
       type: type,
-      children: [{ text: p.text ?? ""}]
+      children: [{ text: p.text ?? "" }]
     }
   }
 }
@@ -207,11 +223,14 @@ function getinfo(content) {
 */
 
 //-----------------------------------------------------------------------------
+// Editor customizations
 
 function getEditor() {
   const editor = withHistory(withReact(createEditor()))
 
-  const {normalizeNode, isVoid} = editor
+  //---------------------------------------------------------------------------
+
+  const { normalizeNode } = editor;
 
   editor.normalizeNode = entry => {
     const [node, path] = entry
@@ -221,13 +240,123 @@ function getEditor() {
     return normalizeNode(entry)
   }
 
+  //---------------------------------------------------------------------------
+
+  const { isVoid } = editor;
+
   editor.isVoid = element => {
-    /*
-    switch(element.type) {
-      case "comment": return true;
+    switch (element.type) {
+      case "br": return true;
     }
-    */
     return isVoid(element)
+  }
+
+  //---------------------------------------------------------------------------
+
+  const STYLESAFTER = {
+    "title": "paragraph",
+    "br.scene": "paragraph",
+    "br.part": "paragraph",
+  }
+
+  const { insertBreak } = editor
+
+  editor.insertBreak = () => {
+    const { selection } = editor
+    if (selection) {
+      const [node] = Editor.nodes(editor, {
+        match: n =>
+          !Editor.isEditor(n) &&
+          //Element.isElement(n) &&
+          (n.type in STYLESAFTER)
+      })
+
+      if (node) {
+        Transforms.insertNodes(editor, {
+          children: [{ text: "" }],
+          type: STYLESAFTER[node.type]
+        })
+        return
+      }
+    }
+    insertBreak()
+  }
+
+  //---------------------------------------------------------------------------
+
+  const SHORTCUTS = {
+    '##': "br.scene",
+    '//': 'comment',
+    '!!': 'missing',
+    '>>': "synopsis",
+  }
+
+  const { insertText } = editor
+
+  editor.insertText = text => {
+    const { selection } = editor
+
+    if (text === ' ' && selection && Range.isCollapsed(selection)) {
+      const { anchor } = selection
+      const block = Editor.above(editor, {
+        match: n => Editor.isBlock(editor, n),
+      })
+      const path = block ? block[1] : []
+      const start = Editor.start(editor, path)
+      const range = { anchor, focus: start }
+      const beforeText = Editor.string(editor, range)
+      const type = SHORTCUTS[beforeText]
+
+      if (type) {
+        Transforms.select(editor, range)
+        Transforms.delete(editor)
+        const newProperties = {
+          type,
+        }
+        Transforms.setNodes(editor, newProperties, {
+          match: n => Editor.isBlock(editor, n),
+        })
+
+        return
+      }
+    }
+
+    insertText(text)
+  }
+
+  //---------------------------------------------------------------------------
+
+  const {deleteBackward} = editor;
+
+  editor.deleteBackward = (...args) => {
+    const { selection } = editor
+
+    if (selection && Range.isCollapsed(selection)) {
+      const match = Editor.above(editor, {
+        match: n => Editor.isBlock(editor, n),
+      })
+
+      if (match) {
+        const [block, path] = match
+        const start = Editor.start(editor, path)
+
+        if (
+          !Editor.isEditor(block) &&
+          SlateElement.isElement(block) &&
+          block.type !== 'paragraph' &&
+          Point.equals(selection.anchor, start)
+        ) {
+          const newProperties = {
+            type: 'paragraph',
+          }
+          Transforms.setNodes(editor, newProperties)
+
+          return
+        }
+      }
+
+      deleteBackward(...args)
+    }
   }
 
   return editor
@@ -235,7 +364,7 @@ function getEditor() {
 
 //-----------------------------------------------------------------------------
 
-export function SlateEdit({className, content, setContent, refresh, ...props}) {
+export function SlateEdit({ className, content, setContent, refresh, ...props }) {
   const editor = useMemo(() => getEditor(), [])
   //const [editor] = useState(() => withReact(withHistory(createEditor())))
 
@@ -247,7 +376,7 @@ export function SlateEdit({className, content, setContent, refresh, ...props}) {
       editor={editor}
       value={content}
       onChange={setContent}
-      >
+    >
       <Editable
         className={className}
         autoFocus
@@ -256,7 +385,7 @@ export function SlateEdit({className, content, setContent, refresh, ...props}) {
         renderLeaf={renderLeaf}
         {...props}
       />
-  </Slate>
+    </Slate>
   )
 
   function onChange(content) {
