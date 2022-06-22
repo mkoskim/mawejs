@@ -5,6 +5,12 @@
 // ----------------------------------------------------------------------------
 */
 
+@import "./styles/board.css";
+@import "./styles/sheet.css";
+
+/* ---------------------------------------------------------------------------- */
+/* Variables */
+
 /* ---------------------------------------------------------------------------- */
 /* Wrapped pre for development */
 
@@ -23,14 +29,6 @@ pre {
 .Secondary { display: none; }
 .Outline { display: none; }
 */
-
-/* ---------------------------------------------------------------------------- */
-
-.EditArea {
-  flex-grow: 1;
-  overflow: hidden;
-  background-color: #f8f8f8;
-}
 
 /* ---------------------------------------------------------------------------- */
 
@@ -57,50 +55,19 @@ pre {
 
 /* ---------------------------------------------------------------------------- */
 
-.Board { overflow: auto; }
-
-/* ---------------------------------------------------------------------------- */
+.Board {
+  display: flex;
+  flex-grow: 1;
+  flex-direction:column;
+  overflow: auto;
+}
 
 .Sheet {
-  background-color: white;
-  font-family: 'Times New Roman', Times, serif;
-  /*
-  font-family: 'Courier New', Courier, monospace;
-  font-family:Arial, Helvetica, sans-serif;
-  */
-  font-size: 12pt;
-  line-height: 180%;
-  padding-top: 1cm;
-  padding-bottom: 2cm;
-
-  min-width: 5in;
-  max-width: 8in;
-  min-height: 12in;
-}
-
-.Centered { flex-grow: 1; }
-.Split { flex-grow: 1; overflow: auto }
-.Primary { flex-grow: 1; padding-left: 0.5cm; }
-
-.Split .Sheet {
+  background: white;
   margin-left: auto;
   margin-right: auto;
-
-  /*
-  margin-left: 0.5cm;
-  margin-right: 0.5cm;
-  */
-  padding-left: 0.5in;
-  padding-right: 0.5in;
-}
-
-.Centered .Sheet {
-  /* Center sheet horizontally to board */
-  /*
-  */
-
-  margin-left: auto;
-  margin-right: auto;
+  margin-top: 0.5cm;
+  margin-bottom: 0.5cm;
 
   /*
   margin-left: 0.5cm;
@@ -108,20 +75,17 @@ pre {
   */
   padding-left: 1in;
   padding-right: 1in;
-}
+  padding-top: 1cm;
+  padding-bottom: 1in;
 
-.Primary .Sheet {
-  padding-left: 1.0cm;
-  padding-right: 1.0cm;
-  max-width: 6in;
-}
-
-.Secondary .Sheet {
   background-color: white;
-  padding-left: 0.5cm;
-  padding-right: 0.5cm;
-
-  max-width: 6in;
+/*
+  padding-top: 1cm;
+  padding-bottom: 2cm;
+*/
+  min-width: 6in;
+  max-width: 8in;
+  min-height: 11in;
 }
 
 .Sheet.Shadow {
@@ -129,94 +93,4 @@ pre {
   box-shadow: rgb(0 0 0 / 10%) 1px 1px 0px inset, rgb(0 0 0 / 7%) 0px -1px 0px inset;
   */
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  margin-top: 0.5cm;
-  margin-bottom: 0.5cm;
-}
-
-/* ----------------------------------------------------------------------------
-// Sheet Subelements
-// ----------------------------------------------------------------------------
-*/
-
-.Sheet h1, h2, h3 {
-  padding: 0;
-  margin: 0;
-}
-
-/* Title */ .Sheet h1 {
-  font-size: 17pt;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 2cm;
-}
-
-/* Part */ .Sheet h2 {
-  font-weight: bold;
-  font-family: inherit;
-  font-size: inherit;
-  text-align: center;
-  color:gray;
-}
-
-/* Scene */ .Sheet h3 {
-  font-weight: bold;
-  font-family: inherit;
-  font-size: inherit;
-  color:gray;
-  /*
-  text-indent: 0;
-  margin-top: 0.5cm;
-  */
-}
-
-.Sheet div.part {
-  margin-left: 4pt;
-  margin-right: 4pt;
-  padding-bottom: 2cm;
-  border-bottom: 1pt dashed gray;
-  /*
-  border: 1pt dashed gray;
-  */
-}
-
-.Sheet div.scene {
-  margin-left: 4pt;
-  margin-right: 4pt;
-  padding-left: 4pt;
-  padding-right: 4pt;
-  margin-bottom: 0.5cm;
-  /*
-  border: 1pt dotted lightgray;
-  */
-}
-
-
-.Sheet p {
-  margin: 0pt;
-}
-
-.Sheet p + p {
-  text-indent: 1.0cm;
-}
-
-.Sheet .missing, .comment, .synopsis {
-  padding-top: 4pt;
-  padding-bottom: 4pt;
-}
-
-.Sheet .missing {
-  /* color: rgb(155, 28, 28); */
-  background-color: #fce4e4;
-  /* border-left: 4px solid #D88; */
-}
-
-.Sheet .comment {
-  /* color: rgb(8, 58, 8); */
-  background-color: #d6f8d6;
-  /* border-left: 4px solid #8D8; */
-}
-
-.Sheet .synopsis {
-  /* color: rgb(46, 49, 7); */
-  background-color: #faf9c9;
 }

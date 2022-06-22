@@ -15,7 +15,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { action, docByID } from "../app/store"
 
 import {
-  SlateEdit, deserialize,
+  SlateEdit, section2edit,
 } from "./slateEditor"
 
 import {
@@ -29,7 +29,7 @@ import {
   Separator, Loading,
 } from "../common/factory";
 
-import {ViewSection} from "./organizer"
+import { ViewSection } from "./organizer"
 
 import isHotkey from 'is-hotkey';
 
@@ -65,7 +65,7 @@ function SingleEdit({ id, left, right, center, refresh }) {
 
   const doc = docByID(id)
 
-  const [content, setContent] = useState(deserialize(doc).body);
+  const [content, setContent] = useState(section2edit(doc).body);
 
   const info = getinfo(content)
 
@@ -79,23 +79,18 @@ function SingleEdit({ id, left, right, center, refresh }) {
 
   //console.log("Edit:", id)
 
-  const mode = "Centered";
-  //const mode="Primary";
-
   //*
   return <React.Fragment>
-    <ToolBar doc={doc} info={info}/>
-    <HFiller style={{overflow: "auto", background: "#F8F8F8"}}>
+    <ToolBar doc={doc} info={info} />
+    <HFiller style={{ overflow: "auto", background: "#F8F8F8" }}>
       <ViewSection
         section={doc.story.body}
-        style={{width: "25%", maxWidth: "25%", background: "#EEE"}}
+        style={{ width: "25%", maxWidth: "25%", background: "#EEE" }}
       />
-      <div
-        style={{overflow: "auto"}}
-        className={`Board ${mode}`}>
-        <SlateEdit content={content} setContent={setContent}/>
-        </div>
-      </HFiller>
+      <VFiller className="Board"><div>
+        <SlateEdit className={"Sheet Shadow"} content={content} setContent={setContent} />
+      </div></VFiller>
+    </HFiller>
   </React.Fragment>
   /*/
   return <React.Fragment>
@@ -121,89 +116,6 @@ function getinfo(content) {
     chars: 0,
   }
 }
-/*
-function getinfo(content) {
-  const parts = content
-    .filter(elem => elem.type === "part")
-    .map(partinfo)
-
-  return {
-    parts: parts.map(part => ({
-      id: part.id,
-      name: part.name,
-      summary: part.summary,
-    })),
-    //...summary(parts.map(part => part.summary)),
-    parts,
-  }
-
-  function partinfo(part) {
-    const childs = part.children
-    const head = childs.find(elem => elem.type === "br.part")
-    const scenes = childs
-      .filter(elem => elem.type === "scene")
-      .map(sceneinfo)
-
-    return {
-      id: part.attributes.id,
-      name: elem2text([head]),
-      scenes: scenes.map(scene => ({
-        id: scene.id,
-        name: scene.name,
-        words: {
-          words: scene.words.n_words,
-          missing: scene.missing.n_words,
-          comment: scene.comment.n_words,
-        }
-      })),
-      summary: scene_summary(scenes.map(scene => scene.words)),
-    }
-  }
-
-  function scene_summary(info) {
-    return info.reduce((a, b) => ({
-      n_chars: a.n_chars + b.n_chars,
-      n_words: a.n_words + b.n_words,
-      words: a.words.concat(b.words),
-    }), { n_chars: 0, n_words: 0, words: [] })
-  }
-
-  function sceneinfo(scene) {
-    const childs = scene.children
-    const head = childs.find(elem => elem.type === "br.scene")
-    const p = childs.filter(elem => elem.type === "p")
-    const missing = childs.filter(elem => elem.type === "missing")
-    const comment = childs.filter(elem => elem.type === "comment")
-
-    return {
-      id: scene.attributes.id,
-      name: elem2text([head]),
-      words: parainfo(p),
-      missing: parainfo(missing),
-      comment: parainfo(comment),
-    }
-  }
-
-  function parainfo(list) {
-    const text = elem2text(list)
-    const words = text.match(/\w+/gu)
-    return {
-      n_chars: text ? text.length : 0,
-      n_words: words ? words.length : 0,
-      words: words ? words : [],
-    }
-  }
-
-  function elem2text(block) {
-    return block
-      .map(elem => elem.children).flat(1)
-      .map(elem => elem.text)
-      .join(" ")
-      .replace(/\s+/g, ' ').trim()
-  }
-
-}
-*/
 
 //-----------------------------------------------------------------------------
 

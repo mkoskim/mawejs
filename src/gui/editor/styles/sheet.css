@@ -1,0 +1,158 @@
+/* ----------------------------------------------------------------------------
+//
+// Styles for story elements in the editor.
+//
+// ----------------------------------------------------------------------------
+*/
+
+/* ----------------------------------------------------------------------------
+// Sheet
+// ----------------------------------------------------------------------------
+*/
+
+.Sheet {
+  /*
+  font-family: 'Courier New', Courier, monospace;
+  font-family:Arial, Helvetica, sans-serif;
+  */
+  font-size: 12pt;
+  line-height: 180%;
+  font-family: 'Times New Roman', Times, serif;
+
+  --comment-bg: #d6f8d6;
+  --missing-bg: #fce4e4;
+  --synopsis-bg:#faf9c9;
+}
+
+/* ----------------------------------------------------------------------------
+// Sheet Subelements
+// ----------------------------------------------------------------------------
+*/
+
+.Sheet h1, h2, h3 {
+  padding: 0;
+  margin: 0;
+}
+
+/* Title */ .Sheet h1 {
+  font-size: 17pt;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2cm;
+}
+
+/* Part */ .Sheet h2 {
+  font-weight: bold;
+  font-family: inherit;
+  font-size: inherit;
+  text-align: center;
+  color:gray;
+}
+
+/* Scene */ .Sheet h3 {
+  font-weight: bold;
+  font-family: inherit;
+  font-size: inherit;
+  color:gray;
+  /*
+  text-indent: 0;
+  margin-top: 0.5cm;
+  */
+}
+
+.Sheet div.part {
+  margin-left: 4pt;
+  margin-right: 4pt;
+  padding-bottom: 2cm;
+  border-bottom: 1pt dashed gray;
+  /*
+  border: 1pt dashed gray;
+  */
+}
+
+.Sheet div.scene {
+  margin-left: 4pt;
+  margin-right: 4pt;
+  padding-left: 4pt;
+  padding-right: 4pt;
+  margin-bottom: 0.5cm;
+  /*
+  border: 1pt dotted lightgray;
+  */
+}
+
+/* ----------------------------------------------------------------------------
+// Sheet Subelements
+// ----------------------------------------------------------------------------
+*/
+
+.Sheet p {
+  margin: 0pt;
+}
+
+.Sheet p + p {
+  text-indent: 1.0cm;
+}
+
+.Sheet > .missing, .Sheet > .comment, .Sheet > .synopsis {
+/*
+  padding-top: 4pt;
+  padding-bottom: 4pt;
+*/
+  padding: 8pt;
+  margin-top: 8pt;
+  margin-bottom: 8pt;
+  text-indent: 0;
+  margin-left: 1cm;
+}
+
+.Sheet .missing {
+  /* color: rgb(155, 28, 28); */
+  background: var(--missing-bg);
+  /* border-left: 4px solid #D88; */
+}
+
+.Sheet .comment {
+  background: var(--comment-bg);
+}
+
+.Sheet .synopsis {
+  /* color: rgb(46, 49, 7); */
+  background: var(--synopsis-bg);
+}
+
+/* ----------------------------------------------------------------------------
+// Floating subelements
+// ----------------------------------------------------------------------------
+*/
+
+/* Tooltip container */
+.Sheet .FloatHandle {
+  position: relative;
+  /*
+  display: inline-block;
+  */
+}
+
+/* Tooltip text */
+.Sheet .FloatHandle .FloatContent {
+  visibility: hidden;
+  width: 100%;
+  /*
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  */
+  padding: 5px 0;
+  border: 1pt solid grey;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.Sheet .FloatHandle:hover .FloatContent {
+  visibility: visible;
+}

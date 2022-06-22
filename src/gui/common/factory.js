@@ -73,7 +73,11 @@ export const Icon = {
     File: muiIcons.InsertDriveFileOutlined,
     Unknown: muiIcons.BrokenImageOutlined,
     Selected: muiIcons.CheckBox,
-  }
+  },
+
+  MoreHoriz: muiIcons.MoreHoriz,
+  PaperClipHoriz: muiIcons.Attachment,
+  PaperClipVert: muiIcons.AttachFile,
 }
 
 //-----------------------------------------------------------------------------
