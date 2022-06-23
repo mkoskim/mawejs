@@ -209,7 +209,8 @@ function SingleEdit({id, left, right, center}) {
     }
 
     function ItemLabel({type, name}) {
-      const style = (type === "br.scene") ? {fontWeight: "bold"} : {}
+      //const style = (type === "br.scene") ? {fontWeight: "bold"} : {}
+      const style = {}
       return <Label className="Name" style={style} text={name}/>
     }
 

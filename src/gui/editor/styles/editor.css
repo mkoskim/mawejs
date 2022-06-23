@@ -31,6 +31,8 @@ pre {
 */
 
 /* ---------------------------------------------------------------------------- */
+/* Document outlining */
+/* ---------------------------------------------------------------------------- */
 
 .Outline {
   /*
@@ -85,10 +87,17 @@ pre {
   margin-right: 8pt;
 }
 
+.Outline .Entry .Box.comment,
+.Outline .Entry .Box.missing {
+  margin-left: 16pt;
+}
+
 .Outline .Entry .Box.comment { background: rgb(71, 207, 71); }
 .Outline .Entry .Box.missing { background: rgb(252, 44, 44); }
 .Outline .Entry .Box.synopsis { background: rgb(243, 243, 12); }
 
+/* ---------------------------------------------------------------------------- */
+/* Sheet for writing and Board for scrollbar */
 /* ---------------------------------------------------------------------------- */
 
 .Board {
