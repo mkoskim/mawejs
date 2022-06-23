@@ -27,6 +27,7 @@ import {
   Chip, TextField, Link,
   Tooltip,
   Divider, CircularProgress as Spinner,
+  List, ListItem, ListItemText,
   Grid,
   Typography,
 } from "@mui/material"
@@ -41,6 +42,7 @@ export {
   Spinner,
   Grid,
   Chip, Link,
+  List, ListItem, ListItemText,
   ToggleButton, ToggleButtonGroup,
 }
 
@@ -56,6 +58,7 @@ export const Icon = {
   Close: muiIcons.Close,
   Star: muiIcons.StarOutlineOutlined,
   Starred: muiIcons.Star,
+  Circle: muiIcons.Circle,
 
   NewFile: muiIcons.NoteAddOutlined,
   NewFolder: muiIcons.CreateNewFolderOutlined,

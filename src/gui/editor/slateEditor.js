@@ -7,7 +7,7 @@
 //*****************************************************************************
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Slate, Editable, withReact } from 'slate-react'
+import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
 import {
   Editor,
   Transforms,
@@ -21,6 +21,8 @@ import {
 import { withHistory } from "slate-history"
 import { Icon } from '../common/factory';
 import { uuid } from '../../util';
+
+export {ReactEditor}
 
 //-----------------------------------------------------------------------------
 
@@ -292,19 +294,6 @@ export function getEditor() {
   editor.insertBreak = () => {
     const { selection } = editor
 
-    /*
-    if (selection) {
-      const [node] = Editor.previous(editor, {
-        match: n =>
-          Editor.isBlock(n)
-          //!Editor.isEditor(n) &&
-          //Element.isElement(n) &&
-      })
-      console.log("Node=", node)
-      if(node && node.type === "br") return;
-    }
-    */
-
     if (selection) {
       const [node] = Editor.nodes(editor, {
         match: n =>
@@ -417,7 +406,7 @@ export function SlateEdit({ editor, className, content, setContent, ...props }) 
       editor={editor}
       value={content}
       onChange={setContent}
-    >
+      >
       <Editable
         className={className}
         autoFocus

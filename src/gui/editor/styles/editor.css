@@ -41,8 +41,16 @@ pre {
   /*
   padding-top: 0.5cm;
   padding-left: 4px;
+  */
+  /*
+  background: white;
   border-right: 1pt dashed lightgray;
   */
+}
+
+.Outline a {
+  color: inherit;
+  text-decoration: inherit;
 }
 
 .Outline .Entry {
@@ -53,9 +61,9 @@ pre {
   */
 }
 
-.Outline .Entry.comment { color: var(--comment-fg); }
-.Outline .Entry.missing { color: var(--missing-fg); }
-.Outline .Entry.synopsis { color: var(--synopsis-fg); }
+.Outline .Entry:hover {
+  background-color: lightgrey;
+}
 
 .Outline .Entry .Name {
   white-space: nowrap;
@@ -63,9 +71,18 @@ pre {
   text-overflow: ellipsis;
 }
 
-.Outline .Entry:hover {
-  background-color: lightgrey;
+.Outline .Entry .Box {
+  min-height: 9pt;
+  max-height: 9pt;
+  min-width: 9pt;
+  max-width: 9pt;
+  border: 1px solid black;
+  margin-right: 8pt;
 }
+
+.Outline .Entry .Box.comment { background: rgb(71, 207, 71); }
+.Outline .Entry .Box.missing { background: rgb(252, 44, 44); }
+.Outline .Entry .Box.synopsis { background: rgb(243, 243, 12); }
 
 /* ---------------------------------------------------------------------------- */
 
@@ -77,34 +94,32 @@ pre {
 }
 
 .Sheet {
-  background: white;
-  margin-left: auto;
-  margin-right: auto;
+  /* Empty space around paper */
   margin-top: 0.5cm;
   margin-bottom: 0.5cm;
+  margin-left: auto;
+  margin-right: auto;
 
-  /*
-  margin-left: 0.5cm;
-  margin-right: 0.5cm;
-  */
+  /* White space around text */
   padding-left: 1in;
   padding-right: 1in;
-  padding-top: 1cm;
+  padding-top: 0.5in;
   padding-bottom: 1in;
 
-  background-color: white;
-/*
-  padding-top: 1cm;
-  padding-bottom: 2cm;
-*/
-  min-width: 6in;
+  min-width: 7in;
   max-width: 8in;
-  min-height: 11in;
+}
+
+.Sheet {
+  background: white;
 }
 
 .Sheet.Shadow {
+
   /*
   box-shadow: rgb(0 0 0 / 10%) 1px 1px 0px inset, rgb(0 0 0 / 7%) 0px -1px 0px inset;
   */
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.253), 0 4px 8px rgba(0, 0, 0, 0.322);
+  /*
+  */
 }

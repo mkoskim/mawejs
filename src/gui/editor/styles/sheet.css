@@ -100,10 +100,13 @@
   text-indent: 1.0cm;
 }
 
+/* ---------------------------------------------------------------------------- */
+
 .Sheet .missing, .Sheet .comment, .Sheet .synopsis {
 /*
   padding-top: 4pt;
   padding-bottom: 4pt;
+  font-family: Arial, Helvetica, sans-serif;
 */
   padding: 8pt;
   margin-top: 8pt;
