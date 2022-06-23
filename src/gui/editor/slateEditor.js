@@ -332,7 +332,7 @@ export function getEditor() {
       const start = Editor.start(editor, path)
       const range = { anchor, focus: start }
       const beforeText = Editor.string(editor, range)
-      const type = SHORTCUTS[beforeText]
+      const type = SHORTCUTS[beforeText + text]
 
       if (type) {
         Transforms.select(editor, range)

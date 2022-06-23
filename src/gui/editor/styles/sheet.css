@@ -100,7 +100,7 @@
   text-indent: 1.0cm;
 }
 
-.Sheet > .missing, .Sheet > .comment, .Sheet > .synopsis {
+.Sheet .missing, .Sheet .comment, .Sheet .synopsis {
 /*
   padding-top: 4pt;
   padding-bottom: 4pt;
