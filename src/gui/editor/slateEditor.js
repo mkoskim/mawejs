@@ -48,7 +48,6 @@ export function Element(props) {
     case "br.scene": return <Linked><h3 {...attributes}>{children}</h3></Linked>
     case "part": return <div className="part">{children}</div>
     case "scene": return <div className="scene">{children}</div>
-    case "br": return <div {...attributes} contentEditable={false}>{children}<br/></div>
     /*
     case "float": return (
       <p className="FloatHandle">
@@ -64,6 +63,9 @@ export function Element(props) {
 
     case "p":
     default:
+      if(elem2text(element) === "") {
+        return <div className="emptyline" {...attributes}>{children}</div>
+      }
       return <p {...attributes}>{children}</p>
   }
 }
@@ -167,7 +169,7 @@ export function section2edit(doc) {
   function Paragraph2Slate(p) {
     const type = p.tag;
     return createElement({
-      type,
+      type: type == "br" ? "p" : type,
       children: [{ text: p.text ?? "" }]
     })
   }
@@ -290,6 +292,7 @@ export function getEditor() {
   editor.insertBreak = () => {
     const { selection } = editor
 
+    /*
     if (selection) {
       const [node] = Editor.previous(editor, {
         match: n =>
@@ -300,12 +303,13 @@ export function getEditor() {
       console.log("Node=", node)
       if(node && node.type === "br") return;
     }
+    */
 
     if (selection) {
       const [node] = Editor.nodes(editor, {
         match: n =>
           !Editor.isEditor(n) &&
-          //Element.isElement(n) &&
+          Editor.isBlock(n) &&
           (n.type in STYLESAFTER)
       })
 

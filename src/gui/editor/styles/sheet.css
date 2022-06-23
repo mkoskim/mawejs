@@ -92,11 +92,11 @@
 // ----------------------------------------------------------------------------
 */
 
-.Sheet p {
+.Sheet p, .Sheet div.emptyline {
   margin: 0pt;
 }
 
-.Sheet p + p {
+.Sheet p + p, .Sheet p + div.emptyline {
   text-indent: 1.0cm;
 }
 

@@ -81,8 +81,9 @@ function SingleEdit({id, left, right, center}) {
 
   const refresh = storedid !== id
   if(refresh) {
+    // TODO: Update also index
     // TODO: Need to refresh editable window (scrollbar etc), too
-    editor.children = doc2slate()
+    editor.children = doc2slate();
   }
 
   //---------------------------------------------------------------------------
@@ -152,13 +153,15 @@ function getinfo(content) {
 function ViewIndex({editor, indexelems, style}) {
   console.log("ViewIndex")
   return <VFiller className="Outline" style={style}>
-    {indexelems.map(elem => <IndexItem elem={elem}/>)}
+    {indexelems.map(elem => <IndexItem key={elem.attributes.id} elem={elem}/>)}
   </VFiller>
 
   function IndexItem({elem}) {
     const className = addClass("Entry", elem.type)
     const name = elem2text(elem).split(/[.:?!]/gu)[0]
-    return <a href={`#${elem.attributes.id}`}>
+    const id = elem.attributes.id
+
+    return <a href={`#${id}`}>
       <div className={className}>
         <Label variant="body1" className="Name">{name}</Label>
       </div>
