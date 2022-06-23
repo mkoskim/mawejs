@@ -48,7 +48,7 @@ export function Element(props) {
     case "br.scene": return <Linked><h3 {...attributes}>{children}</h3></Linked>
     case "part": return <div className="part">{children}</div>
     case "scene": return <div className="scene">{children}</div>
-    case "br": return <br {...attributes} />
+    case "br": return <div {...attributes} contentEditable={false}>{children}<br/></div>
     /*
     case "float": return (
       <p className="FloatHandle">
@@ -62,7 +62,7 @@ export function Element(props) {
     case "synopsis":
       return <Linked><p className={element.type} {...attributes}>{children}</p></Linked>
 
-    case "paragraph":
+    case "p":
     default:
       return <p {...attributes}>{children}</p>
   }
@@ -280,15 +280,27 @@ export function getEditor() {
   //---------------------------------------------------------------------------
 
   const STYLESAFTER = {
-    "title": "paragraph",
-    "br.scene": "paragraph",
-    "br.part": "paragraph",
+    "title": "p",
+    "br.scene": "p",
+    "br.part": "p",
   }
 
   const { insertBreak } = editor
 
   editor.insertBreak = () => {
     const { selection } = editor
+
+    if (selection) {
+      const [node] = Editor.previous(editor, {
+        match: n =>
+          Editor.isBlock(n)
+          //!Editor.isEditor(n) &&
+          //Element.isElement(n) &&
+      })
+      console.log("Node=", node)
+      if(node && node.type === "br") return;
+    }
+
     if (selection) {
       const [node] = Editor.nodes(editor, {
         match: n =>
@@ -298,10 +310,10 @@ export function getEditor() {
       })
 
       if (node) {
-        Transforms.insertNodes(editor, {
+        Transforms.insertNodes(editor, createElement({
+          type: STYLESAFTER[node.type],
           children: [{ text: "" }],
-          type: STYLESAFTER[node.type]
-        })
+        }))
         return
       }
     }
@@ -370,11 +382,11 @@ export function getEditor() {
         if (
           !Editor.isEditor(block) &&
           SlateElement.isElement(block) &&
-          block.type !== 'paragraph' &&
+          block.type !== 'p' &&
           Point.equals(selection.anchor, start)
         ) {
           const newProperties = {
-            type: 'paragraph',
+            type: 'p',
           }
           Transforms.setNodes(editor, newProperties)
 
