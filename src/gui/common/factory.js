@@ -24,7 +24,7 @@ import {
   Button, IconButton, ButtonGroup,
   ToggleButton, ToggleButtonGroup,
   Breadcrumbs,
-  Chip, TextField,
+  Chip, TextField, Link,
   Tooltip,
   Divider, CircularProgress as Spinner,
   Grid,
@@ -40,7 +40,7 @@ export {
   Tooltip,
   Spinner,
   Grid,
-  Chip,
+  Chip, Link,
   ToggleButton, ToggleButtonGroup,
 }
 

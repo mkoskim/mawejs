@@ -121,7 +121,6 @@ export async function loadmawe(file) {
     );
 
     return {
-      id: elem.id ?? uuid(),
       tag: elem.tag,
       attr: { ...elem.attrib },
       text,

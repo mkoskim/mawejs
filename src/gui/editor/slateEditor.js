@@ -20,10 +20,11 @@ import {
 
 import { withHistory } from "slate-history"
 import { Icon } from '../common/factory';
+import { uuid } from '../../util';
 
 //-----------------------------------------------------------------------------
 
-function elem2text(block) {
+export function elem2text(block) {
   return block.children
     //.map(elem => elem.children).flat(1)
     .map(elem => elem.text)
@@ -31,16 +32,20 @@ function elem2text(block) {
     .replace(/\s+/g, ' ').trim()
 }
 
-export function renderPlain({ content }) {
+export function RenderPlain({ content }) {
 }
 
 export function Element(props) {
   const { element, attributes, children } = props;
 
+  function Linked(props) {
+    return <a id={`${element.attributes.id}`} {...props}/>
+  }
+
   switch (element.type) {
     case "title": return <h1 {...attributes}>{children}</h1>
     case "br.part": return <h2 {...attributes}>{children}</h2>
-    case "br.scene": return <h3 {...attributes}>{children}</h3>
+    case "br.scene": return <Linked><h3 {...attributes}>{children}</h3></Linked>
     case "part": return <div className="part">{children}</div>
     case "scene": return <div className="scene">{children}</div>
     case "br": return <br {...attributes} />
@@ -55,7 +60,7 @@ export function Element(props) {
     case "comment":
     case "missing":
     case "synopsis":
-      return <p className={element.type} {...attributes}>{children}</p>
+      return <Linked><p className={element.type} {...attributes}>{children}</p></Linked>
 
     case "paragraph":
     default:
@@ -65,6 +70,27 @@ export function Element(props) {
 
 export function Leaf({ leaf, attributes, children }) {
   return <span {...attributes}>{children}</span>
+}
+
+//-----------------------------------------------------------------------------
+
+function createElement({ type, attributes, children }) {
+  switch (type) {
+    case "br.scene":
+    case "br.part":
+    case "synopsis":
+    case "comment":
+    case "missing": return {
+      type,
+      attributes: { id: uuid(), ...attributes },
+      children
+    }
+  }
+  return {
+    type,
+    attributes,
+    children
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -81,7 +107,7 @@ export function section2edit(doc) {
 
   function Head2Slate(story) {
     return [
-      { type: "title", children: [{ text: story.body.head?.title ?? "" }] },
+      createElement({ type: "title", children: [{ text: story.body.head?.title ?? "" }] }),
     ]
   }
 
@@ -120,10 +146,10 @@ export function section2edit(doc) {
 
   function Scene2Slate(scene) {
     const hasname = scene.attr.name
-    const head = {
+    const head = createElement({
       type: "br.scene",
       children: [{ text: scene.attr.name ?? "" }]
-    }
+    })
     const para = scene.children.map(Paragraph2Slate)
     const content = [head, ...para]
 
@@ -140,10 +166,10 @@ export function section2edit(doc) {
 
   function Paragraph2Slate(p) {
     const type = p.tag;
-    return {
-      type: type,
+    return createElement({
+      type,
       children: [{ text: p.text ?? "" }]
-    }
+    })
   }
 }
 
@@ -225,7 +251,7 @@ function getinfo(content) {
 //-----------------------------------------------------------------------------
 // Editor customizations
 
-function getEditor() {
+export function getEditor() {
   const editor = withHistory(withReact(createEditor()))
 
   //---------------------------------------------------------------------------
@@ -296,7 +322,8 @@ function getEditor() {
   editor.insertText = text => {
     const { selection } = editor
 
-    if (text === ' ' && selection && Range.isCollapsed(selection)) {
+    //if (text === ' ' && selection && Range.isCollapsed(selection)) {
+    if (selection && Range.isCollapsed(selection)) {
       const { anchor } = selection
       const block = Editor.above(editor, {
         match: n => Editor.isBlock(editor, n),
@@ -310,9 +337,9 @@ function getEditor() {
       if (type) {
         Transforms.select(editor, range)
         Transforms.delete(editor)
-        const newProperties = {
+        const newProperties = createElement({
           type,
-        }
+        })
         Transforms.setNodes(editor, newProperties, {
           match: n => Editor.isBlock(editor, n),
         })
@@ -326,7 +353,7 @@ function getEditor() {
 
   //---------------------------------------------------------------------------
 
-  const {deleteBackward} = editor;
+  const { deleteBackward } = editor;
 
   editor.deleteBackward = (...args) => {
     const { selection } = editor
@@ -364,9 +391,7 @@ function getEditor() {
 
 //-----------------------------------------------------------------------------
 
-export function SlateEdit({ className, content, setContent, refresh, ...props }) {
-  const editor = useMemo(() => getEditor(), [])
-  //const [editor] = useState(() => withReact(withHistory(createEditor())))
+export function SlateEdit({ editor, className, content, setContent, ...props }) {
 
   const renderElement = useCallback(props => <Element {...props} />, [])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])

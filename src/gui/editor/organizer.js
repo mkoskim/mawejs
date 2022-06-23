@@ -8,7 +8,7 @@
 
 /* eslint-disable no-unused-vars */
 
-import "./organizer.css"
+import "./styles/organizer.css"
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import { useSelector, useDispatch } from "react-redux";

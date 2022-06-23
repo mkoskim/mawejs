@@ -5,6 +5,16 @@
 // ----------------------------------------------------------------------------
 */
 
+
+:root {
+  --comment-bg: #d6f8d6;
+  --missing-bg: #fce4e4;
+  --synopsis-bg:#faf9c9;
+  --comment-fg: rgb(16, 128, 16);
+  --missing-fg: rgb(216, 3, 3);
+  --synopsis-fg: rgb(99, 99, 14);
+}
+
 /* ----------------------------------------------------------------------------
 // Sheet
 // ----------------------------------------------------------------------------
@@ -18,10 +28,6 @@
   font-size: 12pt;
   line-height: 180%;
   font-family: 'Times New Roman', Times, serif;
-
-  --comment-bg: #d6f8d6;
-  --missing-bg: #fce4e4;
-  --synopsis-bg:#faf9c9;
 }
 
 /* ----------------------------------------------------------------------------
@@ -54,9 +60,9 @@
   font-family: inherit;
   font-size: inherit;
   color:gray;
+  margin-top: 0.5cm;
   /*
   text-indent: 0;
-  margin-top: 0.5cm;
   */
 }
 

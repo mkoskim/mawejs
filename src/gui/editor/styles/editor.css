@@ -5,8 +5,8 @@
 // ----------------------------------------------------------------------------
 */
 
-@import "./styles/board.css";
-@import "./styles/sheet.css";
+@import "./board.css";
+@import "./sheet.css";
 
 /* ---------------------------------------------------------------------------- */
 /* Variables */
@@ -38,18 +38,32 @@ pre {
   background-color: lightgray;
   */
   overflow: auto;
+  /*
   padding-top: 0.5cm;
   padding-left: 4px;
   border-right: 1pt dashed lightgray;
+  */
 }
 
-.Outline .entry {
+.Outline .Entry {
   padding: 6px;
-  padding-left: 16px;
   cursor: default;
+  /*
+  padding-left: 16px;
+  */
 }
 
-.Outline .entry:hover {
+.Outline .Entry.comment { color: var(--comment-fg); }
+.Outline .Entry.missing { color: var(--missing-fg); }
+.Outline .Entry.synopsis { color: var(--synopsis-fg); }
+
+.Outline .Entry .Name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.Outline .Entry:hover {
   background-color: lightgrey;
 }
 

@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import "./editor.css"
+import "./styles/editor.css"
 
 /* eslint-disable no-unused-vars */
 
@@ -15,7 +15,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { action, docByID } from "../app/store"
 
 import {
-  SlateEdit, section2edit,
+  SlateEdit, getEditor, section2edit, elem2text,
 } from "./slateEditor"
 
 import {
@@ -24,9 +24,9 @@ import {
   ToggleButton, ToggleButtonGroup,
   Input,
   SearchBox, addHotkeys,
-  Label,
+  Label, Link,
   Grid,
-  Separator, Loading,
+  Separator, Loading, addClass,
 } from "../common/factory";
 
 import { ViewSection } from "./organizer"
@@ -45,27 +45,48 @@ export function EditView() {
   console.log("EditView:", loading, edit.id)
 
   // Force (slate) re-render when ID changes
-  const [id, setID] = useState(edit.id)
-  useEffect(() => setID(edit.id), [edit.id])
+  //const [id, setID] = useState(edit.id)
+  //useEffect(() => setID(edit.id), [edit.id])
 
-  const refresh = (id !== edit.id)
+  //const refresh = (id !== edit.id)
 
   //return <RawDoc doc={doc}/>
   //return <SlateDoc doc={doc}/>
   return <VFiller>
     <WorkspaceTab />
-    {loading || refresh ? null : <SingleEdit id={id} />}
+    {loading ? null : <SingleEdit id={edit.id} />}
   </VFiller>
 }
 
 //-----------------------------------------------------------------------------
 // Single edit with sidebars
 
-function SingleEdit({ id, left, right, center, refresh }) {
+function SingleEdit({id, left, right, center}) {
 
   const doc = docByID(id)
 
-  const [content, setContent] = useState(section2edit(doc).body);
+  //---------------------------------------------------------------------------
+  /* Slate uses content variable only when initializing. We need to manually
+   * set children when doc changes between re-renders
+  */
+  //---------------------------------------------------------------------------
+
+  function doc2slate() { return section2edit(doc).body; }
+
+  const [storedid, setID] = useState(id)
+  useEffect(() => setID(id), [id])
+
+  const [content, setContent] = useState(doc2slate());
+  const editor = useMemo(() => getEditor(), [])
+
+  const refresh = storedid !== id
+  if(refresh) {
+    // TODO: Need to refresh editable window (scrollbar etc), too
+    editor.children = doc2slate()
+  }
+
+  //---------------------------------------------------------------------------
+  //console.log(`SingleEdit: id=${id} stored=${storedid} refresh=${refresh}`)
 
   const info = getinfo(content)
 
@@ -83,16 +104,25 @@ function SingleEdit({ id, left, right, center, refresh }) {
   return <React.Fragment>
     <ToolBar doc={doc} info={info} />
     <HFiller style={{ overflow: "auto", background: "#F8F8F8" }}>
-      <ViewSection
-        section={doc.story.body}
-        style={{ width: "25%", maxWidth: "25%", background: "#EEE" }}
+      <ViewIndex
+        editor={editor}
+        indexelems={indexElems(content)}
+        style={{ maxWidth: "250px", background: "#EEE" }}
       />
-      <VFiller className="Board"><div>
-        <SlateEdit className={"Sheet Shadow"} content={content} setContent={setContent} />
-      </div></VFiller>
+      <VFiller className="Board">
+        <div>
+        <SlateEdit
+          className={"Sheet Shadow"}
+          editor={editor}
+          content={content}
+          setContent={setContent}
+          />
+        </div>
+        </VFiller>
     </HFiller>
   </React.Fragment>
   /*/
+  // For development purposes:
   return <React.Fragment>
     <ToolBar doc={doc} info={info} />
     <HBox>
@@ -115,6 +145,38 @@ function getinfo(content) {
     words: 0,
     chars: 0,
   }
+}
+
+//-----------------------------------------------------------------------------
+
+function ViewIndex({editor, indexelems, style}) {
+  console.log("ViewIndex")
+  return <VBox className="Outline" style={style}>
+    {indexelems.map(elem => <IndexItem elem={elem}/>)}
+  </VBox>
+
+  function IndexItem({elem}) {
+    const className = addClass("Entry", elem.type)
+    const name = elem2text(elem).split(/[.:?!]/gu)[0]
+    return <a href={`#${elem.attributes.id}`}>
+      <div className={className}>
+        <Label variant="body1" className="Name">{name}</Label>
+      </div>
+    </a>
+  }
+}
+
+function indexElems(content) {
+  return content ? content.filter(elem => isIndexElem(elem)) : []
+}
+
+function isIndexElem(elem) {
+  return [
+    "br.scene",
+    "synopsis",
+    "missing",
+    "comment",
+  ].includes(elem.type)
 }
 
 //-----------------------------------------------------------------------------
