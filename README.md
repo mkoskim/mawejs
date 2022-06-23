@@ -11,23 +11,25 @@ My goal is to get somewhat usable editor for me during the summer, the sooner th
 
 ## What is Mawe?
 
-Mawe is meant to be an editor to write stories - not press articles, blog posts, technical documents or anything else but stories. That means that it has tools to split the text mass to manageable pieces, and it keeps "meta text" - plans, sketches and such - together with the final result (story itself).
+Mawe is meant for writing stories - not press articles, blog posts, technical documents or anything else but stories. That means it has tools to split the text mass to somewhat manageable pieces, and keep "meta text" - plans, sketches and such - together with the final result (story itself).
 
 ## How Mawe differs from Word or Google Docs?
 
 Editors made for writers to write stories differ from regular word processing software by
 
-1) They keep metadata together with the story,
+1) They keep metadata - comments and such - together with the story,
 
 2) They are targeting to produce a manuscript.
 
 That is, they are not exactly meant to edit some file, but they are meant to edit file or files which are used to produce manuscript.
 
+They are not exactly word processing software - they are more like text management software.
+
 ## How Mawe differs from yWriter, Manuskript or similar software?
 
-Most software meant for writers to make stories store document as a tree, and let you edit the nodes (text blocks). Once you are fine with the result, you export it to a manuscript.
+Most software meant for writers keep document as a tree, and let you edit the nodes (text blocks). Once you are fine with the result, you click a button to export a manuscript.
 
-My first story editor, Moe, worked exactly like that. But the problem I felt is that you loose the track of big picture, when you are editing your story one scene or chapter at time. I wanted an editor, which is somewhere in-between the worlds:
+My first story editor, Moe, worked exactly like that. The problem I felt is that you loose the track of big picture, when you are editing your story one scene or chapter at a time. I wanted an editor, which is somewhere in-between the two worlds:
 
 - Structured editors (yWriter, Scrivener)
 - Mawe
@@ -35,9 +37,11 @@ My first story editor, Moe, worked exactly like that. But the problem I felt is 
 
 What Mawe does is that it keeps the story internally as tree-like structure, but it "opens" it for editing, as a some sort of a draft. It keeps track of changes so that it can parse it back to tree-like structure anytime needed (e.g. for organizing parts, analyses and so on).
 
+I have borrowed ideas from code editors, for example, how they do code folding, syntax highlighting and such things.
+
 ## Design Principles
 
-Mawe's main design principle is *"Just start writing"* - you should be able to start writing your story right after starting the editor, without any kind of setting up or configuring, just like opening a notepad.
+Mawe's main design principle is *"Just start writing"* - you should be able to start writing your story right after starting the editor just like opening a notepad. Some structured editors need considerable work before you can start writing. Basically you need to structure your story beforehand, before starting to write it.
 
 All the tools that later help you to keep track with the text mass are taken into use just when you need it, without need for configuring them beforehand. Thus, you don't first create scene list, but you later split text to scenes. You don't need to write synopses or tag scenes, until you feel that you need them.
 
