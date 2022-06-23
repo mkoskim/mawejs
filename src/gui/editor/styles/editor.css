@@ -37,7 +37,8 @@ pre {
   width: 300px;
   background-color: lightgray;
   */
-  overflow: auto;
+  padding-top: 4px;
+  padding-left: 6px;
   /*
   padding-top: 0.5cm;
   padding-left: 4px;
@@ -53,10 +54,14 @@ pre {
   text-decoration: inherit;
 }
 
+.Outline .Index {
+  overflow: auto;
+}
+
 .Outline .Entry {
-  padding: 6px;
   cursor: default;
   /*
+  padding: 6px;
   padding-left: 16px;
   */
 }
@@ -108,6 +113,7 @@ pre {
 
   min-width: 7in;
   max-width: 8in;
+  min-height: 11in;
 }
 
 .Sheet {

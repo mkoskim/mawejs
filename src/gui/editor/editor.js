@@ -110,7 +110,6 @@ function SingleEdit({id, left, right, center}) {
 
   //*
   return <React.Fragment>
-    <ToolBar doc={doc} info={info} />
     <HFiller style={{overflow: "auto", background: "#F8F8F8"}}>
       <ViewIndex
         content={content}
@@ -147,12 +146,40 @@ function SingleEdit({id, left, right, center}) {
 
   function ViewIndex({content, style}) {
     //console.log("ViewIndex")
-    return <VFiller className="Outline" style={style}>
-      {indexElems(content).map(elem => <IndexItem key={elem.attributes.id} elem={elem} />)}
-    </VFiller>
+    return <VBox className="Outline" style={style}>
+      <DocItem />
+      <Separator />
+      <VFiller className="Index">
+        {indexElems(content).map(elem => <IndexItem key={elem.attributes.id} elem={elem} />)}
+      </VFiller>
+    </VBox>
 
     function indexElems(content) {
       return content ? content.filter(elem => isIndexElem(elem)) : []
+    }
+
+    //-------------------------------------------------------------------------
+
+    function IndexTools() {
+      return <ToolBox>
+        <Button>Test</Button>
+      </ToolBox>
+    }
+
+    function DocItem() {
+        const {n_words, n_chars} = {n_words: 0, n_chars: 0};
+
+        return (
+          <HBox style={{alignItems: "center"}}>
+            <Label variant="body1" style={{fontSize: "14pt", fontWeight: "bold"}}>{doc.story.name}</Label>
+            <Filler />
+            <Separator />
+            <Label>{`Words: ${n_words}`}</Label>
+            <Separator />
+            <Label>{`Chars: ${n_chars}`}</Label>
+            <Separator />
+          </HBox>
+        )
     }
 
     //-------------------------------------------------------------------------
@@ -165,7 +192,7 @@ function SingleEdit({id, left, right, center}) {
       return <Link id={id}>
         <HBox className={className} style={{alignItems: "center"}}>
         <ItemIcon type={elem.type}/>
-        <Label className="Name">{name}</Label>
+        <ItemLabel type={elem.type} name={name}/>
         </HBox>
       </Link>
     }
@@ -179,6 +206,11 @@ function SingleEdit({id, left, right, center}) {
           return <div className={addClass("Box", type)}/>
       }
       return null
+    }
+
+    function ItemLabel({type, name}) {
+      const style = (type === "br.scene") ? {fontWeight: "bold"} : {}
+      return <Label className="Name" style={style} text={name}/>
     }
 
     function Link({id, children, ...props}) {
@@ -260,23 +292,6 @@ function WorkspaceTab() {
     if (doc) return doc.story.name
     return file.name
   }
-}
-
-function ToolBar({doc, info}) {
-  const dispatch = useDispatch();
-  const {n_words, n_chars} = info;
-
-  return (
-    <ToolBox>
-      <Label>{doc.file.name}</Label>
-      <Separator />
-      <Label>{`Words: ${n_words}`}</Label>
-      <Separator />
-      <Label>{`Chars: ${n_chars}`}</Label>
-      <Separator />
-      <Filler />
-    </ToolBox>
-  )
 }
 
 function onOpen(event, dispatch, file) {
