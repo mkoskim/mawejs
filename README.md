@@ -1,19 +1,55 @@
 mawejs
 ======
 
-This is my mawe (My/Markus Advanced Writer's Editor) implemented with ElectronJS. The project is in very early state, I have just started to sketch it.
+This is my mawe (My/Markus Advanced Writer's Editor) implemented with ElectronJS.
 
-**Motivation**
+## Status
+
+**2022-Jun-23:** I have been working hard to (1) combine workspaces to file browser, (2) to use workspace to choose file to edit, and (3) with editor itself. Currently it is possible to load files in. I have not yet enabled saving for safety reasons.
+
+My goal is to get somewhat usable editor for me during the summer, the sooner the better.
+
+## What is Mawe?
+
+Mawe is meant to be an editor to write stories - not press articles, blog posts, technical documents or anything else but stories. That means that it has tools to split the text mass to manageable pieces, and it keeps "meta text" - plans, sketches and such - together with the final result (story itself).
+
+## How Mawe differs from Word or Google Docs?
+
+Editors made for writers to write stories differ from regular word processing software by
+
+1) They keep metadata together with the story,
+
+2) They are targeting to produce a manuscript.
+
+That is, they are not exactly meant to edit some file, but they are meant to edit file or files which are used to produce manuscript.
+
+## How Mawe differs from yWriter, Manuskript or similar software?
+
+Most software meant for writers to make stories store document as a tree, and let you edit the nodes (text blocks). Once you are fine with the result, you export it to a manuscript.
+
+My first story editor, Moe, worked exactly like that. But the problem I felt is that you loose the track of big picture, when you are editing your story one scene or chapter at time. I wanted an editor, which is somewhere in-between the worlds:
+
+- Structured editors (yWriter, Scrivener)
+- Mawe
+- Unstructured editors (Notepad, Word, etc)
+
+What Mawe does is that it keeps the story internally as tree-like structure, but it "opens" it for editing, as a some sort of a draft. It keeps track of changes so that it can parse it back to tree-like structure anytime needed (e.g. for organizing parts, analyses and so on).
+
+## Design Principles
+
+Mawe's main design principle is *"Just start writing"* - you should be able to start writing your story right after starting the editor, without any kind of setting up or configuring, just like opening a notepad.
+
+All the tools that later help you to keep track with the text mass are taken into use just when you need it, without need for configuring them beforehand. Thus, you don't first create scene list, but you later split text to scenes. You don't need to write synopses or tag scenes, until you feel that you need them.
+
+## Why MaweJS?
 
 There are certain things I would like to address in this version.
 
-First, the old editor is written with Python/GTK, and thus it mainly works off the shelf only in Linux machines. At the time it was written, it was still huge improvement compared to software written in C++ or similar, which would need porting and compiling them to all supported platforms.
+First, the old Mawe is written with Python/GTK, and thus it mainly works off the shelf only in Linux machines. At the time it was written, it was still huge improvement compared to software written in C++ or similar, which would need porting and compiling them to all supported platforms.
 
 Implementing the editor with ElectronJS should greatly improve this side. I have also planned integrating the editor to cloud storages (Dropbox, gDrive), so that you could access them wherever you have internet connection.
 
 In this editor version, I try really hard to concentrate on fluent user interface. Even thought Python mawe was a huge improvement to older versions, the truth is that GTK is not going to improve anymore. That means that Python/GTK GUI will probably not get any big face-lifts anymore, instead it will probably only be used to develop Linux accessory software.
-
-This time I try to make the "draft view" - where you see your story close similar as printed draft - to the main editing mode. Old moe has such mode, too, but it is fragile - trying to twist GTK components to understand that the text inside textbuffer is internally divided to movable pieces with meta data was apparently too much for them. This time, I will try to design the internal data structure so that the GUI can handle this.
 
 ## Installing
 
@@ -38,14 +74,6 @@ If you update the project with 'git pull', you may need to update the libraries,
 
     mawe.web$ git pull
     mawe.web$ npm install
-
-## Design Principle: "Just start writing"
-
-mawe is meant to be an editor to write stories - not press articles, blog posts, technical documents or anything else but stories. That means that it has tools to split the text mass to manageable pieces, and it keeps "meta text" - plans, sketches and such - together with the final result (story itself).
-
-But unlike some of its "competitors", mawe's main design principle is *"Just start writing"* - you should be able to start writing your story right after starting the editor, without any kind of setting up or configuring, just like opening a notepad.
-
-All the tools that later help you to keep track with the text mass are taken into use just when you need it, without need for configuring them beforehand. Thus, you don't first create scene list, but you later split text to scenes. You don't need to write synopses or tag scenes, until you feel that you need them.
 
 ## MIT License
 

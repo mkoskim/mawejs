@@ -171,7 +171,7 @@ function SingleEdit({id, left, right, center}) {
 
         return (
           <HBox style={{alignItems: "center"}}>
-            <Label variant="body1" style={{fontSize: "14pt", fontWeight: "bold"}}>{doc.story.name}</Label>
+            <Label variant="body1" style={{fontSize: "14pt"}}>{doc.story.name}</Label>
             <Filler />
             <Separator />
             <Label>{`Words: ${n_words}`}</Label>
