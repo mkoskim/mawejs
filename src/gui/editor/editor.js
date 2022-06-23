@@ -151,9 +151,9 @@ function getinfo(content) {
 
 function ViewIndex({editor, indexelems, style}) {
   console.log("ViewIndex")
-  return <VBox className="Outline" style={style}>
+  return <VFiller className="Outline" style={style}>
     {indexelems.map(elem => <IndexItem elem={elem}/>)}
-  </VBox>
+  </VFiller>
 
   function IndexItem({elem}) {
     const className = addClass("Entry", elem.type)
