@@ -7,5 +7,7 @@
 //*****************************************************************************
 
 import {uuid} from "./uuid"
+import {splitByLeadingElem, splitByTrailingElem} from "./generic"
 
 export {uuid}
+export {splitByLeadingElem, splitByTrailingElem}
