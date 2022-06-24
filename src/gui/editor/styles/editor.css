@@ -39,15 +39,15 @@ pre {
   width: 300px;
   background-color: lightgray;
   */
+  /*
   padding-top: 4px;
   padding-left: 6px;
-  /*
   padding-top: 0.5cm;
   padding-left: 4px;
   */
   /*
   background: white;
-  border-right: 1pt dashed lightgray;
+  border-right: 1pt solid lightgray;
   */
 }
 
@@ -58,6 +58,7 @@ pre {
 
 .Outline .Index {
   overflow: auto;
+  padding: 4pt;
 }
 
 .Outline .Entry {
@@ -84,12 +85,12 @@ pre {
   min-width: 9pt;
   max-width: 9pt;
   border: 1px solid black;
-  margin-right: 8pt;
+  margin-right: 9pt;
 }
 
 .Outline .Entry .Box.comment,
 .Outline .Entry .Box.missing {
-  margin-left: 16pt;
+  margin-left: 18pt;
 }
 
 .Outline .Entry .Box.comment { background: rgb(71, 207, 71); }

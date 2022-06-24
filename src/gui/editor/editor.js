@@ -28,7 +28,7 @@ import {
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon,
+  ToolBox, Button, Icon, Tooltip,
   ToggleButton, ToggleButtonGroup,
   Input,
   SearchBox, addHotkeys,
@@ -38,9 +38,7 @@ import {
   Separator, Loading, addClass,
 } from "../common/factory";
 
-import { ViewSection } from "./organizer"
-
-import isHotkey from 'is-hotkey';
+import { styled } from '@mui/material/styles';
 
 //-----------------------------------------------------------------------------
 // Choose the view
@@ -112,13 +110,15 @@ function SingleEdit({ id, left, right, center }) {
 
   //---------------------------------------------------------------------------
 
-  const indexed = {
-    "br.part": true,
-    "br.scene": true,
-    "synopsis": true,
-    "missing": false,
-    "comment": false,
-  }
+  const [indexed, setIndexed] = useState([
+    "br.part",
+    "br.scene",
+    "synopsis",
+    "missing",
+    //"comment",
+  ])
+
+  const [wordsAs, setWordsAs] = useState("numbers")
 
   //---------------------------------------------------------------------------
   //console.log(`SingleEdit: id=${id} stored=${storedid} refresh=${refresh}`)
@@ -136,21 +136,42 @@ function SingleEdit({ id, left, right, center }) {
   //*
   return (
     <HFiller style={{ overflow: "auto", background: "#F8F8F8" }}>
-      <ViewIndex
-        editor={editor}
-        content={content}
-        indexed={indexed}
-        style={{ maxWidth: "350px" }}
-      />
-      <VFiller className="Board">
-        <div>
-          <SlateEdit
-            className={"Sheet Shadow"}
-            editor={editor}
-            content={content}
-            setContent={setContent}
-          />
-        </div>
+      <VFiller style={{ maxWidth: "350px", borderRight: "1px solid lightgray" }}>
+        <ToolBox style={{ background: "white" }}>
+          <Filler />
+          <Separator />
+          <BorderlessToggleButtonGroup value={indexed} onChange={(e, value) => setIndexed(value)}>
+            <ToggleButton value="missing"><Tooltip title="Show missing"><Icon.BlockType.Missing /></Tooltip></ToggleButton>
+            <ToggleButton value="comment"><Tooltip title="Show comments"><Icon.BlockType.Comment /></Tooltip></ToggleButton>
+          </BorderlessToggleButtonGroup>
+          <Separator />
+          <BorderlessToggleButtonGroup exclusive value={wordsAs} onChange={(e, value) => setWordsAs(value)}>
+            <ToggleButton value="numbers"><Icon.StatType.Words /></ToggleButton>
+            <ToggleButton value="percent"><Icon.StatType.Percent /></ToggleButton>
+            <ToggleButton value="cumulative"><Icon.StatType.Cumulative /></ToggleButton>
+          </BorderlessToggleButtonGroup>
+        </ToolBox>
+        <ViewIndex
+          editor={editor}
+          content={content}
+          indexed={indexed} setIndexed={setIndexed}
+          wordsAs={wordsAs} setWordsAs={setWordsAs}
+        />
+      </VFiller>
+      <VFiller>
+        <ToolBox style={{ background: "white" }}>
+          <Button size="small">Test</Button>
+        </ToolBox>
+        <VFiller className="Board">
+          <div>
+            <SlateEdit
+              className={"Sheet Shadow"}
+              editor={editor}
+              content={content}
+              setContent={setContent}
+            />
+          </div>
+        </VFiller>
       </VFiller>
     </HFiller>
   )
@@ -172,26 +193,36 @@ function SingleEdit({ id, left, right, center }) {
   //-----------------------------------------------------------------------------
 }
 
-function ViewIndex({ editor, content, indexed, style }) {
-  console.log("ViewIndex")
+function ViewIndex({ editor, content, style, indexed, wordsAs}) {
+  //console.log("ViewIndex")
 
   return <VBox className="Outline" style={style}>
-    <Separator />
     <VFiller className="Index">
       {indexElems(content).map(elem => <IndexItem key={elem.attributes.id} editor={editor} elem={elem} />)}
     </VFiller>
   </VBox>
 
   function indexElems(content) {
-    return content ? content.filter(elem => indexed[elem.type]) : []
+    return content ? content.filter(elem => indexed.includes(elem.type)) : []
   }
 }
 
-function IndexTools() {
-  return <ToolBox>
-    <Button>Test</Button>
-  </ToolBox>
-}
+const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  '& .MuiToggleButtonGroup-grouped': {
+    //margin: theme.spacing(0.5),
+    padding: "4pt",
+    border: 0,
+    '&.Mui-disabled': {
+      border: 0,
+    },
+    '&:not(:first-of-type)': {
+      borderRadius: theme.shape.borderRadius,
+    },
+    '&:first-of-type': {
+      borderRadius: theme.shape.borderRadius,
+    },
+  },
+}));
 
 function DocItem({ doc }) {
   const { n_words, n_chars } = { n_words: 0, n_chars: 0 };
@@ -214,12 +245,16 @@ function IndexItem({ editor, elem }) {
   const name = elem2text(elem)
   const id = elem.attributes.id
 
+  /*
+  return <ItemLabel type={elem.type} name={name === "" ? "|" : name} />
+  /*/
   return <ItemLink editor={editor} id={id}>
     <HBox className={className} style={{ alignItems: "center" }}>
       <ItemIcon type={elem.type} />
       <ItemLabel type={elem.type} name={name === "" ? "|" : name} />
     </HBox>
   </ItemLink>
+  /**/
 }
 
 function ItemIcon({ type }) {
@@ -238,14 +273,14 @@ function ItemLabel({ type, name }) {
 }
 
 function ItemLink({ editor, id, children, ...props }) {
-  return <a href={`#${id}`} onClick={e => setTimeout(() => onClick(e, id), 0)} {...props}>
+  return <a href={`#${id}`} onClick={e => setTimeout(() => onItemClick(e, editor, id), 0)} {...props}>
     {children}
   </a>
 
-  function onClick(e, id) {
+  function onItemClick(e, editor, id) {
     //console.log("onClick:", id)
     const target = document.getElementById(id)
-    if(!target) {
+    if (!target) {
       console.log(`Index/onClick: ID ${id} not found.`)
       return;
     }

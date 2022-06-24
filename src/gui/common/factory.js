@@ -32,10 +32,6 @@ import {
   Typography,
 } from "@mui/material"
 
-import DeleteIcon from "@mui/icons-material/Delete"
-import HomeIcon from '@mui/icons-material/Home';
-export {DeleteIcon}
-
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export {
   Tooltip,
@@ -76,6 +72,16 @@ export const Icon = {
     File: muiIcons.InsertDriveFileOutlined,
     Unknown: muiIcons.BrokenImageOutlined,
     Selected: muiIcons.CheckBox,
+  },
+
+  BlockType: {
+    Comment: muiIcons.Comment,
+    Missing: muiIcons.Report,
+  },
+  StatType: {
+    Words: muiIcons.Numbers,
+    Percent: muiIcons.Percent,
+    Cumulative: muiIcons.SignalCellularAlt,
   },
 
   MoreHoriz: muiIcons.MoreHoriz,
