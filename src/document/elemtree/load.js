@@ -48,36 +48,45 @@ export async function loadmawe(file) {
   }
 
   function parseRoot(root) {
-    if (root.tag !== "story") throw Error();
-    if (root.get("format") !== "mawe") throw Error();
+    if (root.tag !== "story") throw Error(`${file.name}: File has no story.`);
 
-    const { uuid, name, version = 1, format, ...extra } = root.attrib;
+    const { uuid, name, format, version = 1 } = root.attrib;
 
-    if (version > 2) throw Error(`File version ${version} is too new.`)
+    if (format !== "mawe") throw Error(`${file.name}: Story is not mawe story.`);
+    if (version > 2) throw Error(`${file.name}: File version ${version} is too new.`)
 
-    return withextras({
-      ...{ uuid, name, version, ...extra },
-      body: parseBody(root.find("body")),
+    return {
+      // format - generated at save
+      // format version - generated at save
+      uuid,
+      name,
       notes: parseNotes(root.find("notes")),
-      version: root.findall("version").map(parseBody),
-    }, root);
+      body: parseBody(root.find("body")),
+      versions: root.findall("version").map(parseBody),
+    }
+  }
+
+  function parseNotes(elem) {
+    return {
+      id: elem.id ?? uuid(),
+      parts: parseParts(elem),
+    }
   }
 
   function parseBody(elem) {
-    const { name, modified, ...extra } = elem.attrib;
+    const { name, id, modified } = elem.attrib;
 
-    return withextras({
-      ...extra,
-      id: elem.id ?? uuid(),
-      tag: "body",
-      name: name,
+    return {
+      id: id ?? uuid(),
+      name,
+      modified,
       head: parseHead(elem.find("head")),
       parts: parseParts(elem),
-    }, elem);
+    }
   }
 
   function parseHead(elem) {
-    return withextras({
+    return {
       //version: elem.findtext("version"),
       status: elem.findtext("status"),
       deadline: elem.findtext("deadline"),
@@ -93,16 +102,7 @@ export async function loadmawe(file) {
         missing: elem.findtext("words/missing"),
         comments: elem.findtext("words/comments"),
       },
-    }, elem);
-  }
-
-  function parseNotes(elem) {
-    return withextras({
-      id: elem.id ?? uuid(),
-      tag: "notes",
-      head: null,
-      parts: parseParts(elem),
-    }, elem);
+    }
   }
 
   function parseParts(elem) {
@@ -128,20 +128,4 @@ export async function loadmawe(file) {
       children: elem.getchildren().map(et2js),
     }
   }
-
-  //---------------------------------------------------------------------------
-  // withextras() adds XML elements not processed by the loader to the end
-  // of the block. This may be used to implement new features that not all
-  // editors support yet. This could be extended so that you could apply
-  // attributes to tags that would be preserved by editors.
-  //---------------------------------------------------------------------------
-
-  function withextras(obj, elem) {
-    const extra = elem.getchildren().filter(child => obj[child.tag] === undefined);
-    return {
-      ...obj,
-      extra: extra.map(et2js),
-    }
-  }
-
 }

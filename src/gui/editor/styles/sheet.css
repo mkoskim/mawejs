@@ -44,10 +44,11 @@
   font-size: 17pt;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 2cm;
+  margin-bottom: 0.5in;
 }
 
 /* Part */ .Sheet h2 {
+  margin-top: 0.5in;
   font-weight: bold;
   font-family: inherit;
   font-size: inherit;

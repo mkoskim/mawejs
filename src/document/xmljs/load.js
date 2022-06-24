@@ -7,21 +7,48 @@
 //*****************************************************************************
 
 import {uuid, file2buf} from "../util";
-import {Document} from "../Document";
 
-//const convert = require('xml-js');
+//-----------------------------------------------------------------------------
+// File structure:
+//
+// <story format="mawe" uuid="xxx">
+//    <body name="v2.2">
+//      <head> ... </head>
+//      <part> ... </part>
+//      <part> ... </part>
+//      ...
+//    </body>
+//    <notes>
+//      <part> ... </part>
+//      <part> ... </part>
+//      ...
+//    </notes>
+//    <version name="A">
+//      <head> ... </head>
+//      <part> ... </part>
+//      <part> ... </part>
+//      ...
+//    </version>
+//    <version name="B"> ... </version>
+//    ...
+//
+//-----------------------------------------------------------------------------
+
+const convert = require('xml-js');
 
 function buf2tree(buffer) {
-  //return convert.xml2js(buffer, {compact: false});
-  const parser = new DOMParser();
-  return parser.parseFromString(buffer, "text/xml");
+  return convert.xml2js(buffer, {compact: false});
+  //const parser = new DOMParser();
+  //return parser.parseFromString(buffer, "text/xml");
 }
 
-export async function mawe(file) {
+export async function loadmawe(file) {
   const root = buf2tree(await file2buf(file))
 
-  return new Document(file, root);
-  return new Document(file, parseRoot(root));
+  return root;
+
+  //return new Document(file, root);
+  //return new Document(file, parseRoot(root));
 
   function parseRoot(root) {
     if(root.name !== "story") throw Error(`ERROR (${file}): Root elem is not story.`);

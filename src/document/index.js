@@ -6,13 +6,16 @@
 //*****************************************************************************
 //*****************************************************************************
 
+//*
 import { loadmawe } from "./elemtree/load"
 import { savemawe } from "./elemtree/save"
+/*/
+import {loadmawe} from "./xmljs/load"
+import {savemawe} from "./xmljs/save"
+/**/
 
 import { getSuffix } from "./util.js";
 import { suffix2format } from "./util";
-
-//import {mawe} from "./xmljs/load"
 
 const fs = require("../storage/localfs")
 
@@ -35,7 +38,7 @@ async function load(file) {
   console.log("Load file:", file)
   const format = suffix2format(file);
 
-  if (format == "mawe") try {
+  if (format == "mawe") {
     const suffix = getSuffix(file, [".mawe", ".mawe.gz"]);
     const basename = fs.basename(file.name, suffix);
     const story = await loadmawe(file);
@@ -49,9 +52,6 @@ async function load(file) {
         name: story.name ?? basename,
       }
     }
-  } catch (e) {
-    console.log(e);
-    throw Error(`${file.name}: Invalid .mawe file.`);
   }
 
   throw new Error(`${file.name}: Unknown type.`);

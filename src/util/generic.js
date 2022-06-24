@@ -3,7 +3,7 @@
 // Split list to groups starting by a specific element
 //-----------------------------------------------------------------------------
 
-function splitByLeadingElem(list, match) {
+export function splitByLeadingElem(list, match) {
   return list.reduce(
     (grouped, elem) => {
       const head = grouped.length > 1 ? grouped.slice(0, -1) : [];
@@ -26,7 +26,7 @@ function splitByLeadingElem(list, match) {
 // Split list to groups starting by a specific element
 //-----------------------------------------------------------------------------
 
-function splitByTrailingElem(list, match) {
+export function splitByTrailingElem(list, match) {
   return list.reduce(
     (grouped, elem) => {
       const head = grouped.length > 1 ? grouped.slice(0, -1) : [];
