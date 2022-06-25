@@ -66,6 +66,10 @@ export function docByID(id) {
   return docs[id]
 }
 
+export function docUpdate(id, content) {
+  docs[id] = content
+}
+
 //-----------------------------------------------------------------------------
 
 function open({file}) {

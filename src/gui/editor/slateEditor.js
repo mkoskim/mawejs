@@ -327,11 +327,9 @@ export function getEditor() {
 
       if (match) {
         const [node, path] = match
-        console.log(node)
-        Transforms.insertNodes(editor, createElement({
-          type: STYLESAFTER[node.type],
-          children: [{ text: "" }],
-        }))
+        const newtype = STYLESAFTER[node.type]
+        Transforms.splitNodes(editor, {always: true})
+        Transforms.setNodes(editor, {type: newtype})
         return
       }
     }

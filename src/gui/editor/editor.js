@@ -18,7 +18,7 @@ import {
 } from 'react';
 
 import { useSelector, useDispatch } from "react-redux";
-import { action, docByID } from "../app/store"
+import { action, docByID, docUpdate } from "../app/store"
 
 import {
   SlateEdit, getEditor, ReactEditor,
@@ -93,18 +93,22 @@ function SingleEdit({ id, left, right, center }) {
 
   // TODO: We need to know what element is placed for editing
 
-  /*
-  const fromedit = edit2section(content)
-  const edited = {
-    ...doc,
-    story: {
-      ...doc.story,
-      body: {
-        ...doc.story.body,
-        head: {...doc.story.body.head, ...fromedit.head},
-        parts: fromedit.parts,
+  //*
+  if(storedid === id) {
+    const fromedit = edit2section(content)
+    const edited = {
+      ...doc,
+      story: {
+        ...doc.story,
+        body: {
+          ...doc.story.body,
+          head: {...doc.story.body.head, ...fromedit.head},
+          parts: fromedit.parts,
+        }
       }
     }
+    //console.log("Update:", id, doc.story.name, content)
+    docUpdate(id, edited)
   }
   /**/
 
@@ -148,19 +152,11 @@ function SingleEdit({ id, left, right, center }) {
           wordsAs={wordsAs}
         />
       </VFiller>
-      <VFiller>
-        <EditToolbar />
-        <VFiller className="Board">
-          <div>
-            <SlateEdit
-              className={"Sheet Shadow"}
-              editor={editor}
-              content={content}
-              setContent={setContent}
-            />
-          </div>
-        </VFiller>
-      </VFiller>
+      <EditorBox
+        editor={editor}
+        content={content}
+        setContent={setContent}
+        />
     </HFiller>
   )
 
@@ -168,17 +164,36 @@ function SingleEdit({ id, left, right, center }) {
   // For development purposes:
   return <React.Fragment>
     <HBox>
-    <Pre style={{ width: "50%" }} content={doc2slate()} />
-    <Pre style={{ width: "50%" }} content={doc.story} />
+    <Pre style={{ width: "50%" }} content={edited.story} />
+    <EditorBox style={{width: "50%"}} editor={editor} content={content} setContent={setContent}/>
     </HBox>
   </React.Fragment>
   /**/
 
   /*
+    <Pre style={{ width: "50%" }} content={doc.story} />
       <Pre style={{ width: "50%" }} content={edited.story.body} />
   */
 
   //---------------------------------------------------------------------------
+}
+
+//-----------------------------------------------------------------------------
+
+function EditorBox({style, editor, content, setContent}) {
+  return <VFiller style={style}>
+  <EditToolbar />
+  <VFiller className="Board">
+    <div>
+      <SlateEdit
+        className={"Sheet Shadow"}
+        editor={editor}
+        content={content}
+        setContent={setContent}
+      />
+    </div>
+  </VFiller>
+  </VFiller>
 }
 
 //-----------------------------------------------------------------------------

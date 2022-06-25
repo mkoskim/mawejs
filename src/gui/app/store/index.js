@@ -9,10 +9,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 import cwdReducer, {CWDAction} from "./cwdSlice"
-import docReducer, {docAction, docByID} from "./docSlice"
+import docReducer, {docAction, docByID, docUpdate} from "./docSlice"
 import workspaceReducer, {workspaceAction} from "./workspaceSlice"
 
-export{docByID}
+export{docByID, docUpdate}
 
 //-----------------------------------------------------------------------------
 // Export store
