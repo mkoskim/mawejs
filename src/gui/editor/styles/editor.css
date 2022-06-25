@@ -35,6 +35,8 @@ pre {
 /* ---------------------------------------------------------------------------- */
 
 .Outline {
+  overflow-y: auto;
+  overflow-x: hidden;
   /*
   width: 300px;
   background-color: lightgray;

@@ -64,16 +64,24 @@
   font-family: inherit;
   font-size: inherit;
   margin-top: 0.5cm;
-
   /*
   color:rgb(77, 77, 77);
   */
 }
 
 .Sheet h3::before {
-  content: "Scene: ";
-  font-weight: bold;
+  content: "Scene";
+  background: lightgray;
+  border: 1pt solid gray;
+  border-radius: 4pt;
+  padding-left: 4pt;
+  padding-right: 4pt;
+  margin-right: 4pt;
+  margin-left: -4pt;
 /*
+  padding-top: 2pt;
+  padding-bottom: 2pt;
+  font-weight: bold;
 */
 }
 
@@ -82,13 +90,23 @@
   font-family: inherit;
   font-size: inherit;
   margin-top: 0.5cm;
-  background: var(--synopsis-bg);
+  /*
+  color:rgb(77, 77, 77);
+  */
 }
 
 .Sheet h4::before {
-  content: "Bookmark: ";
-  font-weight: bold;
+  content: "Bookmark";
+  background: var(--synopsis-bg);
+  border: 1pt solid lightgray;
+  border-radius: 4pt;
+  padding-left: 4pt;
+  padding-right: 4pt;
+  margin-right: 4pt;
+  margin-left: -4pt;
 /*
+  padding-top: 2pt;
+  padding-bottom: 2pt;
 */
 }
 
@@ -146,19 +164,46 @@
   margin-left: 1cm;
 }
 
-.Sheet .missing, .Sheet .comment {
-/*
-*/
-}
-
 .Sheet .missing {
   /* color: rgb(155, 28, 28); */
   background: var(--missing-bg);
   /* border-left: 4px solid #D88; */
 }
 
+.Sheet .missing::before {
+  content: "Missing";
+  border: 1pt solid var(--missing-fg);
+  border-radius: 4pt;
+  color: var(--missing-fg);
+  padding-left: 4pt;
+  padding-right: 4pt;
+  padding-top: 2pt;
+  padding-bottom: 2pt;
+  margin-right: 4pt;
+/*
+  background: var(--synopsis-bg);
+  margin-left: -4pt;
+*/
+}
+
 .Sheet .comment {
   background: var(--comment-bg);
+}
+
+.Sheet .comment::before {
+  content: "Comment";
+  border: 1pt solid var(--comment-fg);
+  border-radius: 4pt;
+  color: var(--comment-fg);
+  padding-left: 4pt;
+  padding-right: 4pt;
+  padding-top: 2pt;
+  padding-bottom: 2pt;
+  margin-right: 4pt;
+/*
+  background: var(--synopsis-bg);
+  margin-left: -4pt;
+*/
 }
 
 .Sheet .synopsis {

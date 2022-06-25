@@ -9,12 +9,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
 import {
-  Editor,
+  Editor, Node,
   Transforms,
   Range,
   Point,
   createEditor,
-  Element as SlateElement,
   Descendant,
 } from 'slate'
 
@@ -27,10 +26,7 @@ export { ReactEditor }
 //-----------------------------------------------------------------------------
 
 export function elem2text(block) {
-  return block.children
-    //.map(elem => elem.children).flat(1)
-    .map(elem => elem.text)
-    .join(" ")
+  return Node.string(block)
     .replace(/\s+/g, ' ').trim()
 }
 
@@ -397,7 +393,7 @@ export function getEditor() {
 
         if (
           !Editor.isEditor(block) &&
-          SlateElement.isElement(block) &&
+          Editor.isBlock(editor, block) &&
           block.type !== 'p' &&
           Point.equals(selection.anchor, start)
         ) {

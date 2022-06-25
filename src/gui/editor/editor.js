@@ -140,7 +140,7 @@ function SingleEdit({ id, left, right, center }) {
   //*
   return (
     <HFiller style={{ overflow: "auto", background: "#F8F8F8" }}>
-      <VFiller style={{ maxWidth: "350px", borderRight: "1px solid lightgray" }}>
+      <VFiller style={{maxWidth: "350px", borderRight: "1px solid lightgray" }}>
         <IndexToolbar
           indexed={indexed} setIndexed={setIndexed}
           wordsAs={wordsAs} setWordsAs={setWordsAs}
