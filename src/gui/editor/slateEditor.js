@@ -38,6 +38,12 @@ function elemLeader(elem) {
   return elem2text(elem).split(/[.:?!]/gu, 1)[0]
 }
 
+//*****************************************************************************
+//
+// Rendering
+//
+//*****************************************************************************
+
 export function RenderPlain({ content }) {
 }
 
@@ -50,11 +56,14 @@ export function Element(props) {
 
   switch (element.type) {
     case "title": return <h1 {...attributes}>{children}</h1>
-    case "br.part": return <Linked><h2 {...attributes}>{children}</h2></Linked>
-    case "br.scene": return <Linked><h3 {...attributes}>{children}</h3></Linked>
+    case "br.part": return <h2 {...attributes}><Linked>{children}</Linked></h2>
+    case "br.scene": return <h3 {...attributes}><Linked>{children}</Linked></h3>
+    case "synopsis": return <h4 {...attributes}><Linked>{children}</Linked></h4>
+
+    /*
     case "part": return <div className="part">{children}</div>
     case "scene": return <div className="scene">{children}</div>
-    /*
+
     case "float": return (
       <p className="FloatHandle">
         <Icon.PaperClipHoriz style={{fontsize: "14pt", color: "green"}}/>
@@ -64,8 +73,8 @@ export function Element(props) {
     */
     case "comment":
     case "missing":
-    case "synopsis":
-      return <Linked><p className={element.type} {...attributes}>{children}</p></Linked>
+    //case "synopsis":
+      return <p className={element.type} {...attributes}><Linked>{children}</Linked></p>
 
     case "p":
     default:
@@ -80,7 +89,11 @@ export function Leaf({ leaf, attributes, children }) {
   return <span {...attributes}>{children}</span>
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Doc --> Slate
+//
+//*****************************************************************************
 
 function createElement({ type, attributes, children }) {
   switch (type) {
@@ -149,7 +162,11 @@ export function section2edit(doc) {
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Slate --> Doc
+//
+//*****************************************************************************
 
 export function edit2section(content) {
   const [head, parts] = getHead()
@@ -248,14 +265,18 @@ export function edit2scene(content) {
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
 // Editor customizations
+//
+//*****************************************************************************
 
 export function getEditor() {
   const editor = withHistory(withReact(createEditor()))
 
   //---------------------------------------------------------------------------
 
+  /*
   const { normalizeNode } = editor;
 
   editor.normalizeNode = entry => {
@@ -265,9 +286,11 @@ export function getEditor() {
 
     return normalizeNode(entry)
   }
+  */
 
   //---------------------------------------------------------------------------
 
+  /*
   const { isVoid } = editor;
 
   editor.isVoid = element => {
@@ -276,6 +299,7 @@ export function getEditor() {
     }
     return isVoid(element)
   }
+  */
 
   //---------------------------------------------------------------------------
 
@@ -283,7 +307,10 @@ export function getEditor() {
     "title": "p",
     "br.scene": "p",
     "br.part": "p",
+    "synopsis": "p",
   }
+
+  // TODO: Fix to work also when pressing enter at the mid of things.
 
   const { insertBreak } = editor
 
@@ -291,14 +318,16 @@ export function getEditor() {
     const { selection } = editor
 
     if (selection) {
-      const [node] = Editor.nodes(editor, {
+      const [match] = Editor.nodes(editor, {
         match: n =>
           !Editor.isEditor(n) &&
-          Editor.isBlock(n) &&
+          Editor.isBlock(editor, n) &&
           (n.type in STYLESAFTER)
       })
 
-      if (node) {
+      if (match) {
+        const [node, path] = match
+        console.log(node)
         Transforms.insertNodes(editor, createElement({
           type: STYLESAFTER[node.type],
           children: [{ text: "" }],
@@ -374,6 +403,7 @@ export function getEditor() {
           block.type !== 'p' &&
           Point.equals(selection.anchor, start)
         ) {
+          console.log(block.type)
           const newProperties = {
             type: 'p',
           }
@@ -390,7 +420,11 @@ export function getEditor() {
   return editor
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Creating editor
+//
+//*****************************************************************************
 
 export function SlateEdit({ editor, className, content, setContent, ...props }) {
 

@@ -114,7 +114,7 @@ function SingleEdit({ id, left, right, center }) {
     "br.part",
     "br.scene",
     "synopsis",
-    "missing",
+    //"missing",
     //"comment",
   ])
 
@@ -137,31 +137,19 @@ function SingleEdit({ id, left, right, center }) {
   return (
     <HFiller style={{ overflow: "auto", background: "#F8F8F8" }}>
       <VFiller style={{ maxWidth: "350px", borderRight: "1px solid lightgray" }}>
-        <ToolBox style={{ background: "white" }}>
-          <Filler />
-          <Separator />
-          <BorderlessToggleButtonGroup value={indexed} onChange={(e, value) => setIndexed(value)}>
-            <ToggleButton value="missing"><Tooltip title="Show missing"><Icon.BlockType.Missing /></Tooltip></ToggleButton>
-            <ToggleButton value="comment"><Tooltip title="Show comments"><Icon.BlockType.Comment /></Tooltip></ToggleButton>
-          </BorderlessToggleButtonGroup>
-          <Separator />
-          <BorderlessToggleButtonGroup exclusive value={wordsAs} onChange={(e, value) => setWordsAs(value)}>
-            <ToggleButton value="numbers"><Icon.StatType.Words /></ToggleButton>
-            <ToggleButton value="percent"><Icon.StatType.Percent /></ToggleButton>
-            <ToggleButton value="cumulative"><Icon.StatType.Cumulative /></ToggleButton>
-          </BorderlessToggleButtonGroup>
-        </ToolBox>
-        <ViewIndex
-          editor={editor}
-          content={content}
+        <IndexToolbar
           indexed={indexed} setIndexed={setIndexed}
           wordsAs={wordsAs} setWordsAs={setWordsAs}
         />
+        <ViewIndex
+          editor={editor}
+          content={content}
+          indexed={indexed}
+          wordsAs={wordsAs}
+        />
       </VFiller>
       <VFiller>
-        <ToolBox style={{ background: "white" }}>
-          <Button size="small">Test</Button>
-        </ToolBox>
+        <EditToolbar />
         <VFiller className="Board">
           <div>
             <SlateEdit
@@ -190,10 +178,37 @@ function SingleEdit({ id, left, right, center }) {
       <Pre style={{ width: "50%" }} content={edited.story.body} />
   */
 
-  //-----------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 }
 
-function ViewIndex({ editor, content, style, indexed, wordsAs}) {
+//-----------------------------------------------------------------------------
+
+function IndexToolbar({indexed, setIndexed, wordsAs, setWordsAs}) {
+  return <ToolBox style={{ background: "white" }}>
+    <Filler />
+    <Separator />
+    <BorderlessToggleButtonGroup value={indexed} onChange={(e, value) => setIndexed(value)}>
+      <ToggleButton value="missing"><Tooltip title="Show missing"><Icon.BlockType.Missing /></Tooltip></ToggleButton>
+      <ToggleButton value="comment"><Tooltip title="Show comments"><Icon.BlockType.Comment /></Tooltip></ToggleButton>
+    </BorderlessToggleButtonGroup>
+    <Separator />
+    <BorderlessToggleButtonGroup exclusive value={wordsAs} onChange={(e, value) => setWordsAs(value)}>
+      <ToggleButton value="numbers"><Tooltip title="Words as numbers"><Icon.StatType.Words /></Tooltip></ToggleButton>
+      <ToggleButton value="percent"><Tooltip title="Words as percent"><Icon.StatType.Percent /></Tooltip></ToggleButton>
+      <ToggleButton value="cumulative"><Tooltip title="Words as cumulative percent"><Icon.StatType.Cumulative /></Tooltip></ToggleButton>
+    </BorderlessToggleButtonGroup>
+  </ToolBox>
+}
+
+function EditToolbar() {
+  return <ToolBox style={{ background: "white" }}>
+    <Button size="small">Test</Button>
+  </ToolBox>
+}
+
+//-----------------------------------------------------------------------------
+
+function ViewIndex({ editor, content, style, indexed, wordsAs }) {
   //console.log("ViewIndex")
 
   return <VBox className="Outline" style={style}>

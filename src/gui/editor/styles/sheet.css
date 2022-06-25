@@ -5,7 +5,6 @@
 // ----------------------------------------------------------------------------
 */
 
-
 :root {
   --comment-bg: #d6f8d6;
   --missing-bg: #fce4e4;
@@ -35,7 +34,7 @@
 // ----------------------------------------------------------------------------
 */
 
-.Sheet h1, h2, h3 {
+.Sheet div, p, h1, h2, h3, h4 {
   padding: 0;
   margin: 0;
 }
@@ -56,16 +55,47 @@
   color:gray;
 }
 
+.Sheet h2::before {
+  content: "Part: ";
+}
+
 /* Scene */ .Sheet h3 {
-  font-weight: bold;
+  font-weight: normal;
   font-family: inherit;
   font-size: inherit;
-  color:gray;
   margin-top: 0.5cm;
+
   /*
-  text-indent: 0;
+  color:rgb(77, 77, 77);
   */
 }
+
+.Sheet h3::before {
+  content: "Scene: ";
+  font-weight: bold;
+/*
+*/
+}
+
+/* "Bookmark" */ .Sheet h4 {
+  font-weight: normal;
+  font-family: inherit;
+  font-size: inherit;
+  margin-top: 0.5cm;
+  background: var(--synopsis-bg);
+}
+
+.Sheet h4::before {
+  content: "Bookmark: ";
+  font-weight: bold;
+/*
+*/
+}
+
+/* ----------------------------------------------------------------------------
+// Scene & part divs, not yet used
+// ----------------------------------------------------------------------------
+*/
 
 .Sheet div.part {
   margin-left: 4pt;
@@ -109,11 +139,16 @@
   padding-bottom: 4pt;
   font-family: Arial, Helvetica, sans-serif;
 */
-  padding: 8pt;
-  margin-top: 8pt;
-  margin-bottom: 8pt;
+  padding: 4pt;
+  margin-top: 4pt;
+  margin-bottom: 4pt;
   text-indent: 0;
   margin-left: 1cm;
+}
+
+.Sheet .missing, .Sheet .comment {
+/*
+*/
 }
 
 .Sheet .missing {
