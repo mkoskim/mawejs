@@ -79,6 +79,7 @@ export const Icon = {
     Missing: muiIcons.Report,
   },
   StatType: {
+    Off: muiIcons.VisibilityOff,
     Words: muiIcons.Numbers,
     Percent: muiIcons.Percent,
     Cumulative: muiIcons.SignalCellularAlt,

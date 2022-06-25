@@ -139,8 +139,8 @@ function SingleEdit({ id, left, right, center }) {
 
   //*
   return (
-    <HFiller style={{ overflow: "auto", background: "#F8F8F8" }}>
-      <VFiller style={{maxWidth: "350px", borderRight: "1px solid lightgray" }}>
+    <HFiller style={{overflow: "auto", background: "#F6F7F8"}}>
+      <VFiller style={{maxWidth: "300px", borderRight: "1px solid lightgray" }}>
         <IndexToolbar
           indexed={indexed} setIndexed={setIndexed}
           wordsAs={wordsAs} setWordsAs={setWordsAs}
@@ -180,13 +180,14 @@ function SingleEdit({ id, left, right, center }) {
 
 //-----------------------------------------------------------------------------
 
-function EditorBox({style, editor, content, setContent}) {
+function EditorBox({style, mode="Regular", editor, content, setContent}) {
   return <VFiller style={style}>
   <EditToolbar />
   <VFiller className="Board">
     <div>
       <SlateEdit
-        className={"Sheet Shadow"}
+        className={addClass(mode, "Sheet")}
+        //className="Condensed Sheet"
         editor={editor}
         content={content}
         setContent={setContent}
@@ -200,6 +201,7 @@ function EditorBox({style, editor, content, setContent}) {
 
 function IndexToolbar({indexed, setIndexed, wordsAs, setWordsAs}) {
   return <ToolBox style={{ background: "white" }}>
+    <Button size="small">Test</Button>
     <Filler />
     <Separator />
     <BorderlessToggleButtonGroup value={indexed} onChange={(e, value) => setIndexed(value)}>
@@ -208,6 +210,8 @@ function IndexToolbar({indexed, setIndexed, wordsAs, setWordsAs}) {
     </BorderlessToggleButtonGroup>
     <Separator />
     <BorderlessToggleButtonGroup exclusive value={wordsAs} onChange={(e, value) => setWordsAs(value)}>
+    <ToggleButton value="off">
+      <Tooltip title="Don't show words"><Icon.StatType.Off /></Tooltip></ToggleButton>
       <ToggleButton value="numbers"><Tooltip title="Words as numbers"><Icon.StatType.Words /></Tooltip></ToggleButton>
       <ToggleButton value="percent"><Tooltip title="Words as percent"><Icon.StatType.Percent /></Tooltip></ToggleButton>
       <ToggleButton value="cumulative"><Tooltip title="Words as cumulative percent"><Icon.StatType.Cumulative /></Tooltip></ToggleButton>
@@ -239,8 +243,10 @@ function ViewIndex({ editor, content, style, indexed, wordsAs }) {
 
 const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
-    //margin: theme.spacing(0.5),
-    padding: "4pt",
+    margin: 0,
+    marginLeft: theme.spacing(0.5),
+    marginRight: theme.spacing(0.5),
+    padding: "1pt",
     border: 0,
     '&.Mui-disabled': {
       border: 0,
@@ -357,7 +363,7 @@ function WorkspaceTab() {
   const current = useSelector(state => state.workspace[state.workspace.selected])
   const { name, files, selected } = current;
 
-  return <HBox style={{ background: "#EEE", alignItems: "center" }}>
+  return <HBox style={{background: "#EEE", alignItems: "center"}}>
     <Button onClick={(e) => onClose(e, dispatch)}>{`${name}:`}</Button>
     {files.map(f => <Button
       key={f.id} id={f.id}

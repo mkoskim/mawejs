@@ -59,52 +59,52 @@
   content: "Part: ";
 }
 
-/* Scene */ .Sheet h3 {
-  font-weight: normal;
-  font-family: inherit;
-  font-size: inherit;
+/* Scene, Synopsis */ .Sheet h3, .Sheet h4 {
+  font-family:Arial, Helvetica, sans-serif;
+  font-size: 12pt;
+  font-weight: inherit;
   margin-top: 0.5cm;
+  color: rgb(110, 110, 110);
   /*
   color:rgb(77, 77, 77);
+  font-weight: bold;
+  font-family: inherit;
+  font-size: inherit;
   */
 }
 
 .Sheet h3::before {
-  content: "Scene";
-  background: lightgray;
+  content: "##";
+  /*
+  background: rgb(238, 238, 238);
   border: 1pt solid gray;
   border-radius: 4pt;
+  padding: 1pt;
   padding-left: 4pt;
   padding-right: 4pt;
+  */
   margin-right: 4pt;
-  margin-left: -4pt;
 /*
+  margin-left: -4pt;
   padding-top: 2pt;
   padding-bottom: 2pt;
   font-weight: bold;
 */
 }
 
-/* "Bookmark" */ .Sheet h4 {
-  font-weight: normal;
-  font-family: inherit;
-  font-size: inherit;
-  margin-top: 0.5cm;
-  /*
-  color:rgb(77, 77, 77);
-  */
-}
-
 .Sheet h4::before {
-  content: "Bookmark";
-  background: var(--synopsis-bg);
-  border: 1pt solid lightgray;
+  content: ">>";
+/*
+  border: 1pt solid gray;
   border-radius: 4pt;
+  padding: 1pt;
   padding-left: 4pt;
   padding-right: 4pt;
+  margin-left: 2pt;
+  */
   margin-right: 4pt;
-  margin-left: -4pt;
 /*
+  margin-left: -4pt;
   padding-top: 2pt;
   padding-bottom: 2pt;
 */
@@ -170,6 +170,11 @@
   /* border-left: 4px solid #D88; */
 }
 
+.Sheet .comment {
+  background: var(--comment-bg);
+}
+
+/*
 .Sheet .missing::before {
   content: "Missing";
   border: 1pt solid var(--missing-fg);
@@ -180,14 +185,6 @@
   padding-top: 2pt;
   padding-bottom: 2pt;
   margin-right: 4pt;
-/*
-  background: var(--synopsis-bg);
-  margin-left: -4pt;
-*/
-}
-
-.Sheet .comment {
-  background: var(--comment-bg);
 }
 
 .Sheet .comment::before {
@@ -200,11 +197,8 @@
   padding-top: 2pt;
   padding-bottom: 2pt;
   margin-right: 4pt;
-/*
-  background: var(--synopsis-bg);
-  margin-left: -4pt;
-*/
 }
+*/
 
 .Sheet .synopsis {
   /* color: rgb(46, 49, 7); */

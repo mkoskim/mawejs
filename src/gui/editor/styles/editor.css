@@ -82,25 +82,27 @@ pre {
 }
 
 .Outline .Entry .Box {
-  min-height: 9pt;
-  max-height: 9pt;
-  min-width: 9pt;
-  max-width: 9pt;
+  min-height: 7pt;
+  max-height: 7pt;
+  min-width: 7pt;
+  max-width: 7pt;
   border: 1px solid black;
-  margin-right: 9pt;
+  margin-right: 4pt;
 }
 
+/*
 .Outline .Entry .Box.comment,
 .Outline .Entry .Box.missing {
   margin-left: 18pt;
 }
+*/
 
 .Outline .Entry .Box.comment { background: rgb(71, 207, 71); }
 .Outline .Entry .Box.missing { background: rgb(252, 44, 44); }
 .Outline .Entry .Box.synopsis { background: rgb(243, 243, 12); }
 
 /* ---------------------------------------------------------------------------- */
-/* Sheet for writing and Board for scrollbar */
+/* Board for scrollbar */
 /* ---------------------------------------------------------------------------- */
 
 .Board {
@@ -110,34 +112,42 @@ pre {
   overflow: auto;
 }
 
+/* ---------------------------------------------------------------------------- */
+/* Sheet for writing */
+/* ---------------------------------------------------------------------------- */
+
 .Sheet {
+  background: white;
+}
+
+.Regular.Sheet {
   /* Empty space around paper */
-  margin-top: 0.5cm;
-  margin-bottom: 0.5cm;
+  margin: 0.5cm;
+  /*
   margin-left: auto;
   margin-right: auto;
-
+  */
   /* White space around text */
   padding-left: 1in;
   padding-right: 1in;
   padding-top: 0.5in;
   padding-bottom: 1in;
 
-  min-width: 7in;
   max-width: 8in;
   min-height: 11in;
-}
-
-.Sheet {
-  background: white;
-}
-
-.Sheet.Shadow {
-
   /*
   box-shadow: rgb(0 0 0 / 10%) 1px 1px 0px inset, rgb(0 0 0 / 7%) 0px -1px 0px inset;
   */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.253), 0 4px 8px rgba(0, 0, 0, 0.322);
   /*
   */
+}
+
+.Condensed.Sheet {
+  padding: 0.25in;
+  padding-left: 0.5in;
+  padding-right: 0.5in;
+
+  max-width: 7in;
+  min-height: 11in;
 }

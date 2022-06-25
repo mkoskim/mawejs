@@ -46,7 +46,14 @@ const myTheme = createTheme({
     MuiBreadcrumbs: {
       styleOverrides: {
       }
-    }
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          fontSize: "10pt",
+        }
+      }
+    },
   },
 });
 
