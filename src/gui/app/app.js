@@ -84,7 +84,7 @@ export default function App(props) {
 
   console.log("Status:", status)
 
-  if(!status.reduce((a, b) => (a && !!b), true))
+  if(!status.every(s => s))
   {
     return <View.Starting />
   }

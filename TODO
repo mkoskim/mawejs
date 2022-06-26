@@ -1,8 +1,5 @@
 NOTES
 
-- Discussion about file types (.mawe, .mawe.gz, versioned file) moved
-  to separate document (docs/FileTypes.txt).
-
 -------------------------------------------------------------------------------
 
 FIXES:
@@ -16,6 +13,14 @@ FIXES:
 - Add file name to doc info in editor (helps a lot!)
 
 - Doc reload
+
+- Title to index (so that we can click to the beginning)
+
+- Need indication that file is changed: keep loaded version available and
+  compare to it.
+
+- Error management: We need some sort of async. error management e.g. when
+  loading and saving files.
 
 -------------------------------------------------------------------------------
 
@@ -36,17 +41,6 @@ can not be done with Electron version yet.
 
 TODO:
 
-- Content editing: support for standard features. It is doable, if you can:
-
-  - apply scene header, comments, missing,
-  - save in readable format,
-  - maybe have clickable index.
-  - other features can be added later.
-
-- Work toward saving the edited content: Serialize doc from Slate editor
-
-- Move CWD to application level, so that app remembers in which directory it was
-
 - When directory is opened from search, change directory accordingly (probably the
   best is to use the directory where the search was initiated? Or the directory
   where the opened file is?)
@@ -55,6 +49,18 @@ TODO:
 
 - Cards or something alike. Main feature: card has a tag, that can be scanned
   through text to recognize things.
+
+DONE:
+
+- Content editing: support for standard features. It is doable, if you can:
+
+  - DONE: apply scene header, comments, missing,
+  - DONE: maybe have clickable index.
+  - DONE: save in readable format,
+
+- DONE: Work toward saving the edited content: Serialize doc from Slate editor
+
+- DONE: Move CWD to application level, so that app remembers in which directory it was
 
 -------------------------------------------------------------------------------
 
@@ -106,14 +112,14 @@ VERSIONS:
 
 FUTURE:
 
-- I might switch render functions to classes. They work nicer with states.
-
 - Slack has nice feature: when you press arrow up at first line, it creates
   new empty line, if the first line has some formatting (e.g. <pre></pre>). We
   could incorporate this feature to the editor, too.
 
 - Import RTF: https://www.npmjs.com/package/rtf-parser - many writers Use
   Word or similar, and they can make RTFs.
+
+- Import text & RTF files to scenes.
 
 - Borrow ideas to file browser from Dropbox web browser.
 
