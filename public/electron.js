@@ -78,9 +78,8 @@ const reduxDevToolsPath = path.join(
 // Electron reloader
 //-----------------------------------------------------------------------------
 
-const node_env = process.env.NODE_ENV || "development"
-
-if(node_env === "development") {
+if(isDev) {
+  console.log("Starting reloader...")
   try {
     require('electron-reloader')(module, {
       ignore: [

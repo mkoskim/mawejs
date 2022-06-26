@@ -63,44 +63,23 @@ export function EditView() {
   //return <SlateDoc doc={doc}/>
   return <VFiller>
     <WorkspaceTab />
-    {loading ? null : <SingleEdit id={edit.id} />}
+    {loading ? <Loading/> : <SingleEdit id={edit.id} />}
   </VFiller>
 }
 
 //-----------------------------------------------------------------------------
 // Single edit with sidebars
 
-function SingleEdit({ id, left, right, center }) {
-
-  const cwd = useSelector((state) => state.cwd.path)
-
-  const doc = docByID(id)
-
-  function doc2slate() { return section2edit(doc).body; }
+function SingleEdit({id}) {
 
   //---------------------------------------------------------------------------
-  // Slate uses content variable only when initializing. We need to manually
-  // set children when doc changes between re-renders
-  //---------------------------------------------------------------------------
-
-  //*
-  const [content, setContent] = useState(doc2slate());
-  const editor = useMemo(() => getEditor(), [])
-
-  const [storedid, setID] = useState(id)
-  useEffect(() => {
-    setID(id)
-    const content = doc2slate();
-    setContent(content)
-    editor.children = content;
-  }, [id])
-
   // TODO: We need to know what element is placed for editing
+  //---------------------------------------------------------------------------
 
-  //*
-  if(storedid === id) {
+  function doc2slate(doc) { return section2edit(doc).body; }
+  function slate2doc(doc, content) {
     const fromedit = edit2section(content)
-    const edited = {
+    return {
       ...doc,
       story: {
         ...doc.story,
@@ -111,27 +90,60 @@ function SingleEdit({ id, left, right, center }) {
         }
       }
     }
+  }
+
+  //---------------------------------------------------------------------------
+  // Slate uses content variable only when initializing. We need to manually
+  // set children when doc changes between re-renders
+  //---------------------------------------------------------------------------
+
+  const doc = docByID(id)
+
+  const editor = useMemo(() => getEditor(), [])
+
+  const [_state, setState] = useState({
+    id,
+    content: doc2slate(doc),
+    indexed: [
+      "br.part",
+      "br.scene",
+      "synopsis",
+      //"missing",
+      //"comment",
+    ],
+    wordsAs: "numbers",
+  })
+
+  const state = {
+    ..._state,
+    setContent: content => setState({...state, content}),
+    setID: id => setState({...state, id}),
+    setIndexed: (indexed) => setState({...state, indexed}),
+    setWordsAs: (wordsAs) => setState({...state, wordsAs})
+  }
+
+  //*
+
+  useEffect(() => {
+    state.setID(id)
+    const content = doc2slate(doc);
+    state.setContent(content)
+    editor.children = content;
+  }, [id])
+
+  const edited = slate2doc(doc, state.content)
+  if(state.id === id) {
     //console.log("Update:", id, doc.story.name, content)
     docUpdate(id, edited)
   }
+
   /**/
-
-  //---------------------------------------------------------------------------
-
-  const [indexed, setIndexed] = useState([
-    "br.part",
-    "br.scene",
-    "synopsis",
-    //"missing",
-    //"comment",
-  ])
-
-  const [wordsAs, setWordsAs] = useState("numbers")
 
   //---------------------------------------------------------------------------
   //console.log(`SingleEdit: id=${id} stored=${storedid} refresh=${refresh}`)
 
   const dispatch = useDispatch();
+  const cwd = useSelector(state => state.cwd.path)
 
   useEffect(() => addHotkeys({
     "mod+o": (e) => onClose(e, dispatch),
@@ -145,21 +157,14 @@ function SingleEdit({ id, left, right, center }) {
   return (
     <HFiller style={{overflow: "auto", background: "#F6F7F8"}}>
       <VFiller style={{maxWidth: "300px", borderRight: "1px solid lightgray" }}>
-        <IndexToolbar
-          indexed={indexed} setIndexed={setIndexed}
-          wordsAs={wordsAs} setWordsAs={setWordsAs}
-        />
         <ViewIndex
           editor={editor}
-          content={content}
-          indexed={indexed}
-          wordsAs={wordsAs}
+          state={state}
         />
       </VFiller>
       <EditorBox
         editor={editor}
-        content={content}
-        setContent={setContent}
+        state={state}
         />
     </HFiller>
   )
@@ -184,7 +189,7 @@ function SingleEdit({ id, left, right, center }) {
 
 //-----------------------------------------------------------------------------
 
-function EditorBox({style, mode="Regular", editor, content, setContent}) {
+function EditorBox({style, mode="Regular", editor, state}) {
   return <VFiller style={style}>
   <EditToolbar />
   <VFiller className="Board">
@@ -193,34 +198,12 @@ function EditorBox({style, mode="Regular", editor, content, setContent}) {
         className={addClass(mode, "Sheet")}
         //className="Condensed Sheet"
         editor={editor}
-        content={content}
-        setContent={setContent}
+        content={state.content}
+        setContent={state.setContent}
       />
     </div>
   </VFiller>
   </VFiller>
-}
-
-//-----------------------------------------------------------------------------
-
-function IndexToolbar({indexed, setIndexed, wordsAs, setWordsAs}) {
-  return <ToolBox style={{ background: "white" }}>
-    <Button size="small">Test</Button>
-    <Filler />
-    <Separator />
-    <BorderlessToggleButtonGroup value={indexed} onChange={(e, value) => setIndexed(value)}>
-      <ToggleButton value="missing"><Tooltip title="Show missing"><Icon.BlockType.Missing /></Tooltip></ToggleButton>
-      <ToggleButton value="comment"><Tooltip title="Show comments"><Icon.BlockType.Comment /></Tooltip></ToggleButton>
-    </BorderlessToggleButtonGroup>
-    <Separator />
-    <BorderlessToggleButtonGroup exclusive value={wordsAs} onChange={(e, value) => setWordsAs(value)}>
-    <ToggleButton value="off">
-      <Tooltip title="Don't show words"><Icon.StatType.Off /></Tooltip></ToggleButton>
-      <ToggleButton value="numbers"><Tooltip title="Words as numbers"><Icon.StatType.Words /></Tooltip></ToggleButton>
-      <ToggleButton value="percent"><Tooltip title="Words as percent"><Icon.StatType.Percent /></Tooltip></ToggleButton>
-      <ToggleButton value="cumulative"><Tooltip title="Words as cumulative percent"><Icon.StatType.Cumulative /></Tooltip></ToggleButton>
-    </BorderlessToggleButtonGroup>
-  </ToolBox>
 }
 
 function EditToolbar() {
@@ -231,18 +214,42 @@ function EditToolbar() {
 
 //-----------------------------------------------------------------------------
 
-function ViewIndex({ editor, content, style, indexed, wordsAs }) {
+function ViewIndex({ editor, style, state}) {
   //console.log("ViewIndex")
+  //console.log("- Indexed:", state.indexed)
 
   return <VBox className="Outline" style={style}>
+    <IndexToolbar state={state}/>
     <VFiller className="Index">
-      {indexElems(content).map(elem => <IndexItem key={elem.attributes.id} editor={editor} elem={elem} />)}
+      {indexElems(state.content).map(elem => <IndexItem key={elem.attributes.id} editor={editor} elem={elem} />)}
     </VFiller>
   </VBox>
 
   function indexElems(content) {
-    return content ? content.filter(elem => indexed.includes(elem.type)) : []
+    return content ? content.filter(elem => state.indexed.includes(elem.type)) : []
   }
+}
+
+//-----------------------------------------------------------------------------
+
+function IndexToolbar({state}) {
+  return <ToolBox style={{ background: "white" }}>
+    <Button size="small">Test</Button>
+    <Filler />
+    <Separator />
+    <BorderlessToggleButtonGroup value={state.indexed} onChange={(e, value) => state.setIndexed(value)}>
+      <ToggleButton value="missing"><Tooltip title="Show missing"><Icon.BlockType.Missing /></Tooltip></ToggleButton>
+      <ToggleButton value="comment"><Tooltip title="Show comments"><Icon.BlockType.Comment /></Tooltip></ToggleButton>
+    </BorderlessToggleButtonGroup>
+    <Separator />
+    <BorderlessToggleButtonGroup exclusive value={state.wordsAs} onChange={(e, value) => state.setWordsAs(value)}>
+    <ToggleButton value="off">
+      <Tooltip title="Don't show words"><Icon.StatType.Off /></Tooltip></ToggleButton>
+      <ToggleButton value="numbers"><Tooltip title="Words as numbers"><Icon.StatType.Words /></Tooltip></ToggleButton>
+      <ToggleButton value="percent"><Tooltip title="Words as percent"><Icon.StatType.Percent /></Tooltip></ToggleButton>
+      <ToggleButton value="cumulative"><Tooltip title="Words as cumulative percent"><Icon.StatType.Cumulative /></Tooltip></ToggleButton>
+    </BorderlessToggleButtonGroup>
+  </ToolBox>
 }
 
 const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
