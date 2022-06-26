@@ -75,6 +75,24 @@ const reduxDevToolsPath = path.join(
 )
 
 //-----------------------------------------------------------------------------
+// Electron reloader
+//-----------------------------------------------------------------------------
+
+const node_env = process.env.NODE_ENV || "development"
+
+if(node_env === "development") {
+  try {
+    require('electron-reloader')(module, {
+        debug: false,
+        watchRenderer: true
+    });
+  }
+  catch (e) {
+    console.log('Error:', e);
+  }
+}
+
+//-----------------------------------------------------------------------------
 // Application
 //-----------------------------------------------------------------------------
 

@@ -7,7 +7,7 @@
   "homepage": "./",
   "scripts": {
     "dev": "concurrently npm:dev:react npm:dev:electron",
-    "dev:electron": "wait-on http://localhost:3000 && electron .",
+    "dev:electron": "wait-on http://localhost:3000 && NODE_ENV=development electron .",
     "dev:react": "cross-env BROWSER=none npm run react-start",
     "audit": "npm audit --production",
     "build": "npm run react-build && npm run electron-build",
@@ -50,6 +50,7 @@
     "cross-env": "^7.0.3",
     "electron": "^19.0.4",
     "electron-builder": "^23.0.3",
+    "electron-reloader": "^1.2.3",
     "esm": "^3.2.25",
     "react-scripts": "^4.0.3",
     "wait-on": "^6.0.1"
