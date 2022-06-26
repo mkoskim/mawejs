@@ -83,8 +83,16 @@ const node_env = process.env.NODE_ENV || "development"
 if(node_env === "development") {
   try {
     require('electron-reloader')(module, {
-        debug: false,
-        watchRenderer: true
+      ignore: [
+        "./local/**",
+        "./docs/**",
+        "./test/**",
+        "**/README.md",
+        "./TODO",
+        "./gitignore",
+      ],
+      debug: false,
+      watchRenderer: true
     });
   }
   catch (e) {
