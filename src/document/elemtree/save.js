@@ -49,7 +49,6 @@ export async function savemawe(doc) {
     format: "mawe",
     name: story.name,
     uuid: story.uuid,
-    ...story.extra,
   });
 
   root.append(Comment(" ============================================================================= "));
@@ -74,15 +73,7 @@ export async function savemawe(doc) {
   root.append(Comment(" "));
   root.append(Comment(" ============================================================================= "));
 
-  story.version.forEach(v => addVersion(root, v));
-
-  root.append(Comment(" ============================================================================= "));
-  root.append(Comment(" "));
-  root.append(Comment(" EXTRAS "));
-  root.append(Comment(" "));
-  root.append(Comment(" ============================================================================= "));
-
-  js2et_all(root, story.extra);
+  story.versions.forEach(v => addVersion(root, v));
 
   //---------------------------------------------------------------------------
   // Serialize and write
@@ -95,7 +86,8 @@ export async function savemawe(doc) {
 //-----------------------------------------------------------------------------
 
 function js2et(obj) {
-  let elem = new Element(obj.tag, obj.attr);
+  const {id, ...attr} = obj.attr;
+  let elem = new Element(obj.tag, attr);
   elem.text = obj.text;
   elem.tail = obj.tail;
   js2et_all(elem, obj.children);
@@ -109,9 +101,7 @@ function js2et_all(elem, objs) {
 //-----------------------------------------------------------------------------
 
 function addBody(parent, body) {
-  const elem = SubElement(parent, "body", {
-    name: body.name,
-  });
+  const elem = SubElement(parent, "body");
   addBodyElems(elem, body);
 }
 
@@ -124,9 +114,16 @@ function addVersion(parent, version) {
 }
 
 function addBodyElems(elem, body) {
+/*
+  elem.append(Comment(" "));
+  elem.append(Comment(` STORY: ${story.name} `));
+  elem.append(Comment(" "));
+*/
   addHead(elem, body.head);
-  js2et_all(elem, body.part);
-  js2et_all(elem, body.extra);
+
+  elem.append(Comment(" ============================================================================= "));
+
+  js2et_all(elem, body.parts);
 }
 
 function addHead(parent, head) {
@@ -144,12 +141,9 @@ function addHead(parent, head) {
   SubElement(words, "text").text = head.words.text;
   SubElement(words, "comments").text = head.words.comments;
   SubElement(words, "missing").text = head.words.missing;
-
-  js2et_all(elem, head.extra);
 }
 
 function addNotes(parent, notes) {
   const elem = SubElement(parent, "notes");
-  js2et_all(elem, notes.part);
-  js2et_all(elem, notes.extra);
+  js2et_all(elem, notes.parts);
 }

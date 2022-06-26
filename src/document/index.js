@@ -22,6 +22,7 @@ const fs = require("../storage/localfs")
 export const mawe = {
   load,
   save,
+  saveas,
   rename: async (file, name, suffix) => {
     //name   = name ? name : this.basename;
     //suffix = suffix ? suffix : this.suffix;
@@ -58,6 +59,13 @@ async function load(file) {
 }
 
 //-----------------------------------------------------------------------------
+
+export async function saveas(doc, filename) {
+  //const file = await fs.fstat(filename)
+  doc.file = { id: filename }
+  console.log("Saving:", doc)
+  return await savemawe(doc)
+}
 
 export async function save(doc) {
   return await savemawe(doc);

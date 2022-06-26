@@ -39,6 +39,8 @@ import {
 } from "../common/factory";
 
 import { styled } from '@mui/material/styles';
+import { mawe } from "../../document";
+const path = require("path")
 
 //-----------------------------------------------------------------------------
 // Choose the view
@@ -69,6 +71,8 @@ export function EditView() {
 // Single edit with sidebars
 
 function SingleEdit({ id, left, right, center }) {
+
+  const cwd = useSelector((state) => state.cwd.path)
 
   const doc = docByID(id)
 
@@ -132,7 +136,7 @@ function SingleEdit({ id, left, right, center }) {
   useEffect(() => addHotkeys({
     "mod+o": (e) => onClose(e, dispatch),
     "mod+w": (e) => onClose(e, dispatch),
-    "mod+s": null,
+    "mod+s": (e) => mawe.saveas(docByID(id), path.join(cwd, "/testwrite.mawe")),
   }));
 
   //console.log("Edit:", id)

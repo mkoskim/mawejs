@@ -5,6 +5,20 @@ NOTES
 
 -------------------------------------------------------------------------------
 
+FIXES:
+
+- File loading & saving needs rework. It should work asynchronously. We need to
+  be sure that docs in the software are up-to-date (e.g. file entry has been
+  changed after "Save as..." correctly)
+
+- Entire architecture needs rethinking
+
+- Add file name to doc info in editor (helps a lot!)
+
+- Doc reload
+
+-------------------------------------------------------------------------------
+
 SHORT TERM TODO:
 
 The main objective is to make versions working! That is needed urgently! It

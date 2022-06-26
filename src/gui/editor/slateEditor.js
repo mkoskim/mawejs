@@ -46,15 +46,15 @@ export function RenderPlain({ content }) {
 export function Element(props) {
   const { element, attributes, children } = props;
 
-  function Linked({children, props}) {
+  function WithLink({children, props}) {
     return <a id={`${element.attributes.id}`} {...props}>{children}</a>
   }
 
   switch (element.type) {
     case "title": return <h1 {...attributes}>{children}</h1>
-    case "br.part": return <h2 {...attributes}><Linked>{children}</Linked></h2>
-    case "br.scene": return <h3 {...attributes}><Linked>{children}</Linked></h3>
-    case "synopsis": return <h4 {...attributes}><Linked>{children}</Linked></h4>
+    case "br.part": return <h2 {...attributes}><WithLink>{children}</WithLink></h2>
+    case "br.scene": return <h3 {...attributes}><WithLink>{children}</WithLink></h3>
+    case "synopsis": return <h4 {...attributes}><WithLink>{children}</WithLink></h4>
 
     /*
     case "part": return <div className="part">{children}</div>
@@ -70,7 +70,7 @@ export function Element(props) {
     case "comment":
     case "missing":
     //case "synopsis":
-      return <p className={element.type} {...attributes}><Linked>{children}</Linked></p>
+      return <p className={element.type} {...attributes}><WithLink>{children}</WithLink></p>
 
     case "p":
     default:
@@ -215,7 +215,7 @@ export function edit2part(content) {
       return [content[0], content.slice(1)]
     }
     return [
-      { type: "br.part", children: [{ text: "" }] },
+      { type: "br.part", attributes: {}, children: [{ text: "" }] },
       content,
     ]
   }
@@ -305,8 +305,6 @@ export function getEditor() {
     "br.part": "p",
     "synopsis": "p",
   }
-
-  // TODO: Fix to work also when pressing enter at the mid of things.
 
   const { insertBreak } = editor
 
