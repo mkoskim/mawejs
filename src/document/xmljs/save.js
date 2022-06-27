@@ -79,7 +79,9 @@ export function toXML(story) {
       },
       elements: [
         toHead(head),
-        toComment("==============================================================================="),
+        toComment("",
+        "===============================================================================",
+        ""),
         ...parts.map(toPart)
       ]
     })
@@ -102,39 +104,36 @@ export function toXML(story) {
   function toHead(head) {
     return toElem({
       type: "head",
-      elements: [
-        ...optional("title", head.title),
-        ...optional("subtitle", head.subtitle),
-        ...optional("author", head.author),
-        ...optional("nickname", head.nickname),
-        ...optional("translated", head.translated),
-        ...optional("status", head.status),
-        ...optional("deadline", head.deadline),
-        ...optional("covertext", head.covertext),
-        ...optional("version", head.version),
-        ...toWords("words", head.words)
-      ]
+      elements: toElements(
+        optional("title", head.title),
+        optional("subtitle", head.subtitle),
+        optional("author", head.author),
+        optional("nickname", head.nickname),
+        optional("translated", head.translated),
+        optional("status", head.status),
+        optional("deadline", head.deadline),
+        optional("covertext", head.covertext),
+        optional("version", head.version),
+        toWords("words", head.words)
+      )
     })
 
     function optional(type, value) {
-      console.log(type, value)
-      if(value && value !== "") return [toElem({type, elements: [toText(value)]})]
-      return []
+      if(!value || value === "") return undefined
+      return toElem({type, elements: [toText(value)]})
     }
 
     function toWords(type, field) {
-      console.log(field)
-      if(!field) return []
-      return [
-        toElem({
-          type,
-          elements: [
-            ...optional("text", field.text),
-            ...optional("missing", field.missing),
-            ...optional("comments", field.comments),
-          ]
-        })
-      ]
+      if(!field) return undefined
+      const elements = toElements(
+        optional("text", field.text),
+        optional("missing", field.missing),
+        optional("comments", field.comments),
+      )
+
+      if(!elements.length) return undefined
+
+      return toElem({type, elements})
     }
   }
 
@@ -163,20 +162,27 @@ export function toXML(story) {
   //---------------------------------------------------------------------------
 
   function doc2js(elem) {
-    const {type, attributes, children, text} = elem;
+    const {type, attributes, children = [], text} = elem;
 
     if(type == "text") {
+      if(!text || text === "") return undefined;
       return toText(wrap(text, {indent: "", width: 80}))
     }
 
     return toElem({
       type,
       attributes,
-      elements: children ? children.map(doc2js) : undefined,
+      elements: toElements(...children.map(doc2js)),
     })
   }
 
   //---------------------------------------------------------------------------
+
+  function toElements(...elements) {
+    const list = elements.filter(elem => !!elem)
+    if(!list.length) return undefined
+    return list
+  }
 
   function toElem({type, attributes = undefined, elements = []}) {
     return {
