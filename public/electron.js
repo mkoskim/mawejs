@@ -10,17 +10,27 @@ const electron = require('electron');
 const isDev = require("electron-is-dev");
 const debug = require("electron-debug")
 
+const os = require("os")
+const path = require('path')
+
 //-----------------------------------------------------------------------------
 // Print out things for debugging purposes
 //-----------------------------------------------------------------------------
 
 console.log("Debug info:")
 console.log("- Dirname.:", __dirname)
+console.log("- NODE_ENV:", process.env.node)
+console.log("- isDev...:", isDev)
+console.log("Versions:")
 console.log("- Electron:", process.versions.electron)
 console.log("- Chrome..:", process.versions.chrome)
 console.log("- Node....:", process.versions.node)
-console.log("- NODE_ENV:", process.env.node)
-console.log("- isDev...:", isDev)
+
+//-----------------------------------------------------------------------------
+// Electron reloader
+//-----------------------------------------------------------------------------
+
+require("electron-reload")(path.join(__dirname, "../src/"))
 
 //-----------------------------------------------------------------------------
 // Main Window
@@ -29,9 +39,6 @@ console.log("- isDev...:", isDev)
 const {BrowserWindow} = electron;
 const {globalShortcut} = electron;
 const windowStateKeeper = require('electron-window-state');
-
-const os = require("os")
-const path = require('path')
 
 var mainWindow = null;
 
@@ -86,33 +93,6 @@ const reduxDevToolsPath = path.join(
   os.homedir(),
   "/.config/google-chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/3.0.11_0"
 )
-
-//-----------------------------------------------------------------------------
-// Electron reloader
-//-----------------------------------------------------------------------------
-
-require("electron-reload")(path.join(__dirname, "../src/"))
-
-if(false && isDev) {
-  console.log("Starting reloader...")
-  try {
-    require('electron-reloader')(module, {
-      ignore: [
-        "./local/**",
-        "./docs/**",
-        "./test/**",
-        "**/README.md",
-        "./TODO",
-        "./gitignore",
-      ],
-      debug: false,
-      watchRenderer: true
-    });
-  }
-  catch (e) {
-    console.log('Error:', e);
-  }
-}
 
 //-----------------------------------------------------------------------------
 // Application
