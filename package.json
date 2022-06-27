@@ -7,7 +7,7 @@
   "homepage": "./",
   "scripts": {
     "dev": "concurrently -i \"wait-on http://localhost:3000 && npm run dev:electron\" npm:dev:react",
-    "dev:electron": "nodemon -w public --exec electron .",
+    "dev:electron": "nodemon -w public --exec \"clear && electron .\"",
     "dev:react": "cross-env BROWSER=none npm run react-start",
     "audit": "npm audit --production",
     "build": "npm run react-build && npm run electron-build",
