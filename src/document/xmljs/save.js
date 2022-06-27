@@ -103,25 +103,39 @@ export function toXML(story) {
     return toElem({
       type: "head",
       elements: [
-        toElem({type: "title", elements: [toText(head.title)]}),
-        toElem({type: "subtitle", elements: [toText(head.subtitle)]}),
-        toElem({type: "author", elements: [toText(head.author)]}),
-        toElem({type: "nickname", elements: [toText(head.nickname)]}),
-        toElem({type: "translated", elements: [toText(head.translated)]}),
-        toElem({type: "status", elements: [toText(head.status)]}),
-        toElem({type: "deadline", elements: [toText(head.deadline)]}),
-        toElem({type: "covertext", elements: [toText(head.covertext)]}),
-        toElem({type: "version", elements: [toText(head.version)]}),
+        ...optional("title", head.title),
+        ...optional("subtitle", head.subtitle),
+        ...optional("author", head.author),
+        ...optional("nickname", head.nickname),
+        ...optional("translated", head.translated),
+        ...optional("status", head.status),
+        ...optional("deadline", head.deadline),
+        ...optional("covertext", head.covertext),
+        ...optional("version", head.version),
+        ...toWords("words", head.words)
+      ]
+    })
+
+    function optional(type, value) {
+      console.log(type, value)
+      if(value && value !== "") return [toElem({type, elements: [toText(value)]})]
+      return []
+    }
+
+    function toWords(type, field) {
+      console.log(field)
+      if(!field) return []
+      return [
         toElem({
-          type: "words",
+          type,
           elements: [
-            toElem({type: "text", elements: [toText(head.words.text)]}),
-            toElem({type: "missing", elements: [toText(head.words.missing)]}),
-            toElem({type: "comments", elements: [toText(head.words.comments)]}),
+            ...optional("text", field.text),
+            ...optional("missing", field.missing),
+            ...optional("comments", field.comments),
           ]
         })
       ]
-    })
+    }
   }
 
   function toPart(part) {
@@ -176,7 +190,7 @@ export function toXML(story) {
   function toText(text) {
     return {
       type: "text",
-      text: text,
+      text,
     }
   }
 

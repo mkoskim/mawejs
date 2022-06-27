@@ -49,7 +49,6 @@ export async function loadmawe(file) {
 export function buf2tree(buffer) {
   return convert.xml2js(buffer, {
     compact: false,
-    nativeType: true,
     ignoreComment: true,
   });
   //const parser = new DOMParser();
@@ -101,24 +100,29 @@ export function fromXML(root) {
 
   function parseHead(head) {
     return {
-      title: elem2Text(elemFind(head, "title")),
-      subtitle: elem2Text(elemFind(head, "subtitle")),
-      author: elem2Text(elemFind(head, "author")),
-      nickname: elem2Text(elemFind(head, "nickname")),
-      translated: elem2Text(elemFind(head, "translated")),
-      status: elem2Text(elemFind(head, "status")),
-      deadline: elem2Text(elemFind(head, "deadline")),
-      covertext: elem2Text(elemFind(head, "covertext")),
-      version: elem2Text(elemFind(head, "version")),
-      words: parseWords(elemFind(head, "words")),
+      title: optional(head, "title", elem2Text),
+      subtitle: optional(head, "subtitle", elem2Text),
+      author: optional(head, "author", elem2Text),
+      nickname: optional(head, "nickname", elem2Text),
+      translated: optional(head, "translated", elem2Text),
+      status: optional(head, "status", elem2Text),
+      deadline: optional(head, "deadline", elem2Text),
+      covertext: optional(head, "covertext", elem2Text),
+      version: optional(head, "version", elem2Text),
+      words: optional(head, "words", parseWords),
     }
 
     function parseWords(words) {
       return {
-        text: elem2Text(elemFind(words, "text")),
-        missing: elem2Text(elemFind(words, "missing")),
-        comments: elem2Text(elemFind(words, "comments")),
+        text: optional(words, "text", elem2Text),
+        missing: optional(words, "missing", elem2Text),
+        comments: optional(words, "comments", elem2Text),
       }
+    }
+
+    function optional(elem, name, parse) {
+      const field = elemFind(elem, name)
+      return field ? parse(field) : undefined
     }
   }
 
