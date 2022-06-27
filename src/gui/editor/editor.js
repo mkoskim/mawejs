@@ -53,14 +53,6 @@ export function EditView() {
 
   console.log("EditView:", loading, edit.id)
 
-  // Force (slate) re-render when ID changes
-  //const [id, setID] = useState(edit.id)
-  //useEffect(() => setID(edit.id), [edit.id])
-
-  //const refresh = (id !== edit.id)
-
-  //return <RawDoc doc={doc}/>
-  //return <SlateDoc doc={doc}/>
   return <VFiller>
     <WorkspaceTab />
     {loading ? <Loading/> : <SingleEdit id={edit.id} />}
@@ -76,7 +68,10 @@ function SingleEdit({id}) {
   // TODO: We need to know what element is placed for editing
   //---------------------------------------------------------------------------
 
-  function doc2slate(doc) { return section2edit(doc).body; }
+  function doc2slate(doc) {
+    return section2edit(doc).body;
+  }
+
   function slate2doc(doc, content) {
     const fromedit = edit2section(content)
     return {
@@ -218,6 +213,8 @@ function ViewIndex({ editor, style, state}) {
   //console.log("ViewIndex")
   //console.log("- Indexed:", state.indexed)
 
+  // TODO: Make index from document, not from slate children
+
   return <VBox className="Outline" style={style}>
     <IndexToolbar state={state}/>
     <VFiller className="Index">
@@ -251,6 +248,7 @@ function IndexToolbar({state}) {
     </BorderlessToggleButtonGroup>
   </ToolBox>
 }
+
 
 const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {

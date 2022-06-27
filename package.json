@@ -6,8 +6,8 @@
   "main": "./public/electron.js",
   "homepage": "./",
   "scripts": {
-    "dev": "concurrently npm:dev:react npm:dev:electron",
-    "dev:electron": "wait-on http://localhost:3000 && electron .",
+    "dev": "concurrently -i \"wait-on http://localhost:3000 && npm run dev:electron\" npm:dev:react",
+    "dev:electron": "nodemon -w public --exec electron .",
     "dev:react": "cross-env BROWSER=none npm run react-start",
     "audit": "npm audit --production",
     "build": "npm run react-build && npm run electron-build",
@@ -16,7 +16,7 @@
     "react-build": "react-scripts build",
     "react-test": "react-scripts test",
     "react-eject": "react-scripts eject",
-    "fresh": "rm -rf build node_modules package-lock.json && npm install"
+    "fresh": "rm -rf dist build node_modules package-lock.json && npm install"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.0.5",
@@ -50,8 +50,9 @@
     "cross-env": "^7.0.3",
     "electron": "^19.0.4",
     "electron-builder": "^23.0.3",
-    "electron-reloader": "^1.2.3",
+    "electron-reload": "^2.0.0-alpha.1",
     "esm": "^3.2.25",
+    "nodemon": "^2.0.18",
     "react-scripts": "^4.0.3",
     "wait-on": "^6.0.1"
   },

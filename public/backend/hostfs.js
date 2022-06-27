@@ -117,6 +117,7 @@ async function fsGetLocation(name)
 //-----------------------------------------------------------------------------
 
 async function fsRead(fileid, encoding) {
+  console.log("fsRead:", fileid)
   return fs.promises.readFile(fileid, {encoding: encoding});
 }
 
