@@ -105,7 +105,7 @@ function ChooseView() {
   console.log("ChooseView:", edit?.id)
 
   if(edit) {
-    return <EditView/>
+    return <EditView />
   }
 
   return <Workspace />

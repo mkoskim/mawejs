@@ -47,7 +47,7 @@ export function Element(props) {
   const { element, attributes, children } = props;
 
   function WithLink({children, props}) {
-    return <a id={`${element.attributes.id}`} {...props}>{children}</a>
+    return <a id={`${element.id}`} {...props}>{children}</a>
   }
 
   switch (element.type) {
@@ -99,7 +99,8 @@ function createElement({ type, attributes, children }) {
     case "comment":
     case "missing": return {
       type,
-      attributes: { id: uuid(), ...attributes },
+      id: uuid(),
+      attributes,
       children
     }
   }
@@ -113,8 +114,8 @@ function createElement({ type, attributes, children }) {
 //-----------------------------------------------------------------------------
 
 export function section2edit(doc) {
-  const head = Head2Slate(doc.story);
-  const body = Section2Slate(doc.story.body);
+  const head = Head2Slate(doc.story.body.head);
+  const body = Section2Slate(doc.story.body.parts);
   const notes = Section2Slate(doc.story.notes);
 
   return {
@@ -122,18 +123,18 @@ export function section2edit(doc) {
     notes: notes,
   }
 
-  function Head2Slate(story) {
+  function Head2Slate(head) {
     return [
-      createElement({ type: "title", children: [{ text: story.body.head?.title ?? "" }] }),
+      createElement({ type: "title", children: [{ text: head.title ?? "" }] }),
     ]
   }
 
-  function Section2Slate(section) {
-    return section.parts.map(Part2Slate).flat(1)
+  function Section2Slate(parts) {
+    return parts.map(Part2Slate).flat(1)
   }
 
   function Part2Slate(part, index) {
-    const name = part.attr.name ?? ""
+    const name = part.name ?? ""
     const head = createElement({type: "br.part", children: [{ text: name }]})
 
     const scenes = part.children.map(Scene2Slate).flat(1)
@@ -142,7 +143,7 @@ export function section2edit(doc) {
   }
 
   function Scene2Slate(scene, index) {
-    const name = scene.attr.name ?? ""
+    const name = scene.name ?? ""
     const head = createElement({type: "br.scene", children: [{ text: name }]})
     const para = scene.children.map(Paragraph2Slate)
     const content = (index === 0 && name === "") ? para : [head, ...para]
@@ -150,10 +151,14 @@ export function section2edit(doc) {
   }
 
   function Paragraph2Slate(p) {
-    const type = p.tag;
+    const type = p.type;
     return createElement({
       type: type === "br" ? "p" : type,
-      children: [{ text: p.text ?? "" }]
+      children: [
+        {
+          text: p.children ? p.children.map(e => e.text).join(" ") : ""
+        }
+      ]
     })
   }
 }
@@ -198,13 +203,9 @@ function isSceneBreak(elem) {
 export function edit2part(content) {
   const [head, scenes] = getHead()
   return {
-    tag: "part",
-    attr: {
-      name: elem2text(head),
-      id: head.attributes?.id,
-    },
-    text: "",
-    tail: "",
+    type: "part",
+    name: elem2text(head),
+    id: head.attributes?.id,
     children: splitByLeadingElem(scenes, isSceneBreak)
       .filter(s => s.length)
       .map(elems => edit2scene(elems)),
@@ -225,13 +226,9 @@ export function edit2scene(content) {
   const [head, paragraphs] = getHead()
 
   return {
-    tag: "scene",
-    attr: {
-      name: elem2text(head),
-      id: head.attributes?.id,
-    },
-    text: "",
-    tail: "",
+    type: "scene",
+    name: elem2text(head),
+    id: head.attributes?.id,
     children: paragraphs.map(elem => getParagraph(elem))
   }
 
@@ -250,13 +247,12 @@ export function edit2scene(content) {
     const tag = elem.type
 
     return {
-      tag: tag === "p" && text === "" ? "br" : tag,
-      attr: {
-        id: elem.attributes?.id,
-      },
-      text: text,
-      tail: "",
-      children: [],
+      type: tag === "p" && text === "" ? "br" : tag,
+      id: elem.attributes?.id,
+      children: [{
+        type: "text",
+        text,
+      }],
     }
   }
 }
@@ -395,7 +391,7 @@ export function getEditor() {
           block.type !== 'p' &&
           Point.equals(selection.anchor, start)
         ) {
-          console.log(block.type)
+          //console.log(block.type)
           const newProperties = {
             type: 'p',
           }

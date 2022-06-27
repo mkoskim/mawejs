@@ -64,6 +64,25 @@ export function EditView() {
 
 function SingleEdit({id}) {
 
+  const doc = docByID(id)
+
+  /*
+  // For development purposes:
+  return <React.Fragment>
+    <HBox>
+    <Pre style={{ width: "50%" }} content={doc.story} />
+    <Pre style={{ width: "50%" }} content={mawe.fromXML(mawe.buf2tree(mawe.tree2buf(mawe.toXML(slate2doc(doc, doc2slate(doc)).story))))} />
+    </HBox>
+  </React.Fragment>
+  /**/
+
+  /*
+    <Pre style={{ width: "50%" }} content={doc2slate(doc)} />
+    <EditorBox style={{width: "50%"}} editor={editor} content={content} setContent={setContent}/>
+    <Pre style={{ width: "50%" }} content={edited.story} />
+      <Pre style={{ width: "50%" }} content={edited.story.body} />
+  */
+
   //---------------------------------------------------------------------------
   // TODO: We need to know what element is placed for editing
   //---------------------------------------------------------------------------
@@ -91,8 +110,6 @@ function SingleEdit({id}) {
   // Slate uses content variable only when initializing. We need to manually
   // set children when doc changes between re-renders
   //---------------------------------------------------------------------------
-
-  const doc = docByID(id)
 
   const editor = useMemo(() => getEditor(), [])
 
@@ -148,12 +165,12 @@ function SingleEdit({id}) {
 
   //console.log("Edit:", id)
 
-  //*
   return (
-    <HFiller style={{overflow: "auto", background: "#F6F7F8"}}>
+    <HFiller style={{overflow: "auto", background: "#F5F7F9"}}>
       <VFiller style={{maxWidth: "300px", borderRight: "1px solid lightgray" }}>
         <ViewIndex
           editor={editor}
+          doc={edited}
           state={state}
         />
       </VFiller>
@@ -163,23 +180,6 @@ function SingleEdit({id}) {
         />
     </HFiller>
   )
-
-  /*/
-  // For development purposes:
-  return <React.Fragment>
-    <HBox>
-    <Pre style={{ width: "50%" }} content={edited.story} />
-    <EditorBox style={{width: "50%"}} editor={editor} content={content} setContent={setContent}/>
-    </HBox>
-  </React.Fragment>
-  /**/
-
-  /*
-    <Pre style={{ width: "50%" }} content={doc.story} />
-      <Pre style={{ width: "50%" }} content={edited.story.body} />
-  */
-
-  //---------------------------------------------------------------------------
 }
 
 //-----------------------------------------------------------------------------
@@ -218,7 +218,7 @@ function ViewIndex({ editor, style, state}) {
   return <VBox className="Outline" style={style}>
     <IndexToolbar state={state}/>
     <VFiller className="Index">
-      {indexElems(state.content).map(elem => <IndexItem key={elem.attributes.id} editor={editor} elem={elem} />)}
+      {indexElems(state.content).map(elem => <IndexItem key={elem.id} editor={editor} elem={elem} />)}
     </VFiller>
   </VBox>
 
@@ -248,7 +248,6 @@ function IndexToolbar({state}) {
     </BorderlessToggleButtonGroup>
   </ToolBox>
 }
-
 
 const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
@@ -288,7 +287,7 @@ function DocItem({ doc }) {
 function IndexItem({ editor, elem }) {
   const className = addClass("Entry")
   const name = elem2text(elem)
-  const id = elem.attributes.id
+  const id = elem.id
 
   /*
   return <ItemLabel type={elem.type} name={name === "" ? "|" : name} />
@@ -358,7 +357,9 @@ function getinfo(content) {
 //-----------------------------------------------------------------------------
 
 function Pre({ style, content }) {
-  return <pre style={{ fontSize: "10pt", ...style }}>{`${JSON.stringify(content, null, 2)}`}</pre>
+  return <pre style={{ fontSize: "10pt", ...style }}>
+    {typeof content === "string" ? content : `${JSON.stringify(content, null, 2)}`}
+  </pre>
 }
 
 function Empty() {

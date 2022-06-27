@@ -6,13 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
-//*
-import { loadmawe } from "./elemtree/load"
-import { savemawe } from "./elemtree/save"
-/*/
-import {loadmawe} from "./xmljs/load"
-import {savemawe} from "./xmljs/save"
-/**/
+import {loadmawe, buf2tree, fromXML} from "./xmljs/load"
+import {savemawe, tree2buf, toXML} from "./xmljs/save"
 
 import { getSuffix } from "./util.js";
 import { suffix2format } from "./util";
@@ -28,7 +23,9 @@ export const mawe = {
     //suffix = suffix ? suffix : this.suffix;
 
     return await fs.rename(file.id, name + suffix);
-  }
+  },
+  buf2tree, fromXML,
+  toXML, tree2buf,
 }
 
 //-----------------------------------------------------------------------------
@@ -42,12 +39,14 @@ async function load(file) {
   if (format == "mawe") {
     const suffix = getSuffix(file, [".mawe", ".mawe.gz"]);
     const basename = fs.basename(file.name, suffix);
-    const story = await loadmawe(file);
+    const {buffer, tree, story} = await loadmawe(file);
 
     return {
       file,
       basename,
       suffix,
+      //buffer,
+      //tree,
       story: {
         ...story,
         name: story.name ?? basename,

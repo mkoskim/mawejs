@@ -36,92 +36,142 @@ import {uuid, file2buf} from "../util";
 
 const convert = require('xml-js');
 
-function buf2tree(buffer) {
-  return convert.xml2js(buffer, {compact: false});
+export async function loadmawe(file) {
+  const buffer = await file2buf(file)
+  const tree = buf2tree(buffer)
+  return {
+    buffer,
+    tree,
+    story: fromXML(tree)
+  }
+}
+
+export function buf2tree(buffer) {
+  return convert.xml2js(buffer, {
+    compact: false,
+    nativeType: true,
+    ignoreComment: true,
+  });
   //const parser = new DOMParser();
   //return parser.parseFromString(buffer, "text/xml");
 }
 
-export async function loadmawe(file) {
-  const root = buf2tree(await file2buf(file))
+export function fromXML(root) {
+  const story = root.elements[0]
 
-  return root;
+  if (story.name !== "story") throw Error("File has no story.");
 
-  //return new Document(file, root);
-  //return new Document(file, parseRoot(root));
+  const {uuid, name, format, version = 1} = story.attributes;
 
-  function parseRoot(root) {
-    if(root.name !== "story") throw Error(`ERROR (${file}): Root elem is not story.`);
-    if(getAttr(root, "format") !== "mawe") throw Error();
+  if (format !== "mawe") throw Error("Story is not mawe story.");
+  if (version > 2) throw Error(`File version ${version} is too new.`)
 
-    //const {uuid, name, format, ...extra} = root.attrib;
-    const {uuid, name, format, ...extra} = {};
-
-    return withextras({
-      ...{uuid, name, ...extra},
-      body: parseBody(elemFind(root, "body")),
-      notes: parseNotes(elemFind(root, "notes")),
-      version: elemFindall(root, "version").map(parseBody),
-    }, root);
+  return {
+    // format - generated at save
+    // format version - generated at save
+    uuid,
+    name,
+    body: parseBody(elemFind(story, "body")),
+    notes: parseNotes(elemFind(story, "notes")),
+    versions: elemFindall(story, "version").map(parseVersion),
   }
 
   //---------------------------------------------------------------------------
 
+  function parseBody(body, extras = {}) {
+    return {
+      ...extras,
+      lang: "fi",
+      head: parseHead(elemFind(body, "head")),
+      parts: elemFindall(body, "part").map(parsePart)
+    }
+  }
+
+  function parseNotes(notes) {
+    return elemFindall(notes, "part").map(parsePart)
+  }
+
+  function parseVersion(version) {
+    const {created} = version;
+
+    return parseBody(version, {created})
+  }
+
+  //---------------------------------------------------------------------------
+
+  function parseHead(head) {
+    return {
+      title: elem2Text(elemFind(head, "title")),
+      subtitle: elem2Text(elemFind(head, "subtitle")),
+      author: elem2Text(elemFind(head, "author")),
+      nickname: elem2Text(elemFind(head, "nickname")),
+      translated: elem2Text(elemFind(head, "translated")),
+      status: elem2Text(elemFind(head, "status")),
+      deadline: elem2Text(elemFind(head, "deadline")),
+      covertext: elem2Text(elemFind(head, "covertext")),
+      version: elem2Text(elemFind(head, "version")),
+      words: parseWords(elemFind(head, "words")),
+    }
+
+    function parseWords(words) {
+      return {
+        text: elem2Text(elemFind(words, "text")),
+        missing: elem2Text(elemFind(words, "missing")),
+        comments: elem2Text(elemFind(words, "comments")),
+      }
+    }
+  }
+
+  function parsePart(part) {
+    const {name, ...attributes} = part.attributes ?? {};
+    const children = part.elements ?? []
+    return {
+      type: "part",
+      name,
+      attributes,
+      children: children.map(parseScene)
+    }
+  }
+
+  function parseScene(scene) {
+    const {name, ...attributes} = scene.attributes ?? {};
+    const children = scene.elements ?? []
+
+    return {
+      type: "scene",
+      name,
+      attributes,
+      children: children.map(js2doc)
+    }
+  }
+
+  //---------------------------------------------------------------------------
+
+  function js2doc(elem) {
+    return {
+      type: elem.name ?? elem.type,
+      attributes: elem.attributes,
+      children: elem.elements?.map(js2doc),
+      text: trim(elem.text),
+    }
+  }
+
   function elemFind(parent, name) {
-    return parent.find(e => e.name === name)
+    return parent.elements.find(e => e.name === name)
   }
 
   function elemFindall(parent, name) {
-    return parent.filter(e => e.name === name)
+    return parent.elements.filter(e => e.name === name)
   }
 
-  function getAttr(elem, name) {
-    return elem.attributes[name]
+  function elem2Text(elem) {
+    if (elem.type == "text") return trim(elem.text);
+    if (elem.elements) return trim(elem.elements.map(e => elem2Text(e)).join(" "))
+    return "";
   }
 
-  //---------------------------------------------------------------------------
-  // We convert element tree to JS objects. This way we can make
-  // copies of the trees e.g. when making versions.
-  //---------------------------------------------------------------------------
-
-  function et2js(elem) {
-    const [text, tail] = [elem.text, elem.tail].map(
-      text => text.replace(/\s+/g, ' ').trim()
-      //.replace(/^\s+|\s+$/gm,'')
-    );
-
-    return {
-      id: uuid(),
-      tag: elem.tag,
-      attr: {...elem.attrib},
-      text,
-      tail,
-      children: elem.getchildren().map(et2js),
-    }
-  }
-
-  //---------------------------------------------------------------------------
-  // withextras() adds XML elements not processed by the loader to the end
-  // of the block. This may be used to implement new features that not all
-  // editors support yet. This could be extended so that you could apply
-  // attributes to tags that would be preserved by editors.
-  //---------------------------------------------------------------------------
-
-  function withextras(obj, elem) {
-    //const extra = elem.getchildren().filter(child => obj[child.tag] === undefined);
-    return {
-      ...obj,
-      //extra: extra.map(et2js),
-    }
-  }
-
-  //---------------------------------------------------------------------------
-
-  function parseBody(elem) {
-    return elem;
-  }
-
-  function parseNotes(elem) {
-    return elem;
+  function trim(text) {
+    if(typeof text === "string") return text.replace(/\s+/gu, ' ').trim()
+    return "";
   }
 }
