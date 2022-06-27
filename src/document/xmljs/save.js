@@ -11,16 +11,22 @@ import {buf2file} from "../util";
 const convert = require('xml-js');
 const wrap = require('word-wrap');
 
+//----------------------------------------------------------------------------
+
 export async function savemawe(doc) {
   const buffer = tree2buf(toXML(doc.story))
   return await buf2file(doc, buffer)
 }
+
+//----------------------------------------------------------------------------
 
 export function tree2buf(root) {
   return convert.js2xml({elements: [root]}, {
     spaces: "  ",
   }).split("\n").map(s => s.trim()).join("\n")
 }
+
+//----------------------------------------------------------------------------
 
 export function toXML(story) {
   const root = toElem({
@@ -166,7 +172,8 @@ export function toXML(story) {
 
     if(type == "text") {
       if(!text || text === "") return undefined;
-      return toText(wrap(text, {indent: "", width: 80}))
+      //return toText(wrap(text, {indent: "", width: 80}))
+      return toText(text)
     }
 
     return toElem({
@@ -196,7 +203,7 @@ export function toXML(story) {
   function toText(text) {
     return {
       type: "text",
-      text,
+      text: text.replace(/\s+/gu, ' ').trim(),
     }
   }
 
