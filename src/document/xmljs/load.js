@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid, file2buf} from "../util";
+import {uuid as generateUUID, file2buf} from "../util";
 
 //-----------------------------------------------------------------------------
 // File structure:
@@ -60,7 +60,7 @@ export function fromXML(root) {
 
   if (story.name !== "story") throw Error("File has no story.");
 
-  const {uuid, name, format, version = 1} = story.attributes;
+  const {uuid, name, format, version = 1} = story.attributes ?? {};
 
   if (format !== "mawe") throw Error("Story is not mawe story.");
   if (version > 2) throw Error(`File version ${version} is too new.`)
@@ -68,7 +68,7 @@ export function fromXML(root) {
   return {
     // format - generated at save
     // format version - generated at save
-    uuid,
+    uuid: uuid ?? generateUUID(),
     name,
     body: parseBody(elemFind(story, "body")),
     notes: parseNotes(elemFind(story, "notes")),
@@ -161,10 +161,12 @@ export function fromXML(root) {
   }
 
   function elemFind(parent, name) {
+    if(!parent?.elements) return undefined;
     return parent.elements.find(e => e.name === name)
   }
 
   function elemFindall(parent, name) {
+    if(!parent?.elements) return []
     return parent.elements.filter(e => e.name === name)
   }
 
@@ -175,7 +177,7 @@ export function fromXML(root) {
   }
 
   function trim(text) {
-    if(typeof text === "string") return text.replace(/\s+/gu, ' ').trim()
+    if(typeof text === "string") return text //.replace(/\s+/gu, ' ').trim()
     return "";
   }
 }

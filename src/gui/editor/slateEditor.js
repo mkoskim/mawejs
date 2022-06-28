@@ -124,13 +124,16 @@ export function section2edit(doc) {
   }
 
   function Head2Slate(head) {
-    return [
-      createElement({ type: "title", children: [{ text: head.title ?? "" }] }),
+    if(head.title) return [
+      createElement({ type: "title", children: [{ text: head.title }] }),
     ]
+    return []
   }
 
   function Section2Slate(parts) {
-    return parts.map(Part2Slate).flat(1)
+    const content = parts.map(Part2Slate).flat(1)
+    if(!content.length) return [createElement({type: "p", children: [{text: ""}]})]
+    return content;
   }
 
   function Part2Slate(part, index) {
