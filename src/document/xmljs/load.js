@@ -177,7 +177,7 @@ export function fromXML(root) {
   }
 
   function trim(text) {
-    if(typeof text === "string") return text //.replace(/\s+/gu, ' ').trim()
+    if(typeof text === "string") return text.trim() //.replace(/\s+/gu, ' ')
     return "";
   }
 }
