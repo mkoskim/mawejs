@@ -9,7 +9,7 @@
 import {buf2file} from "../util";
 
 const convert = require('xml-js');
-const wrap = require('word-wrap');
+//const wrap = require('word-wrap');
 
 //----------------------------------------------------------------------------
 
@@ -170,7 +170,7 @@ export function toXML(story) {
   function doc2js(elem) {
     const {type, attributes, children = [], text} = elem;
 
-    if(type == "text") {
+    if(type === "text") {
       if(!text || text === "") return undefined;
       //return toText(wrap(text, {indent: "", width: 80}))
       return toText(text)

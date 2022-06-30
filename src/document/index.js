@@ -36,7 +36,7 @@ async function load(file) {
   console.log("Load file:", file)
   const format = suffix2format(file);
 
-  if (format == "mawe") {
+  if (format === "mawe") {
     const suffix = getSuffix(file, [".mawe", ".mawe.gz"]);
     const basename = fs.basename(file.name, suffix);
     const {buffer, tree, story} = await loadmawe(file);

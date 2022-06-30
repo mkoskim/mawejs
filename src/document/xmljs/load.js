@@ -171,7 +171,7 @@ export function fromXML(root) {
   }
 
   function elem2Text(elem) {
-    if (elem.type == "text") return trim(elem.text);
+    if (elem.type === "text") return trim(elem.text);
     if (elem.elements) return trim(elem.elements.map(e => elem2Text(e)).join(" "))
     return "";
   }
