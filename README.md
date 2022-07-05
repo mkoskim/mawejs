@@ -19,11 +19,9 @@ Editors made for writers to write stories differ from regular word processing so
 
 1) They keep metadata - comments and such - together with the story,
 
-2) They are targeting to produce a manuscript.
+2) They are meant to produce a manuscript.
 
-That is, they are not exactly meant to edit some file, but they are meant to edit file or files which are used to produce manuscript.
-
-They are not exactly word processing software - they are more like text management software.
+That is, they are not exactly meant to edit some files, but they are meant to edit file or files which are used to produce a manuscript. They are generally not exactly word processing software - they are more like text management software.
 
 ## How Mawe differs from yWriter, Manuskript or similar software?
 

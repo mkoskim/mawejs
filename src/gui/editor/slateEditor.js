@@ -18,7 +18,7 @@ import {
 } from 'slate'
 
 import { withHistory } from "slate-history"
-import { Icon } from '../common/factory';
+import { addClass, Icon } from '../common/factory';
 import { uuid, splitByLeadingElem } from '../../util';
 
 export { ReactEditor }
@@ -417,25 +417,25 @@ export function getEditor() {
 //
 //*****************************************************************************
 
-export function SlateEdit({ editor, className, content, setContent, ...props }) {
+export function SlateEdit({editor, className, content, setContent, ...props }) {
 
   const renderElement = useCallback(props => <Element {...props} />, [])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
 
   return (
-    <Slate
-      editor={editor}
-      value={content}
-      onChange={setContent}
-    >
-      <Editable
-        className={className}
-        autoFocus
-        spellCheck={false} // Keep false until you find out how to change language
-        renderElement={renderElement}
-        renderLeaf={renderLeaf}
-        {...props}
-      />
+      <Slate
+        editor={editor}
+        value={content}
+        onChange={setContent}
+      >
+        <Editable
+          className={addClass(className, "Sheet")}
+          autoFocus
+          spellCheck={false} // Keep false until you find out how to change language
+          renderElement={renderElement}
+          renderLeaf={renderLeaf}
+          {...props}
+        />
     </Slate>
   )
 }

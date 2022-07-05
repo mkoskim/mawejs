@@ -48,15 +48,23 @@ const path = require("path")
 
 export function EditView() {
 
+  // TODO: We need to wait loading here
+  // TODO: If there is an error when loading, show it here
+  // TODO: Get settings: general, file specific, current view, ...
+
   const edit = useSelector(state => state.doc.edit)
   const loading = useSelector(state => state.doc.loading)
 
   console.log("EditView:", loading, edit.id)
 
-  return <VFiller>
+  //*
+  return <VBox className="ViewPort">
     <WorkspaceTab />
     {loading ? <Loading/> : <SingleEdit id={edit.id} />}
-  </VFiller>
+  </VBox>
+  /*/
+  return loading ? <Loading/> : <SingleEdit id={edit.id} />
+  /**/
 }
 
 //-----------------------------------------------------------------------------
@@ -165,8 +173,9 @@ function SingleEdit({id}) {
 
   //console.log("Edit:", id)
 
+  //*
   return (
-    <HFiller style={{overflow: "auto", background: "#F5F7F9"}}>
+    <HFiller style={{overflow: "auto"}}>
       <VFiller style={{maxWidth: "300px", borderRight: "1px solid lightgray" }}>
         <ViewIndex
           editor={editor}
@@ -177,33 +186,41 @@ function SingleEdit({id}) {
       <EditorBox
         editor={editor}
         state={state}
+        mode="Regular"
         />
     </HFiller>
   )
+  /*/
+  return (
+    <EditorBox
+      editor={editor}
+      state={state}
+      />
+  )
+  /**/
 }
 
 //-----------------------------------------------------------------------------
 
-function EditorBox({style, mode="Regular", editor, state}) {
-  return <VFiller style={style}>
-  <EditToolbar />
-  <VFiller className="Board">
-    <div>
-      <SlateEdit
-        className={addClass(mode, "Sheet")}
-        //className="Condensed Sheet"
+function EditorBox({style, mode="Condensed", editor, state}) {
+  return <VFiller style={{overflow: "auto", ...style}}>
+    <EditToolbar />
+    <div className="Board">
+        <SlateEdit
+        className={mode}
         editor={editor}
         content={state.content}
         setContent={state.setContent}
-      />
+        />
     </div>
-  </VFiller>
   </VFiller>
 }
 
 function EditToolbar() {
   return <ToolBox style={{ background: "white" }}>
-    <Button size="small">Test</Button>
+    <Button>Test</Button>
+    <Filler/>
+    <Button><Icon.Settings /></Button>
   </ToolBox>
 }
 
@@ -231,7 +248,7 @@ function ViewIndex({ editor, style, state}) {
 
 function IndexToolbar({state}) {
   return <ToolBox style={{ background: "white" }}>
-    <Button size="small">Test</Button>
+    <Button>Test</Button>
     <Filler />
     <Separator />
     <BorderlessToggleButtonGroup value={state.indexed} onChange={(e, value) => state.setIndexed(value)}>
@@ -306,7 +323,6 @@ function ItemIcon({ type }) {
     case "missing":
     case "comment":
     case "synopsis":
-      //return <Icon.Circle className={type} fontSize="small"/>
       return <div className={addClass("Box", type)} />
   }
   return null

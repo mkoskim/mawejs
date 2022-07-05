@@ -142,8 +142,8 @@ export function Workspace() {
       >
         <Label className="Name" text={file.name}/>
         <Filler />
-        <IconButton size="small" onClick={(e) => onRemove(e, file)}>
-          <Icon.Close fontSize="small" />
+        <IconButton onClick={(e) => onRemove(e, file)}>
+          <Icon.Close />
         </IconButton>
       </SortableItem>
     )

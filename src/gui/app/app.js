@@ -89,11 +89,11 @@ export default function App(props) {
     return <View.Starting />
   }
 
-  return <HBox className="ViewPort">
+  return (
     <ThemeProvider theme={myTheme}>
-      <ChooseView />
+        <ChooseView />
     </ThemeProvider>
-  </HBox>
+  )
 }
 
 //-----------------------------------------------------------------------------

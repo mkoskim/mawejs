@@ -8,27 +8,27 @@ FIXES:
   be sure that docs in the software are up-to-date (e.g. file entry has been
   changed after "Save as..." correctly)
 
+- Error management: We need some sort of async. error management e.g. when
+  loading and saving files.
+
 - Entire architecture needs rethinking
 
 - Add file name to doc info in editor (helps a lot!)
 
-- Doc reload
+- Doc reload (revert)
 
-- Title to index (so that we can click to the beginning)
+- Title to index (so that we can click it to move to the beginning)
 
 - Need indication that file is changed: keep loaded version available and
   compare to it.
-
-- Error management: We need some sort of async. error management e.g. when
-  loading and saving files.
 
 -------------------------------------------------------------------------------
 
 SHORT TERM TODO:
 
 The main objective is to make versions working! That is needed urgently! It
-won't take long time when I need an editor, where I can store the existing
-version as a version, and use it to create new one.
+won't take long time when I need an editor, where I can archive the existing
+version, and use it to create new one.
 
 So, aim to single-part editor, supporting body and notes sections, very
 similar to current Python version. Support for multiple parts can be added

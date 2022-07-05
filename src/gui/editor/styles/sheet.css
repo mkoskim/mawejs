@@ -6,12 +6,12 @@
 */
 
 :root {
-  --comment-bg: #d6f8d6;
-  --missing-bg: #fce4e4;
-  --synopsis-bg:#faf9c9;
-  --comment-fg: rgb(16, 128, 16);
-  --missing-fg: rgb(216, 3, 3);
-  --synopsis-fg: rgb(99, 99, 14);
+  --comment-bg: #e7ffe7;
+  --missing-bg: #f8e7e7;
+  --synopsis-bg:#fdfdd6;
+  --comment-fg: rgb(6, 61, 6);
+  --missing-fg: rgb(190, 3, 3);
+  --synopsis-fg: rgb(80, 80, 11);
 }
 
 /* ----------------------------------------------------------------------------
@@ -56,16 +56,19 @@
 }
 
 .Sheet h2::before {
-  content: "Part: ";
+  content: "PART: ";
 }
 
 /* Scene, Synopsis */ .Sheet h3, .Sheet h4 {
   font-family:Arial, Helvetica, sans-serif;
-  font-size: 12pt;
-  font-weight: inherit;
+  font-size: 11pt;
+  font-weight: normal;
   margin-top: 0.5cm;
-  color: rgb(110, 110, 110);
+  background: var(--synopsis-bg);
+  color: var(--synopsis-fg);
   /*
+  color: rgb(110, 110, 110);
+  font-weight: inherit;
   color:rgb(77, 77, 77);
   font-weight: bold;
   font-family: inherit;
@@ -167,11 +170,13 @@
 .Sheet .missing {
   /* color: rgb(155, 28, 28); */
   background: var(--missing-bg);
+  color: var(--missing-fg);
   /* border-left: 4px solid #D88; */
 }
 
 .Sheet .comment {
   background: var(--comment-bg);
+  color: var(--comment-fg);
 }
 
 /*
