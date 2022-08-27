@@ -57,12 +57,12 @@ export function Workspace() {
 
   //if(!edit)
   {
-    return <React.Fragment>
+    return <HBox className="ViewPort">
       <DndContext onDragEnd={onDrop} sensors={sensors}>
         <SideBar workspace={current} style={{minWidth: "25%", maxWidth: "25%"}}/>
         <FileBrowser.PickFiles selected={current.files} style={{width: "75%"}}/>
       </DndContext>
-    </React.Fragment>
+    </HBox>
   }
 
   //---------------------------------------------------------------------------
