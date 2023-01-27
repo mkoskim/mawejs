@@ -7,21 +7,19 @@
 //*****************************************************************************
 
 import {buf2file} from "../util";
-
-const convert = require('xml-js');
-//const wrap = require('word-wrap');
+import {js2xml} from "../../storage/xml";
 
 //----------------------------------------------------------------------------
 
 export async function savemawe(doc) {
-  const buffer = tree2buf(toXML(doc.story))
+  const buffer = await tree2buf(toXML(doc.story))
   return await buf2file(doc, buffer)
 }
 
 //----------------------------------------------------------------------------
 
 export function tree2buf(root) {
-  return convert.js2xml({elements: [root]}, {
+  return js2xml({elements: [root]}, {
     spaces: "  ",
   }).split("\n").map(s => s.trim()).join("\n")
 }

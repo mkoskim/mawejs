@@ -7,6 +7,7 @@
 //*****************************************************************************
 
 import {uuid as generateUUID, file2buf} from "../util";
+import {xml2js} from "../../storage/xml";
 
 //-----------------------------------------------------------------------------
 // File structure:
@@ -34,11 +35,11 @@ import {uuid as generateUUID, file2buf} from "../util";
 //
 //-----------------------------------------------------------------------------
 
-const convert = require('xml-js');
+//const convert = require('xml-js');
 
 export async function loadmawe(file) {
   const buffer = await file2buf(file)
-  const tree = buf2tree(buffer)
+  const tree = await buf2tree(buffer)
   return {
     buffer,
     tree,
@@ -47,7 +48,7 @@ export async function loadmawe(file) {
 }
 
 export function buf2tree(buffer) {
-  return convert.xml2js(buffer, {
+  return xml2js(buffer, {
     compact: false,
     ignoreComment: true,
   });

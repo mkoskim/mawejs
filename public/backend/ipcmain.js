@@ -17,3 +17,4 @@ const {ipcDispatch}  = require("./ipcdispatch");
 
 ipc.answerRenderer("hostfs", (params) => { return ipcDispatch("hostfs", params)})
 ipc.answerRenderer("compress", (params) => { return ipcDispatch("compress", params)})
+ipc.answerRenderer("xml", (params) => { return ipcDispatch("xml", params)})

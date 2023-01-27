@@ -10,6 +10,7 @@ module.exports = { ipcDispatch }
 
 const hostfs = require("./hostfs");
 const compress = require("./compress")
+const xml = require("./xml")
 
 function ipcDispatch(channel, params) {
   const [cmd, args] = [params[0], params.slice(1)];
@@ -42,6 +43,13 @@ function ipcDispatch(channel, params) {
         case "isGzip": return compress.isGzip(...args);
         case "gzip": return compress.gzip(...args);
         case "gunzip": return compress.gunzip(...args);
+      }
+      throw Error(`IPC: compress/${cmd}: Not implemented.`);
+    }
+    case "xml": {
+      switch(cmd) {
+        case "xml2js": return xml.xml2js(...args);
+        case "js2xml": return xml.js2xml(...args);
       }
       throw Error(`IPC: compress/${cmd}: Not implemented.`);
     }

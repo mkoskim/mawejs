@@ -1,24 +1,17 @@
 //*****************************************************************************
 //*****************************************************************************
 //
-// Compression utilities
+// XML utilities
 //
 //*****************************************************************************
 //*****************************************************************************
 
-//-----------------------------------------------------------------------------
-
-const util = require("util");
-const zlib = require("zlib");
-const gunzip = util.promisify(zlib.gunzip);
-const gzip = util.promisify(zlib.gzip);
-
-const isGzip = require("is-gzip");
+const {xml2js, js2xml} = require('xml-js');
+//import {xml2js, js2xml} from "xml-js"
 
 //-----------------------------------------------------------------------------
 
 module.exports = {
-  isGzip,
-  gzip,
-  gunzip,
+  xml2js,
+  js2xml,
 }
