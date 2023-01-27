@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {isGzip, gzip, gunzip} from "../storage/compress"
+import {isGzip, gzip, gunzip} from "../util/compress"
 import {uuid} from "../util"
 export {uuid}
 

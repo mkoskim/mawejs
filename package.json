@@ -7,7 +7,7 @@
   "homepage": "./",
   "scripts": {
     "dev": "concurrently -i \"wait-on http://localhost:3000 && npm run dev:electron\" npm:dev:react",
-    "dev:electron": "nodemon -w public --exec \"clear && electron .\"",
+    "dev:electron": "nodemon -w public --exec \"electron .\"",
     "dev:react": "cross-env BROWSER=none npm run react-start",
     "audit": "npm audit --production",
     "build": "npm run react-build && npm run electron-build",
@@ -35,12 +35,14 @@
     "fs-extra": "^10.1.0",
     "is-gzip": "^2.0.0",
     "is-hotkey": "^0.2.0",
+    "pako": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-infinite-scroll-component": "^6.1.0",
     "slate": "^0.81.1",
     "slate-history": "^0.66.0",
     "slate-react": "^0.81.0",
+    "stream": "^0.0.2",
     "uuid": "^8.3.2",
     "xml-js": "^1.6.11"
   },

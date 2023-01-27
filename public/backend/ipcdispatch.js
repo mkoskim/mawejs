@@ -36,22 +36,7 @@ function ipcDispatch(channel, params) {
         case "basename": return hostfs.fsBasename(...args);
         case "extname": return hostfs.fsExtname(...args);
       }
-      throw Error(`IPC: hostfs/${cmd}: Not implemented.`);
-    }
-    case "compress": {
-      switch(cmd) {
-        case "isGzip": return compress.isGzip(...args);
-        case "gzip": return compress.gzip(...args);
-        case "gunzip": return compress.gunzip(...args);
-      }
-      throw Error(`IPC: compress/${cmd}: Not implemented.`);
-    }
-    case "xml": {
-      switch(cmd) {
-        case "xml2js": return xml.xml2js(...args);
-        case "js2xml": return xml.js2xml(...args);
-      }
-      throw Error(`IPC: compress/${cmd}: Not implemented.`);
+      throw Error(`IPC: ${channel}/${cmd}: Not implemented.`);
     }
   }
 }

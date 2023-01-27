@@ -7,7 +7,7 @@
 //*****************************************************************************
 
 import {uuid as generateUUID, file2buf} from "../util";
-import {xml2js} from "../../storage/xml";
+import { xml2js } from "xml-js";
 
 //-----------------------------------------------------------------------------
 // File structure:
