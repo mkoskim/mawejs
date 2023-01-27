@@ -57,6 +57,7 @@ async function createWindow()
     icon: path.join(__dirname, "./favicon.png"),
     webPreferences: {
         nodeIntegration: false,
+        sandbox: false,
         contextIsolation: true,
         enableRemoteModule: false,
         preload: path.join(__dirname, "./backend/services.js")
