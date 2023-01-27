@@ -9,7 +9,7 @@
 import {loadmawe, buf2tree, fromXML} from "./xmljs/load"
 import {savemawe, tree2buf, toXML} from "./xmljs/save"
 
-import { getSuffix } from "./util.js";
+import { getSuffix } from "./util";
 import { suffix2format } from "./util";
 
 const fs = require("../storage/localfs")
@@ -38,7 +38,7 @@ async function load(file) {
 
   if (format === "mawe") {
     const suffix = getSuffix(file, [".mawe", ".mawe.gz"]);
-    const basename = fs.basename(file.name, suffix);
+    const basename = await fs.basename(file.name, suffix);
     const {buffer, tree, story} = await loadmawe(file);
 
     return {

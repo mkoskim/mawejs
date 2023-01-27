@@ -6,17 +6,12 @@
 //*****************************************************************************
 //*****************************************************************************
 
+import {isGzip, gzip, gunzip} from "../storage/compress"
 import {uuid} from "../util"
 export {uuid}
 
 const fs = require("../storage/localfs");
 
-const isGzip = require("is-gzip");
-
-const util = require("util");
-const zlib = require("zlib");
-const gunzip = util.promisify(zlib.gunzip);
-const gzip = util.promisify(zlib.gzip);
 const utf8decoder = new TextDecoder();
 
 //-----------------------------------------------------------------------------
@@ -41,8 +36,11 @@ export function suffix2format(f, suffixes = [".mawe", ".mawe.gz", ".moe"]) {
 //-----------------------------------------------------------------------------
 
 export async function file2buf(file) {
-  var buffer = await fs.read(file.id, null);
-  return utf8decoder.decode(isGzip(buffer) ? await gunzip(buffer) : buffer);
+  const buffer = await fs.read(file.id, null);
+  const compressed = await isGzip(buffer)
+  //console.log("Buffer:", buffer)
+  //console.log("isGzip:", compressed)
+  return utf8decoder.decode(compressed ? await gunzip(buffer) : buffer);
 }
 
 export async function buf2file(doc, buffer) {

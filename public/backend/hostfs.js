@@ -13,7 +13,11 @@ module.exports = {
   fsSettingsRead, fsSettingsWrite,
   fsRename,
   fsOpenExternal,
-}
+  fsDirname,
+  fsRelpath,
+  fsBasename,
+  fsExtname,
+  }
 
 //-----------------------------------------------------------------------------
 
@@ -170,3 +174,22 @@ function fsOpenExternal(fileid) {
 
   //shell.showItemInFolder('filepath') // Show the given file in a file manager. If possible, select the file.
 }
+
+//-----------------------------------------------------------------------------
+
+function fsDirname(fileid) {
+  return path.dirname(fileid);
+}
+
+function fsRelpath(directory, fileid) {
+  return path.relative(directory, fileid);
+}
+
+function fsBasename(filename, ext) {
+  return path.basename(filename, ext);
+}
+
+function fsExtname(filename) {
+  return path.extname(filename);
+}
+

@@ -42,7 +42,6 @@ import {
 
 import { styled } from '@mui/material/styles';
 import { mawe } from "../../document";
-const path = require("path")
 
 //-----------------------------------------------------------------------------
 // Loading (temporary)
@@ -66,20 +65,18 @@ async function docLoad(file) {
   console.log("docLoad:", file);
   const {id} = file;
 
-  if(!(id in docs)) {
-    console.log("docLoad: Loading:", file)
-    //dispatch(docAction.loading({file}))
-    try {
-      const content = await mawe.load(file)
-      docs[id] = content;
-      //dispatch(docAction.loaded({file}))
-      console.log("doc.open: Loaded", content)
-    }
-    catch(err) {
-      console.log(err)
-    }
-  } else {
+  if(id in docs) return docs[id]
+
+  console.log("docLoad: Loading:", file)
+  try {
+    const content = await mawe.load(file)
+    docs[id] = content;
     //dispatch(docAction.loaded({file}))
+    console.log("docLoad: Loaded", content)
+    return content;
+  }
+  catch(err) {
+    console.log(err)
   }
 }
 
@@ -97,6 +94,9 @@ export function EditView({id}) {
   //const loading = useSelector(state => state.doc.loading)
 
   console.log("EditView:", id)
+  docLoad(id).then(content => {
+    console.log("Loaded", content)
+  })
 
   /*
   return <VBox className="ViewPort">

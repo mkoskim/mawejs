@@ -18,25 +18,22 @@ function fscall(cmd, ...args) {
 // Basic file system functions
 //-----------------------------------------------------------------------------
 
-const os = require("os");
-const path = require("path");
-
 //-----------------------------------------------------------------------------
 
 export function dirname(fileid) {
-  return path.dirname(fileid);
+  return fscall("dirname", fileid);
 }
 
 export function relpath(directory, fileid) {
-  return path.relative(directory, fileid);
+  return fscall("relpath", directory, fileid);
 }
 
 export function basename(filename, ext) {
-  return path.basename(filename, ext);
+  return fscall("basename", filename, ext);
 }
 
 export function extname(filename) {
-  return path.extname(filename);
+  return fscall("extname", filename);
 }
 
 //-----------------------------------------------------------------------------
@@ -88,7 +85,8 @@ export function getlocation(location) {
 }
 
 export function getuser() {
-  return os.userInfo().username;
+  throw new Error("Not implemented.");
+  //return os.userInfo().username;
 }
 
 export function openexternal(fileid) {
