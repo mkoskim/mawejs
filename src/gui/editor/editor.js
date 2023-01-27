@@ -17,8 +17,10 @@ import {
   StrictMode,
 } from 'react';
 
+/*
 import { useSelector, useDispatch } from "react-redux";
 import { action, docByID, docUpdate } from "../app/store"
+*/
 
 import {
   SlateEdit, getEditor, ReactEditor,
@@ -43,27 +45,68 @@ import { mawe } from "../../document";
 const path = require("path")
 
 //-----------------------------------------------------------------------------
+// Loading (temporary)
+//-----------------------------------------------------------------------------
+
+var docs = {}
+
+export function docByID(id) {
+  //console.log("docByID:", id)
+  //console.log("Docs:", docs)
+  return docs[id]
+}
+
+export function docUpdate(id, content) {
+  docs[id] = content
+}
+
+//-----------------------------------------------------------------------------
+
+async function docLoad(file) {
+  console.log("docLoad:", file);
+  const {id} = file;
+
+  if(!(id in docs)) {
+    console.log("docLoad: Loading:", file)
+    //dispatch(docAction.loading({file}))
+    try {
+      const content = await mawe.load(file)
+      docs[id] = content;
+      //dispatch(docAction.loaded({file}))
+      console.log("doc.open: Loaded", content)
+    }
+    catch(err) {
+      console.log(err)
+    }
+  } else {
+    //dispatch(docAction.loaded({file}))
+  }
+}
+
+//-----------------------------------------------------------------------------
 // Choose the view
 //-----------------------------------------------------------------------------
 
-export function EditView() {
+export function EditView({id}) {
 
   // TODO: We need to wait loading here
   // TODO: If there is an error when loading, show it here
   // TODO: Get settings: general, file specific, current view, ...
 
-  const edit = useSelector(state => state.doc.edit)
-  const loading = useSelector(state => state.doc.loading)
+  //const edit = useSelector(state => state.doc.edit)
+  //const loading = useSelector(state => state.doc.loading)
 
-  console.log("EditView:", loading, edit.id)
+  console.log("EditView:", id)
 
-  //*
+  /*
   return <VBox className="ViewPort">
     <WorkspaceTab />
     {loading ? <Loading/> : <SingleEdit id={edit.id} />}
   </VBox>
   /*/
-  return loading ? <Loading/> : <SingleEdit id={edit.id} />
+  return <VBox className="ViewPort">
+    <Loading/>
+  </VBox>
   /**/
 }
 
@@ -154,7 +197,7 @@ function SingleEdit({id}) {
   const edited = slate2doc(doc, state.content)
   if(state.id === id) {
     //console.log("Update:", id, doc.story.name, content)
-    docUpdate(id, edited)
+    //docUpdate(id, edited)
   }
 
   /**/
@@ -162,13 +205,13 @@ function SingleEdit({id}) {
   //---------------------------------------------------------------------------
   //console.log(`SingleEdit: id=${id} stored=${storedid} refresh=${refresh}`)
 
-  const dispatch = useDispatch();
-  const cwd = useSelector(state => state.cwd.path)
+  //const dispatch = useDispatch();
+  //const cwd = useSelector(state => state.cwd.path)
 
   useEffect(() => addHotkeys({
-    "mod+o": (e) => onClose(e, dispatch),
-    "mod+w": (e) => onClose(e, dispatch),
-    "mod+s": (e) => mawe.saveas(docByID(id), path.join(cwd, "/testwrite.mawe")),
+    //"mod+o": (e) => onClose(e, dispatch),
+    //"mod+w": (e) => onClose(e, dispatch),
+    //"mod+s": (e) => mawe.saveas(docByID(id), path.join(cwd, "/testwrite.mawe")),
   }));
 
   //console.log("Edit:", id)
@@ -384,6 +427,7 @@ function Empty() {
 
 //-----------------------------------------------------------------------------
 
+/*
 function WorkspaceTab() {
   const dispatch = useDispatch()
   const current = useSelector(state => state.workspace[state.workspace.selected])
@@ -419,3 +463,4 @@ function onClose(e, dispatch) {
   // Move modifications to doc
   dispatch(action.doc.close({}))
 }
+*/

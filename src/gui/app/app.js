@@ -13,16 +13,18 @@ import "./app.css"
 import React from 'react'
 import {useEffect} from "react"
 
-import { useSelector, useDispatch } from "react-redux";
-import {action} from "./store"
+//import { useSelector, useDispatch } from "react-redux";
+//import {action} from "./store"
 
 import {EditView} from "../editor";
-import {Workspace} from "../workspace";
-import View from "../views"
+//import {Workspace} from "../workspace";
+//import View from "../views"
 
 import {VBox, HBox, Loading} from "../common/factory";
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+//-----------------------------------------------------------------------------
 
 const myTheme = createTheme({
   palette: {
@@ -63,6 +65,7 @@ export default function App(props) {
 
   console.log("App")
 
+  /*
   const dispatch = useDispatch()
 
   //---------------------------------------------------------------------------
@@ -88,10 +91,11 @@ export default function App(props) {
   {
     return <View.Starting />
   }
+  */
 
   return (
     <ThemeProvider theme={myTheme}>
-        <ChooseView />
+        <EditView id="./local/CasaMagda.mawe" />
     </ThemeProvider>
   )
 }
@@ -99,7 +103,7 @@ export default function App(props) {
 //-----------------------------------------------------------------------------
 
 function ChooseView() {
-
+  /*
   const edit = useSelector(state => state.doc.edit)
 
   console.log("ChooseView:", edit?.id)
@@ -109,4 +113,5 @@ function ChooseView() {
   }
 
   return <Workspace />
+  */
 }
