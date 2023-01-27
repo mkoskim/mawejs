@@ -12,7 +12,7 @@ import { js2xml } from "xml-js";
 //----------------------------------------------------------------------------
 
 export async function savemawe(doc) {
-  const buffer = await tree2buf(toXML(doc.story))
+  const buffer = tree2buf(toXML(doc.story))
   return await buf2file(doc, buffer)
 }
 

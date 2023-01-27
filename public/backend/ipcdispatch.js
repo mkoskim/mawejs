@@ -9,8 +9,6 @@
 module.exports = { ipcDispatch }
 
 const hostfs = require("./hostfs");
-const compress = require("./compress")
-const xml = require("./xml")
 
 function ipcDispatch(channel, params) {
   const [cmd, args] = [params[0], params.slice(1)];

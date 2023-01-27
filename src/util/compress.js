@@ -15,6 +15,6 @@ export function gzip(buffer, options) {
   return pako.gzip(buffer, options);
 }
 
-export function gunzip(buffer) {
-  return pako.gunzip(buffer);
+export function gunzip(buffer, options) {
+  return pako.ungzip(buffer, options);
 }

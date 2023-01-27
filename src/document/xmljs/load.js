@@ -39,7 +39,7 @@ import { xml2js } from "xml-js";
 
 export async function loadmawe(file) {
   const buffer = await file2buf(file)
-  const tree = await buf2tree(buffer)
+  const tree = buf2tree(buffer)
   return {
     buffer,
     tree,

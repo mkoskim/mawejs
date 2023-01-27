@@ -37,10 +37,10 @@ export function suffix2format(f, suffixes = [".mawe", ".mawe.gz", ".moe"]) {
 
 export async function file2buf(file) {
   const buffer = await fs.read(file.id, null);
-  const compressed = await isGzip(buffer)
+  const compressed = isGzip(buffer)
   //console.log("Buffer:", buffer)
   //console.log("isGzip:", compressed)
-  return utf8decoder.decode(compressed ? await gunzip(buffer) : buffer);
+  return utf8decoder.decode(compressed ? gunzip(buffer) : buffer);
 }
 
 export async function buf2file(doc, buffer) {
@@ -51,7 +51,7 @@ export async function buf2file(doc, buffer) {
   //console.log(file)
 
   if(file.id.endsWith(".gz")) {
-    return await fs.write(file.id, await gzip(buffer, {level: 9}));
+    return await fs.write(file.id, gzip(buffer, {level: 9}));
   } else {
     return await fs.write(file.id, buffer);
   }
