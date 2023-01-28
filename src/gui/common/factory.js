@@ -20,12 +20,14 @@ import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
 */
 
+import { styled } from '@mui/material/styles';
+
 import {
   Button, IconButton, ButtonGroup,
   ToggleButton, ToggleButtonGroup,
   Breadcrumbs,
   Chip, TextField, Link,
-  Tooltip,
+  Tooltip as muiTooltip, tooltipClasses,
   Divider, CircularProgress as Spinner,
   List, ListItem, ListItemText,
   Grid,
@@ -34,13 +36,31 @@ import {
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export {
-  Tooltip,
   Spinner,
   Grid,
   Chip, Link,
   List, ListItem, ListItemText,
   ToggleButton, ToggleButtonGroup,
 }
+
+//-----------------------------------------------------------------------------
+// Tooltips
+//-----------------------------------------------------------------------------
+
+/*
+const Tooltip = styled(({ className, ...props }) => (
+  <muiTooltip {...props} arrow classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.palette.common.black,
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.black,
+  },
+}));
+*/
+
+export {muiTooltip as Tooltip}
 
 //-----------------------------------------------------------------------------
 // Icons
@@ -66,6 +86,7 @@ export const Icon = {
     Search: muiIcons.Search,
     Edit: muiIcons.ArticleOutlined,
     Cards: muiIcons.GridViewOutlined,
+    Transfer: muiIcons.SwapHorizontalCircleOutlined,
   },
 
   Location: {

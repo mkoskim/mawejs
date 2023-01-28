@@ -19,7 +19,7 @@ import {
 
 import { withHistory } from "slate-history"
 import { addClass, Icon } from '../common/factory';
-import { uuid, splitByLeadingElem } from '../../util';
+import { uuid, nanoid, splitByLeadingElem } from '../../util';
 
 export { ReactEditor }
 
@@ -92,13 +92,13 @@ export function Leaf({ leaf, attributes, children }) {
 //
 //*****************************************************************************
 
-function createUUID(type) {
+function createID(type) {
   switch (type) {
     case "br.part":
     case "br.scene":
     case "synopsis":
     case "comment":
-    case "missing": return uuid()
+    case "missing": return nanoid()
   }
   return undefined;
 }
@@ -106,7 +106,7 @@ function createUUID(type) {
 function createElement({ type, attributes, children }) {
   return {
     type,
-    id: createUUID(type),
+    id: createID(type),
     attributes,
     children
   }
@@ -331,13 +331,13 @@ export function getEditor() {
         if(node.type in STYLEAFTER) {
           const newtype = STYLEAFTER[node.type]
           Transforms.splitNodes(editor, {always: true})
-          Transforms.setNodes(editor, {type: newtype, id: createUUID(newtype)})
+          Transforms.setNodes(editor, {type: newtype, id: createID(newtype)})
           return
         }
         if(RESETEMPTY.includes(node.type)) {
           if(node.children.length > 1 || node.children[0].text) {
             Transforms.splitNodes(editor, {always: true})
-            Transforms.setNodes(editor, {id: createUUID(node.type)})
+            Transforms.setNodes(editor, {id: createID(node.type)})
           } else {
             Transforms.setNodes(editor, {type: "p"});
           }
@@ -379,7 +379,7 @@ export function getEditor() {
         Transforms.delete(editor)
         const newProperties = {
           type,
-          id: createUUID(type)
+          id: createID(type)
         }
         Transforms.setNodes(editor, newProperties, {
           match: n => Editor.isBlock(editor, n),

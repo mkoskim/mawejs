@@ -91,10 +91,11 @@ function ChooseView({mode, id, doc}) {
 
 function ViewSelector({mode}) {
   return <VBox style={{borderRight: "1px solid lightgray", background: "white"}}>
-    <BorderlessToggleButtonGroup exclusive orientation="vertical" size="large" value={mode.mode} onChange={(e, payload) => payload && mode.dispatch({type: "mode", payload})}>
-      <Tooltip title="Edit" arrow placement="right"><ToggleButton value="single"><Icon.Action.Edit /></ToggleButton></Tooltip>
-      <Tooltip title="Organizer" arrow placement="right"><ToggleButton value="organizer"><Icon.Action.Cards /></ToggleButton></Tooltip>
-      <Tooltip title="Search" arrow placement="right"><ToggleButton value="search"><Icon.Action.Search /></ToggleButton></Tooltip>
+    <BorderlessToggleButtonGroup exclusive orientation="vertical" value={mode.mode} onChange={(e, payload) => payload && mode.dispatch({type: "mode", payload})}>
+      <ToggleButton value="single"><Tooltip title="Edit" arrow placement="right"><Icon.Action.Edit sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
+      <ToggleButton value="organizer"><Tooltip title="Organizer" arrow placement="right"><Icon.Action.Cards sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
+      <ToggleButton value="search"><Tooltip title="Search" arrow placement="right"><Icon.Action.Search sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
+      <ToggleButton value="transfer"><Tooltip title="Transfer" arrow placement="right"><Icon.Action.Transfer sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
     </BorderlessToggleButtonGroup>
   </VBox>
 }
@@ -103,7 +104,7 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
     //margin: 0,
     //marginRight: theme.spacing(0.5),
-    //padding: "4pt",
+    padding: "2pt",
     border: 0,
     '&.Mui-disabled': {
       //border: 0,

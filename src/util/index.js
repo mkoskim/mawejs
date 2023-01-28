@@ -6,8 +6,14 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid} from "./uuid"
+//-----------------------------------------------------------------------------
+// UUID generator
+//-----------------------------------------------------------------------------
+
+import {v4 as uuid} from "uuid"
+import {nanoid} from "nanoid"
+
 import {splitByLeadingElem, splitByTrailingElem} from "./generic"
 
-export {uuid}
+export {uuid, nanoid}
 export {splitByLeadingElem, splitByTrailingElem}

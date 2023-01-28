@@ -153,12 +153,10 @@ export function SingleEdit({id, doc}) {
   return (
     <HFiller style={{overflow: "auto"}}>
       <VFiller style={{maxWidth: "400px", borderRight: "1px solid lightgray" }}>
-        {useDeferredValue(
-          <ViewIndex
-            state={state}
-            doc={edited}
-            />
-          )}
+        <DeferredRender><ViewIndex
+          state={state}
+          doc={edited}
+          /></DeferredRender>
       </VFiller>
       <EditorBox
         editor={editor}
@@ -175,6 +173,12 @@ export function SingleEdit({id, doc}) {
       />
   )
   /**/
+}
+
+//-----------------------------------------------------------------------------
+
+function DeferredRender(props) {
+  return useDeferredValue(props.children)
 }
 
 //-----------------------------------------------------------------------------
