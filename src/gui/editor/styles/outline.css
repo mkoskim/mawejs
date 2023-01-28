@@ -1,0 +1,109 @@
+/* ---------------------------------------------------------------------------- */
+/* Document outlining */
+/* ---------------------------------------------------------------------------- */
+
+.Outline {
+  overflow-y: auto;
+  overflow-x: hidden;
+  /*
+  width: 300px;
+  background-color: lightgray;
+  */
+  /*
+  padding-top: 4px;
+  padding-left: 6px;
+  padding-top: 0.5cm;
+  padding-left: 4px;
+  */
+  /*
+  background: white;
+  border-right: 1pt solid lightgray;
+  */
+  counter-reset: scene;
+}
+
+.Outline a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.Outline a:hover {
+  background-color: lightgrey;
+}
+
+.Outline div.Scene {
+  /*
+  padding: 4pt;
+  */
+  border: 2px solid lightgray;
+  border-radius: 3px;
+  margin: 3pt;
+  counter-increment: scene;
+}
+
+.Outline div.Scene:hover {
+  background-color: #DEF;
+}
+
+.Outline .SceneName {
+  padding-top: 4pt !important;
+  font-weight: bold;
+/*
+  padding-top: 4pt !important;
+  border-bottom: 1pt solid gray;
+*/
+}
+
+.Outline .SceneName:before {
+  content: counter(scene) ".\00a0";
+}
+
+/*
+.Outline .Index {
+  overflow: auto;
+  padding: 4pt;
+}
+*/
+
+.Outline .Entry {
+  margin: 0;
+  cursor: default;
+  padding-left: 6pt;
+  padding-right: 4pt;
+  padding-bottom: 2pt;
+  /*
+  padding: 6px;
+  padding-left: 16px;
+  */
+}
+
+.Outline .Entry .Name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.Outline .Entry .Box {
+  min-height: 7pt;
+  max-height: 7pt;
+  min-width: 7pt;
+  max-width: 7pt;
+  border: 1px solid grey;
+  border-radius: 4pt;
+  margin-right: 4pt;
+  /*
+  margin-left: 8pt;
+  */
+}
+
+/*
+.Outline .Entry .Box.comment,
+.Outline .Entry .Box.missing {
+  margin-left: 18pt;
+}
+*/
+
+.Outline .Entry .Box.comment { background: rgb(71, 207, 71); }
+.Outline .Entry .Box.missing { background: rgb(252, 44, 44); }
+.Outline .Entry .Box.synopsis { background: rgb(243, 243, 12); }
+

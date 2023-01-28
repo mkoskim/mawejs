@@ -104,12 +104,15 @@ export default function App(props) {
       }
     },
     {
-      //mode: "single"
-      mode: "organizer"
+      mode: "single"
+      //mode: "organizer"
     }
   );
 
   const id = "./local/NeljaBarnaa.mawe";
+  //const id = "./local/testwrite.mawe";
+  //const id = "./local/CasaMagda.mawe";
+
   const mode = {
     ..._mode,
     dispatch: _dispatch,

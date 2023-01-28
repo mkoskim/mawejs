@@ -12,6 +12,12 @@
 }
 
 .PartCard {
+  /*
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  */
+
   border-bottom: 1pt dashed grey;
   margin-bottom: 8pt;
 
@@ -28,17 +34,21 @@
 .SceneCard {
   display: flex;
   cursor:pointer;
-
-  margin-top: 2pt;
-  margin-bottom: 2pt;
-
-  padding: 4pt;
-  padding-top: 6pt;
-  padding-bottom: 6pt;
   /*
+  width: 300px;
+  height: 300px;
+  */
   background: white;
   border: 1pt solid lightgray;
   margin: 4pt;
+  padding: 4pt;
+
+  /*
+  margin-top: 2pt;
+  margin-bottom: 2pt;
+
+  padding-top: 6pt;
+  padding-bottom: 6pt;
   */
 }
 

@@ -50,7 +50,7 @@ export function Organizer({id, doc}) {
 
   const content = doc.story.body.parts[0].children;
 
-  return <VBox>
+  return <VBox className="PartCard">
     {content.map(scene => <SceneView key={scene.id} scene={scene}/>)}
   </VBox>
 }

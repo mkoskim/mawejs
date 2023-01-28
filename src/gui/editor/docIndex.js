@@ -6,6 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
+import "./styles/outline.css"
+
 import React, {
   useDeferredValue, useMemo,
 } from "react"
@@ -130,10 +132,18 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 function SceneItem({state, scene}) {
   const {id, name, type, words, bookmarks} = scene;
 
+  return <VBox className="Scene">
+    <IndexItem className="SceneName" state={state} id={id} type={type} name={name} words={words}/>
+    <DoBookmarks state={state} bookmarks={bookmarks}/>
+  </VBox>
+}
+
+function DoBookmarks({state, bookmarks}) {
+  if(!bookmarks.length) return null;
   return <React.Fragment>
-    <IndexItem state={state} id={id} type={type} name={name} words={words}/>
+    <Separator/>
     {bookmarks.map(elem => <BookmarkItem key={elem.id} state={state} bookmark={elem}/>)}
-  </React.Fragment>
+    </React.Fragment>
 }
 
 function BookmarkItem({state, bookmark}) {
@@ -143,12 +153,11 @@ function BookmarkItem({state, bookmark}) {
   return <IndexItem state={state} id={id} type={type} name={name}/>
 }
 
-function IndexItem({ state, name, type, id, words }) {
+function IndexItem({ className, state, name, type, id, words }) {
   const {editor} = state
-  const className = addClass("Entry")
 
   return <ItemLink editor={editor} id={id}>
-    <HBox className={className} style={{ alignItems: "center" }}>
+    <HBox className={addClass(className, "Entry")} style={{ alignItems: "center" }}>
       <ItemIcon type={type} />
       <ItemLabel type={type} name={name === "" ? ". . ." : name} />
       <HFiller/>

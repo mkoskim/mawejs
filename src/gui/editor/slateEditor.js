@@ -27,7 +27,8 @@ export { ReactEditor }
 
 export function elem2text(block) {
   return Node.string(block)
-    .replace(/\s+/g, ' ').trim()
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 function elemLeader(elem) {
@@ -351,9 +352,9 @@ export function getEditor() {
 
   const SHORTCUTS = {
     '##': "br.scene",
+    '>>': "synopsis",
     '//': 'comment',
     '!!': 'missing',
-    '>>': "synopsis",
   }
 
   const { insertText } = editor

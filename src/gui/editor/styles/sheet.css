@@ -27,6 +27,7 @@
   font-size: 12pt;
   line-height: 180%;
   font-family: 'Times New Roman', Times, serif;
+  counter-reset: scene;
 }
 
 /* ----------------------------------------------------------------------------
@@ -77,7 +78,8 @@
 }
 
 .Sheet h3::before {
-  content: "## ";
+  counter-increment: scene;
+  content: counter(scene) ". ## ";
   /*
   background: rgb(238, 238, 238);
   border: 1pt solid gray;
@@ -94,6 +96,12 @@
   font-weight: bold;
 */
 }
+
+/*
+.Sheet h3::after {
+  content: counter(h3counter);
+}
+*/
 
 .Sheet h4::before {
   content: ">> ";

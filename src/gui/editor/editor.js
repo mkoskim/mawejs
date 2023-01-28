@@ -64,13 +64,6 @@ export function SingleEdit({id, doc}) {
   </React.Fragment>
   /**/
 
-  /*
-    <Pre style={{ width: "50%" }} content={doc2slate(doc)} />
-    <EditorBox style={{width: "50%"}} editor={editor} content={content} setContent={setContent}/>
-    <Pre style={{ width: "50%" }} content={edited.story} />
-      <Pre style={{ width: "50%" }} content={edited.story.body} />
-  */
-
   //---------------------------------------------------------------------------
   // TODO: We need to know what element is placed for editing
   //---------------------------------------------------------------------------
@@ -138,6 +131,17 @@ export function SingleEdit({id, doc}) {
     docUpdate(id, edited)
   }
 
+  /*
+  return <React.Fragment>
+    <EditorBox style={{width: "50%"}} editor={editor} state={state}/>
+    <Pre style={{ width: "50%" }} content={state.content} />
+    </React.Fragment>
+  /**/
+/*
+  <Pre style={{ width: "50%" }} content={edited.story} />
+  <Pre style={{ width: "50%" }} content={edited.story.body} />
+*/
+
   /**/
 
   //---------------------------------------------------------------------------
@@ -148,7 +152,7 @@ export function SingleEdit({id, doc}) {
   //*
   return (
     <HFiller style={{overflow: "auto"}}>
-      <VFiller style={{maxWidth: "300px", borderRight: "1px solid lightgray" }}>
+      <VFiller style={{maxWidth: "400px", borderRight: "1px solid lightgray" }}>
         {useDeferredValue(
           <ViewIndex
             state={state}

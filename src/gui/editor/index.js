@@ -90,11 +90,11 @@ function ChooseView({mode, id, doc}) {
 }
 
 function ViewSelector({mode}) {
-  return <VBox style={{background: "lightgray"}}>
+  return <VBox style={{borderRight: "1px solid lightgray", background: "white"}}>
     <BorderlessToggleButtonGroup exclusive orientation="vertical" size="large" value={mode.mode} onChange={(e, payload) => payload && mode.dispatch({type: "mode", payload})}>
-      <ToggleButton value="single"><Tooltip title="Edit"><Icon.Action.Edit /></Tooltip></ToggleButton>
-      <ToggleButton value="organizer"><Tooltip title="Organizer"><Icon.Action.Cards /></Tooltip></ToggleButton>
-      <ToggleButton value="search"><Tooltip title="Search"><Icon.Action.Search /></Tooltip></ToggleButton>
+      <Tooltip title="Edit" arrow placement="right"><ToggleButton value="single"><Icon.Action.Edit /></ToggleButton></Tooltip>
+      <Tooltip title="Organizer" arrow placement="right"><ToggleButton value="organizer"><Icon.Action.Cards /></ToggleButton></Tooltip>
+      <Tooltip title="Search" arrow placement="right"><ToggleButton value="search"><Icon.Action.Search /></ToggleButton></Tooltip>
     </BorderlessToggleButtonGroup>
   </VBox>
 }
