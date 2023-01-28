@@ -39,16 +39,26 @@
   border-radius: 3px;
   margin: 3pt;
   counter-increment: scene;
+  background: white;
 }
 
 .Outline div.Scene:hover {
   background-color: #DEF;
 }
 
+.Outline div.Scene .Separator {
+  margin: 0;
+  margin-bottom: 2pt;
+  border: 1px solid lightgrey;
+}
+
 .Outline .SceneName {
   padding-top: 4pt !important;
-  font-weight: bold;
+  padding-bottom: 4pt !important;
+  font-weight: 450;
 /*
+  background: #FFD;
+  font-weight: bold;
   padding-top: 4pt !important;
   border-bottom: 1pt solid gray;
 */
