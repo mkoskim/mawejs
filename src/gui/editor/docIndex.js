@@ -36,7 +36,7 @@ export function ViewIndex({state, doc, style})
 {
   // Create index from doc content
   const content = doc.story.body.parts[0].children;
-  console.log("Indexing:")
+  //console.log("Indexing:")
   //console.log("Indexing: Content:", content)
 
   //console.log("ViewIndex")
@@ -81,7 +81,7 @@ export function ViewIndex({state, doc, style})
     <VBox className="Outline" style={style}>
       <IndexToolbar state={state}/>
       <VFiller className="Index">
-        {scenes.map(scene => <SceneItem state={state} scene={scene}/>)}
+        {scenes.map(scene => <SceneItem key={scene.id} state={state} scene={scene}/>)}
       </VFiller>
     </VBox>
   )
@@ -93,15 +93,12 @@ function IndexToolbar({state}) {
   return <ToolBox style={{ background: "white" }}>
     <Button>Test</Button>
     <Filler />
-    <Separator />
     <BorderlessToggleButtonGroup value={state.indexed} onChange={(e, value) => state.setIndexed(value)}>
       <ToggleButton value="missing"><Tooltip title="Show missing"><Icon.BlockType.Missing /></Tooltip></ToggleButton>
       <ToggleButton value="comment"><Tooltip title="Show comments"><Icon.BlockType.Comment /></Tooltip></ToggleButton>
     </BorderlessToggleButtonGroup>
-    <Separator />
-    <BorderlessToggleButtonGroup exclusive value={state.wordsAs} onChange={(e, value) => state.setWordsAs(value)}>
-    <ToggleButton value="off">
-      <Tooltip title="Don't show words"><Icon.StatType.Off /></Tooltip></ToggleButton>
+    <BorderlessToggleButtonGroup exclusive value={state.wordsAs} onChange={(e, value) => value && state.setWordsAs(value)}>
+      <ToggleButton value="off"><Tooltip title="Don't show words"><Icon.StatType.Off /></Tooltip></ToggleButton>
       <ToggleButton value="numbers"><Tooltip title="Words as numbers"><Icon.StatType.Words /></Tooltip></ToggleButton>
       <ToggleButton value="percent"><Tooltip title="Words as percent"><Icon.StatType.Percent /></Tooltip></ToggleButton>
       <ToggleButton value="cumulative"><Tooltip title="Words as cumulative percent"><Icon.StatType.Cumulative /></Tooltip></ToggleButton>
@@ -111,19 +108,19 @@ function IndexToolbar({state}) {
 
 const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
-    margin: 0,
-    marginLeft: theme.spacing(0.5),
-    marginRight: theme.spacing(0.5),
-    padding: "1pt",
-    border: 0,
+    //margin: 0,
+    //marginRight: theme.spacing(0.5),
+    padding: "4pt",
+    //border: 0,
     '&.Mui-disabled': {
-      border: 0,
-    },
-    '&:not(:first-of-type)': {
-      borderRadius: theme.shape.borderRadius,
+      //border: 0,
     },
     '&:first-of-type': {
-      borderRadius: theme.shape.borderRadius,
+      //borderRadius: theme.shape.borderRadius,
+      marginLeft: theme.spacing(0.5),
+    },
+    '&:not(:first-of-type)': {
+      //borderRadius: theme.shape.borderRadius,
     },
   },
 }));
@@ -154,6 +151,8 @@ function IndexItem({ state, name, type, id, words }) {
     <HBox className={className} style={{ alignItems: "center" }}>
       <ItemIcon type={type} />
       <ItemLabel type={type} name={name === "" ? ". . ." : name} />
+      <HFiller/>
+      <ItemWords state={state} words={words}/>
     </HBox>
   </ItemLink>
 }
@@ -169,8 +168,18 @@ function ItemIcon({ type }) {
 }
 
 function ItemLabel({ type, name }) {
-  return <Label className="Name" text={name} />
+  return <div className="Name">{name}</div>
 }
+
+function ItemWords({state, words}) {
+  if(words) switch(state.wordsAs) {
+    default: break;
+    case "numbers": return <div>{words?.text}</div>
+  }
+  return null;
+}
+
+//-----------------------------------------------------------------------------
 
 function ItemLink({ editor, id, children, ...props }) {
   return <a href={`#${id}`} onClick={e => setTimeout(() => onItemClick(e, editor, id), 0)} {...props}>

@@ -91,21 +91,21 @@ export function Leaf({ leaf, attributes, children }) {
 //
 //*****************************************************************************
 
-function createElement({ type, attributes, children }) {
+function createUUID(type) {
   switch (type) {
     case "br.part":
     case "br.scene":
     case "synopsis":
     case "comment":
-    case "missing": return {
-      type,
-      id: uuid(),
-      attributes,
-      children
-    }
+    case "missing": return uuid()
   }
+  return undefined;
+}
+
+function createElement({ type, attributes, children }) {
   return {
     type,
+    id: createUUID(type),
     attributes,
     children
   }
@@ -298,12 +298,17 @@ export function getEditor() {
 
   //---------------------------------------------------------------------------
 
-  const STYLESAFTER = {
+  const STYLEAFTER = {
     "title": "p",
     "br.scene": "p",
     "br.part": "p",
     "synopsis": "p",
   }
+
+  const RESETEMPTY = [
+    "comment",
+    "missing",
+  ]
 
   const { insertBreak } = editor
 
@@ -314,16 +319,29 @@ export function getEditor() {
       const [match] = Editor.nodes(editor, {
         match: n =>
           !Editor.isEditor(n) &&
-          Editor.isBlock(editor, n) &&
-          (n.type in STYLESAFTER)
+          Editor.isBlock(editor, n)
       })
 
       if (match) {
         const [node, path] = match
-        const newtype = STYLESAFTER[node.type]
-        Transforms.splitNodes(editor, {always: true})
-        Transforms.setNodes(editor, {type: newtype})
-        return
+
+        //console.log("Node:", node)
+
+        if(node.type in STYLEAFTER) {
+          const newtype = STYLEAFTER[node.type]
+          Transforms.splitNodes(editor, {always: true})
+          Transforms.setNodes(editor, {type: newtype, id: createUUID(newtype)})
+          return
+        }
+        if(RESETEMPTY.includes(node.type)) {
+          if(node.children.length > 1 || node.children[0].text) {
+            Transforms.splitNodes(editor, {always: true})
+            Transforms.setNodes(editor, {id: createUUID(node.type)})
+          } else {
+            Transforms.setNodes(editor, {type: "p", id: undefined});
+          }
+          return
+        }
       }
     }
     insertBreak()
@@ -385,27 +403,25 @@ export function getEditor() {
       })
 
       if (match) {
-        const [block, path] = match
+        const [node, path] = match
         const start = Editor.start(editor, path)
 
+        //console.log("Node:", node)
+
         if (
-          !Editor.isEditor(block) &&
-          Editor.isBlock(editor, block) &&
-          block.type !== 'p' &&
+          !Editor.isEditor(node) &&
+          Editor.isBlock(editor, node) &&
+          node.type !== 'p' &&
           Point.equals(selection.anchor, start)
         ) {
           //console.log(block.type)
-          const newProperties = {
-            type: 'p',
-          }
-          Transforms.setNodes(editor, newProperties)
+          Transforms.setNodes(editor, {type: 'p', id: undefined})
 
           return
         }
       }
-
-      deleteBackward(...args)
     }
+    deleteBackward(...args)
   }
 
   return editor

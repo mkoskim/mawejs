@@ -173,8 +173,8 @@ function SingleEdit({id, doc}) {
       "br.part",
       "br.scene",
       "synopsis",
-      //"missing",
-      //"comment",
+      "missing",
+      "comment",
     ],
     wordsAs: "numbers",
   })
@@ -200,7 +200,7 @@ function SingleEdit({id, doc}) {
   const edited = slate2doc(doc, state.content)
   if(state.id === id) {
     //console.log("Update:", id, doc.story.name, content)
-    //docUpdate(id, edited)
+    docUpdate(id, edited)
   }
 
   /**/
@@ -215,6 +215,7 @@ function SingleEdit({id, doc}) {
     //"mod+o": (e) => onClose(e, dispatch),
     //"mod+w": (e) => onClose(e, dispatch),
     //"mod+s": (e) => mawe.saveas(docByID(id), path.join(cwd, "/testwrite.mawe")),
+    "mod+s": (e) => mawe.save(docByID(id)),
   }));
 
   //console.log("Edit:", id)

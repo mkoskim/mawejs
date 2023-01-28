@@ -96,7 +96,7 @@ export default function App(props) {
 
   return (
     <ThemeProvider theme={myTheme}>
-      <EditView id="./local/CasaMagda.mawe" />
+      <EditView id="./local/NeljaBarnaa.mawe" />
     </ThemeProvider>
   )
 }
