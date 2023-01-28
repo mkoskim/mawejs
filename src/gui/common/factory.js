@@ -62,6 +62,12 @@ export const Icon = {
 
   Settings: muiIcons.SettingsOutlined,
 
+  Action: {
+    Search: muiIcons.Search,
+    Edit: muiIcons.ArticleOutlined,
+    Cards: muiIcons.GridViewOutlined,
+  },
+
   Location: {
     Home: muiIcons.Home,
     Favorites: muiIcons.Favorite,

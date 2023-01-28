@@ -40,81 +40,16 @@ import {
 } from "../common/factory";
 
 import { styled } from '@mui/material/styles';
-import { mawe } from "../../document";
+import {docLoad, docSave, docUpdate, docByID} from "./doc"
 
-//-----------------------------------------------------------------------------
-// Loading (temporary)
-//-----------------------------------------------------------------------------
-
-var docs = {}
-
-function docByID(id) {
-  //console.log("docByID:", id)
-  //console.log("Docs:", docs)
-  return docs[id]
-}
-
-function docUpdate(id, content) {
-  docs[id] = content
-}
-
-async function docLoad(file) {
-  console.log("docLoad:", file);
-  const {id} = file;
-
-  if(id in docs) return docs[id]
-
-  console.log("docLoad: Loading:", file)
-  try {
-    const content = await mawe.load(file)
-    docs[id] = content;
-    //dispatch(docAction.loaded({file}))
-    console.log("docLoad: Loaded", content)
-    return content;
-  }
-  catch(err) {
-    console.log(err)
-  }
-}
-
-//-----------------------------------------------------------------------------
-// Choose the view
-//-----------------------------------------------------------------------------
-
-export function EditView({id}) {
-
-  // TODO: We need to wait loading here
-  // TODO: If there is an error when loading, show it here
-  // TODO: Get settings: general, file specific, current view, ...
-
-  //const edit = useSelector(state => state.doc.edit)
-  //const loading = useSelector(state => state.doc.loading)
-
-  const [doc, setDoc] = useState(undefined)
-
-  console.log("EditView/ID:", id)
-  console.log("EditView/Doc:", doc)
-
-  useEffect(() => {
-    docLoad(id).then(content => setDoc(content))
-  }, [id])
-
-  /*
-  return <VBox className="ViewPort">
-    <WorkspaceTab />
-    {loading ? <Loading/> : <SingleEdit id={edit.id} />}
-  </VBox>
-  /*/
-  return <VBox className="ViewPort">
-    {doc ? <SingleEdit id={id} doc={doc}/> : <Loading/>}
-  </VBox>
-  /**/
-}
+//import { mawe } from "../../document";
 
 //-----------------------------------------------------------------------------
 // Single edit with sidebars
 
-function SingleEdit({id, doc}) {
+export function SingleEdit({id, doc}) {
+
+  //const {id, doc} = upstate;
 
   //const doc = docByID(id)
   //console.log("Doc:", doc)
@@ -208,16 +143,6 @@ function SingleEdit({id, doc}) {
   //---------------------------------------------------------------------------
   //console.log(`SingleEdit: id=${id} stored=${storedid} refresh=${refresh}`)
 
-  //const dispatch = useDispatch();
-  //const cwd = useSelector(state => state.cwd.path)
-
-  useEffect(() => addHotkeys({
-    //"mod+o": (e) => onClose(e, dispatch),
-    //"mod+w": (e) => onClose(e, dispatch),
-    //"mod+s": (e) => mawe.saveas(docByID(id), path.join(cwd, "/testwrite.mawe")),
-    "mod+s": (e) => mawe.save(docByID(id)),
-  }));
-
   //console.log("Edit:", id)
 
   //*
@@ -270,16 +195,6 @@ function EditToolbar() {
     <Filler/>
     <Button><Icon.Settings /></Button>
   </ToolBox>
-}
-
-//-----------------------------------------------------------------------------
-// Extract info from (living) slate buffer.
-
-function getinfo(content) {
-  return {
-    words: 0,
-    chars: 0,
-  }
 }
 
 //-----------------------------------------------------------------------------

@@ -11,7 +11,7 @@ import "./app.css"
 /* eslint-disable no-unused-vars */
 
 import React, {
-  useEffect
+  useEffect, useState, useReducer
 } from "react"
 
 //import { useSelector, useDispatch } from "react-redux";
@@ -94,9 +94,30 @@ export default function App(props) {
   }
   */
 
+  const [_mode, _dispatch] = useReducer(
+    (state, action) => {
+      switch (action.type) {
+        case 'mode':
+          return {...state, mode: action.payload};
+        default:
+          throw new Error();
+      }
+    },
+    {
+      //mode: "single"
+      mode: "organizer"
+    }
+  );
+
+  const id = "./local/NeljaBarnaa.mawe";
+  const mode = {
+    ..._mode,
+    dispatch: _dispatch,
+  }
+
   return (
     <ThemeProvider theme={myTheme}>
-      <EditView id="./local/NeljaBarnaa.mawe" />
+      <EditView mode={mode} id={id}/>
     </ThemeProvider>
   )
 }

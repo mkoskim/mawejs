@@ -338,7 +338,7 @@ export function getEditor() {
             Transforms.splitNodes(editor, {always: true})
             Transforms.setNodes(editor, {id: createUUID(node.type)})
           } else {
-            Transforms.setNodes(editor, {type: "p", id: undefined});
+            Transforms.setNodes(editor, {type: "p"});
           }
           return
         }
@@ -364,10 +364,10 @@ export function getEditor() {
     //if (text === ' ' && selection && Range.isCollapsed(selection)) {
     if (selection && Range.isCollapsed(selection)) {
       const { anchor } = selection
-      const block = Editor.above(editor, {
+      const node = Editor.above(editor, {
         match: n => Editor.isBlock(editor, n),
       })
-      const path = block ? block[1] : []
+      const path = node ? node[1] : []
       const start = Editor.start(editor, path)
       const range = { anchor, focus: start }
       const beforeText = Editor.string(editor, range)
@@ -376,9 +376,10 @@ export function getEditor() {
       if (type) {
         Transforms.select(editor, range)
         Transforms.delete(editor)
-        const newProperties = createElement({
+        const newProperties = {
           type,
-        })
+          id: createUUID(type)
+        }
         Transforms.setNodes(editor, newProperties, {
           match: n => Editor.isBlock(editor, n),
         })
@@ -415,7 +416,7 @@ export function getEditor() {
           Point.equals(selection.anchor, start)
         ) {
           //console.log(block.type)
-          Transforms.setNodes(editor, {type: 'p', id: undefined})
+          Transforms.setNodes(editor, {type: 'p'})
 
           return
         }

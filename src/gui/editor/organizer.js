@@ -11,8 +11,8 @@
 import "./styles/organizer.css"
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import { useSelector, useDispatch } from "react-redux";
 
+/*
 import {
   DndContext,
   closestCenter,
@@ -29,6 +29,7 @@ import {
 } from '@dnd-kit/sortable';
 import {useSortable} from '@dnd-kit/sortable';
 import {CSS} from '@dnd-kit/utilities';
+*/
 
 import {
   FlexBox,
@@ -39,24 +40,25 @@ import {
   Label,
 } from "../common/factory";
 
-import {docByID} from "../app/store"
+//import {docByID} from "../app/store"
 
 //-----------------------------------------------------------------------------
 
-export function Organizer({id}) {
-  const doc = docByID(id)
+export function Organizer({id, doc}) {
 
   console.log("Doc:", doc)
-  const dispatch = useDispatch();
 
-  return <HFiller style={{overflow: "auto"}}>
-    <VFiller>
-      <ViewSection section={doc.story.body}/>
-      </VFiller>
-    <VFiller>
-      <ViewSection section={doc.story.notes}/>
-      </VFiller>
-    </HFiller>
+  const content = doc.story.body.parts[0].children;
+
+  return <VBox>
+    {content.map(scene => <SceneView key={scene.id} scene={scene}/>)}
+  </VBox>
+}
+
+function SceneView({scene}) {
+  return <div className="SceneCard">
+    {scene.name}
+  </div>
 }
 
 //-----------------------------------------------------------------------------
@@ -68,6 +70,7 @@ export function Organizer({id}) {
 //
 //-----------------------------------------------------------------------------
 
+/*
 export function ViewSection({section, ...props}) {
   return <div className="SectionCard" {...props}>
     <DndContext onDragEnd={onDrop}>
@@ -131,3 +134,4 @@ function ViewScene({id, scene, ...props}) {
 function ViewParagraph({p}) {
   return <div>{p.text}</div>
 }
+*/
