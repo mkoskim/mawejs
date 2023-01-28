@@ -208,7 +208,7 @@ export function edit2part(content) {
   return {
     type: "part",
     name: elem2text(head),
-    id: head.attributes?.id,
+    id: head?.id,
     children: splitByLeadingElem(scenes, isSceneBreak)
       .filter(s => s.length)
       .map(elems => edit2scene(elems)),
@@ -231,7 +231,7 @@ export function edit2scene(content) {
   return {
     type: "scene",
     name: elem2text(head),
-    id: head.attributes?.id,
+    id: head?.id,
     children: paragraphs.map(elem => getParagraph(elem))
   }
 
@@ -251,7 +251,7 @@ export function edit2scene(content) {
 
     return {
       type: tag === "p" && text === "" ? "br" : tag,
-      id: elem.attributes?.id,
+      id: elem?.id,
       children: [{
         type: "text",
         text,

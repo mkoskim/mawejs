@@ -39,9 +39,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-infinite-scroll-component": "^6.1.0",
-    "slate": "^0.81.1",
-    "slate-history": "^0.66.0",
-    "slate-react": "^0.81.0",
+    "slate": "^0.88.1",
+    "slate-history": "^0.86.0",
+    "slate-react": "^0.88.2",
     "stream": "^0.0.2",
     "uuid": "^9.0.0",
     "xml-js": "^1.6.11"

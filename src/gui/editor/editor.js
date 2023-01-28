@@ -10,23 +10,22 @@ import "./styles/editor.css"
 
 /* eslint-disable no-unused-vars */
 
-import React from "react"
-import {
+import React, {
   useState, useEffect,
   useMemo, useCallback,
+  useDeferredValue,
   StrictMode,
 } from 'react';
-
-/*
-import { useSelector, useDispatch } from "react-redux";
-import { action, docByID, docUpdate } from "../app/store"
-*/
 
 import {
   SlateEdit, getEditor, ReactEditor,
   section2edit, edit2section,
   elem2text,
 } from "./slateEditor"
+
+import {
+  ViewIndex,
+} from "./docIndex"
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
@@ -49,17 +48,15 @@ import { mawe } from "../../document";
 
 var docs = {}
 
-export function docByID(id) {
+function docByID(id) {
   //console.log("docByID:", id)
   //console.log("Docs:", docs)
   return docs[id]
 }
 
-export function docUpdate(id, content) {
+function docUpdate(id, content) {
   docs[id] = content
 }
-
-//-----------------------------------------------------------------------------
 
 async function docLoad(file) {
   console.log("docLoad:", file);
@@ -93,10 +90,14 @@ export function EditView({id}) {
   //const edit = useSelector(state => state.doc.edit)
   //const loading = useSelector(state => state.doc.loading)
 
-  console.log("EditView:", id)
-  docLoad(id).then(content => {
-    console.log("Loaded", content)
-  })
+  const [doc, setDoc] = useState(undefined)
+
+  console.log("EditView/ID:", id)
+  console.log("EditView/Doc:", doc)
+
+  useEffect(() => {
+    docLoad(id).then(content => setDoc(content))
+  }, [id])
 
   /*
   return <VBox className="ViewPort">
@@ -105,7 +106,7 @@ export function EditView({id}) {
   </VBox>
   /*/
   return <VBox className="ViewPort">
-    <Loading/>
+    {doc ? <SingleEdit id={id} doc={doc}/> : <Loading/>}
   </VBox>
   /**/
 }
@@ -113,9 +114,10 @@ export function EditView({id}) {
 //-----------------------------------------------------------------------------
 // Single edit with sidebars
 
-function SingleEdit({id}) {
+function SingleEdit({id, doc}) {
 
-  const doc = docByID(id)
+  //const doc = docByID(id)
+  //console.log("Doc:", doc)
 
   /*
   // For development purposes:
@@ -179,6 +181,7 @@ function SingleEdit({id}) {
 
   const state = {
     ..._state,
+    editor,
     setContent: content => setState({...state, content}),
     setID: id => setState({...state, id}),
     setIndexed: (indexed) => setState({...state, indexed}),
@@ -220,11 +223,12 @@ function SingleEdit({id}) {
   return (
     <HFiller style={{overflow: "auto"}}>
       <VFiller style={{maxWidth: "300px", borderRight: "1px solid lightgray" }}>
-        <ViewIndex
-          editor={editor}
-          doc={edited}
-          state={state}
-        />
+        {useDeferredValue(
+          <ViewIndex
+            state={state}
+            doc={edited}
+            />
+          )}
       </VFiller>
       <EditorBox
         editor={editor}
@@ -265,142 +269,6 @@ function EditToolbar() {
     <Filler/>
     <Button><Icon.Settings /></Button>
   </ToolBox>
-}
-
-//-----------------------------------------------------------------------------
-
-function ViewIndex({ editor, style, state}) {
-  //console.log("ViewIndex")
-  //console.log("- Indexed:", state.indexed)
-
-  // TODO: Make index from document, not from slate children
-
-  return <VBox className="Outline" style={style}>
-    <IndexToolbar state={state}/>
-    <VFiller className="Index">
-      {indexElems(state.content).map(elem => <IndexItem key={elem.id} editor={editor} elem={elem} />)}
-    </VFiller>
-  </VBox>
-
-  function indexElems(content) {
-    return content ? content.filter(elem => state.indexed.includes(elem.type)) : []
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-function IndexToolbar({state}) {
-  return <ToolBox style={{ background: "white" }}>
-    <Button>Test</Button>
-    <Filler />
-    <Separator />
-    <BorderlessToggleButtonGroup value={state.indexed} onChange={(e, value) => state.setIndexed(value)}>
-      <ToggleButton value="missing"><Tooltip title="Show missing"><Icon.BlockType.Missing /></Tooltip></ToggleButton>
-      <ToggleButton value="comment"><Tooltip title="Show comments"><Icon.BlockType.Comment /></Tooltip></ToggleButton>
-    </BorderlessToggleButtonGroup>
-    <Separator />
-    <BorderlessToggleButtonGroup exclusive value={state.wordsAs} onChange={(e, value) => state.setWordsAs(value)}>
-    <ToggleButton value="off">
-      <Tooltip title="Don't show words"><Icon.StatType.Off /></Tooltip></ToggleButton>
-      <ToggleButton value="numbers"><Tooltip title="Words as numbers"><Icon.StatType.Words /></Tooltip></ToggleButton>
-      <ToggleButton value="percent"><Tooltip title="Words as percent"><Icon.StatType.Percent /></Tooltip></ToggleButton>
-      <ToggleButton value="cumulative"><Tooltip title="Words as cumulative percent"><Icon.StatType.Cumulative /></Tooltip></ToggleButton>
-    </BorderlessToggleButtonGroup>
-  </ToolBox>
-}
-
-const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-  '& .MuiToggleButtonGroup-grouped': {
-    margin: 0,
-    marginLeft: theme.spacing(0.5),
-    marginRight: theme.spacing(0.5),
-    padding: "1pt",
-    border: 0,
-    '&.Mui-disabled': {
-      border: 0,
-    },
-    '&:not(:first-of-type)': {
-      borderRadius: theme.shape.borderRadius,
-    },
-    '&:first-of-type': {
-      borderRadius: theme.shape.borderRadius,
-    },
-  },
-}));
-
-function DocItem({ doc }) {
-  const { n_words, n_chars } = { n_words: 0, n_chars: 0 };
-
-  return (
-    <HBox style={{ alignItems: "center" }}>
-      <Label variant="body1" style={{ fontSize: "14pt" }}>{doc.story.name}</Label>
-      <Filler />
-      <Separator />
-      <Label>{`Words: ${n_words}`}</Label>
-      <Separator />
-      <Label>{`Chars: ${n_chars}`}</Label>
-      <Separator />
-    </HBox>
-  )
-}
-
-function IndexItem({ editor, elem }) {
-  const className = addClass("Entry")
-  const name = elem2text(elem)
-  const id = elem.id
-
-  /*
-  return <ItemLabel type={elem.type} name={name === "" ? "|" : name} />
-  /*/
-  return <ItemLink editor={editor} id={id}>
-    <HBox className={className} style={{ alignItems: "center" }}>
-      <ItemIcon type={elem.type} />
-      <ItemLabel type={elem.type} name={name === "" ? "|" : name} />
-    </HBox>
-  </ItemLink>
-  /**/
-}
-
-function ItemIcon({ type }) {
-  switch (type) {
-    case "missing":
-    case "comment":
-    case "synopsis":
-      return <div className={addClass("Box", type)} />
-  }
-  return null
-}
-
-function ItemLabel({ type, name }) {
-  return <Label className="Name" text={name} />
-}
-
-function ItemLink({ editor, id, children, ...props }) {
-  return <a href={`#${id}`} onClick={e => setTimeout(() => onItemClick(e, editor, id), 0)} {...props}>
-    {children}
-  </a>
-
-  function onItemClick(e, editor, id) {
-    //console.log("onClick:", id)
-    const target = document.getElementById(id)
-    if (!target) {
-      console.log(`Index/onClick: ID ${id} not found.`)
-      return;
-    }
-
-    //console.log("- Target:", target)
-
-    var range = document.createRange()
-    var sel = window.getSelection()
-
-    range.setStart(target, 0)
-    range.collapse(true)
-
-    sel.removeAllRanges()
-    sel.addRange(range)
-
-    ReactEditor.focus(editor)
-  }
 }
 
 //-----------------------------------------------------------------------------

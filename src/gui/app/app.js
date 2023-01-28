@@ -10,8 +10,9 @@ import "./app.css"
 
 /* eslint-disable no-unused-vars */
 
-import React from 'react'
-import {useEffect} from "react"
+import React, {
+  useEffect
+} from "react"
 
 //import { useSelector, useDispatch } from "react-redux";
 //import {action} from "./store"
@@ -95,7 +96,7 @@ export default function App(props) {
 
   return (
     <ThemeProvider theme={myTheme}>
-        <EditView id="./local/Beltane.mawe.gz" />
+      <EditView id="./local/CasaMagda.mawe" />
     </ThemeProvider>
   )
 }
