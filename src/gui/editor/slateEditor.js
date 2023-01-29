@@ -92,21 +92,10 @@ export function Leaf({ leaf, attributes, children }) {
 //
 //*****************************************************************************
 
-function createID(type) {
-  switch (type) {
-    case "br.part":
-    case "br.scene":
-    case "synopsis":
-    case "comment":
-    case "missing": return nanoid()
-  }
-  return undefined;
-}
-
 function createElement({ type, id, attributes, children }) {
   return {
     type,
-    id: id ?? createID(type),
+    id: id ?? nanoid(),
     attributes,
     children
   }
@@ -142,16 +131,18 @@ export function section2edit(doc) {
     const head = createElement({type: "br.part", id: part.id, children: [{ text: name }]})
 
     const scenes = part.children.map(Scene2Slate).flat(1)
-    const content = (index === 0 && name === "") ? scenes : [head, ...scenes]
-    return content
+    //const content = (index === 0 && name === "") ? scenes : [head, ...scenes]
+    //return content
+    return [head, ...scenes]
   }
 
   function Scene2Slate(scene, index) {
     const name = scene.name ?? ""
     const head = createElement({type: "br.scene", id: scene.id, children: [{ text: name }]})
     const para = scene.children.map(Paragraph2Slate)
-    const content = (index === 0 && name === "") ? para : [head, ...para]
-    return content
+    //const content = (index === 0 && name === "") ? para : [head, ...para]
+    //return content
+    return [head, ...para]
   }
 
   function Paragraph2Slate(p) {
@@ -210,7 +201,7 @@ export function edit2part(content) {
   return {
     type: "part",
     name: elem2text(head),
-    id: head?.id,
+    id: head?.id ?? nanoid(),
     children: splitByLeadingElem(scenes, isSceneBreak)
       .filter(s => s.length)
       .map(elems => edit2scene(elems)),
@@ -233,7 +224,7 @@ export function edit2scene(content) {
   return {
     type: "scene",
     name: elem2text(head),
-    id: head?.id,
+    id: head?.id ?? nanoid(),
     children: paragraphs.map(elem => getParagraph(elem))
   }
 
@@ -253,7 +244,7 @@ export function edit2scene(content) {
 
     return {
       type: tag === "p" && text === "" ? "br" : tag,
-      id: elem?.id,
+      id: elem?.id ?? nanoid(),
       children: [{
         type: "text",
         text,
@@ -299,6 +290,27 @@ export function getEditor() {
   */
 
   //---------------------------------------------------------------------------
+  // Take care of element IDs
+
+  const {apply} = editor;
+
+  editor.apply = (operation) => {
+    console.log("Apply:", operation)
+    switch(operation.type) {
+      default: break;
+      case "insert_node": {
+        operation.node.id = nanoid()
+        return apply(operation)
+      }
+      case "split_node": {
+        operation.properties.id = nanoid()
+        return apply(operation)
+      }
+    }
+    return apply(operation);
+  }
+
+  //---------------------------------------------------------------------------
 
   const STYLEAFTER = {
     "title": "p",
@@ -332,13 +344,13 @@ export function getEditor() {
         if(node.type in STYLEAFTER) {
           const newtype = STYLEAFTER[node.type]
           Transforms.splitNodes(editor, {always: true})
-          Transforms.setNodes(editor, {type: newtype, id: createID(newtype)})
+          Transforms.setNodes(editor, {type: newtype})
           return
         }
         if(RESETEMPTY.includes(node.type)) {
           if(node.children.length > 1 || node.children[0].text) {
             Transforms.splitNodes(editor, {always: true})
-            Transforms.setNodes(editor, {id: createID(node.type)})
+            //Transforms.setNodes(editor, {id: createID(node.type)})
           } else {
             Transforms.setNodes(editor, {type: "p"});
           }
@@ -378,13 +390,12 @@ export function getEditor() {
       if (type) {
         Transforms.select(editor, range)
         Transforms.delete(editor)
-        const newProperties = {
-          type,
-          id: createID(type)
-        }
-        Transforms.setNodes(editor, newProperties, {
-          match: n => Editor.isBlock(editor, n),
-        })
+        Transforms.setNodes(editor,
+          {type, id: nanoid() },
+          {
+            match: n => Editor.isBlock(editor, n),
+          }
+        )
 
         return
       }

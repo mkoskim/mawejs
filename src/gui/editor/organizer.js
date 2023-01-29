@@ -64,7 +64,7 @@ function OrganizerView({doc}) {
   console.log("Organizer: Doc:", doc)
 
   return <HBox>
-    {doc.story.body.parts.map(part => <PartView part={part}/>)}
+    {doc.story.body.parts.map(part => <PartView key={part.id} part={part}/>)}
   </HBox>
 }
 
