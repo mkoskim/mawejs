@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid as generateUUID, file2buf} from "../util";
+import {uuid as getUUID, nanoid, file2buf} from "../util";
 import { xml2js } from "xml-js";
 
 //-----------------------------------------------------------------------------
@@ -69,7 +69,7 @@ export function fromXML(root) {
   return {
     // format - generated at save
     // format version - generated at save
-    uuid: uuid ?? generateUUID(),
+    uuid: uuid ?? getUUID(),
     name,
     body: parseBody(elemFind(story, "body")),
     notes: parseNotes(elemFind(story, "notes")),
@@ -133,6 +133,7 @@ export function fromXML(root) {
     return {
       type: "part",
       name,
+      id: nanoid(),
       attributes,
       children: children.map(parseScene)
     }
@@ -145,6 +146,7 @@ export function fromXML(root) {
     return {
       type: "scene",
       name,
+      id: nanoid(),
       attributes,
       children: children.map(js2doc)
     }
@@ -155,6 +157,7 @@ export function fromXML(root) {
   function js2doc(elem) {
     return {
       type: elem.name ?? elem.type,
+      id: nanoid(),
       attributes: elem.attributes,
       children: elem.elements?.map(js2doc),
       text: trim(elem.text),

@@ -103,10 +103,10 @@ function createID(type) {
   return undefined;
 }
 
-function createElement({ type, attributes, children }) {
+function createElement({ type, id, attributes, children }) {
   return {
     type,
-    id: createID(type),
+    id: id ?? createID(type),
     attributes,
     children
   }
@@ -139,7 +139,7 @@ export function section2edit(doc) {
 
   function Part2Slate(part, index) {
     const name = part.name ?? ""
-    const head = createElement({type: "br.part", children: [{ text: name }]})
+    const head = createElement({type: "br.part", id: part.id, children: [{ text: name }]})
 
     const scenes = part.children.map(Scene2Slate).flat(1)
     const content = (index === 0 && name === "") ? scenes : [head, ...scenes]
@@ -148,7 +148,7 @@ export function section2edit(doc) {
 
   function Scene2Slate(scene, index) {
     const name = scene.name ?? ""
-    const head = createElement({type: "br.scene", children: [{ text: name }]})
+    const head = createElement({type: "br.scene", id: scene.id, children: [{ text: name }]})
     const para = scene.children.map(Paragraph2Slate)
     const content = (index === 0 && name === "") ? para : [head, ...para]
     return content
@@ -158,6 +158,7 @@ export function section2edit(doc) {
     const type = p.type;
     return createElement({
       type: type === "br" ? "p" : type,
+      id: p.id,
       children: [
         {
           text: p.children ? p.children.map(e => e.text).join(" ") : ""

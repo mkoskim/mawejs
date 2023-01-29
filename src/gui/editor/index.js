@@ -43,30 +43,15 @@ import { styled } from '@mui/material/styles';
 
 export function EditView({mode, id}) {
 
-  console.log("Mode:", mode)
+  console.log("EditView/Mode:", mode)
+  console.log("EditView/ID..:", id)
+
   // TODO: We need to wait loading here
   // TODO: If there is an error when loading, show it here
   // TODO: Get settings: general, file specific, current view, ...
 
   //const edit = useSelector(state => state.doc.edit)
   //const loading = useSelector(state => state.doc.loading)
-
-  const [doc, setDoc] = useState(undefined)
-
-  console.log("EditView/ID:", id)
-  console.log("EditView/Doc:", doc)
-
-  useEffect(() => {
-    docLoad(id)
-      .then(content => setDoc(content))
-  }, [id])
-
-  useEffect(() => addHotkeys({
-    //"mod+o": (e) => onClose(e, dispatch),
-    //"mod+w": (e) => onClose(e, dispatch),
-    //"mod+s": (e) => mawe.saveas(docByID(id), path.join(cwd, "/testwrite.mawe")),
-    "mod+s": (e) => docSave(docByID(id)),
-  }));
 
   /*
   return <VBox className="ViewPort">
@@ -76,16 +61,15 @@ export function EditView({mode, id}) {
   /*/
   return <HBox className="ViewPort">
     <ViewSelector mode={mode}/>
-    <ChooseView mode={mode} id={id} doc={doc}/>
+    <ChooseView mode={mode} id={id}/>
   </HBox>
   /**/
 }
 
-function ChooseView({mode, id, doc}) {
-  if(!doc) return <Loading/>
+function ChooseView({mode, id}) {
   switch(mode.mode) {
-    case "single": return <SingleEdit id={id} doc={doc}/>
-    case "organizer": return <Organizer id={id} doc={doc}/>
+    case "single": return <SingleEdit id={id}/>
+    case "organizer": return <Organizer id={id}/>
   }
 }
 

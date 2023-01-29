@@ -18,18 +18,21 @@
   flex-direction: row;
   */
 
-  border-bottom: 1pt dashed grey;
-  margin-bottom: 8pt;
-
-  padding-left: 4pt;
-  /*
-  margin-top: 4pt;
   border: 2pt solid lightgray;
   padding: 4pt;
   background: lightgoldenrodyellow;
   margin: 4pt;
+
+  /*
+  border-bottom: 1pt dashed grey;
+  margin-bottom: 8pt;
+
+  padding-left: 4pt;
+  margin-top: 4pt;
   */
 }
+
+/* ---------------------------------------------------------------------------- */
 
 .SceneCard {
   display: flex;

@@ -40,16 +40,30 @@ import {
 } from "../common/factory";
 
 import { styled } from '@mui/material/styles';
-import {docLoad, docSave, docUpdate, docByID} from "./doc"
+import {docLoad, docSave, docUpdate} from "./doc"
 
 //import { mawe } from "../../document";
 
 //-----------------------------------------------------------------------------
 // Single edit with sidebars
 
-export function SingleEdit({id, doc}) {
+export function SingleEdit({id}) {
+  const [doc, setDoc] = useState(undefined)
+
+  useEffect(() => {
+    console.log("SingleEdit: Updating doc...")
+    if(id) docLoad(id)
+      .then(content => setDoc(content))
+  }, [id])
+
+  if(!doc) return <Loading/>
+  return <SingleEditView id={id} doc={doc}/>
+}
+
+function SingleEditView({id, doc}) {
 
   //const {id, doc} = upstate;
+  //const id = doc.file.id;
 
   //const doc = docByID(id)
   //console.log("Doc:", doc)
@@ -128,8 +142,15 @@ export function SingleEdit({id, doc}) {
   const edited = slate2doc(doc, state.content)
   if(state.id === id) {
     //console.log("Update:", id, doc.story.name, content)
-    docUpdate(id, edited)
+    docUpdate(edited)
   }
+
+  useEffect(() => addHotkeys({
+    //"mod+o": (e) => onClose(e, dispatch),
+    //"mod+w": (e) => onClose(e, dispatch),
+    //"mod+s": (e) => mawe.saveas(docByID(id), path.join(cwd, "/testwrite.mawe")),
+    "mod+s": (e) => docSave(doc),
+  }));
 
   /*
   return <React.Fragment>

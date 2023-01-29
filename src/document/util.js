@@ -7,8 +7,9 @@
 //*****************************************************************************
 
 import {isGzip, gzip, gunzip} from "../util/compress"
-import {uuid} from "../util"
-export {uuid}
+import {uuid, nanoid} from "../util"
+
+export {uuid, nanoid}
 
 const fs = require("../storage/localfs");
 

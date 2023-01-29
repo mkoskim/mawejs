@@ -38,37 +38,49 @@ import {
   ToolBox, Button, Input,
   SearchBox, addHotkeys,
   Label,
+  Loading,
 } from "../common/factory";
+
+import {docLoad, docSave, docUpdate} from "./doc"
 
 //import {docByID} from "../app/store"
 
 //-----------------------------------------------------------------------------
 
-export function Organizer({id, doc}) {
+export function Organizer({id}) {
+  const [doc, setDoc] = useState(undefined)
 
-  console.log("Doc:", doc)
+  useEffect(() => {
+    console.log("Organizer: Updating doc...")
+    if(id) docLoad(id)
+      .then(content => setDoc(content))
+  }, [id])
 
-  const content = doc.story.body.parts[0].children;
+  if(!doc) return <Loading/>
+  return <OrganizerView id={id} doc={doc}/>
+}
 
+function OrganizerView({doc}) {
+  console.log("Organizer: Doc:", doc)
+
+  return <HBox>
+    {doc.story.body.parts.map(part => <PartView part={part}/>)}
+  </HBox>
+}
+
+function PartView({part}) {
   return <VBox className="PartCard">
-    {content.map(scene => <SceneView key={scene.id} scene={scene}/>)}
+    {part.id}
+    {part.children.map(scene => <SceneView key={scene.id} scene={scene}/>)}
   </VBox>
 }
 
 function SceneView({scene}) {
   return <div className="SceneCard">
+    {scene.id}
     {scene.name}
   </div>
 }
-
-//-----------------------------------------------------------------------------
-//
-// Scene is the smallest individable unit of text. On the other hand, part
-// is the largest amount of text you can edit at once. So lets encourage that
-// writers keep parts flexible - it is just a division line you can change
-// anytime you lie.
-//
-//-----------------------------------------------------------------------------
 
 /*
 export function ViewSection({section, ...props}) {

@@ -24,6 +24,7 @@ import {EditView} from "../editor";
 import {VBox, HBox, Loading} from "../common/factory";
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {fstat} from "../../storage/localfs";
 
 //-----------------------------------------------------------------------------
 
@@ -104,20 +105,22 @@ export default function App(props) {
       }
     },
     {
-      mode: "single"
-      //mode: "organizer"
+      //mode: "single"
+      mode: "organizer"
     }
   );
-
-  //const id = "./local/NeljaBarnaa.mawe";
-  const id = "./local/JazramonGjerta.mawe";
-  //const id = "./local/testwrite.mawe";
-  //const id = "./local/CasaMagda.mawe";
 
   const mode = {
     ..._mode,
     dispatch: _dispatch,
   }
+
+  //const id = "./local/NeljaBarnaa.mawe";
+  //const id = "./local/JazramonGjerta.mawe";
+  //const id = "./local/testwrite.mawe";
+  //const id = "./local/CasaMagda.mawe";
+  //const id = "./local/TestDoc2.mawe";
+  const id = "./local/Lorem30k.mawe";
 
   return (
     <ThemeProvider theme={myTheme}>

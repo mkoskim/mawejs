@@ -37,7 +37,7 @@ import { styled } from '@mui/material/styles';
 export function ViewIndex({state, doc, style})
 {
   // Create index from doc content
-  const content = doc.story.body.parts[0].children;
+  const content = doc.story.body.parts;
   //console.log("Indexing:")
   //console.log("Indexing: Content:", content)
 
@@ -76,14 +76,27 @@ export function ViewIndex({state, doc, style})
     }
   }
 
-  const scenes = content.map(Scene)
+  function Parts(part) {
+
+    const {id, name} = part;
+
+    return {
+      id,
+      name,
+      scenes: part.children.map(Scene)
+    }
+  }
+
+  const parts = content.map(Parts)
+
+  //const scenes = content.map(Scene)
   //console.log(scenes)
 
   return (
     <VBox className="Outline" style={style}>
       <IndexToolbar state={state}/>
       <VFiller className="Index">
-        {scenes.map(scene => <SceneItem key={scene.id} state={state} scene={scene}/>)}
+        {parts.map(part => <PartItem key={part.id} state={state} part={part}/>)}
       </VFiller>
     </VBox>
   )
@@ -129,6 +142,17 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 
 //-----------------------------------------------------------------------------
 
+function PartItem({state, part}) {
+  const {id, name, type} = part;
+
+  return <React.Fragment>
+    <IndexItem className="partName" state={state} id={id} type={type} name={name} />
+    {part.scenes.map(scene => <SceneItem key={scene.id} state={state} scene={scene}/>)}
+  </React.Fragment>
+}
+
+//-----------------------------------------------------------------------------
+
 function SceneItem({state, scene}) {
   const {id, name, type, words, bookmarks} = scene;
 
@@ -159,7 +183,7 @@ function IndexItem({ className, state, name, type, id, words }) {
   return <ItemLink editor={editor} id={id}>
     <HBox className={addClass(className, "Entry")} style={{ alignItems: "center" }}>
       <ItemIcon type={type} />
-      <ItemLabel type={type} name={name === "" ? ". . ." : name} />
+      <ItemLabel type={type} name={name ? name : "???"} id={id}/>
       <HFiller/>
       <ItemWords state={state} words={words}/>
     </HBox>
@@ -176,8 +200,9 @@ function ItemIcon({ type }) {
   return null
 }
 
-function ItemLabel({ type, name }) {
-  return <div className="Name">{name}</div>
+function ItemLabel({ type, name, id }) {
+  //return <div className="Name">{name}</div>
+  return <div className="Name">{id}</div>
 }
 
 function ItemWords({state, words}) {
@@ -191,6 +216,7 @@ function ItemWords({state, words}) {
 //-----------------------------------------------------------------------------
 
 function ItemLink({ editor, id, children, ...props }) {
+
   return <a href={`#${id}`} onClick={e => setTimeout(() => onItemClick(e, editor, id), 0)} {...props}>
     {children}
   </a>

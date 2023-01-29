@@ -113,7 +113,7 @@
 }
 */
 
-.Outline .Entry .Box.comment { background: rgb(71, 207, 71); }
+.Outline .Entry .Box.comment { background: rgb(71, 207, 71); margin-left: 12pt; }
 .Outline .Entry .Box.missing { background: rgb(252, 44, 44); }
 .Outline .Entry .Box.synopsis { background: rgb(243, 243, 12); }
 

@@ -3,31 +3,39 @@
 //-----------------------------------------------------------------------------
 
 import { mawe } from "../../document";
+import {fstat} from "../../storage/localfs";
 
 var docs = {}
 
-export function docByID(id) {
+function docByID(id) {
   //console.log("docByID:", id)
   //console.log("Docs:", docs)
   return docs[id]
 }
 
-export function docUpdate(id, content) {
-  docs[id] = content
+export function docUpdate(doc) {
+  //console.log("Update:", doc.file.id, doc.story.name, doc)
+  docs[doc.file.id] = doc
 }
 
-export async function docLoad(file) {
+export async function docLoad(filename) {
+  const file = await fstat(filename);
+
   console.log("docLoad:", file);
+
   const {id} = file;
 
-  if(id in docs) return docs[id]
+  if(id in docs) {
+    console.log("- Already loaded.")
+    return docs[id]
+  }
 
-  console.log("docLoad: Loading:", file)
+  console.log("- Loading...")
   try {
     const content = await mawe.load(file)
-    docs[id] = content;
+    docUpdate(content);
     //dispatch(docAction.loaded({file}))
-    console.log("docLoad: Loaded", content)
+    console.log("- Loaded", content)
     return content;
   }
   catch(err) {
@@ -36,5 +44,10 @@ export async function docLoad(file) {
 }
 
 export function docSave(doc) {
-  mawe.save(doc)
+  const id = doc.file.id
+  if(id in docs) {
+    mawe.save(docByID(id))
+  } else {
+    mawe.save(doc)
+  }
 }
