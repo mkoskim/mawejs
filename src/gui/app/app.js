@@ -115,12 +115,12 @@ export default function App(props) {
     dispatch: _dispatch,
   }
 
-  //const id = "./local/NeljaBarnaa.mawe";
+  const id = "./local/NeljaBarnaa.mawe";
   //const id = "./local/JazramonGjerta.mawe";
   //const id = "./local/testwrite.mawe";
   //const id = "./local/CasaMagda.mawe";
   //const id = "./local/TestDoc2.mawe";
-  const id = "./local/Lorem30k.mawe";
+  //const id = "./local/Lorem30k.mawe";
 
   return (
     <ThemeProvider theme={myTheme}>

@@ -201,8 +201,8 @@ function ItemIcon({ type }) {
 }
 
 function ItemLabel({ type, name, id }) {
-  //return <div className="Name">{name}</div>
-  return <div className="Name">{id}</div>
+  return <div className="Name">{name}</div>
+  //return <div className="Name">{id}</div>
 }
 
 function ItemWords({state, words}) {

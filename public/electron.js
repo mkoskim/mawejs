@@ -30,7 +30,7 @@ console.log("- Node....:", process.versions.node)
 // Electron reloader
 //-----------------------------------------------------------------------------
 
-require("electron-reload")(path.join(__dirname, "../src/"))
+if(isDev) require("electron-reload")(path.join(__dirname, "../src/"))
 
 //-----------------------------------------------------------------------------
 // Main Window
