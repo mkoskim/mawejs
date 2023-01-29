@@ -295,7 +295,7 @@ export function getEditor() {
   const {apply} = editor;
 
   editor.apply = (operation) => {
-    console.log("Apply:", operation)
+    //console.log("Apply:", operation)
     switch(operation.type) {
       default: break;
       case "insert_node": {

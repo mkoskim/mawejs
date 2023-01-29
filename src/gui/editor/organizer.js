@@ -63,23 +63,26 @@ export function Organizer({id}) {
 function OrganizerView({doc}) {
   console.log("Organizer: Doc:", doc)
 
-  return <HBox>
-    {doc.story.body.parts.map(part => <PartView key={part.id} part={part}/>)}
-  </HBox>
+  return <div className="Filler" style={{overflow: "auto"}}>
+    <HBox style={{marginBottom: "1cm"}}>
+      {doc.story.body.parts.map(part => <PartView key={part.id} part={part}/>)}
+      </HBox>
+  </div>
 }
 
 function PartView({part}) {
   return <VBox className="PartCard">
-    {part.id}
+    <div>Name: {part.name}</div>
+    <div>ID: {part.id}</div>
     {part.children.map(scene => <SceneView key={scene.id} scene={scene}/>)}
   </VBox>
 }
 
 function SceneView({scene}) {
-  return <div className="SceneCard">
-    {scene.id}
-    {scene.name}
-  </div>
+  return <VBox className="SceneCard">
+    <div>Name: {scene.name}</div>
+    <div>ID: {scene.id}</div>
+  </VBox>
 }
 
 /*
