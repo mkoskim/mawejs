@@ -62,13 +62,14 @@ export function ViewIndex({state, doc, style})
     const comment = other.filter(elem => elem.type === "comment")
     const bookmarks = other.filter(elem => state.indexed.includes(elem.type))
 
-    const {id, name, attributes} = scene
+    const {id, name, exclude, attributes} = scene
 
     return {
       id,
       name,
+      exclude,
       attributes,
-      words: {
+      words: !exclude && {
         text: wordCount(paras),
         missing: wordCount(missing),
         comment: wordCount(comment)
@@ -155,11 +156,11 @@ function PartItem({state, part}) {
 //-----------------------------------------------------------------------------
 
 function SceneItem({state, scene}) {
-  const {id, name, type, attributes, words, bookmarks} = scene;
+  const {id, name, type, exclude, attributes, words, bookmarks} = scene;
 
   //const className = addClass("SceneName", attributes.exclude || "SceneNumber")
 
-  return <VBox className={addClass("Scene", attributes?.exclude && "Excluded")}>
+  return <VBox className={addClass("Scene", exclude && "Excluded")}>
     <IndexItem className="SceneName" state={state} id={id} type={type} name={name} words={words}/>
     <DoBookmarks state={state} bookmarks={bookmarks}/>
   </VBox>

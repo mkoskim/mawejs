@@ -51,15 +51,17 @@
 
 /* Part */ .Sheet h2 {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: inherit;
-  font-weight: normal;
-  color: #555;
+  font-size: 11pt;
+  font-weight: bold;
+  color: #888;
+  text-align: center;
   margin-top: 0.5cm;
   margin-bottom: 0.5cm;
 /*
+  border: 1pt solid lightgray;
+  border-radius: 6pt;
   border-top: 1pt dotted gray;
   border-bottom: 1pt dotted gray;
-  text-align: center;
   border-top: 1pt dashed gray;
   font-family: inherit;
   font-weight: bold;
@@ -68,24 +70,27 @@
 
 .Sheet h2::before {
   counter-increment: part;
-  content: "**";
 /*
+  content: "**";
   content: "** " counter(part, upper-roman);
-*/
   background: #EEE;
   padding: 2pt;
   padding-left: 4pt;
   padding-right: 4pt;
   margin-right: 6pt;
+*/
 }
 
-/* Scene, Synopsis */ .Sheet h3, .Sheet h4 {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 11pt;
-  font-weight: normal;
+.Sheet h3 {
+  font-size: inherit;
+  font-weight: bold;
+  color: #888;
   margin-top: 0.5cm;
-  color: #555;
   /*
+  position: relative;
+  font-size: 11pt;
+  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   background: var(--synopsis-bg);
   color: gray;
   font-weight: inherit;
@@ -93,17 +98,11 @@
   font-weight: bold;
   font-family: inherit;
   font-size: inherit;
+  font-size: 11pt;
   */
 }
 
-.Sheet h3 {
-}
-
-.Sheet h4 {
-  background: var(--synopsis-bg);
-  color: var(--synopsis-fg);
-}
-
+/*
 .Sheet h3::before {
   background: #EEE;
   padding: 2pt;
@@ -115,39 +114,41 @@
 .Sheet h3.excluded::before {
   content: "//";
 }
+*/
 
 .Sheet h3:not(.excluded)::before {
   counter-increment: scene;
+  content: counter(scene) ".";
+  margin-right: 8pt;
+/*
+  margin-left: -0.5cm;
   content: "## " counter(scene) ".";
+  position: absolute;
+  left: -0.5cm;
+  content: "#"
+*/
+}
 
 /*
-  border: 1pt solid gray;
-  border-radius: 4pt;
-  margin-left: -0.5cm;
-  margin-right: 4pt;
-  padding-top: 2pt;
-  padding-bottom: 2pt;
-  font-weight: bold;
-*/
+.Sheet h4 {
+  background: var(--synopsis-bg);
+  color: var(--synopsis-fg);
 }
 
 .Sheet h4::before {
   content: ">> ";
-/*
   border: 1pt solid gray;
   border-radius: 4pt;
   padding: 1pt;
   padding-left: 4pt;
   padding-right: 4pt;
   margin-left: 2pt;
-  */
-/*
   margin-right: 4pt;
   margin-left: -4pt;
   padding-top: 2pt;
   padding-bottom: 2pt;
-*/
 }
+*/
 
 /* ----------------------------------------------------------------------------
 // Scene & part divs, not yet used
@@ -214,6 +215,7 @@
   /* border-left: 4px solid #D88; */
 }
 
+/*
 .Sheet .missing::before {
   content: "!!";
   background: var(--missing-bg);
@@ -222,45 +224,23 @@
   padding-right: 4pt;
   margin-right: 4pt;
 }
+*/
 
 .Sheet .comment {
   background: var(--comment-bg);
   color: var(--comment-fg);
 }
 
+/*
 .Sheet .comment::before {
   content: "++";
-  margin-right: 4pt;
-}
-
-/*
-.Sheet .missing::before {
-  content: "Missing";
-  border: 1pt solid var(--missing-fg);
-  border-radius: 4pt;
-  color: var(--missing-fg);
-  padding-left: 4pt;
-  padding-right: 4pt;
-  padding-top: 2pt;
-  padding-bottom: 2pt;
-  margin-right: 4pt;
-}
-
-.Sheet .comment::before {
-  content: "Comment";
-  border: 1pt solid var(--comment-fg);
-  border-radius: 4pt;
-  color: var(--comment-fg);
-  padding-left: 4pt;
-  padding-right: 4pt;
-  padding-top: 2pt;
-  padding-bottom: 2pt;
   margin-right: 4pt;
 }
 */
 
 .Sheet .synopsis {
   /* color: rgb(46, 49, 7); */
+  color: var(--synopsis-fg);
   background: var(--synopsis-bg);
 }
 

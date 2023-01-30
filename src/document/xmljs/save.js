@@ -153,13 +153,12 @@ export function toXML(story) {
   }
 
   function toScene(scene) {
-    const {name} = scene
-    const {exclude, ...attributes} = scene.attributes
+    const {name, exclude} = scene
 
     return toElem({
       type: "scene",
       attributes: {
-        ...attributes,
+        ...scene.attributes,
         name,
         exclude
       },

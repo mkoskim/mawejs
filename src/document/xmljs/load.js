@@ -145,11 +145,11 @@ export function fromXML(root) {
 
     return {
       type: "scene",
-      name,
       id: nanoid(),
+      name,
+      exclude: exclude === "true" ? true : undefined,
       attributes: {
         ...attributes,
-        exclude: exclude === "true" ? true : undefined,
       },
       children: children.map(js2doc)
     }

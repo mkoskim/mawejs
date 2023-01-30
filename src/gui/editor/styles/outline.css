@@ -47,18 +47,22 @@
 
 /* ---------------------------------------------------------------------------- */
 
+.OutLine div.Scene {
+  /*
+  background: var(--comment-bg);
+  */
+  background: white;
+}
+
+.OutLine :not(.Excluded) {
+  background: white;
+}
+
 .Outline div.Scene {
   border: 2px solid lightgray;
   border-radius: 3px;
   margin: 3pt;
-}
-
-.OutLine div.Scene.Excluded {
-  background: var(--comment-bg);
-}
-
-.OutLine div.Scene:not(.Excluded) {
-  background: white;
+  margin-left: 16pt;
 }
 
 .Outline div.Scene:hover {

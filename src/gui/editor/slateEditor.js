@@ -53,13 +53,13 @@ export function Element(props) {
   switch (element.type) {
     case "title": return <h1 {...attributes}>{children}</h1>
     case "br.part": return <h2 {...attributes}><WithLink>{children}</WithLink></h2>
-    case "br.scene": {
-      if(element.attributes?.exclude) {
-        return <h3 className="excluded" {...attributes}><WithLink>{children}</WithLink></h3>
-      }
-      return <h3 {...attributes}><WithLink>{children}</WithLink></h3>
-    }
+    case "br.scene":
+        return <h3 className={element.exclude ? "excluded" : ""} {...attributes}>
+          <WithLink>{children}</WithLink>
+          </h3>
+    /*
     case "synopsis": return <h4 {...attributes}><WithLink>{children}</WithLink></h4>
+    */
 
     /*
     case "part": return <div className="part">{children}</div>
@@ -74,6 +74,7 @@ export function Element(props) {
     */
     case "comment":
     case "missing":
+    case "synopsis":
       return <p className={element.type} {...attributes}><WithLink>{children}</WithLink></p>
 
     case "p":
@@ -95,10 +96,11 @@ export function Leaf({ leaf, attributes, children }) {
 //
 //*****************************************************************************
 
-function createElement({ type, id, attributes, children }) {
+function createElement({ type, id, exclude, attributes, children }) {
   return {
     type,
     id: id ?? nanoid(),
+    exclude,
     attributes,
     children
   }
@@ -145,11 +147,12 @@ export function section2edit(doc) {
 
   function Scene2Slate(scene, index) {
     const name = scene.name ?? ""
-    const {id, attributes} = scene
+    const {id, exclude, attributes} = scene
 
     const head = createElement({
       type: "br.scene",
       id,
+      exclude,
       attributes,
       children: [{ text: name }]
     })
@@ -235,12 +238,14 @@ export function edit2part(content) {
 
 export function edit2scene(content) {
   const [head, paragraphs] = getHead()
-  const {id, attributes} = head;
+  const name = elem2text(head)
+  const {id, exclude, attributes} = head;
 
   return {
     type: "scene",
-    name: elem2text(head),
+    name,
     id,
+    exclude,
     attributes,
     children: paragraphs.map(elem => getParagraph(elem))
   }
@@ -381,12 +386,13 @@ export function getEditor() {
   //---------------------------------------------------------------------------
 
   const SHORTCUTS = {
-    '** ': {type: "br.part"},
-    '## ': {type: "br.scene", attributes: {exclude: null}},
-    '// ': {type: "br.scene", attributes: {exclude: true}},
+    '** ': {type: "br.part", exclude: undefined},
+    '## ': {type: "br.scene", exclude: undefined},
     '>> ': {type: "synopsis"},
-    '++ ': {type: 'comment'},
+    '// ': {type: 'comment'},
     '!! ': {type: 'missing'},
+    '-- ': {exclude: true},
+    '++ ': {exclude: undefined},
     //'<<':
     //'((':
     //'))':
@@ -404,7 +410,6 @@ export function getEditor() {
   editor.insertText = text => {
     const { selection } = editor
 
-    //if (text === ' ' && selection && Range.isCollapsed(selection)) {
     if (selection && Range.isCollapsed(selection)) {
       const { anchor } = selection
       const node = Editor.above(editor, {
@@ -413,14 +418,15 @@ export function getEditor() {
       const path = node ? node[1] : []
       const start = Editor.start(editor, path)
       const range = { anchor, focus: start }
-      const beforeText = Editor.string(editor, range)
-      const {type, attributes} = SHORTCUTS[beforeText + text] ?? {}
+      const key = Editor.string(editor, range) + text
 
-      if (type) {
+      if(key in SHORTCUTS) {
+        const props = SHORTCUTS[key]
+
         Transforms.select(editor, range)
         Transforms.delete(editor)
         Transforms.setNodes(editor,
-          {type, id: nanoid(), attributes},
+          {id: nanoid(), ...props},
           {
             match: n => Editor.isBlock(editor, n),
           }

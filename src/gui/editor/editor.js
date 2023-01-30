@@ -182,7 +182,7 @@ function SingleEditView({id, doc}) {
       <EditorBox
         editor={editor}
         state={state}
-        //mode="Regular"
+        mode="Regular"
         />
     </HFiller>
   )
