@@ -6,12 +6,14 @@
 */
 
 :root {
-  --comment-bg: #e7ffe7;
-  --missing-bg: #f8e7e7;
-  --synopsis-bg:#fdfdd6;
-  --comment-fg: rgb(6, 61, 6);
-  --missing-fg: rgb(190, 3, 3);
   --synopsis-fg: rgb(80, 80, 11);
+  --synopsis-bg:#fdfdd6;
+
+  --missing-fg: rgb(190, 3, 3);
+  --missing-bg: #f8e7e7;
+
+  --comment-fg: rgb(6, 61, 6);
+  --comment-bg: #e7ffe7;
 }
 
 /* ----------------------------------------------------------------------------
@@ -27,7 +29,7 @@
   font-size: 12pt;
   line-height: 180%;
   font-family: 'Times New Roman', Times, serif;
-  counter-reset: scene;
+  counter-reset: part scene;
 }
 
 /* ----------------------------------------------------------------------------
@@ -48,27 +50,44 @@
 }
 
 /* Part */ .Sheet h2 {
-  margin-top: 0.5in;
-  font-weight: bold;
-  font-family: inherit;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: inherit;
+  font-weight: normal;
+  color: #555;
+  margin-top: 0.5cm;
+  margin-bottom: 0.5cm;
+/*
+  border-top: 1pt dotted gray;
+  border-bottom: 1pt dotted gray;
   text-align: center;
-  color:gray;
+  border-top: 1pt dashed gray;
+  font-family: inherit;
+  font-weight: bold;
+*/
 }
 
 .Sheet h2::before {
-  content: "PART: ";
+  counter-increment: part;
+  content: "**";
+/*
+  content: "** " counter(part, upper-roman);
+*/
+  background: #EEE;
+  padding: 2pt;
+  padding-left: 4pt;
+  padding-right: 4pt;
+  margin-right: 6pt;
 }
 
 /* Scene, Synopsis */ .Sheet h3, .Sheet h4 {
-  font-family:Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 11pt;
   font-weight: normal;
   margin-top: 0.5cm;
-  background: var(--synopsis-bg);
-  color: var(--synopsis-fg);
+  color: #555;
   /*
-  color: rgb(110, 110, 110);
+  background: var(--synopsis-bg);
+  color: gray;
   font-weight: inherit;
   color:rgb(77, 77, 77);
   font-weight: bold;
@@ -77,18 +96,33 @@
   */
 }
 
+.Sheet h3 {
+}
+
+.Sheet h4 {
+  background: var(--synopsis-bg);
+  color: var(--synopsis-fg);
+}
+
 .Sheet h3::before {
-  counter-increment: scene;
-  content: counter(scene) ". ## ";
-  /*
-  background: rgb(238, 238, 238);
-  border: 1pt solid gray;
-  border-radius: 4pt;
-  padding: 1pt;
+  background: #EEE;
+  padding: 2pt;
   padding-left: 4pt;
   padding-right: 4pt;
-  */
+  margin-right: 6pt;
+}
+
+.Sheet h3.excluded::before {
+  content: "//";
+}
+
+.Sheet h3:not(.excluded)::before {
+  counter-increment: scene;
+  content: "## " counter(scene) ".";
+
 /*
+  border: 1pt solid gray;
+  border-radius: 4pt;
   margin-left: -0.5cm;
   margin-right: 4pt;
   padding-top: 2pt;
@@ -96,12 +130,6 @@
   font-weight: bold;
 */
 }
-
-/*
-.Sheet h3::after {
-  content: counter(h3counter);
-}
-*/
 
 .Sheet h4::before {
   content: ">> ";
@@ -178,14 +206,21 @@
 }
 
 .Sheet .missing {
-  /* color: rgb(155, 28, 28); */
-  background: var(--missing-bg);
   color: var(--missing-fg);
+  /*
+  background: var(--missing-bg);
+  */
+  /* color: rgb(155, 28, 28); */
   /* border-left: 4px solid #D88; */
 }
 
 .Sheet .missing::before {
-  content: "!! ";
+  content: "!!";
+  background: var(--missing-bg);
+  padding: 2pt;
+  padding-left: 4pt;
+  padding-right: 4pt;
+  margin-right: 4pt;
 }
 
 .Sheet .comment {
@@ -194,7 +229,8 @@
 }
 
 .Sheet .comment::before {
-  content: "// ";
+  content: "++";
+  margin-right: 4pt;
 }
 
 /*

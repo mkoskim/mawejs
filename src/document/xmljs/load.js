@@ -140,14 +140,17 @@ export function fromXML(root) {
   }
 
   function parseScene(scene) {
-    const {name, ...attributes} = scene.attributes ?? {};
+    const {name, exclude, ...attributes} = scene.attributes ?? {};
     const children = scene.elements ?? []
 
     return {
       type: "scene",
       name,
       id: nanoid(),
-      attributes,
+      attributes: {
+        ...attributes,
+        exclude: exclude === "true" ? true : undefined,
+      },
       children: children.map(js2doc)
     }
   }

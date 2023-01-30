@@ -19,7 +19,7 @@
   background: white;
   border-right: 1pt solid lightgray;
   */
-  counter-reset: scene;
+  counter-reset: part scene;
 }
 
 .Outline a {
@@ -31,14 +31,33 @@
   background-color: lightgrey;
 }
 
+/* ---------------------------------------------------------------------------- */
+
+.Outline .PartName {
+  padding-top: 4pt !important;
+  padding-bottom: 4pt !important;
+}
+
+.Outline .PartName:before {
+  counter-increment: part;
+/*
+  content: counter(part, upper-roman) "\00a0-\00a0";
+*/
+}
+
+/* ---------------------------------------------------------------------------- */
+
 .Outline div.Scene {
-  /*
-  padding: 4pt;
-  */
   border: 2px solid lightgray;
   border-radius: 3px;
   margin: 3pt;
-  counter-increment: scene;
+}
+
+.OutLine div.Scene.Excluded {
+  background: var(--comment-bg);
+}
+
+.OutLine div.Scene:not(.Excluded) {
   background: white;
 }
 
@@ -55,8 +74,8 @@
 .Outline .SceneName {
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
-  font-weight: 450;
 /*
+  font-weight: 450;
   background: #FFD;
   font-weight: bold;
   padding-top: 4pt !important;
@@ -64,16 +83,12 @@
 */
 }
 
-.Outline .SceneName:before {
+.Outline div.Scene:not(.Excluded) .SceneName:before {
+  counter-increment: scene;
   content: counter(scene) ".\00a0";
 }
 
-/*
-.Outline .Index {
-  overflow: auto;
-  padding: 4pt;
-}
-*/
+/* ---------------------------------------------------------------------------- */
 
 .Outline .Entry {
   margin: 0;
@@ -113,7 +128,7 @@
 }
 */
 
-.Outline .Entry .Box.comment { background: rgb(71, 207, 71); margin-left: 12pt; }
+.Outline .Entry .Box.comment { background: rgb(71, 207, 71); }
 .Outline .Entry .Box.missing { background: rgb(252, 44, 44); }
 .Outline .Entry .Box.synopsis { background: rgb(243, 243, 12); }
 

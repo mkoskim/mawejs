@@ -62,11 +62,12 @@ export function ViewIndex({state, doc, style})
     const comment = other.filter(elem => elem.type === "comment")
     const bookmarks = other.filter(elem => state.indexed.includes(elem.type))
 
-    const {id, name} = scene
+    const {id, name, attributes} = scene
 
     return {
       id,
       name,
+      attributes,
       words: {
         text: wordCount(paras),
         missing: wordCount(missing),
@@ -146,7 +147,7 @@ function PartItem({state, part}) {
   const {id, name, type} = part;
 
   return <React.Fragment>
-    <IndexItem className="partName" state={state} id={id} type={type} name={name} />
+    <IndexItem className="PartName" state={state} id={id} type={type} name={name} />
     {part.scenes.map(scene => <SceneItem key={scene.id} state={state} scene={scene}/>)}
   </React.Fragment>
 }
@@ -154,9 +155,11 @@ function PartItem({state, part}) {
 //-----------------------------------------------------------------------------
 
 function SceneItem({state, scene}) {
-  const {id, name, type, words, bookmarks} = scene;
+  const {id, name, type, attributes, words, bookmarks} = scene;
 
-  return <VBox className="Scene">
+  //const className = addClass("SceneName", attributes.exclude || "SceneNumber")
+
+  return <VBox className={addClass("Scene", attributes?.exclude && "Excluded")}>
     <IndexItem className="SceneName" state={state} id={id} type={type} name={name} words={words}/>
     <DoBookmarks state={state} bookmarks={bookmarks}/>
   </VBox>

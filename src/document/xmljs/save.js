@@ -153,11 +153,15 @@ export function toXML(story) {
   }
 
   function toScene(scene) {
+    const {name} = scene
+    const {exclude, ...attributes} = scene.attributes
+
     return toElem({
       type: "scene",
       attributes: {
-        name: scene.name,
-        ...scene.attributes,
+        ...attributes,
+        name,
+        exclude
       },
       elements: scene.children.map(doc2js)
     })

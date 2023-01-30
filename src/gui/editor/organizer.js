@@ -72,16 +72,14 @@ function OrganizerView({doc}) {
 
 function PartView({part}) {
   return <VBox className="PartCard">
-    <div>Name: {part.name}</div>
-    <div>ID: {part.id}</div>
+    <div>{part.name !== "" ? part.name : "???"}</div>
     {part.children.map(scene => <SceneView key={scene.id} scene={scene}/>)}
   </VBox>
 }
 
 function SceneView({scene}) {
   return <VBox className="SceneCard">
-    <div>Name: {scene.name}</div>
-    <div>ID: {scene.id}</div>
+    <div>{scene.name !== "" ? scene.name : "???"}</div>
   </VBox>
 }
 
