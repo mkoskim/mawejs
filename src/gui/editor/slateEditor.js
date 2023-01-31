@@ -92,197 +92,15 @@ function Leaf({ leaf, attributes, ...props }) {
 
 //*****************************************************************************
 //
-// Doc --> Slate
-//
-//*****************************************************************************
-
-function createElement({ type, id, exclude, attributes, children }) {
-  return {
-    type,
-    id: id ?? nanoid(),
-    exclude,
-    attributes,
-    children
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-export function section2edit(doc) {
-  const head = Head2Slate(doc.story.body.head);
-  const body = Section2Slate(doc.story.body.parts);
-  const notes = Section2Slate(doc.story.notes);
-
-  return {
-    body: [...head, ...body],
-    notes: notes,
-  }
-
-  function Head2Slate(head) {
-    if(head.title) return [
-      createElement({ type: "title", children: [{ text: head.title }] }),
-    ]
-    return []
-  }
-
-  function Section2Slate(parts) {
-    const content = parts.map(Part2Slate).flat(1)
-    if(!content.length) return [createElement({type: "p", children: [{text: ""}]})]
-    return content;
-  }
-
-  function Part2Slate(part, index) {
-    const name = part.name ?? ""
-    const head = createElement({
-      type: "br.part",
-      id: part.id,
-      children: [{ text: name }]
-    })
-
-    const scenes = part.children.map(Scene2Slate).flat(1)
-    //const content = (index === 0 && name === "") ? scenes : [head, ...scenes]
-    //return content
-    return [head, ...scenes]
-  }
-
-  function Scene2Slate(scene, index) {
-    const name = scene.name ?? ""
-    const {id, exclude, attributes} = scene
-
-    const head = createElement({
-      type: "br.scene",
-      id,
-      exclude,
-      attributes,
-      children: [{ text: name }]
-    })
-
-    const para = scene.children.map(Paragraph2Slate)
-    //const content = (index === 0 && name === "") ? para : [head, ...para]
-    //return content
-    return [head, ...para]
-  }
-
-  function Paragraph2Slate(p) {
-    const {type, id} = p;
-    return createElement({
-      type: type === "br" ? "p" : type,
-      id,
-      children: [
-        {
-          text: p.children ? p.children.map(e => e.text).join(" ") : ""
-        }
-      ]
-    })
-  }
-}
-
-//*****************************************************************************
-//
-// Slate --> Doc
-//
-//*****************************************************************************
-
-export function edit2section(content) {
-  const [head, parts] = getHead()
-  return {
-    head: {},
-    parts: splitByLeadingElem(parts, isPartBreak)
-      .filter(p => p.length)
-      .map(elems => edit2part(elems))
-  }
-
-  function getHead() {
-    return [
-      content.filter(elem => isHeadElement(elem)),
-      content.filter(elem => !isHeadElement(elem))
-    ]
-  }
-}
-
-function isHeadElement(elem) {
-  return [
-    "title",
-  ].includes(elem.type)
-}
-
-function isPartBreak(elem) {
-  return elem.type === "br.part"
-}
-
-function isSceneBreak(elem) {
-  return elem.type === "br.scene"
-}
-
-export function edit2part(content) {
-  const [head, scenes] = getHead()
-  return {
-    type: "part",
-    name: elem2text(head),
-    id: head.id,
-    children: splitByLeadingElem(scenes, isSceneBreak)
-      .filter(s => s.length)
-      .map(elems => edit2scene(elems)),
-  }
-
-  function getHead() {
-    if (isPartBreak(content[0])) {
-      return [content[0], content.slice(1)]
-    }
-    return [
-      createElement({ type: "br.part", children: [{ text: "<Unnamed>" }] }),
-      content,
-    ]
-  }
-}
-
-export function edit2scene(content) {
-  const [head, paragraphs] = getHead()
-  const name = elem2text(head)
-  const {id, exclude, attributes} = head;
-
-  return {
-    type: "scene",
-    name,
-    id,
-    exclude,
-    attributes,
-    children: paragraphs.map(elem => getParagraph(elem))
-  }
-
-  function getHead() {
-    if (isSceneBreak(content[0])) {
-      return [content[0], content.slice(1)]
-    }
-    return [
-      createElement({ type: "br.scene", children: [{ text: "<Unnamed>" }] }),
-      content,
-    ]
-  }
-
-  function getParagraph(elem) {
-    const text = elem2text(elem)
-    const tag = elem.type
-
-    return {
-      type: tag === "p" && text === "" ? "br" : tag,
-      id: elem.id,
-      children: [{
-        type: "text",
-        text,
-      }],
-    }
-  }
-}
-
-//*****************************************************************************
-//
 // Editor customizations
 //
 //*****************************************************************************
 
 export function getEditor() {
   const editor = withReact(withHistory(createEditor()))
+
+  //---------------------------------------------------------------------------
+  // Extra services
 
   //---------------------------------------------------------------------------
 
@@ -470,4 +288,189 @@ export function getEditor() {
   }
 
   return editor
+}
+
+//*****************************************************************************
+//
+// Doc --> Slate
+//
+//*****************************************************************************
+
+function createElement({ type, id, exclude, attributes, children }) {
+  return {
+    type,
+    id: id ?? nanoid(),
+    exclude,
+    attributes,
+    children
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+export function section2edit(doc) {
+  const head = Head2Slate(doc.story.body.head);
+  const body = Section2Slate(doc.story.body.parts);
+  const notes = Section2Slate(doc.story.notes);
+
+  return {
+    body: [...head, ...body],
+    notes: notes,
+  }
+
+  function Head2Slate(head) {
+    if(head.title) return [
+      createElement({ type: "title", children: [{ text: head.title }] }),
+    ]
+    return []
+  }
+
+  function Section2Slate(parts) {
+    const content = parts.map(Part2Slate).flat(1)
+    if(!content.length) return [createElement({type: "p", children: [{text: ""}]})]
+    return content;
+  }
+
+  function Part2Slate(part, index) {
+    const name = part.name ?? ""
+    const head = createElement({
+      type: "br.part",
+      id: part.id,
+      children: [{ text: name }]
+    })
+
+    const scenes = part.children.map(Scene2Slate).flat(1)
+    //const content = (index === 0 && name === "") ? scenes : [head, ...scenes]
+    //return content
+    return [head, ...scenes]
+  }
+
+  function Scene2Slate(scene, index) {
+    const name = scene.name ?? ""
+    const {id, exclude, attributes} = scene
+
+    const head = createElement({
+      type: "br.scene",
+      id,
+      exclude,
+      attributes,
+      children: [{ text: name }]
+    })
+
+    const para = scene.children.map(Paragraph2Slate)
+    //const content = (index === 0 && name === "") ? para : [head, ...para]
+    //return content
+    return [head, ...para]
+  }
+
+  function Paragraph2Slate(p) {
+    const {type, id} = p;
+    return createElement({
+      type: type === "br" ? "p" : type,
+      id,
+      children: [
+        {
+          text: p.children ? p.children.map(e => e.text).join(" ") : ""
+        }
+      ]
+    })
+  }
+}
+
+//*****************************************************************************
+//
+// Slate --> Doc
+//
+//*****************************************************************************
+
+export function edit2section(content) {
+  const [head, parts] = getHead()
+  return {
+    head: {},
+    parts: splitByLeadingElem(parts, isPartBreak)
+      .filter(p => p.length)
+      .map(elems => edit2part(elems))
+  }
+
+  function getHead() {
+    return [
+      content.filter(elem => isHeadElement(elem)),
+      content.filter(elem => !isHeadElement(elem))
+    ]
+  }
+}
+
+function isHeadElement(elem) {
+  return [
+    "title",
+  ].includes(elem.type)
+}
+
+function isPartBreak(elem) {
+  return elem.type === "br.part"
+}
+
+function isSceneBreak(elem) {
+  return elem.type === "br.scene"
+}
+
+export function edit2part(content) {
+  const [head, scenes] = getHead()
+  return {
+    type: "part",
+    name: elem2text(head),
+    id: head.id,
+    children: splitByLeadingElem(scenes, isSceneBreak)
+      .filter(s => s.length)
+      .map(elems => edit2scene(elems)),
+  }
+
+  function getHead() {
+    if (isPartBreak(content[0])) {
+      return [content[0], content.slice(1)]
+    }
+    return [
+      createElement({ type: "br.part", children: [{ text: "<Unnamed>" }] }),
+      content,
+    ]
+  }
+}
+
+export function edit2scene(content) {
+  const [head, paragraphs] = getHead()
+  const name = elem2text(head)
+  const {id, exclude, attributes} = head;
+
+  return {
+    type: "scene",
+    name,
+    id,
+    exclude,
+    attributes,
+    children: paragraphs.map(elem => getParagraph(elem))
+  }
+
+  function getHead() {
+    if (isSceneBreak(content[0])) {
+      return [content[0], content.slice(1)]
+    }
+    return [
+      createElement({ type: "br.scene", children: [{ text: "<Unnamed>" }] }),
+      content,
+    ]
+  }
+
+  function getParagraph(elem) {
+    const text = elem2text(elem)
+    const tag = elem.type
+
+    return {
+      type: tag === "p" && text === "" ? "br" : tag,
+      id: elem.id,
+      children: [{
+        type: "text",
+        text,
+      }],
+    }
+  }
 }
