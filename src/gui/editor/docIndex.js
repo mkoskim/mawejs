@@ -12,11 +12,14 @@ import React, {
   useDeferredValue, useMemo,
 } from "react"
 
+import {Editor} from "slate"
+import {useSlate, ReactEditor} from "slate-react"
+
 import {
-  SlateEdit, getEditor, ReactEditor,
-  section2edit, edit2section,
   elem2text,
 } from "./slateEditor"
+
+import { sleep } from "../../util"
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
@@ -108,6 +111,55 @@ export function ViewIndex({state, doc, style})
       </VFiller>
     </VBox>
   )
+}
+
+//-----------------------------------------------------------------------------
+
+function ItemLink({ id, ...props }) {
+  const editor = useSlate()
+
+  /*
+  return <div onClick={e => onItemClick(e, id)} {...props}/>
+  /*/
+  return <a
+    href={`#${id}`}
+    onClick={e => onItemClick(e, id)}
+    {...props}
+  />
+  /**/
+
+  async function onItemClick(event, id) {
+    /*
+    const match = Editor.children.find(editor, {
+      //at: Range.create(),
+      match: n => Editor.isBlock(n) && n.id === id
+    })
+    //const [node, path] = match ?? []
+
+    //console.log("Range:", Editor.edges(editor))
+    console.log("onClick:", id, match)
+    /*/
+    const target = document.getElementById(id)
+    if (!target) {
+      console.log(`Index/onClick: ID ${id} not found.`)
+      return;
+    }
+
+    //console.log("- Target:", target)
+
+    await sleep(0);
+
+    const range = document.createRange()
+    const sel = window.getSelection()
+
+    range.setStart(target, 0)
+    range.collapse(true)
+
+    sel.removeAllRanges()
+    sel.addRange(range)
+    //ReactEditor.focus(editor)
+    /**/
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -221,35 +273,6 @@ function ItemWords({state, words}) {
     case "numbers": return <div>{words?.text}</div>
   }
   return null;
-}
-
-//-----------------------------------------------------------------------------
-
-function ItemLink({ id, children, ...props }) {
-
-  return <a href={`#${id}`} onClick={e => setTimeout(() => onItemClick(e, id), 0)} {...props}>
-    {children}
-  </a>
-}
-
-function onItemClick(event, id) {
-  //console.log("onClick:", id)
-  const target = document.getElementById(id)
-  if (!target) {
-    console.log(`Index/onClick: ID ${id} not found.`)
-    return;
-  }
-
-  //console.log("- Target:", target)
-
-  var range = document.createRange()
-  var sel = window.getSelection()
-
-  range.setStart(target, 0)
-  range.collapse(true)
-
-  sel.removeAllRanges()
-  sel.addRange(range)
 }
 
 //-----------------------------------------------------------------------------
