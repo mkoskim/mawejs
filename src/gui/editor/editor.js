@@ -189,7 +189,6 @@ function SingleEditView({id, doc}) {
       <DeferredRender><SlateIndex
         state={state}
         doc={edited}
-        style={{minWidth: "400px", maxWidth: "400px"}}
         /></DeferredRender>
       <EditorBox mode="Regular"/>
     </HFiller>

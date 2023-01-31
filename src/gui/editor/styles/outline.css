@@ -5,6 +5,8 @@
 .Outline {
   overflow-y: auto;
   overflow-x: hidden;
+  min-width: 350px;
+  max-width: 350px;
   /*
   width: 300px;
   background-color: lightgray;
@@ -17,8 +19,8 @@
   */
   /*
   background: white;
-  border-right: 1pt solid lightgray;
   */
+  border-right: 1pt solid lightgray;
   counter-reset: part scene;
 }
 

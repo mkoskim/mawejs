@@ -104,10 +104,10 @@ export function SlateIndex({state, doc, style})
   //console.log(scenes)
 
   return (
-    <VFiller style={{...style}}>
+    <VFiller className="Outline" style={{...style}}>
       <IndexToolbar state={state}/>
-      <div style={{overflow: "auto"}}>
-        <VBox className="Outline">
+      <div style={{overflow: "auto", padding: "4pt"}}>
+        <VBox>
         {body.parts.map(part => <PartItem key={part.id} state={state} part={part}/>)}
         </VBox>
       </div>
