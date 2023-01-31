@@ -157,10 +157,11 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 //-----------------------------------------------------------------------------
 
 function PartItem({state, part}) {
-  const {id, name, type} = part;
+  const {id, name, exclude, type} = part;
+  const props = {id, type, name, exclude}
 
   return <React.Fragment>
-    <IndexItem className="PartName" state={state} id={id} type={type} name={name} />
+    <IndexItem className="PartName" state={state} {...props} />
     {part.children.map(scene => <SceneItem key={scene.id} state={state} scene={scene}/>)}
   </React.Fragment>
 }
@@ -169,13 +170,14 @@ function PartItem({state, part}) {
 
 function SceneItem({state, scene}) {
   const {id, name, type, exclude, words} = scene;
+  const props = {id, type, name, exclude, words}
 
   const bookmarks = scene.children.filter(elem => state.indexed.includes(elem.type))
 
   //const className = addClass("SceneName", attributes.exclude || "SceneNumber")
 
-  return <VBox className={addClass("Scene", exclude && "Excluded")}>
-    <IndexItem className="SceneName" state={state} id={id} type={type} name={name} words={words}/>
+  return <VBox className="Scene">
+    <IndexItem className="SceneName" state={state} {...props}/>
     <DoBookmarks state={state} bookmarks={bookmarks}/>
   </VBox>
 }
@@ -194,12 +196,14 @@ function BookmarkItem({state, bookmark}) {
   return <IndexItem state={state} id={id} type={type} name={name}/>
 }
 
-function IndexItem({ className, state, name, type, id, words }) {
+function IndexItem({ className, state, id, type, name, exclude, words }) {
   const editor = useSlate()
 
+  words = exclude ? undefined : words
+
   return <HBox className={addClass(className, "Entry")} onDoubleClick={e => onItemClick(e, id)}>
-      <ItemIcon type={type} />
-      <ItemLabel type={type} name={name ? name : "???"} id={id}/>
+      <ItemIcon type={type} exclude={exclude}/>
+      <ItemLabel className={exclude ? "Excluded" : "Included"} name={name ? name : "<Unnamed>"}/>
       <HFiller/>
       <ItemWords state={state} words={words}/>
     </HBox>
@@ -230,7 +234,7 @@ function IndexItem({ className, state, name, type, id, words }) {
   }
 }
 
-function ItemIcon({ type }) {
+function ItemIcon({type}) {
   switch (type) {
     case "missing":
     case "comment":
@@ -240,8 +244,8 @@ function ItemIcon({ type }) {
   return null
 }
 
-function ItemLabel({ type, name, id }) {
-  return <div className="Name">{name}</div>
+function ItemLabel({className, name}) {
+  return <div className={addClass("Name", className)}>{name}</div>
   //return <div className="Name">{id}</div>
 }
 

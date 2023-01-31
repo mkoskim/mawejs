@@ -31,7 +31,7 @@
   */
 }
 
-.Outline .PartName:before {
+.Outline .PartName.Included::before {
   counter-increment: part;
 /*
   content: counter(part, upper-roman) "\00a0-\00a0";
@@ -44,10 +44,6 @@
   /*
   background: var(--comment-bg);
   */
-  background: white;
-}
-
-.OutLine :not(.Excluded) {
   background: white;
 }
 
@@ -86,17 +82,17 @@
 */
 }
 
-.Outline div.Scene .SceneName::before {
+.Outline .SceneName .Name::before {
   width: 1cm;
 }
 
-.Outline div.Scene:not(.Excluded) .SceneName:before {
+.Outline .SceneName .Name.Included::before {
   counter-increment: scene;
-  content: counter(scene) ".";
+  content: counter(scene) ". ";
 }
 
-.Outline div.Scene.Excluded .SceneName:before {
-  content: "#";
+.Outline .SceneName .Name.Excluded::before {
+  content: "# ";
 }
 
 /* ---------------------------------------------------------------------------- */

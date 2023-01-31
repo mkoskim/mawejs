@@ -104,7 +104,7 @@
 
 .Sheet h2::before {
   counter-increment: part;
-  content: "[";
+  content: "[ ";
 /*
   margin-right: 4pt;
   content: "** " counter(part, upper-roman);
@@ -116,7 +116,7 @@
 }
 
 .Sheet h2::after {
-  content: "]";
+  content: " ]";
 /*
   margin-left: 4pt;
   */

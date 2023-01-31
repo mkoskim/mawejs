@@ -184,7 +184,7 @@ function SingleEditView({id, doc}) {
       <DeferredRender><SlateIndex
         state={state}
         doc={edited}
-        style={{maxWidth: "400px"}}
+        style={{minWidth: "400px", maxWidth: "400px"}}
         /></DeferredRender>
       <EditorBox mode="Regular"/>
     </HFiller>
@@ -203,6 +203,7 @@ function SingleEditView({id, doc}) {
 //-----------------------------------------------------------------------------
 
 function DeferredRender(props) {
+  //return props.children
   return useDeferredValue(props.children)
 }
 
