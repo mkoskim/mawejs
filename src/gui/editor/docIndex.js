@@ -39,9 +39,10 @@ function wordCounts(doc) {
 
   function Scene(scene) {
 
-    function wordCount(elems) {
+    function wordCount(elems, type) {
       return (
         elems
+        .filter(elem => elem.type === type)
         .map(elem => elem2text(elem))
         .join(" ")
         .split(/\s+/g)
@@ -49,17 +50,12 @@ function wordCounts(doc) {
       ).length
     }
 
-    const paras = scene.children.filter(elem => elem.type === "p")
-    const other = scene.children.filter(elem => elem.type !== "p")
-    const missing = other.filter(elem => elem.type === "missing")
-    const comment = other.filter(elem => elem.type === "comment")
-
     return {
       ...scene,
       words: {
-        text: wordCount(paras),
-        missing: wordCount(missing),
-        comment: wordCount(comment)
+        text: wordCount(scene.children, "p"),
+        missing: wordCount(scene.children, "missing"),
+        comment: wordCount(scene.children, "comment")
       },
     }
   }
@@ -194,9 +190,7 @@ function BookmarkItem({state, bookmark}) {
 }
 
 function IndexItem({ className, state, name, type, id, words }) {
-  const {editor} = state
-
-  return <ItemLink editor={editor} id={id}>
+  return <ItemLink id={id}>
     <HBox className={addClass(className, "Entry")} style={{ alignItems: "center" }}>
       <ItemIcon type={type} />
       <ItemLabel type={type} name={name ? name : "???"} id={id}/>
@@ -231,14 +225,14 @@ function ItemWords({state, words}) {
 
 //-----------------------------------------------------------------------------
 
-function ItemLink({ editor, id, children, ...props }) {
+function ItemLink({ id, children, ...props }) {
 
-  return <a href={`#${id}`} onClick={e => setTimeout(() => onItemClick(e, editor, id), 0)} {...props}>
+  return <a href={`#${id}`} onClick={e => setTimeout(() => onItemClick(e, id), 0)} {...props}>
     {children}
   </a>
 }
 
-function onItemClick(event, editor, id) {
+function onItemClick(event, id) {
   //console.log("onClick:", id)
   const target = document.getElementById(id)
   if (!target) {
@@ -256,8 +250,6 @@ function onItemClick(event, editor, id) {
 
   sel.removeAllRanges()
   sel.addRange(range)
-
-  ReactEditor.focus(editor)
 }
 
 //-----------------------------------------------------------------------------

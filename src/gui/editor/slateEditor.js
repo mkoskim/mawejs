@@ -1,13 +1,13 @@
 //*****************************************************************************
 //*****************************************************************************
 //
-// Slate as editor component
+// Slate customizations
 //
 //*****************************************************************************
 //*****************************************************************************
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Slate, Editable, withReact, ReactEditor } from 'slate-react'
+import { Slate, useSlate, Editable, withReact, ReactEditor } from 'slate-react'
 import {
   Editor, Node,
   Transforms,
@@ -20,8 +20,6 @@ import {
 import { withHistory } from "slate-history"
 import { addClass, Icon } from '../common/factory';
 import { uuid, nanoid, splitByLeadingElem } from '../../util';
-
-export { ReactEditor }
 
 //-----------------------------------------------------------------------------
 
@@ -40,6 +38,20 @@ function elemLeader(elem) {
 // Rendering
 //
 //*****************************************************************************
+
+export function SlateEditable({className, ...props}) {
+  const renderElement = useCallback(props => <Element {...props} />, [])
+  const renderLeaf = useCallback(props => <Leaf {...props} />, [])
+
+  return <Editable
+    className={addClass(className, "Sheet")}
+    autoFocus
+    spellCheck={false} // Keep false until you find out how to change language
+    renderElement={renderElement}
+    renderLeaf={renderLeaf}
+    {...props}
+  />
+}
 
 export function RenderPlain({ content }) {
 }
@@ -475,37 +487,4 @@ export function getEditor() {
   }
 
   return editor
-}
-
-//*****************************************************************************
-//
-// Creating editor
-//
-//*****************************************************************************
-
-export function SlateEditable({className, ...props}) {
-  const renderElement = useCallback(props => <Element {...props} />, [])
-  const renderLeaf = useCallback(props => <Leaf {...props} />, [])
-
-  return <Editable
-    className={addClass(className, "Sheet")}
-    autoFocus
-    spellCheck={false} // Keep false until you find out how to change language
-    renderElement={renderElement}
-    renderLeaf={renderLeaf}
-    {...props}
-  />
-}
-
-export function SlateEdit({editor, className, content, setContent, ...props }) {
-
-  return (
-      <Slate
-        editor={editor}
-        value={content}
-        onChange={setContent}
-      >
-        <SlateEditable className={className} {...props}/>
-    </Slate>
-  )
 }

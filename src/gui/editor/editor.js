@@ -18,7 +18,15 @@ import React, {
 } from 'react';
 
 import {
-  SlateEdit, getEditor, ReactEditor,
+  Slate, useSlate, ReactEditor,
+} from "slate-react"
+
+import {
+  Editor, Node, Transforms, Range, Point,
+} from "slate";
+
+import {
+  getEditor, SlateEditable,
   section2edit, edit2section,
   elem2text,
 } from "./slateEditor"
@@ -123,7 +131,6 @@ function SingleEditView({id, doc}) {
 
   const state = {
     ..._state,
-    editor,
     setContent: content => setState({...state, content}),
     setID: id => setState({...state, id}),
     setIndexed: (indexed) => setState({...state, indexed}),
@@ -153,10 +160,10 @@ function SingleEditView({id, doc}) {
   }));
 
   /*
-  return <React.Fragment>
-    <EditorBox style={{width: "50%"}} editor={editor} state={state}/>
+  return <Slate editor={editor} value={state.content} onChange={state.setContent}>
+    <EditorBox style={{width: "50%"}}/>
     <Pre style={{ width: "50%" }} content={state.content} />
-    </React.Fragment>
+    </Slate>
   /**/
 /*
   <Pre style={{ width: "50%" }} content={edited.story} />
@@ -172,6 +179,7 @@ function SingleEditView({id, doc}) {
 
   //*
   return (
+    <Slate editor={editor} value={state.content} onChange={state.setContent}>
     <HFiller style={{overflow: "auto"}}>
       <VFiller style={{maxWidth: "400px", borderRight: "1px solid lightgray" }}>
         <DeferredRender><ViewIndex
@@ -179,12 +187,9 @@ function SingleEditView({id, doc}) {
           doc={edited}
           /></DeferredRender>
       </VFiller>
-      <EditorBox
-        editor={editor}
-        state={state}
-        mode="Regular"
-        />
+      <EditorBox mode="Regular"/>
     </HFiller>
+    </Slate>
   )
   /*/
   return (
@@ -204,23 +209,31 @@ function DeferredRender(props) {
 
 //-----------------------------------------------------------------------------
 
-function EditorBox({style, mode="Condensed", editor, state}) {
+function EditorBox({style, mode="Condensed"}) {
   return <VFiller style={{overflow: "auto", ...style}}>
     <EditToolbar />
     <div className="Board">
-        <SlateEdit
-        className={mode}
-        editor={editor}
-        content={state.content}
-        setContent={state.setContent}
-        />
+      <SlateEditable className={mode}/>
     </div>
   </VFiller>
 }
 
 function EditToolbar() {
+  const editor = useSlate()
+
+  // Block type under cursor
+  const [match] = Editor.nodes(editor, { match: n => Editor.isBlock(editor, n)})
+  const nodetype = match ? match[0].type : undefined
+
+  /*
+  if(match) {
+    const [node, path] = match;
+    console.log(node)
+  }
+  */
+
   return <ToolBox style={{ background: "white" }}>
-    <Button>Test</Button>
+    <Button>Block: {nodetype}</Button>
     <Filler/>
     <Button><Icon.Settings /></Button>
   </ToolBox>
