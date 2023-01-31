@@ -122,9 +122,9 @@ function SingleEditView({id, doc}) {
     indexed: [
       "br.part",
       "br.scene",
-      "synopsis",
-      "missing",
-      "comment",
+      //"synopsis",
+      //"missing",
+      //"comment",
     ],
     wordsAs: "numbers",
   })
@@ -180,13 +180,12 @@ function SingleEditView({id, doc}) {
   //*
   return (
     <Slate editor={editor} value={state.content} onChange={state.setContent}>
-    <HFiller style={{overflow: "auto"}}>
-      <VFiller style={{maxWidth: "400px"}}>
-        <DeferredRender><SlateIndex
-          state={state}
-          doc={edited}
-          /></DeferredRender>
-      </VFiller>
+    <HFiller>
+      <DeferredRender><SlateIndex
+        state={state}
+        doc={edited}
+        style={{maxWidth: "400px"}}
+        /></DeferredRender>
       <EditorBox mode="Regular"/>
     </HFiller>
     </Slate>
@@ -210,7 +209,7 @@ function DeferredRender(props) {
 //-----------------------------------------------------------------------------
 
 function EditorBox({style, mode="Condensed"}) {
-  return <VFiller style={{overflow: "auto", ...style}}>
+  return <VFiller style={{...style}}>
     <EditToolbar />
     <div className="Board">
       <SlateEditable className={mode}/>

@@ -320,7 +320,6 @@ export function getEditor() {
     //console.log("Apply:", operation)
     switch(operation.type) {
       case "insert_node": {
-        console.log(operation)
         operation.node.id = nanoid()
         return apply(operation)
       }

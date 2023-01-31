@@ -104,12 +104,14 @@ export function SlateIndex({state, doc, style})
   //console.log(scenes)
 
   return (
-    <VBox className="Outline" style={style}>
+    <VFiller style={{...style}}>
       <IndexToolbar state={state}/>
-      <VFiller className="Index">
+      <div style={{overflow: "auto"}}>
+        <VBox className="Outline">
         {body.parts.map(part => <PartItem key={part.id} state={state} part={part}/>)}
-      </VFiller>
-    </VBox>
+        </VBox>
+      </div>
+    </VFiller>
   )
 }
 
@@ -120,6 +122,7 @@ function IndexToolbar({state}) {
     <Button>Test</Button>
     <Filler />
     <BorderlessToggleButtonGroup value={state.indexed} onChange={(e, value) => state.setIndexed(value)}>
+      <ToggleButton value="synopsis"><Tooltip title="Show synopses"><Icon.BlockType.Synopsis /></Tooltip></ToggleButton>
       <ToggleButton value="missing"><Tooltip title="Show missing"><Icon.BlockType.Missing /></Tooltip></ToggleButton>
       <ToggleButton value="comment"><Tooltip title="Show comments"><Icon.BlockType.Comment /></Tooltip></ToggleButton>
     </BorderlessToggleButtonGroup>
@@ -194,7 +197,7 @@ function BookmarkItem({state, bookmark}) {
 function IndexItem({ className, state, name, type, id, words }) {
   const editor = useSlate()
 
-  return <HBox className={addClass(className, "Entry")} onClick={e => onItemClick(e, id)}>
+  return <HBox className={addClass(className, "Entry")} onDoubleClick={e => onItemClick(e, id)}>
       <ItemIcon type={type} />
       <ItemLabel type={type} name={name ? name : "???"} id={id}/>
       <HFiller/>
@@ -210,7 +213,7 @@ function IndexItem({ className, state, name, type, id, words }) {
     const match = Array
       .from(Node.elements(editor))
       .filter(([n, p]) => n.id === id)
-    if(match) {
+    if(match?.length) {
       const [node, path] = match[0]
       const start = Editor.start(editor, path)
       //console.log(path, start)

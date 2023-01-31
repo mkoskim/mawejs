@@ -102,6 +102,7 @@ export const Icon = {
   },
 
   BlockType: {
+    Synopsis: muiIcons.Description,
     Comment: muiIcons.Comment,
     Missing: muiIcons.Report,
   },
