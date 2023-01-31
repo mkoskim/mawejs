@@ -117,8 +117,8 @@ export default function App(props) {
 
   //const id = "./local/Beltane.mawe";
   //const id = "./local/Dinosauruspuisto.mawe";
-  //const id = "./local/NeljaBarnaa.mawe";
-  const id = "./local/JazramonGjerta.mawe";
+  const id = "./local/NeljaBarnaa.mawe";
+  //const id = "./local/JazramonGjerta.mawe";
   //const id = "./local/testwrite.mawe";
   //const id = "./local/CasaMagda.mawe";
   //const id = "./local/TestDoc2.mawe";

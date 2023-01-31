@@ -31,11 +31,15 @@
   */
 }
 
-.Outline .PartName.Included::before {
+.Outline .PartName .Name.Included::before {
   counter-increment: part;
 /*
   content: counter(part, upper-roman) "\00a0-\00a0";
 */
+}
+
+.Outline .PartName {
+  font-weight: bold;
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -126,8 +130,8 @@
   min-width: 7pt;
   max-width: 7pt;
   border: 1px solid grey;
-  margin-left: 1cm;
   margin-right: 6pt;
+  margin-left: 1cm;
   /*
   margin-left: 8pt;
   border-radius: 4pt;
@@ -137,7 +141,7 @@
 /*
 .Outline .Entry .Box.comment,
 .Outline .Entry .Box.missing {
-  margin-left: 18pt;
+  margin-left: 1cm;
 }
 */
 
