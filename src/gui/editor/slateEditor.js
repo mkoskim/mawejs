@@ -56,19 +56,12 @@ export function SlateEditable({className, ...props}) {
 export function RenderPlain({ content }) {
 }
 
-function Element(props) {
-  const { element, attributes, children } = props;
-  function WithLink({children, props}) {
-    return <a id={`${element.id}`} {...props}>{children}</a>
-  }
+function Element({element, attributes, ...props}) {
 
   switch (element.type) {
-    case "title": return <h1 {...attributes}>{children}</h1>
-    case "br.part": return <h2 {...attributes}><WithLink>{children}</WithLink></h2>
-    case "br.scene":
-        return <h3 className={element.exclude ? "excluded" : ""} {...attributes}>
-          <WithLink>{children}</WithLink>
-          </h3>
+    case "title": return <h1 {...attributes} {...props}/>
+    case "br.part": return <h2 {...attributes} {...props}/>
+    case "br.scene": return <h3 className={element.exclude ? "excluded" : ""} {...attributes} {...props}/>
     /*
     case "synopsis": return <h4 {...attributes}><WithLink>{children}</WithLink></h4>
     */
@@ -87,19 +80,19 @@ function Element(props) {
     case "comment":
     case "missing":
     case "synopsis":
-      return <p className={element.type} {...attributes}><WithLink>{children}</WithLink></p>
+      return <p className={element.type} {...attributes} {...props}/>
 
     case "p":
     default:
       if (elem2text(element) === "") {
-        return <div className="emptyline" {...attributes}>{children}</div>
+        return <div className="emptyline" {...attributes} {...props}/>
       }
-      return <p {...attributes}>{children}</p>
+      return <p {...props}/>
   }
 }
 
-function Leaf({ leaf, attributes, children }) {
-  return <span {...attributes}>{children}</span>
+function Leaf({ leaf, attributes, ...props }) {
+  return <span {...attributes} {...props}/>
 }
 
 //*****************************************************************************

@@ -1,7 +1,7 @@
 //*****************************************************************************
 //*****************************************************************************
 //
-// Doc index view
+// Index view for slate editor
 //
 //*****************************************************************************
 //*****************************************************************************
@@ -12,7 +12,7 @@ import React, {
   useDeferredValue, useMemo,
 } from "react"
 
-import {Editor} from "slate"
+import {Editor, Node, Transforms} from "slate"
 import {useSlate, ReactEditor} from "slate-react"
 
 import {
@@ -86,7 +86,7 @@ function wordCounts(doc) {
 
 //-----------------------------------------------------------------------------
 
-export function ViewIndex({state, doc, style})
+export function SlateIndex({state, doc, style})
 {
   // Fill in word counts
   doc = wordCounts(doc)
@@ -118,47 +118,23 @@ export function ViewIndex({state, doc, style})
 function ItemLink({ id, ...props }) {
   const editor = useSlate()
 
-  /*
   return <div onClick={e => onItemClick(e, id)} {...props}/>
-  /*/
-  return <a
-    href={`#${id}`}
-    onClick={e => onItemClick(e, id)}
-    {...props}
-  />
-  /**/
 
   async function onItemClick(event, id) {
-    /*
-    const match = Editor.children.find(editor, {
-      //at: Range.create(),
-      match: n => Editor.isBlock(n) && n.id === id
-    })
-    //const [node, path] = match ?? []
+    const match = Array
+      .from(Node.elements(editor))
+      .filter(([n, p]) => n.id === id)
+    if(match) {
+      const [node, path] = match[0]
+      //console.log("onClick:", id)
+      //console.log("Node:", node)
+      //console.log("Path:", Editor.first(editor, path))
 
-    //console.log("Range:", Editor.edges(editor))
-    console.log("onClick:", id, match)
-    /*/
-    const target = document.getElementById(id)
-    if (!target) {
-      console.log(`Index/onClick: ID ${id} not found.`)
-      return;
+      await sleep(0);
+      Transforms.select(editor, {path: [...path, 0], offset: 0});
+      //Transforms.select(editor, {point: Editor.edges(editor, path)[0]})
+      ReactEditor.focus(editor)
     }
-
-    //console.log("- Target:", target)
-
-    await sleep(0);
-
-    const range = document.createRange()
-    const sel = window.getSelection()
-
-    range.setStart(target, 0)
-    range.collapse(true)
-
-    sel.removeAllRanges()
-    sel.addRange(range)
-    //ReactEditor.focus(editor)
-    /**/
   }
 }
 
