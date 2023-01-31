@@ -43,7 +43,15 @@ const myTheme = createTheme({
         root: {
           textTransform: 'none',
           minWidth: 0,
-          fontSize: 14,
+          fontSize: "12pt",
+          lineHeight: 1.0,
+          padding: "8px",
+        },
+      }
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
         },
       }
     },
@@ -54,7 +62,7 @@ const myTheme = createTheme({
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          fontSize: "10pt",
+          fontSize: "11pt",
         }
       }
     },
@@ -117,8 +125,8 @@ export default function App(props) {
 
   //const id = "./local/Beltane.mawe";
   //const id = "./local/Dinosauruspuisto.mawe";
-  const id = "./local/NeljaBarnaa.mawe";
-  //const id = "./local/JazramonGjerta.mawe";
+  //const id = "./local/NeljaBarnaa.mawe";
+  const id = "./local/JazramonGjerta.mawe";
   //const id = "./local/testwrite.mawe";
   //const id = "./local/CasaMagda.mawe";
   //const id = "./local/TestDoc2.mawe";

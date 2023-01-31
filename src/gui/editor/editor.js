@@ -88,6 +88,7 @@ function SingleEditView({id, doc}) {
 
   //---------------------------------------------------------------------------
   // TODO: We need to know what element is placed for editing
+  // TODO: Move to editor extra services.
   //---------------------------------------------------------------------------
 
   function doc2slate(doc) {
@@ -117,7 +118,7 @@ function SingleEditView({id, doc}) {
   const editor = useMemo(() => getEditor(), [])
 
   const [_state, setState] = useState({
-    id,
+    //id,
     content: doc2slate(doc),
     indexed: [
       "br.part",
@@ -131,14 +132,14 @@ function SingleEditView({id, doc}) {
 
   const state = {
     ..._state,
+    //setID: id => setState({...state, id}),
     setContent: content => setState({...state, content}),
-    setID: id => setState({...state, id}),
-    setIndexed: (indexed) => setState({...state, indexed}),
-    setWordsAs: (wordsAs) => setState({...state, wordsAs})
+    setIndexed: indexed => setState({...state, indexed}),
+    setWordsAs: wordsAs => setState({...state, wordsAs})
   }
 
-  //*
-
+  // Rethink this later. We might get rid of these, if we are lucky.
+  /*
   useEffect(() => {
     state.setID(id)
     const content = doc2slate(doc);
@@ -151,6 +152,10 @@ function SingleEditView({id, doc}) {
     //console.log("Update:", id, doc.story.name, content)
     docUpdate(edited)
   }
+  /*/
+  const edited = slate2doc(doc, state.content)
+  docUpdate(edited)
+  /**/
 
   useEffect(() => addHotkeys({
     //"mod+o": (e) => onClose(e, dispatch),
@@ -235,7 +240,8 @@ function EditToolbar() {
   return <ToolBox style={{ background: "white" }}>
     <Button>Block: {nodetype}</Button>
     <Filler/>
-    <Button><Icon.Settings /></Button>
+    <Tooltip title="Export"><Button><Icon.Action.Print /></Button></Tooltip>
+    <Tooltip title="Open folder"><Button><Icon.Action.Folder /></Button></Tooltip>
   </ToolBox>
 }
 

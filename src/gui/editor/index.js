@@ -76,11 +76,13 @@ function ChooseView({mode, id}) {
 function ViewSelector({mode}) {
   return <VBox style={{borderRight: "1px solid lightgray", background: "white"}}>
     <BorderlessToggleButtonGroup exclusive orientation="vertical" value={mode.mode} onChange={(e, payload) => payload && mode.dispatch({type: "mode", payload})}>
-      <ToggleButton value="single"><Tooltip title="Edit" arrow placement="right"><Icon.Action.Edit sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
-      <ToggleButton value="organizer"><Tooltip title="Organizer" arrow placement="right"><Icon.Action.Cards sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
-      <ToggleButton value="search"><Tooltip title="Search" arrow placement="right"><Icon.Action.Search sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
-      <ToggleButton value="transfer"><Tooltip title="Transfer" arrow placement="right"><Icon.Action.Transfer sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
+      <ToggleButton value="single"><Tooltip title="Edit" placement='right'><Icon.Action.Edit sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
+      <ToggleButton value="organizer"><Tooltip title="Outline" placement='right'><Icon.Action.Cards sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
+      <ToggleButton value="search"><Tooltip title="Search" placement='right'><Icon.Action.Search sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
+      <ToggleButton value="transfer"><Tooltip title="Organize" placement='right'><Icon.Action.Transfer sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
     </BorderlessToggleButtonGroup>
+    <Separator/>
+    <Tooltip title="Settings" placement='right'><Button><Icon.Settings sx={{ fontSize: 40 }}/></Button></Tooltip>
   </VBox>
 }
 

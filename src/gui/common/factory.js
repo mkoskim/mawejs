@@ -27,7 +27,7 @@ import {
   ToggleButton, ToggleButtonGroup,
   Breadcrumbs,
   Chip, TextField, Link,
-  Tooltip as muiTooltip, tooltipClasses,
+  Tooltip as MuiTooltip, tooltipClasses,
   Divider, CircularProgress as Spinner,
   List, ListItem, ListItemText,
   Grid,
@@ -60,7 +60,9 @@ const Tooltip = styled(({ className, ...props }) => (
 }));
 */
 
-export {muiTooltip as Tooltip}
+export function Tooltip(props) {
+  return <MuiTooltip arrow {...props}/>
+}
 
 //-----------------------------------------------------------------------------
 // Icons
@@ -87,6 +89,8 @@ export const Icon = {
     Edit: muiIcons.ArticleOutlined,
     Cards: muiIcons.GridViewOutlined,
     Transfer: muiIcons.SwapHorizontalCircleOutlined,
+    Print: muiIcons.PrintOutlined,
+    Folder: muiIcons.FolderOutlined,
   },
 
   Location: {

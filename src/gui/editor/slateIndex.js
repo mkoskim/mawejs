@@ -118,14 +118,13 @@ export function SlateIndex({state, doc, style})
 //-----------------------------------------------------------------------------
 
 function IndexToolbar({state}) {
-  return <ToolBox style={{ background: "white" }}>
-    <Button>Test</Button>
-    <Filler />
+  return <ToolBox style={{background: "white"}}>
     <BorderlessToggleButtonGroup value={state.indexed} onChange={(e, value) => state.setIndexed(value)}>
       <ToggleButton value="synopsis"><Tooltip title="Show synopses"><Icon.BlockType.Synopsis /></Tooltip></ToggleButton>
       <ToggleButton value="missing"><Tooltip title="Show missing"><Icon.BlockType.Missing /></Tooltip></ToggleButton>
       <ToggleButton value="comment"><Tooltip title="Show comments"><Icon.BlockType.Comment /></Tooltip></ToggleButton>
     </BorderlessToggleButtonGroup>
+    <Separator />
     <BorderlessToggleButtonGroup exclusive value={state.wordsAs} onChange={(e, value) => value && state.setWordsAs(value)}>
       <ToggleButton value="off"><Tooltip title="Don't show words"><Icon.StatType.Off /></Tooltip></ToggleButton>
       <ToggleButton value="numbers"><Tooltip title="Words as numbers"><Icon.StatType.Words /></Tooltip></ToggleButton>
@@ -139,14 +138,14 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
     //margin: 0,
     //marginRight: theme.spacing(0.5),
-    padding: "4pt",
+    padding: "5pt",
     //border: 0,
     '&.Mui-disabled': {
       //border: 0,
     },
     '&:first-of-type': {
       //borderRadius: theme.shape.borderRadius,
-      marginLeft: theme.spacing(0.5),
+      //marginLeft: theme.spacing(0.5),
     },
     '&:not(:first-of-type)': {
       //borderRadius: theme.shape.borderRadius,

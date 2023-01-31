@@ -8,6 +8,7 @@
 
 import {loadmawe, buf2tree, fromXML} from "./xmljs/load"
 import {savemawe, tree2buf, toXML} from "./xmljs/save"
+import {toRTF} from "./print"
 
 import { getSuffix } from "./util";
 import { suffix2format } from "./util";
@@ -26,6 +27,8 @@ export const mawe = {
   },
   buf2tree, fromXML,
   toXML, tree2buf,
+
+  toRTF,
 }
 
 //-----------------------------------------------------------------------------
