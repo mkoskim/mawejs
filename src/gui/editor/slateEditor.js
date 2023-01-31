@@ -44,7 +44,7 @@ function elemLeader(elem) {
 export function RenderPlain({ content }) {
 }
 
-export function Element(props) {
+function Element(props) {
   const { element, attributes, children } = props;
   function WithLink({children, props}) {
     return <a id={`${element.id}`} {...props}>{children}</a>
@@ -86,7 +86,7 @@ export function Element(props) {
   }
 }
 
-export function Leaf({ leaf, attributes, children }) {
+function Leaf({ leaf, attributes, children }) {
   return <span {...attributes}>{children}</span>
 }
 
@@ -230,7 +230,7 @@ export function edit2part(content) {
       return [content[0], content.slice(1)]
     }
     return [
-      { type: "br.part", id: nanoid(), attributes: {}, children: [{ text: "" }] },
+      createElement({ type: "br.part", children: [{ text: "<Unnamed>" }] }),
       content,
     ]
   }
@@ -255,7 +255,7 @@ export function edit2scene(content) {
       return [content[0], content.slice(1)]
     }
     return [
-      { type: "br.scene", id: nanoid(), children: [{ text: "" }] },
+      createElement({ type: "br.scene", children: [{ text: "<Unnamed>" }] }),
       content,
     ]
   }
@@ -282,7 +282,7 @@ export function edit2scene(content) {
 //*****************************************************************************
 
 export function getEditor() {
-  const editor = withHistory(withReact(createEditor()))
+  const editor = withReact(withHistory(createEditor()))
 
   //---------------------------------------------------------------------------
 
@@ -318,7 +318,7 @@ export function getEditor() {
 
   editor.apply = (operation) => {
     //console.log("Apply:", operation)
-    switch(operation.type) {
+    if(Editor.isBlock(editor, operation.node)) switch(operation.type) {
       default: break;
       case "insert_node": {
         operation.node.id = nanoid()
@@ -426,7 +426,7 @@ export function getEditor() {
         Transforms.select(editor, range)
         Transforms.delete(editor)
         Transforms.setNodes(editor,
-          {id: nanoid(), ...props},
+          {...props},
           {
             match: n => Editor.isBlock(editor, n),
           }
@@ -440,6 +440,7 @@ export function getEditor() {
   }
 
   //---------------------------------------------------------------------------
+  // Backspace at the start of line resets formatting
 
   const { deleteBackward } = editor;
 
@@ -482,10 +483,21 @@ export function getEditor() {
 //
 //*****************************************************************************
 
-export function SlateEdit({editor, className, content, setContent, ...props }) {
-
+export function SlateEditable({className, ...props}) {
   const renderElement = useCallback(props => <Element {...props} />, [])
   const renderLeaf = useCallback(props => <Leaf {...props} />, [])
+
+  return <Editable
+    className={addClass(className, "Sheet")}
+    autoFocus
+    spellCheck={false} // Keep false until you find out how to change language
+    renderElement={renderElement}
+    renderLeaf={renderLeaf}
+    {...props}
+  />
+}
+
+export function SlateEdit({editor, className, content, setContent, ...props }) {
 
   return (
       <Slate
@@ -493,14 +505,7 @@ export function SlateEdit({editor, className, content, setContent, ...props }) {
         value={content}
         onChange={setContent}
       >
-        <Editable
-          className={addClass(className, "Sheet")}
-          autoFocus
-          spellCheck={false} // Keep false until you find out how to change language
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-          {...props}
-        />
+        <SlateEditable className={className} {...props}/>
     </Slate>
   )
 }

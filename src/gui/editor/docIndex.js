@@ -33,16 +33,9 @@ import {
 import { styled } from '@mui/material/styles';
 
 //-----------------------------------------------------------------------------
+// Complete word counts. Might be useful elsewhere, too.
 
-export function ViewIndex({state, doc, style})
-{
-  // Create index from doc content
-  const content = doc.story.body.parts;
-  //console.log("Indexing:")
-  //console.log("Indexing: Content:", content)
-
-  //console.log("ViewIndex")
-  //console.log("- Indexed:", state.indexed)
+function wordCounts(doc) {
 
   function Scene(scene) {
 
@@ -60,36 +53,53 @@ export function ViewIndex({state, doc, style})
     const other = scene.children.filter(elem => elem.type !== "p")
     const missing = other.filter(elem => elem.type === "missing")
     const comment = other.filter(elem => elem.type === "comment")
-    const bookmarks = other.filter(elem => state.indexed.includes(elem.type))
-
-    const {id, name, exclude, attributes} = scene
 
     return {
-      id,
-      name,
-      exclude,
-      attributes,
-      words: !exclude && {
+      ...scene,
+      words: {
         text: wordCount(paras),
         missing: wordCount(missing),
         comment: wordCount(comment)
       },
-      bookmarks
     }
   }
 
-  function Parts(part) {
-
-    const {id, name} = part;
+  function Part(part) {
+    const scenes = part.children.map(Scene)
 
     return {
-      id,
-      name,
-      scenes: part.children.map(Scene)
+      ...part,
+      children: scenes
     }
   }
 
-  const parts = content.map(Parts)
+  return {
+    ...doc,
+    story: {
+      ...doc.story,
+      body: {
+        ...doc.story.body,
+        parts: doc.story.body.parts.map(Part)
+      }
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+export function ViewIndex({state, doc, style})
+{
+  // Fill in word counts
+  doc = wordCounts(doc)
+  const body = doc.story.body
+
+  //const content = doc.story.body.parts;
+
+  //console.log("Indexing:")
+  //console.log("Indexing: Content:", content)
+
+  //console.log("ViewIndex")
+  //console.log("- Indexed:", state.indexed)
 
   //const scenes = content.map(Scene)
   //console.log(scenes)
@@ -98,7 +108,7 @@ export function ViewIndex({state, doc, style})
     <VBox className="Outline" style={style}>
       <IndexToolbar state={state}/>
       <VFiller className="Index">
-        {parts.map(part => <PartItem key={part.id} state={state} part={part}/>)}
+        {body.parts.map(part => <PartItem key={part.id} state={state} part={part}/>)}
       </VFiller>
     </VBox>
   )
@@ -149,14 +159,16 @@ function PartItem({state, part}) {
 
   return <React.Fragment>
     <IndexItem className="PartName" state={state} id={id} type={type} name={name} />
-    {part.scenes.map(scene => <SceneItem key={scene.id} state={state} scene={scene}/>)}
+    {part.children.map(scene => <SceneItem key={scene.id} state={state} scene={scene}/>)}
   </React.Fragment>
 }
 
 //-----------------------------------------------------------------------------
 
 function SceneItem({state, scene}) {
-  const {id, name, type, exclude, attributes, words, bookmarks} = scene;
+  const {id, name, type, exclude, words} = scene;
+
+  const bookmarks = scene.children.filter(elem => state.indexed.includes(elem.type))
 
   //const className = addClass("SceneName", attributes.exclude || "SceneNumber")
 
