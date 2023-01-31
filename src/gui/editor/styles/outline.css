@@ -25,8 +25,10 @@
 /* ---------------------------------------------------------------------------- */
 
 .Outline .PartName {
+  /*
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
+  */
 }
 
 .Outline .PartName:before {
@@ -50,10 +52,12 @@
 }
 
 .Outline div.Scene {
+  /*
   border: 2px solid lightgray;
   border-radius: 3px;
   margin: 3pt;
   margin-left: 16pt;
+  */
 }
 
 .Outline div.Scene:hover {
@@ -61,14 +65,18 @@
 }
 
 .Outline div.Scene .Separator {
+  /*
   margin: 0;
   margin-bottom: 2pt;
   border: 1px solid lightgrey;
+  */
 }
 
 .Outline .SceneName {
+  /*
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
+  */
 /*
   font-weight: 450;
   background: #FFD;
@@ -78,9 +86,17 @@
 */
 }
 
+.Outline div.Scene .SceneName::before {
+  width: 1cm;
+}
+
 .Outline div.Scene:not(.Excluded) .SceneName:before {
   counter-increment: scene;
-  content: counter(scene) ".\00a0";
+  content: counter(scene) ".";
+}
+
+.Outline div.Scene.Excluded .SceneName:before {
+  content: "#";
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -88,11 +104,12 @@
 .Outline .Entry {
   margin: 0;
   cursor: default;
+  align-items: center;
+  padding: 2px;
+  /*
   padding-left: 6pt;
   padding-right: 4pt;
   padding-bottom: 2pt;
-  /*
-  padding: 6px;
   padding-left: 16px;
   */
 }
@@ -113,10 +130,11 @@
   min-width: 7pt;
   max-width: 7pt;
   border: 1px solid grey;
-  border-radius: 4pt;
-  margin-right: 4pt;
+  margin-left: 1cm;
+  margin-right: 6pt;
   /*
   margin-left: 8pt;
+  border-radius: 4pt;
   */
 }
 

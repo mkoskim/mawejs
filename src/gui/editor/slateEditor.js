@@ -53,9 +53,6 @@ export function SlateEditable({className, ...props}) {
   />
 }
 
-export function RenderPlain({ content }) {
-}
-
 function Element({element, attributes, ...props}) {
 
   switch (element.type) {
@@ -85,7 +82,7 @@ function Element({element, attributes, ...props}) {
       if (elem2text(element) === "") {
         return <div className="emptyline" {...attributes} {...props}/>
       }
-      return <p {...props}/>
+      return <p {...attributes} {...props}/>
   }
 }
 
@@ -321,16 +318,17 @@ export function getEditor() {
 
   editor.apply = (operation) => {
     //console.log("Apply:", operation)
-    if(Editor.isBlock(editor, operation.node)) switch(operation.type) {
-      default: break;
+    switch(operation.type) {
       case "insert_node": {
+        console.log(operation)
         operation.node.id = nanoid()
         return apply(operation)
       }
       case "split_node": {
-        operation.properties.id = nanoid()
+        if(operation.properties.id) operation.properties.id = nanoid()
         return apply(operation)
       }
+      default: break;
     }
     return apply(operation);
   }
@@ -372,13 +370,8 @@ export function getEditor() {
           Transforms.setNodes(editor, {type: newtype})
           return
         }
-        if(RESETEMPTY.includes(node.type)) {
-          if(node.children.length > 1 || node.children[0].text) {
-            Transforms.splitNodes(editor, {always: true})
-            //Transforms.setNodes(editor, {id: createID(node.type)})
-          } else {
-            Transforms.setNodes(editor, {type: "p"});
-          }
+        if(RESETEMPTY.includes(node.type) && Node.string(node) == "") {
+          Transforms.setNodes(editor, {type: "p"});
           return
         }
       }

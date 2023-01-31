@@ -180,7 +180,6 @@ function SceneItem({state, scene}) {
 function DoBookmarks({state, bookmarks}) {
   if(!bookmarks.length) return null;
   return <React.Fragment>
-    <Separator/>
     {bookmarks.map(elem => <BookmarkItem key={elem.id} state={state} bookmark={elem}/>)}
     </React.Fragment>
 }
@@ -214,7 +213,7 @@ function IndexItem({ className, state, name, type, id, words }) {
     if(match) {
       const [node, path] = match[0]
       const start = Editor.start(editor, path)
-      console.log(path, start)
+      //console.log(path, start)
       //console.log("onClick:", id)
       //console.log("Node:", node)
       //console.log("Path:", Editor.first(editor, path))

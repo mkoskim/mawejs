@@ -70,15 +70,22 @@
 
 .Sheet h2::before {
   counter-increment: part;
+  content: "[";
 /*
-  content: "**";
+  margin-right: 4pt;
   content: "** " counter(part, upper-roman);
   background: #EEE;
   padding: 2pt;
   padding-left: 4pt;
   padding-right: 4pt;
-  margin-right: 6pt;
 */
+}
+
+.Sheet h2::after {
+  content: "]";
+/*
+  margin-left: 4pt;
+  */
 }
 
 .Sheet h3 {
@@ -110,16 +117,15 @@
   padding-right: 4pt;
   margin-right: 6pt;
 }
-
-.Sheet h3.excluded::before {
-  content: "//";
-}
 */
+
+.Sheet h3::before {
+  margin-right: 8pt;
+}
 
 .Sheet h3:not(.excluded)::before {
   counter-increment: scene;
   content: counter(scene) ".";
-  margin-right: 8pt;
 /*
   margin-left: -0.5cm;
   content: "## " counter(scene) ".";
@@ -127,6 +133,10 @@
   left: -0.5cm;
   content: "#"
 */
+}
+
+.Sheet h3.excluded::before {
+  content: "#";
 }
 
 /*
@@ -215,33 +225,36 @@
   /* border-left: 4px solid #D88; */
 }
 
-/*
 .Sheet .missing::before {
   content: "!!";
+  margin-right: 4pt;
+/*
   background: var(--missing-bg);
   padding: 2pt;
   padding-left: 4pt;
   padding-right: 4pt;
-  margin-right: 4pt;
-}
 */
+}
 
 .Sheet .comment {
   background: var(--comment-bg);
   color: var(--comment-fg);
 }
 
-/*
 .Sheet .comment::before {
-  content: "++";
+  content: "//";
   margin-right: 4pt;
 }
-*/
 
 .Sheet .synopsis {
   /* color: rgb(46, 49, 7); */
   color: var(--synopsis-fg);
   background: var(--synopsis-bg);
+}
+
+.Sheet .synopsis::before {
+  content: ">>";
+  margin-right: 4pt;
 }
 
 /* ----------------------------------------------------------------------------

@@ -181,7 +181,7 @@ function SingleEditView({id, doc}) {
   return (
     <Slate editor={editor} value={state.content} onChange={state.setContent}>
     <HFiller style={{overflow: "auto"}}>
-      <VFiller style={{maxWidth: "400px", borderRight: "1px solid lightgray" }}>
+      <VFiller style={{maxWidth: "400px"}}>
         <DeferredRender><SlateIndex
           state={state}
           doc={edited}
