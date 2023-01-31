@@ -40,15 +40,15 @@ function elemLeader(elem) {
 //*****************************************************************************
 
 export function SlateEditable({className, ...props}) {
-  const renderElement = useCallback(props => <Element {...props} />, [])
-  const renderLeaf = useCallback(props => <Leaf {...props} />, [])
+  //const renderElement = useCallback(props => <Element {...props} />, [])
+  //const renderLeaf = useCallback(props => <Leaf {...props} />, [])
 
   return <Editable
     className={addClass(className, "Sheet")}
     autoFocus
     spellCheck={false} // Keep false until you find out how to change language
-    renderElement={renderElement}
-    renderLeaf={renderLeaf}
+    renderElement={Element}
+    renderLeaf={Leaf}
     {...props}
   />
 }
@@ -60,11 +60,9 @@ function Element({element, attributes, ...props}) {
 
   switch (element.type) {
     case "title": return <h1 {...attributes} {...props}/>
+
     case "br.part": return <h2 {...attributes} {...props}/>
     case "br.scene": return <h3 className={element.exclude ? "excluded" : ""} {...attributes} {...props}/>
-    /*
-    case "synopsis": return <h4 {...attributes}><WithLink>{children}</WithLink></h4>
-    */
 
     /*
     case "part": return <div className="part">{children}</div>

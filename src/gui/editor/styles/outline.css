@@ -22,15 +22,6 @@
   counter-reset: part scene;
 }
 
-.Outline a {
-  color: inherit;
-  text-decoration: inherit;
-}
-
-.Outline a:hover {
-  background-color: lightgrey;
-}
-
 /* ---------------------------------------------------------------------------- */
 
 .Outline .PartName {
@@ -104,6 +95,10 @@
   padding: 6px;
   padding-left: 16px;
   */
+}
+
+.Outline .Entry:hover {
+  background-color: lightgrey;
 }
 
 .Outline .Entry .Name {

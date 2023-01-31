@@ -115,31 +115,6 @@ export function SlateIndex({state, doc, style})
 
 //-----------------------------------------------------------------------------
 
-function ItemLink({ id, ...props }) {
-  const editor = useSlate()
-
-  return <div onClick={e => onItemClick(e, id)} {...props}/>
-
-  async function onItemClick(event, id) {
-    const match = Array
-      .from(Node.elements(editor))
-      .filter(([n, p]) => n.id === id)
-    if(match) {
-      const [node, path] = match[0]
-      //console.log("onClick:", id)
-      //console.log("Node:", node)
-      //console.log("Path:", Editor.first(editor, path))
-
-      await sleep(0);
-      Transforms.select(editor, {path: [...path, 0], offset: 0});
-      //Transforms.select(editor, {point: Editor.edges(editor, path)[0]})
-      ReactEditor.focus(editor)
-    }
-  }
-}
-
-//-----------------------------------------------------------------------------
-
 function IndexToolbar({state}) {
   return <ToolBox style={{ background: "white" }}>
     <Button>Test</Button>
@@ -218,14 +193,39 @@ function BookmarkItem({state, bookmark}) {
 }
 
 function IndexItem({ className, state, name, type, id, words }) {
-  return <ItemLink id={id}>
-    <HBox className={addClass(className, "Entry")} style={{ alignItems: "center" }}>
+  const editor = useSlate()
+
+  return <HBox className={addClass(className, "Entry")} onClick={e => onItemClick(e, id)}>
       <ItemIcon type={type} />
       <ItemLabel type={type} name={name ? name : "???"} id={id}/>
       <HFiller/>
       <ItemWords state={state} words={words}/>
     </HBox>
-  </ItemLink>
+
+  async function onItemClick(event, id) {
+    /*
+    const item = editor.nodes.first((x) => x.id === id);
+    console.log(item)
+    /*/
+    // TODO: Find better way to search node
+    const match = Array
+      .from(Node.elements(editor))
+      .filter(([n, p]) => n.id === id)
+    if(match) {
+      const [node, path] = match[0]
+      const start = Editor.start(editor, path)
+      console.log(path, start)
+      //console.log("onClick:", id)
+      //console.log("Node:", node)
+      //console.log("Path:", Editor.first(editor, path))
+
+      await sleep(20);
+      Transforms.select(editor, start);
+      //Transforms.select(editor, {point: Editor.edges(editor, path)[0]})
+      ReactEditor.focus(editor)
+    }
+    /**/
+  }
 }
 
 function ItemIcon({ type }) {
