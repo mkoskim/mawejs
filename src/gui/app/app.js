@@ -125,13 +125,14 @@ export default function App(props) {
 
   //const id = "./local/Beltane.mawe";
   //const id = "./local/Dinosauruspuisto.mawe";
-  //const id = "./local/NeljaBarnaa.mawe";
-  const id = "./local/JazramonGjerta.mawe";
   //const id = "./local/testwrite.mawe";
   //const id = "./local/CasaMagda.mawe";
   //const id = "./local/TestDoc2.mawe";
   //const id = "./local/TestDoc3.mawe";
   //const id = "./local/Lorem30k.mawe";
+
+  const id = "./local/mawe2/NeljaBarnaa.mawe";
+  //const id = "./local/mawe2/JazramonGjerta.mawe";
 
   return (
     <ThemeProvider theme={myTheme}>

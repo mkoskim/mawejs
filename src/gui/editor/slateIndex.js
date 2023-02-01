@@ -9,6 +9,7 @@
 import "./styles/outline.css"
 
 import React, {
+  useCallback,
   useDeferredValue, useMemo,
 } from "react"
 
@@ -198,20 +199,7 @@ function BookmarkItem({state, bookmark}) {
 function IndexItem({ className, state, id, type, name, exclude, words }) {
   const editor = useSlate()
 
-  words = exclude ? undefined : words
-
-  return <HBox className={addClass(className, "Entry")} onDoubleClick={e => onItemClick(e, id)}>
-      <ItemIcon type={type} exclude={exclude}/>
-      <ItemLabel className={exclude ? "Excluded" : "Included"} name={name ? name : "<Unnamed>"}/>
-      <HFiller/>
-      <ItemWords state={state} words={words}/>
-    </HBox>
-
-  async function onItemClick(event, id) {
-    /*
-    const item = editor.nodes.first((x) => x.id === id);
-    console.log(item)
-    /*/
+  const onItemClick = useCallback(async (event) => {
     // TODO: Find better way to search node
     const match = Array
       .from(Node.elements(editor))
@@ -219,18 +207,25 @@ function IndexItem({ className, state, id, type, name, exclude, words }) {
     if(match?.length) {
       const [node, path] = match[0]
       const start = Editor.start(editor, path)
-      //console.log(path, start)
+      console.log(node, path, start)
       //console.log("onClick:", id)
       //console.log("Node:", node)
       //console.log("Path:", Editor.first(editor, path))
 
       await sleep(20);
       Transforms.select(editor, start);
-      //Transforms.select(editor, {point: Editor.edges(editor, path)[0]})
       ReactEditor.focus(editor)
     }
-    /**/
-  }
+  }, [])
+
+  words = exclude ? undefined : words
+
+  return <HBox className={addClass(className, "Entry")} onDoubleClick={onItemClick}>
+      <ItemIcon type={type} exclude={exclude}/>
+      <ItemLabel className={exclude ? "Excluded" : "Included"} name={name ? name : "<Unnamed>"}/>
+      <HFiller/>
+      <ItemWords state={state} words={words}/>
+    </HBox>
 }
 
 function ItemIcon({type}) {
