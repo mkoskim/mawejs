@@ -73,6 +73,8 @@ const muiIcons = require("@mui/icons-material/")
 
 // Material icons
 export const Icon = {
+  Placeholder: muiIcons.LightbulbOutlined,
+
   Close: muiIcons.Close,
   Star: muiIcons.StarOutlineOutlined,
   Starred: muiIcons.Star,

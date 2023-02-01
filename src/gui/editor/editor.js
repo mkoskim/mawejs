@@ -191,6 +191,18 @@ function SingleEditView({id, doc}) {
         doc={edited}
         /></DeferredRender>
       <EditorBox mode="Regular"/>
+      <VFiller style={{width: "300px"}}>
+        <ToolBox style={{background: "white"}}>
+          <Button><Icon.Placeholder/>Notes</Button>
+        </ToolBox>
+        <div style={{margin: "8pt"}}>
+          <p>Placeholder: Maybe we place Notes index here?</p>
+          <br/>
+          <p>- Click index, and editor switches to notes.</p>
+          <p>- Click draft index, and editor switches back to draft.</p>
+          <p>- Drag'n'drop items between indices</p>
+        </div>
+        </VFiller>
     </HFiller>
     </Slate>
   )
@@ -214,12 +226,12 @@ function DeferredRender(props) {
 //-----------------------------------------------------------------------------
 
 function EditorBox({style, mode="Condensed"}) {
-  return <VFiller style={{...style}}>
+  return <VBox style={{...style}}>
     <EditToolbar />
     <div className="Board">
       <SlateEditable className={mode}/>
     </div>
-  </VFiller>
+  </VBox>
 }
 
 function EditToolbar() {

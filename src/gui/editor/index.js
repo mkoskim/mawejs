@@ -36,6 +36,7 @@ import {
 } from "../common/factory";
 
 import { styled } from '@mui/material/styles';
+import {Divider} from '@mui/material';
 
 //-----------------------------------------------------------------------------
 // Choose the view
@@ -67,23 +68,66 @@ export function EditView({mode, id}) {
 }
 
 function ChooseView({mode, id}) {
+
   switch(mode.mode) {
     case "single": return <SingleEdit id={id}/>
     case "organizer": return <Organizer id={id}/>
+    case "splitview": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Edit two docs at once: inteded for writing new drafts from previos
+      ones.
+      </p>
+      </div>
+    case "transfer": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Move elements (parts, scenes) between files. This allows you to
+      split and merge stories when needed. Not all ideas you get while writing one
+      story fits there, but they might be worth of another story. Sometimes, you
+      find out that two story drafts or ideas can be combined to even greater story.
+      </p>
+      </div>
+    case "workspace": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Manage workspace: load files, create new files and so on.
+      </p>
+      </div>
+    case "workspaces": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Manage workspaces: switch workspace, move files between them and so on.
+      </p>
+      </div>
+    case "settings": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Manage settings.
+      </p>
+      </div>
+    default: return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Invalid view selection: {mode.mode}</p>
+      </div>
   }
 }
 
 function ViewSelector({mode}) {
   return <VBox style={{borderRight: "1px solid lightgray", background: "white"}}>
     <BorderlessToggleButtonGroup exclusive orientation="vertical" value={mode.mode} onChange={(e, payload) => payload && mode.dispatch({type: "mode", payload})}>
-      <ToggleButton value="single"><Tooltip title="Edit" placement='right'><Icon.Action.Edit sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
-      <ToggleButton value="organizer"><Tooltip title="Outline" placement='right'><Icon.Action.Cards sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
-      <ToggleButton value="search"><Tooltip title="Search" placement='right'><Icon.Action.Search sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
-      <ToggleButton value="transfer"><Tooltip title="Organize" placement='right'><Icon.Action.Transfer sx={{ fontSize: 40 }}/></Tooltip></ToggleButton>
+      <ToggleButton value="workspace"><SidebarToggle tooltip="Workspace"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <Divider/>
+      <ToggleButton value="single"><SidebarToggle tooltip="Edit"><Icon.Action.Edit sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="organizer"><SidebarToggle tooltip="Outline"><Icon.Action.Cards sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="splitview"><SidebarToggle tooltip="Split view"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <Divider/>
+      <ToggleButton value="transfer"><SidebarToggle tooltip="Organize"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="workspaces"><SidebarToggle tooltip="Switch workspaces"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <Divider/>
+      <ToggleButton value="settings"><SidebarToggle tooltip="Settings"><Icon.Settings sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
     </BorderlessToggleButtonGroup>
-    <Separator/>
-    <Tooltip title="Settings" placement='right'><Button><Icon.Settings sx={{ fontSize: 40 }}/></Button></Tooltip>
   </VBox>
+}
+
+function SidebarToggle({tooltip, children, ...props}) {
+  return  <Tooltip title={tooltip} placement="right">
+      {children}
+    </Tooltip>
 }
 
 const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({

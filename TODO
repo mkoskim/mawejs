@@ -26,29 +26,29 @@ FIXES:
 
 SHORT TERM TODO:
 
-The main objective is to make versions working! That is needed urgently! It
-won't take long time when I need an editor, where I can archive the existing
-version, and use it to create new one.
-
-So, aim to single-part editor, supporting body and notes sections, very
-similar to current Python version. Support for multiple parts can be added
-later.
-
 We can make very simple, notepad-like editor as a starting point! We can add
 fancier features later. Basically, I first need editor to replace current Python
 version - in fact, not even that, as I can use the Python version for tasks that
 can not be done with Electron version yet.
 
+VERSIONS/ARCHIVES: The main objective is to make versions working! That is
+needed urgently! It won't take long time when I need an editor, where I can
+archive the existing version, and use it to create new one.
+
 TODO:
+
+- File loading & saving, support for workspaces
 
 - When directory is opened from search, change directory accordingly (probably the
   best is to use the directory where the search was initiated? Or the directory
   where the opened file is?)
 
-- Organizer? An own view to move parts and scenes around stories.
+- Organizer/Outliner? An own view to move parts and scenes around stories.
 
 - Cards or something alike. Main feature: card has a tag, that can be scanned
   through text to recognize things.
+
+- Notes section handling.
 
 DONE:
 
@@ -61,6 +61,8 @@ DONE:
 - DONE: Work toward saving the edited content: Serialize doc from Slate editor
 
 - DONE: Move CWD to application level, so that app remembers in which directory it was
+
+- DONE: Support for parts.
 
 -------------------------------------------------------------------------------
 
