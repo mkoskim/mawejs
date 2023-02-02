@@ -30,3 +30,9 @@
   margin-top: 4pt;
   margin-bottom: 4pt;
 }
+
+.Separator.MuiToggleButtonGroup-groupedVertical {
+  /* width:  100%; */
+  padding: 0 !important;
+  border-bottom: 1pt solid lightgrey !important;
+}

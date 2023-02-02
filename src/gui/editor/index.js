@@ -36,7 +36,6 @@ import {
 } from "../common/factory";
 
 import { styled } from '@mui/material/styles';
-import {Divider} from '@mui/material';
 
 //-----------------------------------------------------------------------------
 // Choose the view
@@ -96,6 +95,11 @@ function ChooseView({mode, id}) {
       <p>Manage workspaces: switch workspace, move files between them and so on.
       </p>
       </div>
+    case "help": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Help.
+      </p>
+      </div>
     case "settings": return <div style={{margin: "8pt", width: "300pt"}}>
       <p>Placeholder</p>
       <p>Manage settings.
@@ -111,14 +115,15 @@ function ViewSelector({mode}) {
   return <VBox style={{borderRight: "1px solid lightgray", background: "white"}}>
     <BorderlessToggleButtonGroup exclusive orientation="vertical" value={mode.mode} onChange={(e, payload) => payload && mode.dispatch({type: "mode", payload})}>
       <ToggleButton value="workspace"><SidebarToggle tooltip="Workspace"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
-      <Divider/>
+      <Separator/>
       <ToggleButton value="single"><SidebarToggle tooltip="Edit"><Icon.Action.Edit sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="organizer"><SidebarToggle tooltip="Outline"><Icon.Action.Cards sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="splitview"><SidebarToggle tooltip="Split view"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
-      <Divider/>
+      <Separator/>
       <ToggleButton value="transfer"><SidebarToggle tooltip="Organize"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="workspaces"><SidebarToggle tooltip="Switch workspaces"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
-      <Divider/>
+      <Separator/>
+      <ToggleButton value="help"><SidebarToggle tooltip="Help"><Icon.Help sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="settings"><SidebarToggle tooltip="Settings"><Icon.Settings sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
     </BorderlessToggleButtonGroup>
   </VBox>

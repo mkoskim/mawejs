@@ -65,7 +65,14 @@ export function SingleEdit({id}) {
   }, [id])
 
   if(!doc) return <Loading/>
+  //*
+  return <VFiller>
+    <ToolBox>Placeholder: Workspace</ToolBox>
+    <SingleEditView id={id} doc={doc}/>
+    </VFiller>
+  /*/
   return <SingleEditView id={id} doc={doc}/>
+  /**/
 }
 
 function SingleEditView({id, doc}) {
@@ -185,7 +192,7 @@ function SingleEditView({id, doc}) {
   //*
   return (
     <Slate editor={editor} value={state.content} onChange={state.setContent}>
-    <HFiller>
+    <HFiller style={{overflow: "auto"}}>
       <DeferredRender><SlateIndex
         state={state}
         doc={edited}
@@ -201,6 +208,12 @@ function SingleEditView({id, doc}) {
           <p>- Click index, and editor switches to notes.</p>
           <p>- Click draft index, and editor switches back to draft.</p>
           <p>- Drag'n'drop items between indices</p>
+          <br/>
+          <p>Notes:</p>
+          <br/>
+          <p>- No need for word counts -> Can be narrower than main index</p>
+          <p>- Comments, missing does not make sense -> needs only button to
+            show synopses.</p>
         </div>
         </VFiller>
     </HFiller>

@@ -15,7 +15,9 @@ FIXES:
 
 - Add file name to doc info in editor (helps a lot!)
 
-- Doc reload (revert)
+- Doc reload (revert). Reconsider this... We have plenty of room just to
+  keep track of every saved buffers. We might implement a poor man's
+  version control with this.
 
 - Title to index (so that we can click it to move to the beginning)
 
@@ -24,7 +26,7 @@ FIXES:
 
 -------------------------------------------------------------------------------
 
-SHORT TERM TODO:
+FIRST VIABLE VERSION:
 
 We can make very simple, notepad-like editor as a starting point! We can add
 fancier features later. Basically, I first need editor to replace current Python
@@ -68,11 +70,11 @@ DONE:
 
 - Make electron-devtools-installer to work
 
-- Update to react-scripts v5: Needs huge amount of work. Zlib, path and os
+- During scanning, it can be hard to double-click a file. Figure out something.
+
+- DONE: Update to react-scripts v5: Needs huge amount of work. Zlib, path and os
   stop working and needs to be tweaked. Also, elementtree does not work
   with webpack v5, as it uses stream library. Some day, but not today.
-
-- During scanning, it can be hard to double-click a file. Figure out something.
 
 -------------------------------------------------------------------------------
 
@@ -88,6 +90,17 @@ story itself.
   file)
 
 - Project manager: dirs to scan, scan dirs and extract headers etc.
+
+-------------------------------------------------------------------------------
+
+FILE EXPLORER
+
+For opening and saving-as files, we need some sort of interface to file system.
+I decided to write my own "file browser" for this purpose, so that it can
+implement handy features for editor.
+
+- Borrow ideas to file browser from Dropbox web browser.
+
 
 -------------------------------------------------------------------------------
 
@@ -114,16 +127,10 @@ VERSIONS:
 
 FUTURE:
 
-- Slack has nice feature: when you press arrow up at first line, it creates
-  new empty line, if the first line has some formatting (e.g. <pre></pre>). We
-  could incorporate this feature to the editor, too.
-
 - Import RTF: https://www.npmjs.com/package/rtf-parser - many writers Use
   Word or similar, and they can make RTFs.
 
 - Import text & RTF files to scenes.
-
-- Borrow ideas to file browser from Dropbox web browser.
 
 - Can we do / do we need fake app for test bench?
 
@@ -135,32 +142,4 @@ FUTURE:
 -------------------------------------------------------------------------------
 
 DONE:
-
-- Some kind of test bench for e.g. file operations would be great! That is,
-  testing file loading & saving, directory scanning and so on.
-
---> it would be great, if file & document operations would work also
-    in plain node (that is, without electron). I am sure that at Some
-    point I like to have command line tools for e.g. exporting stories
-    in different format.
-
-- Make fake window to test code on plain node
-
-- Get rid of body.modified - it makes version control very difficult.
-
-- Check: load -> save --> produces same buffer. A more precise test
-  needs to be created later.
-
-- Integrate file browser and editor parts together: file browser can be
-  used to select file, editor to edit it.
-
-- Infinite scroll bar on find stopped working, it won't fetch more items anymore.
-  BUT WHY?!? Because the outer element was extending to the content and so the
-  infinite scroll didn't have its scrollbar.
-
-- TODO: Implement a separator, which takes its orientation from the surrounding
-  box.
-
-- Editor component needs Document, not file name. Loading of the document needs
-  to be handled elsewhere.
 
