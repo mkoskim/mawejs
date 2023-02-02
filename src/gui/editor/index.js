@@ -77,6 +77,16 @@ function ChooseView({mode, id}) {
       ones.
       </p>
       </div>
+    case "export": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Export preview + exporting.
+      </p>
+      </div>
+    case "folder": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Show folder where file is located.
+      </p>
+      </div>
     case "transfer": return <div style={{margin: "8pt", width: "300pt"}}>
       <p>Placeholder</p>
       <p>Move elements (parts, scenes) between files. This allows you to
@@ -119,6 +129,9 @@ function ViewSelector({mode}) {
       <ToggleButton value="single"><SidebarToggle tooltip="Edit"><Icon.Action.Edit sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="organizer"><SidebarToggle tooltip="Outline"><Icon.Action.Cards sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="splitview"><SidebarToggle tooltip="Split view"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="export"><SidebarToggle tooltip="Export"><Icon.Action.Print sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="folder"><SidebarToggle tooltip="Show folder"><Icon.Action.Folder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+
       <Separator/>
       <ToggleButton value="transfer"><SidebarToggle tooltip="Organize"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="workspaces"><SidebarToggle tooltip="Switch workspaces"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>

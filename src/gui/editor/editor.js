@@ -211,8 +211,8 @@ function SingleEditView({id, doc}) {
           <br/>
           <p>Notes:</p>
           <br/>
-          <p>- No need for word counts -> Can be narrower than main index</p>
-          <p>- Comments, missing does not make sense -> needs only button to
+          <p>- No need for word counts: Can be narrower than main index</p>
+          <p>- Comments, missing does not make sense? needs only button to
             show synopses.</p>
         </div>
         </VFiller>
@@ -264,8 +264,6 @@ function EditToolbar() {
   return <ToolBox style={{ background: "white" }}>
     <Button>Block: {nodetype}</Button>
     <Filler/>
-    <Tooltip title="Export"><Button><Icon.Action.Print /></Button></Tooltip>
-    <Tooltip title="Open folder"><Button><Icon.Action.Folder /></Button></Tooltip>
   </ToolBox>
 }
 
