@@ -1,3 +1,6 @@
+/* ---------------------------------------------------------------------------- */
+/* Organizer styles */
+/* ---------------------------------------------------------------------------- */
 
 .Section.Container {
   display: flex;
@@ -13,7 +16,7 @@
 
 /* ---------------------------------------------------------------------------- */
 
-div.Part {
+.Organizer div.Part {
   display: flex;
   flex-direction: column;
   /*
@@ -33,7 +36,7 @@ div.Part {
   */
 }
 
-.Part .List {
+.Organizer .Part .List {
   border: 1px solid grey;
   flex-grow: 1;
   min-height: 100px;
@@ -41,7 +44,7 @@ div.Part {
 
 /* ---------------------------------------------------------------------------- */
 
-div.Scene {
+.Organizer div.Scene {
   display: flex;
   cursor:pointer;
   /*
@@ -62,11 +65,11 @@ div.Scene {
   */
 }
 
-div.Scene:hover {
+.Organizer div.Scene:hover {
   background: lightgrey;
 }
 
-div.Scene .Name {
+.Organizer div.Scene .Name {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
