@@ -120,6 +120,7 @@ export function SlateIndex({state, doc, style})
 
 function IndexToolbar({state}) {
   return <ToolBox style={{background: "white"}}>
+    <HFiller/>
     <BorderlessToggleButtonGroup value={state.indexed} onChange={(e, value) => state.setIndexed(value)}>
       <ToggleButton value="synopsis"><Tooltip title="Show synopses"><Icon.BlockType.Synopsis /></Tooltip></ToggleButton>
       <ToggleButton value="missing"><Tooltip title="Show missing"><Icon.BlockType.Missing /></Tooltip></ToggleButton>
@@ -139,8 +140,15 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
     //margin: 0,
     //marginRight: theme.spacing(0.5),
-    padding: "5pt",
-    //border: 0,
+    //padding: "5pt",
+    padding: "4px",
+    border: 0,
+    "&:hover": {
+      background: "lightgrey",
+    },
+    '&.Mui-selected': {
+      background: "lightblue",
+    },
     '&.Mui-disabled': {
       //border: 0,
     },
@@ -220,7 +228,7 @@ function IndexItem({ className, state, id, type, name, exclude, words }) {
 
   words = exclude ? undefined : words
 
-  return <HBox className={addClass(className, "Entry")} onDoubleClick={onItemClick}>
+  return <HBox className={addClass(className, "Entry")} onClick={onItemClick}>
       <ItemIcon type={type} exclude={exclude}/>
       <ItemLabel className={exclude ? "Excluded" : "Included"} name={name ? name : "<Unnamed>"}/>
       <HFiller/>
