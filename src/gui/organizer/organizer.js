@@ -29,6 +29,8 @@ import {docLoad, docSave, docUpdate} from "../editor/doc"
 //import {docByID} from "../app/store"
 
 //-----------------------------------------------------------------------------
+// Organizer
+//-----------------------------------------------------------------------------
 
 export function Organizer({id}) {
   const [doc, setDoc] = useState(undefined)
@@ -91,28 +93,32 @@ export function Organizer({id}) {
   }
 }
 
+//-----------------------------------------------------------------------------
+
 function OrganizerView({doc}) {
   console.log("Organizer: Doc:", doc)
 
   return <div className="Filler" style={{overflow: "auto"}}>
     <Droppable droppableId="body" direction="horizontal" type="part">
-      {partDroppable}
+    {(provided, snapshot) => {
+        const {innerRef, droppableProps, placeholder} = provided
+
+        return <div
+          ref={innerRef}
+          className="HBox Organizer" style={{marginBottom: "1cm"}}
+          {...droppableProps}
+          >
+          {doc.story.body.parts.map((part, index) => <PartView key={part.id} index={index} part={part}/>)}
+          {placeholder}
+          </div>
+      }
+    }
     </Droppable>
     </div>
 
-  function partDroppable(provided, snapshot) {
-    const {innerRef, droppableProps, placeholder} = provided
-
-    return <div
-      ref={innerRef}
-      className="HBox Organizer" style={{marginBottom: "1cm"}}
-      {...droppableProps}
-      >
-      {doc.story.body.parts.map((part, index) => <PartView key={part.id} index={index} part={part}/>)}
-      {placeholder}
-      </div>
-  }
 }
+
+//-----------------------------------------------------------------------------
 
 function PartView({part, index}) {
   return <Draggable
@@ -133,7 +139,7 @@ function PartView({part, index}) {
       >
       <div
         className="Name"
-        {...dragHandleProps}  // Move these inside to create handle
+        {...dragHandleProps}
       >
         {part.name !== "" ? part.name : "???"}
       </div>
@@ -154,14 +160,16 @@ function PartView({part, index}) {
     } = snapshot
 
     return <div className="List"
-    ref={innerRef}
-    {...droppableProps}
-    >
+      ref={innerRef}
+      {...droppableProps}
+      >
       {part.children.map((scene, index) => <SceneView key={scene.id} index={index} scene={scene}/>)}
       {placeholder}
     </div>
   }
 }
+
+//-----------------------------------------------------------------------------
 
 function SceneView({scene, index}) {
   return <Draggable

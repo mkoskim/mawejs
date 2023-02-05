@@ -3,11 +3,10 @@
 /* ---------------------------------------------------------------------------- */
 
 .Section.Container {
-  display: flex;
-
   overflow-y: auto;
   overflow-x: hidden;
   /*
+  display: flex;
   margin: 4pt;
   border: 1pt solid lightgray;
   padding: 4pt;
@@ -23,23 +22,35 @@
   flex-wrap: wrap;
   */
 
-  border: 2pt solid lightgray;
-  padding: 4pt;
-  background: lightgoldenrodyellow;
+  border: 2px solid lightgray;
+
   margin: 4pt;
+
   /*
-  border-bottom: 1pt dashed grey;
+  padding-top: 4px;
+  padding-bottom: 4px;
   margin-bottom: 8pt;
+  margin-top: 4pt;
+  border-bottom: 1pt dashed grey;
 
   padding-left: 4pt;
-  margin-top: 4pt;
   */
 }
 
+.Organizer .Part .Name {
+  padding: 4pt;
+  border-bottom: 2pt solid lightgray;
+  background: lightgoldenrodyellow;
+}
+
 .Organizer .Part .List {
+  /*
   border: 1px solid grey;
-  flex-grow: 1;
+  */
   min-height: 100px;
+  flex-grow: 1;
+  background: skyblue;
+  padding: 4pt;
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -52,14 +63,14 @@
   height: 300px;
   */
   background: white;
-  border: 1pt solid lightgray;
-  margin: 4pt;
+  border: 1px solid lightgray;
   padding: 4pt;
 
-  /*
   margin-top: 2pt;
   margin-bottom: 2pt;
 
+  /*
+  margin: 4pt;
   padding-top: 6pt;
   padding-bottom: 6pt;
   */
