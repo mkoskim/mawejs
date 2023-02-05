@@ -14,17 +14,23 @@ import React, {
   useEffect, useState, useReducer
 } from "react"
 
-//import { useSelector, useDispatch } from "react-redux";
-//import {action} from "./store"
-
-import {EditView} from "../editor";
-//import {Workspace} from "../workspace";
-//import View from "../views"
-
-import {VBox, HBox, Loading} from "../common/factory";
+import {
+  FlexBox, VBox, HBox, Filler, VFiller, HFiller,
+  ToolBox, Button, Icon, Tooltip,
+  ToggleButton, ToggleButtonGroup,
+  Input,
+  SearchBox, addHotkeys,
+  Label,
+  List, ListItem, ListItemText,
+  Grid,
+  Separator, Loading, addClass,
+} from "../common/factory";
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import {fstat} from "../../storage/localfs";
+import { styled } from '@mui/material/styles';
+
+import {SingleEdit} from "../editor/editor";
+import {Organizer} from "../organizer/organizer";
 
 //-----------------------------------------------------------------------------
 
@@ -113,8 +119,8 @@ export default function App(props) {
       }
     },
     {
-      mode: "single"
-      //mode: "organizer"
+      //mode: "single"
+      mode: "organizer"
     }
   );
 
@@ -136,23 +142,122 @@ export default function App(props) {
 
   return (
     <ThemeProvider theme={myTheme}>
-      <EditView mode={mode} id={id}/>
+    <HBox className="ViewPort">
+      <ViewSelector mode={mode}/>
+      <ChooseView mode={mode} id={id}/>
+    </HBox>
     </ThemeProvider>
   )
 }
 
 //-----------------------------------------------------------------------------
+// Choose the view
+//-----------------------------------------------------------------------------
 
-function ChooseView() {
-  /*
-  const edit = useSelector(state => state.doc.edit)
+function ChooseView({mode, id}) {
 
-  console.log("ChooseView:", edit?.id)
+  console.log("EditView/Mode:", mode)
+  console.log("EditView/ID..:", id)
 
-  if(edit) {
-    return <EditView />
+  switch(mode.mode) {
+    case "single": return <SingleEdit id={id}/>
+    case "organizer": return <Organizer id={id}/>
+    case "splitview": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Edit two docs at once: inteded for writing new drafts from previos
+      ones.
+      </p>
+      </div>
+    case "export": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Export preview + exporting.
+      </p>
+      </div>
+    case "folder": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Show folder where file is located.
+      </p>
+      </div>
+    case "transfer": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Move elements (parts, scenes) between files. This allows you to
+      split and merge stories when needed. Not all ideas you get while writing one
+      story fits there, but they might be worth of another story. Sometimes, you
+      find out that two story drafts or ideas can be combined to even greater story.
+      </p>
+      </div>
+    case "workspace": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Manage workspace: load files, create new files and so on.
+      </p>
+      </div>
+    case "workspaces": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Manage workspaces: switch workspace, move files between them and so on.
+      </p>
+      </div>
+    case "help": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Help.
+      </p>
+      </div>
+    case "settings": return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Placeholder</p>
+      <p>Manage settings.
+      </p>
+      </div>
+    default: return <div style={{margin: "8pt", width: "300pt"}}>
+      <p>Invalid view selection: {mode.mode}</p>
+      </div>
   }
-
-  return <Workspace />
-  */
 }
+
+//-----------------------------------------------------------------------------
+// View selector
+//-----------------------------------------------------------------------------
+
+function ViewSelector({mode}) {
+  return <VBox style={{borderRight: "1px solid lightgray", background: "white"}}>
+    <BorderlessToggleButtonGroup exclusive orientation="vertical" value={mode.mode} onChange={(e, payload) => payload && mode.dispatch({type: "mode", payload})}>
+      <ToggleButton value="workspace"><SidebarToggle tooltip="Workspace"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <Separator/>
+      <ToggleButton value="single"><SidebarToggle tooltip="Edit"><Icon.Action.Edit sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="organizer"><SidebarToggle tooltip="Outline"><Icon.Action.Cards sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="splitview"><SidebarToggle tooltip="Split view"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="export"><SidebarToggle tooltip="Export"><Icon.Action.Print sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="folder"><SidebarToggle tooltip="Show folder"><Icon.Action.Folder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+
+      <Separator/>
+      <ToggleButton value="transfer"><SidebarToggle tooltip="Organize"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="workspaces"><SidebarToggle tooltip="Switch workspaces"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <Separator/>
+      <ToggleButton value="help"><SidebarToggle tooltip="Help"><Icon.Help sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="settings"><SidebarToggle tooltip="Settings"><Icon.Settings sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+    </BorderlessToggleButtonGroup>
+  </VBox>
+}
+
+function SidebarToggle({tooltip, children, ...props}) {
+  return  <Tooltip title={tooltip} placement="right">
+      {children}
+    </Tooltip>
+}
+
+const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  '& .MuiToggleButtonGroup-grouped': {
+    //margin: 0,
+    //marginRight: theme.spacing(0.5),
+    padding: "2pt",
+    border: 0,
+    '&.Mui-disabled': {
+      //border: 0,
+    },
+    '&:first-of-type': {
+      //borderRadius: theme.shape.borderRadius,
+      //marginLeft: theme.spacing(0.5),
+    },
+    '&:not(:first-of-type)': {
+      //borderRadius: theme.shape.borderRadius,
+    },
+  },
+}));

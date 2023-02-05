@@ -1,5 +1,5 @@
 
-.SectionCard {
+.Section.Container {
   display: flex;
 
   overflow-y: auto;
@@ -11,11 +11,13 @@
   */
 }
 
-.PartCard {
-  /*
+/* ---------------------------------------------------------------------------- */
+
+div.Part {
   display: flex;
+  flex-direction: column;
+  /*
   flex-wrap: wrap;
-  flex-direction: row;
   */
 
   border: 2pt solid lightgray;
@@ -31,9 +33,15 @@
   */
 }
 
+.Part .List {
+  border: 1px solid grey;
+  flex-grow: 1;
+  min-height: 100px;
+}
+
 /* ---------------------------------------------------------------------------- */
 
-.SceneCard {
+div.Scene {
   display: flex;
   cursor:pointer;
   /*
@@ -54,11 +62,11 @@
   */
 }
 
-.SceneCard:hover {
+div.Scene:hover {
   background: lightgrey;
 }
 
-.SceneCard .Name {
+div.Scene .Name {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
