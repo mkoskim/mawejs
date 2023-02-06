@@ -5,9 +5,10 @@ This is my mawe (My/Markus Advanced Writer's Editor) implemented with ElectronJS
 
 ## Status
 
-**2022-Jun-23:** I have been working hard to (1) combine workspaces to file browser, (2) to use workspace to choose file to edit, and (3) with editor itself. Currently it is possible to load files in. I have not yet enabled saving for safety reasons.
-
-My goal is to get somewhat usable editor for me during the summer, the sooner the better.
+**2023-Feb-6:** I disabled workspaces and have worked on editor basics: (1) text editor
+itself, (2) outliner. To get first usable version, I need (3) re-enable workspace, file
+loading and saving, (4) implement RTF export. In addition to these, I urgently need
+(5) versioning feature with split view editing.
 
 ## What is Mawe?
 
