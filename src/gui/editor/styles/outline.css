@@ -2,12 +2,12 @@
 /* Document outlining */
 /* ---------------------------------------------------------------------------- */
 
-.Outline {
+.TOC {
   overflow-y: auto;
   overflow-x: hidden;
+  /*
   min-width: 350px;
   max-width: 350px;
-  /*
   width: 300px;
   background-color: lightgray;
   */
@@ -26,21 +26,21 @@
 
 /* ---------------------------------------------------------------------------- */
 
-.Outline .PartName {
+.TOC .PartName {
   /*
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
   */
 }
 
-.Outline .PartName .Name.Included::before {
+.TOC .PartName .Name.Included::before {
   counter-increment: part;
 /*
   content: counter(part, upper-roman) "\00a0-\00a0";
 */
 }
 
-.Outline .PartName {
+.TOC .PartName {
   font-weight: bold;
 }
 
@@ -53,7 +53,7 @@
   background: white;
 }
 
-.Outline div.Scene {
+.TOC div.Scene {
   /*
   border: 2px solid lightgray;
   border-radius: 3px;
@@ -62,11 +62,11 @@
   */
 }
 
-.Outline div.Scene:hover {
+.TOC div.Scene:hover {
   background-color: #DEF;
 }
 
-.Outline div.Scene .Separator {
+.TOC div.Scene .Separator {
   /*
   margin: 0;
   margin-bottom: 2pt;
@@ -74,7 +74,7 @@
   */
 }
 
-.Outline .SceneName {
+.TOC .SceneName {
   /*
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
@@ -88,22 +88,22 @@
 */
 }
 
-.Outline .SceneName .Name::before {
+.TOC .SceneName .Name::before {
   width: 1cm;
 }
 
-.Outline .SceneName .Name.Included::before {
+.TOC .SceneName .Name.Included::before {
   counter-increment: scene;
   content: counter(scene) ". ";
 }
 
-.Outline .SceneName .Name.Excluded::before {
+.TOC .SceneName .Name.Excluded::before {
   content: "# ";
 }
 
 /* ---------------------------------------------------------------------------- */
 
-.Outline .Entry {
+.TOC .Entry {
   margin: 0;
   cursor: default;
   align-items: center;
@@ -116,38 +116,36 @@
   */
 }
 
-.Outline .Entry:hover {
+.TOC .Entry:hover {
   background-color: lightgrey;
 }
 
-.Outline .Entry .Name {
+.TOC .Entry .Name {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.Outline .Entry .Box {
+.TOC .Entry .Box {
   min-height: 7pt;
   max-height: 7pt;
   min-width: 7pt;
   max-width: 7pt;
   border: 1px solid grey;
   margin-right: 6pt;
-  margin-left: 1cm;
   /*
+  margin-left: 1cm;
   margin-left: 8pt;
   border-radius: 4pt;
   */
 }
 
-/*
-.Outline .Entry .Box.comment,
-.Outline .Entry .Box.missing {
+.TOC .Entry .Box.comment,
+.TOC .Entry .Box.missing {
   margin-left: 1cm;
 }
-*/
 
-.Outline .Entry .Box.comment { background: rgb(71, 207, 71); }
-.Outline .Entry .Box.missing { background: rgb(252, 44, 44); }
-.Outline .Entry .Box.synopsis { background: rgb(243, 243, 12); }
+.TOC .Entry .Box.comment { background: rgb(71, 207, 71); }
+.TOC .Entry .Box.missing { background: rgb(252, 44, 44); }
+.TOC .Entry .Box.synopsis { background: rgb(243, 243, 12); }
 

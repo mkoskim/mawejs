@@ -308,17 +308,14 @@ function createElement({ type, id, exclude, attributes, children }) {
 
 //-----------------------------------------------------------------------------
 
-export function section2edit(doc) {
-  const head = Head2Slate(doc.story.body.head);
-  const body = Section2Slate(doc.story.body.parts);
-  const notes = Section2Slate(doc.story.notes);
+export function section2edit(section) {
+  const head = Head2Slate(section.head);
+  const body = Section2Slate(section.parts);
 
-  return {
-    body: [...head, ...body],
-    notes: notes,
-  }
+  return [...head, ...body]
 
   function Head2Slate(head) {
+    if(!head) return []
     if(head.title) return [
       createElement({ type: "title", children: [{ text: head.title }] }),
     ]

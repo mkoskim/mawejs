@@ -1,32 +1,22 @@
-<story format="mawe" uuid="6931033c-088a-4829-926b-27b7aba4b3ed">
-<body>
+<story uuid="6931033c-088a-4829-926b-27b7aba4b3ed" format="mawe" version="2" name="TestDoc1">
 <!--/
 ===============================================================================
 
-Story: New Story
+STORY: TestDoc1
 
 ===============================================================================
 /-->
+<body lang="fi">
 <head>
-<title />
-<subtitle />
-<author />
-<translated />
-<status />
-<deadline />
-<covertext />
-<version />
-<year />
-<!--/
-===============================================================================
-/-->
-<nickname />
 <words>
 <text>4</text>
-<comments>1</comments>
 <missing>2</missing>
+<comments>1</comments>
 </words>
 </head>
+<!--/
+===============================================================================
+/-->
 <part name="AA">
 <scene name="A">
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
@@ -38,52 +28,53 @@ Story: New Story
 <p>Interdum et malesuada fames ac ante ipsum primis in faucibus.</p>
 <p>Suspendisse sit amet tortor a lacus sollicitudin viverra.</p>
 </scene>
-
 <scene name="B">
 <p>Nullam placerat sed erat eget aliquam.</p>
 <p>Etiam urna dui, congue eget turpis id, tempor pellentesque nisl.</p>
 </scene>
-
 <scene name="C">
 <p>Vestibulum posuere urna vel neque gravida, non laoreet enim consequat.</p>
 <p>Nulla euismod purus aliquam nibh convallis, non semper nisl egestas.</p>
 </scene>
-
 </part>
 <part name="BB">
-
 <scene name="D">
 <p>Vivamus pulvinar dui ex, molestie consequat lorem pellentesque in.</p>
 <p>Aenean porta lectus lectus, non euismod massa lobortis vel.</p>
 </scene>
-
 <scene name="E">
 <p>Interdum et malesuada fames ac ante ipsum primis in faucibus.</p>
 <p>Suspendisse sit amet tortor a lacus sollicitudin viverra.</p>
 </scene>
-
 <scene name="F">
 <p>Nullam condimentum arcu eget orci efficitur, eget tincidunt nunc tempus.</p>
 <p>Cras commodo urna sit amet ex ornare, non dignissim lacus suscipit.</p>
 </scene>
-
 <scene name="G">
 <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Curabitur ultricies eleifend risus sed consequat.</p>
 </scene>
-
 </part>
 </body>
-<notes>
 <!--/
 ===============================================================================
 
-Notes
+NOTES
 
 ===============================================================================
 /-->
-<head />
-<part>
-<scene name="" />
+<notes>
+<part name="Part 1">
+<scene name="Scene A">
+<p>Nullam condimentum arcu eget orci efficitur, eget tincidunt nunc tempus.</p>
+<p>Cras commodo urna sit amet ex ornare, non dignissim lacus suscipit.</p>
+</scene>
 </part>
 </notes>
+<!--/
+===============================================================================
+
+VERSIONS
+
+===============================================================================
+/-->
 </story>

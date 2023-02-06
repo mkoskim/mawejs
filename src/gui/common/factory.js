@@ -126,26 +126,6 @@ export const Icon = {
 }
 
 //-----------------------------------------------------------------------------
-// Manipulate <style> elements in document <head>
-//-----------------------------------------------------------------------------
-
-export function HeadStyle(id) {
-  function byid(id) { return document.head.querySelector(`style#${id}`) }
-  function create(id) {
-    const style = document.createElement("style")
-    style.setAttribute("id", id);
-    document.head.appendChild(style);
-    return style;
-  }
-  return {
-    style: byid(id) ? byid(id) : create(id),
-    set: function(...lines) {
-      this.style.textContent = lines.join("\n");
-    }
-  }
-}
-
-//-----------------------------------------------------------------------------
 
 export const isEmpty = x => !x;
 export const isNotEmpty = x => !!x;
@@ -209,18 +189,11 @@ export function HFiller({className, ...props}) {
 }
 
 //*
-export function Separator({className, ...props}) {
+export function Separator({className, fullWidth, ...props}) {
   return <div className={addClass(className, "Separator")} {...props}/>;
 }
 /*/
 export {Divider as Separator}
-/**/
-
-/*
-HeadStyle("Separator").set(
-  ".HBox > .Separator { height: 100%; border-right: 1pt solid lightgrey; }",
-  ".VBox > .Separator { width:  100%; border-bottom: 1pt solid lightgrey; }",
-);
 /**/
 
 //-----------------------------------------------------------------------------

@@ -52,23 +52,32 @@ export function Organizer({id}) {
     </DragDropContext>
 
   function findPart(partID) {
-    return doc.story.body.parts.find(part => part.id === partID)
+    return (
+      doc.story.body.parts.find(part => part.id === partID) ||
+      doc.story.notes.parts.find(part => part.id === partID)
+    )
+  }
+
+  function findSect(sectID) {
+    switch(sectID) {
+      case "body": return doc.story.body;
+      case "notes": return doc.story.notes;
+    }
   }
 
   function onDragEnd(result) {
     //console.log("onDragEnd:", result)
 
     const {type, source, destination} = result;
-    console.log(type)
+    //console.log(type)
 
     if(!destination) return;
 
-    //console.log(source, "-->", destination)
-
-    // Move scene within a part
     if(source.droppableId === destination.droppableId) {
       if(source.index === destination.index) return;
     }
+
+    //console.log(source, "-->", destination)
 
     switch(type) {
       case "scene": {
@@ -82,13 +91,18 @@ export function Organizer({id}) {
         break;
       }
       case "part": {
-        const part = doc.story.body.parts[source.index]
-        doc.story.body.parts.splice(source.index, 1)
-        doc.story.body.parts.splice(destination.index, 0, part)
+        const sourceSect = findSect(source.droppableId);
+        const destinationSect = findSect(destination.droppableId);
+
+        const part = sourceSect.parts[source.index]
+        sourceSect.parts.splice(source.index, 1)
+        destinationSect.parts.splice(destination.index, 0, part)
         setDoc(doc)
         break;
       }
-      default: break;
+      default:
+        console.log("Unknown draggable type:", type, result)
+        break;
     }
   }
 }
@@ -97,6 +111,9 @@ export function Organizer({id}) {
 
 function OrganizerView({doc}) {
   console.log("Organizer: Doc:", doc)
+
+  const bodyparts = doc.story.body.parts
+  const noteparts = doc.story.notes.parts
 
   return <div className="Filler" style={{overflow: "auto"}}>
     <Droppable droppableId="body" direction="horizontal" type="part">
@@ -108,17 +125,37 @@ function OrganizerView({doc}) {
           className="HBox Organizer" style={{marginBottom: "1cm"}}
           {...droppableProps}
           >
-          {doc.story.body.parts.map((part, index) => <PartView key={part.id} index={index} part={part}/>)}
+          {bodyparts.map((part, index) => <PartView key={part.id} index={index} part={part}/>)}
+          {placeholder}
+          </div>
+      }
+    }
+    </Droppable>
+    <hr/>
+    <Droppable droppableId="notes" direction="horizontal" type="part">
+    {(provided, snapshot) => {
+        const {innerRef, droppableProps, placeholder} = provided
+
+        return <div
+          ref={innerRef}
+          className="HBox Organizer" style={{marginBottom: "1cm"}}
+          {...droppableProps}
+          >
+          {noteparts.map((part, index) => <PartView key={part.id} index={index} part={part}/>)}
           {placeholder}
           </div>
       }
     }
     </Droppable>
     </div>
-
 }
 
 //-----------------------------------------------------------------------------
+// TODO: Empty parts can be removed
+// TODO: Parts can be merged?
+// TODO: Add part
+// TODO: Add scene
+// TODO: Double click -> editor + focus at scene/part
 
 function PartView({part, index}) {
   return <Draggable
@@ -141,7 +178,7 @@ function PartView({part, index}) {
         className="Name"
         {...dragHandleProps}
       >
-        {part.name !== "" ? part.name : "???"}
+        {part.name && part.name !== "" ? part.name : "<Unnamed>"}
       </div>
       <Droppable
         droppableId={part.id}
@@ -170,6 +207,7 @@ function PartView({part, index}) {
 }
 
 //-----------------------------------------------------------------------------
+// TODO: Edit synopsis
 
 function SceneView({scene, index}) {
   return <Draggable
@@ -192,7 +230,7 @@ function SceneView({scene, index}) {
       {...draggableProps}
       {...dragHandleProps}  // Move these inside to create handle
     >
-    <div>{scene.name !== "" ? scene.name : "???"}</div>
+      <div>{scene.name && scene.name !== "" ? scene.name : "<Unnamed>"}</div>
     </div>
   }
 }

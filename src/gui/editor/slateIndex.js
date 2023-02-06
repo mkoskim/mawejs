@@ -17,6 +17,7 @@ import {Editor, Node, Transforms} from "slate"
 import {useSlate, ReactEditor} from "slate-react"
 
 import {
+  section2edit, edit2section,
   elem2text,
 } from "./slateEditor"
 
@@ -39,7 +40,7 @@ import { styled } from '@mui/material/styles';
 //-----------------------------------------------------------------------------
 // Complete word counts. Might be useful elsewhere, too.
 
-function wordCounts(doc) {
+function wordCounts(section) {
 
   function Scene(scene) {
 
@@ -74,51 +75,60 @@ function wordCounts(doc) {
   }
 
   return {
-    ...doc,
-    story: {
-      ...doc.story,
-      body: {
-        ...doc.story.body,
-        parts: doc.story.body.parts.map(Part)
-      }
-    }
+    ...section,
+    parts: section.parts.map(Part)
   }
 }
 
 //-----------------------------------------------------------------------------
 
-export function SlateIndex({state, doc, style})
+export function SlateTOC({state, style})
 {
-  // Fill in word counts
-  doc = wordCounts(doc)
-  const body = doc.story.body
+  //console.log(section)
+  const editor = useSlate()
 
-  //const content = doc.story.body.parts;
+  function getSection() {
+    const section = edit2section(editor.children)
 
-  //console.log("Indexing:")
-  //console.log("Indexing: Content:", content)
+    if(state.wordsAs !== "off") {
+      return wordCounts(section)
+    }
+    return section
+  }
 
-  //console.log("ViewIndex")
-  //console.log("- Indexed:", state.indexed)
+  const section = getSection()
 
-  //const scenes = content.map(Scene)
-  //console.log(scenes)
-
+  /*
   return (
-    <VFiller className="Outline" style={{...style}}>
+    <VFiller style={{...style}}>
       <IndexToolbar state={state}/>
       <div style={{overflow: "auto", padding: "4pt"}}>
-        <VBox>
-        {body.parts.map(part => <PartItem key={part.id} state={state} part={part}/>)}
+        <VBox className="TOC">
+        {section.parts.map(part => <PartItem key={part.id} state={state} part={part}/>)}
         </VBox>
       </div>
     </VFiller>
   )
+  /*/
+  return (
+    <VFiller style={{...style}}>
+      <IndexToolbar state={state}/>
+      <VBox className="TOC">
+        {section.parts.map(part => <PartItem key={part.id} state={state} part={part}/>)}
+      </VBox>
+    </VFiller>
+  )
+  /**/
 }
 
 //-----------------------------------------------------------------------------
 
 function IndexToolbar({state}) {
+  return <ToolBox style={{background: "white"}}>
+    <Button>Test</Button>
+  </ToolBox>
+
+/*
   return <ToolBox style={{background: "white"}}>
     <HFiller/>
     <BorderlessToggleButtonGroup value={state.indexed} onChange={(e, value) => state.setIndexed(value)}>
@@ -134,6 +144,7 @@ function IndexToolbar({state}) {
       <ToggleButton value="cumulative"><Tooltip title="Words as cumulative percent"><Icon.StatType.Cumulative /></Tooltip></ToggleButton>
     </BorderlessToggleButtonGroup>
   </ToolBox>
+  */
 }
 
 const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({

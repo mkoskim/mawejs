@@ -88,7 +88,9 @@ export function fromXML(root) {
   }
 
   function parseNotes(notes) {
-    return elemFindall(notes, "part").map(parsePart)
+    return {
+      parts: elemFindall(notes, "part").map(parsePart)
+    }
   }
 
   function parseVersion(version) {

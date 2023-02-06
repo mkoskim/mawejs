@@ -32,7 +32,7 @@ import {
 } from "./slateEditor"
 
 import {
-  SlateIndex,
+  SlateTOC,
 } from "./slateIndex"
 
 import {
@@ -77,14 +77,11 @@ export function SingleEdit({id}) {
 
 function SingleEditView({id, doc}) {
 
-  //const {id, doc} = upstate;
-  //const id = doc.file.id;
-
-  //const doc = docByID(id)
-  //console.log("Doc:", doc)
+  //---------------------------------------------------------------------------
+  // For development purposes:
+  //---------------------------------------------------------------------------
 
   /*
-  // For development purposes:
   return <React.Fragment>
     <HBox>
     <Pre style={{ width: "50%" }} content={doc.story} />
@@ -93,40 +90,53 @@ function SingleEditView({id, doc}) {
   </React.Fragment>
   /**/
 
-  //---------------------------------------------------------------------------
-  // TODO: We need to know what element is placed for editing
-  // TODO: Move to editor extra services.
-  //---------------------------------------------------------------------------
+  /*
+  return <Pre content={doc.story.notes} />
+  /**/
 
-  function doc2slate(doc) {
-    return section2edit(doc).body;
-  }
+  //---------------------------------------------------------------------------
+  // slate buffers
 
-  function slate2doc(doc, content) {
-    const fromedit = edit2section(content)
-    return {
-      ...doc,
-      story: {
-        ...doc.story,
-        body: {
-          ...doc.story.body,
-          head: {...doc.story.body.head, ...fromedit.head},
-          parts: fromedit.parts,
-        }
+  const [body_buffer, setBodyBuffer] = useState(section2edit(doc.story.body))
+  const [note_buffer, setNoteBuffer] = useState(section2edit(doc.story.notes))
+
+  // Update doc from buffers
+
+  const bodyFromEdit = edit2section(body_buffer)
+  const notesFromEdit = edit2section(note_buffer)
+
+  const edited = {
+    ...doc,
+    story: {
+      ...doc.story,
+      notes: {
+        ...doc.story.notes,
+        parts: notesFromEdit.parts,
+      },
+      body: {
+        ...doc.story.body,
+        head: {...doc.story.body.head, ...bodyFromEdit.head},
+        parts: bodyFromEdit.parts,
       }
     }
   }
+
+  docUpdate(edited);
 
   //---------------------------------------------------------------------------
   // Slate uses content variable only when initializing. We need to manually
   // set children when doc changes between re-renders
   //---------------------------------------------------------------------------
 
-  const editor = useMemo(() => getEditor(), [])
+  const bodyeditor = useMemo(() => getEditor(), [])
+  const noteeditor = useMemo(() => getEditor(), [])
+
+  //---------------------------------------------------------------------------
+  // TODO: Separate settings for different indices
+  //---------------------------------------------------------------------------
 
   const [_state, setState] = useState({
     //id,
-    content: doc2slate(doc),
     indexed: [
       "br.part",
       "br.scene",
@@ -145,30 +155,22 @@ function SingleEditView({id, doc}) {
     setWordsAs: wordsAs => setState({...state, wordsAs})
   }
 
-  // Rethink this later. We might get rid of these, if we are lucky.
-  /*
-  useEffect(() => {
-    state.setID(id)
-    const content = doc2slate(doc);
-    state.setContent(content)
-    editor.children = content;
-  }, [id])
-
-  const edited = slate2doc(doc, state.content)
-  if(state.id === id) {
-    //console.log("Update:", id, doc.story.name, content)
-    docUpdate(edited)
+  const noteindex_settings = {
+    indexed: [
+      "br.part",
+      "br.scene",
+      "synopsis",
+      //"missing",
+      //"comment",
+    ],
+    wordsAs: "off",
   }
-  /*/
-  const edited = slate2doc(doc, state.content)
-  docUpdate(edited)
-  /**/
 
   useEffect(() => addHotkeys({
     //"mod+o": (e) => onClose(e, dispatch),
     //"mod+w": (e) => onClose(e, dispatch),
     //"mod+s": (e) => mawe.saveas(docByID(id), path.join(cwd, "/testwrite.mawe")),
-    "mod+s": (e) => docSave(doc),
+    "mod+s": (e) => docSave(edited),
   }));
 
   /*
@@ -191,33 +193,16 @@ function SingleEditView({id, doc}) {
 
   //*
   return (
-    <Slate editor={editor} value={state.content} onChange={state.setContent}>
     <HFiller style={{overflow: "auto"}}>
-      <DeferredRender><SlateIndex
-        state={state}
-        doc={edited}
-        /></DeferredRender>
-      <EditorBox mode="Regular"/>
-      <VFiller style={{width: "300px"}}>
-        <ToolBox style={{background: "white"}}>
-          <Button><Icon.Placeholder/>Notes</Button>
-        </ToolBox>
-        <div style={{margin: "8pt"}}>
-          <p>Placeholder: Maybe we place Notes index here?</p>
-          <br/>
-          <p>- Click index, and editor switches to notes.</p>
-          <p>- Click draft index, and editor switches back to draft.</p>
-          <p>- Drag'n'drop items between indices</p>
-          <br/>
-          <p>Notes:</p>
-          <br/>
-          <p>- No need for word counts: Can be narrower than main index</p>
-          <p>- Comments, missing does not make sense? needs only button to
-            show synopses.</p>
-        </div>
-        </VFiller>
+      <Slate editor={bodyeditor} value={body_buffer} onChange={setBodyBuffer}>
+        <IndexBox state={state}/>
+        <EditorBox mode="Regular"/>
+      </Slate>
+      <Slate editor={noteeditor} value={note_buffer} onChange={setNoteBuffer}>
+        <EditorBox mode="Regular" visible={false}/>
+        <IndexBox state={noteindex_settings}/>
+      </Slate>
     </HFiller>
-    </Slate>
   )
   /*/
   return (
@@ -238,7 +223,11 @@ function DeferredRender(props) {
 
 //-----------------------------------------------------------------------------
 
-function EditorBox({style, mode="Condensed"}) {
+function EditorBox({style, visible=true, mode="Condensed"}) {
+  //const display = visible ? undefined : "none"
+
+  if(!visible) return null;
+
   return <VBox style={{...style}}>
     <EditToolbar />
     <div className="Board">
@@ -265,6 +254,12 @@ function EditToolbar() {
     <Button>Block: {nodetype}</Button>
     <Filler/>
   </ToolBox>
+}
+
+//-----------------------------------------------------------------------------
+
+function IndexBox({state}) {
+  return <SlateTOC state={state} />
 }
 
 //-----------------------------------------------------------------------------

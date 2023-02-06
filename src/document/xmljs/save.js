@@ -92,9 +92,11 @@ export function toXML(story) {
   }
 
   function toNotes(notes) {
+    const {parts, ...attributes} = notes;
+
     return toElem({
       type: "notes",
-      elements: notes.map(toPart)
+      elements: parts.map(toPart)
     })
   }
 
