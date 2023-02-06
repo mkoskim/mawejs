@@ -8,7 +8,7 @@
 
 /* eslint-disable no-unused-vars */
 
-import "./organizer.css"
+import "./outliner.css"
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 
@@ -25,6 +25,7 @@ import {
 } from "../common/factory";
 
 import {docLoad, docSave, docUpdate} from "../editor/doc"
+import {withWordCounts} from "../../document";
 
 //import {docByID} from "../app/store"
 
@@ -43,12 +44,14 @@ export function Organizer({id}) {
 
   if(!doc) return <Loading/>
 
+  console.log("Update", doc)
+
   return <DragDropContext
     //onDragStart={onDragStart}
     //onDragUpdate={onDragUpdate}
     onDragEnd={onDragEnd}
     >
-      <OrganizerView id={id} doc={doc}/>
+      <OrganizerView doc={doc}/>
     </DragDropContext>
 
   function findPart(partID) {
@@ -66,7 +69,7 @@ export function Organizer({id}) {
   }
 
   function onDragEnd(result) {
-    //console.log("onDragEnd:", result)
+    console.log("onDragEnd:", result)
 
     const {type, source, destination} = result;
     //console.log(type)
@@ -110,38 +113,45 @@ export function Organizer({id}) {
 //-----------------------------------------------------------------------------
 
 function OrganizerView({doc}) {
-  console.log("Organizer: Doc:", doc)
+  //console.log("Organizer: Doc:", doc)
 
-  const bodyparts = doc.story.body.parts
-  const noteparts = doc.story.notes.parts
+  return <div className="Filler Organizer" style={{overflow: "auto"}}>
 
-  return <div className="Filler" style={{overflow: "auto"}}>
     <Droppable droppableId="body" direction="horizontal" type="part">
     {(provided, snapshot) => {
         const {innerRef, droppableProps, placeholder} = provided
+        const body = withWordCounts(doc.story.body)
+        const {words} = body
 
-        return <div
-          ref={innerRef}
-          className="HBox Organizer" style={{marginBottom: "1cm"}}
-          {...droppableProps}
-          >
-          {bodyparts.map((part, index) => <PartView key={part.id} index={index} part={part}/>)}
-          {placeholder}
+        //console.log("Body update")
+        return <React.Fragment>
+          <Button>Words: {words?.text}</Button>
+          <div
+            ref={innerRef}
+            className="HBox Section"
+            {...droppableProps}
+            >
+            {body.parts.map((part, index) => <PartView key={part.id} index={index} part={part}/>)}
+            {placeholder}
           </div>
+          </React.Fragment>
       }
     }
     </Droppable>
+
     <hr/>
+
     <Droppable droppableId="notes" direction="horizontal" type="part">
     {(provided, snapshot) => {
         const {innerRef, droppableProps, placeholder} = provided
+        const notes = doc.story.notes
 
         return <div
           ref={innerRef}
-          className="HBox Organizer" style={{marginBottom: "1cm"}}
+          className="HBox Section"
           {...droppableProps}
           >
-          {noteparts.map((part, index) => <PartView key={part.id} index={index} part={part}/>)}
+          {notes.parts.map((part, index) => <PartView key={part.id} index={index} part={part}/>)}
           {placeholder}
           </div>
       }
@@ -168,18 +178,25 @@ function PartView({part, index}) {
 
   function partDraggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
+    const {words} = part;
+
+    function Words() {
+      if(words) return <React.Fragment><Filler style={{minWidth: "8pt"}}/>{words.text}</React.Fragment>
+      return null;
+    }
 
     return <div
       ref={innerRef}
       {...draggableProps}
       className="Part"
       >
-      <div
+      <HBox
         className="Name"
         {...dragHandleProps}
       >
         {part.name && part.name !== "" ? part.name : "<Unnamed>"}
-      </div>
+        <Words />
+      </HBox>
       <Droppable
         droppableId={part.id}
         type="scene"
@@ -230,7 +247,7 @@ function SceneView({scene, index}) {
       {...draggableProps}
       {...dragHandleProps}  // Move these inside to create handle
     >
-      <div>{scene.name && scene.name !== "" ? scene.name : "<Unnamed>"}</div>
+      <div className="Name">{scene.name && scene.name !== "" ? scene.name : "<Unnamed>"}</div>
     </div>
   }
 }

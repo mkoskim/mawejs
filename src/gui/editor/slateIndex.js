@@ -38,65 +38,13 @@ import {
 import { styled } from '@mui/material/styles';
 
 //-----------------------------------------------------------------------------
-// Complete word counts. Might be useful elsewhere, too.
 
-function wordCounts(section) {
-
-  function Scene(scene) {
-
-    function wordCount(elems, type) {
-      return (
-        elems
-        .filter(elem => elem.type === type)
-        .map(elem => elem2text(elem))
-        .join(" ")
-        .split(/\s+/g)
-        .filter(s => s.length)
-      ).length
-    }
-
-    return {
-      ...scene,
-      words: {
-        text: wordCount(scene.children, "p"),
-        missing: wordCount(scene.children, "missing"),
-        comment: wordCount(scene.children, "comment")
-      },
-    }
-  }
-
-  function Part(part) {
-    const scenes = part.children.map(Scene)
-
-    return {
-      ...part,
-      children: scenes
-    }
-  }
-
-  return {
-    ...section,
-    parts: section.parts.map(Part)
-  }
-}
-
-//-----------------------------------------------------------------------------
-
-export function SlateTOC({state, style})
+export function SlateTOC({state, section, style})
 {
+  //const editor = useSlate()
+  //const section = withWordCounts(edit2section(editor.children))
+
   //console.log(section)
-  const editor = useSlate()
-
-  function getSection() {
-    const section = edit2section(editor.children)
-
-    if(state.wordsAs !== "off") {
-      return wordCounts(section)
-    }
-    return section
-  }
-
-  const section = getSection()
 
   /*
   return (
@@ -112,7 +60,7 @@ export function SlateTOC({state, style})
   /*/
   return (
     <VFiller style={{...style}}>
-      <IndexToolbar state={state}/>
+      <IndexToolbar state={state} section={section}/>
       <VBox className="TOC">
         {section.parts.map(part => <PartItem key={part.id} state={state} part={part}/>)}
       </VBox>
@@ -123,9 +71,9 @@ export function SlateTOC({state, style})
 
 //-----------------------------------------------------------------------------
 
-function IndexToolbar({state}) {
+function IndexToolbar({state, section}) {
   return <ToolBox style={{background: "white"}}>
-    <Button>Test</Button>
+    <Button>Words: {section.words?.text}</Button>
   </ToolBox>
 
 /*
@@ -176,8 +124,8 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 //-----------------------------------------------------------------------------
 
 function PartItem({state, part}) {
-  const {id, name, exclude, type} = part;
-  const props = {id, type, name, exclude}
+  const {id, name, exclude, type, words} = part;
+  const props = {id, type, name, exclude, words}
 
   return <React.Fragment>
     <IndexItem className="PartName" state={state} {...props} />

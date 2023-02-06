@@ -12,8 +12,7 @@ import {toRTF} from "./print"
 
 import { getSuffix } from "./util";
 import { suffix2format } from "./util";
-
-const fs = require("../storage/localfs")
+import { withWordCounts } from "./util";
 
 export const mawe = {
   load,
@@ -30,6 +29,12 @@ export const mawe = {
 
   toRTF,
 }
+
+export {withWordCounts}
+
+//-----------------------------------------------------------------------------
+
+const fs = require("../storage/localfs")
 
 //-----------------------------------------------------------------------------
 

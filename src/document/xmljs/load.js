@@ -81,6 +81,7 @@ export function fromXML(root) {
   function parseBody(body, extras = {}) {
     return {
       ...extras,
+      type: "sect",
       lang: "fi",
       head: parseHead(elemFind(body, "head")),
       parts: elemFindall(body, "part").map(parsePart)
@@ -89,6 +90,7 @@ export function fromXML(root) {
 
   function parseNotes(notes) {
     return {
+      type: "sect",
       parts: elemFindall(notes, "part").map(parsePart)
     }
   }

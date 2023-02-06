@@ -30,7 +30,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
 
 import {SingleEdit} from "../editor/editor";
-import {Organizer} from "../organizer/organizer";
+import {Organizer} from "../outliner/outliner";
 
 //-----------------------------------------------------------------------------
 
@@ -119,8 +119,8 @@ export default function App(props) {
       }
     },
     {
-      //mode: "single"
-      mode: "organizer"
+      //mode: "editor"
+      mode: "outliner"
     }
   );
 
@@ -131,7 +131,7 @@ export default function App(props) {
 
   //const id = "./local/Beltane.mawe";
   //const id = "./local/Dinosauruspuisto.mawe";
-  const id = "./local/JazramonGjerta.test.mawe";
+  //const id = "./local/JazramonGjerta.test.mawe";
   //const id = "./local/testwrite.mawe";
   //const id = "./local/TestDoc1.mawe";
   //const id = "./local/TestDoc2.mawe";
@@ -139,7 +139,7 @@ export default function App(props) {
   //const id = "./local/Lorem30k.mawe";
 
   //const id = "./local/mawe2/NeljaBarnaa.mawe";
-  //const id = "./local/mawe2/JazramonGjerta.mawe";
+  const id = "./local/mawe2/JazramonGjerta.mawe";
   //const id = "./local/mawe2/LammenHirvio.mawe";
   //const id = "./local/mawe2/CasaMagda.mawe";
 
@@ -163,8 +163,8 @@ function ChooseView({mode, id}) {
   console.log("EditView/ID..:", id)
 
   switch(mode.mode) {
-    case "single": return <SingleEdit id={id}/>
-    case "organizer": return <Organizer id={id}/>
+    case "editor": return <SingleEdit id={id}/>
+    case "outliner": return <Organizer id={id}/>
     case "splitview": return <div style={{margin: "8pt", width: "300pt"}}>
       <p>Placeholder</p>
       <p>Edit two docs at once: inteded for writing new drafts from previos
@@ -224,8 +224,8 @@ function ViewSelector({mode}) {
     <BorderlessToggleButtonGroup exclusive orientation="vertical" value={mode.mode} onChange={(e, payload) => payload && mode.dispatch({type: "mode", payload})}>
       <ToggleButton value="workspace"><SidebarToggle tooltip="Workspace"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <Separator/>
-      <ToggleButton value="single"><SidebarToggle tooltip="Edit"><Icon.Action.Edit sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
-      <ToggleButton value="organizer"><SidebarToggle tooltip="Outline"><Icon.Action.Cards sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="outliner"><SidebarToggle tooltip="Outline"><Icon.Action.Cards sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="editor"><SidebarToggle tooltip="Edit"><Icon.Action.Edit sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="splitview"><SidebarToggle tooltip="Split view"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="export"><SidebarToggle tooltip="Export"><Icon.Action.Print sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="folder"><SidebarToggle tooltip="Show folder"><Icon.Action.Folder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>

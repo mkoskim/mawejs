@@ -49,6 +49,7 @@ import {
 
 import { styled } from '@mui/material/styles';
 import {docLoad, docSave, docUpdate} from "./doc"
+import {withWordCounts} from "../../document";
 
 //import { mawe } from "../../document";
 
@@ -102,7 +103,8 @@ function SingleEditView({id, doc}) {
 
   // Update doc from buffers
 
-  const bodyFromEdit = edit2section(body_buffer)
+  const bodyFromEdit  = edit2section(body_buffer)
+  const bodyWithWords = withWordCounts(bodyFromEdit)
   const notesFromEdit = edit2section(note_buffer)
 
   const edited = {
@@ -195,12 +197,12 @@ function SingleEditView({id, doc}) {
   return (
     <HFiller style={{overflow: "auto"}}>
       <Slate editor={bodyeditor} value={body_buffer} onChange={setBodyBuffer}>
-        <IndexBox state={state}/>
+        <IndexBox state={state} section={bodyWithWords}/>
         <EditorBox mode="Regular"/>
       </Slate>
       <Slate editor={noteeditor} value={note_buffer} onChange={setNoteBuffer}>
         <EditorBox mode="Regular" visible={false}/>
-        <IndexBox state={noteindex_settings}/>
+        <IndexBox state={noteindex_settings} section={notesFromEdit}/>
       </Slate>
     </HFiller>
   )
@@ -258,8 +260,12 @@ function EditToolbar() {
 
 //-----------------------------------------------------------------------------
 
-function IndexBox({state}) {
-  return <SlateTOC state={state} />
+function IndexBox({state, section}) {
+  const props = {state, section}
+
+  return <DeferredRender>
+    <SlateTOC {...props}/>
+    </DeferredRender>
 }
 
 //-----------------------------------------------------------------------------

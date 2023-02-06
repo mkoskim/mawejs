@@ -383,6 +383,7 @@ export function section2edit(section) {
 export function edit2section(content) {
   const [head, parts] = getHead()
   return {
+    type: "sect",
     head: {},
     parts: splitByLeadingElem(parts, isPartBreak)
       .filter(p => p.length)

@@ -57,3 +57,101 @@ export async function buf2file(doc, buffer) {
     return await fs.write(file.id, buffer);
   }
 }
+
+//-----------------------------------------------------------------------------
+// Count words
+//-----------------------------------------------------------------------------
+
+// TODO: Split to two functions: (1) one that adds word counts to elements, and
+// (2) one that just counts words.
+
+export function withWordCounts(elem) {
+  switch(elem.type) {
+    case "sect":  return Section(elem);
+    case "part":  return Part(elem);
+    case "scene": return Scene(elem);
+    default: break;
+  }
+  return elem;
+
+  function sum(elems) {
+    return (
+      elems
+      .map(elem => elem.words)
+      .reduce(
+        (a, b) => ({
+          chars: a.chars + b.chars,
+          text: a.text + b.text,
+          missing: a.missing + b.missing,
+          comment: a.comment + b.comment,
+        }),
+        {
+          chars: 0,
+          text: 0,
+          missing: 0,
+          comment: 0,
+        }
+      )
+    )
+  }
+
+  function Section(section) {
+    const parts = section.parts.map(Part)
+    return {
+      ...section,
+      parts,
+      words: sum(parts),
+    }
+  }
+
+  function Part(part) {
+    const scenes = part.children.map(Scene)
+
+    return {
+      ...part,
+      children: scenes,
+      words: sum(scenes),
+    }
+  }
+
+  function Scene(scene) {
+
+    function elemAsText(elem) {
+      return (
+        elem.children
+        .map(elem => elem.text)
+        .join()
+      )
+    }
+
+    function asText(elems, type) {
+      return (
+        elems
+        .filter(elem => elem.type === type)
+        .map(elem => elemAsText(elem))
+        .join(" ")
+      )
+    }
+
+    function words(text) {
+      return (
+        text
+        .split(/\s+/g)
+        .filter(s => s.length)
+      ).length
+    }
+
+    const text = asText(scene.children, "p")
+
+    return {
+      ...scene,
+      words: {
+        chars: text.length,
+        text: words(text),
+        missing: words(asText(scene.children, "missing")),
+        comment: words(asText(scene.children, "comment"))
+      },
+    }
+  }
+}
+
