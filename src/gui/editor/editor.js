@@ -150,7 +150,7 @@ function SingleEditView({id, doc}) {
   //---------------------------------------------------------------------------
 
   const [indexed1, setIndexed1] = useState(["br.scene", "synopsis"])
-  const [words1, setWords1] = useState("cumulative")
+  const [words1, setWords1] = useState("numbers")
 
   const bodyindex_settings = {
     sectID: "body",
@@ -233,6 +233,10 @@ function SingleEditView({id, doc}) {
   )
   /**/
 
+  //---------------------------------------------------------------------------
+  // Toolbar
+  //---------------------------------------------------------------------------
+
   function Toolbar() {
     return <ToolBox style={{ background: "white" }}>
       <Label>Words: {bodyWithWords.words?.text}</Label>
@@ -246,6 +250,22 @@ function SingleEditView({id, doc}) {
       <Filler/>
     </ToolBox>
   }
+
+  /*
+  function EditToolbar() {
+  const editor = useSlate()
+
+  // Block type under cursor
+  const [match] = Editor.nodes(editor, { match: n => Editor.isBlock(editor, n)})
+  const nodetype = match ? match[0].type : undefined
+
+  return <ToolBox style={{ background: "white" }}>
+    <Button>Block: {nodetype}</Button>
+    <Filler/>
+  </ToolBox>
+  }
+*/
+
 
   //---------------------------------------------------------------------------
   // Brute force DnD
@@ -294,11 +314,9 @@ function SingleEditView({id, doc}) {
     switch(type) {
       case "scene": {
         const srcSectID = findSectIDByElemID(source.droppableID)
-        const dstSectID = findSectIDByElemID(destination.droppableID)
-        //console.log(srcSectID, dstSectID)
-
         const srcEdit = findEditor(srcSectID)
-        const dstEdit = findEditor(dstSectID)
+
+        // Find source container and pop it out
 
         const srcPath  = elemByID(srcEdit, source.droppableId)[0][1]
         //console.log("srcPart", srcPart[0], "@", srcPart[1])
@@ -311,10 +329,13 @@ function SingleEditView({id, doc}) {
         const srcStart = Editor.start(srcEdit, srcParts[source.index][1])
         const srcEnd = Editor.before(srcEdit, srcParts[source.index+1][1])
 
-        const nodes = elemsByRange(srcEdit, srcStart, srcEnd)
-
-        console.log("Scene:", nodes)
+        const block = elemsByRange(srcEdit, srcStart, srcEnd)
         Transforms.removeNodes(srcEdit, {at: {anchor: srcStart, focus: srcEnd}})
+
+        // Find destination container and insert element there
+
+        const dstSectID = findSectIDByElemID(destination.droppableID)
+        const dstEdit = findEditor(dstSectID)
 
         const dstPath  = elemByID(dstEdit, destination.droppableId)[0][1]
         const dstParts = [
@@ -322,7 +343,7 @@ function SingleEditView({id, doc}) {
           [undefined, Editor.end(dstEdit, [])]
         ]
         const dstStart = dstParts[destination.index][1]
-        Transforms.insertNodes(dstEdit, nodes, {at: dstStart})
+        Transforms.insertNodes(dstEdit, block, {at: dstStart})
 
         setActive(dstSectID)
         focusByID(dstEdit, result.draggableId)
@@ -341,8 +362,8 @@ function SingleEditView({id, doc}) {
 
       case "part": {
         const srcEdit = findEditor(source.droppableId)
-        const dstEdit = findEditor(destination.droppableId)
 
+        // Find source container and pop element
         const srcParts = [
           ...elemByTypes(srcEdit, ["br.part"]),
           [undefined, Editor.end(srcEdit, [])]
@@ -351,17 +372,19 @@ function SingleEditView({id, doc}) {
         const srcStart = Editor.start(srcEdit, srcParts[source.index][1])
         const srcEnd = Editor.before(srcEdit, srcParts[source.index+1][1])
 
-        const nodes = elemsByRange(srcEdit, srcStart, srcEnd)
-
-        //console.log("Part:", nodes)
+        const block = elemsByRange(srcEdit, srcStart, srcEnd)
         Transforms.removeNodes(srcEdit, {at: {anchor: srcStart, focus: srcEnd}})
+
+        // Find destination container and insert element there
+
+        const dstEdit = findEditor(destination.droppableId)
 
         const dstParts = [
           ...elemByTypes(dstEdit, ["br.part"]),
           [undefined, Editor.end(dstEdit, [])]
         ]
         const dstStart = dstParts[destination.index][1]
-        Transforms.insertNodes(dstEdit, nodes, {at: dstStart})
+        Transforms.insertNodes(dstEdit, block, {at: dstStart})
 
         setActive(destination.droppableId)
         focusByID(dstEdit, result.draggableId)
@@ -383,26 +406,6 @@ function SingleEditView({id, doc}) {
         return;
     }
   }
-}
-
-function EditToolbar() {
-  const editor = useSlate()
-
-  // Block type under cursor
-  const [match] = Editor.nodes(editor, { match: n => Editor.isBlock(editor, n)})
-  const nodetype = match ? match[0].type : undefined
-
-  /*
-  if(match) {
-    const [node, path] = match;
-    console.log(node)
-  }
-  */
-
-  return <ToolBox style={{ background: "white" }}>
-    <Button>Block: {nodetype}</Button>
-    <Filler/>
-  </ToolBox>
 }
 
 //-----------------------------------------------------------------------------
