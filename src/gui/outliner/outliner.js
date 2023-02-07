@@ -46,11 +46,7 @@ export function Organizer({id}) {
 
   console.log("Update", doc)
 
-  return <DragDropContext
-    //onDragStart={onDragStart}
-    //onDragUpdate={onDragUpdate}
-    onDragEnd={onDragEnd}
-    >
+  return <DragDropContext onDragEnd={onDragEnd}>
       <OrganizerView doc={doc}/>
     </DragDropContext>
 

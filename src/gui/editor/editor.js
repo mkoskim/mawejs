@@ -25,15 +25,23 @@ import {
   Editor, Node, Transforms, Range, Point,
 } from "slate";
 
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
 import {
   getEditor, SlateEditable,
   section2edit, edit2section,
   elem2text,
+  elemByID,
+  focusByPath, focusByID,
+  elemByTypes,
+  elemsByRange,
 } from "./slateEditor"
 
 import {
   SlateTOC,
 } from "./slateIndex"
+
+import { sleep } from "../../util"
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
@@ -106,14 +114,14 @@ function SingleEditView({id, doc}) {
   //---------------------------------------------------------------------------
   // slate buffers
 
-  const [body_buffer, setBodyBuffer] = useState(section2edit(doc.story.body))
-  const [note_buffer, setNoteBuffer] = useState(section2edit(doc.story.notes))
+  const [bodybuffer, setBodyBuffer] = useState(section2edit(doc.story.body))
+  const [notebuffer, setNoteBuffer] = useState(section2edit(doc.story.notes))
 
   // Update doc from buffers
 
-  const bodyFromEdit  = edit2section(body_buffer)
+  const bodyFromEdit  = edit2section(bodybuffer)
   const bodyWithWords = withWordCounts(bodyFromEdit)
-  const notesFromEdit = edit2section(note_buffer)
+  const notesFromEdit = edit2section(notebuffer)
 
   const edited = {
     ...doc,
@@ -145,6 +153,7 @@ function SingleEditView({id, doc}) {
   const [words1, setWords1] = useState("cumulative")
 
   const bodyindex_settings = {
+    sectID: "body",
     activate: () => setActive("body"),
     indexed: {
       choices:  ["br.scene", "synopsis", "missing", "comment"],
@@ -161,6 +170,7 @@ function SingleEditView({id, doc}) {
   }
 
   const noteindex_settings = {
+    sectID: "notes",
     activate: () => setActive("notes"),
     indexed: {
       value: ["br.scene", "synopsis"],
@@ -195,17 +205,17 @@ function SingleEditView({id, doc}) {
   //console.log("Edit:", id)
 
   //*
-  return <React.Fragment>
+  return <DragDropContext onDragEnd={onDragEnd}>
     <Toolbar />
     <HFiller style={{overflow: "auto"}}>
-      <Slate editor={bodyeditor} value={body_buffer} onChange={setBodyBuffer}>
+      <Slate editor={bodyeditor} value={bodybuffer} onChange={setBodyBuffer}>
         <IndexBox
           style={{maxWidth: "400px", width: "400px"}}
           settings={bodyindex_settings}
           section={bodyWithWords}/>
         <EditorBox mode="Regular" visible={active === "body"}/>
       </Slate>
-      <Slate editor={noteeditor} value={note_buffer} onChange={setNoteBuffer}>
+      <Slate editor={noteeditor} value={notebuffer} onChange={setNoteBuffer}>
         <EditorBox mode="Regular" visible={active === "notes"}/>
         <IndexBox
           style={{maxWidth: "300px", width: "300px"}}
@@ -213,7 +223,7 @@ function SingleEditView({id, doc}) {
           section={notesFromEdit}/>
       </Slate>
     </HFiller>
-    </React.Fragment>
+    </DragDropContext>
   /*/
   return (
     <EditorBox
@@ -236,6 +246,163 @@ function SingleEditView({id, doc}) {
       <Filler/>
     </ToolBox>
   }
+
+  //---------------------------------------------------------------------------
+  // Brute force DnD
+  //---------------------------------------------------------------------------
+
+  function findEditor(sectID) {
+    switch(sectID) {
+      case "body": return bodyeditor;
+      case "notes": return noteeditor;
+    }
+  }
+
+  function findSect(sectID) {
+    switch(sectID) {
+      case "body": return doc.story.body;
+      case "notes": return doc.story.notes;
+    }
+  }
+
+  function findPart(partID) {
+    return (
+      doc.story.body.parts.find(part => part.id === partID) ||
+      doc.story.notes.parts.find(part => part.id === partID)
+    )
+  }
+
+  function findSectIDByElemID(elemID) {
+    if(elemByID(bodyeditor, elemID)) return "body"
+    if(elemByID(noteeditor, elemID)) return "notes"
+    return undefined
+  }
+
+  async function onDragEnd(result) {
+    console.log("onDragEnd:", result)
+
+    const {type, source, destination} = result;
+
+    if(!destination) return;
+
+    if(source.droppableId === destination.droppableId) {
+      if(source.index === destination.index) return;
+    }
+
+    //console.log(type, source, "-->", destination)
+
+    switch(type) {
+      case "scene": {
+        const srcSectID = findSectIDByElemID(source.droppableID)
+        const dstSectID = findSectIDByElemID(destination.droppableID)
+        //console.log(srcSectID, dstSectID)
+
+        const srcEdit = findEditor(srcSectID)
+        const dstEdit = findEditor(dstSectID)
+
+        const srcPath  = elemByID(srcEdit, source.droppableId)[0][1]
+        //console.log("srcPart", srcPart[0], "@", srcPart[1])
+        const srcParts = [
+          ...elemByTypes(srcEdit, ["br.part", "br.scene"], Editor.after(srcEdit, srcPath)),
+          [undefined, Editor.end(srcEdit, [])]
+        ]
+        //console.log(srcParts)
+
+        const srcStart = Editor.start(srcEdit, srcParts[source.index][1])
+        const srcEnd = Editor.before(srcEdit, srcParts[source.index+1][1])
+
+        const nodes = elemsByRange(srcEdit, srcStart, srcEnd)
+
+        console.log("Scene:", nodes)
+        Transforms.removeNodes(srcEdit, {at: {anchor: srcStart, focus: srcEnd}})
+
+        const dstPath  = elemByID(dstEdit, destination.droppableId)[0][1]
+        const dstParts = [
+          ...elemByTypes(dstEdit, ["br.part", "br.scene"], Editor.after(dstEdit, dstPath)),
+          [undefined, Editor.end(dstEdit, [])]
+        ]
+        const dstStart = dstParts[destination.index][1]
+        Transforms.insertNodes(dstEdit, nodes, {at: dstStart})
+
+        setActive(dstSectID)
+        focusByID(dstEdit, result.draggableId)
+        /*
+        const srcPart = findPart(source.droppableId);
+        const dstPart = findPart(destination.droppableId);
+
+        const scene = srcPart.children[source.index]
+        srcPart.children.splice(source.index, 1)
+        dstPart.children.splice(destination.index, 0, scene)
+
+        update(scene.id)
+        */
+        break;
+      }
+
+      case "part": {
+        const srcEdit = findEditor(source.droppableId)
+        const dstEdit = findEditor(destination.droppableId)
+
+        const srcParts = [
+          ...elemByTypes(srcEdit, ["br.part"]),
+          [undefined, Editor.end(srcEdit, [])]
+        ]
+        //console.log("srcParts", srcParts)
+        const srcStart = Editor.start(srcEdit, srcParts[source.index][1])
+        const srcEnd = Editor.before(srcEdit, srcParts[source.index+1][1])
+
+        const nodes = elemsByRange(srcEdit, srcStart, srcEnd)
+
+        //console.log("Part:", nodes)
+        Transforms.removeNodes(srcEdit, {at: {anchor: srcStart, focus: srcEnd}})
+
+        const dstParts = [
+          ...elemByTypes(dstEdit, ["br.part"]),
+          [undefined, Editor.end(dstEdit, [])]
+        ]
+        const dstStart = dstParts[destination.index][1]
+        Transforms.insertNodes(dstEdit, nodes, {at: dstStart})
+
+        setActive(destination.droppableId)
+        focusByID(dstEdit, result.draggableId)
+
+        /*
+        const srcSect = findSect(source.droppableId)
+        const dstSect = findSect(destination.droppableId)
+
+        const part = srcSect.parts[source.index]
+        srcSect.parts.splice(source.index, 1)
+        dstSect.parts.splice(destination.index, 0, part)
+
+        update(part.id)
+        */
+        break;
+      }
+      default:
+        console.log("Unknown draggable type:", type, result)
+        return;
+    }
+  }
+}
+
+function EditToolbar() {
+  const editor = useSlate()
+
+  // Block type under cursor
+  const [match] = Editor.nodes(editor, { match: n => Editor.isBlock(editor, n)})
+  const nodetype = match ? match[0].type : undefined
+
+  /*
+  if(match) {
+    const [node, path] = match;
+    console.log(node)
+  }
+  */
+
+  return <ToolBox style={{ background: "white" }}>
+    <Button>Block: {nodetype}</Button>
+    <Filler/>
+  </ToolBox>
 }
 
 //-----------------------------------------------------------------------------
@@ -282,26 +449,6 @@ function Empty() {
 }
 
 //-----------------------------------------------------------------------------
-
-function EditToolbar() {
-  const editor = useSlate()
-
-  // Block type under cursor
-  const [match] = Editor.nodes(editor, { match: n => Editor.isBlock(editor, n)})
-  const nodetype = match ? match[0].type : undefined
-
-  /*
-  if(match) {
-    const [node, path] = match;
-    console.log(node)
-  }
-  */
-
-  return <ToolBox style={{ background: "white" }}>
-    <Button>Block: {nodetype}</Button>
-    <Filler/>
-  </ToolBox>
-}
 
 function getButtonGroup(group, exclusive) {
   if(!group?.choices) return null;
@@ -362,15 +509,6 @@ function getButtonGroup(group, exclusive) {
   >
     {group.choices.map(choice => getButton(choice))}
   </BorderlessToggleButtonGroup>
-
-  /*
-  return <ToolBox style={{background: "white"}}>
-    <Button>Words: {section.words?.text}</Button>
-    <HFiller/>
-    {getButtonGroup(settings.indexed)}
-    {getButtonGroup(settings.words, true)}
-  </ToolBox>
-  */
 }
 
 const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
@@ -380,6 +518,7 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     //padding: "5pt",
     padding: "4px",
     border: 0,
+    borderRadius: 0,
     "&:hover": {
       background: "lightgrey",
     },

@@ -19,7 +19,7 @@ import {
 
 import { withHistory } from "slate-history"
 import { addClass, Icon } from '../common/factory';
-import { uuid, nanoid, splitByLeadingElem } from '../../util';
+import { sleep, uuid, nanoid, splitByLeadingElem } from '../../util';
 
 //-----------------------------------------------------------------------------
 
@@ -92,6 +92,60 @@ function Leaf({ leaf, attributes, ...props }) {
 
 //*****************************************************************************
 //
+// Extras
+//
+//*****************************************************************************
+
+
+export function elemByID(editor, id, anchor, focus) {
+  if(!anchor) anchor = Editor.start(editor, [])
+  if(!focus) focus = Editor.end(editor, [])
+
+  return Array.from(Editor.nodes(editor, {
+    at: {anchor, focus},
+    match: (n, p) => Editor.isBlock(editor, n) && n.id === id
+  }))
+}
+
+export function elemByTypes(editor, types, anchor, focus) {
+  if(!anchor) anchor = Editor.start(editor, [])
+  if(!focus) focus = Editor.end(editor, [])
+
+  return Array.from(
+    Editor.nodes(editor, {
+      at: {anchor, focus},
+      match: (node, path) => types.includes(node.type),
+    })
+  )
+}
+
+export function elemsByRange(editor, anchor, focus) {
+  return Array.from(
+    Editor.nodes(editor, {
+      at: {anchor, focus},
+      match: (node, path) => path.length == 1 && Editor.isBlock(editor, node),
+    })
+  ).map(([n, p]) => n)
+}
+
+export async function focusByPath(editor, path) {
+  //console.log("Focus path:", path)
+  await sleep(100);
+  Transforms.select(editor, path);
+  ReactEditor.focus(editor)
+}
+
+export async function focusByID(editor, id) {
+  const match = elemByID(editor, id)
+
+  if(!match.length) return;
+
+  const [node, path] = match[0]
+  focusByPath(editor, Editor.start(editor, path))
+}
+
+//*****************************************************************************
+//
 // Editor customizations
 //
 //*****************************************************************************
@@ -138,7 +192,7 @@ export function getEditor() {
     //console.log("Apply:", operation)
     switch(operation.type) {
       case "insert_node": {
-        const node = { ...operation.node, id: nanoid() }
+        const node = { ...operation.node, id: operation.node.id ?? nanoid() }
         return apply({...operation, node})
       }
       case "split_node": {
@@ -335,12 +389,11 @@ export function section2edit(section) {
 
   function Scene2Slate(scene, index) {
     const name = scene.name ?? ""
-    const {id, attributes} = scene
+    const {id} = scene
 
     const head = createElement({
       type: "br.scene",
       id,
-      attributes,
       children: [{ text: name }]
     })
 
@@ -418,7 +471,7 @@ export function edit2part(content) {
       return [content[0], content.slice(1)]
     }
     return [
-      createElement({ type: "br.part", children: [{ text: "<Unnamed>" }] }),
+      createElement({ type: "br.part", children: [{ text: "" }] }),
       content,
     ]
   }
@@ -427,13 +480,12 @@ export function edit2part(content) {
 export function edit2scene(content) {
   const [head, paragraphs] = getHead()
   const name = elem2text(head)
-  const {id, attributes} = head;
+  const {id} = head;
 
   return {
     type: "scene",
     name,
     id,
-    attributes,
     children: paragraphs.map(elem => getParagraph(elem))
   }
 
@@ -442,7 +494,7 @@ export function edit2scene(content) {
       return [content[0], content.slice(1)]
     }
     return [
-      createElement({ type: "br.scene", children: [{ text: "<Unnamed>" }] }),
+      createElement({ type: "br.scene", children: [{ text: "" }] }),
       content,
     ]
   }

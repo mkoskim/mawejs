@@ -139,9 +139,9 @@ export default function App(props) {
   //const id = "./local/Lorem30k.mawe";
 
   //const id = "./local/mawe2/NeljaBarnaa.mawe";
-  //const id = "./local/mawe2/JazramonGjerta.mawe";
+  const id = "./local/mawe2/JazramonGjerta.mawe";
   //const id = "./local/mawe2/LammenHirvio.mawe";
-  const id = "./local/mawe2/CasaMagda.mawe";
+  //const id = "./local/mawe2/CasaMagda.mawe";
 
   return (
     <ThemeProvider theme={myTheme}>
