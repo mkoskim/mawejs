@@ -66,6 +66,9 @@ export async function buf2file(doc, buffer) {
 // (2) one that just counts words.
 
 export function withWordCounts(elem) {
+
+  const cumulativeSum = (sum => value => sum += value)(0);
+
   switch(elem.type) {
     case "sect":  return Section(elem);
     case "part":  return Part(elem);
@@ -105,12 +108,16 @@ export function withWordCounts(elem) {
   }
 
   function Part(part) {
+    const cumulative = cumulativeSum(0)
     const scenes = part.children.map(Scene)
 
     return {
       ...part,
       children: scenes,
-      words: sum(scenes),
+      words: {
+        ...sum(scenes),
+        cumulative,
+      }
     }
   }
 
@@ -133,7 +140,7 @@ export function withWordCounts(elem) {
       )
     }
 
-    function words(text) {
+    function wordcount(text) {
       return (
         text
         .split(/\s+/g)
@@ -142,14 +149,16 @@ export function withWordCounts(elem) {
     }
 
     const text = asText(scene.children, "p")
+    const wc_text = wordcount(text)
 
     return {
       ...scene,
       words: {
         chars: text.length,
-        text: words(text),
-        missing: words(asText(scene.children, "missing")),
-        comment: words(asText(scene.children, "comment"))
+        text: wc_text,
+        cumulative: cumulativeSum(wc_text),
+        missing: wordcount(asText(scene.children, "missing")),
+        comment: wordcount(asText(scene.children, "comment"))
       },
     }
   }

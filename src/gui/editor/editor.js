@@ -142,7 +142,7 @@ function SingleEditView({id, doc}) {
   //---------------------------------------------------------------------------
 
   const [indexed1, setIndexed1] = useState(["br.scene", "synopsis"])
-  const [words1, setWords1] = useState("numbers")
+  const [words1, setWords1] = useState("cumulative")
 
   const bodyindex_settings = {
     activate: () => setActive("body"),
@@ -152,6 +152,7 @@ function SingleEditView({id, doc}) {
       setValue: setIndexed1,
     },
     words: {
+      total:    bodyWithWords.words.text,
       choices:  ["off", "numbers", "percent", "cumulative"],
       value:    words1,
       setValue: setWords1,

@@ -144,20 +144,22 @@ function ItemIcon({type}) {
     case "missing":
     case "comment":
     case "synopsis":
-      return <div className={addClass("Box", type)} />
+      return <span className={addClass("Box", type)} />
   }
   return null
 }
 
 function ItemLabel({className, name}) {
-  return <div className={addClass("Name", className)}>{name}</div>
+  return <span className={addClass("Name", className)}>{name}</span>
   //return <div className="Name">{id}</div>
 }
 
 function ItemWords({settings, words}) {
   if(words) switch(settings.words.value) {
+    case "numbers": return <span>{words.text}</span>
+    case "percent": return <span>{Number(100.0 * words.text / settings.words.total).toFixed(1)}</span>
+    case "cumulative": return <span>{words.cumulative !== undefined && Number(100.0 * words.cumulative / settings.words.total).toFixed(1)}</span>
     default: break;
-    case "numbers": return <div>{words?.text}</div>
   }
   return null;
 }
