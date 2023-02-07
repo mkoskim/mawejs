@@ -97,7 +97,7 @@ function Leaf({ leaf, attributes, ...props }) {
 //*****************************************************************************
 
 export function getEditor() {
-  const editor = withReact(withHistory(createEditor()))
+  const editor = withHistory(withReact(createEditor()))
 
   //---------------------------------------------------------------------------
   // Extra services
@@ -138,12 +138,12 @@ export function getEditor() {
     //console.log("Apply:", operation)
     switch(operation.type) {
       case "insert_node": {
-        operation.node.id = nanoid()
-        return apply(operation)
+        const node = { ...operation.node, id: nanoid() }
+        return apply({...operation, node})
       }
       case "split_node": {
-        if(operation.properties.id) operation.properties.id = nanoid()
-        return apply(operation)
+        const properties = { ...operation.properties, id: operation.properties.id && nanoid() }
+        return apply({...operation, properties})
       }
       default: break;
     }
@@ -234,17 +234,9 @@ export function getEditor() {
       const key = Editor.string(editor, range) + text
 
       if(key in SHORTCUTS) {
-        const props = SHORTCUTS[key]
-
         Transforms.select(editor, range)
         Transforms.delete(editor)
-        Transforms.setNodes(editor,
-          {...props},
-          {
-            match: n => Editor.isBlock(editor, n),
-          }
-        )
-
+        Transforms.setNodes(editor, SHORTCUTS[key])
         return
       }
     }
