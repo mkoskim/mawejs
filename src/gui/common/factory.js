@@ -109,7 +109,8 @@ export const Icon = {
   },
 
   BlockType: {
-    Synopsis: muiIcons.Description,
+    Scene: muiIcons.FormatAlignJustifyOutlined,
+    Synopsis: muiIcons.FormatAlignRightOutlined,
     Comment: muiIcons.Comment,
     Missing: muiIcons.Report,
   },

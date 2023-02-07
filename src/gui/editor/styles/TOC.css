@@ -11,6 +11,8 @@
   width: 300px;
   background-color: lightgray;
   */
+
+  padding: 4px;
   /*
   padding-top: 4px;
   padding-left: 6px;
@@ -19,8 +21,8 @@
   */
   /*
   background: white;
-  */
   border-right: 1pt solid lightgray;
+  */
   counter-reset: part scene;
 }
 
@@ -33,7 +35,7 @@
   */
 }
 
-.TOC .PartName .Name.Included::before {
+.TOC .PartName .Name::before {
   counter-increment: part;
 /*
   content: counter(part, upper-roman) "\00a0-\00a0";
@@ -45,13 +47,6 @@
 }
 
 /* ---------------------------------------------------------------------------- */
-
-.OutLine div.Scene {
-  /*
-  background: var(--comment-bg);
-  */
-  background: white;
-}
 
 .TOC div.Scene {
   /*
@@ -90,15 +85,8 @@
 
 .TOC .SceneName .Name::before {
   width: 1cm;
-}
-
-.TOC .SceneName .Name.Included::before {
   counter-increment: scene;
   content: counter(scene) ". ";
-}
-
-.TOC .SceneName .Name.Excluded::before {
-  content: "# ";
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -133,17 +121,20 @@
   max-width: 7pt;
   border: 1px solid grey;
   margin-right: 6pt;
+  margin-left: 0.5cm;
   /*
-  margin-left: 1cm;
   margin-left: 8pt;
   border-radius: 4pt;
   */
 }
 
+/*
+.TOC .Entry .Box.synopsis,
 .TOC .Entry .Box.comment,
 .TOC .Entry .Box.missing {
-  margin-left: 1cm;
+  margin-left: 0.5cm;
 }
+*/
 
 .TOC .Entry .Box.comment { background: rgb(71, 207, 71); }
 .TOC .Entry .Box.missing { background: rgb(252, 44, 44); }

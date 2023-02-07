@@ -72,15 +72,11 @@ export function toXML(story) {
 
   //---------------------------------------------------------------------------
 
-  function toBody(body, extra = {}) {
-    const {head, parts, ...attributes} = body;
+  function toBody(body) {
+    const {head, parts} = body;
 
     return toElem({
       type: "body",
-      attributes: {
-        ...extra,
-        ...attributes,
-      },
       elements: [
         toHead(head),
         toComment("",
@@ -92,7 +88,7 @@ export function toXML(story) {
   }
 
   function toNotes(notes) {
-    const {parts, ...attributes} = notes;
+    const {parts} = notes;
 
     return toElem({
       type: "notes",
@@ -144,25 +140,23 @@ export function toXML(story) {
   }
 
   function toPart(part) {
+    const {name} = part;
     return toElem({
       type: "part",
       attributes: {
-        name: part.name,
-        ...part.attributes,
+        name,
       },
       elements: part.children.map(toScene)
     })
   }
 
   function toScene(scene) {
-    const {name, exclude} = scene
+    const {name} = scene
 
     return toElem({
       type: "scene",
       attributes: {
-        ...scene.attributes,
         name,
-        exclude
       },
       elements: scene.children.map(doc2js)
     })
@@ -171,7 +165,7 @@ export function toXML(story) {
   //---------------------------------------------------------------------------
 
   function doc2js(elem) {
-    const {type, attributes, children = [], text} = elem;
+    const {type, children = [], text} = elem;
 
     if(type === "text") {
       if(!text || text === "") return undefined;
@@ -181,7 +175,6 @@ export function toXML(story) {
 
     return toElem({
       type,
-      attributes,
       elements: toElements(...children.map(doc2js)),
     })
   }

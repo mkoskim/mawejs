@@ -11,7 +11,7 @@ import "./styles/editor.css"
 /* eslint-disable no-unused-vars */
 
 import React, {
-  useState, useEffect,
+  useState, useEffect, useReducer,
   useMemo, useCallback,
   useDeferredValue,
   StrictMode,
@@ -96,6 +96,14 @@ function SingleEditView({id, doc}) {
   /**/
 
   //---------------------------------------------------------------------------
+  // Slate uses content variable only when initializing. We need to manually
+  // set children when doc changes between re-renders
+  //---------------------------------------------------------------------------
+
+  const bodyeditor = useMemo(() => getEditor(), [])
+  const noteeditor = useMemo(() => getEditor(), [])
+
+  //---------------------------------------------------------------------------
   // slate buffers
 
   const [body_buffer, setBodyBuffer] = useState(section2edit(doc.story.body))
@@ -126,47 +134,39 @@ function SingleEditView({id, doc}) {
   docUpdate(edited);
 
   //---------------------------------------------------------------------------
-  // Slate uses content variable only when initializing. We need to manually
-  // set children when doc changes between re-renders
-  //---------------------------------------------------------------------------
 
-  const bodyeditor = useMemo(() => getEditor(), [])
-  const noteeditor = useMemo(() => getEditor(), [])
+  const [active, setActive] = useState("body")
 
   //---------------------------------------------------------------------------
-  // TODO: Separate settings for different indices
+  // Index settings
   //---------------------------------------------------------------------------
 
-  const [_state, setState] = useState({
-    //id,
-    indexed: [
-      "br.part",
-      "br.scene",
-      //"synopsis",
-      //"missing",
-      //"comment",
-    ],
-    wordsAs: "numbers",
-  })
+  const [indexed1, setIndexed1] = useState(["br.scene", "synopsis"])
+  const [words1, setWords1] = useState("numbers")
 
-  const state = {
-    ..._state,
-    //setID: id => setState({...state, id}),
-    setContent: content => setState({...state, content}),
-    setIndexed: indexed => setState({...state, indexed}),
-    setWordsAs: wordsAs => setState({...state, wordsAs})
+  const bodyindex_settings = {
+    activate: () => setActive("body"),
+    indexed: {
+      choices:  ["br.scene", "synopsis", "missing", "comment"],
+      value:    indexed1,
+      setValue: setIndexed1,
+    },
+    words: {
+      choices:  ["off", "numbers", "percent", "cumulative"],
+      value:    words1,
+      setValue: setWords1,
+    },
+    numbering: true,
   }
 
   const noteindex_settings = {
-    indexed: [
-      "br.part",
-      "br.scene",
-      "synopsis",
-      //"missing",
-      //"comment",
-    ],
-    wordsAs: "off",
+    activate: () => setActive("notes"),
+    indexed: {
+      value: ["br.scene", "synopsis"],
+    }
   }
+
+  //---------------------------------------------------------------------------
 
   useEffect(() => addHotkeys({
     //"mod+o": (e) => onClose(e, dispatch),
@@ -194,18 +194,25 @@ function SingleEditView({id, doc}) {
   //console.log("Edit:", id)
 
   //*
-  return (
+  return <React.Fragment>
+    <Toolbar />
     <HFiller style={{overflow: "auto"}}>
       <Slate editor={bodyeditor} value={body_buffer} onChange={setBodyBuffer}>
-        <IndexBox state={state} section={bodyWithWords}/>
-        <EditorBox mode="Regular"/>
+        <IndexBox
+          style={{maxWidth: "400px", width: "400px"}}
+          settings={bodyindex_settings}
+          section={bodyWithWords}/>
+        <EditorBox mode="Regular" visible={active === "body"}/>
       </Slate>
       <Slate editor={noteeditor} value={note_buffer} onChange={setNoteBuffer}>
-        <EditorBox mode="Regular" visible={false}/>
-        <IndexBox state={noteindex_settings} section={notesFromEdit}/>
+        <EditorBox mode="Regular" visible={active === "notes"}/>
+        <IndexBox
+          style={{maxWidth: "300px", width: "300px"}}
+          settings={noteindex_settings}
+          section={notesFromEdit}/>
       </Slate>
     </HFiller>
-  )
+    </React.Fragment>
   /*/
   return (
     <EditorBox
@@ -214,6 +221,20 @@ function SingleEditView({id, doc}) {
       />
   )
   /**/
+
+  function Toolbar() {
+    return <ToolBox style={{ background: "white" }}>
+      <Label>Words: {bodyWithWords.words?.text}</Label>
+      <Separator/>
+      <Label>Chars: {bodyWithWords.words?.chars}</Label>
+      <Separator/>
+      {getButtonGroup(bodyindex_settings.indexed)}
+      <Separator/>
+      {getButtonGroup(bodyindex_settings.words, true)}
+      <Separator/>
+      <Filler/>
+    </ToolBox>
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -225,18 +246,41 @@ function DeferredRender(props) {
 
 //-----------------------------------------------------------------------------
 
-function EditorBox({style, visible=true, mode="Condensed"}) {
+function EditorBox({style, mode="Condensed", visible=true}) {
   //const display = visible ? undefined : "none"
 
   if(!visible) return null;
 
-  return <VBox style={{...style}}>
-    <EditToolbar />
+  return <VFiller style={{...style}}>
     <div className="Board">
       <SlateEditable className={mode}/>
     </div>
-  </VBox>
+  </VFiller>
 }
+
+//-----------------------------------------------------------------------------
+
+function IndexBox({settings, section, style}) {
+  const props = {settings, section, style}
+
+  return <DeferredRender>
+    <SlateTOC {...props}/>
+    </DeferredRender>
+}
+
+//-----------------------------------------------------------------------------
+
+function Pre({ style, content }) {
+  return <pre style={{ fontSize: "10pt", ...style }}>
+    {typeof content === "string" ? content : `${JSON.stringify(content, null, 2)}`}
+  </pre>
+}
+
+function Empty() {
+  return null;
+}
+
+//-----------------------------------------------------------------------------
 
 function EditToolbar() {
   const editor = useSlate()
@@ -258,27 +302,101 @@ function EditToolbar() {
   </ToolBox>
 }
 
-//-----------------------------------------------------------------------------
+function getButtonGroup(group, exclusive) {
+  if(!group?.choices) return null;
 
-function IndexBox({state, section}) {
-  const props = {state, section}
+  const buttons = {
+    "br.scene": {
+      tooltip: "Show scenes",
+      icon: <Icon.BlockType.Scene/>
+    },
+    "synopsis": {
+      tooltip: "Show synopses",
+      icon: <Icon.BlockType.Synopsis />
+    },
+    "missing": {
+      tooltip: "Show missing",
+      icon: <Icon.BlockType.Missing />
+    },
+    "comment": {
+      tooltip: "Show comments",
+      icon: <Icon.BlockType.Comment />
+    },
 
-  return <DeferredRender>
-    <SlateTOC {...props}/>
-    </DeferredRender>
+    "off": {
+      tooltip: "Don't show words",
+      icon: <Icon.StatType.Off />
+    },
+    "numbers": {
+      tooltip: "Words as numbers",
+      icon: <Icon.StatType.Words />,
+    },
+    "percent": {
+      tooltip: "Words as percent",
+      icon: <Icon.StatType.Percent />
+    },
+    "cumulative": {
+      tooltip: "Words as cumulative percent",
+      icon: <Icon.StatType.Cumulative />
+    },
+  }
+
+  function getButton(choice) {
+    if(!(choice in buttons)) return <ToggleButton key={choice} value={choice}>
+      {choice}
+    </ToggleButton>
+
+    const {tooltip, icon} = buttons[choice]
+    return <ToggleButton key={choice} value={choice}>
+      <Tooltip title={tooltip}>
+        {icon}
+      </Tooltip>
+    </ToggleButton>
+  }
+
+  return <BorderlessToggleButtonGroup
+    exclusive={exclusive}
+    value={group.value}
+    onChange={(e, value) => (exclusive ? value : true) && group.setValue(value)}
+  >
+    {group.choices.map(choice => getButton(choice))}
+  </BorderlessToggleButtonGroup>
+
+  /*
+  return <ToolBox style={{background: "white"}}>
+    <Button>Words: {section.words?.text}</Button>
+    <HFiller/>
+    {getButtonGroup(settings.indexed)}
+    {getButtonGroup(settings.words, true)}
+  </ToolBox>
+  */
 }
 
-//-----------------------------------------------------------------------------
-
-function Pre({ style, content }) {
-  return <pre style={{ fontSize: "10pt", ...style }}>
-    {typeof content === "string" ? content : `${JSON.stringify(content, null, 2)}`}
-  </pre>
-}
-
-function Empty() {
-  return null;
-}
+const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  '& .MuiToggleButtonGroup-grouped': {
+    //margin: 0,
+    //marginRight: theme.spacing(0.5),
+    //padding: "5pt",
+    padding: "4px",
+    border: 0,
+    "&:hover": {
+      background: "lightgrey",
+    },
+    '&.Mui-selected': {
+      background: "lightblue",
+    },
+    '&.Mui-disabled': {
+      //border: 0,
+    },
+    '&:first-of-type': {
+      //borderRadius: theme.shape.borderRadius,
+      //marginLeft: theme.spacing(0.5),
+    },
+    '&:not(:first-of-type)': {
+      //borderRadius: theme.shape.borderRadius,
+    },
+  },
+}));
 
 //-----------------------------------------------------------------------------
 

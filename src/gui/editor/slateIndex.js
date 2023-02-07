@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import "./styles/outline.css"
+import "./styles/TOC.css"
 
 import React, {
   useCallback,
@@ -39,7 +39,7 @@ import { styled } from '@mui/material/styles';
 
 //-----------------------------------------------------------------------------
 
-export function SlateTOC({state, section, style})
+export function SlateTOC({settings, section, style})
 {
   //const editor = useSlate()
   //const section = withWordCounts(edit2section(editor.children))
@@ -49,10 +49,10 @@ export function SlateTOC({state, section, style})
   /*
   return (
     <VFiller style={{...style}}>
-      <IndexToolbar state={state}/>
+      <IndexToolbar settings={settings}/>
       <div style={{overflow: "auto", padding: "4pt"}}>
         <VBox className="TOC">
-        {section.parts.map(part => <PartItem key={part.id} state={state} part={part}/>)}
+        {section.parts.map(part => <PartItem key={part.id} settings={settings} part={part}/>)}
         </VBox>
       </div>
     </VFiller>
@@ -60,9 +60,8 @@ export function SlateTOC({state, section, style})
   /*/
   return (
     <VFiller style={{...style}}>
-      <IndexToolbar state={state} section={section}/>
       <VBox className="TOC">
-        {section.parts.map(part => <PartItem key={part.id} state={state} part={part}/>)}
+        {section.parts.map(part => <PartItem key={part.id} settings={settings} part={part}/>)}
       </VBox>
     </VFiller>
   )
@@ -71,99 +70,45 @@ export function SlateTOC({state, section, style})
 
 //-----------------------------------------------------------------------------
 
-function IndexToolbar({state, section}) {
-  return <ToolBox style={{background: "white"}}>
-    <Button>Words: {section.words?.text}</Button>
-  </ToolBox>
-
-/*
-  return <ToolBox style={{background: "white"}}>
-    <HFiller/>
-    <BorderlessToggleButtonGroup value={state.indexed} onChange={(e, value) => state.setIndexed(value)}>
-      <ToggleButton value="synopsis"><Tooltip title="Show synopses"><Icon.BlockType.Synopsis /></Tooltip></ToggleButton>
-      <ToggleButton value="missing"><Tooltip title="Show missing"><Icon.BlockType.Missing /></Tooltip></ToggleButton>
-      <ToggleButton value="comment"><Tooltip title="Show comments"><Icon.BlockType.Comment /></Tooltip></ToggleButton>
-    </BorderlessToggleButtonGroup>
-    <Separator />
-    <BorderlessToggleButtonGroup exclusive value={state.wordsAs} onChange={(e, value) => value && state.setWordsAs(value)}>
-      <ToggleButton value="off"><Tooltip title="Don't show words"><Icon.StatType.Off /></Tooltip></ToggleButton>
-      <ToggleButton value="numbers"><Tooltip title="Words as numbers"><Icon.StatType.Words /></Tooltip></ToggleButton>
-      <ToggleButton value="percent"><Tooltip title="Words as percent"><Icon.StatType.Percent /></Tooltip></ToggleButton>
-      <ToggleButton value="cumulative"><Tooltip title="Words as cumulative percent"><Icon.StatType.Cumulative /></Tooltip></ToggleButton>
-    </BorderlessToggleButtonGroup>
-  </ToolBox>
-  */
-}
-
-const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-  '& .MuiToggleButtonGroup-grouped': {
-    //margin: 0,
-    //marginRight: theme.spacing(0.5),
-    //padding: "5pt",
-    padding: "4px",
-    border: 0,
-    "&:hover": {
-      background: "lightgrey",
-    },
-    '&.Mui-selected': {
-      background: "lightblue",
-    },
-    '&.Mui-disabled': {
-      //border: 0,
-    },
-    '&:first-of-type': {
-      //borderRadius: theme.shape.borderRadius,
-      //marginLeft: theme.spacing(0.5),
-    },
-    '&:not(:first-of-type)': {
-      //borderRadius: theme.shape.borderRadius,
-    },
-  },
-}));
-
-//-----------------------------------------------------------------------------
-
-function PartItem({state, part}) {
-  const {id, name, exclude, type, words} = part;
-  const props = {id, type, name, exclude, words}
+function PartItem({settings, part}) {
+  const {id, name, type, words} = part;
+  const props = {id, type, name, words}
 
   return <React.Fragment>
-    <IndexItem className="PartName" state={state} {...props} />
-    {part.children.map(scene => <SceneItem key={scene.id} state={state} scene={scene}/>)}
+    <IndexItem className="PartName" settings={settings} {...props} />
+    {settings.indexed.value.includes("br.scene") && part.children.map(scene => <SceneItem key={scene.id} settings={settings} scene={scene}/>)}
   </React.Fragment>
 }
 
 //-----------------------------------------------------------------------------
 
-function SceneItem({state, scene}) {
-  const {id, name, type, exclude, words} = scene;
-  const props = {id, type, name, exclude, words}
+function SceneItem({settings, scene}) {
+  const {id, name, type, words} = scene;
+  const props = {id, type, name, words}
 
-  const bookmarks = scene.children.filter(elem => state.indexed.includes(elem.type))
-
-  //const className = addClass("SceneName", attributes.exclude || "SceneNumber")
+  const bookmarks = scene.children.filter(elem => settings.indexed.value.includes(elem.type))
 
   return <VBox className="Scene">
-    <IndexItem className="SceneName" state={state} {...props}/>
-    <DoBookmarks state={state} bookmarks={bookmarks}/>
+    <IndexItem className="SceneName" settings={settings} {...props}/>
+    <DoBookmarks settings={settings} bookmarks={bookmarks}/>
   </VBox>
 }
 
-function DoBookmarks({state, bookmarks}) {
+function DoBookmarks({settings, bookmarks}) {
   if(!bookmarks.length) return null;
   return <React.Fragment>
-    {bookmarks.map(elem => <BookmarkItem key={elem.id} state={state} bookmark={elem}/>)}
+    {bookmarks.map(elem => <BookmarkItem key={elem.id} settings={settings} bookmark={elem}/>)}
     </React.Fragment>
 }
 
-function BookmarkItem({state, bookmark}) {
+function BookmarkItem({settings, bookmark}) {
   const {id, type} = bookmark;
   const name = elem2text(bookmark)
 
-  return <IndexItem state={state} id={id} type={type} name={name}/>
+  return <IndexItem settings={settings} id={id} type={type} name={name}/>
 }
 
-function IndexItem({ className, state, id, type, name, exclude, words }) {
+function IndexItem({ className, settings, id, type, name, words }) {
   const editor = useSlate()
 
   const onItemClick = useCallback(async (event) => {
@@ -179,19 +124,18 @@ function IndexItem({ className, state, id, type, name, exclude, words }) {
       //console.log("Node:", node)
       //console.log("Path:", Editor.first(editor, path))
 
+      settings.activate()
       await sleep(20);
       Transforms.select(editor, start);
       ReactEditor.focus(editor)
     }
   }, [])
 
-  words = exclude ? undefined : words
-
   return <HBox className={addClass(className, "Entry")} onClick={onItemClick}>
-      <ItemIcon type={type} exclude={exclude}/>
-      <ItemLabel className={exclude ? "Excluded" : "Included"} name={name ? name : "<Unnamed>"}/>
+      <ItemIcon type={type}/>
+      <ItemLabel name={name ? name : "<Unnamed>"}/>
       <HFiller/>
-      <ItemWords state={state} words={words}/>
+      <ItemWords settings={settings} words={words}/>
     </HBox>
 }
 
@@ -210,8 +154,8 @@ function ItemLabel({className, name}) {
   //return <div className="Name">{id}</div>
 }
 
-function ItemWords({state, words}) {
-  if(words) switch(state.wordsAs) {
+function ItemWords({settings, words}) {
+  if(words) switch(settings.words.value) {
     default: break;
     case "numbers": return <div>{words?.text}</div>
   }

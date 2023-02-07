@@ -114,9 +114,10 @@ export function fromXML(root) {
       deadline: optional(head, "deadline", elem2Text),
       covertext: optional(head, "covertext", elem2Text),
       version: optional(head, "version", elem2Text),
-      words: optional(head, "words", parseWords),
+      //words: optional(head, "words", parseWords),
     }
 
+    /*
     function parseWords(words) {
       return {
         text: optional(words, "text", elem2Text),
@@ -124,6 +125,7 @@ export function fromXML(root) {
         comments: optional(words, "comments", elem2Text),
       }
     }
+    */
 
     function optional(elem, name, parse) {
       const field = elemFind(elem, name)
@@ -132,29 +134,24 @@ export function fromXML(root) {
   }
 
   function parsePart(part) {
-    const {name, ...attributes} = part.attributes ?? {};
+    const {name} = part.attributes ?? {};
     const children = part.elements ?? []
     return {
       type: "part",
       name,
       id: nanoid(),
-      attributes,
       children: children.map(parseScene)
     }
   }
 
   function parseScene(scene) {
-    const {name, exclude, ...attributes} = scene.attributes ?? {};
+    const {name, exclude} = scene.attributes ?? {};
     const children = scene.elements ?? []
 
     return {
       type: "scene",
       id: nanoid(),
       name,
-      exclude: exclude === "true" ? true : undefined,
-      attributes: {
-        ...attributes,
-      },
       children: children.map(js2doc)
     }
   }
@@ -165,7 +162,6 @@ export function fromXML(root) {
     return {
       type: elem.name ?? elem.type,
       id: nanoid(),
-      attributes: elem.attributes,
       children: elem.elements?.map(js2doc),
       text: trim(elem.text),
     }

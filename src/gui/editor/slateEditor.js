@@ -59,7 +59,7 @@ function Element({element, attributes, ...props}) {
     case "title": return <h1 {...attributes} {...props}/>
 
     case "br.part": return <h2 {...attributes} {...props}/>
-    case "br.scene": return <h3 className={element.exclude ? "excluded" : ""} {...attributes} {...props}/>
+    case "br.scene": return <h3 {...attributes} {...props}/>
 
     /*
     case "part": return <div className="part">{children}</div>
@@ -199,13 +199,13 @@ export function getEditor() {
   //---------------------------------------------------------------------------
 
   const SHORTCUTS = {
-    '** ': {type: "br.part", exclude: undefined},
-    '## ': {type: "br.scene", exclude: undefined},
+    '** ': {type: "br.part"},
+    '## ': {type: "br.scene"},
     '>> ': {type: "synopsis"},
     '// ': {type: 'comment'},
     '!! ': {type: 'missing'},
-    '-- ': {exclude: true},
-    '++ ': {exclude: undefined},
+    //'-- ': ,
+    //'++ ': ,
     //'<<':
     //'((':
     //'))':
@@ -296,11 +296,10 @@ export function getEditor() {
 //
 //*****************************************************************************
 
-function createElement({ type, id, exclude, attributes, children }) {
+function createElement({ type, id, attributes, children }) {
   return {
     type,
     id: id ?? nanoid(),
-    exclude,
     attributes,
     children
   }
@@ -344,12 +343,11 @@ export function section2edit(section) {
 
   function Scene2Slate(scene, index) {
     const name = scene.name ?? ""
-    const {id, exclude, attributes} = scene
+    const {id, attributes} = scene
 
     const head = createElement({
       type: "br.scene",
       id,
-      exclude,
       attributes,
       children: [{ text: name }]
     })
@@ -437,13 +435,12 @@ export function edit2part(content) {
 export function edit2scene(content) {
   const [head, paragraphs] = getHead()
   const name = elem2text(head)
-  const {id, exclude, attributes} = head;
+  const {id, attributes} = head;
 
   return {
     type: "scene",
     name,
     id,
-    exclude,
     attributes,
     children: paragraphs.map(elem => getParagraph(elem))
   }
