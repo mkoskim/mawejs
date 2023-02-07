@@ -1,0 +1,65 @@
+<story uuid="0feec3fb-217c-4ba8-ab48-84b8dfc56ad3" format="mawe" version="2" name="UserGuide">
+<!--/
+===============================================================================
+
+STORY: UserGuide
+
+===============================================================================
+/-->
+<body>
+<head>
+<title>User's Guide</title>
+</head>
+<!--/
+===============================================================================
+/-->
+<part name="Basics">
+<scene name="MaweJS Basics">
+<p>Scarce formatting.</p>
+<br/>
+</scene>
+<scene name="Scenes: Splitting text">
+<p>...</p>
+<br/>
+</scene>
+<scene name="Bookmarks">
+<p>...</p>
+<br/>
+<br/>
+</scene>
+</part>
+</body>
+<!--/
+===============================================================================
+
+NOTES
+
+===============================================================================
+/-->
+<notes>
+<part name="TODO / MaweJS">
+<scene name="TODO">
+<p>Just for myself, notes added while writing this document.</p>
+<br/>
+<p>TODO / General:</p>
+<p>- Creating new file</p>
+<p>- More robust DnD - get rid of implicitly created elements, instead, use normalizing features to keep Slate state always in such condition, that it can be pulled as a story.</p>
+<p>- Don't store empty part / scene names</p>
+<br/>
+<p>TODO / Head editing:</p>
+<p>- Editing head info: title, subtitle, author, etc.</p>
+<p>- Change story language</p>
+</scene>
+<scene name="DONE">
+<br/>
+</scene>
+</part>
+</notes>
+<!--/
+===============================================================================
+
+VERSIONS
+
+===============================================================================
+/-->
+</story>
