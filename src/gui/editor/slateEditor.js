@@ -61,17 +61,6 @@ function Element({element, attributes, ...props}) {
     case "br.part": return <h2 {...attributes} {...props}/>
     case "br.scene": return <h3 {...attributes} {...props}/>
 
-    /*
-    case "part": return <div className="part">{children}</div>
-    case "scene": return <div className="scene">{children}</div>
-
-    case "float": return (
-      <p className="FloatHandle">
-        <Icon.PaperClipHoriz style={{fontsize: "14pt", color: "green"}}/>
-        <div contenteditable="false" className="FloatContent comment">{elem2text(element)}</div>
-      </p>
-    )
-    */
     case "comment":
     case "missing":
     case "synopsis":
@@ -92,10 +81,9 @@ function Leaf({ leaf, attributes, ...props }) {
 
 //*****************************************************************************
 //
-// Extras
+// Helper functions
 //
 //*****************************************************************************
-
 
 export function elemByID(editor, id, anchor, focus) {
   if(!anchor) anchor = Editor.start(editor, [])
@@ -382,8 +370,6 @@ export function section2edit(section) {
     })
 
     const scenes = part.children.map(Scene2Slate).flat(1)
-    //const content = (index === 0 && name === "") ? scenes : [head, ...scenes]
-    //return content
     return [head, ...scenes]
   }
 
@@ -398,8 +384,6 @@ export function section2edit(section) {
     })
 
     const para = scene.children.map(Paragraph2Slate)
-    //const content = (index === 0 && name === "") ? para : [head, ...para]
-    //return content
     return [head, ...para]
   }
 
@@ -457,10 +441,13 @@ function isSceneBreak(elem) {
 
 export function edit2part(content) {
   const [head, scenes] = getHead()
+  const {id} = head
+  const name = elem2text(head)
+
   return {
     type: "part",
-    name: elem2text(head),
-    id: head.id,
+    name: name.length ? name : undefined,
+    id,
     children: splitByLeadingElem(scenes, isSceneBreak)
       .filter(s => s.length)
       .map(elems => edit2scene(elems)),
@@ -470,6 +457,8 @@ export function edit2part(content) {
     if (isPartBreak(content[0])) {
       return [content[0], content.slice(1)]
     }
+    // TODO: This should not be needed!
+    console.log("WARNING: Creating implicit part!")
     return [
       createElement({ type: "br.part", children: [{ text: "" }] }),
       content,
@@ -484,7 +473,7 @@ export function edit2scene(content) {
 
   return {
     type: "scene",
-    name,
+    name: name.length ? name : undefined,
     id,
     children: paragraphs.map(elem => getParagraph(elem))
   }
@@ -493,6 +482,8 @@ export function edit2scene(content) {
     if (isSceneBreak(content[0])) {
       return [content[0], content.slice(1)]
     }
+    // TODO: THis should not be needed!
+    console.log("WARNING: Creating implicit scene!")
     return [
       createElement({ type: "br.scene", children: [{ text: "" }] }),
       content,
