@@ -225,12 +225,25 @@ function SingleEditView({id, doc}) {
     </HFiller>
     </DragDropContext>
   /*/
-  return (
-    <EditorBox
-      editor={editor}
-      state={state}
-      />
-  )
+  return <DragDropContext onDragEnd={onDragEnd}>
+    <Toolbar />
+    <HFiller style={{overflow: "auto"}}>
+      <Slate editor={bodyeditor} value={bodybuffer} onChange={setBodyBuffer}>
+        <IndexBox
+          style={{maxWidth: "400px", width: "400px"}}
+          settings={bodyindex_settings}
+          section={bodyWithWords}/>
+        <EditorBox mode="Regular" visible={active === "body"}/>
+      </Slate>
+      <div style={{overflowY: "auto"}}><table><tbody>
+        {bodyeditor.children.map(elem => <tr key={elem.id}>
+          <td>{elem.id}</td>
+          <td>{elem.type}</td>
+          <td>{elem2text(elem).slice(0, 20)}</td>
+          </tr>)}
+        </tbody></table></div>
+    </HFiller>
+    </DragDropContext>
   /**/
 
   //---------------------------------------------------------------------------
@@ -293,8 +306,8 @@ function SingleEditView({id, doc}) {
   }
 
   function findSectIDByElemID(elemID) {
-    if(elemByID(bodyeditor, elemID)) return "body"
-    if(elemByID(noteeditor, elemID)) return "notes"
+    if(elemByID(bodyeditor, elemID).length) return "body"
+    if(elemByID(noteeditor, elemID).length) return "notes"
     return undefined
   }
 
@@ -313,9 +326,10 @@ function SingleEditView({id, doc}) {
 
     switch(type) {
       case "scene": {
-        const srcSectID = findSectIDByElemID(source.droppableID)
+        //console.log(elemByID(bodyeditor, source.droppableId))
+        const srcSectID = findSectIDByElemID(source.droppableId)
         const srcEdit = findEditor(srcSectID)
-
+        console.log(srcSectID)
         // Find source container and pop it out
 
         const srcPath  = elemByID(srcEdit, source.droppableId)[0][1]
@@ -330,11 +344,12 @@ function SingleEditView({id, doc}) {
         const srcEnd = Editor.before(srcEdit, srcParts[source.index+1][1])
 
         const block = elemsByRange(srcEdit, srcStart, srcEnd)
-        Transforms.removeNodes(srcEdit, {at: {anchor: srcStart, focus: srcEnd}})
+
+        Transforms.removeNodes(srcEdit, {at: {anchor: srcStart, focus: srcEnd}, hanging: true})
 
         // Find destination container and insert element there
 
-        const dstSectID = findSectIDByElemID(destination.droppableID)
+        const dstSectID = findSectIDByElemID(destination.droppableId)
         const dstEdit = findEditor(dstSectID)
 
         const dstPath  = elemByID(dstEdit, destination.droppableId)[0][1]
@@ -369,11 +384,13 @@ function SingleEditView({id, doc}) {
           [undefined, Editor.end(srcEdit, [])]
         ]
         //console.log("srcParts", srcParts)
-        const srcStart = Editor.start(srcEdit, srcParts[source.index][1])
-        const srcEnd = Editor.before(srcEdit, srcParts[source.index+1][1])
+        const [srcStart, srcEnd] = [
+          Editor.start(srcEdit, srcParts[source.index][1]),
+          Editor.before(srcEdit, srcParts[source.index+1][1]),
+        ]
 
         const block = elemsByRange(srcEdit, srcStart, srcEnd)
-        Transforms.removeNodes(srcEdit, {at: {anchor: srcStart, focus: srcEnd}})
+        Transforms.removeNodes(srcEdit, {at: {anchor: srcStart, focus: srcEnd}, hanging: true})
 
         // Find destination container and insert element there
 
