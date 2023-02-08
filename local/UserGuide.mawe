@@ -20,7 +20,10 @@ STORY: UserGuide
 <p>Either keep reading, or press "Open" or "New" to start a new doc.</p>
 <p>Or do both.</p>
 <p>(At some point of future) User's Guide can be accessed from "Help" button.</p>
+<br/>
 </scene>
+</part>
+<part name="MaweJS">
 <scene name="Basics">
 <p>As an editor, one thing you might notice right away is the scarciness of formatting options. You may wonder, how you will...</p>
 <p>...change font? Change text or background color?</p>
@@ -112,7 +115,7 @@ STORY: UserGuide
 <br/>
 <p>SYNOPSIS: Synopsis line is a bulleted list item for your scene. When outlining a scene, you list things that happens in that particular scene, and for that purpose you use synopsis lines.</p>
 <p>As an example, take a look for the following scene and how it looks in the index.</p>
-<missing>&lt;-- Check index!</missing>
+<missing>&lt;-- Check index left!</missing>
 </scene>
 <scene name="Fictional: Albert meets Betty">
 <synopsis>Albert enters the room</synopsis>
@@ -134,8 +137,6 @@ STORY: UserGuide
 <p>&lt;-- Type "//" + spacebar to change this line to comment. Comments use green color and slash, common to many programming languages.</p>
 <p>&lt;-- Type "&gt;&gt;" + spacebar to change this line to synopsis.</p>
 <br/>
-</scene>
-<scene name="Setting and resetting line format">
 <p>Changing formats:</p>
 <comment>&lt;-- Type "!!" + spacebar to change this comment to missing, or "&gt;&gt;" to change the line to synopsis. Type "//" + spacebar to change the line back to comment.</comment>
 <br/>
@@ -146,7 +147,8 @@ STORY: UserGuide
 <p>This same holds true also to scenes.</p>
 <comment>This is comment. Type "##" + spacebar at the beginning of the line to make this scene break. Press backspace at the beginning of the line to make this just plain text.</comment>
 <p>...</p>
-<br/>
+<p>Why to use these kinds of markup language features?</p>
+<p>Because writers keep their hands on keyboard.</p>
 </scene>
 <scene name="Word Counts">
 <p>Word counts and their intendended purposes.</p>
@@ -209,15 +211,6 @@ STORY: UserGuide
 </scene>
 </part>
 <part name="Other features">
-<scene name="Exporting">
-<p>Tell something about this.</p>
-<p>It's the printer icon in left side bar.</p>
-</scene>
-<scene name="Importing">
-<p>Importing text in different formats.</p>
-<p>Importing text to parts or scenes.</p>
-<br/>
-</scene>
 <scene name="Compression">
 <p>MaweJS can natively read and write compressed files. MaweJS reads and creates compressed gzip files:</p>
 <p>$ ls</p>
@@ -226,6 +219,14 @@ STORY: UserGuide
 <p>$ ls</p>
 <p>MyStory.mawe.gz ...</p>
 <br/>
+</scene>
+<scene name="Future: Exporting">
+<p>Tell something about this.</p>
+<p>It's the printer icon in left side bar.</p>
+</scene>
+<scene name="Future: Importing">
+<p>Importing text in different formats.</p>
+<p>Importing text to parts or scenes.</p>
 <br/>
 </scene>
 </part>
@@ -267,7 +268,7 @@ STORY: UserGuide
 </scene>
 </part>
 <part name="Migration">
-<scene name="So, You didn't like MaweJS">
+<scene name="You tried and didn't like">
 <p>You wrote your story with MaweJS, but you didn't like it. You want to use another story editor. What to do?</p>
 <p>In general, .mawe file is standard XML file, and it can be processed with any XML tool.</p>
 <br/>
