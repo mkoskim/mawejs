@@ -95,6 +95,10 @@ export function elemByID(editor, id, anchor, focus) {
   }))
 }
 
+export function hasElem(editor, id) {
+  return elemByID(editor, id).length > 0
+}
+
 export function elemByTypes(editor, types, anchor, focus) {
   if(!anchor) anchor = Editor.start(editor, [])
   if(!focus) focus = Editor.end(editor, [])
@@ -116,6 +120,58 @@ export function elemsByRange(editor, anchor, focus) {
   ).map(([n, p]) => n)
 }
 
+//-----------------------------------------------------------------------------
+// Pop elems
+
+export function elemPop(editor, id) {
+  const [match] = elemByID(editor, id)
+  if(!match) return
+
+  const [node, path] = match
+  const [focus, anchor] = range(node, path)
+  if(!focus || !anchor) return
+
+  const block = elemsByRange(editor, anchor, focus)
+  Transforms.removeNodes(editor, {at: {anchor, focus}, hanging: true})
+  return block
+
+  function range(node, path) {
+    if(node.type === "br.part")  return getRange(path, ["br.part"])
+    if(node.type === "br.scene") return getRange(path, ["br.part", "br.scene"])
+    return []
+  }
+
+  function getRange(path, types) {
+    const match = Editor.next(editor, {
+      at: path,
+      match: (n, p) => Editor.isBlock(editor, n) && types.includes(n.type)
+    })
+    return [
+      Editor.start(editor, path),
+      match ? Editor.before(editor, match[1]) : Editor.end(editor, []),
+    ]
+  }
+}
+
+export function elemPushTo(editor, block, id, index) {
+  const blocktype = block[0].type
+  const types = (blocktype === "br.part") ? ["br.part"] : ["br.part", "br.scene"]
+  const anchor = (
+    id
+    ? Editor.after(editor, elemByID(editor, id)[0][1])
+    : Editor.start(editor, [])
+  )
+  const blocks = [
+    ...elemByTypes(editor, types, anchor),
+    [undefined, Editor.end(editor, [])]
+  ]
+
+  Transforms.insertNodes(editor, block, {at: blocks[index][1]})
+}
+
+//-----------------------------------------------------------------------------
+// Focusing elements
+
 export async function focusByPath(editor, path) {
   //console.log("Focus path:", path)
   await sleep(100);
@@ -132,6 +188,16 @@ export async function focusByID(editor, id) {
   focusByPath(editor, Editor.start(editor, path))
 }
 
+//-----------------------------------------------------------------------------
+
+function elemIsBlock(editor, elem) {
+  return elem && !Editor.isEditor(elem) && Editor.isBlock(editor, elem);
+}
+
+function elemIsType(editor, elem, type) {
+  return elemIsBlock(editor, elem) && elem.type === type
+}
+
 //*****************************************************************************
 //
 // Editor customizations
@@ -142,9 +208,6 @@ export function getEditor() {
   const editor = withHistory(withReact(createEditor()))
 
   //---------------------------------------------------------------------------
-  // Extra services
-
-  //---------------------------------------------------------------------------
 
   const { normalizeNode } = editor;
 
@@ -153,8 +216,20 @@ export function getEditor() {
 
     //console.log("Path/Node:", path, node)
 
+    //*
+    if(path.length == 0) {
+      if(editor.children.length < 1) {
+        Transforms.insertNodes(editor,
+          createElement({type: "br.part", children: [{text: ""}]}),
+          {at: path.concat(0)}
+        )
+        return
+      }
+    }
+    /**/
+
     if(path.length != 1) return normalizeNode(entry)
-    if(!Editor.isBlock(editor, node)) return normalizeNode(entry)
+    if(!elemIsBlock(editor, node)) return normalizeNode(entry)
 
     // Force first element to be part break
 
@@ -163,25 +238,26 @@ export function getEditor() {
       return
     }
 
+    // Force element after part break to be scene break
     if(node.type === "br.part") {
       const [next, nextpath] = Editor.next(editor, {at: path}) ?? []
-      if(Editor.isBlock(editor, next)) switch(next.type) {
+      if(next && Editor.isBlock(editor, next)) switch(next.type) {
         case "br.part": break
         case "br.scene": break
         default:
           Transforms.setNodes(editor, {type: "br.scene"}, {at: nextpath})
           return
       }
-    } else {
-      const [previous] = Editor.previous(editor, {at: path}) ?? []
-      //console.log("Node", node.type, "Previous", previous?.type)
-      if(Editor.isBlock(editor, previous) && previous.type === "br.part") switch(node.type) {
-        case "br.part": break
-        case "br.scene": break
-        default:
-          Transforms.setNodes(editor, {type: "br.scene"}, {at: path})
-          return
-      }
+    }
+
+    const [previous] = Editor.previous(editor, {at: path}) ?? []
+    //console.log("Node", node.type, "Previous", previous?.type)
+    if(elemIsType(editor, previous, "br.part")) switch(node.type) {
+      case "br.part": break
+      case "br.scene": break
+      default:
+        Transforms.setNodes(editor, {type: "br.scene"}, {at: path})
+        return
     }
 
     return normalizeNode(entry)
@@ -242,9 +318,7 @@ export function getEditor() {
 
     if (selection) {
       const [match] = Editor.nodes(editor, {
-        match: n =>
-          !Editor.isEditor(n) &&
-          Editor.isBlock(editor, n)
+        match: n => elemIsBlock(editor, n)
       })
 
       if (match) {
@@ -296,10 +370,10 @@ export function getEditor() {
 
     if (selection && Range.isCollapsed(selection)) {
       const { anchor } = selection
-      const node = Editor.above(editor, {
+      const [node, path] = Editor.above(editor, {
         match: n => Editor.isBlock(editor, n),
       })
-      const path = node ? node[1] : []
+      //const path = node ? node[1] : []
       const start = Editor.start(editor, path)
       const range = { anchor, focus: start }
       const key = Editor.string(editor, range) + text
@@ -335,8 +409,7 @@ export function getEditor() {
         //console.log("Node:", node)
 
         if (
-          !Editor.isEditor(node) &&
-          Editor.isBlock(editor, node) &&
+          elemIsBlock(editor, node) &&
           node.type !== 'p' &&
           Point.equals(selection.anchor, start)
         ) {
@@ -388,7 +461,13 @@ export function section2edit(section) {
 
   function Section2Slate(parts) {
     const content = parts.map(Part2Slate).flat(1)
-    if(!content.length) return [createElement({type: "p", children: [{text: ""}]})]
+    //*
+    if(!content.length) return [
+      createElement({type: "br.part", children: [{text: ""}]}),
+      //createElement({type: "br.scene", children: [{text: ""}]}),
+      //createElement({type: "p", children: [{text: ""}]}),
+    ]
+    /**/
     return content;
   }
 
@@ -401,6 +480,15 @@ export function section2edit(section) {
     })
 
     const scenes = part.children.map(Scene2Slate).flat(1)
+    /*
+    if(!scenes.length) {
+      return [
+        head,
+        createElement({type: "br.scene", children: [{text: ""}]}),
+        createElement({type: "p", children: [{text: ""}]}),
+      ]
+    }
+    */
     return [head, ...scenes]
   }
 

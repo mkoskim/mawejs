@@ -31,17 +31,16 @@ import {
   getEditor, SlateEditable,
   section2edit, edit2section,
   elem2text,
-  elemByID,
+  elemByID, hasElem,
   focusByPath, focusByID,
   elemByTypes,
   elemsByRange,
+  elemPop, elemPushTo,
 } from "./slateEditor"
 
 import {
   SlateTOC,
 } from "./slateIndex"
-
-import { sleep } from "../../util"
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
@@ -236,7 +235,9 @@ function SingleEditView({id, doc}) {
         <EditorBox mode="Regular" visible={active === "body"}/>
       </Slate>
       <div style={{overflowY: "auto"}}><table><tbody>
-        {bodyeditor.children.filter(n => ["br.part", "br.scene"].includes(n.type)).map(elem => <tr key={elem.id}>
+        {bodyeditor.children
+          //.filter(n => ["br.part", "br.scene"].includes(n.type))
+          .map(elem => <tr key={elem.id}>
           <td>{elem.id}</td>
           <td>{elem.type}</td>
           <td>{elem2text(elem).slice(0, 20)}</td>
@@ -281,40 +282,27 @@ function SingleEditView({id, doc}) {
 
 
   //---------------------------------------------------------------------------
-  // Brute force DnD
+  // Index DnD
   //---------------------------------------------------------------------------
 
-  function findEditor(sectID) {
-    switch(sectID) {
-      case "body": return bodyeditor;
-      case "notes": return noteeditor;
+  function onDragEnd(result) {
+
+    function getSectIDByElemID(elemID) {
+      if(hasElem(bodyeditor, elemID)) return "body"
+      if(hasElem(noteeditor, elemID)) return "notes"
+      return undefined
     }
-  }
 
-  function findSect(sectID) {
-    switch(sectID) {
-      case "body": return doc.story.body;
-      case "notes": return doc.story.notes;
+    function getEditor(sectID) {
+      switch(sectID) {
+        case "body": return bodyeditor;
+        case "notes": return noteeditor;
+      }
     }
-  }
 
-  function findPart(partID) {
-    return (
-      doc.story.body.parts.find(part => part.id === partID) ||
-      doc.story.notes.parts.find(part => part.id === partID)
-    )
-  }
+    //console.log("onDragEnd:", result)
 
-  function findSectIDByElemID(elemID) {
-    if(elemByID(bodyeditor, elemID).length) return "body"
-    if(elemByID(noteeditor, elemID).length) return "notes"
-    return undefined
-  }
-
-  async function onDragEnd(result) {
-    console.log("onDragEnd:", result)
-
-    const {type, source, destination} = result;
+    const {type, draggableId, source, destination} = result;
 
     if(!destination) return;
 
@@ -326,42 +314,19 @@ function SingleEditView({id, doc}) {
 
     switch(type) {
       case "scene": {
-        //console.log(elemByID(bodyeditor, source.droppableId))
-        const srcSectID = findSectIDByElemID(source.droppableId)
-        const srcEdit = findEditor(srcSectID)
-        //console.log(srcSectID)
-        // Find source container and pop it out
+        const srcEditID = getSectIDByElemID(source.droppableId)
+        const dstEditID = getSectIDByElemID(destination.droppableId)
+        const srcEdit = getEditor(srcEditID)
+        const dstEdit = getEditor(dstEditID)
 
-        const srcPath  = elemByID(srcEdit, source.droppableId)[0][1]
-        //console.log("srcPart", srcPart[0], "@", srcPart[1])
-        const srcParts = [
-          ...elemByTypes(srcEdit, ["br.part", "br.scene"], Editor.after(srcEdit, srcPath)),
-          [undefined, Editor.end(srcEdit, [])]
-        ]
-        //console.log(srcParts)
+        elemPushTo(dstEdit,
+          elemPop(srcEdit, draggableId),
+          destination.droppableId,
+          destination.index
+        )
 
-        const srcStart = Editor.start(srcEdit, srcParts[source.index][1])
-        const srcEnd = Editor.before(srcEdit, srcParts[source.index+1][1])
-
-        const block = elemsByRange(srcEdit, srcStart, srcEnd)
-
-        Transforms.removeNodes(srcEdit, {at: {anchor: srcStart, focus: srcEnd}, hanging: true})
-
-        // Find destination container and insert element there
-
-        const dstSectID = findSectIDByElemID(destination.droppableId)
-        const dstEdit = findEditor(dstSectID)
-
-        const dstPath  = elemByID(dstEdit, destination.droppableId)[0][1]
-        const dstParts = [
-          ...elemByTypes(dstEdit, ["br.part", "br.scene"], Editor.after(dstEdit, dstPath)),
-          [undefined, Editor.end(dstEdit, [])]
-        ]
-        const dstStart = dstParts[destination.index][1]
-        Transforms.insertNodes(dstEdit, block, {at: dstStart})
-
-        setActive(dstSectID)
-        focusByID(dstEdit, result.draggableId)
+        setActive(dstEditID)
+        focusByID(dstEdit, draggableId)
         /*
         const srcPart = findPart(source.droppableId);
         const dstPart = findPart(destination.droppableId);
@@ -376,35 +341,17 @@ function SingleEditView({id, doc}) {
       }
 
       case "part": {
-        const srcEdit = findEditor(source.droppableId)
+        const srcEdit = getEditor(source.droppableId)
+        const dstEdit = getEditor(destination.droppableId)
 
-        // Find source container and pop element
-        const srcParts = [
-          ...elemByTypes(srcEdit, ["br.part"]),
-          [undefined, Editor.end(srcEdit, [])]
-        ]
-        //console.log("srcParts", srcParts)
-        const [srcStart, srcEnd] = [
-          Editor.start(srcEdit, srcParts[source.index][1]),
-          Editor.before(srcEdit, srcParts[source.index+1][1]),
-        ]
-
-        const block = elemsByRange(srcEdit, srcStart, srcEnd)
-        Transforms.removeNodes(srcEdit, {at: {anchor: srcStart, focus: srcEnd}, hanging: true})
-
-        // Find destination container and insert element there
-
-        const dstEdit = findEditor(destination.droppableId)
-
-        const dstParts = [
-          ...elemByTypes(dstEdit, ["br.part"]),
-          [undefined, Editor.end(dstEdit, [])]
-        ]
-        const dstStart = dstParts[destination.index][1]
-        Transforms.insertNodes(dstEdit, block, {at: dstStart})
+        elemPushTo(dstEdit,
+          elemPop(srcEdit, draggableId),
+          null,
+          destination.index
+        )
 
         setActive(destination.droppableId)
-        focusByID(dstEdit, result.draggableId)
+        focusByID(dstEdit, draggableId)
 
         /*
         const srcSect = findSect(source.droppableId)

@@ -225,8 +225,8 @@ function ViewSelector({mode}) {
     <BorderlessToggleButtonGroup exclusive orientation="vertical" value={mode.mode} onChange={(e, payload) => payload && mode.dispatch({type: "mode", payload})}>
       <ToggleButton value="workspace"><SidebarToggle tooltip="Workspace"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <Separator/>
-      <ToggleButton value="outliner"><SidebarToggle tooltip="Outline"><Icon.Action.Cards sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="editor"><SidebarToggle tooltip="Edit"><Icon.Action.Edit sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="outliner"><SidebarToggle tooltip="Outline"><Icon.Action.Cards sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="splitview"><SidebarToggle tooltip="Split view"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="export"><SidebarToggle tooltip="Export"><Icon.Action.Print sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
       <ToggleButton value="folder"><SidebarToggle tooltip="Show folder"><Icon.Action.Folder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
