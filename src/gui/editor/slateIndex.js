@@ -100,6 +100,7 @@ function PartItem({settings, index, part}) {
     const {innerRef, draggableProps, dragHandleProps} = provided
 
     return <div
+      className="Part"
       ref={innerRef}
       {...draggableProps}
     >

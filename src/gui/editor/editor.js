@@ -236,7 +236,7 @@ function SingleEditView({id, doc}) {
         <EditorBox mode="Regular" visible={active === "body"}/>
       </Slate>
       <div style={{overflowY: "auto"}}><table><tbody>
-        {bodyeditor.children.map(elem => <tr key={elem.id}>
+        {bodyeditor.children.filter(n => ["br.part", "br.scene"].includes(n.type)).map(elem => <tr key={elem.id}>
           <td>{elem.id}</td>
           <td>{elem.type}</td>
           <td>{elem2text(elem).slice(0, 20)}</td>
@@ -329,7 +329,7 @@ function SingleEditView({id, doc}) {
         //console.log(elemByID(bodyeditor, source.droppableId))
         const srcSectID = findSectIDByElemID(source.droppableId)
         const srcEdit = findEditor(srcSectID)
-        console.log(srcSectID)
+        //console.log(srcSectID)
         // Find source container and pop it out
 
         const srcPath  = elemByID(srcEdit, source.droppableId)[0][1]

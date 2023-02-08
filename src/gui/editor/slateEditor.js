@@ -153,28 +153,34 @@ export function getEditor() {
 
     //console.log("Path/Node:", path, node)
 
+    if(path.length != 1) return normalizeNode(entry)
+    if(!Editor.isBlock(editor, node)) return normalizeNode(entry)
+
     // Force first element to be part break
+
     if(path[0] === 0 && node.type != "br.part") {
       Transforms.setNodes(editor, {type: "br.part"}, {at: path})
+      return
     }
 
-    // Force first element after part break to be scene break
-    if(path.length > 0 && path[0] > 0) {
-      if(node.type === "br.part") {
-        const [next, nextpath] = Editor.next(editor, {at: path}) ?? []
-        if(next) switch(next.type) {
-          case "br.part": break
-          case "br.scene": break
-          default: Transforms.setNodes(editor, {type: "br.scene"}, {at: nextpath})
-        }
-      } else {
-        const [previous] = Editor.previous(editor, {at: path}) ?? []
-        //console.log("Node", node.type, "Previous", previous?.type)
-        if(previous?.type === "br.part") switch(node.type) {
-          case "br.part": break
-          case "br.scene": break
-          default: Transforms.setNodes(editor, {type: "br.scene"}, {at: path})
-        }
+    if(node.type === "br.part") {
+      const [next, nextpath] = Editor.next(editor, {at: path}) ?? []
+      if(Editor.isBlock(editor, next)) switch(next.type) {
+        case "br.part": break
+        case "br.scene": break
+        default:
+          Transforms.setNodes(editor, {type: "br.scene"}, {at: nextpath})
+          return
+      }
+    } else {
+      const [previous] = Editor.previous(editor, {at: path}) ?? []
+      //console.log("Node", node.type, "Previous", previous?.type)
+      if(Editor.isBlock(editor, previous) && previous.type === "br.part") switch(node.type) {
+        case "br.part": break
+        case "br.scene": break
+        default:
+          Transforms.setNodes(editor, {type: "br.scene"}, {at: path})
+          return
       }
     }
 

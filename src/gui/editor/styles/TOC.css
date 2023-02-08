@@ -12,7 +12,9 @@
   background-color: lightgray;
   */
 
+  flex-grow: 1;
   padding: 4px;
+  padding-bottom: 1cm; /* For DnD */
   /*
   padding-top: 4px;
   padding-left: 6px;
@@ -27,6 +29,10 @@
 }
 
 /* ---------------------------------------------------------------------------- */
+
+.TOC div.Part {
+  background: #F5F7F9;
+}
 
 .TOC .PartName {
   /*
@@ -49,6 +55,7 @@
 /* ---------------------------------------------------------------------------- */
 
 .TOC div.Scene {
+  background: #F5F7F9;
   /*
   border: 2px solid lightgray;
   border-radius: 3px;
