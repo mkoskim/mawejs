@@ -146,17 +146,40 @@ export function getEditor() {
 
   //---------------------------------------------------------------------------
 
-  /*
   const { normalizeNode } = editor;
 
   editor.normalizeNode = entry => {
     const [node, path] = entry
 
-    //console.log("Node/path:", node, path)
+    //console.log("Path/Node:", path, node)
+
+    // Force first element to be part break
+    if(path[0] === 0 && node.type != "br.part") {
+      Transforms.setNodes(editor, {type: "br.part"}, {at: path})
+    }
+
+    // Force first element after part break to be scene break
+    if(path.length > 0 && path[0] > 0) {
+      if(node.type === "br.part") {
+        const [next, nextpath] = Editor.next(editor, {at: path}) ?? []
+        if(next) switch(next.type) {
+          case "br.part": break
+          case "br.scene": break
+          default: Transforms.setNodes(editor, {type: "br.scene"}, {at: nextpath})
+        }
+      } else {
+        const [previous] = Editor.previous(editor, {at: path}) ?? []
+        //console.log("Node", node.type, "Previous", previous?.type)
+        if(previous?.type === "br.part") switch(node.type) {
+          case "br.part": break
+          case "br.scene": break
+          default: Transforms.setNodes(editor, {type: "br.scene"}, {at: path})
+        }
+      }
+    }
 
     return normalizeNode(entry)
   }
-  */
 
   //---------------------------------------------------------------------------
 
@@ -348,10 +371,12 @@ export function section2edit(section) {
   return [...head, ...body]
 
   function Head2Slate(head) {
+    /*
     if(!head) return []
     if(head.title) return [
       createElement({ type: "title", children: [{ text: head.title }] }),
     ]
+    */
     return []
   }
 
@@ -454,15 +479,9 @@ export function edit2part(content) {
   }
 
   function getHead() {
-    if (isPartBreak(content[0])) {
-      return [content[0], content.slice(1)]
-    }
-    // TODO: This should not be needed!
-    console.log("WARNING: Creating implicit part!")
-    return [
-      createElement({ type: "br.part", children: [{ text: "" }] }),
-      content,
-    ]
+    console.assert(isPartBreak(content[0]), "Missing part break")
+
+    return [content[0], content.slice(1)]
   }
 }
 
@@ -479,15 +498,8 @@ export function edit2scene(content) {
   }
 
   function getHead() {
-    if (isSceneBreak(content[0])) {
-      return [content[0], content.slice(1)]
-    }
-    // TODO: THis should not be needed!
-    console.log("WARNING: Creating implicit scene!")
-    return [
-      createElement({ type: "br.scene", children: [{ text: "" }] }),
-      content,
-    ]
+    console.assert(isSceneBreak(content[0]), "Missing scene break")
+    return [content[0], content.slice(1)]
   }
 
   function getParagraph(elem) {

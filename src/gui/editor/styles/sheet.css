@@ -126,8 +126,8 @@
 
 .Sheet h2::before {
   counter-increment: part;
-  content: "[ ";
 /*
+  content: "** ";
   margin-right: 4pt;
   content: "** " counter(part, upper-roman);
   background: #EEE;
@@ -135,13 +135,6 @@
   padding-left: 4pt;
   padding-right: 4pt;
 */
-}
-
-.Sheet h2::after {
-  content: " ]";
-/*
-  margin-left: 4pt;
-  */
 }
 
 .Sheet h3 {

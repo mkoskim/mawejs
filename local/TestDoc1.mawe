@@ -13,38 +13,33 @@ STORY: TestDoc1
 /-->
 <part name="AA">
 <scene name="A">
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-<comment>Integer quis ex mollis, gravida ex malesuada, faucibus lectus.</comment>
-<missing>Mauris tempus varius orci in cursus.</missing>
-<synopsis>Pellentesque non molestie enim, ullamcorper suscipit sem.</synopsis>
-<p>Mauris sed nunc efficitur, tempus est eu, ornare arcu.</p>
-<br/>
-<p>Interdum et malesuada fames ac ante ipsum primis in faucibus.</p>
-<p>Suspendisse sit amet tortor a lacus sollicitudin viverra.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interdum et malesuada fames ac ante ipsum primis in faucibus.</p>
 </scene>
 <scene name="B">
-<p>Nullam placerat sed erat eget aliquam.</p>
-<p>Etiam urna dui, congue eget turpis id, tempor pellentesque nisl.</p>
-</scene>
-<scene name="C">
-<p>Vestibulum posuere urna vel neque gravida, non laoreet enim consequat.</p>
-<p>Nulla euismod purus aliquam nibh convallis, non semper nisl egestas.</p>
+<p>Nullam placerat sed erat eget aliquam. Etiam urna dui, congue eget turpis id, tempor pellentesque nisl.</p>
 </scene>
 </part>
 <part name="BB">
-<scene name="D">
-<p>Vivamus pulvinar dui ex, molestie consequat lorem pellentesque in.</p>
-<p>Aenean porta lectus lectus, non euismod massa lobortis vel.</p>
+<scene name="C">
+<p>Vestibulum posuere urna vel neque gravida, non laoreet enim consequat. Nulla euismod purus aliquam nibh convallis, non semper nisl egestas.</p>
 </scene>
+<scene name="D">
+<p>Vivamus pulvinar dui ex, molestie consequat lorem pellentesque in. Aenean porta lectus lectus, non euismod massa lobortis vel.</p>
+</scene>
+</part>
+<part name="CC">
 <scene name="E">
-<p>Interdum et malesuada fames ac ante ipsum primis in faucibus.</p>
-<p>Suspendisse sit amet tortor a lacus sollicitudin viverra.</p>
+<p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse sit amet tortor a lacus sollicitudin viverra.</p>
 </scene>
 <scene name="F">
-<p>Nullam condimentum arcu eget orci efficitur, eget tincidunt nunc tempus.</p>
-<p>Cras commodo urna sit amet ex ornare, non dignissim lacus suscipit.</p>
+<p>Nullam condimentum arcu eget orci efficitur, eget tincidunt nunc tempus. Cras commodo urna sit amet ex ornare, non dignissim lacus suscipit.</p>
 </scene>
+</part>
+<part name="DD">
 <scene name="G">
+<p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Curabitur ultricies eleifend risus sed consequat.</p>
+</scene>
+<scene name="H">
 <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Curabitur ultricies eleifend risus sed consequat.</p>
 </scene>
 </part>

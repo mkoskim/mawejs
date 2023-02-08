@@ -180,25 +180,25 @@ STORY: UserGuide
 </part>
 <part name="Outliner">
 <scene name="Outliner">
-<p>Well, this can be hard to follow, as you need to switch between views.</p>
-<p>Main purposes:</p>
-<p>- It is intended that when you outline your story, you do it with (1) part names, (2) scene names, and (3) synopsis lines.</p>
+<p>This can be hard to follow, as you need to switch between views... Anyways.</p>
+<p>Main ideas:</p>
+<p>- It is intended that you outline your story with (1) part names, (2) scene names, and (3) synopsis lines.</p>
 <p>- It is intended, that each description is attached to a bunch of text: you don't do outlining just because of outlining, but to describe the text attached to it.</p>
-<p>- It is not intended, that you write separate synopses, descriptions or so</p>
-<p>- Maybe in the future we create an editor instance resembling this one, but it shows only outline elements, and allows only adding, modifying and removing them.</p>
+<p>- It is not intended, that you write separate synopses, descriptions or so. Most probably you do lots of sketching when outlining, but the result of sketching and planning should somehow relate to actual text being written.</p>
 <br/>
 <p>Outline is sort of a PPT presentation:</p>
 <p>Backcover text (from head)</p>
 <p>Part name / description</p>
-<p>- - - Scene name / description - - - - - text</p>
-<p>- - - - - - Synopsis line - - - - - - - - - - text</p>
-<p>- - - - - - Synopsis line - - - - - - - - - - text</p>
-<p>- - - Scene name /description</p>
-<p>- - - Scene name /description</p>
+<p>- - - Scene name / description - - - - &gt; text block</p>
+<p>- - - - - - Synopsis line - - - - - - - - - &gt; text block</p>
+<p>- - - - - - Synopsis line - - - - - - - - - &gt; text</p>
+<p>- - - Scene name /description - - - - &gt; text</p>
+<p>- - - Scene name /description - - - - &gt; text</p>
 <p>Part name / description</p>
 <p>...</p>
-<p>Draft: - - - - - - - - - - - - - - - - - - - - texts</p>
 <br/>
+<p>Maybe in the future we create an editor mode showing your story the way it is shown above: show only outline elements, and allow only adding, modifying and removing them.</p>
+<p>...</p>
 </scene>
 <scene name="NOTICE">
 <p>Notice, that part, scene and synopsis description can be long. It does not need to be short. For example:</p>
@@ -212,12 +212,12 @@ STORY: UserGuide
 </part>
 <part name="Other features">
 <scene name="Compression">
-<p>MaweJS can natively read and write compressed files. MaweJS reads and creates compressed gzip files:</p>
+<p>MaweJS can natively read and write compressed files. MaweJS reads and creates compressed gzip files, which you can create or extract with command line tools:</p>
 <p>$ ls</p>
-<p>MyStory.mawe ...</p>
+<p>MyStory.mawe</p>
 <p>$ gzip MyStory.mawe</p>
 <p>$ ls</p>
-<p>MyStory.mawe.gz ...</p>
+<p>MyStory.mawe.gz</p>
 <br/>
 </scene>
 <scene name="Future: Exporting">
@@ -229,6 +229,18 @@ STORY: UserGuide
 <p>Importing text to parts or scenes.</p>
 <br/>
 </scene>
+<scene name="Future: Split view">
+<p>...</p>
+</scene>
+<scene name="Future: Moving elements between stories">
+<p>Planned future feature is a tool to move elements - parts and scenes - between several files. This feature is for:</p>
+<br/>
+<p>1. Splitting stories: while writing, you get ideas that do not eventually incorporate to the story. Instead, you may find them worth of writing another story. Move them out to separate documents.</p>
+<p>Similarly, sometimes you see that your story gets growing out of its bounds, it is coming to a series of books. Then it will be useful to be able to create new documents and move parts there.</p>
+<br/>
+<p>2. Merging stories: while writing, you may read your older sketches and realize that there is things in some other stories you could apply to the one you are writing. Move those things from that other document to your story.</p>
+<br/>
+</scene>
 </part>
 <part name="Missing/Future Features">
 <scene name="Folding etc">
@@ -237,19 +249,11 @@ STORY: UserGuide
 <p>Float / off-page comments etc. Move comments to margins, out of the way.</p>
 <br/>
 </scene>
-<scene name="Multiple sections">
-<p>Currently, manuscript body is one single section.</p>
-<p>At some point, for large stories, we might need to add multiple sections to a body.</p>
-</scene>
 <scene name="Collections">
 <p>Create a workspace from multiple files, write a prologue and epilogue, and export workspace stories as one RTF document.</p>
 <p>This could be useful for:</p>
 <p>- Creating collections from your short stories</p>
 <p>- Splitting a long story to smaller files</p>
-<br/>
-</scene>
-<scene name="Tags, Pages, Cards">
-<p>At the moment, elements inside Notes section are not "referrable" from draft. But that can change: we may create an entire new class of elements, pages or cards or whatever, that can be linked to scenes.</p>
 <br/>
 </scene>
 <scene name="Plot Liner">
@@ -259,11 +263,21 @@ STORY: UserGuide
 <p>2. Plot lines at columns</p>
 <p>You move your scenes to specific column, indicating that it tells about that specific plot line. Also, it would be really good that you could add hidden elements to plot lines telling how it advances at the background during one scene.</p>
 <br/>
+<br/>
+</scene>
+<scene name="Tags, Pages, Cards">
+<p>At the moment, elements inside Notes section are not "referrable" from draft. But that can change: we may create an entire new class of elements, pages or cards or whatever, that can be linked to scenes.</p>
+<br/>
+<br/>
 </scene>
 <scene name="Scene fillers">
 <p>You have outlined your story. You are ready to write it. The problem: word counts do not indicate where you are.</p>
 <p>Possible solution: Make a filler element, that generates enough "lorem" to get to your target word count.</p>
 <p>Don't expect to see this feature soon. There are many more important features waiting.</p>
+</scene>
+<scene name="Multiple sections">
+<p>Currently, manuscript body is one single section.</p>
+<p>At some point, for large stories, we might need to add multiple sections to a body.</p>
 <br/>
 </scene>
 </part>
