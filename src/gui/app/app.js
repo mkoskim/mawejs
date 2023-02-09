@@ -31,6 +31,7 @@ import { styled } from '@mui/material/styles';
 
 import {SingleEdit} from "../editor/editor";
 import {Organizer} from "../outliner/outliner";
+import {Export} from "../export/export"
 
 //-----------------------------------------------------------------------------
 
@@ -172,11 +173,7 @@ function ChooseView({mode, id}) {
       ones.
       </p>
       </div>
-    case "export": return <div style={{margin: "8pt", width: "300pt"}}>
-      <p>Placeholder</p>
-      <p>Export preview + exporting.
-      </p>
-      </div>
+    case "export": return <Export id={id}/>
     case "folder": return <div style={{margin: "8pt", width: "300pt"}}>
       <p>Placeholder</p>
       <p>Show folder where file is located.

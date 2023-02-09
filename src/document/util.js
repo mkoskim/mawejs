@@ -59,6 +59,16 @@ export async function buf2file(doc, buffer) {
 }
 
 //-----------------------------------------------------------------------------
+
+export function elemAsText(elem) {
+  return (
+    elem.children
+    .map(elem => elem.text)
+    .join()
+  )
+}
+
+//-----------------------------------------------------------------------------
 // Count words
 //-----------------------------------------------------------------------------
 
@@ -122,14 +132,6 @@ export function withWordCounts(elem) {
   }
 
   function Scene(scene) {
-
-    function elemAsText(elem) {
-      return (
-        elem.children
-        .map(elem => elem.text)
-        .join()
-      )
-    }
 
     function asText(elems, type) {
       return (

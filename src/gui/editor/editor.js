@@ -7,6 +7,7 @@
 //*****************************************************************************
 
 import "./styles/editor.css"
+import "../common/styles/sheet.css"
 
 /* eslint-disable no-unused-vars */
 
