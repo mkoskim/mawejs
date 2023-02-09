@@ -31,7 +31,7 @@ import {
   getEditor, SlateEditable,
   section2edit, edit2section,
   elem2text,
-  elemByID, hasElem,
+  elemsByID, hasElem,
   focusByPath, focusByID,
   elemByTypes,
   elemsByRange,
@@ -208,7 +208,7 @@ function SingleEditView({id, doc}) {
     <Toolbar />
     <HFiller style={{overflow: "auto"}}>
       <Slate editor={bodyeditor} value={bodybuffer} onChange={setBodyBuffer}>
-        <IndexBox
+        <SlateTOC
           style={{maxWidth: "400px", width: "400px"}}
           settings={bodyindex_settings}
           section={bodyWithWords}/>
@@ -216,7 +216,7 @@ function SingleEditView({id, doc}) {
       </Slate>
       <Slate editor={noteeditor} value={notebuffer} onChange={setNoteBuffer}>
         <EditorBox mode="Regular" visible={active === "notes"}/>
-        <IndexBox
+        <SlateTOC
           style={{maxWidth: "300px", width: "300px"}}
           settings={noteindex_settings}
           section={notesFromEdit}/>
@@ -374,13 +374,6 @@ function SingleEditView({id, doc}) {
 
 //-----------------------------------------------------------------------------
 
-function DeferredRender(props) {
-  //return props.children
-  return useDeferredValue(props.children)
-}
-
-//-----------------------------------------------------------------------------
-
 function EditorBox({style, mode="Condensed", visible=true}) {
   //const display = visible ? undefined : "none"
 
@@ -395,13 +388,13 @@ function EditorBox({style, mode="Condensed", visible=true}) {
 
 //-----------------------------------------------------------------------------
 
+/*
 function IndexBox({settings, section, style}) {
   const props = {settings, section, style}
 
-  return <DeferredRender>
-    <SlateTOC {...props}/>
-    </DeferredRender>
+  return <SlateTOC {...props}/>
 }
+*/
 
 //-----------------------------------------------------------------------------
 

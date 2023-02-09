@@ -21,7 +21,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {
   section2edit, edit2section,
   elem2text,
-  elemByID,
+  elemsByID,
   focusByID,
 } from "./slateEditor"
 
@@ -36,7 +36,7 @@ import {
   Label,
   List, ListItem, ListItemText,
   Grid,
-  Separator, Loading, addClass,
+  Separator, Loading, addClass, DeferredRender,
 } from "../common/factory";
 
 import { styled } from '@mui/material/styles';
@@ -45,41 +45,28 @@ import { styled } from '@mui/material/styles';
 
 export function SlateTOC({settings, section, style})
 {
-  //const editor = useSlate()
-  //const section = withWordCounts(edit2section(editor.children))
+  function TOCDroppable(provided, snapshot) {
+    const {innerRef, droppableProps, placeholder} = provided
 
-  //console.log(section)
+    return <div className="VBox TOC"
+      ref={innerRef}
+      {...droppableProps}
+    >
+      {section.parts.map((part, index) => <PartItem key={part.id} index={index} settings={settings} part={part}/>
+      )}
+      {placeholder}
+    </div>
+  }
 
-  /*
   return (
-    <VFiller style={{...style}}>
-      <IndexToolbar settings={settings}/>
-      <div style={{overflow: "auto", padding: "4pt"}}>
-        <VBox className="TOC">
-        {section.parts.map(part => <PartItem key={part.id} settings={settings} part={part}/>)}
-        </VBox>
-      </div>
-    </VFiller>
-  )
-  /*/
-  return (
+    <DeferredRender>
     <VFiller style={{...style}}>
       <Droppable droppableId={settings.sectID} type="part">
-      {(provided, snapshot) => {
-        const {innerRef, droppableProps, placeholder} = provided
-
-        return <div className="VBox TOC"
-          ref={innerRef}
-          {...droppableProps}
-        >
-          {section.parts.map((part, index) => <PartItem key={part.id} index={index} settings={settings} part={part}/>)}
-          {placeholder}
-        </div>
-      }}
+      {TOCDroppable}
       </Droppable>
     </VFiller>
+    </DeferredRender>
   )
-  /**/
 }
 
 //-----------------------------------------------------------------------------
@@ -88,15 +75,7 @@ function PartItem({settings, index, part}) {
   const {id, name, type, words} = part;
   const props = {id, type, name, words}
 
-  return <Draggable
-    draggableId={id}
-    index={index}
-    type="part"
-    >
-      {partDraggable}
-    </Draggable>
-
-  function partDraggable(provided, snapshot) {
+  function PartDraggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
 
     return <div
@@ -105,11 +84,11 @@ function PartItem({settings, index, part}) {
       {...draggableProps}
     >
       <IndexItem className="PartName" settings={settings} {...dragHandleProps} {...props} />
-      <Scenes />
+      <PartScenes />
     </div>
   }
 
-  function Scenes() {
+  function PartScenes() {
     if(!settings.indexed.value.includes("br.scene")) return null;
     return <Droppable droppableId={part.id} type="scene">
     {(provided, snapshot) => {
@@ -126,6 +105,14 @@ function PartItem({settings, index, part}) {
     }}
     </Droppable>
   }
+
+  return <Draggable
+    draggableId={id}
+    index={index}
+    type="part"
+    >
+      {PartDraggable}
+    </Draggable>
 }
 
 //-----------------------------------------------------------------------------
@@ -135,14 +122,6 @@ function SceneItem({index, settings, scene}) {
   const props = {id, type, name, words}
 
   const bookmarks = scene.children.filter(elem => settings.indexed.value.includes(elem.type))
-
-  return <Draggable
-    draggableId={id}
-    index={index}
-    type="scene"
-    >
-      {sceneDraggable}
-    </Draggable>
 
   function sceneDraggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
@@ -156,6 +135,15 @@ function SceneItem({index, settings, scene}) {
       <DoBookmarks settings={settings} bookmarks={bookmarks}/>
     </div>
   }
+
+  return <Draggable
+    draggableId={id}
+    index={index}
+    type="scene"
+    >
+      {sceneDraggable}
+    </Draggable>
+
 }
 
 function DoBookmarks({settings, bookmarks}) {

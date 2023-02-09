@@ -11,6 +11,9 @@ import "./factory.css"
 /* eslint-disable no-unused-vars */
 
 //-----------------------------------------------------------------------------
+import React, {
+  useDeferredValue,
+} from "react"
 
 import isHotkey from 'is-hotkey';
 
@@ -124,6 +127,13 @@ export const Icon = {
   MoreHoriz: muiIcons.MoreHoriz,
   PaperClipHoriz: muiIcons.Attachment,
   PaperClipVert: muiIcons.AttachFile,
+}
+
+//-----------------------------------------------------------------------------
+
+export function DeferredRender({children}) {
+  //return props.children
+  return useDeferredValue(children)
 }
 
 //-----------------------------------------------------------------------------

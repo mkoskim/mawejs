@@ -85,7 +85,7 @@ function Leaf({ leaf, attributes, ...props }) {
 //
 //*****************************************************************************
 
-export function elemByID(editor, id, anchor, focus) {
+export function elemsByID(editor, id, anchor, focus) {
   if(!anchor) anchor = Editor.start(editor, [])
   if(!focus) focus = Editor.end(editor, [])
 
@@ -96,7 +96,7 @@ export function elemByID(editor, id, anchor, focus) {
 }
 
 export function hasElem(editor, id) {
-  return elemByID(editor, id).length > 0
+  return elemsByID(editor, id).length > 0
 }
 
 export function elemByTypes(editor, types, anchor, focus) {
@@ -124,7 +124,7 @@ export function elemsByRange(editor, anchor, focus) {
 // Pop elems
 
 export function elemPop(editor, id) {
-  const [match] = elemByID(editor, id)
+  const [match] = elemsByID(editor, id)
   if(!match) return
 
   const [node, path] = match
@@ -158,7 +158,7 @@ export function elemPushTo(editor, block, id, index) {
   const types = (blocktype === "br.part") ? ["br.part"] : ["br.part", "br.scene"]
   const anchor = (
     id
-    ? Editor.after(editor, elemByID(editor, id)[0][1])
+    ? Editor.after(editor, elemsByID(editor, id)[0][1])
     : Editor.start(editor, [])
   )
   const blocks = [
@@ -172,20 +172,20 @@ export function elemPushTo(editor, block, id, index) {
 //-----------------------------------------------------------------------------
 // Focusing elements
 
-export async function focusByPath(editor, path) {
-  //console.log("Focus path:", path)
-  await sleep(100);
-  Transforms.select(editor, path);
-  ReactEditor.focus(editor)
-}
-
 export async function focusByID(editor, id) {
-  const match = elemByID(editor, id)
+  await sleep(10)
+  const match = elemsByID(editor, id)
 
   if(!match.length) return;
 
   const [node, path] = match[0]
   focusByPath(editor, Editor.start(editor, path))
+}
+
+export async function focusByPath(editor, path) {
+  await sleep(10);
+  Transforms.select(editor, path);
+  ReactEditor.focus(editor)
 }
 
 //-----------------------------------------------------------------------------
