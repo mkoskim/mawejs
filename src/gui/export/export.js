@@ -56,57 +56,108 @@ function ExportView({id, doc}) {
 
   const previewprops = {
     settings,
-    body: doc.story.body,
+    doc,
   }
 
-  return <Preview {...previewprops}/>
+  return <HFiller>
+    <Settings {...{settings, doc}}/>
+    <Preview {...previewprops}/>
+  </HFiller>
 }
 
 //-----------------------------------------------------------------------------
-// Preview rendering
+// Export settings
 //-----------------------------------------------------------------------------
 
-function Preview({settings, body}) {
-  const titleprops = { settings, head: body.head}
-  const partsprops = { settings, parts: body.parts }
+function Settings({settings, doc}) {
+  const {basename} = doc;
 
-  return <div className="Board">
-    <div className="Sheet Regular">
-      <RenderTitle {...titleprops}/>
-      <RenderParts {...partsprops}/>
-    </div>
+  return <VBox>
+    <Label>Filename: {basename}</Label>
+  </VBox>
+}
+
+//-----------------------------------------------------------------------------
+// Export preview
+//-----------------------------------------------------------------------------
+
+// TODO: Make this use mawe.asHTML / mawe.asRTF functions
+
+function Preview({settings, doc}) {
+  //const titleprops = { settings, head: body.head}
+  //const partsprops = { settings, parts: body.parts }
+
+  const {body} = doc.story
+
+  return <div className="Filler Board">
+    <div
+      className="Sheet Regular"
+      dangerouslySetInnerHTML={{__html: FormatBody(formatHTML, settings, body)}}
+      />
   </div>
 }
 
-function RenderTitle({settings, head}) {
-  const {title} = head;
-  return null;
+/*
+function toHTML(settings, doc) {
+  return FormatBody(formatHTML, settings, doc)
+  //return `<div>${Head2HTML(head)}${Parts2HTML(parts)}</div>`
 }
+*/
 
-function RenderParts({settings, parts}) {
-  return parts.map(part => <RenderPart key={part.id} {...{settings, part}}/>)
-}
+//-----------------------------------------------------------------------------
+// Formatting engine
+//-----------------------------------------------------------------------------
 
-function RenderPart({settings, part}) {
-  return part.children.map(scene => <RenderScene key={scene.id} {...{settings, scene}}/>)
-}
+const formatHTML = {
+  // Paragraphs
+  "p": (settings, p) => `<p>${elemAsText(p)}</p>\n`,
+  "br": (settings, p) => "<br/>\n",
+  "comment": (settings, p) => "",
+  "synopsis": (settings, p) => "",
+  "missing": (settings, p) => `<p class="missing">${elemAsText(p)}</p>\n`,
 
-function RenderScene({settings, scene}) {
-  return scene.children.map(p => <RenderParagraph key={p.id} {...{settings, p}}/>)
-}
+  // Scene
+  "scene": (settings, scene, paragraphs) => {
+    return paragraphs.join("\n")
+  },
 
-function RenderParagraph({settings, p}) {
-  //console.log(p)
+  // Part
+  "part": (settings, part, scenes) => {
+    return scenes.join("\n")
+  },
 
-  switch(p.type) {
-    case "comment":   return null;
-    case "synopsis":  return null;
-    case "missing":   return <p className="missing">{elemAsText(p)}</p>
-    case "p":         return <p>{elemAsText(p)}</p>
-    case "br":        return <br/>
-    default: break;
+  // Body
+  "body": (settings, head, parts) => {
+    return parts.join("\n")
   }
-  return null;
+}
+
+function FormatBody(format, settings, body) {
+  //const {head, parts} = doc.story.body;
+  const head  = FormatHead(format, settings, body.head)
+  const parts = body.parts.map(part => FormatPart(format, settings, part))
+
+  return format["body"](settings, head, parts)
+}
+
+function FormatHead(format, settings, head) {
+  return "";
+}
+
+function FormatPart(format, settings, part) {
+  const content = part.children.map(scene => FormatScene(format, settings, scene))
+  return format["part"](settings, part, content);
+}
+
+function FormatScene(format, settings, scene) {
+  const content = scene.children.map(p => FormatParagraph(format, settings, p))
+  return format["scene"](settings, scene, content)
+}
+
+function FormatParagraph(format, settings, p) {
+  if(!(p.type in format)) return ""
+
+  return format[p.type](settings, p)
 }
 
 //-----------------------------------------------------------------------------
