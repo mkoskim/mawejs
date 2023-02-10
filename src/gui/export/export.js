@@ -262,12 +262,12 @@ ${lang}\\f0\\fs24\\fi0\\li0\\ri0\\rin0\\lin0
 \\sl-440\\tqr\\tx8496 ${headinfo}
 \\tab Sivu ${pgnum} / ${pgtot}
 \\par}
-\n${content}\n}\n`
+${content}}\n`
   },
 
   // Body
   "body": (settings, head, parts) => {
-    return parts.join("\n")
+    return parts.join("")
   },
 
   // Head
