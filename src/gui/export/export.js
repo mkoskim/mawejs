@@ -160,8 +160,6 @@ function FormatFile(format, settings, body) {
       .filter(s => s.length)
     //console.log(splits)
 
-    //const content =
-    //if(!content.length) return ""
     return format["scene"](
       settings,
       scene,
@@ -238,14 +236,14 @@ const formatRTF = {
 
   "file": (settings, head, content) => {
     const author = head.nickname || head.author
-    const headinfo = author ? `${author}: ${head.title}` : head.title
+    const title = head.title ?? ""
+    const headinfo = author ? `${author}: ${title}` : title
     const langcode = 1035
 
     const pgnum = `{\\field{\\*\\fldinst PAGE}}`
     const pgtot = `{\\field{\\*\\fldinst NUMPAGES}}`
 
     return `{\\rtf1\\ansi
-\\deflang${langcode}
 {\\fonttbl\\f0\\froman\\fcharset0 Times New Roman;}
 {\\colortbl;\\red0\\green0\\blue0;\\red180\\green20\\blue20;}
 {\\info{\\title ${head.title}}{\\author ${head.author}}}
@@ -255,8 +253,9 @@ const formatRTF = {
 \\pgwsxn11905\\pghsxn16837
 \\marglsxn1701\\margrsxn1701\\margtsxn1701\\margbsxn1701
 \\gutter0\\ltrsect
-{\\header\\tqr\\tx8496 ${headinfo}\\tab ${pgnum} / ${pgtot}\\par}
+\\deflang${langcode}
 {\\lang${langcode}\\sl-440
+{\\header\\tqr\\tx8496 ${headinfo}\\tab ${pgnum} / ${pgtot}\\par}
 ${content}
 }}\n`
   },
@@ -288,12 +287,6 @@ ${content}
   "p": (settings, p) => `\\cf1 ${formatRTF.escape(elemAsText(p))}\\par}\n`,
   "synopsis": (settings, p) => undefined,
   "comment": (settings, p) => undefined,
-
-  //"missing": (settings, p) => `{\\lang1035\\sl-440\\fi567\\cf2 ${formatRTF.escape(elemAsText(p))}\\par}\n\n`,
-  //"p": (settings, p) => `{\\lang1035\\sl-440\\fi567\\cf1 ${formatRTF.escape(elemAsText(p))}\\par}\n\n`,
-
-  //wrapPara1 = Wrap(r"{\lang1035\sl-440\sb480%s ", "\par}\n\n")
-  //wrapPara  = Wrap(r"{\lang1035\sl-440\fi567%s ", "\par}\n\n")
 
   //---------------------------------------------------------------------------
 
