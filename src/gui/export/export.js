@@ -143,7 +143,7 @@ function FormatFile(format, settings, body) {
   }
 
   function FormatHead(head) {
-    return "";
+    return format["title"](settings, head.title);
   }
 
   function FormatPart(part) {
@@ -195,11 +195,12 @@ const formatHTML = {
 
   // Body
   "body": (settings, head, parts) => {
-    return parts.join("\n")
+    return head + parts.join("\n")
   },
 
   //---------------------------------------------------------------------------
 
+  "title": (settings, title) => `<h1>${title}</h1>\n`,
 
   //---------------------------------------------------------------------------
 
@@ -265,11 +266,10 @@ ${content}
   //---------------------------------------------------------------------------
   // Body
   "body": (settings, head, parts) => {
-    return parts.join("{\\sb480\\fs34\\qc * * *\\par}\n")
+    return head + parts.join("{\\sb480\\fs34\\qc * * *\\par}\n")
   },
 
-  // Head
-  //{\\qc{\\sa480\\b\\fs34 Otsikko\\par}}
+  "title": (settings, title) => `{\\qc\\sa480\\b\\fs34 ${title}\\par}\n`,
 
   //---------------------------------------------------------------------------
 

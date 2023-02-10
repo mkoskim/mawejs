@@ -124,6 +124,7 @@ export default function App(props) {
     {
       mode: "editor"
       //mode: "outliner"
+      //mode: "export"
     }
   );
 
@@ -136,9 +137,9 @@ export default function App(props) {
   //const id = "./local/Dinosauruspuisto.mawe";
   //const id = "./local/JazramonGjerta.test.mawe";
   //const id = "./local/testwrite.mawe";
+  //const id = "./local/EmptyDoc.mawe";
   //const id = "./local/TestDoc1.mawe";
   //const id = "./local/TestDoc2.mawe";
-  //const id = "./local/EmptyDoc.mawe";
   //const id = "./local/Lorem30k.mawe";
   const id = "./local/UserGuide.mawe";
 

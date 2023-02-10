@@ -334,14 +334,11 @@ NOTES
 <part name="TODO / MaweJS">
 <scene name="Fixes">
 <p>Fix:</p>
-<p>- Fix editor index DnD. And the implicit blocks it creates. They are VERY ANNOYING!</p>
 </scene>
 <scene name="General">
 <p>General missing things:</p>
 <p>- Creating new file</p>
 <p>- Revert file (very useful with User's Guide)</p>
-<p>- More robust DnD - get rid of implicitly created elements, instead, use normalizing features to keep Slate state always in such condition, that it can be pulled as a story.</p>
-<br/>
 </scene>
 <scene name="Head editing">
 <p>Head:</p>
@@ -359,7 +356,10 @@ NOTES
 </scene>
 <scene name="DONE">
 <p>Done:</p>
-<p>- Don't store empty part / scene names</p>
+<p>- DONE: Don't store empty part / scene names</p>
+<p>- DONE: Fix editor index DnD. And the implicit blocks it creates. They are VERY ANNOYING!</p>
+<p>- DONE: More robust DnD - get rid of implicitly created elements, instead, use normalizing features to keep Slate state always in such condition, that it can be pulled as a story.</p>
+<br/>
 <br/>
 </scene>
 </part>
