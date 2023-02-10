@@ -33,6 +33,7 @@ function ipcDispatch(channel, params) {
         case "relpath": return hostfs.fsRelpath(...args);
         case "basename": return hostfs.fsBasename(...args);
         case "extname": return hostfs.fsExtname(...args);
+        case "makepath": return hostfs.fsMakepath(...args);
       }
       throw Error(`IPC: ${channel}/${cmd}: Not implemented.`);
     }

@@ -13,10 +13,9 @@ module.exports = {
   fsSettingsRead, fsSettingsWrite,
   fsRename,
   fsOpenExternal,
-  fsDirname,
+  fsDirname, fsBasename, fsExtname,
   fsRelpath,
-  fsBasename,
-  fsExtname,
+  fsMakepath,
   }
 
 //-----------------------------------------------------------------------------
@@ -193,3 +192,6 @@ function fsExtname(filename) {
   return path.extname(filename);
 }
 
+function fsMakepath(...parts) {
+  return path.join(...parts)
+}

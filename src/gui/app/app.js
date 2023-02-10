@@ -41,9 +41,11 @@ const myTheme = createTheme({
       main: "#222",
     },
   },
+  /*
   typography: {
     fontSize: 12,
   },
+  */
   components: {
     MuiButton: {
       styleOverrides: {

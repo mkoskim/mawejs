@@ -36,6 +36,10 @@ export function extname(filename) {
   return fscall("extname", filename);
 }
 
+export function makepath(...parts) {
+  return fscall("makepath", ...parts)
+}
+
 //-----------------------------------------------------------------------------
 
 export function fstat(fileid) {

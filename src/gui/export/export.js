@@ -27,6 +27,11 @@ import {
 
 import {docLoad, docSave, docUpdate} from "../editor/doc"
 import {elemAsText} from "../../document"
+import { splitByTrailingElem } from "../../util";
+
+//-----------------------------------------------------------------------------
+
+const fs = require("../../storage/localfs");
 
 //-----------------------------------------------------------------------------
 
@@ -71,10 +76,30 @@ function ExportView({id, doc}) {
 
 function Settings({settings, doc}) {
   const {basename} = doc;
+  const {body} = doc.story
+  const {head, parts} = body
 
-  return <VBox>
+  return <VBox style={{background: "white", padding: "8px", borderRight: "2px solid lightgray"}}>
     <Label>Filename: {basename}</Label>
+    <Button onClick={exportRTF}>Export</Button>
+    <Separator/>
+    <Input label="Title" value={head.title}/>
+    <Input label="Subtitle" value={head.subtitle}/>
+    <Input label="Author" value={head.author}/>
+    <Separator/>
   </VBox>
+
+  async function exportRTF(event) {
+    console.log("Exporting...")
+
+    const content = FormatFile(formatRTF, settings, body)
+    //console.log(content)
+
+    const dirname  = await fs.dirname(doc.file.id)
+    const filename = await fs.makepath(dirname, doc.basename + ".rtf")
+    console.log("Filename:", filename)
+    fs.write(filename, content)
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -92,73 +117,207 @@ function Preview({settings, doc}) {
   return <div className="Filler Board">
     <div
       className="Sheet Regular"
-      dangerouslySetInnerHTML={{__html: FormatBody(formatHTML, settings, body)}}
+      dangerouslySetInnerHTML={{__html: FormatFile(formatHTML, settings, body)}}
       />
   </div>
 }
-
-/*
-function toHTML(settings, doc) {
-  return FormatBody(formatHTML, settings, doc)
-  //return `<div>${Head2HTML(head)}${Parts2HTML(parts)}</div>`
-}
-*/
 
 //-----------------------------------------------------------------------------
 // Formatting engine
 //-----------------------------------------------------------------------------
 
-const formatHTML = {
-  // Paragraphs
-  "p": (settings, p) => `<p>${elemAsText(p)}</p>\n`,
-  "br": (settings, p) => "<br/>\n",
-  "comment": (settings, p) => "",
-  "synopsis": (settings, p) => "",
-  "missing": (settings, p) => `<p class="missing">${elemAsText(p)}</p>\n`,
+function FormatFile(format, settings, body) {
+  const {head, parts} = body
+  return format["file"](
+    settings,
+    head,
+    FormatBody(head, parts)
+  )
 
-  // Scene
-  "scene": (settings, scene, paragraphs) => {
-    return paragraphs.join("\n")
+  function FormatBody(head, parts) {
+    return format["body"](
+      settings,
+      FormatHead(head),
+      parts.map(FormatPart)
+    )
+  }
+
+  function FormatHead(head) {
+    return "";
+  }
+
+  function FormatPart(part) {
+    return format["part"](
+      settings,
+      part,
+      part.children.map(FormatScene)
+    );
+  }
+
+  function FormatScene(scene) {
+    const splits = splitByTrailingElem(scene.children, p => p.type === "br")
+      .map(s => s.slice(0, -1))
+      .filter(s => s.length)
+    console.log(splits)
+
+    const content = splits.map(FormatSplit).filter(s => s.length)
+    if(!content.length) return ""
+    return format["scene"](
+      settings,
+      scene,
+      content
+    )
+  }
+
+  function FormatSplit(split) {
+    const content = split.map(FormatParagraph).filter(p => p)
+    if(!content.length) return ""
+    return format["br"](
+      settings,
+      content
+    )
+  }
+
+  function FormatParagraph(p) {
+    return format[p.type](settings, p)
+  }
+}
+
+// ****************************************************************************
+//
+// HTML formatting table
+//
+// ****************************************************************************
+
+const formatHTML = {
+  // File
+  "file": (settings, head, content) => {
+    return content
   },
+
+  // Body
+  "body": (settings, head, parts) => {
+    return parts.join("\n")
+  },
+
+  //---------------------------------------------------------------------------
+
+
+  //---------------------------------------------------------------------------
 
   // Part
   "part": (settings, part, scenes) => {
     return scenes.join("\n")
   },
 
+  // Scene & breaks
+  "scene": (settings, scene, splits) => {
+    return splits.join("\n")
+  },
+  "br": (settings, splits) => splits.join("\n") + "<br/>\n",
+
+  // Paragraph styles
+  "synopsis": (settings, p) => "",
+  "comment": (settings, p) => "",
+  "missing": (settings, p) => `<p style="color: rgb(180, 20, 20);">${formatHTML.escape(elemAsText(p))}</p>\n`,
+  "p": (settings, p) => `<p>${formatHTML.escape(elemAsText(p))}</p>\n`,
+
+  //---------------------------------------------------------------------------
+
+  escape: (text) => text
+}
+
+// ****************************************************************************
+//
+// RTF formatting table
+//
+// ****************************************************************************
+
+
+const formatRTF = {
+
+  "file": (settings, head, content) => {
+    const author = head.nickname || head.author
+    const headinfo = author ? `${author}: ${head.title}` : head.title
+    const langcode = 1035
+
+    const lang    = `\\lang${langcode}`
+    const pgnum = `{\\field{\\*\\fldinst PAGE}}`
+    const pgtot = `{\\field{\\*\\fldinst NUMPAGES}}`
+
+    return `{\\rtf1\\ansi
+{\\fonttbl\\f0\\froman\\fcharset0 Times New Roman;}
+{\\colortbl;\\red0\\green0\\blue0;\\red180\\green20\\blue20;}
+{\\info{\\title ${head.title}}{\\author ${head.author}}}
+\\deflang${langcode}
+\\paperh16837\\paperw11905
+\\margl1701\\margr1701\\margt851\\margb1701
+\\sectd\\sbknone
+\\pgwsxn11905\\pghsxn16837
+\\marglsxn1701\\margrsxn1701\\margtsxn1701\\margbsxn1701
+\\gutter0\\ltrsect
+\\headery851
+${lang}\\f0\\fs24\\fi0\\li0\\ri0\\rin0\\lin0
+{\\header${lang}
+\\sl-440\\tqr\\tx8496 ${headinfo}
+\\tab Sivu ${pgnum} / ${pgtot}
+\\par}
+\n${content}\n}\n`
+  },
+
   // Body
   "body": (settings, head, parts) => {
     return parts.join("\n")
-  }
+  },
+
+  // Head
+  //{\\qc{\\sa480\\b\\fs34 Otsikko\\par}}
+
+  //---------------------------------------------------------------------------
+
+  // Part
+  "part": (settings, part, scenes) => {
+    return scenes.filter(s => s.length).join("")
+  },
+
+  // Scene & breaks
+  "scene": (settings, scene, splits) => splits.join(""),
+  "br": (settings, split) => {
+    const firstpar = "{\\lang1035\\sl-440\\sb480"
+    const separator = "{\\lang1035\\sl-440\\fi567"
+    return firstpar + split.join(separator)
+    //return paragraphs.join("")
+  },
+
+  // Paragraph styles
+  "synopsis": (settings, p) => undefined,
+  "comment": (settings, p) => undefined,
+  "missing": (settings, p) => `\\cf2 ${formatRTF.escape(elemAsText(p))}\\par}\n`,
+  "p": (settings, p) => `\\cf1 ${formatRTF.escape(elemAsText(p))}\\par}\n`,
+
+  //"missing": (settings, p) => `{\\lang1035\\sl-440\\fi567\\cf2 ${formatRTF.escape(elemAsText(p))}\\par}\n\n`,
+  //"p": (settings, p) => `{\\lang1035\\sl-440\\fi567\\cf1 ${formatRTF.escape(elemAsText(p))}\\par}\n\n`,
+
+  //wrapPara1 = Wrap(r"{\lang1035\sl-440\sb480%s ", "\par}\n\n")
+  //wrapPara  = Wrap(r"{\lang1035\sl-440\fi567%s ", "\par}\n\n")
+
+  //---------------------------------------------------------------------------
+
+  escape: text => {
+    return (text
+      .replaceAll('\\', "\\\\")
+      .replaceAll('{', "\\{")
+      .replaceAll('}', "\\}")
+
+      .replaceAll('~', "\\~")
+      .replaceAll('"', "\\'94")
+
+      .replaceAll("å", "\\'e5")
+      .replaceAll("Å", "\\'c5")
+      .replaceAll("ä", "\\'e4")
+      .replaceAll("Ä", "\\'c4")
+      .replaceAll("ö", "\\'f6")
+      .replaceAll("Ö", "\\'d6")
+    )
+  },
 }
-
-function FormatBody(format, settings, body) {
-  //const {head, parts} = doc.story.body;
-  const head  = FormatHead(format, settings, body.head)
-  const parts = body.parts.map(part => FormatPart(format, settings, part))
-
-  return format["body"](settings, head, parts)
-}
-
-function FormatHead(format, settings, head) {
-  return "";
-}
-
-function FormatPart(format, settings, part) {
-  const content = part.children.map(scene => FormatScene(format, settings, scene))
-  return format["part"](settings, part, content);
-}
-
-function FormatScene(format, settings, scene) {
-  const content = scene.children.map(p => FormatParagraph(format, settings, p))
-  return format["scene"](settings, scene, content)
-}
-
-function FormatParagraph(format, settings, p) {
-  if(!(p.type in format)) return ""
-
-  return format[p.type](settings, p)
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
