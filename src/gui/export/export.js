@@ -40,7 +40,7 @@ export function Export({id}) {
   const [doc, setDoc] = useState(undefined)
 
   useEffect(() => {
-    console.log("SingleEdit: Updating doc...")
+    //console.log("SingleEdit: Updating doc...")
     if(id) docLoad(id)
       .then(content => setDoc(content))
   }, [id])
@@ -150,7 +150,7 @@ function FormatFile(format, settings, body) {
     return format["part"](
       settings,
       part,
-      part.children.map(FormatScene)
+      part.children.map(FormatScene).filter(s => s)
     );
   }
 
@@ -158,21 +158,21 @@ function FormatFile(format, settings, body) {
     const splits = splitByTrailingElem(scene.children, p => p.type === "br")
       .map(s => s.slice(0, -1))
       .filter(s => s.length)
-    console.log(splits)
+    //console.log(splits)
 
-    const content = splits.map(FormatSplit).filter(s => s.length)
-    if(!content.length) return ""
+    //const content =
+    //if(!content.length) return ""
     return format["scene"](
       settings,
       scene,
-      content
+      splits.map(FormatSplit).filter(s => s && s.length)
     )
   }
 
   function FormatSplit(split) {
     const content = split.map(FormatParagraph).filter(p => p)
-    if(!content.length) return ""
-    return format["br"](
+    if(!content.length) return
+    return format["split"](
       settings,
       content
     )
@@ -207,20 +207,20 @@ const formatHTML = {
 
   // Part
   "part": (settings, part, scenes) => {
-    return scenes.join("\n")
+    return scenes.join("<center>* * *</center>")
   },
 
   // Scene & breaks
   "scene": (settings, scene, splits) => {
-    return splits.join("\n")
+    return splits.join("<br/>\n")
   },
-  "br": (settings, splits) => splits.join("\n") + "<br/>\n",
+  "split": (settings, paragraphs) => paragraphs.join("\n"),
 
   // Paragraph styles
   "synopsis": (settings, p) => "",
   "comment": (settings, p) => "",
-  "missing": (settings, p) => `<p style="color: rgb(180, 20, 20);">${formatHTML.escape(elemAsText(p))}</p>\n`,
-  "p": (settings, p) => `<p>${formatHTML.escape(elemAsText(p))}</p>\n`,
+  "missing": (settings, p) => `<p style="color: rgb(180, 20, 20);">${formatHTML.escape(elemAsText(p))}</p>`,
+  "p": (settings, p) => `<p>${formatHTML.escape(elemAsText(p))}</p>`,
 
   //---------------------------------------------------------------------------
 
@@ -241,30 +241,29 @@ const formatRTF = {
     const headinfo = author ? `${author}: ${head.title}` : head.title
     const langcode = 1035
 
-    const lang    = `\\lang${langcode}`
     const pgnum = `{\\field{\\*\\fldinst PAGE}}`
     const pgtot = `{\\field{\\*\\fldinst NUMPAGES}}`
 
     return `{\\rtf1\\ansi
+\\deflang${langcode}
 {\\fonttbl\\f0\\froman\\fcharset0 Times New Roman;}
 {\\colortbl;\\red0\\green0\\blue0;\\red180\\green20\\blue20;}
 {\\info{\\title ${head.title}}{\\author ${head.author}}}
-\\deflang${langcode}
 \\paperh16837\\paperw11905
 \\margl1701\\margr1701\\margt851\\margb1701
 \\sectd\\sbknone
 \\pgwsxn11905\\pghsxn16837
 \\marglsxn1701\\margrsxn1701\\margtsxn1701\\margbsxn1701
 \\gutter0\\ltrsect
-\\headery851
-${lang}\\f0\\fs24\\fi0\\li0\\ri0\\rin0\\lin0
-{\\header${lang}
-\\sl-440\\tqr\\tx8496 ${headinfo}
-\\tab Sivu ${pgnum} / ${pgtot}
-\\par}
-${content}}\n`
+{\\header\\tqr\\tx8496 ${headinfo}\\tab ${pgnum} / ${pgtot}\\par}
+{\\lang${langcode}\\sl-440
+${content}
+}}\n`
   },
 
+  //\\headery851\\f0\\fs24\\fi0\\li0\\ri0\\rin0\\lin0
+
+  //---------------------------------------------------------------------------
   // Body
   "body": (settings, head, parts) => {
     return parts.join("")
@@ -282,18 +281,13 @@ ${content}}\n`
 
   // Scene & breaks
   "scene": (settings, scene, splits) => splits.join(""),
-  "br": (settings, split) => {
-    const firstpar = "{\\lang1035\\sl-440\\sb480"
-    const separator = "{\\lang1035\\sl-440\\fi567"
-    return firstpar + split.join(separator)
-    //return paragraphs.join("")
-  },
+  "split": (settings, split) => "{\\sb480" + split.join("{\\fi567"),
 
   // Paragraph styles
-  "synopsis": (settings, p) => undefined,
-  "comment": (settings, p) => undefined,
   "missing": (settings, p) => `\\cf2 ${formatRTF.escape(elemAsText(p))}\\par}\n`,
   "p": (settings, p) => `\\cf1 ${formatRTF.escape(elemAsText(p))}\\par}\n`,
+  "synopsis": (settings, p) => undefined,
+  "comment": (settings, p) => undefined,
 
   //"missing": (settings, p) => `{\\lang1035\\sl-440\\fi567\\cf2 ${formatRTF.escape(elemAsText(p))}\\par}\n\n`,
   //"p": (settings, p) => `{\\lang1035\\sl-440\\fi567\\cf1 ${formatRTF.escape(elemAsText(p))}\\par}\n\n`,
