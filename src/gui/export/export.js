@@ -266,7 +266,7 @@ ${content}
   //---------------------------------------------------------------------------
   // Body
   "body": (settings, head, parts) => {
-    return parts.join("")
+    return parts.join("{\\sb480\\fs34\\qc * * *\\par}\n")
   },
 
   // Head
@@ -276,7 +276,7 @@ ${content}
 
   // Part
   "part": (settings, part, scenes) => {
-    return scenes.filter(s => s.length).join("")
+    return scenes.filter(s => s.length).join("{\\sb480\\fs34\\qc * * *\\par}\n")
   },
 
   // Scene & breaks
