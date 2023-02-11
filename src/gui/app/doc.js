@@ -7,7 +7,7 @@ import {fstat} from "../../system/localfs";
 
 var docs = {}
 
-function docByID(id) {
+export function docByID(id) {
   //console.log("docByID:", id)
   //console.log("Docs:", docs)
   return docs[id]

@@ -24,7 +24,7 @@ import {
   Loading,
 } from "../common/factory";
 
-import {docLoad, docSave, docUpdate} from "../editor/doc"
+import {docByID, docLoad, docSave, docUpdate} from "../app/doc"
 import {withWordCounts} from "../../document";
 
 //import {docByID} from "../app/store"
@@ -33,7 +33,14 @@ import {withWordCounts} from "../../document";
 // Organizer
 //-----------------------------------------------------------------------------
 
-export function Organizer({id, doc, setDoc}) {
+export function Organizer({id}) {
+
+  const [doc, _setDoc] = useState(docByID(id))
+
+  function setDoc(doc) {
+    docUpdate(doc)
+    _setDoc(doc)
+  }
 
   return <DragDropContext onDragEnd={onDragEnd}>
       <OrganizerView doc={doc}/>

@@ -59,7 +59,7 @@ import {
 } from "../common/factory";
 
 import { styled } from '@mui/material/styles';
-import {docLoad, docSave, docUpdate} from "./doc"
+import {docByID, docLoad, docSave, docUpdate} from "../app/doc"
 import {withWordCounts} from "../../document";
 
 //import { mawe } from "../../document";
@@ -68,7 +68,7 @@ import {withWordCounts} from "../../document";
 
 const fs = require("../../system/localfs");
 
-export function SingleEditView({id, doc, setDoc}) {
+export function SingleEditView({id}) {
 
   //---------------------------------------------------------------------------
   // For development purposes:
@@ -98,6 +98,7 @@ export function SingleEditView({id, doc, setDoc}) {
   //---------------------------------------------------------------------------
   // slate buffers
 
+  const doc = docByID(id)
   const [bodybuffer, setBodyBuffer] = useState(section2edit(doc.story.body))
   const [notebuffer, setNoteBuffer] = useState(section2edit(doc.story.notes))
 

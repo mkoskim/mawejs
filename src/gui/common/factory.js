@@ -26,7 +26,7 @@ import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
 import { styled } from '@mui/material/styles';
 
 import {
-  Button, IconButton, ButtonGroup,
+  Button as XButton, ButtonGroup,
   ToggleButton, ToggleButtonGroup,
   Breadcrumbs,
   Chip, TextField, Link,
@@ -99,6 +99,12 @@ export const Icon = {
     Transfer: muiIcons.SwapHorizontalCircleOutlined,
     Print: muiIcons.PrintOutlined,
     Folder: muiIcons.FolderOutlined,
+    File: {
+      New: muiIcons.NoteAddOutlined,
+      Open: muiIcons.FileOpenOutlined,
+      Save: muiIcons.SaveOutlined,
+      SaveAs: muiIcons.SaveAsOutlined,
+    }
   },
 
   Location: {
@@ -290,16 +296,14 @@ export function ButtonGroup(props) {
 }
 */
 
-//*
+/*
 export {Button, IconButton}
 /*/
-export function Button({tooltip, style, ...props}) {
-  const button = <XButton
-    style={{...style}}
-    {...props}
-  />
-
-  return tooltip ? <Tooltip content={tooltip}>{button}</Tooltip> : button;
+export function Button({tooltip, ...props}) {
+  if(tooltip) {
+    return <Tooltip title={tooltip}><XButton {...props}/></Tooltip>
+  }
+  return <XButton {...props}/>
 }
 /**/
 

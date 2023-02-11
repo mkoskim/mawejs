@@ -25,7 +25,7 @@ import {
   Separator, Loading, addClass,
 } from "../common/factory";
 
-import {docLoad, docSave, docUpdate} from "../editor/doc"
+import {docByID, docLoad, docSave, docUpdate} from "../app/doc"
 import {elemAsText} from "../../document"
 import { splitByTrailingElem } from "../../util";
 
@@ -35,7 +35,9 @@ const fs = require("../../system/localfs");
 
 //-----------------------------------------------------------------------------
 
-export function Export({id, doc}) {
+export function Export({id}) {
+  const doc = docByID(id)
+
   return <VFiller>
     <ExportView id={id} doc={doc}/>
     </VFiller>

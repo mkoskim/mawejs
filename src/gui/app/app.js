@@ -30,12 +30,11 @@ import {
   Menu, MenuItem, MakeToggleGroup,
 } from "../common/factory";
 
-
 import {SingleEditView} from "../editor/editor";
 import {Organizer} from "../outliner/outliner";
 import {Export} from "../export/export"
 
-import {docLoad, docSave, docUpdate} from "../editor/doc"
+import {docByID, docLoad, docSave, docUpdate} from "./doc"
 import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
 
 //-----------------------------------------------------------------------------
@@ -63,7 +62,8 @@ const myTheme = createTheme({
           minWidth: 0,
           fontSize: "12pt",
           lineHeight: 1.0,
-          padding: "8px",
+          padding: "8px 8px",
+          margin: 0,
         },
       }
     },
@@ -133,7 +133,10 @@ export default function App(props) {
     setValue: _setMode,
   }
 
-  const [id, setId] = useState(
+  //---------------------------------------------------------------------------
+  // TODO: Improve doc architecture!!!
+
+  const [id, _setId] = useState(
     "./local/UserGuide.mawe"
     //const id = "./local/EmptyDoc.mawe";
     //const id = "./local/TestDoc1.mawe";
@@ -146,32 +149,23 @@ export default function App(props) {
     //const id = "./local/mawe2/CasaMagda.mawe";
   )
 
-  //---------------------------------------------------------------------------
-  // TODO: Improve doc architecture!!!
+  const [loaded, setLoaded] = useState(undefined)
 
-  const [file, setFile] = useState()
-
-  useEffect(() => {
-    fs.fstat(id).then(file => setFile(file))
-  }, [id])
-
-  const [doc, _setDoc] = useState(undefined)
-
-  function setDoc(value) {
-    _setDoc(value)
-    docUpdate(value)
+  function setId(id) {
+    _setId(id)
+    setLoaded(false)
   }
 
   useEffect(() => {
     if(id) docLoad(id)
-      .then(content => setDoc(content))
+      .then(content => setLoaded(content.file.id))
   }, [id])
 
-  if(!doc || doc.file.id !== file.id) return <Loading/>
+  if(!loaded) return <Loading/>
 
   //---------------------------------------------------------------------------
 
-  const props2 = {mode, id, setId, doc, setDoc}
+  const props2 = {mode, id: loaded, setId}
 
   return (
     <ThemeProvider theme={myTheme}>
@@ -183,8 +177,8 @@ export default function App(props) {
   )
 }
 
-function ChooseView({mode, id, setId, doc, setDoc}) {
-  const props={id, setId, doc, setDoc}
+function ChooseView({mode, id, setId}) {
+  const props={id, setId}
 
   switch(mode.value) {
     case "editor": return <SingleEditView {...props}/>
@@ -197,8 +191,11 @@ function ChooseView({mode, id, setId, doc, setDoc}) {
 
 //-----------------------------------------------------------------------------
 
-function WorkspaceTab({mode, id, doc, setId}) {
-  console.log("Workspace:", doc)
+function WorkspaceTab({mode, id, setId}) {
+  const doc = docByID(id)
+
+  //console.log("Workspace: id=", id)
+  //console.log("Workspace: doc=", doc)
 
   useEffect(() => addHotkeys({
     //"mod+o": (e) => onClose(e, dispatch),
@@ -254,26 +251,25 @@ function WorkspaceTab({mode, id, doc, setId}) {
     <Separator/>
     <Filler/>
     <Separator/>
-    <Tooltip title="Help"><Button><Icon.Help /></Button></Tooltip>
-    <Tooltip title="Settings"><Button><Icon.Settings /></Button></Tooltip>
+    <Button tooltip="Help"><Icon.Help /></Button>
+    <Button tooltip="Settings"><Icon.Settings /></Button>
   </ToolBox>
 
-
-async function onOpenFile(event) {
-  console.log("Open file...")
-  //const dirname = await fs.dirname(doc.file.id)
-  const {cancelled, filePaths} = await fileOpenDialog({
-    filters,
-    defaultPath: doc.file.id,
-    properties: ["OpenFile"],
-  })
-  if(!cancelled) {
-    const [filePath] = filePaths
-    console.log("File", filePath)
-    setId(filePath)
+  async function onOpenFile(event) {
+    console.log("Open file...")
+    //const dirname = await fs.dirname(doc.file.id)
+    const {cancelled, filePaths} = await fileOpenDialog({
+      filters,
+      defaultPath: doc.file.id,
+      properties: ["OpenFile"],
+    })
+    if(!cancelled) {
+      const [filePath] = filePaths
+      console.log("File", filePath)
+      setId(filePath)
+    }
+    handleClose()
   }
-  handleClose()
-}
 
   async function onSaveFileAs(event) {
     console.log("Save file as...")
