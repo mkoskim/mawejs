@@ -225,6 +225,60 @@ export function ToolBox({style, ...props}) {
 
 //-----------------------------------------------------------------------------
 
+export function MakeToggleGroup(buttons, group, exclusive) {
+  if(!group?.choices) return null;
+
+  function getButton(choice) {
+    if(!(choice in buttons)) return <ToggleButton key={choice} value={choice}>
+      {choice}
+    </ToggleButton>
+
+    const {tooltip, icon} = buttons[choice]
+    return <ToggleButton key={choice} value={choice}>
+      <Tooltip title={tooltip}>
+        {icon}
+      </Tooltip>
+    </ToggleButton>
+  }
+
+  return <BorderlessToggleButtonGroup
+    exclusive={exclusive}
+    value={group.value}
+    onChange={(e, value) => (exclusive ? value : true) && group.setValue(value)}
+  >
+    {group.choices.map(choice => getButton(choice))}
+  </BorderlessToggleButtonGroup>
+}
+
+const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  '& .MuiToggleButtonGroup-grouped': {
+    //margin: 0,
+    //marginRight: theme.spacing(0.5),
+    //padding: "5pt",
+    padding: "4px",
+    border: 0,
+    borderRadius: 0,
+    "&:hover": {
+      background: "lightgrey",
+    },
+    '&.Mui-selected': {
+      background: "lightblue",
+    },
+    '&.Mui-disabled': {
+      //border: 0,
+    },
+    '&:first-of-type': {
+      //borderRadius: theme.shape.borderRadius,
+      //marginLeft: theme.spacing(0.5),
+    },
+    '&:not(:first-of-type)': {
+      //borderRadius: theme.shape.borderRadius,
+    },
+  },
+}));
+
+//-----------------------------------------------------------------------------
+
 export {Breadcrumbs}
 
 //-----------------------------------------------------------------------------

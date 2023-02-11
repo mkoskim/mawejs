@@ -35,18 +35,7 @@ const fs = require("../../system/localfs");
 
 //-----------------------------------------------------------------------------
 
-export function Export({id}) {
-
-  const [doc, setDoc] = useState(undefined)
-
-  useEffect(() => {
-    //console.log("SingleEdit: Updating doc...")
-    if(id) docLoad(id)
-      .then(content => setDoc(content))
-  }, [id])
-
-  if(!doc) return <Loading/>
-
+export function Export({id, doc}) {
   return <VFiller>
     <ExportView id={id} doc={doc}/>
     </VFiller>

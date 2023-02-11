@@ -14,7 +14,7 @@ const dialog = require("./hostdialog");
 function ipcDispatch(channel, params, browserWindow) {
   const [cmd, ...args] = params
 
-  console.log("IPC:", channel, cmd, args)
+  //console.log("IPC:", channel, cmd, args)
 
   switch(channel) {
     case "hostfs": {

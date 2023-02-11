@@ -33,18 +33,7 @@ import {withWordCounts} from "../../document";
 // Organizer
 //-----------------------------------------------------------------------------
 
-export function Organizer({id}) {
-  const [doc, setDoc] = useState(undefined)
-
-  useEffect(() => {
-    console.log("Organizer: Updating doc...")
-    if(id) docLoad(id)
-      .then(content => setDoc(content))
-  }, [id])
-
-  if(!doc) return <Loading/>
-
-  console.log("Update", doc)
+export function Organizer({id, doc, setDoc}) {
 
   return <DragDropContext onDragEnd={onDragEnd}>
       <OrganizerView doc={doc}/>
@@ -153,6 +142,9 @@ function OrganizerView({doc}) {
       }
     }
     </Droppable>
+
+    <hr/>
+
     </div>
 }
 

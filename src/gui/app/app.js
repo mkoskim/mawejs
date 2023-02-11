@@ -14,6 +14,9 @@ import React, {
   useEffect, useState, useReducer
 } from "react"
 
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
+
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Icon, Tooltip,
@@ -24,14 +27,20 @@ import {
   List, ListItem, ListItemText,
   Grid,
   Separator, Loading, addClass,
+  Menu, MenuItem, MakeToggleGroup,
 } from "../common/factory";
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { styled } from '@mui/material/styles';
 
-import {SingleEdit} from "../editor/editor";
+import {SingleEditView} from "../editor/editor";
 import {Organizer} from "../outliner/outliner";
 import {Export} from "../export/export"
+
+import {docLoad, docSave, docUpdate} from "../editor/doc"
+import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
+
+//-----------------------------------------------------------------------------
+
+const fs = require("../../system/localfs");
 
 //-----------------------------------------------------------------------------
 
@@ -112,25 +121,16 @@ export default function App(props) {
   }
   */
 
-  const [_mode, _dispatch] = useReducer(
-    (state, action) => {
-      switch (action.type) {
-        case 'mode':
-          return {...state, mode: action.payload};
-        default:
-          throw new Error();
-      }
-    },
-    {
-      mode: "editor"
-      //mode: "outliner"
-      //mode: "export"
-    }
+  const [_mode, _setMode] = useState(
+    "editor"
+    //mode: "outliner"
+    //mode: "export"
   );
 
   const mode = {
-    ..._mode,
-    dispatch: _dispatch,
+    choices: ["editor", "outliner", "export"],
+    value: _mode,
+    setValue: _setMode,
   }
 
   //const id = "./local/Beltane.mawe";
@@ -141,126 +141,161 @@ export default function App(props) {
   //const id = "./local/TestDoc1.mawe";
   //const id = "./local/TestDoc2.mawe";
   //const id = "./local/Lorem30k.mawe";
-  const id = "./local/UserGuide.mawe";
+  //const id = "./local/UserGuide.mawe";
 
-  //const id = "./local/mawe2/NeljaBarnaa.mawe";
+  const [id, setId] = useState(
+    "./local/mawe2/NeljaBarnaa.mawe"
   //const id = "./local/mawe2/JazramonGjerta.mawe";
   //const id = "./local/mawe2/LammenHirvio.mawe";
   //const id = "./local/mawe2/CasaMagda.mawe";
+  )
+
+  const [file, setFile] = useState()
+
+  useEffect(() => {
+    fs.fstat(id).then(file => setFile(file))
+  }, [id])
+
+  //---------------------------------------------------------------------------
+  // TODO: Improve doc architecture!!!
+  const [doc, _setDoc] = useState(undefined)
+
+  function setDoc(value) {
+    _setDoc(value)
+    docUpdate(value)
+  }
+
+  useEffect(() => {
+    if(id) docLoad(id)
+      .then(content => setDoc(content))
+  }, [id])
+
+  if(!doc || doc.file.id !== file.id) return <Loading/>
+
+  //---------------------------------------------------------------------------
+
+  const props2 = {mode, id, setId, doc, setDoc}
 
   return (
     <ThemeProvider theme={myTheme}>
-    <HBox className="ViewPort">
-      <ViewSelector mode={mode}/>
-      <ChooseView mode={mode} id={id}/>
-    </HBox>
+    <VBox className="ViewPort">
+      <WorkspaceTab {...props2}/>
+      <ChooseView {...props2}/>
+      </VBox>
     </ThemeProvider>
   )
 }
 
+function ChooseView({mode, id, setId, doc, setDoc}) {
+  const props={id, setId, doc, setDoc}
+
+  switch(mode.value) {
+    case "editor": return <SingleEditView {...props}/>
+    case "outliner": return <Organizer {...props}/>
+    case "export": return <Export {...props}/>
+    default: break;
+  }
+  return null;
+}
+
 //-----------------------------------------------------------------------------
-// Choose the view
-//-----------------------------------------------------------------------------
 
-function ChooseView({mode, id}) {
+function WorkspaceTab({mode, id, doc, setId}) {
+  console.log("Workspace:", doc)
 
-  console.log("EditView/Mode:", mode)
-  console.log("EditView/ID..:", id)
+  useEffect(() => addHotkeys({
+    //"mod+o": (e) => onClose(e, dispatch),
+    //"mod+w": (e) => onClose(e, dispatch),
+    //"mod+s": (e) => mawe.saveas(docByID(id), path.join(cwd, "/testwrite.mawe")),
+    "mod+s": (e) => docSave(doc),
+  }));
 
-  switch(mode.mode) {
-    case "editor": return <SingleEdit id={id}/>
-    case "outliner": return <Organizer id={id}/>
-    case "splitview": return <div style={{margin: "8pt", width: "300pt"}}>
-      <p>Placeholder</p>
-      <p>Edit two docs at once: inteded for writing new drafts from previos
-      ones.
-      </p>
-      </div>
-    case "export": return <Export id={id}/>
-    case "folder": return <div style={{margin: "8pt", width: "300pt"}}>
-      <p>Placeholder</p>
-      <p>Show folder where file is located.
-      </p>
-      </div>
-    case "transfer": return <div style={{margin: "8pt", width: "300pt"}}>
-      <p>Placeholder</p>
-      <p>Move elements (parts, scenes) between files. This allows you to
-      split and merge stories when needed. Not all ideas you get while writing one
-      story fits there, but they might be worth of another story. Sometimes, you
-      find out that two story drafts or ideas can be combined to even greater story.
-      </p>
-      </div>
-    case "workspace": return <div style={{margin: "8pt", width: "300pt"}}>
-      <p>Placeholder</p>
-      <p>Manage workspace: load files, create new files and so on.
-      </p>
-      </div>
-    case "workspaces": return <div style={{margin: "8pt", width: "300pt"}}>
-      <p>Placeholder</p>
-      <p>Manage workspaces: switch workspace, move files between them and so on.
-      </p>
-      </div>
-    case "help": return <div style={{margin: "8pt", width: "300pt"}}>
-      <p>Placeholder</p>
-      <p>Help.
-      </p>
-      </div>
-    case "settings": return <div style={{margin: "8pt", width: "300pt"}}>
-      <p>Placeholder</p>
-      <p>Manage settings.
-      </p>
-      </div>
-    default: return <div style={{margin: "8pt", width: "300pt"}}>
-      <p>Invalid view selection: {mode.mode}</p>
-      </div>
+  const filters = [
+    { name: 'Mawe Files', extensions: ['moe', 'mawe', 'mawe.gz'] },
+    { name: 'All Files', extensions: ['*'] }
+  ]
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => { setAnchorEl(event.currentTarget); };
+  const handleClose = () => { setAnchorEl(null); };
+
+  return <ToolBox>
+    <Button
+      id="basic-button"
+      aria-controls={open ? 'basic-menu' : undefined}
+      aria-haspopup="true"
+      aria-expanded={open ? 'true' : undefined}
+      onClick={handleClick}
+    >
+      File
+    </Button>
+    <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <MenuItem onClick={handleClose}>New</MenuItem>
+        <MenuItem onClick={onOpenFile}>Open...</MenuItem>
+        <MenuItem onClick={handleClose}>Save</MenuItem>
+        <MenuItem onClick={onSaveFileAs}>Save As...</MenuItem>
+        <MenuItem onClick={handleClose}>Revert</MenuItem>
+        <MenuItem onClick={onOpenFolder}>Open Folder</MenuItem>
+      </Menu>
+    <Separator/>
+    {MakeToggleGroup({
+      "editor": {tooltip: "Editor", icon: <Icon.Action.Edit/>},
+      "outliner": {tooltip: "Outline", icon: <Icon.Action.Cards/>},
+      "export": {tooltip: "Export", icon: <Icon.Action.Print/>},
+    }, mode, true)}
+    <Separator/>
+    <Label text={doc.story.name}/>
+    <Separator/>
+    <Filler/>
+    <Separator/>
+    <Tooltip title="Help"><Button><Icon.Help /></Button></Tooltip>
+    <Tooltip title="Settings"><Button><Icon.Settings /></Button></Tooltip>
+  </ToolBox>
+
+
+async function onOpenFile(event) {
+  console.log("Open file...")
+  //const dirname = await fs.dirname(doc.file.id)
+  const {cancelled, filePaths} = await fileOpenDialog({
+    filters,
+    defaultPath: doc.file.id,
+    properties: ["OpenFile"],
+  })
+  if(!cancelled) {
+    const [filePath] = filePaths
+    console.log("File", filePath)
+    setId(filePath)
+  }
+  handleClose()
+}
+
+  async function onSaveFileAs(event) {
+    console.log("Save file as...")
+    //const dirname = await fs.dirname(doc.file.id)
+    const {cancelled, filePath} = await fileSaveDialog({
+      filters,
+      defaultPath: doc.file.id,
+      properties: ["createDirectory", "showOverwriteConfirmation"],
+    })
+    if(!cancelled) {
+      console.log("File", filePath)
+    }
+    handleClose()
+  }
+
+  async function onOpenFolder(event) {
+    console.log("Open folder...")
+    const dirname = await fs.dirname(doc.file.id)
+    fs.openexternal(dirname)
+    handleClose()
   }
 }
-
-//-----------------------------------------------------------------------------
-// View selector
-//-----------------------------------------------------------------------------
-
-function ViewSelector({mode}) {
-  return <VBox style={{borderRight: "1px solid lightgray", background: "white"}}>
-    <BorderlessToggleButtonGroup exclusive orientation="vertical" value={mode.mode} onChange={(e, payload) => payload && mode.dispatch({type: "mode", payload})}>
-      <ToggleButton value="editor"><SidebarButton tooltip="Edit"><Icon.Action.Edit sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
-      <ToggleButton value="outliner"><SidebarButton tooltip="Outline"><Icon.Action.Cards sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
-      <ToggleButton value="splitview"><SidebarButton tooltip="Split view"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
-      <ToggleButton value="export"><SidebarButton tooltip="Export"><Icon.Action.Print sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
-      <ToggleButton value="folder"><SidebarButton tooltip="Open folder"><Icon.Action.Folder sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
-
-      <Separator/>
-      <ToggleButton value="workspace"><SidebarButton tooltip="Workspace"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
-      <ToggleButton value="transfer"><SidebarButton tooltip="Organize"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
-      <ToggleButton value="workspaces"><SidebarButton tooltip="Switch workspaces"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
-      <Separator/>
-      <ToggleButton value="help"><SidebarButton tooltip="Help"><Icon.Help sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
-      <ToggleButton value="settings"><SidebarButton tooltip="Settings"><Icon.Settings sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
-    </BorderlessToggleButtonGroup>
-  </VBox>
-}
-
-function SidebarButton({tooltip, children, ...props}) {
-  return  <Tooltip title={tooltip} placement="right">
-      {children}
-    </Tooltip>
-}
-
-const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-  '& .MuiToggleButtonGroup-grouped': {
-    //margin: 0,
-    //marginRight: theme.spacing(0.5),
-    padding: "2pt",
-    border: 0,
-    '&.Mui-disabled': {
-      //border: 0,
-    },
-    '&:first-of-type': {
-      //borderRadius: theme.shape.borderRadius,
-      //marginLeft: theme.spacing(0.5),
-    },
-    '&:not(:first-of-type)': {
-      //borderRadius: theme.shape.borderRadius,
-    },
-  },
-}));

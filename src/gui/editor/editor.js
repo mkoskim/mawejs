@@ -48,7 +48,7 @@ import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Icon, Tooltip,
-  ToggleButton, ToggleButtonGroup,
+  ToggleButton, ToggleButtonGroup, MakeToggleGroup,
   Input,
   SearchBox, addHotkeys,
   Label,
@@ -68,30 +68,7 @@ import {withWordCounts} from "../../document";
 
 const fs = require("../../system/localfs");
 
-//-----------------------------------------------------------------------------
-// Single edit with sidebars
-
-export function SingleEdit({id}) {
-  const [doc, setDoc] = useState(undefined)
-
-  useEffect(() => {
-    console.log("SingleEdit: Updating doc...")
-    if(id) docLoad(id)
-      .then(content => setDoc(content))
-  }, [id])
-
-  if(!doc) return <Loading/>
-  //*
-  return <VFiller>
-    <WorkspaceTab {...{id, doc}}/>
-    <SingleEditView {...{id, doc}}/>
-    </VFiller>
-  /*/
-  return <SingleEditView id={id} doc={doc}/>
-  /**/
-}
-
-function SingleEditView({id, doc}) {
+export function SingleEditView({id, doc, setDoc}) {
 
   //---------------------------------------------------------------------------
   // For development purposes:
@@ -186,13 +163,6 @@ function SingleEditView({id, doc}) {
 
   //---------------------------------------------------------------------------
 
-  useEffect(() => addHotkeys({
-    //"mod+o": (e) => onClose(e, dispatch),
-    //"mod+w": (e) => onClose(e, dispatch),
-    //"mod+s": (e) => mawe.saveas(docByID(id), path.join(cwd, "/testwrite.mawe")),
-    "mod+s": (e) => docSave(edited),
-  }));
-
   /*
   return <Slate editor={editor} value={state.content} onChange={state.setContent}>
     <EditorBox style={{width: "50%"}}/>
@@ -211,10 +181,12 @@ function SingleEditView({id, doc}) {
 
   //console.log("Edit:", id)
 
+  //
   //*
-  return <DragDropContext onDragEnd={onDragEnd}>
+  return <React.Fragment>
     <Toolbar />
-    <HFiller style={{overflow: "auto"}}>
+    <HBox style={{overflow: "auto"}}>
+      <DragDropContext onDragEnd={onDragEnd}>
       <Slate editor={bodyeditor} value={bodybuffer} onChange={setBodyBuffer}>
         <SlateTOC
           style={{maxWidth: "400px", width: "400px"}}
@@ -229,8 +201,9 @@ function SingleEditView({id, doc}) {
           settings={noteindex_settings}
           section={notesFromEdit}/>
       </Slate>
-    </HFiller>
-    </DragDropContext>
+      </DragDropContext>
+    </HBox>
+    </React.Fragment>
   /*/
   return <DragDropContext onDragEnd={onDragEnd}>
     <Toolbar />
@@ -260,14 +233,50 @@ function SingleEditView({id, doc}) {
   //---------------------------------------------------------------------------
 
   function Toolbar() {
+    const buttons = {
+      "br.scene": {
+        tooltip: "Show scenes",
+        icon: <Icon.BlockType.Scene/>
+      },
+      "synopsis": {
+        tooltip: "Show synopses",
+        icon: <Icon.BlockType.Synopsis />
+      },
+      "missing": {
+        tooltip: "Show missing",
+        icon: <Icon.BlockType.Missing />
+      },
+      "comment": {
+        tooltip: "Show comments",
+        icon: <Icon.BlockType.Comment />
+      },
+
+      "off": {
+        tooltip: "Don't show words",
+        icon: <Icon.StatType.Off />
+      },
+      "numbers": {
+        tooltip: "Words as numbers",
+        icon: <Icon.StatType.Words />,
+      },
+      "percent": {
+        tooltip: "Words as percent",
+        icon: <Icon.StatType.Percent />
+      },
+      "cumulative": {
+        tooltip: "Words as cumulative percent",
+        icon: <Icon.StatType.Cumulative />
+      },
+    }
+
     return <ToolBox style={{ background: "white" }}>
       <Label>Words: {bodyWithWords.words?.text}</Label>
       <Separator/>
       <Label>Chars: {bodyWithWords.words?.chars}</Label>
       <Separator/>
-      {getButtonGroup(bodyindex_settings.indexed)}
+      {MakeToggleGroup(buttons, bodyindex_settings.indexed)}
       <Separator/>
-      {getButtonGroup(bodyindex_settings.words, true)}
+      {MakeToggleGroup(buttons, bodyindex_settings.words, true)}
       <Separator/>
       <Filler/>
     </ToolBox>
@@ -387,11 +396,9 @@ function EditorBox({style, mode="Condensed", visible=true}) {
 
   if(!visible) return null;
 
-  return <VFiller style={{...style}}>
-    <div className="Board">
+  return <div className="Filler Board" style={{...style}}>
       <SlateEditable className={mode}/>
     </div>
-  </VFiller>
 }
 
 //-----------------------------------------------------------------------------
@@ -415,213 +422,3 @@ function Pre({ style, content }) {
 function Empty() {
   return null;
 }
-
-//-----------------------------------------------------------------------------
-
-function getButtonGroup(group, exclusive) {
-  if(!group?.choices) return null;
-
-  const buttons = {
-    "br.scene": {
-      tooltip: "Show scenes",
-      icon: <Icon.BlockType.Scene/>
-    },
-    "synopsis": {
-      tooltip: "Show synopses",
-      icon: <Icon.BlockType.Synopsis />
-    },
-    "missing": {
-      tooltip: "Show missing",
-      icon: <Icon.BlockType.Missing />
-    },
-    "comment": {
-      tooltip: "Show comments",
-      icon: <Icon.BlockType.Comment />
-    },
-
-    "off": {
-      tooltip: "Don't show words",
-      icon: <Icon.StatType.Off />
-    },
-    "numbers": {
-      tooltip: "Words as numbers",
-      icon: <Icon.StatType.Words />,
-    },
-    "percent": {
-      tooltip: "Words as percent",
-      icon: <Icon.StatType.Percent />
-    },
-    "cumulative": {
-      tooltip: "Words as cumulative percent",
-      icon: <Icon.StatType.Cumulative />
-    },
-  }
-
-  function getButton(choice) {
-    if(!(choice in buttons)) return <ToggleButton key={choice} value={choice}>
-      {choice}
-    </ToggleButton>
-
-    const {tooltip, icon} = buttons[choice]
-    return <ToggleButton key={choice} value={choice}>
-      <Tooltip title={tooltip}>
-        {icon}
-      </Tooltip>
-    </ToggleButton>
-  }
-
-  return <BorderlessToggleButtonGroup
-    exclusive={exclusive}
-    value={group.value}
-    onChange={(e, value) => (exclusive ? value : true) && group.setValue(value)}
-  >
-    {group.choices.map(choice => getButton(choice))}
-  </BorderlessToggleButtonGroup>
-}
-
-const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-  '& .MuiToggleButtonGroup-grouped': {
-    //margin: 0,
-    //marginRight: theme.spacing(0.5),
-    //padding: "5pt",
-    padding: "4px",
-    border: 0,
-    borderRadius: 0,
-    "&:hover": {
-      background: "lightgrey",
-    },
-    '&.Mui-selected': {
-      background: "lightblue",
-    },
-    '&.Mui-disabled': {
-      //border: 0,
-    },
-    '&:first-of-type': {
-      //borderRadius: theme.shape.borderRadius,
-      //marginLeft: theme.spacing(0.5),
-    },
-    '&:not(:first-of-type)': {
-      //borderRadius: theme.shape.borderRadius,
-    },
-  },
-}));
-
-//-----------------------------------------------------------------------------
-
-function WorkspaceTab({id, doc}) {
-  console.log("Workspace:", doc)
-
-  const filters = [
-    { name: 'Mawe Files', extensions: ['moe', 'mawe', 'mawe.gz'] },
-    { name: 'All Files', extensions: ['*'] }
-  ]
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => { setAnchorEl(event.currentTarget); };
-  const handleClose = () => { setAnchorEl(null); };
-
-  return <ToolBox>
-    <Button
-      id="basic-button"
-      aria-controls={open ? 'basic-menu' : undefined}
-      aria-haspopup="true"
-      aria-expanded={open ? 'true' : undefined}
-      onClick={handleClick}
-    >
-      File
-    </Button>
-    <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        <MenuItem onClick={handleClose}>New</MenuItem>
-        <MenuItem onClick={onOpenFile}>Open...</MenuItem>
-        <MenuItem onClick={handleClose}>Save</MenuItem>
-        <MenuItem onClick={onSaveFileAs}>Save As...</MenuItem>
-        <MenuItem onClick={handleClose}>Revert</MenuItem>
-        <MenuItem onClick={onOpenFolder}>Open Folder</MenuItem>
-      </Menu>
-    <Separator/>
-    <Label text={doc.file.name}/>
-  </ToolBox>
-
-async function onOpenFile(event) {
-  console.log("Open file...")
-  const dirname = await fs.dirname(doc.file.id)
-  const {cancelled, filePaths} = await fileOpenDialog({
-    filters,
-    defaultPath: dirname,
-    properties: ["OpenFile"],
-  })
-  if(!cancelled) {
-    const [filePath] = filePaths
-    console.log("File", filePath)
-  }
-  handleClose()
-}
-
-  async function onSaveFileAs(event) {
-    console.log("Save file as...")
-    const dirname = await fs.dirname(doc.file.id)
-    const {cancelled, filePath} = await fileSaveDialog({
-      filters,
-      defaultPath: dirname,
-      properties: ["createDirectory", "showOverwriteConfirmation"],
-    })
-    if(!cancelled) {
-      console.log("File", filePath)
-    }
-    handleClose()
-  }
-
-  async function onOpenFolder(event) {
-    console.log("Open folder...")
-    const dirname = await fs.dirname(doc.file.id)
-    fs.openexternal(dirname)
-    handleClose()
-  }
-}
-
-/*
-function WorkspaceTab() {
-  const dispatch = useDispatch()
-  const current = useSelector(state => state.workspace[state.workspace.selected])
-  const { name, files, selected } = current;
-
-  return <HBox style={{background: "#EEE", alignItems: "center"}}>
-    <Button onClick={(e) => onClose(e, dispatch)}>{`${name}:`}</Button>
-    {files.map(f => <Button
-      key={f.id} id={f.id}
-      style={{ background: (f.id === selected.id) ? "white" : null }}
-      onClick={(e) => onOpen(e, dispatch, f)}
-    >
-      {getName(f)}
-    </Button>)}
-  </HBox>
-
-  function getName(file) {
-    const doc = docByID(file.id)
-    if (doc) return doc.story.name
-    return file.name
-  }
-}
-
-function onOpen(event, dispatch, file) {
-  event.stopPropagation()
-  console.log("Opening:", file)
-  dispatch(action.workspace.selectFile({ file }))
-  dispatch(action.doc.open({ file }))
-}
-
-function onClose(e, dispatch) {
-  if (e) e.preventDefault()
-  // Move modifications to doc
-  dispatch(action.doc.close({}))
-}
-*/

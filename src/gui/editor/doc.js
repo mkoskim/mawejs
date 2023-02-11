@@ -44,6 +44,6 @@ export async function docLoad(filename) {
 }
 
 export function docSave(doc) {
-  docUpdate(doc)
-  mawe.save(doc)
+  //docUpdate(doc)
+  mawe.save(docs[doc.file.id])
 }
