@@ -6,7 +6,7 @@ const electron = require("electron");
 const {contextBridge} = electron;
 
 // HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
-require("electron").ipcRenderer.addListener("fix-event-79558e00-29ef-5c7f-84bd-0bcd9a0c5cf3", () => {});
+//require("electron").ipcRenderer.addListener("fix-event-79558e00-29ef-5c7f-84bd-0bcd9a0c5cf3", () => {});
 
 //-----------------------------------------------------------------------------
 // Exposing full interfaces
@@ -35,7 +35,7 @@ contextBridge.exposeInMainWorld("ipc", ipcRenderer);
         receive: (channel, func) => {
             //let validChannels = ["fromMain"];
             //if (validChannels.includes(channel)) {
-                // Deliberately strip event as it includes `sender` 
+                // Deliberately strip event as it includes `sender`
                 ipcRenderer.on(channel, (event, ...args) => fn(...args));
             //}
         }

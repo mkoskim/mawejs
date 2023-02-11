@@ -36,7 +36,7 @@ export {elemAsText, withWordCounts}
 
 //-----------------------------------------------------------------------------
 
-const fs = require("../storage/localfs")
+const fs = require("../system/localfs")
 
 //-----------------------------------------------------------------------------
 

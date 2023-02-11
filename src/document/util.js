@@ -11,7 +11,7 @@ import {uuid, nanoid} from "../util"
 
 export {uuid, nanoid}
 
-const fs = require("../storage/localfs");
+const fs = require("../system/localfs");
 
 const utf8decoder = new TextDecoder();
 

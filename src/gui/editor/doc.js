@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------
 
 import { mawe } from "../../document";
-import {fstat} from "../../storage/localfs";
+import {fstat} from "../../system/localfs";
 
 var docs = {}
 

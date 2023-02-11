@@ -15,6 +15,7 @@ require("electron").ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d5529
 const {ipcMain: ipc} = require("electron-better-ipc");
 const {ipcDispatch}  = require("./ipcdispatch");
 
-ipc.answerRenderer("hostfs", (params) => { return ipcDispatch("hostfs", params)})
+ipc.answerRenderer("hostfs", (params, browserWindow) => { return ipcDispatch("hostfs", params, browserWindow)})
+ipc.answerRenderer("dialog", (params, browserWindow) => { return ipcDispatch("dialog", params, browserWindow)})
 //ipc.answerRenderer("compress", (params) => { return ipcDispatch("compress", params)})
 //ipc.answerRenderer("xml", (params) => { return ipcDispatch("xml", params)})

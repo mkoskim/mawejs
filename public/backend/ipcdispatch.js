@@ -9,14 +9,14 @@
 module.exports = { ipcDispatch }
 
 const hostfs = require("./hostfs");
+const dialog = require("./hostdialog");
 
-function ipcDispatch(channel, params) {
-  const [cmd, args] = [params[0], params.slice(1)];
+function ipcDispatch(channel, params, browserWindow) {
+  const [cmd, ...args] = params
 
-  //console.log("IPC:", channel, cmd, args)
+  console.log("IPC:", channel, cmd, args)
 
   switch(channel) {
-    default: throw Error(`Invalid IPC channel: ${channel}`);
     case "hostfs": {
       switch(cmd) {
         case "fstat": return hostfs.fsGetFileEntry(...args);
@@ -34,8 +34,19 @@ function ipcDispatch(channel, params) {
         case "basename": return hostfs.fsBasename(...args);
         case "extname": return hostfs.fsExtname(...args);
         case "makepath": return hostfs.fsMakepath(...args);
+        default: break;
       }
       throw Error(`IPC: ${channel}/${cmd}: Not implemented.`);
     }
+    case "dialog": {
+      console.log(cmd, ...args)
+      switch(cmd) {
+        case "openfile": return dialog.openFile(browserWindow, ...args);
+        case "savefile": return dialog.saveFile(browserWindow, ...args);
+        default: break;
+      }
+      throw Error(`IPC: ${channel}/${cmd}: Not implemented.`);
+    }
+    default: throw Error(`Invalid IPC channel: ${channel}`);
   }
 }

@@ -43,6 +43,8 @@ import {
   SlateTOC,
 } from "./slateIndex"
 
+import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
+
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Icon, Tooltip,
@@ -53,6 +55,7 @@ import {
   List, ListItem, ListItemText,
   Grid,
   Separator, Loading, addClass,
+  Menu, MenuItem,
 } from "../common/factory";
 
 import { styled } from '@mui/material/styles';
@@ -60,6 +63,10 @@ import {docLoad, docSave, docUpdate} from "./doc"
 import {withWordCounts} from "../../document";
 
 //import { mawe } from "../../document";
+
+//-----------------------------------------------------------------------------
+
+const fs = require("../../system/localfs");
 
 //-----------------------------------------------------------------------------
 // Single edit with sidebars
@@ -76,8 +83,8 @@ export function SingleEdit({id}) {
   if(!doc) return <Loading/>
   //*
   return <VFiller>
-    <ToolBox>Placeholder: Workspace</ToolBox>
-    <SingleEditView id={id} doc={doc}/>
+    <WorkspaceTab {...{id, doc}}/>
+    <SingleEditView {...{id, doc}}/>
     </VFiller>
   /*/
   return <SingleEditView id={id} doc={doc}/>
@@ -500,6 +507,86 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 }));
 
 //-----------------------------------------------------------------------------
+
+function WorkspaceTab({id, doc}) {
+  console.log("Workspace:", doc)
+
+  const filters = [
+    { name: 'Mawe Files', extensions: ['moe', 'mawe', 'mawe.gz'] },
+    { name: 'All Files', extensions: ['*'] }
+  ]
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => { setAnchorEl(event.currentTarget); };
+  const handleClose = () => { setAnchorEl(null); };
+
+  return <ToolBox>
+    <Button
+      id="basic-button"
+      aria-controls={open ? 'basic-menu' : undefined}
+      aria-haspopup="true"
+      aria-expanded={open ? 'true' : undefined}
+      onClick={handleClick}
+    >
+      File
+    </Button>
+    <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <MenuItem onClick={handleClose}>New</MenuItem>
+        <MenuItem onClick={onOpenFile}>Open...</MenuItem>
+        <MenuItem onClick={handleClose}>Save</MenuItem>
+        <MenuItem onClick={onSaveFileAs}>Save As...</MenuItem>
+        <MenuItem onClick={handleClose}>Revert</MenuItem>
+        <MenuItem onClick={onOpenFolder}>Open Folder</MenuItem>
+      </Menu>
+    <Separator/>
+    <Label text={doc.file.name}/>
+  </ToolBox>
+
+async function onOpenFile(event) {
+  console.log("Open file...")
+  const dirname = await fs.dirname(doc.file.id)
+  const {cancelled, filePaths} = await fileOpenDialog({
+    filters,
+    defaultPath: dirname,
+    properties: ["OpenFile"],
+  })
+  if(!cancelled) {
+    const [filePath] = filePaths
+    console.log("File", filePath)
+  }
+  handleClose()
+}
+
+  async function onSaveFileAs(event) {
+    console.log("Save file as...")
+    const dirname = await fs.dirname(doc.file.id)
+    const {cancelled, filePath} = await fileSaveDialog({
+      filters,
+      defaultPath: dirname,
+      properties: ["createDirectory", "showOverwriteConfirmation"],
+    })
+    if(!cancelled) {
+      console.log("File", filePath)
+    }
+    handleClose()
+  }
+
+  async function onOpenFolder(event) {
+    console.log("Open folder...")
+    const dirname = await fs.dirname(doc.file.id)
+    fs.openexternal(dirname)
+    handleClose()
+  }
+}
 
 /*
 function WorkspaceTab() {

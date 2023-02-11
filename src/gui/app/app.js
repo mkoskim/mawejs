@@ -223,25 +223,24 @@ function ChooseView({mode, id}) {
 function ViewSelector({mode}) {
   return <VBox style={{borderRight: "1px solid lightgray", background: "white"}}>
     <BorderlessToggleButtonGroup exclusive orientation="vertical" value={mode.mode} onChange={(e, payload) => payload && mode.dispatch({type: "mode", payload})}>
-      <ToggleButton value="workspace"><SidebarToggle tooltip="Workspace"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
-      <Separator/>
-      <ToggleButton value="editor"><SidebarToggle tooltip="Edit"><Icon.Action.Edit sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
-      <ToggleButton value="outliner"><SidebarToggle tooltip="Outline"><Icon.Action.Cards sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
-      <ToggleButton value="splitview"><SidebarToggle tooltip="Split view"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
-      <ToggleButton value="export"><SidebarToggle tooltip="Export"><Icon.Action.Print sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
-      <ToggleButton value="folder"><SidebarToggle tooltip="Show folder"><Icon.Action.Folder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="editor"><SidebarButton tooltip="Edit"><Icon.Action.Edit sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
+      <ToggleButton value="outliner"><SidebarButton tooltip="Outline"><Icon.Action.Cards sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
+      <ToggleButton value="splitview"><SidebarButton tooltip="Split view"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
+      <ToggleButton value="export"><SidebarButton tooltip="Export"><Icon.Action.Print sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
+      <ToggleButton value="folder"><SidebarButton tooltip="Open folder"><Icon.Action.Folder sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
 
       <Separator/>
-      <ToggleButton value="transfer"><SidebarToggle tooltip="Organize"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
-      <ToggleButton value="workspaces"><SidebarToggle tooltip="Switch workspaces"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="workspace"><SidebarButton tooltip="Workspace"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
+      <ToggleButton value="transfer"><SidebarButton tooltip="Organize"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
+      <ToggleButton value="workspaces"><SidebarButton tooltip="Switch workspaces"><Icon.Placeholder sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
       <Separator/>
-      <ToggleButton value="help"><SidebarToggle tooltip="Help"><Icon.Help sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
-      <ToggleButton value="settings"><SidebarToggle tooltip="Settings"><Icon.Settings sx={{ fontSize: 40 }}/></SidebarToggle></ToggleButton>
+      <ToggleButton value="help"><SidebarButton tooltip="Help"><Icon.Help sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
+      <ToggleButton value="settings"><SidebarButton tooltip="Settings"><Icon.Settings sx={{ fontSize: 40 }}/></SidebarButton></ToggleButton>
     </BorderlessToggleButtonGroup>
   </VBox>
 }
 
-function SidebarToggle({tooltip, children, ...props}) {
+function SidebarButton({tooltip, children, ...props}) {
   return  <Tooltip title={tooltip} placement="right">
       {children}
     </Tooltip>

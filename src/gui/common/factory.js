@@ -35,6 +35,7 @@ import {
   List, ListItem, ListItemText,
   Grid,
   Typography,
+  Menu, MenuItem,
 } from "@mui/material"
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
@@ -44,6 +45,7 @@ export {
   Chip, Link,
   List, ListItem, ListItemText,
   ToggleButton, ToggleButtonGroup,
+  Menu, MenuItem,
 }
 
 //-----------------------------------------------------------------------------
