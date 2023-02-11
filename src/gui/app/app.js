@@ -133,22 +133,21 @@ export default function App(props) {
     setValue: _setMode,
   }
 
-  //const id = "./local/Beltane.mawe";
-  //const id = "./local/Dinosauruspuisto.mawe";
-  //const id = "./local/JazramonGjerta.test.mawe";
-  //const id = "./local/testwrite.mawe";
-  //const id = "./local/EmptyDoc.mawe";
-  //const id = "./local/TestDoc1.mawe";
-  //const id = "./local/TestDoc2.mawe";
-  //const id = "./local/Lorem30k.mawe";
-  //const id = "./local/UserGuide.mawe";
-
   const [id, setId] = useState(
-    "./local/mawe2/NeljaBarnaa.mawe"
-  //const id = "./local/mawe2/JazramonGjerta.mawe";
-  //const id = "./local/mawe2/LammenHirvio.mawe";
-  //const id = "./local/mawe2/CasaMagda.mawe";
+    "./local/UserGuide.mawe"
+    //const id = "./local/EmptyDoc.mawe";
+    //const id = "./local/TestDoc1.mawe";
+    //const id = "./local/TestDoc2.mawe";
+    //const id = "./local/Lorem30k.mawe";
+
+    //"./local/mawe2/NeljaBarnaa.mawe"
+    //const id = "./local/mawe2/JazramonGjerta.mawe";
+    //const id = "./local/mawe2/LammenHirvio.mawe";
+    //const id = "./local/mawe2/CasaMagda.mawe";
   )
+
+  //---------------------------------------------------------------------------
+  // TODO: Improve doc architecture!!!
 
   const [file, setFile] = useState()
 
@@ -156,8 +155,6 @@ export default function App(props) {
     fs.fstat(id).then(file => setFile(file))
   }, [id])
 
-  //---------------------------------------------------------------------------
-  // TODO: Improve doc architecture!!!
   const [doc, _setDoc] = useState(undefined)
 
   function setDoc(value) {
