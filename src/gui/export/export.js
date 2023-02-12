@@ -35,17 +35,15 @@ const fs = require("../../system/localfs");
 
 //-----------------------------------------------------------------------------
 
-export function Export({id}) {
-  const doc = docByID(id)
-
+export function Export({doc, setDoc}) {
   return <VFiller>
-    <ExportView id={id} doc={doc}/>
+    <ExportView doc={doc}/>
     </VFiller>
 }
 
 //-----------------------------------------------------------------------------
 
-function ExportView({id, doc}) {
+function ExportView({doc}) {
   const settings = {
 
   }

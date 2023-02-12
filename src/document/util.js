@@ -61,6 +61,7 @@ export async function buf2file(doc, buffer) {
 //-----------------------------------------------------------------------------
 
 export function elemAsText(elem) {
+  if(!elem?.children) return ""
   return (
     elem.children
     .map(elem => elem.text)

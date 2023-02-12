@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {loadmawe, buf2tree, fromXML} from "./xmljs/load"
+import {loadmawe, createmawe, buf2tree, fromXML} from "./xmljs/load"
 import {savemawe, tree2buf, toXML} from "./xmljs/save"
 import {asRTF, asHTML} from "./print"
 
@@ -17,6 +17,7 @@ import {
 
 export const mawe = {
   load,
+  create,
   save,
   saveas,
   rename: async (file, name, suffix) => {
@@ -43,7 +44,7 @@ const fs = require("../system/localfs")
 async function load(file) {
   if (typeof file === "string") file = await fs.fstat(file);
 
-  console.log("Load file:", file)
+  //console.log("Load file:", file)
   const format = suffix2format(file);
 
   if (format === "mawe") {
@@ -65,6 +66,15 @@ async function load(file) {
   }
 
   throw new Error(`${file.name}: Unknown type.`);
+}
+
+function create(buffer) {
+  const {tree, story} = createmawe(buffer);
+  return {
+    //buffer,
+    //tree,
+    story
+  }
 }
 
 //-----------------------------------------------------------------------------

@@ -7,43 +7,45 @@ import {fstat} from "../../system/localfs";
 
 var docs = {}
 
-export function docByID(id) {
+function docByID(id) {
   //console.log("docByID:", id)
   //console.log("Docs:", docs)
   return docs[id]
 }
 
 export function docUpdate(doc) {
-  //console.log("Update:", doc.file.id, doc.story.name, doc)
-  docs[doc.file.id] = doc
+  if(doc.file?.id) {
+    docs[doc.file.id] = doc
+  }
 }
 
 export async function docLoad(filename) {
   const file = await fstat(filename);
 
-  console.log("docLoad:", file);
+  //console.log("docLoad:", file);
 
   const {id} = file;
 
   if(id in docs) {
-    console.log("- Already loaded.")
+    //console.log("- Already loaded.")
     return docs[id]
   }
 
-  console.log("- Loading...")
-  try {
-    const content = await mawe.load(file)
-    docUpdate(content);
-    //dispatch(docAction.loaded({file}))
-    console.log("- Loaded", content)
-    return content;
-  }
-  catch(err) {
-    console.log(err)
-  }
+  //console.log("- Loading...")
+  const content = await mawe.load(file)
+  docUpdate(content);
+  //dispatch(docAction.loaded({file}))
+  //console.log("- Loaded", content)
+  return content;
 }
 
 export function docSave(doc) {
   //docUpdate(doc)
-  mawe.save(docs[doc.file.id])
+  mawe.save(doc)
+}
+
+export async function docSaveAs(doc, filename) {
+  mawe.saveas(doc, filename)
+  doc.file = await fstat.fstat(filename)
+  docUpdate(doc)
 }

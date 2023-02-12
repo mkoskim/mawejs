@@ -33,14 +33,7 @@ import {withWordCounts} from "../../document";
 // Organizer
 //-----------------------------------------------------------------------------
 
-export function Organizer({id}) {
-
-  const [doc, _setDoc] = useState(docByID(id))
-
-  function setDoc(doc) {
-    docUpdate(doc)
-    _setDoc(doc)
-  }
+export function Organizer({doc, setDoc}) {
 
   return <DragDropContext onDragEnd={onDragEnd}>
       <OrganizerView doc={doc}/>

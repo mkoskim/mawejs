@@ -30,11 +30,15 @@ import {
   Menu, MenuItem, MakeToggleGroup,
 } from "../common/factory";
 
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+
 import {SingleEditView} from "../editor/editor";
 import {Organizer} from "../outliner/outliner";
 import {Export} from "../export/export"
 
-import {docByID, docLoad, docSave, docUpdate} from "./doc"
+import {docLoad, docSave, docSaveAs, docUpdate} from "./doc"
+import {mawe} from "../../document"
+
 import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
 
 //-----------------------------------------------------------------------------
@@ -91,7 +95,7 @@ const myTheme = createTheme({
 
 export default function App(props) {
 
-  console.log("App")
+  //console.log("App")
 
   /*
   const dispatch = useDispatch()
@@ -136,6 +140,7 @@ export default function App(props) {
   //---------------------------------------------------------------------------
   // TODO: Improve doc architecture!!!
 
+  /*
   const [id, _setId] = useState(
     "./local/UserGuide.mawe"
     //const id = "./local/EmptyDoc.mawe";
@@ -149,23 +154,39 @@ export default function App(props) {
     //const id = "./local/mawe2/CasaMagda.mawe";
   )
 
-  const [loaded, setLoaded] = useState(undefined)
-
   function setId(id) {
     _setId(id)
-    setLoaded(false)
+    _setDoc()
+  }
+
+  */
+
+  const [doc, _setDoc] = useState({
+    load: "./local/UserGuide.mawe",
+  })
+
+  function setDoc(value) {
+    _setDoc(value)
+    docUpdate(value)
   }
 
   useEffect(() => {
-    if(id) docLoad(id)
-      .then(content => setLoaded(content.file.id))
-  }, [id])
+    if(!doc.story) {
+      if(doc.load) {
+        console.log("Loading:", doc.load)
+        docLoad(doc.load).then(content => setDoc(content))
+      }
+      else if(doc.buffer) {
+        setDoc(mawe.create(doc.buffer))
+      }
+    }
+  }, [doc.file?.id, doc.load, doc.buffer])
 
-  if(!loaded) return <Loading/>
+  if(!doc.story) return <Loading/>
 
   //---------------------------------------------------------------------------
 
-  const props2 = {mode, id: loaded, setId}
+  const props2 = {mode, doc, setDoc}
 
   return (
     <ThemeProvider theme={myTheme}>
@@ -177,8 +198,8 @@ export default function App(props) {
   )
 }
 
-function ChooseView({mode, id, setId}) {
-  const props={id, setId}
+function ChooseView({mode, doc, setDoc}) {
+  const props={doc, setDoc}
 
   switch(mode.value) {
     case "editor": return <SingleEditView {...props}/>
@@ -191,55 +212,32 @@ function ChooseView({mode, id, setId}) {
 
 //-----------------------------------------------------------------------------
 
-function WorkspaceTab({mode, id, setId}) {
-  const doc = docByID(id)
-
+function WorkspaceTab({mode, doc, setDoc}) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
+  const cbprops = {doc, setDoc}
+
   useEffect(() => addHotkeys({
-    //"mod+o": (e) => onClose(e, dispatch),
-    //"mod+w": (e) => onClose(e, dispatch),
-    //"mod+s": (e) => mawe.saveas(docByID(id), path.join(cwd, "/testwrite.mawe")),
-    "mod+s": (e) => docSave(doc),
+    "mod+o": (e) => onOpenFile(cbprops),
+    "mod+s": (e) => onSaveFile(cbprops),
   }));
 
-  const filters = [
-    { name: 'Mawe Files', extensions: ['moe', 'mawe', 'mawe.gz'] },
-    { name: 'All Files', extensions: ['*'] }
-  ]
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => { setAnchorEl(event.currentTarget); };
-  const handleClose = () => { setAnchorEl(null); };
-
   return <ToolBox>
-    <Button
-      id="basic-button"
-      aria-controls={open ? 'basic-menu' : undefined}
-      aria-haspopup="true"
-      aria-expanded={open ? 'true' : undefined}
-      onClick={handleClick}
-    >
-      File
-    </Button>
-    <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        <MenuItem onClick={handleClose}>New</MenuItem>
-        <MenuItem onClick={onOpenFile}>Open...</MenuItem>
-        <MenuItem onClick={handleClose}>Save</MenuItem>
-        <MenuItem onClick={onSaveFileAs}>Save As...</MenuItem>
-        <MenuItem onClick={handleClose}>Revert</MenuItem>
-        <MenuItem onClick={onOpenFolder}>Open Folder</MenuItem>
+    <PopupState variant="popover" popupId="file-menu">
+      {(popupState) => <React.Fragment>
+      <Button {...bindTrigger(popupState)}><Icon.Menu/></Button>
+      <Menu {...bindMenu(popupState)}>
+        <MenuItem onClick={e => {onNewFile(cbprops); popupState.close(e); }}>New</MenuItem>
+        <MenuItem onClick={e => {onOpenFile(cbprops); popupState.close(e); }}>Open...</MenuItem>
+        <MenuItem onClick={e => {onSaveFile(cbprops); popupState.close(e); }}>Save</MenuItem>
+        <MenuItem onClick={e => {onRename(cbprops); popupState.close(e); }}>Rename</MenuItem>
+        <MenuItem onClick={e => {popupState.close(e); }}>Make a copy</MenuItem>
+        <MenuItem onClick={popupState.close}>Revert</MenuItem>
+        <MenuItem onClick={e => {onOpenFolder(cbprops); popupState.close(e); }}>Open Folder</MenuItem>
       </Menu>
+      </React.Fragment>
+    }</PopupState>
     <Separator/>
     {MakeToggleGroup({
       "editor": {tooltip: "Editor", icon: <Icon.Action.Edit/>},
@@ -254,41 +252,70 @@ function WorkspaceTab({mode, id, setId}) {
     <Button tooltip="Help"><Icon.Help /></Button>
     <Button tooltip="Settings"><Icon.Settings /></Button>
   </ToolBox>
+}
 
-  async function onOpenFile(event) {
-    console.log("Open file...")
-    //const dirname = await fs.dirname(doc.file.id)
-    const {cancelled, filePaths} = await fileOpenDialog({
-      filters,
-      defaultPath: doc.file.id,
-      properties: ["OpenFile"],
+//-----------------------------------------------------------------------------
+
+const filters = [
+  { name: 'Mawe Files', extensions: ['moe', 'mawe', 'mawe.gz'] },
+  { name: 'All Files', extensions: ['*'] }
+]
+
+async function onNewFile({doc, setDoc}) {
+  setDoc({
+    buffer: '<story format="mawe"><body><part/></body><notes><part/></notes></story>'
+  })
+}
+
+async function onOpenFile({doc, setDoc}) {
+  //const dirname = await fs.dirname(doc.file.id)
+  const {cancelled, filePaths} = await fileOpenDialog({
+    filters,
+    defaultPath: doc.file?.id ?? ".",
+    properties: ["OpenFile"],
+  })
+  if(!cancelled) {
+    const [filePath] = filePaths
+    console.log("Load file:", filePath)
+    setDoc({load: filePath})
+  }
+}
+
+async function onSaveFile({doc, setDoc}) {
+  if(doc.file) {
+    docSave(doc)
+    return;
+  }
+
+  const {cancelled, filePath} = await fileSaveDialog({
+    filters,
+    defaultPath: ".",
+    properties: ["createDirectory", "showOverwriteConfirmation"],
+  })
+  if(!cancelled) {
+    console.log("Save File", filePath)
+    docSaveAs(doc, filePath)
+    setDoc({
+      ...doc,
+      file: await fs.fstat(filePath)
     })
-    if(!cancelled) {
-      const [filePath] = filePaths
-      console.log("File", filePath)
-      setId(filePath)
-    }
-    handleClose()
   }
+}
 
-  async function onSaveFileAs(event) {
-    console.log("Save file as...")
-    //const dirname = await fs.dirname(doc.file.id)
-    const {cancelled, filePath} = await fileSaveDialog({
-      filters,
-      defaultPath: doc.file.id,
-      properties: ["createDirectory", "showOverwriteConfirmation"],
-    })
-    if(!cancelled) {
-      console.log("File", filePath)
-    }
-    handleClose()
+async function onRename({doc}) {
+  //const dirname = await fs.dirname(doc.file.id)
+  const {cancelled, filePath} = await fileSaveDialog({
+    filters,
+    defaultPath: doc.file.id,
+    properties: ["createDirectory", "showOverwriteConfirmation"],
+  })
+  if(!cancelled) {
+    console.log("File", filePath)
   }
+}
 
-  async function onOpenFolder(event) {
-    console.log("Open folder...")
-    const dirname = await fs.dirname(doc.file.id)
-    fs.openexternal(dirname)
-    handleClose()
-  }
+async function onOpenFolder({doc}) {
+  const dirname = await doc.file ? fs.dirname(doc.file.if) : "."
+  console.log("Open folder:", dirname)
+  fs.openexternal(dirname)
 }

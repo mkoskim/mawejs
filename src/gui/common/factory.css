@@ -24,7 +24,7 @@
   margin-right: 4pt;
 }
 
-.VBox > .Separator {
+.VBox > .Separator, .MuiList-root > .Separator {
   width:  100%;
   border-bottom: 1pt solid lightgrey;
   margin-top: 4pt;

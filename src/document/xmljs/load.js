@@ -38,7 +38,10 @@ import { xml2js } from "xml-js";
 //const convert = require('xml-js');
 
 export async function loadmawe(file) {
-  const buffer = await file2buf(file)
+  return createmawe(await file2buf(file))
+}
+
+export function createmawe(buffer) {
   const tree = buf2tree(buffer)
   return {
     buffer,
@@ -185,6 +188,6 @@ export function fromXML(root) {
 
   function trim(text) {
     if(typeof text === "string") return text.trim() //.replace(/\s+/gu, ' ')
-    return "";
+    return undefined;
   }
 }

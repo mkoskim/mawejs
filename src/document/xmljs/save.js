@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {buf2file} from "../util";
+import {uuid as getUUID, buf2file} from "../util";
 import { js2xml } from "xml-js";
 
 //----------------------------------------------------------------------------
@@ -30,7 +30,7 @@ export function toXML(story) {
   const root = toElem({
     type: "story",
     attributes: {
-      uuid: story.uuid,
+      uuid: story.uuid ?? getUUID(),
       format: "mawe",
       version: 2,
       name: story.name

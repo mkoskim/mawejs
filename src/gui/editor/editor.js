@@ -68,7 +68,7 @@ import {withWordCounts} from "../../document";
 
 const fs = require("../../system/localfs");
 
-export function SingleEditView({id}) {
+export function SingleEditView({doc, setDoc}) {
 
   //---------------------------------------------------------------------------
   // For development purposes:
@@ -88,45 +88,55 @@ export function SingleEditView({id}) {
   /**/
 
   //---------------------------------------------------------------------------
-  // Slate uses content variable only when initializing. We need to manually
-  // set children when doc changes between re-renders
-  //---------------------------------------------------------------------------
-
-  const bodyeditor = useMemo(() => getEditor(), [])
-  const noteeditor = useMemo(() => getEditor(), [])
-
-  //---------------------------------------------------------------------------
   // slate buffers
 
-  const doc = docByID(id)
-  const [bodybuffer, setBodyBuffer] = useState(section2edit(doc.story.body))
-  const [notebuffer, setNoteBuffer] = useState(section2edit(doc.story.notes))
+  //console.log("Story ID:", doc.story.uuid)
 
-  // Update doc from buffers
+  const bodyeditor = useMemo(() => getEditor(), [doc.story.uuid])
+  const noteeditor = useMemo(() => getEditor(), [doc.story.uuid])
 
-  const bodyFromEdit  = edit2section(bodybuffer)
-  const bodyWithWords = withWordCounts(bodyFromEdit)
-  const notesFromEdit = edit2section(notebuffer)
+  const [bodybuffer, _setBodyBuffer] = useState(section2edit(doc.story.body))
+  const [notebuffer, _setNoteBuffer] = useState(section2edit(doc.story.notes))
 
-  const edited = {
-    ...doc,
-    story: {
-      ...doc.story,
-      notes: {
-        ...doc.story.notes,
-        parts: notesFromEdit.parts,
-      },
-      body: {
-        ...doc.story.body,
-        head: {...doc.story.body.head, ...bodyFromEdit.head},
-        parts: bodyFromEdit.parts,
+  function setBodyBuffer(value) {
+    _setBodyBuffer(value)
+    const bodyFromEdit = edit2section(value)
+    const edited = {
+      ...doc,
+      story: {
+        ...doc.story,
+        body: {
+          ...doc.story.body,
+          head: {...doc.story.body.head, ...bodyFromEdit.head},
+          parts: bodyFromEdit.parts,
+        }
       }
     }
+    setDoc(edited)
   }
 
-  docUpdate(edited);
+  function setNoteBuffer(value) {
+    _setNoteBuffer(value)
+    const notesFromEdit = edit2section(value)
+    const edited = {
+      ...doc,
+      story: {
+        ...doc.story,
+        notes: {
+          ...doc.story.notes,
+          parts: notesFromEdit.parts
+        }
+      }
+    }
+    setDoc(edited)
+  }
 
   //---------------------------------------------------------------------------
+
+  const bodyWithWords = withWordCounts(doc.story.body)
+  const notesFromEdit = doc.story.notes;
+
+  console.log(bodyWithWords)
 
   const [active, setActive] = useState("body")
 
@@ -234,7 +244,7 @@ export function SingleEditView({id}) {
   //---------------------------------------------------------------------------
 
   function Toolbar() {
-    const buttons = {
+    const btn_index = {
       "br.scene": {
         tooltip: "Show scenes",
         icon: <Icon.BlockType.Scene/>
@@ -251,7 +261,9 @@ export function SingleEditView({id}) {
         tooltip: "Show comments",
         icon: <Icon.BlockType.Comment />
       },
+    }
 
+    const btn_words = {
       "off": {
         tooltip: "Don't show words",
         icon: <Icon.StatType.Off />
@@ -275,9 +287,9 @@ export function SingleEditView({id}) {
       <Separator/>
       <Label>Chars: {bodyWithWords.words?.chars}</Label>
       <Separator/>
-      {MakeToggleGroup(buttons, bodyindex_settings.indexed)}
+      {MakeToggleGroup(btn_index, bodyindex_settings.indexed)}
       <Separator/>
-      {MakeToggleGroup(buttons, bodyindex_settings.words, true)}
+      {MakeToggleGroup(btn_words, bodyindex_settings.words, true)}
       <Separator/>
       <Filler/>
     </ToolBox>

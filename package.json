@@ -32,6 +32,7 @@
     "fs-extra": "^11.1.0",
     "is-gzip": "^2.0.0",
     "is-hotkey": "^0.2.0",
+    "material-ui-popup-state": "^5.0.4",
     "nanoid": "^4.0.0",
     "pako": "^2.1.0",
     "react": "^18.2.0",

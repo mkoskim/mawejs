@@ -85,6 +85,7 @@ export const Icon = {
   Starred: muiIcons.Star,
   Circle: muiIcons.Circle,
   Help: muiIcons.HelpOutline,
+  Menu: muiIcons.Menu,
 
   NewFile: muiIcons.NoteAddOutlined,
   NewFolder: muiIcons.CreateNewFolderOutlined,
