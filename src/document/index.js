@@ -48,20 +48,21 @@ async function load(file) {
   const format = suffix2format(file);
 
   if (format === "mawe") {
-    const suffix = getSuffix(file, [".mawe", ".mawe.gz"]);
-    const basename = await fs.basename(file.name, suffix);
+    //const suffix = getSuffix(file, [".mawe", ".mawe.gz"]);
+    //const basename = await fs.basename(file.name, suffix);
     const {buffer, tree, story} = await loadmawe(file);
 
     return {
       file,
-      basename,
-      suffix,
+      story,
+      //basename,
+      //suffix,
       //buffer,
       //tree,
-      story: {
-        ...story,
-        name: story.name ?? basename,
-      }
+      //story: {
+      //  ...story,
+      //name: story.name ?? basename,
+      //}
     }
   }
 
@@ -82,6 +83,7 @@ function create(buffer) {
 export async function saveas(doc, filename) {
   //const file = await fs.fstat(filename)
   //console.log("Saving:", doc)
+  // TODO: Fill in basename + suffix
   return await savemawe({
     file: { id: filename },
     story: doc.story,

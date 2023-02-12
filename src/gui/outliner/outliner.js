@@ -24,7 +24,6 @@ import {
   Loading,
 } from "../common/factory";
 
-import {docByID, docLoad, docSave, docUpdate} from "../app/doc"
 import {withWordCounts} from "../../document";
 
 //import {docByID} from "../app/store"

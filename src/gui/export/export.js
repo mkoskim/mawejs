@@ -25,7 +25,6 @@ import {
   Separator, Loading, addClass,
 } from "../common/factory";
 
-import {docByID, docLoad, docSave, docUpdate} from "../app/doc"
 import {elemAsText} from "../../document"
 import { splitByTrailingElem } from "../../util";
 

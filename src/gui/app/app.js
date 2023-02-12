@@ -36,14 +36,13 @@ import {SingleEditView} from "../editor/editor";
 import {Organizer} from "../outliner/outliner";
 import {Export} from "../export/export"
 
-import {docLoad, docSave, docSaveAs, docUpdate} from "./doc"
 import {mawe} from "../../document"
 
 import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
 
 //-----------------------------------------------------------------------------
 
-const fs = require("../../system/localfs");
+const fs = require("../../system/localfs")
 
 //-----------------------------------------------------------------------------
 
@@ -161,20 +160,15 @@ export default function App(props) {
 
   */
 
-  const [doc, _setDoc] = useState({
+  const [doc, setDoc] = useState({
     load: "./local/UserGuide.mawe",
   })
-
-  function setDoc(value) {
-    _setDoc(value)
-    docUpdate(value)
-  }
 
   useEffect(() => {
     if(!doc.story) {
       if(doc.load) {
         console.log("Loading:", doc.load)
-        docLoad(doc.load).then(content => setDoc(content))
+        mawe.load(doc.load).then(content => setDoc(content))
       }
       else if(doc.buffer) {
         setDoc(mawe.create(doc.buffer))
@@ -246,7 +240,7 @@ function WorkspaceTab({mode, doc, setDoc}) {
       "export": {tooltip: "Export", icon: <Icon.Action.Print/>},
     }, mode, true)}
     <Separator/>
-    <Label text={doc.file.name ?? "<New>"}/>
+    <Label text={doc.file?.name ?? "<New>"}/>
     <Separator/>
     <Filler/>
     <Separator/>
@@ -270,35 +264,42 @@ async function onNewFile({doc, setDoc}) {
 
 async function onOpenFile({doc, setDoc}) {
   //const dirname = await fs.dirname(doc.file.id)
-  const {cancelled, filePaths} = await fileOpenDialog({
+  const {canceled, filePaths} = await fileOpenDialog({
     filters,
     defaultPath: doc.file?.id ?? ".",
     properties: ["OpenFile"],
   })
-  if(!cancelled) {
+  if(!canceled) {
     const [filePath] = filePaths
+
     console.log("Load file:", filePath)
     setDoc({load: filePath})
+    // TODO: Would work, but does not replace editor buffers:
+    //setDoc(await mawe.load(filePath))
   }
 }
 
 async function onSaveFile({doc, setDoc}) {
   if(doc.file) {
-    docSave(doc)
+    mawe.save(doc)
     return;
   }
   onSaveFileAs({doc, setDoc})
 }
 
 async function onSaveFileAs({doc, setDoc}) {
-  const {cancelled, filePath} = await fileSaveDialog({
+  const {canceled, filePath} = await fileSaveDialog({
     filters,
-    defaultPath: doc.file?.id ?? ".",
+    defaultPath: doc.file?.id ?? "./NewDoc.mawe",
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
-  if(!cancelled) {
-    console.log("Save File", filePath)
-    setDoc(await docSaveAs(doc, filePath))
+  if(!canceled) {
+    console.log("Save File As", filePath)
+    await mawe.saveas(doc, filePath)
+    setDoc({
+      ...doc,
+      file: await fs.fstat(filePath),
+    })
   }
 }
 
