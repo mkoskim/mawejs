@@ -43,8 +43,6 @@ import {
   SlateTOC,
 } from "./slateIndex"
 
-import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
-
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Icon, Tooltip,
@@ -57,6 +55,11 @@ import {
   Separator, Loading, addClass,
   Menu, MenuItem,
 } from "../common/factory";
+
+import {
+  SectionWordInfo,
+  ChooseVisibleElements, ChooseWordFormat,
+} from "../common/components";
 
 import { styled } from '@mui/material/styles';
 import {withWordCounts} from "../../document";
@@ -331,52 +334,13 @@ export function SingleEditView({doc, setDoc}) {
 //-----------------------------------------------------------------------------
 
 function EditToolbar({bodyWithWords, bodyindex_settings}) {
-  const btn_index = {
-    "br.scene": {
-      tooltip: "Show scenes",
-      icon: <Icon.BlockType.Scene/>
-    },
-    "synopsis": {
-      tooltip: "Show synopses",
-      icon: <Icon.BlockType.Synopsis />
-    },
-    "missing": {
-      tooltip: "Show missing",
-      icon: <Icon.BlockType.Missing />
-    },
-    "comment": {
-      tooltip: "Show comments",
-      icon: <Icon.BlockType.Comment />
-    },
-  }
-
-  const btn_words = {
-    "off": {
-      tooltip: "Don't show words",
-      icon: <Icon.StatType.Off />
-    },
-    "numbers": {
-      tooltip: "Words as numbers",
-      icon: <Icon.StatType.Words />,
-    },
-    "percent": {
-      tooltip: "Words as percent",
-      icon: <Icon.StatType.Percent />
-    },
-    "cumulative": {
-      tooltip: "Words as cumulative percent",
-      icon: <Icon.StatType.Cumulative />
-    },
-  }
 
   return <ToolBox style={{ background: "white" }}>
-    <Label>Words: {bodyWithWords.words?.text}</Label>
+    <SectionWordInfo sectWithWords={bodyWithWords}/>
     <Separator/>
-    <Label>Chars: {bodyWithWords.words?.chars}</Label>
+    <ChooseVisibleElements elements={bodyindex_settings.indexed}/>
     <Separator/>
-    {MakeToggleGroup(btn_index, bodyindex_settings.indexed)}
-    <Separator/>
-    {MakeToggleGroup(btn_words, bodyindex_settings.words, true)}
+    <ChooseWordFormat format={bodyindex_settings.words}/>
     <Separator/>
     <Filler/>
   </ToolBox>

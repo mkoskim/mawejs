@@ -24,6 +24,11 @@ import {
   Loading,
 } from "../common/factory";
 
+import {
+  SectionWordInfo,
+  ChooseVisibleElements, ChooseWordFormat, FormatWords,
+} from "../common/components";
+
 import {elemAsText, withWordCounts} from "../../document";
 
 //import {docByID} from "../app/store"
@@ -38,14 +43,14 @@ export function Organizer({doc, setDoc}) {
       <OrganizerView doc={doc}/>
     </DragDropContext>
 
-  function findPart(partID) {
+  function findPart(doc, partID) {
     return (
       doc.story.body.parts.find(part => part.id === partID) ||
       doc.story.notes.parts.find(part => part.id === partID)
     )
   }
 
-  function findSect(sectID) {
+  function findSect(doc, sectID) {
     switch(sectID) {
       case "body": return doc.story.body;
       case "notes": return doc.story.notes;
@@ -68,23 +73,25 @@ export function Organizer({doc, setDoc}) {
 
     switch(type) {
       case "scene": {
-        const sourcePart = findPart(source.droppableId);
-        const destinationPart = findPart(destination.droppableId);
+        const sourcePart = findPart(doc, source.droppableId);
+        const destinationPart = findPart(doc, destination.droppableId);
 
         const scene = sourcePart.children[source.index]
         sourcePart.children.splice(source.index, 1)
         destinationPart.children.splice(destination.index, 0, scene)
-        setDoc(doc)
+        setDoc({...doc})
+        //setDoc(doc => {...moveScene(doc, source, destination))
         break;
       }
       case "part": {
-        const sourceSect = findSect(source.droppableId);
-        const destinationSect = findSect(destination.droppableId);
+        const sourceSect = findSect(doc, source.droppableId);
+        const destinationSect = findSect(doc, destination.droppableId);
 
         const part = sourceSect.parts[source.index]
         sourceSect.parts.splice(source.index, 1)
         destinationSect.parts.splice(destination.index, 0, part)
-        setDoc(doc)
+        setDoc({...doc})
+        //setDoc(doc => movePart(doc, source, destination))
         break;
       }
       default:
@@ -99,23 +106,48 @@ export function Organizer({doc, setDoc}) {
 function OrganizerView({doc}) {
   //console.log("Organizer: Doc:", doc)
 
-  return <div className="Filler Organizer" style={{overflow: "auto"}}>
+  const body = withWordCounts(doc.story.body)
+  const notes = doc.story.notes
 
+  const [indexed1, setIndexed1] = useState(["synopsis"])
+  const [words1, setWords1] = useState("numbers")
+
+  const body_settings = {
+    indexed: {
+      choices:  ["synopsis", "missing", "comment"],
+      value:    indexed1,
+      setValue: setIndexed1,
+    },
+    words: {
+      total:    body.words.text,
+      choices:  ["off", "numbers", "percent", "cumulative"],
+      value:    words1,
+      setValue: setWords1,
+    },
+    numbering: true,
+  }
+
+  const note_settings = {
+    indexed: {
+      value: [],
+    }
+  }
+
+  return <div className="Filler Organizer" style={{overflow: "auto"}}>
+    <OutlinerToolbar settings={body_settings} sectWithWords={body}/>
     <Droppable droppableId="body" direction="horizontal" type="part">
     {(provided, snapshot) => {
         const {innerRef, droppableProps, placeholder} = provided
-        const body = withWordCounts(doc.story.body)
         const {words} = body
 
         //console.log("Body update")
         return <React.Fragment>
-          <Button>Words: {words?.text}</Button>
           <div
             ref={innerRef}
             className="HBox Section"
             {...droppableProps}
             >
-            {body.parts.map((part, index) => <PartView key={part.id} index={index} part={part}/>)}
+            {body.parts.map((part, index) => <PartView key={part.id} index={index} settings={body_settings} part={part}/>)}
             {placeholder}
           </div>
           </React.Fragment>
@@ -128,14 +160,13 @@ function OrganizerView({doc}) {
     <Droppable droppableId="notes" direction="horizontal" type="part">
     {(provided, snapshot) => {
         const {innerRef, droppableProps, placeholder} = provided
-        const notes = doc.story.notes
 
         return <div
           ref={innerRef}
           className="HBox Section"
           {...droppableProps}
           >
-          {notes.parts.map((part, index) => <PartView key={part.id} index={index} part={part}/>)}
+          {notes.parts.map((part, index) => <PartView key={part.id} index={index} settings={note_settings} part={part}/>)}
           {placeholder}
           </div>
       }
@@ -148,13 +179,28 @@ function OrganizerView({doc}) {
 }
 
 //-----------------------------------------------------------------------------
+
+function OutlinerToolbar({settings, sectWithWords}) {
+
+  return <ToolBox style={{ background: "white" }}>
+    <SectionWordInfo sectWithWords={sectWithWords}/>
+    <Separator/>
+    <ChooseVisibleElements elements={settings.indexed}/>
+    <Separator/>
+    <ChooseWordFormat format={settings.words}/>
+    <Separator/>
+    <Filler/>
+  </ToolBox>
+}
+
+//-----------------------------------------------------------------------------
 // TODO: Empty parts can be removed
 // TODO: Parts can be merged?
 // TODO: Add part
 // TODO: Add scene
 // TODO: Double click -> editor + focus at scene/part
 
-function PartView({part, index}) {
+function PartView({settings, part, index}) {
   return <Draggable
     draggableId={part.id}
     index={index}
@@ -182,7 +228,8 @@ function PartView({part, index}) {
         {...dragHandleProps}
       >
         {part.name && part.name !== "" ? part.name : "<Unnamed>"}
-        <Words />
+        <Filler/>
+        <FormatWords settings={settings} words={words}/>
       </HBox>
       <Droppable
         droppableId={part.id}
@@ -204,7 +251,7 @@ function PartView({part, index}) {
       ref={innerRef}
       {...droppableProps}
       >
-      {part.children.map((scene, index) => <SceneView key={scene.id} index={index} scene={scene}/>)}
+      {part.children.map((scene, index) => <SceneView key={scene.id} index={index} settings={settings} scene={scene}/>)}
       {placeholder}
     </div>
   }
@@ -213,7 +260,7 @@ function PartView({part, index}) {
 //-----------------------------------------------------------------------------
 // TODO: Edit synopsis
 
-function SceneView({scene, index}) {
+function SceneView({index, settings, scene}) {
   return <Draggable
     draggableId={scene.id}
     index={index}
@@ -229,7 +276,8 @@ function SceneView({scene, index}) {
       draggingOver, // droppable id
     } = snapshot
 
-    const bookmarks = scene.children.filter(p => p.type === "synopsis");
+    const {indexed} = settings
+    const bookmarks = scene.children.filter(p => indexed.value.includes(p.type));
 
     return <div className="VBox Scene"
       ref={innerRef}

@@ -24,8 +24,8 @@
   flex-wrap: wrap;
   */
 
-  border: 2px solid lightgray;
-
+  border: 3px solid lightgray;
+  border-radius: 6px;
   margin: 4pt;
 
   /*
@@ -61,7 +61,7 @@
   display: flex;
   cursor:pointer;
 
-  width: 200px;
+  width: 250px;
   min-width: 150px;
   max-width: 400px;
   /*
@@ -70,8 +70,9 @@
   */
 
   background: white;
-  border: 1px solid lightgray;
-  padding: 4pt;
+  border: 2px solid lightgray;
+  border-radius: 6px;
+  padding: 8px;
 
   margin-top: 2pt;
   margin-bottom: 2pt;

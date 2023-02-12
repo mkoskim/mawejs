@@ -25,8 +25,6 @@ import {
   focusByID,
 } from "./slateEditor"
 
-import { sleep } from "../../util"
-
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Icon, Tooltip,
@@ -39,7 +37,7 @@ import {
   Separator, Loading, addClass, DeferredRender,
 } from "../common/factory";
 
-import { styled } from '@mui/material/styles';
+import {FormatWords} from "../common/components";
 
 //-----------------------------------------------------------------------------
 
@@ -173,7 +171,7 @@ function IndexItem({ className, settings, id, type, name, words, ...props }) {
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       <HFiller/>
-      <ItemWords settings={settings} words={words}/>
+      <FormatWords settings={settings} words={words}/>
     </HBox>
 }
 
@@ -190,32 +188,4 @@ function ItemIcon({type}) {
 function ItemLabel({className, name}) {
   return <span className={addClass("Name", className)}>{name}</span>
   //return <div className="Name">{id}</div>
-}
-
-function ItemWords({settings, words}) {
-  if(words) switch(settings.words.value) {
-    case "numbers": return <span>{words.text}</span>
-    case "percent": return <span>{Number(100.0 * words.text / settings.words.total).toFixed(1)}</span>
-    case "cumulative": return <span>{words.cumulative !== undefined && Number(100.0 * words.cumulative / settings.words.total).toFixed(1)}</span>
-    default: break;
-  }
-  return null;
-}
-
-//-----------------------------------------------------------------------------
-
-function DocItem({ doc }) {
-  const { n_words, n_chars } = { n_words: 0, n_chars: 0 };
-
-  return (
-    <HBox style={{ alignItems: "center" }}>
-      <Label variant="body1" style={{ fontSize: "14pt" }}>{doc.story.name}</Label>
-      <Filler />
-      <Separator />
-      <Label>{`Words: ${n_words}`}</Label>
-      <Separator />
-      <Label>{`Chars: ${n_chars}`}</Label>
-      <Separator />
-    </HBox>
-  )
 }
