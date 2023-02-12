@@ -100,7 +100,7 @@ export function SingleEditView({doc, setDoc}) {
   function setBodyBuffer(value) {
     _setBodyBuffer(value)
     const bodyFromEdit = edit2section(value)
-    const edited = {
+    setDoc(doc => ({
       ...doc,
       story: {
         ...doc.story,
@@ -110,14 +110,13 @@ export function SingleEditView({doc, setDoc}) {
           parts: bodyFromEdit.parts,
         }
       }
-    }
-    setDoc(edited)
+    }))
   }
 
   function setNoteBuffer(value) {
     _setNoteBuffer(value)
     const notesFromEdit = edit2section(value)
-    const edited = {
+    setDoc(doc => ({
       ...doc,
       story: {
         ...doc.story,
@@ -126,8 +125,7 @@ export function SingleEditView({doc, setDoc}) {
           parts: notesFromEdit.parts
         }
       }
-    }
-    setDoc(edited)
+    }))
   }
 
   //---------------------------------------------------------------------------

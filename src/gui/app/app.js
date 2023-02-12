@@ -178,8 +178,6 @@ export default function App(props) {
 
   if(!doc.story) return <Loading/>
 
-  //console.log("Doc:", doc)
-
   //---------------------------------------------------------------------------
 
   const props2 = {mode, doc, setDoc}
