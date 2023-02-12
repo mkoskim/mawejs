@@ -35,14 +35,6 @@ const fs = require("../../system/localfs");
 //-----------------------------------------------------------------------------
 
 export function Export({doc, setDoc}) {
-  return <VFiller>
-    <ExportView doc={doc}/>
-    </VFiller>
-}
-
-//-----------------------------------------------------------------------------
-
-function ExportView({doc}) {
   const settings = {
 
   }
@@ -52,10 +44,10 @@ function ExportView({doc}) {
     doc,
   }
 
-  return <HFiller>
-    <Settings {...{settings, doc}}/>
+  return <HBox style={{overflow: "auto"}}>
+    <Settings {...previewprops}/>
     <Preview {...previewprops}/>
-  </HFiller>
+  </HBox>
 }
 
 //-----------------------------------------------------------------------------
