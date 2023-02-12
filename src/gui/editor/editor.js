@@ -94,8 +94,10 @@ export function SingleEditView({doc, setDoc}) {
   const bodyeditor = useMemo(() => getEditor(), [doc.story.uuid])
   const noteeditor = useMemo(() => getEditor(), [doc.story.uuid])
 
-  const [bodybuffer, _setBodyBuffer] = useState(section2edit(doc.story.body))
-  const [notebuffer, _setNoteBuffer] = useState(section2edit(doc.story.notes))
+  const [bodybuffer, _setBodyBuffer] = useState(() => section2edit(doc.story.body))
+  const [notebuffer, _setNoteBuffer] = useState(() => section2edit(doc.story.notes))
+
+  // Get updates from Slate, and apply them to doc, too
 
   function setBodyBuffer(value) {
     _setBodyBuffer(value)
@@ -129,15 +131,13 @@ export function SingleEditView({doc, setDoc}) {
   }
 
   //---------------------------------------------------------------------------
+  // Index settings
+  //---------------------------------------------------------------------------
 
   const bodyWithWords = withWordCounts(doc.story.body)
   const notesFromEdit = doc.story.notes;
 
   const [active, setActive] = useState("body")
-
-  //---------------------------------------------------------------------------
-  // Index settings
-  //---------------------------------------------------------------------------
 
   const [indexed1, setIndexed1] = useState(["br.scene", "synopsis"])
   const [words1, setWords1] = useState("numbers")
@@ -190,7 +190,7 @@ export function SingleEditView({doc, setDoc}) {
   //
   //*
   return <React.Fragment>
-    <Toolbar />
+    <EditToolbar {...{bodyindex_settings, noteindex_settings, bodyWithWords}}/>
     <HBox style={{overflow: "auto"}}>
       <DragDropContext onDragEnd={onDragEnd}>
       <Slate editor={bodyeditor} value={bodybuffer} onChange={setBodyBuffer}>
@@ -233,78 +233,6 @@ export function SingleEditView({doc, setDoc}) {
     </HFiller>
     </DragDropContext>
   /**/
-
-  //---------------------------------------------------------------------------
-  // Toolbar
-  //---------------------------------------------------------------------------
-
-  function Toolbar() {
-    const btn_index = {
-      "br.scene": {
-        tooltip: "Show scenes",
-        icon: <Icon.BlockType.Scene/>
-      },
-      "synopsis": {
-        tooltip: "Show synopses",
-        icon: <Icon.BlockType.Synopsis />
-      },
-      "missing": {
-        tooltip: "Show missing",
-        icon: <Icon.BlockType.Missing />
-      },
-      "comment": {
-        tooltip: "Show comments",
-        icon: <Icon.BlockType.Comment />
-      },
-    }
-
-    const btn_words = {
-      "off": {
-        tooltip: "Don't show words",
-        icon: <Icon.StatType.Off />
-      },
-      "numbers": {
-        tooltip: "Words as numbers",
-        icon: <Icon.StatType.Words />,
-      },
-      "percent": {
-        tooltip: "Words as percent",
-        icon: <Icon.StatType.Percent />
-      },
-      "cumulative": {
-        tooltip: "Words as cumulative percent",
-        icon: <Icon.StatType.Cumulative />
-      },
-    }
-
-    return <ToolBox style={{ background: "white" }}>
-      <Label>Words: {bodyWithWords.words?.text}</Label>
-      <Separator/>
-      <Label>Chars: {bodyWithWords.words?.chars}</Label>
-      <Separator/>
-      {MakeToggleGroup(btn_index, bodyindex_settings.indexed)}
-      <Separator/>
-      {MakeToggleGroup(btn_words, bodyindex_settings.words, true)}
-      <Separator/>
-      <Filler/>
-    </ToolBox>
-  }
-
-  /*
-  function EditToolbar() {
-  const editor = useSlate()
-
-  // Block type under cursor
-  const [match] = Editor.nodes(editor, { match: n => Editor.isBlock(editor, n)})
-  const nodetype = match ? match[0].type : undefined
-
-  return <ToolBox style={{ background: "white" }}>
-    <Button>Block: {nodetype}</Button>
-    <Filler/>
-  </ToolBox>
-  }
-*/
-
 
   //---------------------------------------------------------------------------
   // Index DnD
@@ -396,6 +324,77 @@ export function SingleEditView({doc, setDoc}) {
     }
   }
 }
+
+//-----------------------------------------------------------------------------
+// Toolbar
+//-----------------------------------------------------------------------------
+
+function EditToolbar({bodyWithWords, bodyindex_settings}) {
+  const btn_index = {
+    "br.scene": {
+      tooltip: "Show scenes",
+      icon: <Icon.BlockType.Scene/>
+    },
+    "synopsis": {
+      tooltip: "Show synopses",
+      icon: <Icon.BlockType.Synopsis />
+    },
+    "missing": {
+      tooltip: "Show missing",
+      icon: <Icon.BlockType.Missing />
+    },
+    "comment": {
+      tooltip: "Show comments",
+      icon: <Icon.BlockType.Comment />
+    },
+  }
+
+  const btn_words = {
+    "off": {
+      tooltip: "Don't show words",
+      icon: <Icon.StatType.Off />
+    },
+    "numbers": {
+      tooltip: "Words as numbers",
+      icon: <Icon.StatType.Words />,
+    },
+    "percent": {
+      tooltip: "Words as percent",
+      icon: <Icon.StatType.Percent />
+    },
+    "cumulative": {
+      tooltip: "Words as cumulative percent",
+      icon: <Icon.StatType.Cumulative />
+    },
+  }
+
+  return <ToolBox style={{ background: "white" }}>
+    <Label>Words: {bodyWithWords.words?.text}</Label>
+    <Separator/>
+    <Label>Chars: {bodyWithWords.words?.chars}</Label>
+    <Separator/>
+    {MakeToggleGroup(btn_index, bodyindex_settings.indexed)}
+    <Separator/>
+    {MakeToggleGroup(btn_words, bodyindex_settings.words, true)}
+    <Separator/>
+    <Filler/>
+  </ToolBox>
+}
+
+  /*
+  function EditToolbar() {
+  const editor = useSlate()
+
+  // Block type under cursor
+  const [match] = Editor.nodes(editor, { match: n => Editor.isBlock(editor, n)})
+  const nodetype = match ? match[0].type : undefined
+
+  return <ToolBox style={{ background: "white" }}>
+    <Button>Block: {nodetype}</Button>
+    <Filler/>
+  </ToolBox>
+  }
+*/
 
 //-----------------------------------------------------------------------------
 

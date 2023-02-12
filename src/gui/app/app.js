@@ -152,12 +152,6 @@ export default function App(props) {
     //const id = "./local/mawe2/LammenHirvio.mawe";
     //const id = "./local/mawe2/CasaMagda.mawe";
   )
-
-  function setId(id) {
-    _setId(id)
-    _setDoc()
-  }
-
   */
 
   const [doc, setDoc] = useState({
@@ -179,14 +173,16 @@ export default function App(props) {
   if(!doc.story) return <Loading/>
 
   //---------------------------------------------------------------------------
+  // Use key to force editor state reset when file is changed: It won't work
+  // for generated docs (user guide, new doc), but we fix that later.
 
-  const props2 = {mode, doc, setDoc}
+  const viewprops = {mode, doc, setDoc}
 
   return (
     <ThemeProvider theme={myTheme}>
     <VBox className="ViewPort">
-      <WorkspaceTab {...props2}/>
-      <ChooseView {...props2}/>
+      <WorkspaceTab {...viewprops}/>
+      <ChooseView key={doc.file?.id} {...viewprops}/>
       </VBox>
     </ThemeProvider>
   )
@@ -271,9 +267,7 @@ async function onOpenFile({doc, setDoc}) {
     const [filePath] = filePaths
 
     console.log("Load file:", filePath)
-    setDoc({load: filePath})
-    // TODO: Would work, but does not replace editor buffers:
-    //setDoc(await mawe.load(filePath))
+    setDoc(await mawe.load(filePath))
   }
 }
 
@@ -293,11 +287,12 @@ async function onSaveFileAs({doc, setDoc}) {
   })
   if(!canceled) {
     console.log("Save File As", filePath)
-    await mawe.saveas(doc, filePath)
-    setDoc({
+    const file = await fs.fstat(filePath)
+    await mawe.saveas(doc, file)
+    setDoc(doc => ({
       ...doc,
-      file: await fs.fstat(filePath),
-    })
+      file,
+    }))
   }
 }
 
