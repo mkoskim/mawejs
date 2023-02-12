@@ -184,6 +184,8 @@ export default function App(props) {
 
   if(!doc.story) return <Loading/>
 
+  //console.log("Doc:", doc)
+
   //---------------------------------------------------------------------------
 
   const props2 = {mode, doc, setDoc}
@@ -231,8 +233,7 @@ function WorkspaceTab({mode, doc, setDoc}) {
         <MenuItem onClick={e => {onNewFile(cbprops); popupState.close(e); }}>New</MenuItem>
         <MenuItem onClick={e => {onOpenFile(cbprops); popupState.close(e); }}>Open...</MenuItem>
         <MenuItem onClick={e => {onSaveFile(cbprops); popupState.close(e); }}>Save</MenuItem>
-        <MenuItem onClick={e => {onRename(cbprops); popupState.close(e); }}>Rename</MenuItem>
-        <MenuItem onClick={e => {popupState.close(e); }}>Make a copy</MenuItem>
+        <MenuItem onClick={e => {onSaveFileAs(cbprops); popupState.close(e); }}>Save As...</MenuItem>
         <MenuItem onClick={popupState.close}>Revert</MenuItem>
         <MenuItem onClick={e => {onOpenFolder(cbprops); popupState.close(e); }}>Open Folder</MenuItem>
       </Menu>
@@ -245,7 +246,7 @@ function WorkspaceTab({mode, doc, setDoc}) {
       "export": {tooltip: "Export", icon: <Icon.Action.Print/>},
     }, mode, true)}
     <Separator/>
-    <Label text={doc.story.name}/>
+    <Label text={doc.file.name ?? "<New>"}/>
     <Separator/>
     <Filler/>
     <Separator/>
@@ -286,36 +287,23 @@ async function onSaveFile({doc, setDoc}) {
     docSave(doc)
     return;
   }
+  onSaveFileAs({doc, setDoc})
+}
 
+async function onSaveFileAs({doc, setDoc}) {
   const {cancelled, filePath} = await fileSaveDialog({
     filters,
-    defaultPath: ".",
+    defaultPath: doc.file?.id ?? ".",
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
   if(!cancelled) {
     console.log("Save File", filePath)
-    docSaveAs(doc, filePath)
-    setDoc({
-      ...doc,
-      file: await fs.fstat(filePath)
-    })
-  }
-}
-
-async function onRename({doc}) {
-  //const dirname = await fs.dirname(doc.file.id)
-  const {cancelled, filePath} = await fileSaveDialog({
-    filters,
-    defaultPath: doc.file.id,
-    properties: ["createDirectory", "showOverwriteConfirmation"],
-  })
-  if(!cancelled) {
-    console.log("File", filePath)
+    setDoc(await docSaveAs(doc, filePath))
   }
 }
 
 async function onOpenFolder({doc}) {
-  const dirname = await doc.file ? fs.dirname(doc.file.if) : "."
+  const dirname = doc.file ? await fs.dirname(doc.file.id) : "."
   console.log("Open folder:", dirname)
   fs.openexternal(dirname)
 }

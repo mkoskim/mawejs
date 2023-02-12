@@ -81,9 +81,11 @@ function create(buffer) {
 
 export async function saveas(doc, filename) {
   //const file = await fs.fstat(filename)
-  doc.file = { id: filename }
-  console.log("Saving:", doc)
-  return await savemawe(doc)
+  //console.log("Saving:", doc)
+  return await savemawe({
+    file: { id: filename },
+    story: doc.story,
+  })
 }
 
 export async function save(doc) {

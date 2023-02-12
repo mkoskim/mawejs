@@ -45,7 +45,11 @@ export function docSave(doc) {
 }
 
 export async function docSaveAs(doc, filename) {
-  mawe.saveas(doc, filename)
-  doc.file = await fstat.fstat(filename)
-  docUpdate(doc)
+  await mawe.saveas(doc, filename)
+  const newdoc = {
+    file: await fstat(filename),
+    story: doc.story
+  }
+  docUpdate(newdoc)
+  return newdoc
 }

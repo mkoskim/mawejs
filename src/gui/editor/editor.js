@@ -136,8 +136,6 @@ export function SingleEditView({doc, setDoc}) {
   const bodyWithWords = withWordCounts(doc.story.body)
   const notesFromEdit = doc.story.notes;
 
-  console.log(bodyWithWords)
-
   const [active, setActive] = useState("body")
 
   //---------------------------------------------------------------------------
