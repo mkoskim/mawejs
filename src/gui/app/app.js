@@ -238,6 +238,7 @@ function WorkspaceTab({mode, doc, setDoc}) {
     <Separator/>
     <Filler/>
     <Separator/>
+    <Button tooltip="Open Folder" onClick={e => onOpenFolder(cbprops)}><Icon.Action.Folder /></Button>
     <Button tooltip="Help"><Icon.Help /></Button>
     <Button tooltip="Settings"><Icon.Settings /></Button>
   </ToolBox>
@@ -287,12 +288,9 @@ async function onSaveFileAs({doc, setDoc}) {
   })
   if(!canceled) {
     console.log("Save File As", filePath)
-    const file = await fs.fstat(filePath)
-    await mawe.saveas(doc, file)
-    setDoc(doc => ({
-      ...doc,
-      file,
-    }))
+    mawe.saveas(doc, filePath)
+      .then(() => fs.fstat(filePath))
+      .then(file => setDoc(doc => ({...doc, file})))
   }
 }
 
