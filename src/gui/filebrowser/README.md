@@ -1,6 +1,8 @@
 FILE BROWSING
 =============
 
+** NOTE: THIS IS NOT IN USE RIGHT NOW. I will come back to file browser later. **
+
 Stories are stored in files, so we need a tool to find them.
 
 My intent is to have file browser similar to e.g. Nautilus, that is, you can perform

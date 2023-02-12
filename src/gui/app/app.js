@@ -227,16 +227,20 @@ function WorkspaceTab({mode, doc, setDoc}) {
       </Menu>
       </React.Fragment>
     }</PopupState>
+
     <Separator/>
     {MakeToggleGroup({
       "editor": {tooltip: "Editor", icon: <Icon.Action.Edit/>},
       "outliner": {tooltip: "Outline", icon: <Icon.Action.Cards/>},
       "export": {tooltip: "Export", icon: <Icon.Action.Print/>},
     }, mode, true)}
+
     <Separator/>
-    <Label text={doc.file?.name ?? "<New>"}/>
+    <Label text={doc.file?.name ?? "<Unnamed>"}/>
     <Separator/>
+
     <Filler/>
+
     <Separator/>
     <Button tooltip="Open Folder" onClick={e => onOpenFolder(cbprops)}><Icon.Action.Folder /></Button>
     <Button tooltip="Help"><Icon.Help /></Button>

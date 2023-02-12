@@ -61,7 +61,9 @@
   display: flex;
   cursor:pointer;
 
+  width: 200px;
   min-width: 150px;
+  max-width: 400px;
   /*
   width: 300px;
   height: 300px;
@@ -96,4 +98,12 @@
 .Organizer div.Scene > .Name::before {
   counter-increment: scene;
   content: counter(scene) ". "
+}
+
+.Organizer div.Scene div.synopsis {
+
+}
+
+.Organizer div.Scene div.synopsis::before {
+  content: "* "
 }

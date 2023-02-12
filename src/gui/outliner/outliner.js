@@ -17,14 +17,14 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {
   FlexBox,
   VBox, HBox, HFiller, VFiller,
-  Filler,
+  Filler, Separator,
   ToolBox, Button, Input,
   SearchBox, addHotkeys,
   Label,
   Loading,
 } from "../common/factory";
 
-import {withWordCounts} from "../../document";
+import {elemAsText, withWordCounts} from "../../document";
 
 //import {docByID} from "../app/store"
 
@@ -229,12 +229,21 @@ function SceneView({scene, index}) {
       draggingOver, // droppable id
     } = snapshot
 
-    return <div className="HBox Scene"
+    const bookmarks = scene.children.filter(p => p.type === "synopsis");
+
+    return <div className="VBox Scene"
       ref={innerRef}
       {...draggableProps}
       {...dragHandleProps}  // Move these inside to create handle
     >
       <div className="Name">{scene.name && scene.name !== "" ? scene.name : "<Unnamed>"}</div>
+      {bookmarks.length
+        ? <React.Fragment>
+          <Separator/>
+          {bookmarks.map(p => <div key={p.id} className="synopsis">{elemAsText(p)}</div>)}
+        </React.Fragment>
+        : null
+      }
     </div>
   }
 }

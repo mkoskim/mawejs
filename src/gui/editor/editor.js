@@ -88,11 +88,12 @@ export function SingleEditView({doc, setDoc}) {
 
   //---------------------------------------------------------------------------
   // slate buffers
+  //---------------------------------------------------------------------------
 
   //console.log("Story ID:", doc.story.uuid)
 
-  const bodyeditor = useMemo(() => getEditor(), [doc.story.uuid])
-  const noteeditor = useMemo(() => getEditor(), [doc.story.uuid])
+  const bodyeditor = useMemo(() => getEditor(), [])
+  const noteeditor = useMemo(() => getEditor(), [])
 
   const [bodybuffer, _setBodyBuffer] = useState(() => section2edit(doc.story.body))
   const [notebuffer, _setNoteBuffer] = useState(() => section2edit(doc.story.notes))
