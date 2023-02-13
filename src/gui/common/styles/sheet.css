@@ -60,32 +60,34 @@
   padding: 1cm;
 }
 
-.Sheet.Regular {
+.Sheet.Real, .Sheet.Regular {
   /* Empty space around paper */
   margin: 0.5cm;
   margin-right: auto;
   margin-left: auto;
   /*
   */
-
-  /* White space around text */
-  /*
-  padding-left: 1in;
-  padding-right: 1in;
-  padding-top: 0.5in;
-  padding-bottom: 1in;
-  */
-  padding-left: 2cm;
-  padding-right: 2cm;
-  padding-top: 1cm;
-  padding-bottom: 2cm;
-
   /*
   box-shadow: rgb(0 0 0 / 10%) 1px 1px 0px inset, rgb(0 0 0 / 7%) 0px -1px 0px inset;
   */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.253), 0 4px 8px rgba(0, 0, 0, 0.322);
   /*
   */
+}
+
+.Sheet.Regular {
+  /* White space around text */
+  padding-left: 2cm;
+  padding-right: 2cm;
+  padding-top: 1cm;
+  padding-bottom: 2cm;
+}
+
+.Sheet.Real {
+  padding-left: 1in;
+  padding-right: 1in;
+  padding-top: 0.5in;
+  padding-bottom: 1in;
 }
 
 /* ----------------------------------------------------------------------------

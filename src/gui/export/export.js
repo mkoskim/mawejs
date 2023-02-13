@@ -26,6 +26,7 @@ import {
 } from "../common/factory";
 
 import {elemAsText} from "../../document"
+import { getSuffix } from "../../document/util";
 import { splitByTrailingElem } from "../../util";
 
 //-----------------------------------------------------------------------------
@@ -36,7 +37,12 @@ const fs = require("../../system/localfs");
 
 export function Export({doc, setDoc}) {
   const settings = {
-
+    part: {
+      separator: "* * *",
+    },
+    scene: {
+      separator: "* * *",
+    },
   }
 
   const previewprops = {
@@ -76,7 +82,10 @@ function Settings({settings, doc}) {
     //console.log(content)
 
     const dirname  = await fs.dirname(doc.file.id)
-    const filename = await fs.makepath(dirname, doc.basename + ".rtf")
+    const name = await fs.basename(doc.file.id)
+    const suffix = getSuffix(name, [".mawe", ".mawe.gz"]);
+    const basename = await fs.basename(name, suffix);
+    const filename = await fs.makepath(dirname, basename + ".rtf")
     console.log("Filename:", filename)
     fs.write(filename, content)
   }
@@ -96,7 +105,7 @@ function Preview({settings, doc}) {
 
   return <div className="Filler Board">
     <div
-      className="Sheet Regular"
+      className="Sheet Real"
       dangerouslySetInnerHTML={{__html: FormatFile(formatHTML, settings, body)}}
       />
   </div>
@@ -170,13 +179,22 @@ function FormatFile(format, settings, body) {
 const formatHTML = {
   // File
   "file": (settings, head, content) => {
-    return content
+    const author = head.nickname || head.author
+    const title = head.title ?? ""
+    const headinfo = author ? `${author}: ${title}` : title
+    return `<div style="margin-bottom: 1cm">${headinfo}</div>\n` + content
   },
 
   // Body
   "body": (settings, head, parts) => {
-    return head + parts.join("\n")
+    const {separator} = settings.part
+    const sep = separator ? formatHTML["sep.part"](separator) : "\n"
+    return head + parts.join(sep)
   },
+
+  //---------------------------------------------------------------------------
+  "sep.part": (text) => `<center style="margin-top: 1cm; margin-bottom: 1cm">${text}</center>\n`,
+  "sep.scene": (text) => `<center style="margin-top: 1cm; margin-bottom: 1cm">${text}</center>\n`,
 
   //---------------------------------------------------------------------------
 
@@ -186,7 +204,9 @@ const formatHTML = {
 
   // Part
   "part": (settings, part, scenes) => {
-    return scenes.join("<center>* * *</center>")
+    const {separator} = settings.scene
+    const sep = separator ? formatHTML["sep.scene"](separator) : "\n"
+    return scenes.join(sep)
   },
 
   // Scene & breaks
@@ -214,7 +234,6 @@ const formatHTML = {
 
 
 const formatRTF = {
-
   "file": (settings, head, content) => {
     const author = head.nickname || head.author
     const title = head.title ?? ""
@@ -227,7 +246,7 @@ const formatRTF = {
     return `{\\rtf1\\ansi
 {\\fonttbl\\f0\\froman\\fcharset0 Times New Roman;}
 {\\colortbl;\\red0\\green0\\blue0;\\red180\\green20\\blue20;}
-{\\info{\\title ${head.title}}{\\author ${head.author}}}
+{\\info{\\title ${formatRTF.escape(head.title)}}{\\author ${formatRTF.escape(head.author)}}}
 \\paperh16837\\paperw11905
 \\margl1701\\margr1701\\margt851\\margb1701
 \\sectd\\sbknone
@@ -236,7 +255,7 @@ const formatRTF = {
 \\gutter0\\ltrsect
 \\deflang${langcode}
 {\\lang${langcode}\\sl-440
-{\\header\\tqr\\tx8496 ${headinfo}\\tab ${pgnum} / ${pgtot}\\par}
+{\\header\\tqr\\tx8496 ${formatRTF.escape(headinfo)}\\tab ${pgnum} / ${pgtot}\\par}
 ${content}
 }}\n`
   },
@@ -246,16 +265,23 @@ ${content}
   //---------------------------------------------------------------------------
   // Body
   "body": (settings, head, parts) => {
-    return head + parts.join("{\\sb480\\fs34\\qc * * *\\par}\n")
+    const {separator} = settings.part
+    //const sep = separator ? `{\\sb480\\qc\\fs34 ${separator}\\par}\n` : "\n"
+    const sep = separator ? `{\\sb480\\qc ${separator}\\par}\n` : "\n"
+    return head + parts.join(sep)
   },
 
-  "title": (settings, title) => `{\\qc\\sa480\\b\\fs34 ${title}\\par}\n`,
+  "title": (settings, title) => `{\\qc\\sa480\\b\\fs34 ${formatRTF.escape(title)}\\par}\n`,
 
   //---------------------------------------------------------------------------
 
   // Part
   "part": (settings, part, scenes) => {
-    return scenes.filter(s => s.length).join("{\\sb480\\fs34\\qc * * *\\par}\n")
+    const {separator} = settings.scene
+    //const sep = separator ? `{\\sb480\\qc\\fs34 ${separator}\\par}\n` : "\n"
+    const sep = separator ? `{\\sb480\\qc ${separator}\\par}\n` : "\n"
+
+    return scenes.filter(s => s.length).join(sep)
   },
 
   // Scene & breaks
@@ -271,7 +297,7 @@ ${content}
   //---------------------------------------------------------------------------
 
   escape: text => {
-    return (text
+    return (text && text
       .replaceAll('\\', "\\\\")
       .replaceAll('{', "\\{")
       .replaceAll('}', "\\}")

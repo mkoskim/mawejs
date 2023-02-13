@@ -19,8 +19,8 @@ const utf8decoder = new TextDecoder();
 // Determine file type by extension
 //-----------------------------------------------------------------------------
 
-export function getSuffix(f, suffixes) {
-  return suffixes.find(suffix => f.name.endsWith(suffix))
+export function getSuffix(filename, suffixes) {
+  return suffixes.find(suffix => filename.endsWith(suffix))
 }
 
 export function suffix2format(f, suffixes = [".mawe", ".mawe.gz", ".moe"]) {

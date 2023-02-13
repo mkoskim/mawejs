@@ -45,7 +45,7 @@ async function load(file) {
   if (typeof file === "string") file = await fs.fstat(file);
 
   //console.log("Load file:", file)
-  const format = suffix2format(file);
+  const format = suffix2format(file.id);
 
   if (format === "mawe") {
     //const suffix = getSuffix(file, [".mawe", ".mawe.gz"]);
