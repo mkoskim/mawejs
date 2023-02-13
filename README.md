@@ -15,7 +15,11 @@ loading and saving, (4) implement RTF export. In addition to these, I urgently n
 Mawe is meant for writing stories - not press articles, blog posts, technical documents or anything else but stories. That means it has tools to split the text mass to somewhat manageable pieces, and keep "meta text" - plans, sketches and such - together with the final result (story itself).
 
 ## How does it look like?
+Something like this:
+
 ![image](https://user-images.githubusercontent.com/10298548/218349525-c385016b-f2f3-4605-9601-5fd095345646.png)
+
+It is all about editing your manuscript. At right hand you have your draggable draft index, and at the left side your notes.
 
 ## How Mawe differs from Word or Google Docs?
 
