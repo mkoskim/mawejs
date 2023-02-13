@@ -79,8 +79,7 @@ export function Organizer({doc, setDoc}) {
         const scene = sourcePart.children[source.index]
         sourcePart.children.splice(source.index, 1)
         destinationPart.children.splice(destination.index, 0, scene)
-        setDoc({...doc})
-        //setDoc(doc => {...moveScene(doc, source, destination))
+        setDoc({...doc}) // Make a copy to force rendering
         break;
       }
       case "part": {
@@ -90,8 +89,7 @@ export function Organizer({doc, setDoc}) {
         const part = sourceSect.parts[source.index]
         sourceSect.parts.splice(source.index, 1)
         destinationSect.parts.splice(destination.index, 0, part)
-        setDoc({...doc})
-        //setDoc(doc => movePart(doc, source, destination))
+        setDoc({...doc}) // Make a copy to force rendering
         break;
       }
       default:

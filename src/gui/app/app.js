@@ -126,7 +126,7 @@ export default function App(props) {
 
   const [_mode, _setMode] = useState(
     "editor"
-    //mode: "outliner"
+    //"outliner"
     //mode: "export"
   );
 
@@ -147,8 +147,6 @@ export default function App(props) {
     //const id = "./local/TestDoc2.mawe";
     //const id = "./local/Lorem30k.mawe";
 
-    //"./local/mawe2/NeljaBarnaa.mawe"
-    //const id = "./local/mawe2/JazramonGjerta.mawe";
     //const id = "./local/mawe2/LammenHirvio.mawe";
     //const id = "./local/mawe2/CasaMagda.mawe";
   )
@@ -156,6 +154,8 @@ export default function App(props) {
 
   const [doc, setDoc] = useState({
     load: "./local/UserGuide.mawe",
+    //load: "./local/mawe2/JazramonGjerta.mawe"
+    //load: "./local/mawe2/NeljaBarnaa.mawe",
   })
 
   useEffect(() => {

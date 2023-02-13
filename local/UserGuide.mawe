@@ -44,7 +44,9 @@ STORY: UserGuide
 <p>One of the main design principles of MaweJS is that you should just start writing, just like opening a Notepad when you come up with an idea. Unlike in many other structured editors, you don't have to make _any_ preparation before starting to write the story itself. Instead, the tools are intended to be taken in use _when_ you need them.</p>
 <p>For example: You don't need to create scenes or parts in advance. You split your text to scenes and parts when you feel you need to split your text to smaller, movable pieces. You don't need to describe a scene beforehand: you write descriptions when you need them.</p>
 <p>For that purpose, take a look this editor page. Unlike in Scrivener or similar, you see a canvas showing you the entire manuscript in one single page.</p>
-<br/>
+</scene>
+<scene name="Focus on draft">
+<p>Everything in MaweJS revolves around your manuscript.</p>
 </scene>
 <scene name="Note!">
 <p>Keep in mind, that this guide is live document. You can try things out as you will, and revert back to original (when that feature is implemented).</p>
@@ -79,21 +81,23 @@ STORY: UserGuide
 <p>Try it yourself: Side bar buttons: outliner, export.</p>
 </scene>
 <scene name="Scenes: Splitting text">
-<p>The main feature of MaweJS is to split large text chunk to more manageable pieces.</p>
-<p>Unlike you think, a scene break is not a header:</p>
+<p>The main feature of MaweJS is to split large text chunk to more manageable pieces. Unlike you think, a scene break is not a header:</p>
 </scene>
 <scene name="--> This is not a header <---">
 <p>Unlike in conventional unstructured editors - Googledocs, Microsoft Word, Libre Office - in MaweJS we are not really applying styles to text. Parts and scenes are breaks to split text to smaller, more manageable pieces. All text inside a scene move together. All scenes inside a part move together.</p>
 <p>The scene and part names are only for you, so that you know what the part or scene is all about. It is not exported. Maybe at some point we make a special scene or break to give chapter names.</p>
 <br/>
+</scene>
+<scene name="Try it yourself: Splitting">
 <p>To create scene, type "##" at the beginning of line. Try it yourself:</p>
-<p>&lt;-- Type "##" + space bar</p>
-<p>To reset the line back to normal text, press backspace at the beginning of the line.</p>
-<p>Try it yourself:</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<missing>&lt;-- Type "##" + space bar</missing>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<br/>
+<p>To reset the line back to normal text, press backspace at the beginning of the line. Try it yourself:</p>
 </scene>
 <scene name="<-- Press backspace">
-<p>...</p>
-<br/>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 </scene>
 <scene name="Scene numbering">
 <p>Take a look to the main index at left.</p>
@@ -106,6 +110,7 @@ STORY: UserGuide
 <br/>
 <p>MISSING: Mark to indicate that something is missing at this point. You may have questions, you may have some hard parts that need more time for resolving, and so on. Remember that:</p>
 <missing>Missing texts ARE INCLUDED to draft!</missing>
+<missing>The sole idea is that you get rid of all missing pieces!</missing>
 <p>That is why you don't want them to exist in your final draft anymore! Your goal is that all the hard parts are resolved. Exporting missing is also useful, when you share your incomplete manuscript with fellow writers or your editor, so that they can see that there are some missing parts in the text.</p>
 <br/>
 <p>COMMENT: Comment is note to yourself.</p>
@@ -153,6 +158,8 @@ STORY: UserGuide
 <scene name="Word Counts">
 <p>Word counts and their intendended purposes.</p>
 <br/>
+<p>OFF: No word counts.</p>
+<br/>
 <p>NUMBERS: This is pretty self-explanatory. You can see the word counts of individual scenes, as well as summed counts for parts. In the toolbar, exclude scenes from index: you will only see the accumulated word counts for parts.</p>
 <br/>
 <p>PERCENTAGE: Percentage count is similar to plain numbers, but it may show you better where your main chunks of text is located.</p>
@@ -170,7 +177,7 @@ STORY: UserGuide
 </scene>
 </part>
 <part name="Notes section">
-<scene name="Take a look to notes">
+<scene name="Take a look to notes -->">
 <p>Take a look to index at your right hand, notes --&gt;</p>
 <p>In addition to this manuscript canvas, there is a parallel canvas called "notes". This is meant to store all your notes, sketches, research, links and so.</p>
 <p>You start writing your story here in main body. But when you are writing, you most probably do some sketching, do some research to find out how things work and so on. When your story progress forward, you want these things out from draft, but you don't want to forget them.</p>
@@ -220,27 +227,6 @@ STORY: UserGuide
 <p>MyStory.mawe.gz</p>
 <br/>
 </scene>
-<scene name="Future: Exporting">
-<p>Tell something about this.</p>
-<p>It's the printer icon in left side bar.</p>
-</scene>
-<scene name="Future: Importing">
-<p>Importing text in different formats.</p>
-<p>Importing text to parts or scenes.</p>
-<br/>
-</scene>
-<scene name="Future: Split view">
-<p>...</p>
-</scene>
-<scene name="Future: Moving elements between stories">
-<p>Planned future feature is a tool to move elements - parts and scenes - between several files. This feature is for:</p>
-<br/>
-<p>1. Splitting stories: while writing, you get ideas that do not eventually incorporate to the story. Instead, you may find them worth of writing another story. Move them out to separate documents.</p>
-<p>Similarly, sometimes you see that your story gets growing out of its bounds, it is coming to a series of books. Then it will be useful to be able to create new documents and move parts there.</p>
-<br/>
-<p>2. Merging stories: while writing, you may read your older sketches and realize that there is things in some other stories you could apply to the one you are writing. Move those things from that other document to your story.</p>
-<br/>
-</scene>
 </part>
 <part name="Missing/Future Features">
 <scene name="Folding etc">
@@ -279,6 +265,27 @@ STORY: UserGuide
 <p>Currently, manuscript body is one single section.</p>
 <p>At some point, for large stories, we might need to add multiple sections to a body.</p>
 <br/>
+</scene>
+<scene name="Future: Split view">
+<p>...</p>
+</scene>
+<scene name="Future: Moving elements between stories">
+<p>Planned future feature is a tool to move elements - parts and scenes - between several files. This feature is for:</p>
+<br/>
+<p>1. Splitting stories: while writing, you get ideas that do not eventually incorporate to the story. Instead, you may find them worth of writing another story. Move them out to separate documents.</p>
+<p>Similarly, sometimes you see that your story gets growing out of its bounds, it is coming to a series of books. Then it will be useful to be able to create new documents and move parts there.</p>
+<br/>
+<p>2. Merging stories: while writing, you may read your older sketches and realize that there is things in some other stories you could apply to the one you are writing. Move those things from that other document to your story.</p>
+<br/>
+</scene>
+<scene name="Future: Importing">
+<p>Importing text in different formats.</p>
+<p>Importing text to parts or scenes.</p>
+<br/>
+</scene>
+<scene name="Future: Exporting">
+<p>Tell something about this.</p>
+<p>It's the printer icon in left side bar.</p>
 </scene>
 </part>
 <part name="Migration">
@@ -348,8 +355,6 @@ NOTES
 <scene name="Outliner">
 <p>Outliner needs:</p>
 <p>- Adding and removing parts &amp; scenes</p>
-<p>- Word count options</p>
-<p>- Index options (what is shown in scene)</p>
 <p>- Editing scenes</p>
 <p>- Adding synopses to scenes: Think it so that the scene card in outliner is a PostIt note, and you list things that are needed in that scene.</p>
 </scene>
@@ -359,6 +364,9 @@ NOTES
 <p>- DONE: Don't store empty part / scene names</p>
 <p>- DONE: Fix editor index DnD. And the implicit blocks it creates. They are VERY ANNOYING!</p>
 <p>- DONE: More robust DnD - get rid of implicitly created elements, instead, use normalizing features to keep Slate state always in such condition, that it can be pulled as a story.</p>
+<p>- DONE: (Outliner) Word count options</p>
+<p>- DONE: (Outliner) Index options (what is shown in scene)</p>
+<br/>
 <br/>
 <br/>
 </scene>
