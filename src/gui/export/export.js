@@ -145,19 +145,20 @@ function FormatFile(format, settings, body) {
 
   function FormatScene(scene) {
     const splits = splitByTrailingElem(scene.children, p => p.type === "br")
-      .map(s => s.slice(0, -1))
+      .map(s => s.filter(p => p.type !== "br"))
       .filter(s => s.length)
     //console.log(splits)
 
     return format["scene"](
       settings,
       scene,
-      splits.map(FormatSplit).filter(s => s && s.length)
+      splits.map(FormatSplit).filter(s => s?.length)
     )
   }
 
   function FormatSplit(split) {
-    const content = split.map(FormatParagraph).filter(p => p)
+    const content = split.map(FormatParagraph).filter(p => p?.length)
+    //console.log(split, "->", content)
     if(!content.length) return
     return format["split"](
       settings,
