@@ -171,7 +171,7 @@ function IndexItem({ className, settings, id, type, name, words, ...props }) {
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       <HFiller/>
-      <FormatWords settings={settings} words={words}/>
+      <ItemWords settings={settings} words={words} />
     </HBox>
 }
 
@@ -188,4 +188,19 @@ function ItemIcon({type}) {
 function ItemLabel({className, name}) {
   return <span className={addClass("Name", className)}>{name}</span>
   //return <div className="Name">{id}</div>
+}
+
+function ItemWords({settings, words}) {
+  if(!words?.text) return null;
+
+  return <React.Fragment>{
+    words?.missing
+    ? (<React.Fragment>
+      <span style={{color: "red"}}>{words.missing}</span>
+      <span>&nbsp;/&nbsp;</span>
+      </React.Fragment>)
+    : null
+    }
+    <FormatWords settings={settings} words={words}/>
+  </React.Fragment>
 }
