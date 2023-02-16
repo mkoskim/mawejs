@@ -197,7 +197,7 @@ function ItemWords({settings, words}) {
       <span style={{color: "red"}}>{words.missing}</span>
       <span>&nbsp;/&nbsp;</span>
       </React.Fragment>)
-    : null
+    : (words ? <Icon.Starred sx={{color: "#59F", fontSize: 14, marginRight: "4px"}}/> : null)
     }
     <FormatWords settings={settings} words={words}/>
   </React.Fragment>
