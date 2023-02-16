@@ -191,8 +191,6 @@ function ItemLabel({className, name}) {
 }
 
 function ItemWords({settings, words}) {
-  if(!words?.text) return null;
-
   return <React.Fragment>{
     words?.missing
     ? (<React.Fragment>
