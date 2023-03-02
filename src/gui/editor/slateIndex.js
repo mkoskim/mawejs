@@ -86,11 +86,13 @@ export function SlateTOC({activeID, setActive, wcFormat, include, section, style
   </VFiller>
   */
 
-  return <VFiller style={{...style}}>
+  const wcTotal = section.words?.total
+
+  return <DeferredRender><VFiller style={{...style}}>
     <Droppable droppableId={activeID} type="part">
     {TOCDroppable}
     </Droppable>
-  </VFiller>
+  </VFiller></DeferredRender>
 
   function TOCDroppable(provided, snapshot) {
     const {innerRef, droppableProps, placeholder} = provided
@@ -106,10 +108,7 @@ export function SlateTOC({activeID, setActive, wcFormat, include, section, style
         elem={elem}
         index={index}
         wcFormat={wcFormat}
-        wcTotal={section.words?.total}
-        //wcText={part.words?.text}
-        //wcMissing={part.words?.missing}
-        //wcCumulative={part.words?.cumulative}
+        wcTotal={wcTotal}
         activeID={activeID}
         setActive={setActive}
         include={include}
@@ -142,14 +141,9 @@ function PartItem({elem, index, activeID, setActive, wcFormat, wcTotal, include}
     >
       <IndexItem
         {...dragHandleProps}
-        id={elem.id}
-        type={elem.type}
-        name={elem.name}
+        elem={elem}
         wcFormat={wcFormat}
         wcTotal={wcTotal}
-        wcText={elem.words?.text}
-        wcMissing={elem.words?.missing}
-        wcCumulative={elem.words?.cumulative}
         activeID={activeID}
         setActive={setActive}
       />
@@ -177,8 +171,8 @@ function SceneDroppable({id, scenes, wcFormat, wcTotal, activeID, setActive, inc
       >
         {scenes.map((elem, index) => <SceneItem
           key={elem.id}
-          index={index}
           elem={elem}
+          index={index}
           wcFormat={wcFormat}
           wcTotal={wcTotal}
           activeID={activeID}
@@ -213,14 +207,9 @@ function SceneItem({elem, index, wcFormat, wcTotal, activeID, setActive, include
       {...dragHandleProps}
     >
       <IndexItem
-        id={elem.id}
-        type={elem.type}
-        name={elem.name}
+        elem={elem}
         wcFormat={wcFormat}
         wcTotal={wcTotal}
-        wcText={elem.words?.text}
-        wcMissing={elem.words?.missing}
-        wcCumulative={elem.words?.cumulative}
         activeID={activeID}
         setActive={setActive}
       />
@@ -238,9 +227,7 @@ function DoBookmarks({bookmarks, activeID, setActive}) {
   return <React.Fragment>
     {bookmarks.map(elem => <IndexItem
       key={elem.id}
-      id={elem.id}
-      type={elem.type}
-      name={elem2text(elem)}
+      elem={elem}
       activeID={activeID}
       setActive={setActive}
     />)}
@@ -249,8 +236,11 @@ function DoBookmarks({bookmarks, activeID, setActive}) {
 
 //-----------------------------------------------------------------------------
 
-function IndexItem({id, type, name, wcFormat, wcText, wcMissing, wcCumulative, wcTotal, setActive, activeID, ...props }) {
+function IndexItem({elem, wcFormat, wcTotal, setActive, activeID, ...props}) {
   const editor = useSlate()
+
+  const {id, type} = elem
+  const name = elem.name ?? elem2text(elem)
 
   const className = (type === "part") ? "PartName" :
     (type === "scene") ? "SceneName" :
@@ -268,9 +258,9 @@ function IndexItem({id, type, name, wcFormat, wcText, wcMissing, wcCumulative, w
       <HFiller/>
       <ItemWords
         wcFormat={wcFormat}
-        wcText={wcText}
-        wcMissing={wcMissing}
-        wcCumulative={wcCumulative}
+        wcText={elem.words?.text}
+        wcMissing={elem.words?.missing}
+        wcCumulative={elem.words?.cumulative}
         wcTotal={wcTotal}
       />
     </HBox>
@@ -292,6 +282,8 @@ function ItemLabel({className, name}) {
 }
 
 function ItemWords({wcFormat, wcText, wcMissing, wcCumulative, wcTotal}) {
+  if(!wcFormat || wcFormat === "off") return null;
+
   return <React.Fragment>{
     wcMissing
     ? (<React.Fragment>

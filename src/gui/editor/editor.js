@@ -117,9 +117,12 @@ export function SingleEditView({doc, setDoc}) {
       ...doc,
       story: {
         ...doc.story,
-        body: updateSection(doc.story.body, buffer)
+        body: {
+          ...doc.story.body,
+          ...updateSection(doc.story.body, buffer)
           //...doc.story.body,
           //parts: section.parts
+        }
       }
     }))
   }
