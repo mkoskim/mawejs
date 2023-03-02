@@ -93,11 +93,11 @@ export function ChooseWordFormat({format}) {
   return MakeToggleGroup(buttons, format, true)
 }
 
-export function FormatWords({settings, words}) {
-  if(words) switch(settings.words.value) {
-    case "numbers": return <span>{words.text}</span>
-    case "percent": return <span>{Number(100.0 * words.text / settings.words.total).toFixed(1)}</span>
-    case "cumulative": return <span>{words.cumulative !== undefined && Number(100.0 * words.cumulative / settings.words.total).toFixed(1)}</span>
+export function FormatWords({format, words, cumulative, total}) {
+  if(words) switch(format) {
+    case "numbers": return <span>{words}</span>
+    case "percent": return <span>{Number(100.0 * words / total).toFixed(1)}</span>
+    case "cumulative": return <span>{cumulative !== undefined && Number(100.0 * cumulative / total).toFixed(1)}</span>
     default: break;
   }
   return null;

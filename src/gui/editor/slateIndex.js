@@ -41,37 +41,60 @@ import {FormatWords} from "../common/components";
 
 //-----------------------------------------------------------------------------
 
-export function SlateTOC({settings, section, style})
+export function SlateTOC({activeID, setActive, wcFormat, wcTotal, include, section, style})
 {
-  function TOCDroppable(provided, snapshot) {
-    const {innerRef, droppableProps, placeholder} = provided
-
-    return <div className="VBox TOC"
-      ref={innerRef}
-      {...droppableProps}
-    >
-      {section.parts.map((part, index) => <PartItem key={part.id} index={index} settings={settings} part={part}/>
-      )}
-      {placeholder}
-    </div>
-  }
-
   return (
     <DeferredRender>
     <VFiller style={{...style}}>
-      <Droppable droppableId={settings.sectID} type="part">
+      <Droppable droppableId={activeID} type="part">
       {TOCDroppable}
       </Droppable>
     </VFiller>
     </DeferredRender>
   )
+
+  function TOCDroppable(provided, snapshot) {
+    const {innerRef, droppableProps, placeholder} = provided
+
+    //console.log("TOC update")
+
+    return <div className="VBox TOC"
+      ref={innerRef}
+      {...droppableProps}
+    >
+      {section.parts.map((part, index) => <PartItem
+        key={part.id}
+        index={index}
+        id={part.id}
+        type={part.type}
+        name={part.name}
+        wcFormat={wcFormat}
+        wcTotal={wcTotal}
+        wcText={part.words?.text}
+        wcMissing={part.words?.missing}
+        wcCumulative={part.words?.cumulative}
+        include={include}
+        scenes={part.children}
+        activeID={activeID}
+        setActive={setActive}
+      />
+      )}
+      {placeholder}
+    </div>
+  }
 }
 
 //-----------------------------------------------------------------------------
 
-function PartItem({settings, index, part}) {
-  const {id, name, type, words} = part;
-  const props = {id, type, name, words}
+function PartItem({activeID, setActive, include, wcFormat, wcTotal, index, id, name, type, wcText, wcMissing, wcCumulative, scenes}) {
+
+  return <Draggable
+    draggableId={id}
+    index={index}
+    type="part"
+    >
+    {PartDraggable}
+  </Draggable>
 
   function PartDraggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
@@ -81,14 +104,27 @@ function PartItem({settings, index, part}) {
       ref={innerRef}
       {...draggableProps}
     >
-      <IndexItem className="PartName" settings={settings} {...dragHandleProps} {...props} />
+      <IndexItem
+        {...dragHandleProps}
+        className="PartName"
+        activeID={activeID}
+        setActive={setActive}
+        id={id}
+        type={type}
+        name={name}
+        wcFormat={wcFormat}
+        wcTotal={wcTotal}
+        wcText={wcText}
+        wcMissing={wcMissing}
+        wcCumulative={wcCumulative}
+      />
       <PartScenes />
     </div>
   }
 
   function PartScenes() {
-    if(!settings.indexed.value.includes("br.scene")) return null;
-    return <Droppable droppableId={part.id} type="scene">
+    if(!include.includes("br.scene")) return null;
+    return <Droppable droppableId={id} type="scene">
     {(provided, snapshot) => {
         const {innerRef, droppableProps, placeholder} = provided
 
@@ -96,30 +132,34 @@ function PartItem({settings, index, part}) {
           ref={innerRef}
           {...droppableProps}
         >
-          {part.children.map((scene, index) => <SceneItem key={scene.id} index={index} settings={settings} scene={scene}/>)}
+          {scenes.map((scene, index) => <SceneItem
+            key={scene.id}
+            index={index}
+            id={scene.id}
+            type={scene.type}
+            name={scene.name}
+            wcFormat={wcFormat}
+            wcTotal={wcTotal}
+            wcText={scene.words?.text}
+            wcMissing={scene.words?.missing}
+            wcCumulative={scene.words?.cumulative}
+            include={include}
+            paragraphs={scene.children}
+            activeID={activeID}
+            setActive={setActive}
+          />)}
           {placeholder}
         </div>
 
     }}
     </Droppable>
   }
-
-  return <Draggable
-    draggableId={id}
-    index={index}
-    type="part"
-    >
-      {PartDraggable}
-    </Draggable>
 }
 
 //-----------------------------------------------------------------------------
 
-function SceneItem({index, settings, scene}) {
-  const {id, name, type, words} = scene;
-  const props = {id, type, name, words}
-
-  const bookmarks = scene.children.filter(elem => settings.indexed.value.includes(elem.type))
+function SceneItem({index, activeID, setActive, include, id, type, name, wcText, wcMissing, wcCumulative, wcFormat, wcTotal, paragraphs}) {
+  const bookmarks = paragraphs.filter(elem => include.includes(elem.type))
 
   function sceneDraggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
@@ -129,8 +169,20 @@ function SceneItem({index, settings, scene}) {
       {...draggableProps}
       {...dragHandleProps}
     >
-      <IndexItem className="SceneName" settings={settings} {...props}/>
-      <DoBookmarks settings={settings} bookmarks={bookmarks}/>
+      <IndexItem
+        className="SceneName"
+        id={id}
+        type={type}
+        name={name}
+        wcFormat={wcFormat}
+        wcTotal={wcTotal}
+        wcText={wcText}
+        wcMissing={wcMissing}
+        wcCumulative={wcCumulative}
+        activeID={activeID}
+        setActive={setActive}
+      />
+      <DoBookmarks activeID={activeID} setActive={setActive} bookmarks={bookmarks}/>
     </div>
   }
 
@@ -144,26 +196,28 @@ function SceneItem({index, settings, scene}) {
 
 }
 
-function DoBookmarks({settings, bookmarks}) {
+function DoBookmarks({activeID, setActive, bookmarks}) {
   if(!bookmarks.length) return null;
   return <React.Fragment>
-    {bookmarks.map(elem => <BookmarkItem key={elem.id} settings={settings} bookmark={elem}/>)}
+    {bookmarks.map(elem => <IndexItem
+      key={elem.id}
+      id={elem.id}
+      type={elem.type}
+      name={elem2text(elem)}
+      activeID={activeID}
+      setActive={setActive}
+    />)}
     </React.Fragment>
 }
 
-function BookmarkItem({settings, bookmark}) {
-  const {id, type} = bookmark;
-  const name = elem2text(bookmark)
+//-----------------------------------------------------------------------------
 
-  return <IndexItem settings={settings} id={id} type={type} name={name}/>
-}
-
-function IndexItem({ className, settings, id, type, name, words, ...props }) {
+function IndexItem({ className, id, type, name, wcFormat, wcText, wcMissing, wcCumulative, wcTotal, setActive, activeID, ...props }) {
   const editor = useSlate()
 
   const onItemClick = useCallback(async (event) => {
-    // TODO: Find better way to search node
-    settings.activate()
+    //settings.activate()
+    setActive(activeID)
     focusByID(editor, id)
   }, [])
 
@@ -171,7 +225,13 @@ function IndexItem({ className, settings, id, type, name, words, ...props }) {
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       <HFiller/>
-      <ItemWords settings={settings} words={words} />
+      <ItemWords
+        wcFormat={wcFormat}
+        wcText={wcText}
+        wcMissing={wcMissing}
+        wcCumulative={wcCumulative}
+        wcTotal={wcTotal}
+      />
     </HBox>
 }
 
@@ -190,15 +250,15 @@ function ItemLabel({className, name}) {
   //return <div className="Name">{id}</div>
 }
 
-function ItemWords({settings, words}) {
+function ItemWords({wcFormat, wcText, wcMissing, wcCumulative, wcTotal}) {
   return <React.Fragment>{
-    words?.missing
+    wcMissing
     ? (<React.Fragment>
-      <span style={{color: "red"}}>{words.missing}</span>
+      <span style={{color: "red"}}>{wcMissing}</span>
       <span>&nbsp;/&nbsp;</span>
       </React.Fragment>)
-    : (words ? <Icon.Starred sx={{color: "#59F", fontSize: 14, marginRight: "4px"}}/> : null)
+    : (wcText ? <Icon.Starred sx={{color: "#59F", fontSize: 14, marginRight: "4px"}}/> : null)
     }
-    <FormatWords settings={settings} words={words}/>
+    <FormatWords format={wcFormat} words={wcText} cumulative={wcCumulative} total={wcTotal}/>
   </React.Fragment>
 }

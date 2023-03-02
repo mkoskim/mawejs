@@ -101,45 +101,78 @@ export function SingleEditView({doc, setDoc}) {
   const [bodybuffer, _setBodyBuffer] = useState(() => section2edit(doc.story.body))
   const [notebuffer, _setNoteBuffer] = useState(() => section2edit(doc.story.notes))
 
+  //---------------------------------------------------------------------------
   // Get updates from Slate, and apply them to doc, too
+  //---------------------------------------------------------------------------
 
-  function setBodyBuffer(value) {
-    _setBodyBuffer(value)
-    const bodyFromEdit = edit2section(value)
+  //const [bodyFromEdit, setBodyFromEdit] = useState(() => withWordCounts(doc.story.body))
+  //const [notesFromEdit, setNotesFromEdit] = useState(doc.story.notes)
+
+  const bodyFromEdit = withWordCounts(doc.story.body)
+  const notesFromEdit = doc.story.notes
+
+  function updateBody(buffer) {
+    //console.log("Body update")
+    const section = edit2section(buffer)
+    //setBodyFromEdit(withWordCounts(section))
     setDoc(doc => ({
       ...doc,
       story: {
         ...doc.story,
         body: {
           ...doc.story.body,
-          head: {...doc.story.body.head, ...bodyFromEdit.head},
-          parts: bodyFromEdit.parts,
+          head: {...doc.story.body.head, ...section.head},
+          parts: section.parts,
         }
       }
     }))
   }
 
-  function setNoteBuffer(value) {
-    _setNoteBuffer(value)
-    const notesFromEdit = edit2section(value)
+  function updateNotes(buffer) {
+    const section = edit2section(buffer)
+    //setNotesFromEdit(section)
     setDoc(doc => ({
       ...doc,
       story: {
         ...doc.story,
         notes: {
           ...doc.story.notes,
-          parts: notesFromEdit.parts
+          parts: section.parts
         }
       }
     }))
   }
 
-  //---------------------------------------------------------------------------
-  // Index settings
-  //---------------------------------------------------------------------------
+  /*
+  useEffect(() => {
+    //console.log("Update request")
+    if(updateTimer) clearTimeout(updateTimer)
+    setUpdateTimer(setTimeout(updateBody, 100))
+    //const timer = setTimeout(updateBody, 100)
+    return () => { clearTimeout(updateTimer); setUpdateTimer(undefined); }
+    updateBody()
+  }, [bodybuffer])
 
-  const bodyWithWords = withWordCounts(doc.story.body)
-  const notesFromEdit = doc.story.notes;
+  useEffect(() => {
+    updateNotes()
+  }, [notebuffer])
+  */
+
+  //*
+  function setBodyBuffer(value) {
+    //_setBodyBuffer(value)
+    updateBody(value)
+  }
+
+  function setNoteBuffer(value) {
+    //_setNoteBuffer(value)
+    updateNotes(value)
+  }
+  /**/
+
+  //---------------------------------------------------------------------------
+  // Index settings: Change these to component props
+  //---------------------------------------------------------------------------
 
   const [active, setActive] = useState("body")
 
@@ -147,25 +180,20 @@ export function SingleEditView({doc, setDoc}) {
   const [words1, setWords1] = useState("numbers")
 
   const bodyindex_settings = {
-    sectID: "body",
-    activate: () => setActive("body"),
     indexed: {
       choices:  ["br.scene", "synopsis", "missing", "comment"],
       value:    indexed1,
       setValue: setIndexed1,
     },
     words: {
-      total:    bodyWithWords.words.text,
+      total:    bodyFromEdit.words.text,
       choices:  ["off", "numbers", "percent", "cumulative"],
       value:    words1,
       setValue: setWords1,
     },
-    numbering: true,
   }
 
   const noteindex_settings = {
-    sectID: "notes",
-    activate: () => setActive("notes"),
     indexed: {
       value: ["br.scene", "synopsis"],
     }
@@ -194,21 +222,27 @@ export function SingleEditView({doc, setDoc}) {
   //
   //*
   return <React.Fragment>
-    <EditToolbar {...{bodyindex_settings, noteindex_settings, bodyWithWords}}/>
+    <EditToolbar {...{bodyindex_settings, noteindex_settings, bodyWithWords: bodyFromEdit}}/>
     <HBox style={{overflow: "auto"}}>
       <DragDropContext onDragEnd={onDragEnd}>
       <Slate editor={bodyeditor} value={bodybuffer} onChange={setBodyBuffer}>
         <SlateTOC
           style={{maxWidth: "400px", width: "400px"}}
-          settings={bodyindex_settings}
-          section={bodyWithWords}/>
+          activeID="body"
+          setActive={setActive}
+          wcFormat={words1}
+          wcTotal={bodyFromEdit.words.text}
+          include={indexed1}
+          section={bodyFromEdit}/>
         <EditorBox mode="Regular" visible={active === "body"}/>
       </Slate>
       <Slate editor={noteeditor} value={notebuffer} onChange={setNoteBuffer}>
         <EditorBox mode="Regular" visible={active === "notes"}/>
         <SlateTOC
           style={{maxWidth: "300px", width: "300px"}}
-          settings={noteindex_settings}
+          activeID="notes"
+          setActive={setActive}
+          include={["br.scene", "synopsis"]}
           section={notesFromEdit}/>
       </Slate>
       </DragDropContext>
