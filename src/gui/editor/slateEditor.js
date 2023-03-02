@@ -205,29 +205,15 @@ function elemIsType(editor, elem, type) {
 //*****************************************************************************
 
 export function getEditor() {
-  const editor = (
-    withFixParts(
-    withMarkup(
-    withIDs(
-    withHistory(
-    withReact(
-    createEditor()
-  ))))))
 
-  //---------------------------------------------------------------------------
-
-  /*
-  const { isVoid } = editor;
-
-  editor.isVoid = element => {
-    switch (element.type) {
-      case "br": return true;
-    }
-    return isVoid(element)
-  }
-  */
-
-  return editor
+  return [
+    createEditor,
+    withHistory,
+    withMarkup,
+    withIDs,
+    withFixParts,
+    withReact,
+  ].reduce((a, b) => b(a), undefined)
 }
 
 //-----------------------------------------------------------------------------
