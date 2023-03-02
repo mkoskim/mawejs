@@ -563,22 +563,53 @@ export function section2edit(section) {
 //
 //*****************************************************************************
 
-export function edit2section(content) {
-  const [head, parts] = getHead()
-  return {
-    type: "sect",
-    head: {},
-    parts: splitByLeadingElem(parts, isPartBreak)
-      .filter(p => p.length)
-      .map(elems => edit2part(elems))
+export function edit2grouped(content) {
+  const [head, parts] = splitHead(content)
+
+  function partHead(part) {
+    console.assert(isPartBreak(part[0]), "Missing part break")
+    return [part[0], part.slice(1)]
   }
 
-  function getHead() {
-    return [
-      content.filter(elem => isHeadElement(elem)),
-      content.filter(elem => !isHeadElement(elem))
-    ]
+  function sceneHead(scene) {
+    console.assert(isSceneBreak(scene[0]), "Missing scene break")
+    return [scene[0], scene.slice(1)]
   }
+
+  function splitParts(parts) {
+    return splitByLeadingElem(parts, isPartBreak)
+    .filter(p => p.length)
+    .map(part => partHead(part))
+    .map(part => [part[0], splitScenes(part[1])])
+  }
+
+  function splitScenes(part) {
+    return splitByLeadingElem(part, isSceneBreak)
+    .filter(s => s.length)
+    .map(scene => sceneHead(scene))
+  }
+
+  return splitParts(parts)
+}
+
+export function edit2section(content) {
+  const [head, parts] = splitHead(content)
+  const grouped = edit2grouped(parts)
+  return grouped2section(grouped)
+}
+
+export function grouped2section(grouped) {
+  return {
+    type: "sect",
+    parts: grouped.map(part => edit2part(part))
+  }
+}
+
+function splitHead(content) {
+  return [
+    content.filter(elem => isHeadElement(elem)),
+    content.filter(elem => !isHeadElement(elem))
+  ]
 }
 
 function isHeadElement(elem) {
@@ -595,8 +626,8 @@ function isSceneBreak(elem) {
   return elem.type === "br.scene"
 }
 
-export function edit2part(content) {
-  const [head, scenes] = getHead()
+function edit2part(part) {
+  const [head, scenes] = part
   const {id} = head
   const name = elem2text(head)
 
@@ -604,20 +635,12 @@ export function edit2part(content) {
     type: "part",
     name: name.length ? name : undefined,
     id,
-    children: splitByLeadingElem(scenes, isSceneBreak)
-      .filter(s => s.length)
-      .map(elems => edit2scene(elems)),
-  }
-
-  function getHead() {
-    console.assert(isPartBreak(content[0]), "Missing part break")
-
-    return [content[0], content.slice(1)]
+    children: scenes.map(scene => edit2scene(scene)),
   }
 }
 
-export function edit2scene(content) {
-  const [head, paragraphs] = getHead()
+function edit2scene(scene) {
+  const [head, paragraphs] = scene
   const name = elem2text(head)
   const {id} = head;
 
@@ -626,11 +649,6 @@ export function edit2scene(content) {
     name: name.length ? name : undefined,
     id,
     children: paragraphs.map(elem => getParagraph(elem))
-  }
-
-  function getHead() {
-    console.assert(isSceneBreak(content[0]), "Missing scene break")
-    return [content[0], content.slice(1)]
   }
 
   function getParagraph(elem) {
@@ -645,5 +663,19 @@ export function edit2scene(content) {
         text,
       }],
     }
+  }
+}
+
+//*****************************************************************************
+//
+// Update section from buffer
+//
+//*****************************************************************************
+
+export function updateSection(section, buffer) {
+  const content = edit2section(buffer)
+  return {
+    ...section,
+    parts: content.parts
   }
 }

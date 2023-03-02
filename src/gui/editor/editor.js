@@ -30,13 +30,14 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import {
   getEditor, SlateEditable,
-  section2edit, edit2section,
+  section2edit, edit2section, updateSection,
+  edit2grouped,
   elem2text,
   elemsByID, hasElem,
   focusByPath, focusByID,
   elemByTypes,
   elemsByRange,
-  elemPop, elemPushTo,
+  elemPop, elemPushTo, grouped2section,
 } from "./slateEditor"
 
 import {
@@ -108,67 +109,37 @@ export function SingleEditView({doc, setDoc}) {
   //const [bodyFromEdit, setBodyFromEdit] = useState(() => withWordCounts(doc.story.body))
   //const [notesFromEdit, setNotesFromEdit] = useState(doc.story.notes)
 
-  const bodyFromEdit = withWordCounts(doc.story.body)
-  const notesFromEdit = doc.story.notes
-
   function updateBody(buffer) {
-    //console.log("Body update")
-    const section = edit2section(buffer)
-    //setBodyFromEdit(withWordCounts(section))
+    //_setBodyBuffer(buffer)
+    //const section = edit2section(buffer)
+
     setDoc(doc => ({
       ...doc,
       story: {
         ...doc.story,
-        body: {
-          ...doc.story.body,
-          head: {...doc.story.body.head, ...section.head},
-          parts: section.parts,
-        }
+        body: updateSection(doc.story.body, buffer)
+          //...doc.story.body,
+          //parts: section.parts
       }
     }))
   }
 
   function updateNotes(buffer) {
-    const section = edit2section(buffer)
-    //setNotesFromEdit(section)
+    //_setNoteBuffer(buffer)
+    //const section = edit2section(buffer)
     setDoc(doc => ({
       ...doc,
       story: {
         ...doc.story,
-        notes: {
-          ...doc.story.notes,
-          parts: section.parts
-        }
+        notes: updateSection(doc.story.notes, buffer)
+        //notes: section.parts,
       }
     }))
   }
 
-  /*
-  useEffect(() => {
-    //console.log("Update request")
-    if(updateTimer) clearTimeout(updateTimer)
-    setUpdateTimer(setTimeout(updateBody, 100))
-    //const timer = setTimeout(updateBody, 100)
-    return () => { clearTimeout(updateTimer); setUpdateTimer(undefined); }
-    updateBody()
-  }, [bodybuffer])
-
-  useEffect(() => {
-    updateNotes()
-  }, [notebuffer])
-  */
-
-  //*
-  function setBodyBuffer(value) {
-    //_setBodyBuffer(value)
-    updateBody(value)
-  }
-
-  function setNoteBuffer(value) {
-    //_setNoteBuffer(value)
-    updateNotes(value)
-  }
-  /**/
+  const bodyFromEdit = withWordCounts(doc.story.body)
+  //const bodyFromEdit = doc.story.body
+  const noteFromEdit = doc.story.notes
 
   //---------------------------------------------------------------------------
   // Index settings: Change these to component props
@@ -176,17 +147,16 @@ export function SingleEditView({doc, setDoc}) {
 
   const [active, setActive] = useState("body")
 
-  const [indexed1, setIndexed1] = useState(["br.scene", "synopsis"])
+  const [indexed1, setIndexed1] = useState(["scene", "synopsis"])
   const [words1, setWords1] = useState("numbers")
 
   const bodyindex_settings = {
     indexed: {
-      choices:  ["br.scene", "synopsis", "missing", "comment"],
+      choices:  ["scene", "synopsis", "missing", "comment"],
       value:    indexed1,
       setValue: setIndexed1,
     },
     words: {
-      total:    bodyFromEdit.words.text,
       choices:  ["off", "numbers", "percent", "cumulative"],
       value:    words1,
       setValue: setWords1,
@@ -195,17 +165,19 @@ export function SingleEditView({doc, setDoc}) {
 
   const noteindex_settings = {
     indexed: {
-      value: ["br.scene", "synopsis"],
+      value: ["scene", "synopsis"],
     }
   }
 
   //---------------------------------------------------------------------------
 
   /*
-  return <Slate editor={editor} value={state.content} onChange={state.setContent}>
-    <EditorBox style={{width: "50%"}}/>
-    <Pre style={{ width: "50%" }} content={state.content} />
-    </Slate>
+  return <HBox style={{overflow: "auto"}}>
+      <Slate editor={bodyeditor} value={bodybuffer} onChange={setBodyBuffer}>
+      <EditorBox style={{width: "50%"}} visible={true}/>
+      <Pre style={{ width: "50%" }} content={edit2grouped(bodybuffer)} />
+      </Slate>
+    </HBox>
   /**/
 /*
   <Pre style={{ width: "50%" }} content={edited.story} />
@@ -222,28 +194,29 @@ export function SingleEditView({doc, setDoc}) {
   //
   //*
   return <React.Fragment>
-    <EditToolbar {...{bodyindex_settings, noteindex_settings, bodyWithWords: bodyFromEdit}}/>
+    <EditToolbar {...{bodyindex_settings, noteindex_settings, bodyFromEdit}}/>
     <HBox style={{overflow: "auto"}}>
       <DragDropContext onDragEnd={onDragEnd}>
-      <Slate editor={bodyeditor} value={bodybuffer} onChange={setBodyBuffer}>
+      <Slate editor={bodyeditor} value={bodybuffer} onChange={updateBody}>
         <SlateTOC
           style={{maxWidth: "400px", width: "400px"}}
           activeID="body"
           setActive={setActive}
           wcFormat={words1}
-          wcTotal={bodyFromEdit.words.text}
-          include={indexed1}
-          section={bodyFromEdit}/>
+          include={["part", ...indexed1]}
+          section={bodyFromEdit}
+          />
         <EditorBox mode="Regular" visible={active === "body"}/>
       </Slate>
-      <Slate editor={noteeditor} value={notebuffer} onChange={setNoteBuffer}>
+      <Slate editor={noteeditor} value={notebuffer} onChange={updateNotes}>
         <EditorBox mode="Regular" visible={active === "notes"}/>
         <SlateTOC
           style={{maxWidth: "300px", width: "300px"}}
           activeID="notes"
           setActive={setActive}
-          include={["br.scene", "synopsis"]}
-          section={notesFromEdit}/>
+          include={["part", "scene", "synopsis"]}
+          section={noteFromEdit}
+          />
       </Slate>
       </DragDropContext>
     </HBox>
@@ -367,14 +340,14 @@ export function SingleEditView({doc, setDoc}) {
 // Toolbar
 //-----------------------------------------------------------------------------
 
-function EditToolbar({bodyWithWords, bodyindex_settings}) {
+function EditToolbar({bodyindex_settings, bodyFromEdit}) {
 
   return <ToolBox style={{ background: "white" }}>
     <ChooseVisibleElements elements={bodyindex_settings.indexed}/>
     <Separator/>
     <ChooseWordFormat format={bodyindex_settings.words}/>
     <Separator/>
-    <SectionWordInfo sectWithWords={bodyWithWords}/>
+    <SectionWordInfo sectWithWords={bodyFromEdit}/>
     <Separator/>
     <Filler/>
   </ToolBox>

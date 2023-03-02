@@ -41,7 +41,7 @@ export function Export({doc, setDoc}) {
       separator: "* * *",
     },
     scene: {
-      separator: "* * *",
+      //separator: "* * *",
     },
   }
 
@@ -206,7 +206,7 @@ const formatHTML = {
   // Part
   "part": (settings, part, scenes) => {
     const {separator} = settings.scene
-    const sep = separator ? formatHTML["sep.scene"](separator) : "\n"
+    const sep = separator ? formatHTML["sep.scene"](separator) : "<br/>\n"
     return scenes.join(sep)
   },
 

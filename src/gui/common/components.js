@@ -45,7 +45,7 @@ export function SectionWordInfo({sectWithWords}) {
 
 export function ChooseVisibleElements({elements}) {
   const buttons = {
-    "br.scene": {
+    "scene": {
       tooltip: "Show scenes",
       icon: <Icon.BlockType.Scene/>
     },

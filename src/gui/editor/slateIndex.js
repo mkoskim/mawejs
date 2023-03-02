@@ -41,17 +41,56 @@ import {FormatWords} from "../common/components";
 
 //-----------------------------------------------------------------------------
 
-export function SlateTOC({activeID, setActive, wcFormat, wcTotal, include, section, style})
+export function SlateTOC({activeID, setActive, wcFormat, include, section, style})
 {
-  return (
-    <DeferredRender>
-    <VFiller style={{...style}}>
-      <Droppable droppableId={activeID} type="part">
-      {TOCDroppable}
-      </Droppable>
-    </VFiller>
-    </DeferredRender>
-  )
+  if(!section) return null;
+
+  //---------------------------------------------------------------------------
+  // Transform section to table of IDs
+  //---------------------------------------------------------------------------
+
+  /*
+  function flatPart(part) {
+    const {children, ...props} = part
+    const ids = children.map(elem => elem.id)
+    return [{...props, children: ids}, ...children.map(flatScene).flat()]
+  }
+
+  function flatScene(scene) {
+    const {children, ...props} = scene
+    const ids = children.map(elem => elem.id)
+    return [{...props, children: ids}, ...children]
+  }
+
+  const parts = section.parts.map(elem => elem.id)
+  const entries = section.parts
+    .map(flatPart)
+    .flat()
+    .filter(entry => include.includes(entry.type))
+    .reduce((acc, elem) => ({ ...acc, [elem.id]: elem }), {})
+  */
+
+  //console.log(flat)
+
+  //---------------------------------------------------------------------------
+
+  /*
+  return <VFiller className="TOC" style={{...style}}>
+    {parts.map((id, index) => <Elem2Index
+      key={id}
+      index={index}
+      elem={entries[id]}
+      activeID={activeID}
+      setActive={setActive}
+    />)}
+  </VFiller>
+  */
+
+  return <VFiller style={{...style}}>
+    <Droppable droppableId={activeID} type="part">
+    {TOCDroppable}
+    </Droppable>
+  </VFiller>
 
   function TOCDroppable(provided, snapshot) {
     const {innerRef, droppableProps, placeholder} = provided
@@ -62,21 +101,18 @@ export function SlateTOC({activeID, setActive, wcFormat, wcTotal, include, secti
       ref={innerRef}
       {...droppableProps}
     >
-      {section.parts.map((part, index) => <PartItem
-        key={part.id}
+      {section.parts.map((elem, index) => <PartItem
+        key={elem.id}
+        elem={elem}
         index={index}
-        id={part.id}
-        type={part.type}
-        name={part.name}
         wcFormat={wcFormat}
-        wcTotal={wcTotal}
-        wcText={part.words?.text}
-        wcMissing={part.words?.missing}
-        wcCumulative={part.words?.cumulative}
-        include={include}
-        scenes={part.children}
+        wcTotal={section.words?.total}
+        //wcText={part.words?.text}
+        //wcMissing={part.words?.missing}
+        //wcCumulative={part.words?.cumulative}
         activeID={activeID}
         setActive={setActive}
+        include={include}
       />
       )}
       {placeholder}
@@ -86,10 +122,10 @@ export function SlateTOC({activeID, setActive, wcFormat, wcTotal, include, secti
 
 //-----------------------------------------------------------------------------
 
-function PartItem({activeID, setActive, include, wcFormat, wcTotal, index, id, name, type, wcText, wcMissing, wcCumulative, scenes}) {
+function PartItem({elem, index, activeID, setActive, wcFormat, wcTotal, include}) {
 
   return <Draggable
-    draggableId={id}
+    draggableId={elem.id}
     index={index}
     type="part"
     >
@@ -106,60 +142,67 @@ function PartItem({activeID, setActive, include, wcFormat, wcTotal, index, id, n
     >
       <IndexItem
         {...dragHandleProps}
-        className="PartName"
-        activeID={activeID}
-        setActive={setActive}
-        id={id}
-        type={type}
-        name={name}
+        id={elem.id}
+        type={elem.type}
+        name={elem.name}
         wcFormat={wcFormat}
         wcTotal={wcTotal}
-        wcText={wcText}
-        wcMissing={wcMissing}
-        wcCumulative={wcCumulative}
+        wcText={elem.words?.text}
+        wcMissing={elem.words?.missing}
+        wcCumulative={elem.words?.cumulative}
+        activeID={activeID}
+        setActive={setActive}
       />
-      <PartScenes />
+      <SceneDroppable
+        id={elem.id}
+        scenes={elem.children.filter(elem => include.includes(elem.type))}
+        wcFormat={wcFormat}
+        wcTotal={wcTotal}
+        activeID={activeID}
+        setActive={setActive}
+        include={include}
+        />
     </div>
   }
+}
 
-  function PartScenes() {
-    if(!include.includes("br.scene")) return null;
-    return <Droppable droppableId={id} type="scene">
-    {(provided, snapshot) => {
-        const {innerRef, droppableProps, placeholder} = provided
+function SceneDroppable({id, scenes, wcFormat, wcTotal, activeID, setActive, include}) {
+  return <Droppable droppableId={id} type="scene">
+  {(provided, snapshot) => {
+      const {innerRef, droppableProps, placeholder} = provided
 
-        return <div className="VBox"
-          ref={innerRef}
-          {...droppableProps}
-        >
-          {scenes.map((scene, index) => <SceneItem
-            key={scene.id}
-            index={index}
-            id={scene.id}
-            type={scene.type}
-            name={scene.name}
-            wcFormat={wcFormat}
-            wcTotal={wcTotal}
-            wcText={scene.words?.text}
-            wcMissing={scene.words?.missing}
-            wcCumulative={scene.words?.cumulative}
-            include={include}
-            paragraphs={scene.children}
-            activeID={activeID}
-            setActive={setActive}
-          />)}
-          {placeholder}
-        </div>
+      return <div className="VBox"
+        ref={innerRef}
+        {...droppableProps}
+      >
+        {scenes.map((elem, index) => <SceneItem
+          key={elem.id}
+          index={index}
+          elem={elem}
+          wcFormat={wcFormat}
+          wcTotal={wcTotal}
+          activeID={activeID}
+          setActive={setActive}
+          include={include}
+        />)}
+        {placeholder}
+      </div>
 
-    }}
-    </Droppable>
-  }
+  }}
+  </Droppable>
 }
 
 //-----------------------------------------------------------------------------
 
-function SceneItem({index, activeID, setActive, include, id, type, name, wcText, wcMissing, wcCumulative, wcFormat, wcTotal, paragraphs}) {
-  const bookmarks = paragraphs.filter(elem => include.includes(elem.type))
+function SceneItem({elem, index, wcFormat, wcTotal, activeID, setActive, include}) {
+
+  return <Draggable
+    draggableId={elem.id}
+    index={index}
+    type="scene"
+    >
+      {sceneDraggable}
+    </Draggable>
 
   function sceneDraggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
@@ -170,33 +213,27 @@ function SceneItem({index, activeID, setActive, include, id, type, name, wcText,
       {...dragHandleProps}
     >
       <IndexItem
-        className="SceneName"
-        id={id}
-        type={type}
-        name={name}
+        id={elem.id}
+        type={elem.type}
+        name={elem.name}
         wcFormat={wcFormat}
         wcTotal={wcTotal}
-        wcText={wcText}
-        wcMissing={wcMissing}
-        wcCumulative={wcCumulative}
+        wcText={elem.words?.text}
+        wcMissing={elem.words?.missing}
+        wcCumulative={elem.words?.cumulative}
         activeID={activeID}
         setActive={setActive}
       />
-      <DoBookmarks activeID={activeID} setActive={setActive} bookmarks={bookmarks}/>
+      <DoBookmarks
+        bookmarks={elem.children.filter(elem => include.includes(elem.type))}
+        activeID={activeID}
+        setActive={setActive}
+        />
     </div>
   }
-
-  return <Draggable
-    draggableId={id}
-    index={index}
-    type="scene"
-    >
-      {sceneDraggable}
-    </Draggable>
-
 }
 
-function DoBookmarks({activeID, setActive, bookmarks}) {
+function DoBookmarks({bookmarks, activeID, setActive}) {
   if(!bookmarks.length) return null;
   return <React.Fragment>
     {bookmarks.map(elem => <IndexItem
@@ -212,8 +249,12 @@ function DoBookmarks({activeID, setActive, bookmarks}) {
 
 //-----------------------------------------------------------------------------
 
-function IndexItem({ className, id, type, name, wcFormat, wcText, wcMissing, wcCumulative, wcTotal, setActive, activeID, ...props }) {
+function IndexItem({id, type, name, wcFormat, wcText, wcMissing, wcCumulative, wcTotal, setActive, activeID, ...props }) {
   const editor = useSlate()
+
+  const className = (type === "part") ? "PartName" :
+    (type === "scene") ? "SceneName" :
+    ""
 
   const onItemClick = useCallback(async (event) => {
     //settings.activate()
