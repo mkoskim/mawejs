@@ -205,9 +205,212 @@ function elemIsType(editor, elem, type) {
 //*****************************************************************************
 
 export function getEditor() {
-  const editor = withHistory(withReact(createEditor()))
+  const editor = withFixParts(
+    withMarkup(
+    withIDs(
+    withHistory(
+    withReact(createEditor())
+  ))))
 
   //---------------------------------------------------------------------------
+
+  /*
+  const { isVoid } = editor;
+
+  editor.isVoid = element => {
+    switch (element.type) {
+      case "br": return true;
+    }
+    return isVoid(element)
+  }
+  */
+
+  return editor
+}
+
+//-----------------------------------------------------------------------------
+// Markup shortcuts
+//-----------------------------------------------------------------------------
+
+function withMarkup(editor) {
+
+  //---------------------------------------------------------------------------
+  // Markup shortcuts to create styles
+
+  const SHORTCUTS = {
+    '** ': {type: "br.part"},
+    '## ': {type: "br.scene"},
+    '>> ': {type: "synopsis"},
+    '// ': {type: 'comment'},
+    '!! ': {type: 'missing'},
+    //'-- ': ,
+    //'++ ': ,
+    //'<<':
+    //'((':
+    //'))':
+    //'==':
+    //'??':
+    //'++':
+    //'--':
+    //'%%':
+    //'/*':
+    //'::':
+  }
+
+  const { insertText } = editor
+
+  editor.insertText = text => {
+    const { selection } = editor
+
+    if (selection && Range.isCollapsed(selection)) {
+      const { anchor } = selection
+      const [node, path] = Editor.above(editor, {
+        match: n => Editor.isBlock(editor, n),
+      })
+      //const path = node ? node[1] : []
+      const start = Editor.start(editor, path)
+      const range = { anchor, focus: start }
+      const key = Editor.string(editor, range) + text
+
+      if(key in SHORTCUTS) {
+        Transforms.select(editor, range)
+        Transforms.delete(editor)
+        Transforms.setNodes(editor, SHORTCUTS[key])
+        return
+      }
+    }
+
+    insertText(text)
+  }
+
+  //---------------------------------------------------------------------------
+  // Default styles followed by a style
+
+  const STYLEAFTER = {
+    "title": "br.part",
+    "br.part": "br.scene",
+    "br.scene": "p",
+    "synopsis": "p",
+  }
+
+  const RESETEMPTY = [
+    "comment",
+    "missing",
+  ]
+
+  const { insertBreak } = editor
+
+  editor.insertBreak = () => {
+    const { selection } = editor
+
+    if (selection) {
+      const [match] = Editor.nodes(editor, {
+        match: n => elemIsBlock(editor, n)
+      })
+
+      if (match) {
+        const [node, path] = match
+
+        //console.log("Node:", node)
+
+        if(node.type in STYLEAFTER) {
+          const newtype = STYLEAFTER[node.type]
+          Transforms.splitNodes(editor, {always: true})
+          Transforms.setNodes(editor, {type: newtype})
+          return
+        }
+        if(RESETEMPTY.includes(node.type) && Node.string(node) == "") {
+          Transforms.setNodes(editor, {type: "p"});
+          return
+        }
+      }
+    }
+    insertBreak()
+  }
+
+  //---------------------------------------------------------------------------
+  // Backspace at the start of line resets formatting
+
+  const { deleteBackward } = editor;
+
+  editor.deleteBackward = (...args) => {
+    const { selection } = editor
+
+    if (selection && Range.isCollapsed(selection)) {
+      const match = Editor.above(editor, {
+        match: n => Editor.isBlock(editor, n),
+      })
+
+      if (match) {
+        const [node, path] = match
+        const start = Editor.start(editor, path)
+
+        //console.log("Node:", node)
+
+        if (
+          elemIsBlock(editor, node) &&
+          node.type !== 'p' &&
+          Point.equals(selection.anchor, start)
+        ) {
+          //console.log(block.type)
+          Transforms.setNodes(editor, {type: 'p'})
+
+          return
+        }
+      }
+    }
+    deleteBackward(...args)
+  }
+
+  return editor
+}
+
+//-----------------------------------------------------------------------------
+// Ensure that indexable blocks have unique ID
+//-----------------------------------------------------------------------------
+
+function withIDs(editor) {
+
+  const { normalizeNode } = editor;
+
+  editor.normalizeNode = entry => {
+    const [node, path] = entry
+
+    if(path.length > 0) return ;
+
+    //console.log("Path/Node:", path, node)
+    const ids = new Set()
+
+    const blocks = Editor.nodes(editor, {
+      at: [],
+      match: (node, path) => path.length == 1 && Editor.isBlock(editor, node),
+    })
+
+    //console.log(Array.from(blocks))
+
+    for(const block of blocks) {
+      const [node, path] = block
+
+      if(!node.id || ids.has(node.id)) {
+        //console.log("ID clash detected")
+        const id = nanoid()
+        Transforms.setNodes(editor, {id}, {at: path})
+        ids.add(id)
+      }
+      else {
+        ids.add(node.id)
+      }
+    }
+  }
+
+  return editor
+}
+
+//-----------------------------------------------------------------------------
+// Ensure, that part breaks are followed by scene break
+//-----------------------------------------------------------------------------
+
+function withFixParts(editor) {
 
   const { normalizeNode } = editor;
 
@@ -261,166 +464,6 @@ export function getEditor() {
     }
 
     return normalizeNode(entry)
-  }
-
-  //---------------------------------------------------------------------------
-
-  /*
-  const { isVoid } = editor;
-
-  editor.isVoid = element => {
-    switch (element.type) {
-      case "br": return true;
-    }
-    return isVoid(element)
-  }
-  */
-
-  //---------------------------------------------------------------------------
-  // Take care of element IDs
-
-  const {apply} = editor;
-
-  editor.apply = (operation) => {
-    //console.log("Apply:", operation)
-    switch(operation.type) {
-      case "insert_node": {
-        const node = { ...operation.node, id: operation.node.id ?? nanoid() }
-        return apply({...operation, node})
-      }
-      case "split_node": {
-        const properties = { ...operation.properties, id: operation.properties.id && nanoid() }
-        return apply({...operation, properties})
-      }
-      default: break;
-    }
-    return apply(operation);
-  }
-
-  //---------------------------------------------------------------------------
-
-  const STYLEAFTER = {
-    "title": "br.part",
-    "br.part": "br.scene",
-    "br.scene": "p",
-    "synopsis": "p",
-  }
-
-  const RESETEMPTY = [
-    "comment",
-    "missing",
-  ]
-
-  const { insertBreak } = editor
-
-  editor.insertBreak = () => {
-    const { selection } = editor
-
-    if (selection) {
-      const [match] = Editor.nodes(editor, {
-        match: n => elemIsBlock(editor, n)
-      })
-
-      if (match) {
-        const [node, path] = match
-
-        //console.log("Node:", node)
-
-        if(node.type in STYLEAFTER) {
-          const newtype = STYLEAFTER[node.type]
-          Transforms.splitNodes(editor, {always: true})
-          Transforms.setNodes(editor, {type: newtype})
-          return
-        }
-        if(RESETEMPTY.includes(node.type) && Node.string(node) == "") {
-          Transforms.setNodes(editor, {type: "p"});
-          return
-        }
-      }
-    }
-    insertBreak()
-  }
-
-  //---------------------------------------------------------------------------
-
-  const SHORTCUTS = {
-    '** ': {type: "br.part"},
-    '## ': {type: "br.scene"},
-    '>> ': {type: "synopsis"},
-    '// ': {type: 'comment'},
-    '!! ': {type: 'missing'},
-    //'-- ': ,
-    //'++ ': ,
-    //'<<':
-    //'((':
-    //'))':
-    //'==':
-    //'??':
-    //'++':
-    //'--':
-    //'%%':
-    //'/*':
-    //'::':
-  }
-
-  const { insertText } = editor
-
-  editor.insertText = text => {
-    const { selection } = editor
-
-    if (selection && Range.isCollapsed(selection)) {
-      const { anchor } = selection
-      const [node, path] = Editor.above(editor, {
-        match: n => Editor.isBlock(editor, n),
-      })
-      //const path = node ? node[1] : []
-      const start = Editor.start(editor, path)
-      const range = { anchor, focus: start }
-      const key = Editor.string(editor, range) + text
-
-      if(key in SHORTCUTS) {
-        Transforms.select(editor, range)
-        Transforms.delete(editor)
-        Transforms.setNodes(editor, SHORTCUTS[key])
-        return
-      }
-    }
-
-    insertText(text)
-  }
-
-  //---------------------------------------------------------------------------
-  // Backspace at the start of line resets formatting
-
-  const { deleteBackward } = editor;
-
-  editor.deleteBackward = (...args) => {
-    const { selection } = editor
-
-    if (selection && Range.isCollapsed(selection)) {
-      const match = Editor.above(editor, {
-        match: n => Editor.isBlock(editor, n),
-      })
-
-      if (match) {
-        const [node, path] = match
-        const start = Editor.start(editor, path)
-
-        //console.log("Node:", node)
-
-        if (
-          elemIsBlock(editor, node) &&
-          node.type !== 'p' &&
-          Point.equals(selection.anchor, start)
-        ) {
-          //console.log(block.type)
-          Transforms.setNodes(editor, {type: 'p'})
-
-          return
-        }
-      }
-    }
-    deleteBackward(...args)
   }
 
   return editor
