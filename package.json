@@ -39,9 +39,9 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
     "react-infinite-scroll-component": "^6.1.0",
-    "slate": "^0.91.1",
+    "slate": "^0.91.4",
     "slate-history": "^0.86.0",
-    "slate-react": "^0.91.2",
+    "slate-react": "^0.91.7",
     "stream": "^0.0.2",
     "uuid": "^9.0.0",
     "xml-js": "^1.6.11"

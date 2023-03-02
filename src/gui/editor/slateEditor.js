@@ -412,6 +412,8 @@ function withIDs(editor) {
 
 function withFixParts(editor) {
 
+  // TODO: Need fix
+
   const { normalizeNode } = editor;
 
   editor.normalizeNode = entry => {

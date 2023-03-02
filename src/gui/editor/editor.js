@@ -336,11 +336,11 @@ export function SingleEditView({doc, setDoc}) {
 function EditToolbar({bodyWithWords, bodyindex_settings}) {
 
   return <ToolBox style={{ background: "white" }}>
-    <SectionWordInfo sectWithWords={bodyWithWords}/>
-    <Separator/>
     <ChooseVisibleElements elements={bodyindex_settings.indexed}/>
     <Separator/>
     <ChooseWordFormat format={bodyindex_settings.words}/>
+    <Separator/>
+    <SectionWordInfo sectWithWords={bodyWithWords}/>
     <Separator/>
     <Filler/>
   </ToolBox>
