@@ -205,12 +205,14 @@ function elemIsType(editor, elem, type) {
 //*****************************************************************************
 
 export function getEditor() {
-  const editor = withFixParts(
+  const editor = (
+    withFixParts(
     withMarkup(
     withIDs(
     withHistory(
-    withReact(createEditor())
-  ))))
+    withReact(
+    createEditor()
+  ))))))
 
   //---------------------------------------------------------------------------
 
@@ -371,12 +373,13 @@ function withMarkup(editor) {
 
 function withIDs(editor) {
 
+  //*
   const { normalizeNode } = editor;
 
   editor.normalizeNode = entry => {
     const [node, path] = entry
 
-    if(path.length > 0) return ;
+    if(path.length > 0) return normalizeNode(entry);
 
     //console.log("Path/Node:", path, node)
     const ids = new Set()
@@ -401,7 +404,10 @@ function withIDs(editor) {
         ids.add(node.id)
       }
     }
+
+    return normalizeNode(entry)
   }
+  /**/
 
   return editor
 }
