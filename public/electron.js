@@ -88,7 +88,7 @@ async function createWindow()
 const reactDevToolsPath = path.join(
   os.homedir(),
   //"/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.24.7_0"
-  "/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.27.1_1"
+  "/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.27.2_0"
 )
 
 /*

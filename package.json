@@ -41,7 +41,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "slate": "^0.91.4",
     "slate-history": "^0.86.0",
-    "slate-react": "^0.91.7",
+    "slate-react": "^0.91.8",
     "stream": "^0.0.2",
     "uuid": "^9.0.0",
     "xml-js": "^1.6.11"
@@ -49,10 +49,10 @@
   "devDependencies": {
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
-    "electron": "^23.0.0",
+    "electron": "^23.1.1",
     "electron-builder": "^23.6.0",
     "electron-reload": "^2.0.0-alpha.1",
-    "nodemon": "^2.0.20",
+    "nodemon": "^2.0.21",
     "react-scripts": "^5.0.1",
     "wait-on": "^7.0.1"
   },

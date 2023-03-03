@@ -109,9 +109,15 @@ export function SingleEditView({doc, setDoc}) {
   //const [bodyFromEdit, setBodyFromEdit] = useState(() => withWordCounts(doc.story.body))
   //const [notesFromEdit, setNotesFromEdit] = useState(doc.story.notes)
 
+  function isAstChange(editor) {
+    return editor.operations.some(op => 'set_selection' !== op.type)
+  }
+
   function updateBody(buffer) {
     //_setBodyBuffer(buffer)
     //const section = edit2section(buffer)
+
+    if(!isAstChange(bodyeditor)) return
 
     setDoc(doc => ({
       ...doc,
@@ -130,6 +136,9 @@ export function SingleEditView({doc, setDoc}) {
   function updateNotes(buffer) {
     //_setNoteBuffer(buffer)
     //const section = edit2section(buffer)
+
+    if(!isAstChange(noteeditor)) return
+
     setDoc(doc => ({
       ...doc,
       story: {

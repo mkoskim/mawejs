@@ -97,13 +97,13 @@ export function withWordCounts(elem) {
           chars: a.chars + b.chars,
           text: a.text + b.text,
           missing: a.missing + b.missing,
-          comment: a.comment + b.comment,
+          //comment: a.comment + b.comment,
         }),
         {
           chars: 0,
           text: 0,
           missing: 0,
-          comment: 0,
+          //comment: 0,
         }
       )
     )
@@ -161,7 +161,7 @@ export function withWordCounts(elem) {
         text: wc_text,
         cumulative: cumulativeSum(wc_text),
         missing: wordcount(asText(scene.children, "missing")),
-        comment: wordcount(asText(scene.children, "comment"))
+        //comment: wordcount(asText(scene.children, "comment"))
       },
     }
   }

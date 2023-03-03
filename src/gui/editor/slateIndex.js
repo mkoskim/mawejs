@@ -88,11 +88,11 @@ export function SlateTOC({activeID, setActive, wcFormat, include, section, style
 
   const wcTotal = section.words?.text
 
-  return <DeferredRender><VFiller style={{...style}}>
+  return <VFiller style={{...style}}>
     <Droppable droppableId={activeID} type="part">
     {TOCDroppable}
     </Droppable>
-  </VFiller></DeferredRender>
+  </VFiller>
 
   function TOCDroppable(provided, snapshot) {
     const {innerRef, droppableProps, placeholder} = provided
@@ -190,13 +190,13 @@ function SceneDroppable({id, scenes, wcFormat, wcTotal, activeID, setActive, inc
 
 function SceneItem({elem, index, wcFormat, wcTotal, activeID, setActive, include}) {
 
-  return <Draggable
+  return <DeferredRender><Draggable
     draggableId={elem.id}
     index={index}
     type="scene"
     >
       {sceneDraggable}
-    </Draggable>
+    </Draggable></DeferredRender>
 
   function sceneDraggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
