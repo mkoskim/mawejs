@@ -86,7 +86,7 @@ export function SlateTOC({activeID, setActive, wcFormat, include, section, style
   </VFiller>
   */
 
-  const wcTotal = section.words?.total
+  const wcTotal = section.words?.text
 
   return <DeferredRender><VFiller style={{...style}}>
     <Droppable droppableId={activeID} type="part">
