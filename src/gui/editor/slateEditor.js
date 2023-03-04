@@ -62,7 +62,6 @@ export function SlateEditable({className, highlight, ...props}) {
 
   return <Editable
     className={addClass(className, "Sheet")}
-    autoFocus
     spellCheck={false} // Keep false until you find out how to change language
     renderElement={Element}
     renderLeaf={Leaf}
@@ -216,7 +215,7 @@ function scrollToPoint(editor, point) {
   /**/
 }
 
-export async function focusByID(editor, id) {
+export function focusByID(editor, id) {
   const match = elemsByID(editor, id)
 
   if(!match.length) return;
@@ -227,15 +226,16 @@ export async function focusByID(editor, id) {
 
 export async function focusByPath(editor, path) {
   if(!ReactEditor.isFocused(editor)) {
+    await sleep(20)
     ReactEditor.focus(editor)
-    await sleep(50);
+    await sleep(20);
   }
   Transforms.select(editor, path);
 }
 
 export async function scrollToRange(editor, range, focus) {
   if(focus) {
-    focusByPath(editor, range)
+    await focusByPath(editor, range)
   }
   scrollToPoint(editor, range.focus)
 }

@@ -436,7 +436,7 @@ function EditorBox({style, mode="Condensed", visible=true, highlight=undefined})
   if(!visible) return null;
 
   return <div className="Filler Board" style={{...style}}>
-      <SlateEditable className={mode} highlight={highlight}/>
+      <SlateEditable autoFocus className={mode} highlight={highlight}/>
     </div>
 }
 

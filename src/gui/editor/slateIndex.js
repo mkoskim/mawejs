@@ -166,7 +166,8 @@ function SceneDroppable({id, scenes, wcFormat, wcTotal, activeID, setActive, inc
   {(provided, snapshot) => {
       const {innerRef, droppableProps, placeholder} = provided
 
-      return <div className="VBox"
+      return <div
+        className="VBox"
         ref={innerRef}
         {...droppableProps}
       >
