@@ -38,6 +38,7 @@ import {
   elemByTypes,
   elemsByRange,
   elemPop, elemPushTo, grouped2section,
+  searchFirst, searchNext,
 } from "./slateEditor"
 
 import {
@@ -55,6 +56,7 @@ import {
   Grid,
   Separator, Loading, addClass,
   Menu, MenuItem,
+  isHotkey,
 } from "../common/factory";
 
 import {
@@ -68,8 +70,6 @@ import {withWordCounts} from "../../document";
 //import { mawe } from "../../document";
 
 //-----------------------------------------------------------------------------
-
-const fs = require("../../system/localfs");
 
 export function SingleEditView({doc, setDoc}) {
 
@@ -106,14 +106,12 @@ export function SingleEditView({doc, setDoc}) {
   // Get updates from Slate, and apply them to doc, too
   //---------------------------------------------------------------------------
 
-  //const [bodyFromEdit, setBodyFromEdit] = useState(() => withWordCounts(doc.story.body))
-  //const [notesFromEdit, setNotesFromEdit] = useState(doc.story.notes)
-
   function isAstChange(editor) {
     return editor.operations.some(op => 'set_selection' !== op.type)
   }
 
   function updateBody(buffer) {
+    //return
     //_setBodyBuffer(buffer)
     //const section = edit2section(buffer)
 
@@ -123,12 +121,7 @@ export function SingleEditView({doc, setDoc}) {
       ...doc,
       story: {
         ...doc.story,
-        body: {
-          ...doc.story.body,
-          ...updateSection(doc.story.body, buffer)
-          //...doc.story.body,
-          //parts: section.parts
-        }
+        body: updateSection(doc.story.body, buffer)
       }
     }))
   }
@@ -149,9 +142,23 @@ export function SingleEditView({doc, setDoc}) {
     }))
   }
 
-  const bodyFromEdit = withWordCounts(doc.story.body)
+  //---------------------------------------------------------------------------
+  // Sections for indexing
+  //---------------------------------------------------------------------------
+
+  //const [bodyFromEdit, setBodyFromEdit] = useState(() => withWordCounts(doc.story.body))
+  //const [notesFromEdit, setNotesFromEdit] = useState(doc.story.notes)
+  const [bodyFromEdit, setBodyFromEdit] = useState()
+  const [noteFromEdit, setNoteFromEdit] = useState()
+
+  useEffect(() => {
+    setBodyFromEdit(withWordCounts(doc.story.body))
+    setNoteFromEdit(doc.story.notes)
+  }, [doc])
+
+  //const bodyFromEdit = withWordCounts(doc.story.body)
   //const bodyFromEdit = doc.story.body
-  const noteFromEdit = doc.story.notes
+  //const noteFromEdit = doc.story.notes
 
   //---------------------------------------------------------------------------
   // Index settings: Change these to component props
@@ -159,7 +166,14 @@ export function SingleEditView({doc, setDoc}) {
 
   const [active, setActive] = useState("body")
 
-  const [indexed1, setIndexed1] = useState(["scene", "synopsis"])
+  function activeEdit() {
+    switch(active) {
+      case "body": return bodyeditor
+      case "notes": return noteeditor
+    }
+  }
+
+  const [indexed1, setIndexed1] = useState(["part", "scene", "synopsis"])
   const [words1, setWords1] = useState("numbers")
 
   const bodyindex_settings = {
@@ -182,31 +196,62 @@ export function SingleEditView({doc, setDoc}) {
   }
 
   //---------------------------------------------------------------------------
+  // Search
+  //---------------------------------------------------------------------------
+
+  const [searchText, _setSearchText] = useState()
+  const highlightText = useDeferredValue(searchText)
+
+  function setSearchText(text) {
+    _setSearchText(text)
+    searchFirst(activeEdit(), text)
+  }
+
+  useEffect(() => addHotkeys({
+    "mod+f": ev => {
+      const editor = activeEdit()
+      const focused = ReactEditor.isFocused(editor)
+      if(focused) {
+        const {selection} = editor
+        if(selection) {
+          const text = Editor.string(editor, selection)
+          if(text) {
+            _setSearchText(text)
+            return;
+          }
+        }
+      }
+      if(typeof(searchText) !== "string") _setSearchText("")
+    },
+    "escape": ev => {
+      _setSearchText(undefined)
+      ReactEditor.focus(activeEdit())
+    },
+    "mod+g": ev => searchNext(activeEdit(), searchText, true),
+  }));
+
+  //---------------------------------------------------------------------------
+  // Debug/development view
 
   /*
-  return <HBox style={{overflow: "auto"}}>
-      <Slate editor={bodyeditor} value={bodybuffer} onChange={setBodyBuffer}>
-      <EditorBox style={{width: "50%"}} visible={true}/>
-      <Pre style={{ width: "50%" }} content={edit2grouped(bodybuffer)} />
+  return <>
+    <EditToolbar {...{bodyindex_settings, noteindex_settings, bodyFromEdit, searchText, setSearchText}}/>
+    <HBox style={{overflow: "auto"}}>
+      <Slate editor={bodyeditor} value={bodybuffer} onChange={updateBody}>
+        <EditorBox mode="Condensed" visible={active === "body"} search={searchText}/>
+        <SlateAST />
       </Slate>
     </HBox>
-  /**/
-/*
-  <Pre style={{ width: "50%" }} content={edited.story} />
-  <Pre style={{ width: "50%" }} content={edited.story.body} />
-*/
-
+    </>
   /**/
 
   //---------------------------------------------------------------------------
-  //console.log(`SingleEdit: id=${id} stored=${storedid} refresh=${refresh}`)
 
-  //console.log("Edit:", id)
-
-  //
-  //*
-  return <React.Fragment>
-    <EditToolbar {...{bodyindex_settings, noteindex_settings, bodyFromEdit}}/>
+  return <>
+    <EditToolbar
+      editor={activeEdit()}
+      {...{bodyindex_settings, noteindex_settings, bodyFromEdit, searchText, setSearchText}}
+      />
     <HBox style={{overflow: "auto"}}>
       <DragDropContext onDragEnd={onDragEnd}>
       <Slate editor={bodyeditor} value={bodybuffer} onChange={updateBody}>
@@ -215,13 +260,13 @@ export function SingleEditView({doc, setDoc}) {
           activeID="body"
           setActive={setActive}
           wcFormat={words1}
-          include={["part", ...indexed1]}
+          include={indexed1}
           section={bodyFromEdit}
           />
-        <EditorBox mode="Regular" visible={active === "body"}/>
+        <EditorBox mode="Regular" visible={active === "body"} highlight={highlightText}/>
       </Slate>
       <Slate editor={noteeditor} value={notebuffer} onChange={updateNotes}>
-        <EditorBox mode="Regular" visible={active === "notes"}/>
+        <EditorBox mode="Regular" visible={active === "notes"} highlight={highlightText}/>
         <SlateTOC
           style={{maxWidth: "300px", width: "300px"}}
           activeID="notes"
@@ -232,36 +277,25 @@ export function SingleEditView({doc, setDoc}) {
       </Slate>
       </DragDropContext>
     </HBox>
-    </React.Fragment>
-  /*/
-  return <DragDropContext onDragEnd={onDragEnd}>
-    <Toolbar />
-    <HFiller style={{overflow: "auto"}}>
-      <Slate editor={bodyeditor} value={bodybuffer} onChange={setBodyBuffer}>
-        <IndexBox
-          style={{maxWidth: "400px", width: "400px"}}
-          settings={bodyindex_settings}
-          section={bodyWithWords}/>
-        <EditorBox mode="Regular" visible={active === "body"}/>
-      </Slate>
-      <div style={{overflowY: "auto"}}><table><tbody>
-        {bodyeditor.children
-          //.filter(n => ["br.part", "br.scene"].includes(n.type))
-          .map(elem => <tr key={elem.id}>
-          <td>{elem.id}</td>
-          <td>{elem.type}</td>
-          <td>{elem2text(elem).slice(0, 20)}</td>
-          </tr>)}
-        </tbody></table></div>
-    </HFiller>
-    </DragDropContext>
-  /**/
+    </>
 
   //---------------------------------------------------------------------------
   // Index DnD
   //---------------------------------------------------------------------------
 
   function onDragEnd(result) {
+
+    //console.log("onDragEnd:", result)
+
+    const {type, draggableId, source, destination} = result;
+
+    if(!destination) return;
+
+    if(source.droppableId === destination.droppableId) {
+      if(source.index === destination.index) return;
+    }
+
+    //console.log(type, source, "-->", destination)
 
     function getSectIDByElemID(elemID) {
       if(hasElem(bodyeditor, elemID)) return "body"
@@ -275,18 +309,6 @@ export function SingleEditView({doc, setDoc}) {
         case "notes": return noteeditor;
       }
     }
-
-    //console.log("onDragEnd:", result)
-
-    const {type, draggableId, source, destination} = result;
-
-    if(!destination) return;
-
-    if(source.droppableId === destination.droppableId) {
-      if(source.index === destination.index) return;
-    }
-
-    //console.log(type, source, "-->", destination)
 
     switch(type) {
       case "scene": {
@@ -352,7 +374,27 @@ export function SingleEditView({doc, setDoc}) {
 // Toolbar
 //-----------------------------------------------------------------------------
 
-function EditToolbar({bodyindex_settings, bodyFromEdit}) {
+function Searching({editor, searchText, setSearchText}) {
+  if(typeof(searchText) !== "string") return <Button>
+    <Icon.Action.Search onClick={ev => setSearchText("")}/>
+  </Button>
+  return <SearchBox
+    key={searchText}
+    size="small"
+    value={searchText}
+    autoFocus
+    onChange={ev => setSearchText(ev.target.value)}
+    onKeyDown={ev => {
+      if(isHotkey("enter", ev)) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        searchFirst(editor, searchText, true)
+      }
+    }}
+  />
+}
+
+function EditToolbar({bodyindex_settings, bodyFromEdit, editor, searchText, setSearchText}) {
 
   return <ToolBox style={{ background: "white" }}>
     <ChooseVisibleElements elements={bodyindex_settings.indexed}/>
@@ -360,6 +402,8 @@ function EditToolbar({bodyindex_settings, bodyFromEdit}) {
     <ChooseWordFormat format={bodyindex_settings.words}/>
     <Separator/>
     <SectionWordInfo sectWithWords={bodyFromEdit}/>
+    <Separator/>
+    <Searching editor={editor} searchText={searchText} setSearchText={setSearchText}/>
     <Separator/>
     <Filler/>
   </ToolBox>
@@ -382,13 +426,13 @@ function EditToolbar({bodyindex_settings, bodyFromEdit}) {
 
 //-----------------------------------------------------------------------------
 
-function EditorBox({style, mode="Condensed", visible=true}) {
+function EditorBox({style, mode="Condensed", visible=true, highlight=undefined}) {
   //const display = visible ? undefined : "none"
 
   if(!visible) return null;
 
   return <div className="Filler Board" style={{...style}}>
-      <SlateEditable className={mode}/>
+      <SlateEditable className={mode} highlight={highlight}/>
     </div>
 }
 
@@ -403,6 +447,12 @@ function IndexBox({settings, section, style}) {
 */
 
 //-----------------------------------------------------------------------------
+
+function SlateAST({}) {
+  const editor = useSlate()
+
+  return <Pre style={{ width: "50%" }} content={editor.children} />
+}
 
 function Pre({ style, content }) {
   return <pre style={{ fontSize: "10pt", ...style }}>

@@ -32,11 +32,12 @@ import {
 //-----------------------------------------------------------------------------
 
 export function SectionWordInfo({sectWithWords}) {
-  return <React.Fragment>
+  if(!sectWithWords) return null;
+  return <>
     <Label>Words: {sectWithWords.words?.text}</Label>
     <Separator/>
     <Label>Chars: {sectWithWords.words?.chars}</Label>
-    </React.Fragment>
+    </>
 }
 
 //-----------------------------------------------------------------------------

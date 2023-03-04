@@ -43,7 +43,8 @@ import {FormatWords} from "../common/components";
 
 export function SlateTOC({activeID, setActive, wcFormat, include, section, style})
 {
-  if(!section) return null;
+  //return null
+  //if(!section) return null;
 
   //---------------------------------------------------------------------------
   // Transform section to table of IDs
@@ -86,13 +87,13 @@ export function SlateTOC({activeID, setActive, wcFormat, include, section, style
   </VFiller>
   */
 
-  const wcTotal = section.words?.text
-
-  return <VFiller style={{...style}}>
+  const index = <VFiller style={{...style}}>
     <Droppable droppableId={activeID} type="part">
     {TOCDroppable}
     </Droppable>
   </VFiller>
+
+  return useDeferredValue(index)
 
   function TOCDroppable(provided, snapshot) {
     const {innerRef, droppableProps, placeholder} = provided
@@ -103,12 +104,12 @@ export function SlateTOC({activeID, setActive, wcFormat, include, section, style
       ref={innerRef}
       {...droppableProps}
     >
-      {section.parts.map((elem, index) => <PartItem
+      {section && section.parts.map((elem, index) => <PartItem
         key={elem.id}
         elem={elem}
         index={index}
         wcFormat={wcFormat}
-        wcTotal={wcTotal}
+        wcTotal={section.words?.text}
         activeID={activeID}
         setActive={setActive}
         include={include}
@@ -190,13 +191,13 @@ function SceneDroppable({id, scenes, wcFormat, wcTotal, activeID, setActive, inc
 
 function SceneItem({elem, index, wcFormat, wcTotal, activeID, setActive, include}) {
 
-  return <DeferredRender><Draggable
+  return <Draggable
     draggableId={elem.id}
     index={index}
     type="scene"
     >
       {sceneDraggable}
-    </Draggable></DeferredRender>
+    </Draggable>
 
   function sceneDraggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided

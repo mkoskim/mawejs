@@ -29,7 +29,8 @@ import {
   Button as XButton, ButtonGroup,
   ToggleButton, ToggleButtonGroup,
   Breadcrumbs,
-  Chip, TextField, Link,
+  Chip, Link,
+  TextField, InputAdornment,
   Tooltip as MuiTooltip, tooltipClasses,
   Divider, CircularProgress as Spinner,
   List, ListItem, ListItemText,
@@ -37,6 +38,7 @@ import {
   Typography,
   Menu, MenuItem,
 } from "@mui/material"
+import {OutlinedInput} from "@mui/material";
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export {
@@ -46,6 +48,7 @@ export {
   List, ListItem, ListItemText,
   ToggleButton, ToggleButtonGroup,
   Menu, MenuItem,
+  isHotkey,
 }
 
 //-----------------------------------------------------------------------------
@@ -326,10 +329,21 @@ export function Input(props) {
 
 export function SearchBox({onCancel, ...props})
 {
-  return <TextField
-    //leftElement={<Icon icon="search"/>}
+//*
+  return <OutlinedInput
+    spellCheck={false}
+    startAdornment={
+      <InputAdornment position="start"><Icon.Action.Search /></InputAdornment>
+    }
     {...props}
   />
+/*/
+  return <OutlinedInput
+    type="search"
+    spellCheck={false}
+    {...props}
+  />
+/**/
 }
 
 export function Loading({className, style}) {

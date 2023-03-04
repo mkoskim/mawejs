@@ -6,13 +6,13 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useDeferredValue } from 'react';
 import { Slate, useSlate, Editable, withReact, ReactEditor } from 'slate-react'
 import {
-  Editor, Node,
+  Editor,
+  Node, Text,
   Transforms,
-  Range,
-  Point,
+  Range, Point, Path,
   createEditor,
   Descendant,
 } from 'slate'
@@ -39,9 +39,26 @@ function elemLeader(elem) {
 //
 //*****************************************************************************
 
-export function SlateEditable({className, ...props}) {
+export function SlateEditable({className, highlight, ...props}) {
   //const renderElement = useCallback(props => <Element {...props} />, [])
   //const renderLeaf = useCallback(props => <Leaf {...props} />, [])
+
+  //console.log("Search:", search)
+
+  //const highlight = useDeferredValue(search)
+
+  const decorate = useCallback(([node, path]) => {
+    if (highlight && Text.isText(node)) {
+      const re = new RegExp(`${highlight}`, "gi")
+      const matches = Array.from(node.text.matchAll(re))
+      return matches.map(match => ({
+        anchor: {path, offset: match["index"]},
+        focus: {path, offset: match["index"] + highlight.length},
+        highlight: true,
+      }))
+    }
+    return []
+  }, [highlight])
 
   return <Editable
     className={addClass(className, "Sheet")}
@@ -49,6 +66,7 @@ export function SlateEditable({className, ...props}) {
     spellCheck={false} // Keep false until you find out how to change language
     renderElement={Element}
     renderLeaf={Leaf}
+    decorate={(typeof(highlight) === "string") ? decorate : undefined}
     {...props}
   />
 }
@@ -76,7 +94,19 @@ function Element({element, attributes, ...props}) {
 }
 
 function Leaf({ leaf, attributes, ...props }) {
-  return <span {...attributes} {...props}/>
+  return <span
+    style={{background: leaf.highlight && "#ffeeba"}}
+    {...attributes}
+    {...props}
+  />
+
+  /*
+  {...(leaf.highlight && { 'data-cy': 'search-highlighted' })}
+  className={css`
+    font-weight: ${leaf.bold && 'bold'};
+    background-color: ${leaf.highlight && '#ffeeba'};
+  `}
+  */
 }
 
 //*****************************************************************************
@@ -172,8 +202,21 @@ export function elemPushTo(editor, block, id, index) {
 //-----------------------------------------------------------------------------
 // Focusing elements
 
+function scrollToPoint(editor, point) {
+  const [dom] = ReactEditor.toDOMPoint(editor, point)
+  //console.log("DOM:", dom)
+  //Editable.scrollIntoView(editor, dom.parentElement)
+  /*
+  dom.parentElement.scrollIntoView({
+    //behaviour: "smooth",
+    block: "center",
+  })
+  /*/
+  dom.parentElement.scrollIntoViewIfNeeded(false)
+  /**/
+}
+
 export async function focusByID(editor, id) {
-  await sleep(10)
   const match = elemsByID(editor, id)
 
   if(!match.length) return;
@@ -183,9 +226,18 @@ export async function focusByID(editor, id) {
 }
 
 export async function focusByPath(editor, path) {
-  await sleep(10);
+  if(!ReactEditor.isFocused(editor)) {
+    ReactEditor.focus(editor)
+    await sleep(50);
+  }
   Transforms.select(editor, path);
-  ReactEditor.focus(editor)
+}
+
+export async function scrollToRange(editor, range, focus) {
+  if(focus) {
+    focusByPath(editor, range)
+  }
+  scrollToPoint(editor, range.focus)
 }
 
 //-----------------------------------------------------------------------------
@@ -196,6 +248,97 @@ function elemIsBlock(editor, elem) {
 
 function elemIsType(editor, elem, type) {
   return elemIsBlock(editor, elem) && elem.type === type
+}
+
+//-----------------------------------------------------------------------------
+// Finding
+
+function searchMatchPoint(re, leaf, path, offset = 0) {
+  //console.log(path, leaf.text)
+  re.lastIndex = offset
+  const match = re.exec(leaf.text) //.filter(m => m["index"] >= offset)
+  if(!match) return undefined
+  return {
+    path,
+    offset: match["index"]
+  }
+}
+
+export function searchFirst(editor, text, doFocus=false) {
+  if(!text) return
+
+  const re = new RegExp(`${text}`, "gi")
+
+  function nextMatch() {
+    const next = Editor.next(editor, {
+      match: (n, p) => {
+        if(!Text.isText(n)) return false
+        return re.test(n.text)
+      }
+    })
+    //console.log("Next:", next)
+    if(!next) return undefined
+    const [node, path] = next
+    return searchMatchPoint(re, node, path)
+  }
+
+  const match = nextMatch()
+
+  if(!match) return;
+  const {path, offset} = match
+  //console.log("Match:", path, offset)
+
+  scrollToRange(editor, {
+    focus: { path, offset },
+    anchor: { path, offset: offset + text.length }
+  },
+  doFocus)
+}
+
+export function searchNext(editor, text, doFocus=false) {
+  if(!text) return;
+
+  //console.log("Find next:", text)
+  const focus = editor.selection.focus
+  const re = new RegExp(`${text}`, "gi")
+
+  //console.log("Focus:", focus)
+
+  // Check if current block has more matches
+  function moreInCurrent() {
+    const [leaf, path] = Editor.leaf(editor, focus)
+    return searchMatchPoint(re, leaf, path, focus.offset + 1)
+  }
+
+  function nextMatch() {
+    const next = Editor.next(editor, {
+      match: (n, p) => {
+        if(Path.equals(p, focus.path)) return false
+        if(!Text.isText(n)) return false
+        return re.test(n.text)
+      }
+    })
+    //console.log("Next:", next)
+    if(!next) return undefined
+    const [node, path] = next
+    return searchMatchPoint(re, node, path)
+  }
+
+  const match = moreInCurrent() || nextMatch()
+
+  //console.log("Match:", match)
+
+  if(!match) return;
+  const {path, offset} = match
+
+  scrollToRange(
+    editor,
+    {
+      focus: { path, offset },
+      anchor: { path, offset: offset + text.length }
+    },
+    doFocus
+  )
 }
 
 //*****************************************************************************
