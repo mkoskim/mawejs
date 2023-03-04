@@ -26,6 +26,14 @@ export function tree2buf(root) {
 
 //----------------------------------------------------------------------------
 
+// Quick fix: xml-js does not escape string attributes
+function escape(text) {
+  return text && text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/"/g, '&quot;');
+}
+
 export function toXML(story) {
   const root = toElem({
     type: "story",
@@ -33,7 +41,7 @@ export function toXML(story) {
       uuid: story.uuid ?? getUUID(),
       format: "mawe",
       version: 2,
-      name: story.name
+      name: escape(story.name)
     },
     elements: [
       toComment("",
@@ -144,7 +152,7 @@ export function toXML(story) {
     return toElem({
       type: "part",
       attributes: {
-        name,
+        name: escape(name),
       },
       elements: part.children.map(toScene)
     })
@@ -156,7 +164,7 @@ export function toXML(story) {
     return toElem({
       type: "scene",
       attributes: {
-        name,
+        name: escape(name),
       },
       elements: scene.children.map(doc2js)
     })
@@ -190,7 +198,7 @@ export function toXML(story) {
   function toElem({type, attributes = undefined, elements = []}) {
     return {
       type: "element",
-      name: type,
+      name: escape(type),
       attributes,
       elements
     }
