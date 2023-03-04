@@ -241,7 +241,21 @@ function IndexItem({elem, wcFormat, wcTotal, setActive, activeID, ...props}) {
   const editor = useSlate()
 
   const {id, type} = elem
-  const name = elem.name ?? elem2text(elem)
+
+  function getName() {
+    switch(type) {
+      case "part":
+      case "scene":
+        return elem.name
+      case "comment":
+      case "missing":
+      case "synopsis":
+        return elem2text(elem)
+    }
+    return undefined
+  }
+
+  const name = getName()
 
   const className = (type === "part") ? "PartName" :
     (type === "scene") ? "SceneName" :

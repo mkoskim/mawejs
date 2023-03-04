@@ -253,83 +253,117 @@ function elemIsType(editor, elem, type) {
 //-----------------------------------------------------------------------------
 // Finding
 
-function searchMatchPoint(re, leaf, path, offset = 0) {
-  //console.log(path, leaf.text)
-  re.lastIndex = offset
-  const match = re.exec(leaf.text) //.filter(m => m["index"] >= offset)
-  if(!match) return undefined
-  return {
-    path,
-    offset: match["index"]
-  }
+function searchMatches(re, leaf) {
+  re.lastIndex = 0
+  const matches = Array.from(leaf.text.matchAll(re))
+  return matches.map(match => match["index"])
+}
+
+function searchMatchNext(re, leaf, path, offset = 0) {
+  const matches = searchMatches(re, leaf)
+    .filter(match => match >= offset)
+  //console.log("Match next:", matches)
+  const match = matches.length ? matches[0] : undefined
+  //console.log(match)
+  return match !== undefined ? {path, offset: match} : undefined
+}
+
+function searchMatchPrev(re, leaf, path, offset) {
+  const matches = searchMatches(re, leaf)
+    .filter(match => match < offset)
+    .slice(-1)
+  //console.log(matches)
+  const match = matches.length ? matches[0] : undefined
+  //console.log(match)
+  return match !== undefined ? {path, offset: match} : undefined
+}
+
+function searchTextForward(editor, re, path, offset) {
+  const [leaf] = Editor.leaf(editor, path)
+  const match = searchMatchNext(re, leaf, path, offset)
+  if(match) return match
+
+  const next = Editor.next(editor, {
+    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && re.test(n.text)
+  })
+  if(!next) return undefined
+  //console.log(next)
+  return searchMatchNext(re, next[0], next[1])
+}
+
+function searchTextBackward(editor, re, path, offset) {
+  const [leaf] = Editor.leaf(editor, path)
+  const match = searchMatchPrev(re, leaf, path, offset)
+  if(match) return match
+
+  const prev = Editor.previous(editor, {
+    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && re.test(n.text)
+  })
+  if(!prev) return undefined
+  //console.log(next)
+  return searchMatchPrev(re, prev[0], prev[1], prev[0].text.length)
 }
 
 export function searchFirst(editor, text, doFocus=false) {
   if(!text) return
 
   const re = new RegExp(`${text}`, "gi")
+  const focus = editor.selection.focus
 
-  function nextMatch() {
-    const next = Editor.next(editor, {
-      match: (n, p) => {
-        if(!Text.isText(n)) return false
-        return re.test(n.text)
-      }
-    })
-    //console.log("Next:", next)
-    if(!next) return undefined
-    const [node, path] = next
-    return searchMatchPoint(re, node, path)
-  }
-
-  const match = nextMatch()
+  const match = searchTextForward(editor, re, focus.path, focus.offset)
 
   if(!match) return;
   const {path, offset} = match
-  //console.log("Match:", path, offset)
 
-  scrollToRange(editor, {
-    focus: { path, offset },
-    anchor: { path, offset: offset + text.length }
-  },
-  doFocus)
+  scrollToRange(
+    editor,
+    {
+      focus: { path, offset },
+      anchor: { path, offset: offset + text.length }
+    },
+    doFocus
+  )
 }
 
-export function searchNext(editor, text, doFocus=false) {
+export function searchForward(editor, text, doFocus=false) {
   if(!text) return;
 
   //console.log("Find next:", text)
   const focus = editor.selection.focus
   const re = new RegExp(`${text}`, "gi")
 
-  //console.log("Focus:", focus)
-
-  // Check if current block has more matches
-  function moreInCurrent() {
-    const [leaf, path] = Editor.leaf(editor, focus)
-    return searchMatchPoint(re, leaf, path, focus.offset + 1)
-  }
-
-  function nextMatch() {
-    const next = Editor.next(editor, {
-      match: (n, p) => {
-        if(Path.equals(p, focus.path)) return false
-        if(!Text.isText(n)) return false
-        return re.test(n.text)
-      }
-    })
-    //console.log("Next:", next)
-    if(!next) return undefined
-    const [node, path] = next
-    return searchMatchPoint(re, node, path)
-  }
-
-  const match = moreInCurrent() || nextMatch()
+  const match = searchTextForward(editor, re, focus.path, focus.offset + 1)
 
   //console.log("Match:", match)
 
   if(!match) return;
   const {path, offset} = match
+  //console.log("Match:", path, offset)
+
+  scrollToRange(
+    editor,
+    {
+      focus: { path, offset },
+      anchor: { path, offset: offset + text.length }
+    },
+    doFocus
+  )
+}
+
+export function searchBackward(editor, text, doFocus) {
+  if(!text) return;
+
+  //console.log("Find next:", text)
+  const focus = editor.selection.focus
+  const re = new RegExp(`${text}`, "gi")
+
+  const match = searchTextBackward(editor, re, focus.path, focus.offset)
+
+  //console.log("Match:", match)
+
+  if(!match) return;
+  const {path, offset} = match
+  //console.log("Match:", path, offset)
 
   scrollToRange(
     editor,
@@ -769,14 +803,26 @@ function isSceneBreak(elem) {
   return elem.type === "br.scene"
 }
 
+function getName(elem) {
+  switch(elem.type) {
+    case "br.part":
+    case "br.scene":
+      return elem2text(elem)
+    case "synopsis":
+    case "missing":
+    case "comment":
+      return elem2text(elem)
+  }
+  return undefined
+}
+
 function edit2part(part) {
   const [head, scenes] = part
   const {id} = head
-  const name = elem2text(head)
 
   return {
     type: "part",
-    name: name.length ? name : undefined,
+    name: getName(head),
     id,
     children: scenes.map(scene => edit2scene(scene)),
   }
@@ -784,12 +830,11 @@ function edit2part(part) {
 
 function edit2scene(scene) {
   const [head, paragraphs] = scene
-  const name = elem2text(head)
   const {id} = head;
 
   return {
     type: "scene",
-    name: name.length ? name : undefined,
+    name: getName(head),
     id,
     children: paragraphs.map(elem => getParagraph(elem))
   }

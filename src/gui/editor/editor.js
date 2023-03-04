@@ -38,7 +38,7 @@ import {
   elemByTypes,
   elemsByRange,
   elemPop, elemPushTo, grouped2section,
-  searchFirst, searchNext,
+  searchFirst, searchForward, searchBackward,
 } from "./slateEditor"
 
 import {
@@ -216,6 +216,7 @@ export function SingleEditView({doc, setDoc}) {
         if(selection) {
           const text = Editor.string(editor, selection)
           if(text) {
+            Transforms.select(editor, Range.start(selection))
             _setSearchText(text)
             return;
           }
@@ -224,10 +225,13 @@ export function SingleEditView({doc, setDoc}) {
       if(typeof(searchText) !== "string") _setSearchText("")
     },
     "escape": ev => {
-      _setSearchText(undefined)
-      ReactEditor.focus(activeEdit())
+      if(typeof(searchText) === "string") {
+        _setSearchText(undefined)
+        ReactEditor.focus(activeEdit())
+      }
     },
-    "mod+g": ev => searchNext(activeEdit(), searchText, true),
+    "mod+g": ev => searchForward(activeEdit(), searchText, true),
+    "shift+mod+g": ev => searchBackward(activeEdit(), searchText, true)
   }));
 
   //---------------------------------------------------------------------------
