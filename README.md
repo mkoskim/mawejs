@@ -12,7 +12,13 @@ loading and saving, (4) implement RTF export. In addition to these, I urgently n
 
 ## How does it look like?
 
+Live screenshot while editing one of my stories (written in Finnish):
+
 ![image](https://user-images.githubusercontent.com/10298548/218349525-c385016b-f2f3-4605-9601-5fd095345646.png)
+
+At topmost, there is the selection of view. Below that is a toolbar to change settings in
+the editor. The main editing view contains three parts: (1) index of the draft, (2)
+editor display, and (3) index of notes.
 
 ## What is Mawe?
 
