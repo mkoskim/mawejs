@@ -237,7 +237,7 @@ export function SingleEditView({doc, setDoc}) {
   //---------------------------------------------------------------------------
   // When component is mounted, move focus to start of text in editor
 
-  useEffect(() => { focusByPath(activeEdit(), {path: [0], offset: 0})})
+  //useEffect(() => { focusByPath(activeEdit(), {path: [0], offset: 0})})
 
   //---------------------------------------------------------------------------
   // Debug/development view
