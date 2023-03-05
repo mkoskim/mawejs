@@ -235,6 +235,11 @@ export function SingleEditView({doc, setDoc}) {
   }));
 
   //---------------------------------------------------------------------------
+  // When component is mounted, move focus to start of text in editor
+
+  useEffect(() => { focusByPath(activeEdit(), {path: [0], offset: 0})})
+
+  //---------------------------------------------------------------------------
   // Debug/development view
 
   /*
@@ -436,7 +441,7 @@ function EditorBox({style, mode="Condensed", visible=true, highlight=undefined})
   if(!visible) return null;
 
   return <div className="Filler Board" style={{...style}}>
-      <SlateEditable autoFocus className={mode} highlight={highlight}/>
+      <SlateEditable className={mode} highlight={highlight}/>
     </div>
 }
 
