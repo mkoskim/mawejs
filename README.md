@@ -2,6 +2,22 @@ mawejs
 ======
 
 This is my mawe (My/Markus Advanced Writer's Editor) implemented with ElectronJS.
+It is the third version of my homebrew editors to write stories. History:
+
+1. **moe** (Markus' / My Own Editor): Once I started writing stories, I wrote them in one
+   text file. I started to split them to multiple pieces, and I wanted an editor to
+   collect them together to form a draft.
+
+2. **mawe** (Markus' / My Advances Writer's Editor): Written with Python/GTK. The main
+   feature between moe and mawe is that mawe not only joins story pieces, but it allows you to edit them as one big bunch.
+
+3. **maweJS**: mawe written with ElectronJS, NodeJS and React. I realized that Python/GTK
+   is not going anywhere, it is used to write firmware software to Linux, nothing else.
+   The improvements in GUI are made in the JavaScript front.
+
+All these editors are backward compatible, that is, files made with older versions can
+be loaded to newer ones. Also, I have something like 200-300 stories on my disk, written
+with various editors, and I really want my new versions to load the older ones.
 
 ## Status
 
