@@ -226,9 +226,9 @@ export function focusByID(editor, id) {
 
 export async function focusByPath(editor, path) {
   if(!ReactEditor.isFocused(editor)) {
-    await sleep(20)
+    //await sleep(20)
     ReactEditor.focus(editor)
-    await sleep(20);
+    await sleep(40);
   }
   Transforms.select(editor, path);
 }
@@ -251,7 +251,13 @@ function elemIsType(editor, elem, type) {
 }
 
 //-----------------------------------------------------------------------------
-// Finding
+//
+// Searching
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// Search text within a node
 
 function searchMatches(re, leaf) {
   re.lastIndex = 0
@@ -277,6 +283,9 @@ function searchMatchPrev(re, leaf, path, offset) {
   //console.log(match)
   return match !== undefined ? {path, offset: match} : undefined
 }
+
+//-----------------------------------------------------------------------------
+// Search text from another node
 
 function searchTextForward(editor, re, path, offset) {
   const [leaf] = Editor.leaf(editor, path)
@@ -304,75 +313,45 @@ function searchTextBackward(editor, re, path, offset) {
   return searchMatchPrev(re, prev[0], prev[1], prev[0].text.length)
 }
 
-export function searchFirst(editor, text, doFocus=false) {
+//-----------------------------------------------------------------------------
+// Search with scrolling and optional focusing
+
+function searchWithScroll(editor, text, path, offset, forward=true, doFocus=false) {
   if(!text) return
 
   const re = new RegExp(`${text}`, "gi")
-  const focus = editor.selection.focus
+  const match = (forward ? searchTextForward : searchTextBackward)(editor, re, path, offset)
 
-  const match = searchTextForward(editor, re, focus.path, focus.offset)
+  if(match) {
+    const {path, offset} = match
 
-  if(!match) return;
-  const {path, offset} = match
+    scrollToRange(
+      editor,
+      {
+        focus: { path, offset },
+        anchor: { path, offset: offset + text.length }
+      },
+      doFocus
+    )
+  }
+}
 
-  scrollToRange(
-    editor,
-    {
-      focus: { path, offset },
-      anchor: { path, offset: offset + text.length }
-    },
-    doFocus
-  )
+export function searchFirst(editor, text, doFocus=false) {
+  const {path, offset} = editor.selection.focus
+
+  return searchWithScroll(editor, text, path, offset, true, doFocus)
 }
 
 export function searchForward(editor, text, doFocus=false) {
-  if(!text) return;
+  const {path, offset} = editor.selection.focus
 
-  //console.log("Find next:", text)
-  const focus = editor.selection.focus
-  const re = new RegExp(`${text}`, "gi")
-
-  const match = searchTextForward(editor, re, focus.path, focus.offset + 1)
-
-  //console.log("Match:", match)
-
-  if(!match) return;
-  const {path, offset} = match
-  //console.log("Match:", path, offset)
-
-  scrollToRange(
-    editor,
-    {
-      focus: { path, offset },
-      anchor: { path, offset: offset + text.length }
-    },
-    doFocus
-  )
+  return searchWithScroll(editor, text, path, offset+1, true, doFocus)
 }
 
-export function searchBackward(editor, text, doFocus) {
-  if(!text) return;
+export function searchBackward(editor, text, doFocus=false) {
+  const {path, offset} = editor.selection.focus
 
-  //console.log("Find next:", text)
-  const focus = editor.selection.focus
-  const re = new RegExp(`${text}`, "gi")
-
-  const match = searchTextBackward(editor, re, focus.path, focus.offset)
-
-  //console.log("Match:", match)
-
-  if(!match) return;
-  const {path, offset} = match
-  //console.log("Match:", path, offset)
-
-  scrollToRange(
-    editor,
-    {
-      focus: { path, offset },
-      anchor: { path, offset: offset + text.length }
-    },
-    doFocus
-  )
+  return searchWithScroll(editor, text, path, offset, false, doFocus)
 }
 
 //*****************************************************************************
@@ -387,10 +366,29 @@ export function getEditor() {
     createEditor,
     withHistory,
     withMarkup,
-    withIDs,
     withFixParts,
+    withIDs,
     withReact,
-  ].reduce((a, b) => b(a), undefined)
+    withDebugging,
+  ].reduce((editor, func) => func(editor), undefined)
+}
+
+//-----------------------------------------------------------------------------
+// Debugging
+//-----------------------------------------------------------------------------
+
+function withDebugging(editor) {
+  const { normalizeNode } = editor;
+
+  /*
+  editor.normalizeNode = entry => {
+    const [node, path] = entry
+    console.log("Normalize:", path)
+    return normalizeNode(entry)
+  }
+  /**/
+
+  return editor
 }
 
 //-----------------------------------------------------------------------------
@@ -536,7 +534,6 @@ function withMarkup(editor) {
 
 function withIDs(editor) {
 
-  //*
   const { normalizeNode } = editor;
 
   editor.normalizeNode = entry => {
@@ -558,7 +555,7 @@ function withIDs(editor) {
       const [node, path] = block
 
       if(!node.id || ids.has(node.id)) {
-        //console.log("ID clash detected")
+        console.log("ID clash detected:", path)
         const id = nanoid()
         Transforms.setNodes(editor, {id}, {at: path})
         ids.add(id)
@@ -570,7 +567,6 @@ function withIDs(editor) {
 
     return normalizeNode(entry)
   }
-  /**/
 
   return editor
 }
@@ -836,21 +832,21 @@ function edit2scene(scene) {
     type: "scene",
     name: getName(head),
     id,
-    children: paragraphs.map(elem => getParagraph(elem))
+    children: paragraphs.map(elem => edit2paragraph(elem))
   }
+}
 
-  function getParagraph(elem) {
-    const text = elem2text(elem)
-    const tag = elem.type
+function edit2paragraph(elem) {
+  const text = elem2text(elem)
+  const tag = elem.type
 
-    return {
-      type: tag === "p" && text === "" ? "br" : tag,
-      id: elem.id,
-      children: [{
-        type: "text",
-        text,
-      }],
-    }
+  return {
+    type: tag === "p" && text === "" ? "br" : tag,
+    id: elem.id,
+    children: [{
+      type: "text",
+      text,
+    }],
   }
 }
 
