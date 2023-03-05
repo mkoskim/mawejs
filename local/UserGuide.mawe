@@ -176,7 +176,7 @@ STORY: UserGuide
 <br/>
 </scene>
 </part>
-<part name="Search and Replace">
+<part name="Search &amp; Replace">
 <scene name="Search">
 <p>To start searching, press Ctrl-F (find).</p>
 <p>You are given an input box to type what you want to search.</p>
