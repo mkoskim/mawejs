@@ -86,7 +86,7 @@ STORY: UserGuide
 <scene name="Scenes: Splitting text">
 <p>The main feature of MaweJS is to split large text chunk to more manageable pieces. Unlike you think, a scene break is not a header:</p>
 </scene>
-<scene name="--> This is scene break, not a header <---">
+<scene name="--> This is scene break, not a header &lt;---">
 <p>Unlike in conventional unstructured editors - Googledocs, Microsoft Word, Libre Office - in MaweJS we are not really applying styles to text. Parts and scenes are breaks to split text to smaller, more manageable pieces. All text inside a scene move together. All scenes inside a part move together.</p>
 <p>The scene and part names are only for you, so that you know what the part or scene is all about. It is not exported. Maybe at some point we make a special scene or break to give chapter names.</p>
 <br/>
@@ -100,7 +100,7 @@ STORY: UserGuide
 <br/>
 <p>To reset the line back to normal text, press backspace at the beginning of the line. Try it yourself:</p>
 </scene>
-<scene name="<-- Press backspace">
+<scene name="&lt;-- Press backspace">
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 </scene>
 <scene name="Scene numbering">
@@ -175,6 +175,15 @@ STORY: UserGuide
 <p>With cumulative word count you can identify, where your story points are.</p>
 <br/>
 </scene>
+</part>
+<part name="Searching">
+<scene name="Search">
+<p>To start searching, press Ctrl-F.</p>
+<p>xxx</p>
+<br/>
+</scene>
+</part>
+<part name="Drag'n'drop">
 <scene name="Drag-and-Drop">
 <p>You can drag and drop parts and scenes in the editor indices (between body and notes).</p>
 </scene>
