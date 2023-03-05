@@ -39,7 +39,7 @@ STORY: UserGuide
 <p>1. It is a Notepad editor that allows you to split text to chunks, and to organize (add, move, modify and delete) those text chunks, and</p>
 <p>2. In addition to text itself, it also stores the metatext - comments, descriptions and such - with the text.</p>
 </scene>
-<scene name="MawJS as Strucured Editor">
+<scene name="MaweJS as Strucured Editor">
 <p>From that perspective, MaweJS is so called "structured editor". It is not the only one, vice versa, there are many well-known structured editors around for story writers. So, how MaweJS differs from e.g. Scrivener, yWriter or Manuskript?</p>
 <p>One of the main design principles of MaweJS is that you should just start writing, just like opening a Notepad when you come up with an idea. Unlike in many other structured editors, you don't have to make _any_ preparation before starting to write the story itself. Instead, the tools are intended to be taken in use _when_ you need them.</p>
 <p>For example: You don't need to create scenes or parts in advance. You split your text to scenes and parts when you feel you need to split your text to smaller, movable pieces. You don't need to describe a scene beforehand: you write descriptions when you need them.</p>
@@ -64,7 +64,7 @@ STORY: UserGuide
 <p>VERSION: "Version" means an archived body. Body and versions are all drafts: "body" is the active one you write, "versions" are the older ones you have wanted to store for later use. For example: a version can be your earlier completed draft when you are writing a new one. It can also be the version of your draft you sent to a particular writing competition. It can also be a translation of your draft.</p>
 <br/>
 <p>SCENE: Scene is smallest undividable piece of text, the fundamental building block for a story. The basic definition of a scene is that if its content is splitted, those two parts do not make sense anymore. Text written inside a scene always move together.</p>
-<p>IMPORTANT: A story is a carefully crafted sequence of scenes.</p>
+<p>IMPORTANT: In the end, a story is a carefully crafted sequence of scenes.</p>
 <p>That is where we concentrate on, and let me repeat it: "Story is carefully crafted sequence of scenes." - What MaweJS is all about is just to organize scenes in good order to make a story. Everything outside crafting and organizing scene sequence is outside of its scope.</p>
 <br/>
 <p>BOOKMARK: A scene can be injeted by "synopsis", "missing" and "comment" lines. These lines get their entry in index, but you can't move them out from a scene. If you need to move them - split the scene to pieces.</p>
@@ -182,7 +182,7 @@ STORY: UserGuide
 <p>You are given an input box to type what you want to search.</p>
 <p>Now, press ESC - that clears the search box.</p>
 <p>The normal way you use search is that you select the text you are looking for:</p>
-<p>Select this --&gt; IAmLookingFor</p>
+<p>Select this --&gt; IAmLookingFor &lt;--</p>
 <p>...And press Ctrl-F.</p>
 <p>Now search uses your selection. Once you are in search box, you can edit the searched text, if you like.</p>
 <p>Then, press ENTER - that brings you back to your selected text.</p>
@@ -198,13 +198,21 @@ STORY: UserGuide
 <p>Press Ctrl-G (Find next). That will take you to the next match. To go backwards, press Shift-Ctrl-G (find previous). The easiest way to do this is to keep your left hand on Ctrl-G, and press right shift with your right hand. Try it out few times.</p>
 <br/>
 </scene>
-<scene name="Replaing">
-<p>The easiest way to find &amp; replace is to (1) first select what you want to replace, (2) overwrite it, (3) select and copy that (Ctrl-C), and (4) go through your document with Ctrl-G / Shift-Ctrl-G (search forward / backward) and pressing Ctrl-V (paste) to replace text. So</p>
-<p>Select this --&gt; IAmReplacingThis</p>
-<p>(1) Press Ctrl-F to make it a search text.</p>
-<p>(2) Press ENTER to replace it with e.g. "something".</p>
-<p>(3) Select your replacement.</p>
-<p>(4) Copy it to clipboard with Ctrl-C.</p>
+<scene name="Replacing">
+<p>The easiest way to find &amp; replace is:</p>
+<p>(1) first select what you want to replace,</p>
+<p>(2) Press Ctrl-F to make it a search pattern,</p>
+<p>(3) Press ENTER to come back to your selection,</p>
+<p>(4) overwrite it,</p>
+<p>(5) select your overwrite and copy that (Ctrl-C), and</p>
+<p>(6) go through your document with Ctrl-G / Shift-Ctrl-G (search forward / backward) and pressing Ctrl-V (paste) to replace text.</p>
+<br/>
+<p>So:</p>
+<p>(1) Select this --&gt; IAmReplacingThis &lt;--</p>
+<p>(2) Press Ctrl-F to make it a search text.</p>
+<p>(3) Press ENTER to replace it with e.g. "something".</p>
+<p>(4) Select your replacement.</p>
+<p>(5) Copy it to clipboard with Ctrl-C.</p>
 <p>Press Ctrl-G / Shift-Ctrl-G to go through matches, and press Ctrl-V (paste) to replace the match. Try it out here:</p>
 <p>iamreplacingthis IAMREPLACINGTHIS</p>
 <p>IAmReplacingThis IAMreplacingTHIS</p>
