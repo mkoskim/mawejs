@@ -176,10 +176,46 @@ STORY: UserGuide
 <br/>
 </scene>
 </part>
-<part name="Searching">
+<part name="Search and Replace">
 <scene name="Search">
-<p>To start searching, press Ctrl-F.</p>
-<p>xxx</p>
+<p>To start searching, press Ctrl-F (find).</p>
+<p>You are given an input box to type what you want to search.</p>
+<p>Now, press ESC - that clears the search box.</p>
+<p>The normal way you use search is that you select the text you are looking for:</p>
+<p>Select this --&gt; IAmLookingFor</p>
+<p>...And press Ctrl-F.</p>
+<p>Now search uses your selection. Once you are in search box, you can edit the searched text, if you like.</p>
+<p>Then, press ENTER - that brings you back to your selected text.</p>
+<p>Now, if everything is working correcly, you will see that these texts are highlighed:</p>
+<p>IAmLookingFor IAmLookingFor IAmLookingFor</p>
+<p>IAmLookingFor IAmLookingFor</p>
+<p>IAmLookingFor</p>
+<p>IAmLookingFor</p>
+<p>IAmLookingFor</p>
+<p>IAmLookingForIAmLookingFor</p>
+<p>IAmLookingFor</p>
+<br/>
+<p>Press Ctrl-G (Find next). That will take you to the next match. To go backwards, press Shift-Ctrl-G (find previous). The easiest way to do this is to keep your left hand on Ctrl-G, and press right shift with your right hand. Try it out few times.</p>
+<br/>
+</scene>
+<scene name="Replaing">
+<p>The easiest way to find &amp; replace is to (1) first select what you want to replace, (2) overwrite it, (3) select and copy that (Ctrl-C), and (4) go through your document with Ctrl-G / Shift-Ctrl-G (search forward / backward) and pressing Ctrl-V (paste) to replace text. So</p>
+<p>Select this --&gt; IAmReplacingThis</p>
+<p>(1) Press Ctrl-F to make it a search text.</p>
+<p>(2) Press ENTER to replace it with e.g. "something".</p>
+<p>(3) Select your replacement.</p>
+<p>(4) Copy it to clipboard with Ctrl-C.</p>
+<p>Press Ctrl-G / Shift-Ctrl-G to go through matches, and press Ctrl-V (paste) to replace the match. Try it out here:</p>
+<p>iamreplacingthis IAMREPLACINGTHIS</p>
+<p>IAmReplacingThis IAMreplacingTHIS</p>
+<p>IAmReplacingThis</p>
+<p>IAmReplacingThisIAmReplacingThis</p>
+<p>IAmReplacingThis IAmReplacingThis</p>
+<p>IAmReplacingThis</p>
+<br/>
+<p>As you can see, search is case insensitive.</p>
+<br/>
+<br/>
 <br/>
 </scene>
 </part>
