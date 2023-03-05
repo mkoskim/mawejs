@@ -127,7 +127,7 @@ export default function App(props) {
   const [_mode, _setMode] = useState(
     "editor"
     //"outliner"
-    //mode: "export"
+    //"export"
   );
 
   const mode = {
@@ -139,22 +139,11 @@ export default function App(props) {
   //---------------------------------------------------------------------------
   // TODO: Improve doc architecture!!!
 
-  /*
-  const [id, _setId] = useState(
-    "./local/UserGuide.mawe"
-    //const id = "./local/EmptyDoc.mawe";
-    //const id = "./local/TestDoc1.mawe";
-    //const id = "./local/TestDoc2.mawe";
-    //const id = "./local/Lorem30k.mawe";
-
-    //const id = "./local/mawe2/LammenHirvio.mawe";
-    //const id = "./local/mawe2/CasaMagda.mawe";
-  )
-  */
-
   const [doc, setDoc] = useState({
+    //load: "./local/TestDoc1.mawe"
     load: "./local/UserGuide.mawe",
     //load: "./local/mawe2/JazramonGjerta.mawe"
+    //load: "./local/mawe2/JazraGjertaViidakossa.mawe"
     //load: "./local/mawe2/NeljaBarnaa.mawe",
   })
 
