@@ -416,7 +416,6 @@ NOTES
 <p>Outliner needs:</p>
 <p>- Adding and removing parts &amp; scenes</p>
 <p>- Editing scenes</p>
-<p>- Adding synopses to scenes: Think it so that the scene card in outliner is a PostIt note, and you list things that are needed in that scene.</p>
 </scene>
 <scene name="DONE">
 <p>Done:</p>
@@ -426,8 +425,7 @@ NOTES
 <p>- DONE: More robust DnD - get rid of implicitly created elements, instead, use normalizing features to keep Slate state always in such condition, that it can be pulled as a story.</p>
 <p>- DONE: (Outliner) Word count options</p>
 <p>- DONE: (Outliner) Index options (what is shown in scene)</p>
-<br/>
-<br/>
+<p>- DONE: Adding synopses to scenes: Think it so that the scene card in outliner is a PostIt note, and you list things that are needed in that scene.</p>
 <br/>
 </scene>
 </part>
