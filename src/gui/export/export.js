@@ -50,30 +50,27 @@ export function Export({doc, setDoc}) {
     doc,
   }
 
-  return <HBox style={{overflow: "auto"}}>
-    <Settings {...previewprops}/>
-    <Preview {...previewprops}/>
-  </HBox>
+  return <VBox style={{overflow: "auto"}}>
+    <ExportToolbar {...previewprops}/>
+    <HBox style={{overflow: "auto"}}>
+      <ExportIndex {...previewprops}/>
+      <Preview {...previewprops}/>
+      <ExportSettings {...previewprops}/>
+    </HBox>
+  </VBox>
 }
 
 //-----------------------------------------------------------------------------
-// Export settings
+// Export toolbar
 //-----------------------------------------------------------------------------
 
-function Settings({settings, doc}) {
-  const {basename} = doc;
+function ExportToolbar({settings, doc}) {
   const {body} = doc.story
   const {head, parts} = body
 
-  return <VBox style={{background: "white", padding: "8px", borderRight: "2px solid lightgray"}}>
-    <Label>Filename: {basename}</Label>
+  return <ToolBox style={{background: "white"}}>
     <Button onClick={exportRTF}>Export</Button>
-    <Separator/>
-    <Input label="Title" value={head.title}/>
-    <Input label="Subtitle" value={head.subtitle}/>
-    <Input label="Author" value={head.author}/>
-    <Separator/>
-  </VBox>
+  </ToolBox>
 
   async function exportRTF(event) {
     console.log("Exporting...")
@@ -88,6 +85,64 @@ function Settings({settings, doc}) {
     const filename = await fs.makepath(dirname, basename + ".rtf")
     console.log("Filename:", filename)
     fs.write(filename, content)
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Export settings
+//-----------------------------------------------------------------------------
+
+function ExportSettings({settings, doc}) {
+  const {basename} = doc;
+  const {body} = doc.story
+  const {head, parts} = body
+
+  return <VBox style={{background: "white", padding: "8px", borderRight: "2px solid lightgray"}}>
+    <Label>Filename: {basename}</Label>
+    <Separator/>
+    <Input label="Title" value={head.title}/>
+    <Input label="Subtitle" value={head.subtitle}/>
+    <Input label="Author" value={head.author}/>
+    <Separator/>
+  </VBox>
+
+}
+
+//-----------------------------------------------------------------------------
+// Export index
+//-----------------------------------------------------------------------------
+
+function ExportIndex({settings, doc}) {
+  const {body} = doc.story
+  const {parts} = body
+
+  return <VFiller className="TOC">
+    {parts.map(part => <PartItem key={part.id} part={part}/>)}
+  </VFiller>
+
+  function PartItem({part}) {
+    const {id, name, children} = part
+    return <>
+      <div
+        className="Entry PartName"
+        onClick={ev => window.location.href=`#${id}`}
+        style={{cursor: "pointer"}}
+        >
+        <span className="Name">{name}</span>
+        </div>
+      {children.map(scene => <SceneItem key={scene.id} scene={scene}/>)}
+    </>
+  }
+
+  function SceneItem({scene}) {
+    const {id, name} = scene
+    return <div
+      className="Entry SceneName"
+      onClick={ev => window.location.href=`#${id}`}
+      style={{cursor: "pointer"}}
+      >
+      <span className="Name">{name}</span>
+      </div>
   }
 }
 
@@ -207,20 +262,20 @@ const formatHTML = {
   "part": (settings, part, scenes) => {
     const {separator} = settings.scene
     const sep = separator ? formatHTML["sep.scene"](separator) : "<br/>\n"
-    return scenes.join(sep)
+    return `<div id="${part.id}"/>` + scenes.join(sep)
   },
 
   // Scene & breaks
   "scene": (settings, scene, splits) => {
-    return splits.join("<br/>\n")
+    return `<div id="${scene.id}"/>` + splits.join("<br/>\n")
   },
   "split": (settings, paragraphs) => paragraphs.join("\n"),
 
   // Paragraph styles
   "synopsis": (settings, p) => "",
   "comment": (settings, p) => "",
-  "missing": (settings, p) => `<p style="color: rgb(180, 20, 20);">${formatHTML.escape(elemAsText(p))}</p>`,
-  "p": (settings, p) => `<p>${formatHTML.escape(elemAsText(p))}</p>`,
+  "missing": (settings, p) => `<p id="${p.id}" style="color: rgb(180, 20, 20);">${formatHTML.escape(elemAsText(p))}</p>`,
+  "p": (settings, p) => `<p id="${p.id}">${formatHTML.escape(elemAsText(p))}</p>`,
 
   //---------------------------------------------------------------------------
 
