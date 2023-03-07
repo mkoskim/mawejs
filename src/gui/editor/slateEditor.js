@@ -122,6 +122,16 @@ function Leaf({ leaf, attributes, ...props }) {
 
 //-----------------------------------------------------------------------------
 
+function elemIsBlock(editor, elem) {
+  return elem && !Editor.isEditor(elem) && Editor.isBlock(editor, elem);
+}
+
+function elemIsType(editor, elem, type) {
+  return elemIsBlock(editor, elem) && elem.type === type
+}
+
+//-----------------------------------------------------------------------------
+
 // Return true, if editor operations change content
 // Return false, if operations only change selection
 
@@ -131,19 +141,23 @@ export function isAstChange(editor) {
 
 //-----------------------------------------------------------------------------
 
-export function elemsByID(editor, id, anchor, focus) {
+export function elemByID(editor, id, anchor, focus) {
   if(!id) return []
-  if(!anchor) anchor = Editor.start(editor, [])
-  if(!focus) focus = Editor.end(editor, [])
 
-  return Array.from(Editor.nodes(editor, {
-    at: {anchor, focus},
+  const matches = Array.from(Editor.nodes(editor, {
+    at: {
+      anchor: anchor ?? Editor.start(editor, []),
+      focus: focus ?? Editor.end(editor, [])
+    },
     match: (n, p) => Editor.isBlock(editor, n) && n.id === id
   }))
+  if(!matches.length) return undefined
+  console.assert(matches.length === 1, "elemById: Multiple IDs found!")
+  return matches[0]
 }
 
 export function hasElem(editor, id) {
-  return elemsByID(editor, id).length > 0
+  return !!elemByID(editor, id)
 }
 
 export function elemByTypes(editor, types, anchor, focus) {
@@ -171,7 +185,7 @@ export function elemsByRange(editor, anchor, focus) {
 // Pop elems
 
 export function elemPop(editor, id) {
-  const [match] = elemsByID(editor, id)
+  const match = elemByID(editor, id)
   if(!match) return
 
   const [node, path] = match
@@ -179,9 +193,7 @@ export function elemPop(editor, id) {
   if(!focus || !anchor) return
 
   const block = elemsByRange(editor, anchor, focus)
-  Editor.withoutNormalizing(editor, () => {
-    Transforms.removeNodes(editor, {at: {anchor, focus}, hanging: true})
-  })
+  Transforms.removeNodes(editor, {at: {anchor, focus}, hanging: true})
   return block
 
   function range(node, path) {
@@ -204,34 +216,39 @@ export function elemPop(editor, id) {
 
 export function elemPushTo(editor, block, id, index) {
   const blocktype = block[0].type
-  const elems = elemsByID(editor, id)
-  const anchor = elems.length && Editor.after(editor, elems[0][1])
 
-  //console.log("PushTo:", id, anchor, elems)
-
-  const types = (blocktype === "part") ? ["part"] : ["part", "scene"]
   const blocks = [
-    ...(anchor ? elemByTypes(editor, types, anchor) : []),
+    ...(blocktype == "part" ? getParts() : getScenes(id)),
     [undefined, Editor.end(editor, [])]
   ]
 
   //console.log("Pushto:", anchor, blocks, index)
 
-  Editor.withoutNormalizing(editor, () => {
-    Transforms.insertNodes(editor, block, {at: blocks[index][1]})
-  })
+  Transforms.insertNodes(editor, block, {at: blocks[index][1]})
+
+  function getParts() {
+    return elemByTypes(editor, ["part"])
+  }
+
+  function getScenes(partid) {
+    const elem = elemByID(editor, partid)
+    const anchor = Editor.after(editor, elem[1])
+    if(!anchor) return []
+    return elemByTypes(editor, ["part", "scene"], anchor)
+  }
+
 }
 
 //-----------------------------------------------------------------------------
 // Focusing elements
 
 export function focusByID(editor, id) {
-  const match = elemsByID(editor, id)
+  const match = elemByID(editor, id)
 
-  if(!match.length) {
+  if(!match) {
     focusByPath(editor, undefined);
   } else {
-    const [node, path] = match[0]
+    const [node, path] = match
     focusByPath(editor, Editor.start(editor, path))
   }
 }
@@ -269,16 +286,6 @@ export async function scrollToRange(editor, range, focus) {
   }
 
   scrollToPoint(editor, range.focus)
-}
-
-//-----------------------------------------------------------------------------
-
-function elemIsBlock(editor, elem) {
-  return elem && !Editor.isEditor(elem) && Editor.isBlock(editor, elem);
-}
-
-function elemIsType(editor, elem, type) {
-  return elemIsBlock(editor, elem) && elem.type === type
 }
 
 //*****************************************************************************

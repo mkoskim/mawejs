@@ -30,14 +30,10 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import {
   getEditor, SlateEditable,
-  section2edit, edit2section, updateSection,
-  edit2grouped,
-  elem2text,
-  elemsByID, hasElem,
+  section2edit, updateSection,
+  hasElem,
   focusByPath, focusByID,
-  elemByTypes,
-  elemsByRange,
-  elemPop, elemPushTo, grouped2section,
+  elemPop, elemPushTo,
   searchFirst, searchForward, searchBackward,
   isAstChange,
 } from "./slateEditor"
@@ -66,7 +62,6 @@ import {
 } from "../common/components";
 
 import { styled } from '@mui/material/styles';
-import {withWordCounts} from "../../document";
 import {sleep} from "../../util";
 
 //import { mawe } from "../../document";

@@ -13,17 +13,7 @@ import React, {
   useDeferredValue, useMemo,
 } from "react"
 
-import {Editor, Node, Transforms} from "slate"
-import {useSlate, ReactEditor} from "slate-react"
-
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-
-import {
-  section2edit, edit2section,
-  elem2text,
-  elemsByID,
-  focusByID,
-} from "./slateEditor"
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
