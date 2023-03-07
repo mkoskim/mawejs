@@ -28,6 +28,7 @@ import {
 import {elemAsText} from "../../document"
 import { getSuffix } from "../../document/util";
 import { splitByTrailingElem } from "../../util";
+import {SectionWordInfo} from "../common/components";
 
 //-----------------------------------------------------------------------------
 
@@ -53,7 +54,7 @@ export function Export({doc, setDoc}) {
   return <VBox style={{overflow: "auto"}}>
     <ExportToolbar {...previewprops}/>
     <HBox style={{overflow: "auto"}}>
-      <ExportIndex {...previewprops}/>
+      <ExportIndex style={{width: "300px"}} {...previewprops}/>
       <Preview {...previewprops}/>
       <ExportSettings {...previewprops}/>
     </HBox>
@@ -70,6 +71,12 @@ function ExportToolbar({settings, doc}) {
 
   return <ToolBox style={{background: "white"}}>
     <Button onClick={exportRTF}>Export</Button>
+    <Separator/>
+    RTF
+    <Separator/>
+    <SectionWordInfo sectWithWords={body}/>
+    <Separator/>
+    <Filler/>
   </ToolBox>
 
   async function exportRTF(event) {
@@ -92,12 +99,12 @@ function ExportToolbar({settings, doc}) {
 // Export settings
 //-----------------------------------------------------------------------------
 
-function ExportSettings({settings, doc}) {
+function ExportSettings({style, settings, doc}) {
   const {basename} = doc;
   const {body} = doc.story
   const {head, parts} = body
 
-  return <VBox style={{background: "white", padding: "8px", borderRight: "2px solid lightgray"}}>
+  return <VBox style={{...style, background: "white", padding: "8px"}}>
     <Label>Filename: {basename}</Label>
     <Separator/>
     <Input label="Title" value={head.title}/>
@@ -112,11 +119,11 @@ function ExportSettings({settings, doc}) {
 // Export index
 //-----------------------------------------------------------------------------
 
-function ExportIndex({settings, doc}) {
+function ExportIndex({style, settings, doc}) {
   const {body} = doc.story
   const {parts} = body
 
-  return <VFiller className="TOC">
+  return <VFiller className="TOC" style={style}>
     {parts.map(part => <PartItem key={part.id} part={part}/>)}
   </VFiller>
 
@@ -149,8 +156,6 @@ function ExportIndex({settings, doc}) {
 //-----------------------------------------------------------------------------
 // Export preview
 //-----------------------------------------------------------------------------
-
-// TODO: Make this use mawe.asHTML / mawe.asRTF functions
 
 function Preview({settings, doc}) {
   //const titleprops = { settings, head: body.head}
