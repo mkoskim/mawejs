@@ -36,10 +36,13 @@ import {wcChildren, wcCumulative} from "../../document/util";
 // Organizer
 //-----------------------------------------------------------------------------
 
-export function Organizer({doc, setDoc}) {
+export function Organizer({doc, setDoc, setFocusTo}) {
 
   return <DragDropContext onDragEnd={onDragEnd}>
-      <OrganizerView doc={doc}/>
+      <OrganizerView
+        doc={doc}
+        setFocusTo={setFocusTo}
+      />
     </DragDropContext>
 
   function findPart(doc, partID) {
@@ -123,7 +126,22 @@ export function Organizer({doc, setDoc}) {
 
 //-----------------------------------------------------------------------------
 
-function OrganizerView({doc}) {
+function OutlinerToolbar({settings, section}) {
+
+  return <ToolBox style={{ background: "white" }}>
+    <ChooseVisibleElements elements={settings.indexed}/>
+    <Separator/>
+    <ChooseWordFormat format={settings.words}/>
+    <Separator/>
+    <SectionWordInfo sectWithWords={section}/>
+    <Separator/>
+    <Filler/>
+  </ToolBox>
+}
+
+//-----------------------------------------------------------------------------
+
+function OrganizerView({doc, setFocusTo}) {
   //console.log("Organizer: Doc:", doc)
 
   const body = doc.story.body
@@ -145,6 +163,7 @@ function OrganizerView({doc}) {
       total: body.words.text,
       cumulative: wcCumulative(body)
     },
+    focusTo: id => setFocusTo({sectID: "body", id}),
   }
 
   const note_settings = {
@@ -153,7 +172,8 @@ function OrganizerView({doc}) {
     },
     words: {
       value: "off",
-    }
+    },
+    focusTo: id => setFocusTo({sectID: "notes", id}),
   }
 
   return <div className="Filler Organizer" style={{overflow: "auto"}}>
@@ -199,21 +219,6 @@ function OrganizerView({doc}) {
 }
 
 //-----------------------------------------------------------------------------
-
-function OutlinerToolbar({settings, section}) {
-
-  return <ToolBox style={{ background: "white" }}>
-    <ChooseVisibleElements elements={settings.indexed}/>
-    <Separator/>
-    <ChooseWordFormat format={settings.words}/>
-    <Separator/>
-    <SectionWordInfo sectWithWords={section}/>
-    <Separator/>
-    <Filler/>
-  </ToolBox>
-}
-
-//-----------------------------------------------------------------------------
 // TODO: Empty parts can be removed
 // TODO: Parts can be merged?
 // TODO: Add part
@@ -240,6 +245,7 @@ function PartView({settings, part, index}) {
       >
       <HBox
         className="Name"
+        onDoubleClick={ev => settings.focusTo(part.id)}
         {...dragHandleProps}
       >
         {part.name && part.name !== "" ? part.name : "<Unnamed>"}
@@ -304,6 +310,7 @@ function SceneView({index, settings, scene}) {
 
     return <div className="VBox Scene"
       ref={innerRef}
+      onDoubleClick={ev => settings.focusTo(scene.id)}
       {...draggableProps}
       {...dragHandleProps}  // Move these inside to create handle
     >
