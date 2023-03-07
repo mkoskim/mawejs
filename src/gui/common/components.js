@@ -95,7 +95,7 @@ export function ChooseWordFormat({format}) {
 }
 
 export function FormatWords({format, words, cumulative, total}) {
-  if(words) switch(format) {
+  if(words !== undefined) switch(format) {
     case "numbers": return <span>{words}</span>
     case "percent": return <span>{Number(100.0 * words / total).toFixed(1)}</span>
     case "cumulative": return <span>{cumulative !== undefined && Number(100.0 * cumulative / total).toFixed(1)}</span>

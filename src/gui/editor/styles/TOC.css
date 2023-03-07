@@ -30,9 +30,21 @@
 
 /* ---------------------------------------------------------------------------- */
 
-.TOC div.Part {
+.TOC div.Part, .TOC div.Scene {
   background: #F5F7F9;
 }
+
+/*
+.TOC div.Part:hover {
+  background-color: #EFD;
+}
+*/
+
+.TOC div.Scene:hover {
+  background-color: #DEF;
+}
+
+/* ---------------------------------------------------------------------------- */
 
 .TOC .PartName {
   /*
@@ -55,17 +67,12 @@
 /* ---------------------------------------------------------------------------- */
 
 .TOC div.Scene {
-  background: #F5F7F9;
   /*
   border: 2px solid lightgray;
   border-radius: 3px;
   margin: 3pt;
   margin-left: 16pt;
   */
-}
-
-.TOC div.Scene:hover {
-  background-color: #DEF;
 }
 
 .TOC div.Scene .Separator {

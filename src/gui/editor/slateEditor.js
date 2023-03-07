@@ -20,6 +20,7 @@ import {
 import { withHistory } from "slate-history"
 import { addClass, Icon } from '../common/factory';
 import { sleep, uuid, nanoid, splitByLeadingElem } from '../../util';
+import {section2flat, section2lookup, wcElem, wordcount} from '../../document/util';
 
 //-----------------------------------------------------------------------------
 
@@ -45,27 +46,32 @@ export function SlateEditable({className, highlight, ...props}) {
 
   //console.log("Search:", search)
 
-  //const highlight = useDeferredValue(search)
-
-  const decorate = useCallback(([node, path]) => {
-    if (highlight && Text.isText(node)) {
-      const re = new RegExp(`${highlight}`, "gi")
-      const matches = Array.from(node.text.matchAll(re))
-      return matches.map(match => ({
-        anchor: {path, offset: match["index"]},
-        focus: {path, offset: match["index"] + highlight.length},
-        highlight: true,
-      }))
+  const highlighter = useCallback(
+    highlight
+    ?
+    ([node, path]) => {
+      if (Text.isText(node)) {
+        const re = new RegExp(`${highlight}`, "gi")
+        const matches = Array.from(node.text.matchAll(re))
+        return matches.map(match => ({
+          anchor: {path, offset: match["index"]},
+          focus: {path, offset: match["index"] + highlight.length},
+          highlight: true,
+        }))
+      }
+      return []
     }
-    return []
-  }, [highlight])
+    :
+    undefined,
+    [highlight]
+  )
 
   return <Editable
     className={addClass(className, "Sheet")}
     spellCheck={false} // Keep false until you find out how to change language
     renderElement={Element}
     renderLeaf={Leaf}
-    decorate={(typeof(highlight) === "string") ? decorate : undefined}
+    decorate={highlighter}
     {...props}
   />
 }
@@ -75,8 +81,8 @@ function Element({element, attributes, ...props}) {
   switch (element.type) {
     case "title": return <h1 {...attributes} {...props}/>
 
-    case "br.part": return <h2 {...attributes} {...props}/>
-    case "br.scene": return <h3 {...attributes} {...props}/>
+    case "part": return <h2 {...attributes} {...props}/>
+    case "scene": return <h3 {...attributes} {...props}/>
 
     case "comment":
     case "missing":
@@ -114,7 +120,19 @@ function Leaf({ leaf, attributes, ...props }) {
 //
 //*****************************************************************************
 
+//-----------------------------------------------------------------------------
+
+// Return true, if editor operations change content
+// Return false, if operations only change selection
+
+export function isAstChange(editor) {
+  return editor.operations.some(op => 'set_selection' !== op.type)
+}
+
+//-----------------------------------------------------------------------------
+
 export function elemsByID(editor, id, anchor, focus) {
+  if(!id) return []
   if(!anchor) anchor = Editor.start(editor, [])
   if(!focus) focus = Editor.end(editor, [])
 
@@ -165,8 +183,8 @@ export function elemPop(editor, id) {
   return block
 
   function range(node, path) {
-    if(node.type === "br.part")  return getRange(path, ["br.part"])
-    if(node.type === "br.scene") return getRange(path, ["br.part", "br.scene"])
+    if(node.type === "part")  return getRange(path, ["part"])
+    if(node.type === "scene") return getRange(path, ["part", "scene"])
     return []
   }
 
@@ -184,7 +202,7 @@ export function elemPop(editor, id) {
 
 export function elemPushTo(editor, block, id, index) {
   const blocktype = block[0].type
-  const types = (blocktype === "br.part") ? ["br.part"] : ["br.part", "br.scene"]
+  const types = (blocktype === "part") ? ["part"] : ["part", "scene"]
   const anchor = (
     id
     ? Editor.after(editor, elemsByID(editor, id)[0][1])
@@ -201,7 +219,31 @@ export function elemPushTo(editor, block, id, index) {
 //-----------------------------------------------------------------------------
 // Focusing elements
 
-function scrollToPoint(editor, point) {
+export function focusByID(editor, id) {
+  const match = elemsByID(editor, id)
+
+  if(!match.length) {
+    focusByPath(editor, undefined);
+  } else {
+    const [node, path] = match[0]
+    focusByPath(editor, Editor.start(editor, path))
+  }
+}
+
+export async function focusByPath(editor, path) {
+  //await sleep(20)
+  if(!ReactEditor.isFocused(editor)) {
+    ReactEditor.focus(editor)
+    await sleep(40);
+  }
+  if(path) Transforms.select(editor, path);
+}
+
+async function scrollToPoint(editor, point, focus) {
+  if(focus) {
+    await focusByPath(editor, point)
+  }
+
   const [dom] = ReactEditor.toDOMPoint(editor, point)
   //console.log("DOM:", dom)
   //Editable.scrollIntoView(editor, dom.parentElement)
@@ -215,28 +257,11 @@ function scrollToPoint(editor, point) {
   /**/
 }
 
-export function focusByID(editor, id) {
-  const match = elemsByID(editor, id)
-
-  if(!match.length) return;
-
-  const [node, path] = match[0]
-  focusByPath(editor, Editor.start(editor, path))
-}
-
-export async function focusByPath(editor, path) {
-  if(!ReactEditor.isFocused(editor)) {
-    //await sleep(20)
-    ReactEditor.focus(editor)
-    await sleep(40);
-  }
-  Transforms.select(editor, path);
-}
-
 export async function scrollToRange(editor, range, focus) {
   if(focus) {
     await focusByPath(editor, range)
   }
+
   scrollToPoint(editor, range.focus)
 }
 
@@ -250,11 +275,11 @@ function elemIsType(editor, elem, type) {
   return elemIsBlock(editor, elem) && elem.type === type
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
 //
 // Searching
 //
-//-----------------------------------------------------------------------------
+//*****************************************************************************
 
 //-----------------------------------------------------------------------------
 // Search text within a node
@@ -316,26 +341,6 @@ function searchTextBackward(editor, re, path, offset) {
 //-----------------------------------------------------------------------------
 // Search with scrolling and optional focusing
 
-function searchWithScroll(editor, text, path, offset, forward=true, doFocus=false) {
-  if(!text) return
-
-  const re = new RegExp(`${text}`, "gi")
-  const match = (forward ? searchTextForward : searchTextBackward)(editor, re, path, offset)
-
-  if(match) {
-    const {path, offset} = match
-
-    scrollToRange(
-      editor,
-      {
-        focus: { path, offset },
-        anchor: { path, offset: offset + text.length }
-      },
-      doFocus
-    )
-  }
-}
-
 export function searchFirst(editor, text, doFocus=false) {
   const {path, offset} = editor.selection.focus
 
@@ -352,6 +357,34 @@ export function searchBackward(editor, text, doFocus=false) {
   const {path, offset} = editor.selection.focus
 
   return searchWithScroll(editor, text, path, offset, false, doFocus)
+}
+
+function searchWithScroll(editor, text, path, offset, forward=true, doFocus=false) {
+  if(text) {
+    const re = new RegExp(`${text}`, "gi")
+    const match = (forward ? searchTextForward : searchTextBackward)(editor, re, path, offset)
+
+    if(match) {
+      const {path, offset} = match
+
+      scrollToRange(
+        editor,
+        {
+          focus: { path, offset },
+          anchor: { path, offset: offset + text.length }
+        },
+        doFocus
+      )
+      return
+    }
+  }
+  if(path) {
+    scrollToPoint(
+      editor,
+      { path, offset },
+      doFocus
+    )
+  }
 }
 
 //*****************************************************************************
@@ -401,8 +434,8 @@ function withMarkup(editor) {
   // Markup shortcuts to create styles
 
   const SHORTCUTS = {
-    '** ': {type: "br.part"},
-    '## ': {type: "br.scene"},
+    '** ': {type: "part"},
+    '## ': {type: "scene"},
     '>> ': {type: "synopsis"},
     '// ': {type: 'comment'},
     '!! ': {type: 'missing'},
@@ -450,9 +483,9 @@ function withMarkup(editor) {
   // Default styles followed by a style
 
   const STYLEAFTER = {
-    "title": "br.part",
-    "br.part": "br.scene",
-    "br.scene": "p",
+    "title": "part",
+    "part": "scene",
+    "scene": "p",
     "synopsis": "p",
   }
 
@@ -590,7 +623,7 @@ function withFixParts(editor) {
     if(path.length == 0) {
       if(editor.children.length < 1) {
         Transforms.insertNodes(editor,
-          createElement({type: "br.part", children: [{text: ""}]}),
+          {type: "part", children: [{text: ""}]},
           {at: path.concat(0)}
         )
         return
@@ -603,30 +636,30 @@ function withFixParts(editor) {
 
     // Force first element to be part break
 
-    if(path[0] === 0 && node.type != "br.part") {
-      Transforms.setNodes(editor, {type: "br.part"}, {at: path})
+    if(path[0] === 0 && node.type != "part") {
+      Transforms.setNodes(editor, {type: "part"}, {at: path})
       return
     }
 
     // Force element after part break to be scene break
-    if(node.type === "br.part") {
+    if(node.type === "part") {
       const [next, nextpath] = Editor.next(editor, {at: path}) ?? []
       if(next && Editor.isBlock(editor, next)) switch(next.type) {
-        case "br.part": break
-        case "br.scene": break
+        case "part": break
+        case "scene": break
         default:
-          Transforms.setNodes(editor, {type: "br.scene"}, {at: nextpath})
+          Transforms.setNodes(editor, {type: "scene"}, {at: nextpath})
           return
       }
     }
 
     const [previous] = Editor.previous(editor, {at: path}) ?? []
     //console.log("Node", node.type, "Previous", previous?.type)
-    if(elemIsType(editor, previous, "br.part")) switch(node.type) {
-      case "br.part": break
-      case "br.scene": break
+    if(elemIsType(editor, previous, "part")) switch(node.type) {
+      case "part": break
+      case "scene": break
       default:
-        Transforms.setNodes(editor, {type: "br.scene"}, {at: path})
+        Transforms.setNodes(editor, {type: "scene"}, {at: path})
         return
     }
 
@@ -642,91 +675,26 @@ function withFixParts(editor) {
 //
 //*****************************************************************************
 
-function createElement({ type, id, attributes, children }) {
-  return {
-    type,
-    id: id ?? nanoid(),
-    attributes,
-    children
-  }
-}
-
-//-----------------------------------------------------------------------------
-
 export function section2edit(section) {
-  const head = Head2Slate(section.head);
-  const body = Section2Slate(section.parts);
+  return section2flat(section).map(elem2Edit)
 
-  return [...head, ...body]
-
-  function Head2Slate(head) {
-    /*
-    if(!head) return []
-    if(head.title) return [
-      createElement({ type: "title", children: [{ text: head.title }] }),
-    ]
-    */
-    return []
-  }
-
-  function Section2Slate(parts) {
-    const content = parts.map(Part2Slate).flat(1)
-    //*
-    if(!content.length) return [
-      createElement({type: "br.part", children: [{text: ""}]}),
-      //createElement({type: "br.scene", children: [{text: ""}]}),
-      //createElement({type: "p", children: [{text: ""}]}),
-    ]
-    /**/
-    return content;
-  }
-
-  function Part2Slate(part, index) {
-    const name = part.name ?? ""
-    const head = createElement({
-      type: "br.part",
-      id: part.id,
-      children: [{ text: name }]
-    })
-
-    const scenes = part.children.map(Scene2Slate).flat(1)
-    /*
-    if(!scenes.length) {
-      return [
-        head,
-        createElement({type: "br.scene", children: [{text: ""}]}),
-        createElement({type: "p", children: [{text: ""}]}),
-      ]
+  function elem2Edit(elem) {
+    switch(elem.type) {
+      case "part": return {
+        ...elem,
+        children: [{text: elem.name ?? ""}]
+      }
+      case "scene": return {
+        ...elem,
+        children: [{text: elem.name ?? ""}]
+      }
+      case "br": return {
+        ...elem,
+        type: "p",
+        children: [{text: ""}]
+      }
     }
-    */
-    return [head, ...scenes]
-  }
-
-  function Scene2Slate(scene, index) {
-    const name = scene.name ?? ""
-    const {id} = scene
-
-    const head = createElement({
-      type: "br.scene",
-      id,
-      children: [{ text: name }]
-    })
-
-    const para = scene.children.map(Paragraph2Slate)
-    return [head, ...para]
-  }
-
-  function Paragraph2Slate(p) {
-    const {type, id} = p;
-    return createElement({
-      type: type === "br" ? "p" : type,
-      id,
-      children: [
-        {
-          text: p.children ? p.children.map(e => e.text).join(" ") : ""
-        }
-      ]
-    })
+    return elem
   }
 }
 
@@ -736,130 +704,169 @@ export function section2edit(section) {
 //
 //*****************************************************************************
 
+//-----------------------------------------------------------------------------
+// Regroup parts & scenes from flattened buffer
+
 export function edit2grouped(content) {
-  const [head, parts] = splitHead(content)
+  //const [head, parts] = splitHead(content)
 
-  function partHead(part) {
-    console.assert(isPartBreak(part[0]), "Missing part break")
-    return [part[0], part.slice(1)]
+  var grouped = []
+
+  for(var index = 0; index < content.length;) {
+    const elem = content[index]
+
+    console.assert(isPartBreak(elem), "Missing part break")
+    const head = elem
+    var scenes = []
+
+    for(index++; index < content.length;) {
+      const elem = content[index]
+      if(isPartBreak(elem)) break;
+      console.assert(isSceneBreak(elem), "Missing scene break")
+
+      const head = elem
+      var paras = []
+
+      for(index++;index < content.length; index++) {
+        const elem = content[index]
+        if(isPartBreak(elem)) break
+        if(isSceneBreak(elem)) break
+        paras.push(elem)
+      }
+
+      scenes.push([head, paras])
+    }
+    grouped.push([head, scenes])
   }
 
-  function sceneHead(scene) {
-    console.assert(isSceneBreak(scene[0]), "Missing scene break")
-    return [scene[0], scene.slice(1)]
+  return grouped
+
+  function isPartBreak(elem) {
+    return elem.type === "part"
   }
 
-  function splitParts(parts) {
-    return splitByLeadingElem(parts, isPartBreak)
-    .filter(p => p.length)
-    .map(part => partHead(part))
-    .map(part => [part[0], splitScenes(part[1])])
+  function isSceneBreak(elem) {
+    return elem.type === "scene"
   }
-
-  function splitScenes(part) {
-    return splitByLeadingElem(part, isSceneBreak)
-    .filter(s => s.length)
-    .map(scene => sceneHead(scene))
-  }
-
-  return splitParts(parts)
 }
 
-export function edit2section(content) {
-  const [head, parts] = splitHead(content)
-  const grouped = edit2grouped(parts)
-  return grouped2section(grouped)
-}
+//-----------------------------------------------------------------------------
+// Update parts & scenes
 
-export function grouped2section(grouped) {
+export function updateSection(buffer, section) {
+
+  //console.log("Update section")
+
+  const lookup = section ? section2lookup(section) : {}
+  //console.log(lookup)
+
+  const grouped = edit2grouped(buffer)
+  //console.log(grouped)
+
+  const updated = grouped.map(part => edit2part(part, lookup))
+  const isClean = cmpList(updated, section.parts)
+
+  if(isClean) return section
+
   return {
-    type: "sect",
-    parts: grouped.map(part => edit2part(part))
+    ...section,
+    parts: updated,
+    words: wcElem({type: "sect", children: updated})
   }
 }
 
-function splitHead(content) {
-  return [
-    content.filter(elem => isHeadElement(elem)),
-    content.filter(elem => !isHeadElement(elem))
-  ]
-}
-
-function isHeadElement(elem) {
-  return [
-    "title",
-  ].includes(elem.type)
-}
-
-function isPartBreak(elem) {
-  return elem.type === "br.part"
-}
-
-function isSceneBreak(elem) {
-  return elem.type === "br.scene"
-}
-
-function getName(elem) {
-  switch(elem.type) {
-    case "br.part":
-    case "br.scene":
-      return elem2text(elem)
-    case "synopsis":
-    case "missing":
-    case "comment":
-      return elem2text(elem)
-  }
-  return undefined
-}
-
-function edit2part(part) {
+function edit2part(part, lookup) {
   const [head, scenes] = part
   const {id} = head
 
-  return {
+  return checkClean({
     type: "part",
-    name: getName(head),
+    name: elem2text(head),
     id,
-    children: scenes.map(scene => edit2scene(scene)),
-  }
+    children: scenes.map(scene => edit2scene(scene, lookup)),
+  }, lookup)
 }
 
-function edit2scene(scene) {
+// Update scene
+
+function edit2scene(scene, lookup) {
   const [head, paragraphs] = scene
   const {id} = head;
 
-  return {
+  return checkClean({
     type: "scene",
-    name: getName(head),
+    name: elem2text(head),
     id,
-    children: paragraphs.map(elem => edit2paragraph(elem))
-  }
+    children: paragraphs.map(p => edit2paragraph(p, lookup))
+  }, lookup)
 }
 
-function edit2paragraph(elem) {
+// Update paragraph
+
+function edit2paragraph(elem, lookup) {
   const text = elem2text(elem)
-  const tag = elem.type
+  const {id, type} = elem
+
+  return checkClean({
+    type: type === "p" && text === "" ? "br" : type,
+    id,
+    children: [{type: "text", text}],
+  }, lookup)
+}
+
+function checkClean(elem, lookup) {
+  const {id} = elem
+
+  if(lookup.has(id)) {
+    const orig = lookup.get(id)
+
+    if(cmpType(elem, orig)) switch(elem.type) {
+      case "part":
+      case "scene":
+        if(cmpNamedGroup(elem, orig)) return orig
+        break;
+      case "br": return orig;
+      default:
+        if(elem.children[0].text === orig.children[0].text) return orig
+        break;
+    }
+    //console.log(`Update ${elem.type}:`, id)
+  } else {
+    //console.log(`Create ${elem.type}`, id)
+  }
 
   return {
-    type: tag === "p" && text === "" ? "br" : tag,
-    id: elem.id,
-    children: [{
-      type: "text",
-      text,
-    }],
+    ...elem,
+    words: wcElem(elem)
   }
 }
 
-//*****************************************************************************
-//
-// Update section from buffer
-//
-//*****************************************************************************
+function cmpNamedGroup(elem, orig) {
+  return (
+    cmpTypeName(elem, orig) &&
+    cmpChildren(elem, orig)
+  )
+}
 
-export function updateSection(section, buffer) {
-  const content = edit2section(buffer)
-  return {
-    ...section,
-    parts: content.parts
-  }
+function cmpChildren(elem, orig) {
+  return cmpList(elem.children, orig.children)
+}
+
+function cmpTypeName(elem, orig) {
+  return (
+    cmpType(elem, orig) &&
+    elem.name === orig.name
+  )
+}
+
+function cmpType(elem, orig) {
+  return (
+    elem.id === orig.id &&
+    elem.type === orig.type
+  )
+}
+
+function cmpList(a, b) {
+  if(a.length !== b.length) return false
+  return a.every((elem, index) => elem === b[index])
 }

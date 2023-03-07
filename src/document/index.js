@@ -33,7 +33,7 @@ export const mawe = {
   asRTF, asHTML,
 }
 
-export {elemAsText, withWordCounts}
+export {elemAsText}
 
 //-----------------------------------------------------------------------------
 

@@ -9,7 +9,7 @@
 import "./styles/TOC.css"
 
 import React, {
-  useCallback,
+  useCallback, useEffect,
   useDeferredValue, useMemo,
 } from "react"
 
@@ -38,276 +38,282 @@ import {
 } from "../common/factory";
 
 import {FormatWords} from "../common/components";
+import {sleep} from "../../util";
+import {elemAsText} from "../../document";
+import {wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
-export function SlateTOC({activeID, setActive, wcFormat, include, section, style})
+export function SlateTOC({style, section, wcFormat, include, activeID, setActive})
 {
-  //return null
-  //if(!section) return null;
+  const onActivate = useCallback(id => {
+    console.log("Activate:", activeID, id)
+    setActive(activeID, id)
+  }, [])
 
-  //---------------------------------------------------------------------------
-  // Transform section to table of IDs
-  //---------------------------------------------------------------------------
+  const total = (["percent", "cumulative"].includes(wcFormat))
+    ? section.words?.text
+    : undefined
 
-  /*
-  function flatPart(part) {
-    const {children, ...props} = part
-    const ids = children.map(elem => elem.id)
-    return [{...props, children: ids}, ...children.map(flatScene).flat()]
-  }
+  const cumulative = (wcFormat == "cumulative")
+    ? wcCumulative(section)
+    : undefined
 
-  function flatScene(scene) {
-    const {children, ...props} = scene
-    const ids = children.map(elem => elem.id)
-    return [{...props, children: ids}, ...children]
-  }
+  //if(activeID === "body") console.log("Index:", total, cumulative)
 
-  const parts = section.parts.map(elem => elem.id)
-  const entries = section.parts
-    .map(flatPart)
-    .flat()
-    .filter(entry => include.includes(entry.type))
-    .reduce((acc, elem) => ({ ...acc, [elem.id]: elem }), {})
-  */
+  const wcFormatFunction = useCallback(
+    (!wcFormat || wcFormat === "off")
+    ? undefined
+    : (id, wcText) => <FormatWords
+      format={wcFormat}
+      words={wcText}
+      cumulative={cumulative && id in cumulative && cumulative[id]}
+      total={total}
+    />,
+    [wcFormat, total, cumulative]
+  )
 
-  //console.log(flat)
-
-  //---------------------------------------------------------------------------
-
-  /*
-  return <VFiller className="TOC" style={{...style}}>
-    {parts.map((id, index) => <Elem2Index
-      key={id}
-      index={index}
-      elem={entries[id]}
+  return <VFiller style={{...style}}>
+    <PartDropArea
       activeID={activeID}
-      setActive={setActive}
-    />)}
-  </VFiller>
-  */
+      parts={section?.parts}
+      wcFormat={wcFormatFunction}
+      include={include}
+      onActivate={onActivate}
+    />
+    </VFiller>
 
-  const index = <VFiller style={{...style}}>
-    <Droppable droppableId={activeID} type="part">
-    {TOCDroppable}
-    </Droppable>
-  </VFiller>
-
-  return useDeferredValue(index)
-
-  function TOCDroppable(provided, snapshot) {
-    const {innerRef, droppableProps, placeholder} = provided
-
-    //console.log("TOC update")
-
-    return <div className="VBox TOC"
-      ref={innerRef}
-      {...droppableProps}
-    >
-      {section && section.parts.map((elem, index) => <PartItem
-        key={elem.id}
-        elem={elem}
-        index={index}
-        wcFormat={wcFormat}
-        wcTotal={section.words?.text}
-        activeID={activeID}
-        setActive={setActive}
-        include={include}
-      />
-      )}
-      {placeholder}
-    </div>
-  }
+  //return useDeferredValue(index)
 }
 
 //-----------------------------------------------------------------------------
 
-function PartItem({elem, index, activeID, setActive, wcFormat, wcTotal, include}) {
+class PartDropArea extends React.PureComponent {
 
-  return <Draggable
-    draggableId={elem.id}
-    index={index}
-    type="part"
+  render() {
+    const {parts, activeID} = this.props
+
+    if(!parts) return null
+
+    //console.log("Index update:", activeID)
+
+    return <Droppable droppableId={activeID} type="part">
+      {this.DropArea.bind(this)}
+    </Droppable>
+  }
+
+  DropArea(provided, snapshot) {
+    const {parts, wcFormat, include, onActivate} = this.props
+    const {innerRef, droppableProps, placeholder} = provided
+
+    return <div
+      className="VBox TOC"
+      ref={innerRef}
+      {...droppableProps}
     >
-    {PartDraggable}
-  </Draggable>
+    {parts.map((elem, index) => <PartItem
+      key={elem.id}
+      index={index}
+      elem={elem}
+      include={include}
+      wcFormat={wcFormat}
+      onActivate={onActivate}
+      />)}
+    {placeholder}
+    </div>
+  }
+}
 
-  function PartDraggable(provided, snapshot) {
+class PartItem extends React.PureComponent {
+
+  render() {
+    const {elem, index} = this.props
+    return <Draggable
+      draggableId={elem.id}
+      index={index}
+      type="part"
+      >
+      {this.Draggable.bind(this)}
+    </Draggable>
+  }
+
+  Draggable(provided, snapshot) {
+    const {elem, include, wcFormat, onActivate} = this.props
     const {innerRef, draggableProps, dragHandleProps} = provided
 
     return <div
       className="Part"
       ref={innerRef}
       {...draggableProps}
-    >
+      >
       <IndexItem
-        {...dragHandleProps}
-        elem={elem}
-        wcFormat={wcFormat}
-        wcTotal={wcTotal}
-        activeID={activeID}
-        setActive={setActive}
-      />
-      <SceneDroppable
         id={elem.id}
-        scenes={elem.children.filter(elem => include.includes(elem.type))}
+        type={elem.type}
+        name={elem.name}
+        words={elem.words}
         wcFormat={wcFormat}
-        wcTotal={wcTotal}
-        activeID={activeID}
-        setActive={setActive}
+        onActivate={onActivate}
+        {...dragHandleProps}
+      />
+      <SceneDropArea
+        id={elem.id}
+        scenes={elem.children}
         include={include}
-        />
+        wcFormat={wcFormat}
+        onActivate={onActivate}
+      />
     </div>
   }
 }
 
-function SceneDroppable({id, scenes, wcFormat, wcTotal, activeID, setActive, include}) {
-  return <Droppable droppableId={id} type="scene">
-  {(provided, snapshot) => {
-      const {innerRef, droppableProps, placeholder} = provided
+class SceneDropArea extends React.PureComponent {
 
-      return <div
-        className="VBox"
+  render() {
+    const {id} = this.props
+
+    return <Droppable droppableId={id} type="scene">
+      {this.DropArea.bind(this)}
+    </Droppable>
+  }
+
+  DropArea(provided, snapshot) {
+    const {scenes, include, wcFormat, onActivate} = this.props
+    const {innerRef, droppableProps, placeholder} = provided
+
+    return <div
+      className="VBox"
         ref={innerRef}
         {...droppableProps}
       >
-        {scenes.map((elem, index) => <SceneItem
-          key={elem.id}
-          elem={elem}
-          index={index}
-          wcFormat={wcFormat}
-          wcTotal={wcTotal}
-          activeID={activeID}
-          setActive={setActive}
-          include={include}
-        />)}
-        {placeholder}
-      </div>
-
-  }}
-  </Droppable>
+    {scenes.map((elem, index) => <SceneItem
+      key={elem.id}
+      index={index}
+      elem={elem}
+      include={include}
+      wcFormat={wcFormat}
+      onActivate={onActivate}
+      />)}
+    {placeholder}
+    </div>
+  }
 }
 
 //-----------------------------------------------------------------------------
 
-function SceneItem({elem, index, wcFormat, wcTotal, activeID, setActive, include}) {
+class SceneItem extends React.PureComponent {
 
-  return <Draggable
-    draggableId={elem.id}
-    index={index}
-    type="scene"
+  render() {
+    //*
+    const {elem, index} = this.props
+    return <Draggable
+      draggableId={elem.id}
+      index={index}
+      type="scene"
     >
-      {sceneDraggable}
+      {this.Draggable.bind(this)}
     </Draggable>
+    /*/
+    return this.Draggable()
+    /**/
+  }
 
-  function sceneDraggable(provided, snapshot) {
+  Draggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
+    const {elem, include, wcFormat, onActivate} = this.props
 
-    return <div className="VBox Scene"
+    const bookmarks = elem.children.filter(elem => include.includes(elem.type))
+
+    return <div
+      className="VBox Scene"
       ref={innerRef}
       {...draggableProps}
       {...dragHandleProps}
     >
-      <IndexItem
-        elem={elem}
-        wcFormat={wcFormat}
-        wcTotal={wcTotal}
-        activeID={activeID}
-        setActive={setActive}
-      />
-      <DoBookmarks
-        bookmarks={elem.children.filter(elem => include.includes(elem.type))}
-        activeID={activeID}
-        setActive={setActive}
-        />
+    <IndexItem
+      id={elem.id}
+      type={elem.type}
+      name={elem.name}
+      words={elem.words}
+      wcFormat={wcFormat}
+      onActivate={onActivate}
+    />
+    {bookmarks.map(elem => <IndexItem
+      key={elem.id}
+      id={elem.id}
+      type={elem.type}
+      name={elemAsText(elem)}
+      onActivate={onActivate}
+    />)}
     </div>
   }
 }
 
-function DoBookmarks({bookmarks, activeID, setActive}) {
-  if(!bookmarks.length) return null;
-  return <React.Fragment>
-    {bookmarks.map(elem => <IndexItem
-      key={elem.id}
-      elem={elem}
-      activeID={activeID}
-      setActive={setActive}
-    />)}
-    </React.Fragment>
-}
-
 //-----------------------------------------------------------------------------
 
-function IndexItem({elem, wcFormat, wcTotal, setActive, activeID, ...props}) {
-  const editor = useSlate()
+class IndexItem extends React.PureComponent {
+  render() {
+    const {id, type, name, words, wcFormat, onActivate, ...rest} = this.props
 
-  const {id, type} = elem
+    //console.log("Render IndexItem:", type, id, name)
 
-  function getName() {
-    switch(type) {
-      case "part":
-      case "scene":
-        return elem.name
-      case "comment":
-      case "missing":
-      case "synopsis":
-        return elem2text(elem)
+    const className = (type === "part") ? "PartName" :
+      (type === "scene") ? "SceneName" :
+      ""
+
+    function onClick(ev) {
+      onActivate(id)
     }
-    return undefined
-  }
 
-  const name = getName()
-
-  const className = (type === "part") ? "PartName" :
-    (type === "scene") ? "SceneName" :
-    ""
-
-  const onItemClick = useCallback(async (event) => {
-    //settings.activate()
-    setActive(activeID)
-    focusByID(editor, id)
-  }, [])
-
-  return <HBox className={addClass(className, "Entry")} onClick={onItemClick} {...props}>
+    return <HBox className={addClass(className, "Entry")} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
-      <HFiller/>
+      <Filler/>
       <ItemWords
+        id={id}
+        words={words}
         wcFormat={wcFormat}
-        wcText={elem.words?.text}
-        wcMissing={elem.words?.missing}
-        wcCumulative={elem.words?.cumulative}
-        wcTotal={wcTotal}
       />
     </HBox>
-}
-
-function ItemIcon({type}) {
-  switch (type) {
-    case "missing":
-    case "comment":
-    case "synopsis":
-      return <span className={addClass("Box", type)} />
   }
-  return null
 }
 
-function ItemLabel({className, name}) {
-  return <span className={addClass("Name", className)}>{name}</span>
-  //return <div className="Name">{id}</div>
-}
-
-function ItemWords({wcFormat, wcText, wcMissing, wcCumulative, wcTotal}) {
-  if(!wcFormat || wcFormat === "off") return null;
-
-  return <React.Fragment>{
-    wcMissing
-    ? (<React.Fragment>
-      <span style={{color: "red"}}>{wcMissing}</span>
-      <span>&nbsp;/&nbsp;</span>
-      </React.Fragment>)
-    : (wcText ? <Icon.Starred sx={{color: "#59F", fontSize: 14, marginRight: "4px"}}/> : null)
+class ItemIcon extends React.PureComponent {
+  render() {
+    const {type} = this.props
+    switch (type) {
+      case "missing":
+      case "comment":
+      case "synopsis":
+        return <span className={addClass("Box", type)} />
     }
-    <FormatWords format={wcFormat} words={wcText} cumulative={wcCumulative} total={wcTotal}/>
-  </React.Fragment>
+    return null
+  }
+}
+
+class ItemLabel extends React.PureComponent {
+  render() {
+    const {name} = this.props
+    return <span className="Name">{name}</span>
+  }
+}
+
+class ItemWords extends React.PureComponent {
+  render() {
+    const {wcFormat, id, words} = this.props
+    if(!wcFormat || !words) return null;
+
+    const wcText = words?.text
+    const wcMissing = words?.missing
+
+    return <React.Fragment>{
+      wcMissing
+      ? (<React.Fragment>
+        <span style={{color: "red"}}>{wcMissing}</span>
+        <span>&nbsp;/&nbsp;</span>
+        </React.Fragment>)
+      : (wcText ? <Icon.Starred sx={{color: "#59F", fontSize: 14, marginRight: "4px"}}/> : null)
+      }
+      {wcFormat(id, wcText)}
+    </React.Fragment>
+  }
 }

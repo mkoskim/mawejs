@@ -29,9 +29,8 @@ import {
   ChooseVisibleElements, ChooseWordFormat, FormatWords,
 } from "../common/components";
 
-import {elemAsText, withWordCounts} from "../../document";
-
-//import {docByID} from "../app/store"
+import {elemAsText} from "../../document";
+import {wcChildren, wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 // Organizer
@@ -71,6 +70,29 @@ export function Organizer({doc, setDoc}) {
 
     //console.log(source, "-->", destination)
 
+    function updateSection(section) {
+      const parts = section.parts.map(part => ({
+        ...part,
+        words: wcChildren(part.children)
+      }))
+      return {
+        ...section,
+        parts,
+        words: wcChildren(parts)
+      }
+    }
+
+    function updateDoc() {
+      setDoc({
+        ...doc,
+        story: {
+          ...doc.story,
+          body: updateSection(doc.story.body),
+          notes: updateSection(doc.story.notes)
+        }
+      })
+    }
+
     switch(type) {
       case "scene": {
         const sourcePart = findPart(doc, source.droppableId);
@@ -79,7 +101,7 @@ export function Organizer({doc, setDoc}) {
         const scene = sourcePart.children[source.index]
         sourcePart.children.splice(source.index, 1)
         destinationPart.children.splice(destination.index, 0, scene)
-        setDoc({...doc}) // Make a copy to force rendering
+        updateDoc()
         break;
       }
       case "part": {
@@ -89,7 +111,7 @@ export function Organizer({doc, setDoc}) {
         const part = sourceSect.parts[source.index]
         sourceSect.parts.splice(source.index, 1)
         destinationSect.parts.splice(destination.index, 0, part)
-        setDoc({...doc}) // Make a copy to force rendering
+        updateDoc()
         break;
       }
       default:
@@ -104,7 +126,7 @@ export function Organizer({doc, setDoc}) {
 function OrganizerView({doc}) {
   //console.log("Organizer: Doc:", doc)
 
-  const body = withWordCounts(doc.story.body)
+  const body = doc.story.body
   const notes = doc.story.notes
 
   const [indexed1, setIndexed1] = useState(["synopsis"])
@@ -112,43 +134,43 @@ function OrganizerView({doc}) {
 
   const body_settings = {
     indexed: {
-      choices:  ["synopsis", "missing", "comment"],
+      choices:  ["synopsis"],
       value:    indexed1,
       setValue: setIndexed1,
     },
     words: {
-      total:    body.words.text,
       choices:  ["off", "numbers", "percent", "cumulative"],
       value:    words1,
       setValue: setWords1,
+      total: body.words.text,
+      cumulative: wcCumulative(body)
     },
-    numbering: true,
   }
 
   const note_settings = {
     indexed: {
       value: [],
+    },
+    words: {
+      value: "off",
     }
   }
 
   return <div className="Filler Organizer" style={{overflow: "auto"}}>
-    <OutlinerToolbar settings={body_settings} sectWithWords={body}/>
+    <OutlinerToolbar settings={body_settings} section={body}/>
     <Droppable droppableId="body" direction="horizontal" type="part">
     {(provided, snapshot) => {
         const {innerRef, droppableProps, placeholder} = provided
-        const {words} = body
 
         //console.log("Body update")
-        return <React.Fragment>
-          <div
-            ref={innerRef}
-            className="HBox Section"
-            {...droppableProps}
-            >
-            {body.parts.map((part, index) => <PartView key={part.id} index={index} settings={body_settings} part={part}/>)}
-            {placeholder}
-          </div>
-          </React.Fragment>
+        return <div
+          ref={innerRef}
+          className="HBox Section"
+          {...droppableProps}
+          >
+          {body.parts.map((part, index) => <PartView key={part.id} index={index} settings={body_settings} part={part}/>)}
+          {placeholder}
+        </div>
       }
     }
     </Droppable>
@@ -178,14 +200,14 @@ function OrganizerView({doc}) {
 
 //-----------------------------------------------------------------------------
 
-function OutlinerToolbar({settings, sectWithWords}) {
+function OutlinerToolbar({settings, section}) {
 
   return <ToolBox style={{ background: "white" }}>
-    <SectionWordInfo sectWithWords={sectWithWords}/>
-    <Separator/>
     <ChooseVisibleElements elements={settings.indexed}/>
     <Separator/>
     <ChooseWordFormat format={settings.words}/>
+    <Separator/>
+    <SectionWordInfo sectWithWords={section}/>
     <Separator/>
     <Filler/>
   </ToolBox>
@@ -211,11 +233,6 @@ function PartView({settings, part, index}) {
     const {innerRef, draggableProps, dragHandleProps} = provided
     const {words} = part;
 
-    function Words() {
-      if(words) return <React.Fragment><Filler style={{minWidth: "8pt"}}/>{words.text}</React.Fragment>
-      return null;
-    }
-
     return <div
       ref={innerRef}
       {...draggableProps}
@@ -227,7 +244,15 @@ function PartView({settings, part, index}) {
       >
         {part.name && part.name !== "" ? part.name : "<Unnamed>"}
         <Filler/>
-        <FormatWords settings={settings} words={words}/>
+        {(settings.words?.value && settings.words.value !== "off")
+          ? <FormatWords
+            format={settings.words.value}
+            words={words?.text}
+            total={settings.words.total}
+            cumulative={settings.words.cumulative[part.id]}
+          />
+          : null
+        }
       </HBox>
       <Droppable
         droppableId={part.id}

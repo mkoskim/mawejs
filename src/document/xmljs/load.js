@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid as getUUID, nanoid, file2buf} from "../util";
+import {uuid as getUUID, nanoid, file2buf, wcElem, wcChildren} from "../util";
 import { xml2js } from "xml-js";
 
 //-----------------------------------------------------------------------------
@@ -82,19 +82,26 @@ export function fromXML(root) {
   //---------------------------------------------------------------------------
 
   function parseBody(body, extras = {}) {
+
     return {
       ...extras,
-      type: "sect",
       lang: "fi",
       head: parseHead(elemFind(body, "head")),
-      parts: elemFindall(body, "part").map(parsePart)
+      ...parseSection(body)
     }
   }
 
   function parseNotes(notes) {
+    return parseSection(notes)
+  }
+
+  function parseSection(section) {
+    const parts = elemFindall(section, "part").map(parsePart)
+    const words = wcChildren(parts)
     return {
       type: "sect",
-      parts: elemFindall(notes, "part").map(parsePart)
+      parts,
+      words,
     }
   }
 
@@ -138,24 +145,29 @@ export function fromXML(root) {
 
   function parsePart(part) {
     const {name} = part.attributes ?? {};
-    const children = part.elements ?? []
+    const children = (part.elements ?? []).map(parseScene)
+    const words = wcChildren(children)
+
     return {
       type: "part",
       name,
       id: nanoid(),
-      children: children.map(parseScene)
+      children,
+      words,
     }
   }
 
   function parseScene(scene) {
-    const {name, exclude} = scene.attributes ?? {};
-    const children = scene.elements ?? []
+    const {name} = scene.attributes ?? {};
+    const children = (scene.elements ?? []).map(js2doc).map(elem => ({...elem, words: wcElem(elem)}))
+    const words = wcChildren(children)
 
     return {
       type: "scene",
       id: nanoid(),
       name,
-      children: children.map(js2doc)
+      children,
+      words,
     }
   }
 

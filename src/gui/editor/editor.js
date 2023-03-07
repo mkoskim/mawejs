@@ -39,6 +39,7 @@ import {
   elemsByRange,
   elemPop, elemPushTo, grouped2section,
   searchFirst, searchForward, searchBackward,
+  isAstChange,
 } from "./slateEditor"
 
 import {
@@ -66,6 +67,7 @@ import {
 
 import { styled } from '@mui/material/styles';
 import {withWordCounts} from "../../document";
+import {sleep} from "../../util";
 
 //import { mawe } from "../../document";
 
@@ -106,72 +108,75 @@ export function SingleEditView({doc, setDoc}) {
   // Get updates from Slate, and apply them to doc, too
   //---------------------------------------------------------------------------
 
-  function isAstChange(editor) {
-    return editor.operations.some(op => 'set_selection' !== op.type)
-  }
-
-  function updateBody(buffer) {
+  const updateBody = useCallback(buffer => {
     //return
     //_setBodyBuffer(buffer)
     //const section = edit2section(buffer)
 
     if(!isAstChange(bodyeditor)) return
 
-    setDoc(doc => ({
-      ...doc,
-      story: {
-        ...doc.story,
-        body: updateSection(doc.story.body, buffer)
+    //*
+    setDoc(doc => {
+      const updated = updateSection(buffer, doc.story.body)
+      //console.log(updated)
+      return {
+        ...doc,
+        story: {
+          ...doc.story,
+          body: updated,
+        }
       }
-    }))
-  }
+    })
+    /**/
+  }, [bodyeditor])
 
-  function updateNotes(buffer) {
+  const updateNotes = useCallback(buffer => {
     //_setNoteBuffer(buffer)
     //const section = edit2section(buffer)
 
     if(!isAstChange(noteeditor)) return
 
-    setDoc(doc => ({
-      ...doc,
-      story: {
-        ...doc.story,
-        notes: updateSection(doc.story.notes, buffer)
-        //notes: section.parts,
+    //*
+    setDoc(doc => {
+      const updated = updateSection(buffer, doc.story.notes)
+      //console.log(updated)
+      return {
+        ...doc,
+        story: {
+          ...doc.story,
+          notes: updated,
+        }
       }
-    }))
-  }
-
-  //---------------------------------------------------------------------------
-  // Sections for indexing
-  //---------------------------------------------------------------------------
-
-  //const [bodyFromEdit, setBodyFromEdit] = useState(() => withWordCounts(doc.story.body))
-  //const [notesFromEdit, setNotesFromEdit] = useState(doc.story.notes)
-  const [bodyFromEdit, setBodyFromEdit] = useState()
-  const [noteFromEdit, setNoteFromEdit] = useState()
-
-  useEffect(() => {
-    setBodyFromEdit(withWordCounts(doc.story.body))
-    setNoteFromEdit(doc.story.notes)
-  }, [doc])
-
-  //const bodyFromEdit = withWordCounts(doc.story.body)
-  //const bodyFromEdit = doc.story.body
-  //const noteFromEdit = doc.story.notes
+    })
+    /**/
+    //setNoteFromEdit(updated)
+  }, [noteeditor])
 
   //---------------------------------------------------------------------------
   // Index settings: Change these to component props
   //---------------------------------------------------------------------------
 
-  const [active, setActive] = useState("body")
+  const [active, _setActive] = useState("body")
+  const [focusTo, _setFocusTo] = useState(undefined)
 
-  function activeEdit() {
+  const setActive = useCallback((sectID, elemID) => {
+    console.log("setActive:", sectID, elemID)
+    _setActive(sectID)
+    _setFocusTo({id: elemID})
+  })
+
+  const activeEdit = useCallback(() => {
     switch(active) {
       case "body": return bodyeditor
       case "notes": return noteeditor
     }
-  }
+  }, [active])
+
+  useEffect(() => {
+    const editor = activeEdit()
+    console.log("Focus to:", active, focusTo)
+    focusByID(editor, focusTo && focusTo.id)
+  }, [active, focusTo])
 
   const [indexed1, setIndexed1] = useState(["part", "scene", "synopsis"])
   const [words1, setWords1] = useState("numbers")
@@ -189,9 +194,11 @@ export function SingleEditView({doc, setDoc}) {
     },
   }
 
+  const [indexed2, setIndexed2] = useState(["part", "scene", "synopsis"])
+
   const noteindex_settings = {
     indexed: {
-      value: ["scene", "synopsis"],
+      value: indexed2,
     }
   }
 
@@ -202,10 +209,10 @@ export function SingleEditView({doc, setDoc}) {
   const [searchText, _setSearchText] = useState()
   const highlightText = useDeferredValue(searchText)
 
-  function setSearchText(text) {
+  const setSearchText = useCallback(text => {
     _setSearchText(text)
     searchFirst(activeEdit(), text)
-  }
+  }, [activeEdit])
 
   useEffect(() => addHotkeys({
     "mod+f": ev => {
@@ -259,31 +266,46 @@ export function SingleEditView({doc, setDoc}) {
   return <>
     <EditToolbar
       editor={activeEdit()}
-      {...{bodyindex_settings, noteindex_settings, bodyFromEdit, searchText, setSearchText}}
+      searchText={searchText}
+      setSearchText={setSearchText}
+      section={doc.story.body}
+      {...{bodyindex_settings, noteindex_settings}}
       />
     <HBox style={{overflow: "auto"}}>
       <DragDropContext onDragEnd={onDragEnd}>
-      <Slate editor={bodyeditor} value={bodybuffer} onChange={updateBody}>
-        <SlateTOC
-          style={{maxWidth: "400px", width: "400px"}}
-          activeID="body"
-          setActive={setActive}
-          wcFormat={words1}
-          include={indexed1}
-          section={bodyFromEdit}
-          />
-        <EditorBox mode="Regular" visible={active === "body"} highlight={highlightText}/>
-      </Slate>
-      <Slate editor={noteeditor} value={notebuffer} onChange={updateNotes}>
-        <EditorBox mode="Regular" visible={active === "notes"} highlight={highlightText}/>
-        <SlateTOC
-          style={{maxWidth: "300px", width: "300px"}}
-          activeID="notes"
-          setActive={setActive}
-          include={["part", "scene", "synopsis"]}
-          section={noteFromEdit}
-          />
-      </Slate>
+      <SlateTOC
+        //editor={bodyeditor}
+        style={{maxWidth: "400px", width: "400px"}}
+        section={doc.story.body}
+        include={indexed1}
+        wcFormat={words1}
+        activeID="body"
+        setActive={setActive}
+        />
+      <EditorBox
+        editor={bodyeditor}
+        value={bodybuffer}
+        onChange={updateBody}
+        mode="Regular"
+        visible={active === "body"}
+        highlight={highlightText}
+        />
+      <EditorBox
+        editor={noteeditor}
+        value={notebuffer}
+        onChange={updateNotes}
+        mode="Regular"
+        visible={active === "notes"}
+        highlight={highlightText}
+        />
+      <SlateTOC
+        //editor={noteeditor}
+        style={{maxWidth: "300px", width: "300px"}}
+        section={doc.story.notes}
+        include={indexed2}
+        activeID="notes"
+        setActive={setActive}
+        />
       </DragDropContext>
     </HBox>
     </>
@@ -319,6 +341,16 @@ export function SingleEditView({doc, setDoc}) {
       }
     }
 
+    function moveElem(srcEdit, srcId, dstEditID, dstEdit, dstId, dstIndex) {
+      elemPushTo(dstEdit,
+        elemPop(srcEdit, srcId),
+        dstId,
+        dstIndex
+      )
+
+      setActive(dstEditID, draggableId)
+    }
+
     switch(type) {
       case "scene": {
         const srcEditID = getSectIDByElemID(source.droppableId)
@@ -326,50 +358,17 @@ export function SingleEditView({doc, setDoc}) {
         const srcEdit = getEditor(srcEditID)
         const dstEdit = getEditor(dstEditID)
 
-        elemPushTo(dstEdit,
-          elemPop(srcEdit, draggableId),
-          destination.droppableId,
-          destination.index
-        )
-
-        setActive(dstEditID)
-        focusByID(dstEdit, draggableId)
-        /*
-        const srcPart = findPart(source.droppableId);
-        const dstPart = findPart(destination.droppableId);
-
-        const scene = srcPart.children[source.index]
-        srcPart.children.splice(source.index, 1)
-        dstPart.children.splice(destination.index, 0, scene)
-
-        update(scene.id)
-        */
+        moveElem(srcEdit, draggableId, dstEditID, dstEdit, destination.droppableId, destination.index)
         break;
       }
 
       case "part": {
-        const srcEdit = getEditor(source.droppableId)
-        const dstEdit = getEditor(destination.droppableId)
+        const srcEditID = source.droppableId
+        const dstEditID = destination.droppableId
+        const srcEdit = getEditor(srcEditID)
+        const dstEdit = getEditor(dstEditID)
 
-        elemPushTo(dstEdit,
-          elemPop(srcEdit, draggableId),
-          null,
-          destination.index
-        )
-
-        setActive(destination.droppableId)
-        focusByID(dstEdit, draggableId)
-
-        /*
-        const srcSect = findSect(source.droppableId)
-        const dstSect = findSect(destination.droppableId)
-
-        const part = srcSect.parts[source.index]
-        srcSect.parts.splice(source.index, 1)
-        dstSect.parts.splice(destination.index, 0, part)
-
-        update(part.id)
-        */
+        moveElem(srcEdit, draggableId, dstEditID, dstEdit, null, destination.index)
         break;
       }
       default:
@@ -397,20 +396,21 @@ function Searching({editor, searchText, setSearchText}) {
       if(isHotkey("enter", ev)) {
         ev.preventDefault();
         ev.stopPropagation();
+        if(searchText === "") setSearchText(undefined)
         searchFirst(editor, searchText, true)
       }
     }}
   />
 }
 
-function EditToolbar({bodyindex_settings, bodyFromEdit, editor, searchText, setSearchText}) {
+function EditToolbar({bodyindex_settings, editor, section, searchText, setSearchText}) {
 
   return <ToolBox style={{ background: "white" }}>
     <ChooseVisibleElements elements={bodyindex_settings.indexed}/>
     <Separator/>
     <ChooseWordFormat format={bodyindex_settings.words}/>
     <Separator/>
-    <SectionWordInfo sectWithWords={bodyFromEdit}/>
+    <SectionWordInfo sectWithWords={section}/>
     <Separator/>
     <Searching editor={editor} searchText={searchText} setSearchText={setSearchText}/>
     <Separator/>
@@ -435,14 +435,14 @@ function EditToolbar({bodyindex_settings, bodyFromEdit, editor, searchText, setS
 
 //-----------------------------------------------------------------------------
 
-function EditorBox({style, mode="Condensed", visible=true, highlight=undefined}) {
-  //const display = visible ? undefined : "none"
-
-  if(!visible) return null;
-
-  return <div className="Filler Board" style={{...style}}>
-      <SlateEditable className={mode} highlight={highlight}/>
-    </div>
+function EditorBox({style, editor, value, onChange, mode="Condensed", visible=true, highlight=undefined}) {
+  return <Slate editor={editor} value={value} onChange={onChange}>
+    {visible
+    ? <div className="Filler Board" style={{...style}}>
+        <SlateEditable className={mode} highlight={highlight}/>
+      </div>
+    : null}
+    </Slate>
 }
 
 //-----------------------------------------------------------------------------

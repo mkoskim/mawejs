@@ -312,6 +312,11 @@ ${content}
       .replaceAll("Ä", "\\'c4")
       .replaceAll("ö", "\\'f6")
       .replaceAll("Ö", "\\'d6")
+
+      // If you have copy-pasted text, you may have these
+      .replaceAll('“', "\\'94")
+      .replaceAll('”', "\\'94")
+      .replaceAll('…', "...")
     )
   },
 }

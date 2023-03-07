@@ -70,100 +70,121 @@ export function elemAsText(elem) {
 }
 
 //-----------------------------------------------------------------------------
-// Count words
+// Flat / unflat doc
 //-----------------------------------------------------------------------------
 
-// TODO: Split to two functions: (1) one that adds word counts to elements, and
-// (2) one that just counts words.
+export function section2flat(section) {
+  const flat = new Array()
 
-export function withWordCounts(elem) {
-
-  const cumulativeSum = (sum => value => sum += value)(0);
-
-  switch(elem.type) {
-    case "sect":  return Section(elem);
-    case "part":  return Part(elem);
-    case "scene": return Scene(elem);
-    default: break;
-  }
-  return elem;
-
-  function sum(elems) {
-    return (
-      elems
-      .map(elem => elem.words)
-      .reduce(
-        (a, b) => ({
-          chars: a.chars + b.chars,
-          text: a.text + b.text,
-          missing: a.missing + b.missing,
-          //comment: a.comment + b.comment,
-        }),
-        {
-          chars: 0,
-          text: 0,
-          missing: 0,
-          //comment: 0,
-        }
-      )
-    )
-  }
-
-  function Section(section) {
-    const parts = section.parts.map(Part)
-    return {
-      ...section,
-      parts,
-      words: sum(parts),
-    }
-  }
-
-  function Part(part) {
-    const cumulative = cumulativeSum(0)
-    const scenes = part.children.map(Scene)
-
-    return {
-      ...part,
-      children: scenes,
-      words: {
-        ...sum(scenes),
-        cumulative,
+  for(const part of section.parts) {
+    flat.push(part)
+    for(const scene of part.children) {
+      flat.push(scene)
+      for(const p of scene.children) {
+        flat.push(p)
       }
     }
   }
 
-  function Scene(scene) {
-
-    function asText(elems, type) {
-      return (
-        elems
-        .filter(elem => elem.type === type)
-        .map(elem => elemAsText(elem))
-        .join(" ")
-      )
-    }
-
-    function wordcount(text) {
-      return (
-        text
-        .split(/\s+/g)
-        .filter(s => s.length)
-      ).length
-    }
-
-    const text = asText(scene.children, "p")
-    const wc_text = wordcount(text)
-
-    return {
-      ...scene,
-      words: {
-        chars: text.length,
-        text: wc_text,
-        cumulative: cumulativeSum(wc_text),
-        missing: wordcount(asText(scene.children, "missing")),
-        //comment: wordcount(asText(scene.children, "comment"))
-      },
-    }
-  }
+  return flat
 }
 
+export function section2lookup(section) {
+  const lookup = new Map()
+
+  for(const part of section.parts) {
+    lookup.set(part.id, part)
+    for(const scene of part.children) {
+      lookup.set(scene.id, scene)
+      for(const p of scene.children) {
+        lookup.set(p.id, p)
+      }
+    }
+  }
+
+  return lookup
+}
+
+//-----------------------------------------------------------------------------
+// Count words
+//-----------------------------------------------------------------------------
+
+export function wordcount(text) {
+  return (
+    text
+    .split(/\s+/g)
+    .filter(s => s.length)
+  ).length
+}
+
+function wcParagraph(elem) {
+  const text = elemAsText(elem)
+  const chars = text.length
+  const words = wordcount(text)
+
+  switch(elem.type) {
+    case "p": return { chars, text: words }
+    case "missing": return { chars, missing: words }
+    //case "comment": return { chars, comment: words }
+  }
+  return undefined
+}
+
+export function wcChildren(children) {
+  var words = {
+    chars: 0,
+    text: 0,
+    missing: 0,
+  }
+
+  for(const elem of children) {
+    if(!elem.words) continue
+    words.chars += elem.words.chars ?? 0
+    words.text += elem.words.text ?? 0
+    words.missing += elem.words.missing ?? 0
+  }
+
+  return words
+}
+
+export function wcElem(elem) {
+
+  switch(elem.type) {
+    case "sect":
+    case "part":
+    case "scene":
+      return wcChildren(elem.children)
+
+    case "p":
+    case "missing":
+      return wcParagraph(elem)
+
+    default:
+    //case "synopsis":
+    //case "comment":
+    //case "br":
+      break;
+  }
+  return undefined
+}
+
+export function wcCumulative(section) {
+  const flat = new Array()
+
+  for(const part of section.parts) {
+    flat.push(part)
+    for(const scene of part.children) {
+      flat.push(scene)
+    }
+  }
+
+  const cumulative = {}
+  var summed = 0
+
+  for(const elem of flat) {
+    if(elem.type === "scene") summed += elem.words?.text
+    cumulative[elem.id] = summed
+  }
+
+  return cumulative
+}
