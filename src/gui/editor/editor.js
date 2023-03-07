@@ -68,7 +68,7 @@ import {sleep} from "../../util";
 
 //-----------------------------------------------------------------------------
 
-export function SingleEditView({doc, setDoc}) {
+export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 
   //---------------------------------------------------------------------------
   // For development purposes:
@@ -132,16 +132,17 @@ export function SingleEditView({doc, setDoc}) {
   }, [noteeditor])
 
   //---------------------------------------------------------------------------
-  // Index settings: Change these to component props
+  // Section selection
   //---------------------------------------------------------------------------
 
-  const [active, _setActive] = useState("body")
-  const [focusTo, _setFocusTo] = useState(undefined)
+  const [active, _setActive] = useState(focusTo?.sectID ?? "body")
+
+  console.log("ActiveID:", active)
 
   const setActive = useCallback((sectID, elemID) => {
     //console.log("setActive:", sectID, elemID)
     _setActive(sectID)
-    _setFocusTo({id: elemID})
+    setFocusTo({id: elemID})
   })
 
   const activeEdit = useCallback(() => {
@@ -153,9 +154,14 @@ export function SingleEditView({doc, setDoc}) {
 
   useEffect(() => {
     const editor = activeEdit()
-    //console.log("Focus to:", active, focusTo)
-    focusByID(editor, focusTo && focusTo.id)
+    const id = focusTo?.id
+    console.log("Focus to:", id)
+    if(editor) focusByID(editor, id)
   }, [active, focusTo])
+
+  //---------------------------------------------------------------------------
+  // Index settings: Change these to component props
+  //---------------------------------------------------------------------------
 
   const [indexed1, setIndexed1] = useState(["part", "scene", "synopsis"])
   const [words1, setWords1] = useState("numbers")
@@ -239,7 +245,8 @@ export function SingleEditView({doc, setDoc}) {
 
   return <>
     <EditToolbar
-      editor={activeEdit()}
+      //editor={activeEdit()}
+      editor={bodyeditor}
       searchText={searchText}
       setSearchText={setSearchText}
       section={doc.story.body}
@@ -248,7 +255,6 @@ export function SingleEditView({doc, setDoc}) {
     <HBox style={{overflow: "auto"}}>
       <DragDropContext onDragEnd={onDragEnd}>
       <SlateTOC
-        //editor={bodyeditor}
         style={{maxWidth: "400px", width: "400px"}}
         section={doc.story.body}
         include={indexed1}
@@ -273,7 +279,6 @@ export function SingleEditView({doc, setDoc}) {
         highlight={highlightText}
         />
       <SlateTOC
-        //editor={noteeditor}
         style={{maxWidth: "300px", width: "300px"}}
         section={doc.story.notes}
         include={indexed2}
@@ -303,6 +308,7 @@ export function SingleEditView({doc, setDoc}) {
     //console.log(type, source, "-->", destination)
 
     function getSectIDByElemID(elemID) {
+      if(!elemID) return undefined
       if(hasElem(bodyeditor, elemID)) return "body"
       if(hasElem(noteeditor, elemID)) return "notes"
       return undefined

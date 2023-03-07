@@ -36,7 +36,7 @@ const fs = require("../../system/localfs");
 
 //-----------------------------------------------------------------------------
 
-export function Export({doc, setDoc}) {
+export function Export({doc, setDoc, focusTo, setFocusTo}) {
   const settings = {
     part: {
       separator: "* * *",
@@ -44,6 +44,7 @@ export function Export({doc, setDoc}) {
     scene: {
       //separator: "* * *",
     },
+    setFocusTo,
   }
 
   const previewprops = {
@@ -133,6 +134,7 @@ function ExportIndex({style, settings, doc}) {
       <div
         className="Entry PartName"
         onClick={ev => window.location.href=`#${id}`}
+        onDoubleClick={ev => settings.setFocusTo({id})}
         style={{cursor: "pointer"}}
         >
         <span className="Name">{name}</span>
@@ -146,6 +148,7 @@ function ExportIndex({style, settings, doc}) {
     return <div
       className="Entry SceneName"
       onClick={ev => window.location.href=`#${id}`}
+      onDoubleClick={ev => settings.setFocusTo({id})}
       style={{cursor: "pointer"}}
       >
       <span className="Name">{name}</span>
