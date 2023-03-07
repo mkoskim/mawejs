@@ -33,7 +33,7 @@
     "is-gzip": "^2.0.0",
     "is-hotkey": "^0.2.0",
     "material-ui-popup-state": "^5.0.4",
-    "nanoid": "^4.0.0",
+    "nanoid": "^4.0.1",
     "pako": "^2.1.0",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
@@ -41,7 +41,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "slate": "^0.91.4",
     "slate-history": "^0.86.0",
-    "slate-react": "^0.91.8",
+    "slate-react": "^0.91.9",
     "stream": "^0.0.2",
     "uuid": "^9.0.0",
     "xml-js": "^1.6.11"
@@ -49,7 +49,7 @@
   "devDependencies": {
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
-    "electron": "^23.1.1",
+    "electron": "^23.1.2",
     "electron-builder": "^23.6.0",
     "electron-reload": "^2.0.0-alpha.1",
     "nodemon": "^2.0.21",
