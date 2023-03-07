@@ -715,7 +715,7 @@ function withFixParts(editor) {
 //*****************************************************************************
 
 export function section2edit(section) {
-  return section2flat(section).map(elem2Edit)
+  return validate(section2flat(section).map(elem2Edit))
 
   function elem2Edit(elem) {
     switch(elem.type) {
@@ -730,10 +730,27 @@ export function section2edit(section) {
       case "br": return {
         ...elem,
         type: "p",
-        children: [{text: ""}]
       }
     }
     return elem
+  }
+
+  function validate(buffer) {
+    for(const elem of buffer) {
+
+      expect(elem.id, "Missing ID")
+      expect(elem.type, "Missing type")
+      expect(typeof(elem) === "object", "Not an object")
+      expect(Array.isArray(elem.children), "Children not an array")
+      expect(elem.children.every(child => !child.children), "Children has children.")
+      expect(elem.children.every(child => typeof(child.text) === "string"), "Child has no text.")
+
+      function expect(cond, message) {
+        if(cond) return
+        console.log("ERROR:", elem, message)
+      }
+    }
+    return buffer
   }
 }
 

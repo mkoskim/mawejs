@@ -99,6 +99,9 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   const [bodybuffer, _setBodyBuffer] = useState(() => section2edit(doc.story.body))
   const [notebuffer, _setNoteBuffer] = useState(() => section2edit(doc.story.notes))
 
+  //console.log(doc.story.body)
+  //console.log(bodybuffer)
+
   //---------------------------------------------------------------------------
   // Get updates from Slate, and apply them to doc, too
   //---------------------------------------------------------------------------
@@ -137,7 +140,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 
   const [active, _setActive] = useState(focusTo?.sectID ?? "body")
 
-  console.log("ActiveID:", active)
+  //console.log("ActiveID:", active)
 
   const setActive = useCallback((sectID, elemID) => {
     //console.log("setActive:", sectID, elemID)

@@ -179,12 +179,17 @@ export function fromXML(root) {
   //---------------------------------------------------------------------------
 
   function js2doc(elem) {
+    const {name, type} = elem
+    const text = elem.elements ? elem.elements.map(elem => elem.text ?? "").join() : ""
+    //console.log("Elem", elem)
+    //const {children} = recurse(elem)
     return {
-      type: elem.name ?? elem.type,
+      type: name ?? type,
       id: nanoid(),
-      children: elem.elements?.map(js2doc),
-      text: trim(elem.text),
+      children: [{text}]
+      //children: children?.length ? children : [{text: ""}]
     }
+
   }
 
   function elemFind(parent, name) {

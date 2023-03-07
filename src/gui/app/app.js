@@ -136,10 +136,18 @@ export default function App(props) {
     setValue: _setMode,
   }
 
+  const [focusTo, _setFocusTo] = useState(undefined)
+
+  const setFocusTo = useCallback(value => {
+    _setMode("editor")
+    _setFocusTo(value)
+  }, [])
+
   //---------------------------------------------------------------------------
   // TODO: Improve doc architecture!!!
 
   const [doc, setDoc] = useState({
+    //load: "./local/EmptyDoc.mawe",
     //load: "./local/TestDoc1.mawe"
     load: "./local/UserGuide.mawe",
     //load: "./local/mawe2/JazramonGjerta.mawe"
@@ -165,7 +173,7 @@ export default function App(props) {
   // Use key to force editor state reset when file is changed: It won't work
   // for generated docs (user guide, new doc), but we fix that later.
 
-  const viewprops = {mode, doc, setDoc}
+  const viewprops = {mode, doc, setDoc, focusTo, setFocusTo}
 
   return (
     <ThemeProvider theme={myTheme}>
@@ -177,8 +185,8 @@ export default function App(props) {
   )
 }
 
-function ChooseView({mode, doc, setDoc}) {
-  const props={doc, setDoc}
+function ChooseView({mode, doc, setDoc, focusTo, setFocusTo}) {
+  const props={doc, setDoc, focusTo, setFocusTo}
 
   switch(mode.value) {
     case "editor": return <SingleEditView {...props}/>

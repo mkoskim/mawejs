@@ -175,7 +175,7 @@ export function toXML(story) {
   function doc2js(elem) {
     const {type, children = [], text} = elem;
 
-    if(type === "text") {
+    if(!type || type === "text") {
       if(!text || text === "") return undefined;
       //return toText(wrap(text, {indent: "", width: 80}))
       return toText(text)
