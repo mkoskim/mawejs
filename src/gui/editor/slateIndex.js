@@ -47,7 +47,7 @@ import {wcCumulative} from "../../document/util";
 export function SlateTOC({style, section, wcFormat, include, activeID, setActive})
 {
   const onActivate = useCallback(id => {
-    console.log("Activate:", activeID, id)
+    //console.log("Activate:", activeID, id)
     setActive(activeID, id)
   }, [])
 
@@ -179,12 +179,13 @@ class SceneDropArea extends React.PureComponent {
   DropArea(provided, snapshot) {
     const {scenes, include, wcFormat, onActivate} = this.props
     const {innerRef, droppableProps, placeholder} = provided
+    const {isDraggingOver} = snapshot
 
     return <div
-      className="VBox"
-        ref={innerRef}
-        {...droppableProps}
-      >
+      className={addClass("VBox SceneDropZone", isDraggingOver && "DragOver")}
+      ref={innerRef}
+      {...droppableProps}
+    >
     {scenes.map((elem, index) => <SceneItem
       key={elem.id}
       index={index}

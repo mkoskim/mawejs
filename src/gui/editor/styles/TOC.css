@@ -13,7 +13,7 @@
   */
 
   flex-grow: 1;
-  padding: 4px;
+  padding: 6px;
   padding-bottom: 1cm; /* For DnD */
   /*
   padding-top: 4px;
@@ -33,12 +33,6 @@
 .TOC div.Part, .TOC div.Scene {
   background: #F5F7F9;
 }
-
-/*
-.TOC div.Part:hover {
-  background-color: #EFD;
-}
-*/
 
 .TOC div.Scene:hover {
   background-color: #DEF;
@@ -62,6 +56,22 @@
 
 .TOC .PartName {
   font-weight: bold;
+}
+
+.TOC div.SceneDropZone {
+  min-height: 16pt
+}
+
+.TOC div.SceneDropZone.DragOver {
+  margin-left: -4px;
+  margin-right: -4px;
+  border: 1px dashed grey;
+  border-radius: 4px;
+  padding: 3px;
+  /*
+  padding-top: 6px;
+  padding-bottom: 6px;
+  */
 }
 
 /* ---------------------------------------------------------------------------- */

@@ -109,14 +109,7 @@ export function SingleEditView({doc, setDoc}) {
   //---------------------------------------------------------------------------
 
   const updateBody = useCallback(buffer => {
-    //return
-    //_setBodyBuffer(buffer)
-    //const section = edit2section(buffer)
-
-    if(!isAstChange(bodyeditor)) return
-
-    //*
-    setDoc(doc => {
+    if(isAstChange(bodyeditor)) setDoc(doc => {
       const updated = updateSection(buffer, doc.story.body)
       //console.log(updated)
       return {
@@ -127,17 +120,10 @@ export function SingleEditView({doc, setDoc}) {
         }
       }
     })
-    /**/
   }, [bodyeditor])
 
   const updateNotes = useCallback(buffer => {
-    //_setNoteBuffer(buffer)
-    //const section = edit2section(buffer)
-
-    if(!isAstChange(noteeditor)) return
-
-    //*
-    setDoc(doc => {
+    if(isAstChange(noteeditor)) setDoc(doc => {
       const updated = updateSection(buffer, doc.story.notes)
       //console.log(updated)
       return {
@@ -148,8 +134,6 @@ export function SingleEditView({doc, setDoc}) {
         }
       }
     })
-    /**/
-    //setNoteFromEdit(updated)
   }, [noteeditor])
 
   //---------------------------------------------------------------------------
@@ -160,7 +144,7 @@ export function SingleEditView({doc, setDoc}) {
   const [focusTo, _setFocusTo] = useState(undefined)
 
   const setActive = useCallback((sectID, elemID) => {
-    console.log("setActive:", sectID, elemID)
+    //console.log("setActive:", sectID, elemID)
     _setActive(sectID)
     _setFocusTo({id: elemID})
   })
@@ -174,7 +158,7 @@ export function SingleEditView({doc, setDoc}) {
 
   useEffect(() => {
     const editor = activeEdit()
-    console.log("Focus to:", active, focusTo)
+    //console.log("Focus to:", active, focusTo)
     focusByID(editor, focusTo && focusTo.id)
   }, [active, focusTo])
 
@@ -240,11 +224,6 @@ export function SingleEditView({doc, setDoc}) {
     "mod+g": ev => searchForward(activeEdit(), searchText, true),
     "shift+mod+g": ev => searchBackward(activeEdit(), searchText, true)
   }));
-
-  //---------------------------------------------------------------------------
-  // When component is mounted, move focus to start of text in editor
-
-  //useEffect(() => { focusByPath(activeEdit(), {path: [0], offset: 0})})
 
   //---------------------------------------------------------------------------
   // Debug/development view
