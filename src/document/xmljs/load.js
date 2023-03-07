@@ -96,7 +96,12 @@ export function fromXML(root) {
   }
 
   function parseSection(section) {
-    const parts = elemFindall(section, "part").map(parsePart)
+    function getParts() {
+      const parts = elemFindall(section, "part")
+      if(!parts.length) return [{type: "part", id: nanoid()}]
+      return parts
+    }
+    const parts = getParts().map(parsePart)
     const words = wcChildren(parts)
     return {
       type: "sect",

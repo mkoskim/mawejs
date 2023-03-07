@@ -179,7 +179,9 @@ export function elemPop(editor, id) {
   if(!focus || !anchor) return
 
   const block = elemsByRange(editor, anchor, focus)
-  Transforms.removeNodes(editor, {at: {anchor, focus}, hanging: true})
+  Editor.withoutNormalizing(editor, () => {
+    Transforms.removeNodes(editor, {at: {anchor, focus}, hanging: true})
+  })
   return block
 
   function range(node, path) {
@@ -202,18 +204,22 @@ export function elemPop(editor, id) {
 
 export function elemPushTo(editor, block, id, index) {
   const blocktype = block[0].type
+  const elems = elemsByID(editor, id)
+  const anchor = elems.length && Editor.after(editor, elems[0][1])
+
+  //console.log("PushTo:", id, anchor, elems)
+
   const types = (blocktype === "part") ? ["part"] : ["part", "scene"]
-  const anchor = (
-    id
-    ? Editor.after(editor, elemsByID(editor, id)[0][1])
-    : Editor.start(editor, [])
-  )
   const blocks = [
-    ...elemByTypes(editor, types, anchor),
+    ...(anchor ? elemByTypes(editor, types, anchor) : []),
     [undefined, Editor.end(editor, [])]
   ]
 
-  Transforms.insertNodes(editor, block, {at: blocks[index][1]})
+  //console.log("Pushto:", anchor, blocks, index)
+
+  Editor.withoutNormalizing(editor, () => {
+    Transforms.insertNodes(editor, block, {at: blocks[index][1]})
+  })
 }
 
 //-----------------------------------------------------------------------------
@@ -511,8 +517,10 @@ function withMarkup(editor) {
 
         if(node.type in STYLEAFTER) {
           const newtype = STYLEAFTER[node.type]
-          Transforms.splitNodes(editor, {always: true})
-          Transforms.setNodes(editor, {type: newtype})
+          Editor.withoutNormalizing(editor, () => {
+            Transforms.splitNodes(editor, {always: true})
+            Transforms.setNodes(editor, {type: newtype})
+          })
           return
         }
         if(RESETEMPTY.includes(node.type) && Node.string(node) == "") {
@@ -531,31 +539,42 @@ function withMarkup(editor) {
 
   editor.deleteBackward = (...args) => {
     const { selection } = editor
+    if(!selection) return deleteBackward(...args)
+    if(!Range.isCollapsed(selection)) return deleteBackward(...args)
 
-    if (selection && Range.isCollapsed(selection)) {
-      const match = Editor.above(editor, {
-        match: n => Editor.isBlock(editor, n),
-      })
+    // Which block we are:
+    const match = Editor.above(editor, {
+      match: n => Editor.isBlock(editor, n),
+    })
+    if(!match) return deleteBackward(...args)
 
-      if (match) {
-        const [node, path] = match
-        const start = Editor.start(editor, path)
+    const [node, path] = match
 
-        //console.log("Node:", node)
+    if(!elemIsBlock(editor, node)) return deleteBackward(...args)
 
-        if (
-          elemIsBlock(editor, node) &&
-          node.type !== 'p' &&
-          Point.equals(selection.anchor, start)
-        ) {
-          //console.log(block.type)
-          Transforms.setNodes(editor, {type: 'p'})
+    // Beginning of line?
+    if(!Point.equals(selection.anchor, Editor.start(editor, path))) return deleteBackward(...args)
 
-          return
-        }
+    // Merge plain paragraphs to scene
+    if(node.type === "p") {
+      const prev = Editor.previous(editor, {at: path})
+      if(prev && prev[0].type === "scene") {
+        Transforms.setNodes(editor, {type: "scene"})
+      }
+      return deleteBackward(...args)
+    }
+
+    if(node.type === "scene") {
+      const prev = Editor.previous(editor, {at: path})
+      if(prev && prev[0].type === "part") {
+        const next = Editor.next(editor, {at: path})
+        if(!next || next[0].type === "scene") return deleteBackward(...args)
+        return
       }
     }
-    deleteBackward(...args)
+
+    Transforms.setNodes(editor, {type: 'p'})
+    return
   }
 
   return editor
@@ -572,23 +591,25 @@ function withIDs(editor) {
   editor.normalizeNode = entry => {
     const [node, path] = entry
 
-    if(path.length > 0) return normalizeNode(entry);
+    // Don't give IDs to text blocks
+    if(path.length !== 1) return normalizeNode(entry);
 
     //console.log("Path/Node:", path, node)
-    const ids = new Set()
 
     const blocks = Editor.nodes(editor, {
       at: [],
-      match: (node, path) => path.length == 1 && Editor.isBlock(editor, node),
+      match: (node, path) => path.length === 1 && Editor.isBlock(editor, node),
     })
 
     //console.log(Array.from(blocks))
+
+    const ids = new Set()
 
     for(const block of blocks) {
       const [node, path] = block
 
       if(!node.id || ids.has(node.id)) {
-        console.log("ID clash detected:", path)
+        console.log("ID clash fixed:", path)
         const id = nanoid()
         Transforms.setNodes(editor, {id}, {at: path})
         ids.add(id)
@@ -610,16 +631,19 @@ function withIDs(editor) {
 
 function withFixParts(editor) {
 
-  // TODO: Need fix
-
   const { normalizeNode } = editor;
 
   editor.normalizeNode = entry => {
     const [node, path] = entry
 
+    //console.log("Normalize: Fix parts")
+
     //console.log("Path/Node:", path, node)
 
-    //*
+    //-------------------------------------------------------------------------
+    // 1. Ensure, that we have at least 1 node and that is a part
+    // 2. Ensure, that first block is always part
+
     if(path.length == 0) {
       if(editor.children.length < 1) {
         Transforms.insertNodes(editor,
@@ -628,39 +652,47 @@ function withFixParts(editor) {
         )
         return
       }
-    }
-    /**/
-
-    if(path.length != 1) return normalizeNode(entry)
-    if(!elemIsBlock(editor, node)) return normalizeNode(entry)
-
-    // Force first element to be part break
-
-    if(path[0] === 0 && node.type != "part") {
-      Transforms.setNodes(editor, {type: "part"}, {at: path})
-      return
-    }
-
-    // Force element after part break to be scene break
-    if(node.type === "part") {
-      const [next, nextpath] = Editor.next(editor, {at: path}) ?? []
-      if(next && Editor.isBlock(editor, next)) switch(next.type) {
-        case "part": break
-        case "scene": break
-        default:
-          Transforms.setNodes(editor, {type: "scene"}, {at: nextpath})
-          return
-      }
-    }
-
-    const [previous] = Editor.previous(editor, {at: path}) ?? []
-    //console.log("Node", node.type, "Previous", previous?.type)
-    if(elemIsType(editor, previous, "part")) switch(node.type) {
-      case "part": break
-      case "scene": break
-      default:
-        Transforms.setNodes(editor, {type: "scene"}, {at: path})
+      if(editor.children[0].type !== "part") {
+        Transforms.setNodes(editor,
+          {type: "part"},
+          {at: path.concat(0)}
+        )
         return
+      }
+      return normalizeNode(entry)
+    }
+
+    //-------------------------------------------------------------------------
+    // 3. Ensure, that created part is followed by scene break
+    // 4. Ensure, that node after part is a scene
+
+    if(path.length === 1) {
+      if(node.type === "part") {
+        //console.log("Part", node, path)
+        const next = Editor.next(editor, {at: path})
+        if(next) {
+          //console.log("Check:", next)
+          const [n, p] = next
+          if(n.type !== "scene") {
+            Transforms.insertNodes(
+              editor,
+              {type: "scene", id: nanoid(), children: [{text: ""}]},
+              {at: p}
+            )
+            return
+          }
+        }
+      } else {
+        const prev = Editor.previous(editor, {at: path})
+        if(prev && prev[0].type === "part") {
+          Transforms.setNodes(
+            editor,
+            {type: "scene"},
+            {at: path}
+          )
+          return
+        }
+      }
     }
 
     return normalizeNode(entry)
