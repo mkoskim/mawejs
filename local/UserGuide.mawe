@@ -23,7 +23,7 @@ STORY: UserGuide
 </scene>
 </part>
 <part name="MaweJS">
-<scene name="Basics">
+<scene name="Design Principles">
 <p>As an editor, one thing you might notice right away is the scarciness of formatting options. You may wonder, how you will...</p>
 <p>...change font? Change text or background color?</p>
 <p>...Justify paragraphs? Make them center aligned?</p>
@@ -33,20 +33,39 @@ STORY: UserGuide
 <p>You can't do that, not in the way you think.</p>
 <p>MaweJS is not an editor to styling your text.</p>
 <p>MaweJS is not even a WYSIWYG editor!</p>
-<p>MaweJS is meant to write story manuscripts, nothing more, nothing less. You write it and then export it in some suitable format to share your story with your fellow writers or publishing editor.</p>
-<br/>
-<p>Keeping the formatting options very scarce is INTENTIONAL.</p>
+<p>MaweJS is meant to write story manuscripts, nothing more, nothing less. You (1) write your draft, (2) export it in suitable format, (3) to share your story with your fellow writers or publishing editor.</p>
+</scene>
+<scene name="It is the manuscript">
+<p>Keeping the formatting options very scarce is INTENTIONAL!</p>
 <p>Many writers have very bad habit to stay tuning the fonts, their faces, layout, headers and such when you give them an opportunity to do so. The sad thing is that those things do not matter for the publisher - they will anyways use their own fonts and design their own layout once you get your manuscript to be published. That's why many writers are still using editors like Notepad or similar, just to make them to concentrate on the text itself.</p>
+<br/>
+<p>Everything in MaweJS revolves around your manuscript. For that purpose, take a look this editor page. Unlike in Scrivener or similar, you see the entire manuscript in one single page.</p>
+<p>The sole idea is that this draft edit and its content you are reading now is the center of the editor. I have also an idea that everything written to draft editor will be part of your exported draft, thought that principle has certain exceptions:</p>
+<p>1. Part and scene breaks: these need to be visible for writer.</p>
+<p>2. Annotations: synopses, comments and marks for missing text.</p>
+<p>3. Notes section: There needs to be some room to write notes, that are not part of your draft. It is not intended, that you first sketch your story in notes. No, it is intended to be your clipboard to keep things cut out from draft, and a freeform sketch pad when you need one.</p>
+<p>But overall I try to follow that principle. For example, there is no "exclude" feature to exclude parts or scenes from draft, e.g. marking them as comments or notes, invisible or so. Why would you write something to draft, that is not intended to be exported?</p>
+<p>Yes, but I think I need to implement a feature to exclude something from exported draft in the "Export preview" view. The reason for that is that time to time you want to share some parts of your drafts with your peers, for example, just some changed parts. But that will be *export* feature, not *editor* feature.</p>
+<br/>
+<p>It is very unlikely that you can ever embed images to draft. Your publishing editor most probably will not like them at all. Except, of course, if you are writing and drawing a graphic novel, but in this case MaweJS is not exactly made for your needs...</p>
+<p>It is very unlikely, that MaweJS will support text alignment, explicit page breaks and such things. Your publishing editor will probably not like these, except if you are writing poems. But MaweJS is not specifically made to write poems, so it does not fulfill all the needs of poets.</p>
+<p>It is very, very unlikely that draft will ever support tables, super and subscripts, equations and such. Your publishing editor most probably would not like them, too. Except, of course, if you are writing a technical manual, a nonficitional book about something, a scientific analysis or so. But MaweJS is not exactly made for writing such documents and probably can't fulfill all your needs.</p>
+<p>As a general rule, MaweJS will only support document styles and elements that your publishing editor or judge in a writing competition will like to see, and for most parts that means plain text.</p>
+<p>It is slightly possible, that at some point draft editor MAY support bold and italics styles. I personally disregard books that use font styling extensively, but I have also noted that they come handy in certain situations, for example, when writing a story that resembles press article or scientific report, or when story includes such parts. But I need to think hard how I want to support such things.</p>
+<p>MaweJS might support footnotes at some point, they might come handy in certain situations.</p>
+<br/>
+<p>What may happen is that the editor will be integrated to some sort of "wiki" editor. I have some initial ideas to extend notes section so that you can create linkable and taggable pages to it, possibly with images.</p>
+<br/>
 <p>From one point of view, MaweJS is closer to Notepad than to Microsoft Word or Googledocs. MaweJS is sort of "Notepad on steroids" in that sense, that in addition to have bunch of plain text, you can add marks to split it to smaller pieces, and to annotate it. These are two of MaweJS's main purposes:</p>
 <p>1. It is a Notepad editor that allows you to split text to chunks, and to organize (add, move, modify and delete) those text chunks, and</p>
 <p>2. In addition to text itself, it also stores the metatext - comments, descriptions and such - with the text.</p>
+<br/>
 </scene>
 <scene name="MaweJS as Strucured Editor">
-<p>From that perspective, MaweJS is so called "structured editor". It is not the only one, vice versa, there are many well-known structured editors around for story writers. So, how MaweJS differs from e.g. Scrivener, yWriter or Manuskript?</p>
+<p>Splitting text to chunks and moving them around makes MaweJS also so called "structured editor". It is not the only one, vice versa, there are many well-known structured editors around for story writers. So, how MaweJS differs from e.g. Scrivener, yWriter or Manuskript?</p>
 <p>One of the main design principles of MaweJS is that you should just start writing, just like opening a Notepad when you come up with an idea. Unlike in many other structured editors, you don't have to make _any_ preparation before starting to write the story itself.</p>
 <p>Instead, the tools are intended to be taken in use _when_ you need them.</p>
 <p>For example: You don't need to create scenes or parts in advance. You split your text to scenes and parts when you feel you need to split your text to smaller, movable pieces. You don't need to describe a scene beforehand: you write descriptions when you need them.</p>
-<p>Everything in MaweJS revolves around your manuscript. For that purpose, take a look this editor page. Unlike in Scrivener or similar, you see a canvas showing you the entire manuscript in one single page.</p>
 <br/>
 </scene>
 </part>
@@ -395,6 +414,9 @@ NOTES
 <p>1. It will never be exported to draft.</p>
 <p>2. It is the same for all the versions.</p>
 <br/>
+<p>Notes section is meant to store things from your draft you may need later. Because of that, notes follows the same formatting principles as the draft - the items in the notes need to be such that they can be dragged and dropped to manuscript any time you like.</p>
+<p>Notes section also serves as your freeform sketch pad. I personally first sketch the story in the draft editor itself, but I later move to notes, just to keep them available if needed. I usually also create some sections for characters, places and other center elements of the story, to make notes about them.</p>
+<br/>
 </scene>
 </part>
 <part name="TODO / Guide">
@@ -437,13 +459,6 @@ NOTES
 </scene>
 <scene name="DONE">
 <p>Done:</p>
-<p>- DONE: Creating new file</p>
-<p>- DONE: Don't store empty part / scene names</p>
-<p>- DONE: Fix editor index DnD. And the implicit blocks it creates. They are VERY ANNOYING!</p>
-<p>- DONE: More robust DnD - get rid of implicitly created elements, instead, use normalizing features to keep Slate state always in such condition, that it can be pulled as a story.</p>
-<p>- DONE: (Outliner) Word count options</p>
-<p>- DONE: (Outliner) Index options (what is shown in scene)</p>
-<p>- DONE: Adding synopses to scenes: Think it so that the scene card in outliner is a PostIt note, and you list things that are needed in that scene.</p>
 <br/>
 </scene>
 </part>

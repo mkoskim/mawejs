@@ -22,18 +22,6 @@ import { addClass, Icon } from '../common/factory';
 import { sleep, uuid, nanoid, splitByLeadingElem } from '../../util';
 import {section2flat, section2lookup, wcElem, wordcount} from '../../document/util';
 
-//-----------------------------------------------------------------------------
-
-export function elem2text(block) {
-  return Node.string(block)
-    .replace(/\s+/g, ' ')
-    .trim()
-}
-
-function elemLeader(elem) {
-  return elem2text(elem).split(/[.:?!]/gu, 1)[0]
-}
-
 //*****************************************************************************
 //
 // Rendering
@@ -51,8 +39,12 @@ export function SlateEditable({className, highlight, ...props}) {
     ?
     ([node, path]) => {
       if (Text.isText(node)) {
+
+        // TODO: Better way to do this
+
         const re = new RegExp(`${highlight}`, "gi")
         const matches = Array.from(node.text.matchAll(re))
+
         return matches.map(match => ({
           anchor: {path, offset: match["index"]},
           focus: {path, offset: match["index"] + highlight.length},
@@ -91,7 +83,7 @@ function Element({element, attributes, ...props}) {
 
     case "p":
     default:
-      if (elem2text(element) === "") {
+      if (Node.string(element) === "") {
         return <div className="emptyline" {...attributes} {...props}/>
       }
       return <p {...attributes} {...props}/>
@@ -142,18 +134,18 @@ export function isAstChange(editor) {
 //-----------------------------------------------------------------------------
 
 export function elemByID(editor, id, anchor, focus) {
-  if(!id) return []
+  if(!id) return undefined
 
-  const matches = Array.from(Editor.nodes(editor, {
+  const match = Editor.nodes(editor, {
     at: {
       anchor: anchor ?? Editor.start(editor, []),
       focus: focus ?? Editor.end(editor, [])
     },
     match: (n, p) => Editor.isBlock(editor, n) && n.id === id
-  }))
-  if(!matches.length) return undefined
-  console.assert(matches.length === 1, "elemById: Multiple IDs found!")
-  return matches[0]
+  }).next()
+
+  if(match.done) return undefined
+  return match.value
 }
 
 export function hasElem(editor, id) {
@@ -471,22 +463,24 @@ function withMarkup(editor) {
   editor.insertText = text => {
     const { selection } = editor
 
-    if (selection && Range.isCollapsed(selection)) {
-      const { anchor } = selection
-      const [node, path] = Editor.above(editor, {
-        match: n => Editor.isBlock(editor, n),
-      })
-      //const path = node ? node[1] : []
-      const start = Editor.start(editor, path)
-      const range = { anchor, focus: start }
-      const key = Editor.string(editor, range) + text
+    if(!selection) return insertText()
+    if(!Range.isCollapsed(selection)) return insertText()
 
-      if(key in SHORTCUTS) {
-        Transforms.select(editor, range)
-        Transforms.delete(editor)
-        Transforms.setNodes(editor, SHORTCUTS[key])
-        return
-      }
+    const { anchor } = selection
+    const [node, path] = Editor.above(editor, {
+      match: n => Editor.isBlock(editor, n),
+    })
+
+    //const path = node ? node[1] : []
+    const start = Editor.start(editor, path)
+    const range = { anchor, focus: start }
+    const key = Editor.string(editor, range) + text
+
+    if(key in SHORTCUTS) {
+      Transforms.select(editor, range)
+      Transforms.delete(editor)
+      Transforms.setNodes(editor, SHORTCUTS[key])
+      return
     }
 
     insertText(text)
@@ -503,6 +497,7 @@ function withMarkup(editor) {
   }
 
   const RESETEMPTY = [
+    "synopsis",
     "comment",
     "missing",
   ]
@@ -512,30 +507,40 @@ function withMarkup(editor) {
   editor.insertBreak = () => {
     const { selection } = editor
 
-    if (selection) {
-      const [match] = Editor.nodes(editor, {
-        match: n => elemIsBlock(editor, n)
-      })
+    if(!selection) return insertBreak()
+    if(!Range.isCollapsed(selection)) return insertBreak()
 
-      if (match) {
-        const [node, path] = match
+    const [match] = Editor.nodes(editor, {
+      match: n => elemIsBlock(editor, n)
+    })
 
-        //console.log("Node:", node)
+    if(!match) return insertBreak()
 
-        if(node.type in STYLEAFTER) {
-          const newtype = STYLEAFTER[node.type]
-          Editor.withoutNormalizing(editor, () => {
-            Transforms.splitNodes(editor, {always: true})
-            Transforms.setNodes(editor, {type: newtype})
-          })
-          return
-        }
-        if(RESETEMPTY.includes(node.type) && Node.string(node) == "") {
-          Transforms.setNodes(editor, {type: "p"});
-          return
-        }
+    const [node, path] = match
+
+    //console.log("Node:", node)
+
+    if(node.type === "part") {
+      if(Point.equals(selection.focus, Editor.end(editor, path))) {
+        Transforms.move(editor, {distance: 1, unit: "line"})
+        return
       }
     }
+
+    if(RESETEMPTY.includes(node.type) && Node.string(node) == "") {
+      Transforms.setNodes(editor, {type: "p"});
+      return
+    }
+
+    if(node.type in STYLEAFTER) {
+      const newtype = STYLEAFTER[node.type]
+      Editor.withoutNormalizing(editor, () => {
+        Transforms.splitNodes(editor, {always: true})
+        Transforms.setNodes(editor, {type: newtype})
+      })
+      return
+    }
+
     insertBreak()
   }
 
@@ -546,6 +551,7 @@ function withMarkup(editor) {
 
   editor.deleteBackward = (...args) => {
     const { selection } = editor
+
     if(!selection) return deleteBackward(...args)
     if(!Range.isCollapsed(selection)) return deleteBackward(...args)
 
@@ -571,6 +577,7 @@ function withMarkup(editor) {
       return deleteBackward(...args)
     }
 
+    // Don't remove scene, if it is the first one after part break
     if(node.type === "scene") {
       const prev = Editor.previous(editor, {at: path})
       if(prev && prev[0].type === "part") {
@@ -580,6 +587,7 @@ function withMarkup(editor) {
       }
     }
 
+    // Remove formatting
     Transforms.setNodes(editor, {type: 'p'})
     return
   }
@@ -598,8 +606,8 @@ function withIDs(editor) {
   editor.normalizeNode = entry => {
     const [node, path] = entry
 
-    // Don't give IDs to text blocks
-    if(path.length !== 1) return normalizeNode(entry);
+    // When argument is whole editor (all blocks)
+    if(path.length > 0) return normalizeNode(entry);
 
     //console.log("Path/Node:", path, node)
 
@@ -837,7 +845,7 @@ function edit2part(part, lookup) {
 
   return checkClean({
     type: "part",
-    name: elem2text(head),
+    name: Node.string(head),
     id,
     children: scenes.map(scene => edit2scene(scene, lookup)),
   }, lookup)
@@ -851,7 +859,7 @@ function edit2scene(scene, lookup) {
 
   return checkClean({
     type: "scene",
-    name: elem2text(head),
+    name: Node.string(head),
     id,
     children: paragraphs.map(p => edit2paragraph(p, lookup))
   }, lookup)
@@ -860,7 +868,7 @@ function edit2scene(scene, lookup) {
 // Update paragraph
 
 function edit2paragraph(elem, lookup) {
-  const text = elem2text(elem)
+  const text = Node.string(elem)
   const {id, type} = elem
 
   return checkClean({
