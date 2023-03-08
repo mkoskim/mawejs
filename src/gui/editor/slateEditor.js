@@ -28,18 +28,13 @@ import {section2flat, section2lookup, wcElem, wordcount} from '../../document/ut
 //
 //*****************************************************************************
 
-function searchOffsets(text, search) {
-  const offsets = []
-  const parts = text.split(search)
+function searchOffsets(text, re) {
+  return Array.from(text.matchAll(re)).map(match => match["index"])
+}
 
-  let offset = parts[0].length
-
-  parts.slice(1).forEach(part => {
-    offsets.push(offset)
-    offset += offset + search.length + part.length
-  })
-
-  return offsets
+function text2Regexp(text, opts = "gi") {
+  if(!text) return undefined
+  return new RegExp(text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), opts)
 }
 
 export function SlateEditable({className, highlight, ...props}) {
@@ -48,24 +43,27 @@ export function SlateEditable({className, highlight, ...props}) {
 
   //console.log("Search:", search)
 
+  const re = useMemo(() => text2Regexp(highlight), [highlight])
+
   const highlighter = useCallback(
-    highlight
+    re
     ?
     ([node, path]) => {
-      if (Text.isText(node)) {
-        const offsets = searchOffsets(node.text, highlight)
+      if (!Text.isText(node)) return []
 
-        return offsets.map(offset => ({
-          anchor: {path, offset},
-          focus: {path, offset: offset + highlight.length},
-          highlight: true,
-        }))
-      }
-      return []
+      const offsets = searchOffsets(Node.string(node), re)
+      const ranges = offsets.map(offset => ({
+        anchor: {path, offset},
+        focus: {path, offset: offset + highlight.length},
+        highlight: true,
+      }))
+      //if(ranges.length) console.log(ranges)
+
+      return ranges
     }
     :
     undefined,
-    [highlight]
+    [re]
   )
 
   return <Editable
@@ -299,8 +297,8 @@ export async function scrollToRange(editor, range, focus) {
 //-----------------------------------------------------------------------------
 // Search text within a node
 
-function searchMatchNext(search, leaf, path, offset = 0) {
-  const matches = searchOffsets(leaf.text, search)
+function searchMatchNext(re, leaf, path, offset = 0) {
+  const matches = searchOffsets(leaf.text, re)
     .filter(match => match >= offset)
 
   return matches.length
@@ -308,8 +306,8 @@ function searchMatchNext(search, leaf, path, offset = 0) {
     : undefined
 }
 
-function searchMatchPrev(search, leaf, path, offset) {
-  const matches = searchOffsets(leaf.text, search)
+function searchMatchPrev(re, leaf, path, offset) {
+  const matches = searchOffsets(leaf.text, re)
     .filter(match => match < offset)
 
   return matches.length
@@ -320,30 +318,33 @@ function searchMatchPrev(search, leaf, path, offset) {
 //-----------------------------------------------------------------------------
 // Search text from another node
 
-function searchTextForward(editor, search, path, offset) {
+function searchTextForward(editor, text, path, offset) {
+  const re = text2Regexp(text)
   const [leaf] = Editor.leaf(editor, path)
-  const match = searchMatchNext(search, leaf, path, offset)
+  const match = searchMatchNext(re, leaf, path, offset)
   if(match) return match
 
   const next = Editor.next(editor, {
-    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && searchOffsets(n.text, search).length
+    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && searchOffsets(n.text, re).length
   })
   if(!next) return undefined
   //console.log(next)
-  return searchMatchNext(search, next[0], next[1])
+  return searchMatchNext(re, next[0], next[1])
 }
 
-function searchTextBackward(editor, search, path, offset) {
+function searchTextBackward(editor, text, path, offset) {
+  const re = text2Regexp(text)
+
   const [leaf] = Editor.leaf(editor, path)
-  const match = searchMatchPrev(search, leaf, path, offset)
+  const match = searchMatchPrev(re, leaf, path, offset)
   if(match) return match
 
   const prev = Editor.previous(editor, {
-    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && searchOffsets(n.text, search).length
+    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && searchOffsets(n.text, re).length
   })
   if(!prev) return undefined
   //console.log(next)
-  return searchMatchPrev(search, prev[0], prev[1], prev[0].text.length)
+  return searchMatchPrev(re, prev[0], prev[1], prev[0].text.length)
 }
 
 //-----------------------------------------------------------------------------
@@ -465,8 +466,8 @@ function withMarkup(editor) {
   editor.insertText = text => {
     const { selection } = editor
 
-    if(!selection) return insertText(text)
-    if(!Range.isCollapsed(selection)) return insertText(text)
+    if(!selection) return insertText()
+    if(!Range.isCollapsed(selection)) return insertText()
 
     const { anchor } = selection
     const [node, path] = Editor.above(editor, {
