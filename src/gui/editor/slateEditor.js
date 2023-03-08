@@ -466,8 +466,8 @@ function withMarkup(editor) {
   editor.insertText = text => {
     const { selection } = editor
 
-    if(!selection) return insertText()
-    if(!Range.isCollapsed(selection)) return insertText()
+    if(!selection) return insertText(text)
+    if(!Range.isCollapsed(selection)) return insertText(text)
 
     const { anchor } = selection
     const [node, path] = Editor.above(editor, {
