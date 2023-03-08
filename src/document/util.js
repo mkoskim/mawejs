@@ -70,7 +70,7 @@ export function elemAsText(elem) {
 }
 
 //-----------------------------------------------------------------------------
-// Flat / unflat doc
+// Flat section
 //-----------------------------------------------------------------------------
 
 export function section2flat(section) {
@@ -89,6 +89,10 @@ export function section2flat(section) {
   return flat
 }
 
+//-----------------------------------------------------------------------------
+// Make lookup table
+//-----------------------------------------------------------------------------
+
 export function section2lookup(section) {
   const lookup = new Map()
 
@@ -103,6 +107,32 @@ export function section2lookup(section) {
   }
 
   return lookup
+}
+
+//-----------------------------------------------------------------------------
+// Split words only: This includes only words in paragraphs, not words in
+// comments, synopses, part & section headers and so on.
+//-----------------------------------------------------------------------------
+
+export function section2lines(section) {
+  const lines = new Array()
+
+  for(const part of section.parts) {
+    for(const scene of part.children) {
+      for(const p of scene.children) {
+        if(p.type === "p") lines.push(elemAsText(p))
+      }
+    }
+  }
+
+  return lines
+}
+
+export function section2words(section) {
+  return section2lines(section)
+    .map(line => line.split(/[^\wåäö]+/i))
+    .flat()
+    .filter(word => word.length)
 }
 
 //-----------------------------------------------------------------------------

@@ -28,6 +28,20 @@ import {section2flat, section2lookup, wcElem, wordcount} from '../../document/ut
 //
 //*****************************************************************************
 
+function searchOffsets(text, search) {
+  const offsets = []
+  const parts = text.split(search)
+
+  let offset = parts[0].length
+
+  parts.slice(1).forEach(part => {
+    offsets.push(offset)
+    offset += offset + search.length + part.length
+  })
+
+  return offsets
+}
+
 export function SlateEditable({className, highlight, ...props}) {
   //const renderElement = useCallback(props => <Element {...props} />, [])
   //const renderLeaf = useCallback(props => <Leaf {...props} />, [])
@@ -39,15 +53,11 @@ export function SlateEditable({className, highlight, ...props}) {
     ?
     ([node, path]) => {
       if (Text.isText(node)) {
+        const offsets = searchOffsets(node.text, highlight)
 
-        // TODO: Better way to do this
-
-        const re = new RegExp(`${highlight}`, "gi")
-        const matches = Array.from(node.text.matchAll(re))
-
-        return matches.map(match => ({
-          anchor: {path, offset: match["index"]},
-          focus: {path, offset: match["index"] + highlight.length},
+        return offsets.map(offset => ({
+          anchor: {path, offset},
+          focus: {path, offset: offset + highlight.length},
           highlight: true,
         }))
       }
@@ -289,58 +299,51 @@ export async function scrollToRange(editor, range, focus) {
 //-----------------------------------------------------------------------------
 // Search text within a node
 
-function searchMatches(re, leaf) {
-  re.lastIndex = 0
-  const matches = Array.from(leaf.text.matchAll(re))
-  return matches.map(match => match["index"])
-}
-
-function searchMatchNext(re, leaf, path, offset = 0) {
-  const matches = searchMatches(re, leaf)
+function searchMatchNext(search, leaf, path, offset = 0) {
+  const matches = searchOffsets(leaf.text, search)
     .filter(match => match >= offset)
-  //console.log("Match next:", matches)
-  const match = matches.length ? matches[0] : undefined
-  //console.log(match)
-  return match !== undefined ? {path, offset: match} : undefined
+
+  return matches.length
+    ? {path, offset: matches[0]}
+    : undefined
 }
 
-function searchMatchPrev(re, leaf, path, offset) {
-  const matches = searchMatches(re, leaf)
+function searchMatchPrev(search, leaf, path, offset) {
+  const matches = searchOffsets(leaf.text, search)
     .filter(match => match < offset)
-    .slice(-1)
-  //console.log(matches)
-  const match = matches.length ? matches[0] : undefined
-  //console.log(match)
-  return match !== undefined ? {path, offset: match} : undefined
+
+  return matches.length
+    ? {path, offset: matches[matches.length - 1]}
+    : undefined
 }
 
 //-----------------------------------------------------------------------------
 // Search text from another node
 
-function searchTextForward(editor, re, path, offset) {
+function searchTextForward(editor, search, path, offset) {
   const [leaf] = Editor.leaf(editor, path)
-  const match = searchMatchNext(re, leaf, path, offset)
+  const match = searchMatchNext(search, leaf, path, offset)
   if(match) return match
 
   const next = Editor.next(editor, {
-    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && re.test(n.text)
+    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && searchOffsets(n.text, search).length
   })
   if(!next) return undefined
   //console.log(next)
-  return searchMatchNext(re, next[0], next[1])
+  return searchMatchNext(search, next[0], next[1])
 }
 
-function searchTextBackward(editor, re, path, offset) {
+function searchTextBackward(editor, search, path, offset) {
   const [leaf] = Editor.leaf(editor, path)
-  const match = searchMatchPrev(re, leaf, path, offset)
+  const match = searchMatchPrev(search, leaf, path, offset)
   if(match) return match
 
   const prev = Editor.previous(editor, {
-    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && re.test(n.text)
+    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && searchOffsets(n.text, search).length
   })
   if(!prev) return undefined
   //console.log(next)
-  return searchMatchPrev(re, prev[0], prev[1], prev[0].text.length)
+  return searchMatchPrev(search, prev[0], prev[1], prev[0].text.length)
 }
 
 //-----------------------------------------------------------------------------
@@ -366,8 +369,7 @@ export function searchBackward(editor, text, doFocus=false) {
 
 function searchWithScroll(editor, text, path, offset, forward=true, doFocus=false) {
   if(text) {
-    const re = new RegExp(`${text}`, "gi")
-    const match = (forward ? searchTextForward : searchTextBackward)(editor, re, path, offset)
+    const match = (forward ? searchTextForward : searchTextBackward)(editor, text, path, offset)
 
     if(match) {
       const {path, offset} = match
