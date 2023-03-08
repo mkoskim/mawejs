@@ -64,7 +64,7 @@ export function SlateTOC({style, section, wcFormat, include, activeID, setActive
   )
 
   return <VFiller style={{...style}}>
-    <PartDropArea
+    <PartDropZone
       activeID={activeID}
       parts={section?.parts}
       wcFormat={wcFormatFunction}
@@ -78,7 +78,7 @@ export function SlateTOC({style, section, wcFormat, include, activeID, setActive
 
 //-----------------------------------------------------------------------------
 
-class PartDropArea extends React.PureComponent {
+class PartDropZone extends React.PureComponent {
 
   render() {
     const {parts, activeID} = this.props
@@ -88,11 +88,11 @@ class PartDropArea extends React.PureComponent {
     //console.log("Index update:", activeID)
 
     return <Droppable droppableId={activeID} type="part">
-      {this.DropArea.bind(this)}
+      {this.DropZone.bind(this)}
     </Droppable>
   }
 
-  DropArea(provided, snapshot) {
+  DropZone(provided, snapshot) {
     const {parts, wcFormat, include, onActivate} = this.props
     const {innerRef, droppableProps, placeholder} = provided
 
@@ -145,7 +145,7 @@ class PartItem extends React.PureComponent {
         onActivate={onActivate}
         {...dragHandleProps}
       />
-      <SceneDropArea
+      <SceneDropZone
         id={elem.id}
         scenes={elem.children}
         include={include}
@@ -156,17 +156,17 @@ class PartItem extends React.PureComponent {
   }
 }
 
-class SceneDropArea extends React.PureComponent {
+class SceneDropZone extends React.PureComponent {
 
   render() {
     const {id} = this.props
 
     return <Droppable droppableId={id} type="scene">
-      {this.DropArea.bind(this)}
+      {this.DropZone.bind(this)}
     </Droppable>
   }
 
-  DropArea(provided, snapshot) {
+  DropZone(provided, snapshot) {
     const {scenes, include, wcFormat, onActivate} = this.props
     const {innerRef, droppableProps, placeholder} = provided
     const {isDraggingOver} = snapshot
