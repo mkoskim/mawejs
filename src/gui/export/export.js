@@ -73,7 +73,7 @@ function ExportToolbar({settings, doc}) {
   return <ToolBox style={{background: "white"}}>
     <Button onClick={exportRTF}>Export</Button>
     <Separator/>
-    RTF
+    Format: RTF
     <Separator/>
     <SectionWordInfo sectWithWords={body}/>
     <Separator/>

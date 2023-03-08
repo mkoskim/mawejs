@@ -176,7 +176,7 @@ class SceneDropArea extends React.PureComponent {
       ref={innerRef}
       {...droppableProps}
     >
-    {scenes.map((elem, index) => <SceneItem
+    {include.includes("scene") && scenes.map((elem, index) => <SceneItem
       key={elem.id}
       index={index}
       elem={elem}
