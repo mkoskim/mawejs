@@ -40,6 +40,8 @@ import {
 } from "@mui/material"
 import {OutlinedInput} from "@mui/material";
 
+import {DataGrid} from "@mui/x-data-grid"
+
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export {
   Spinner,
@@ -49,6 +51,7 @@ export {
   ToggleButton, ToggleButtonGroup,
   Menu, MenuItem,
   isHotkey,
+  DataGrid,
 }
 
 //-----------------------------------------------------------------------------

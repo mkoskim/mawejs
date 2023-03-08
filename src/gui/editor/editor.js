@@ -54,6 +54,7 @@ import {
   Separator, Loading, addClass,
   Menu, MenuItem,
   isHotkey,
+  DataGrid,
 } from "../common/factory";
 
 import {
@@ -63,6 +64,7 @@ import {
 
 import { styled } from '@mui/material/styles';
 import {sleep} from "../../util";
+import {section2words, wordTable} from "../../document/util";
 
 //import { mawe } from "../../document";
 
@@ -163,6 +165,18 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   }, [active, focusTo])
 
   //---------------------------------------------------------------------------
+  // Search
+  //---------------------------------------------------------------------------
+
+  const [searchText, _setSearchText] = useState()
+  const highlightText = useDeferredValue(searchText)
+
+  const setSearchText = useCallback(text => {
+    _setSearchText(text)
+    searchFirst(activeEdit(), text)
+  }, [activeEdit])
+
+  //---------------------------------------------------------------------------
   // Index settings: Change these to component props
   //---------------------------------------------------------------------------
 
@@ -191,16 +205,8 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   }
 
   //---------------------------------------------------------------------------
-  // Search
+  // Hotkeys
   //---------------------------------------------------------------------------
-
-  const [searchText, _setSearchText] = useState()
-  const highlightText = useDeferredValue(searchText)
-
-  const setSearchText = useCallback(text => {
-    _setSearchText(text)
-    searchFirst(activeEdit(), text)
-  }, [activeEdit])
 
   useEffect(() => addHotkeys({
     "mod+f": ev => {
@@ -245,26 +251,33 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   /**/
 
   //---------------------------------------------------------------------------
+  // Render elements: what we want is to get menu items from subcomponents to
+  // the toolbar.
+
+  //const [rightpanel, setRightpanel] = useState("noteindex")
+  const [selectRight, setSelectRight] = useState("wordtable")
+
+  const left  = LeftPanel({style: {maxWidth: "400px", width: "400px"}})
+  const right = RightPanel({style: {maxWidth: "300px", width: "300px"}})
+
+  //---------------------------------------------------------------------------
 
   return <>
     <EditToolbar
       //editor={activeEdit()}
       editor={bodyeditor}
+      left={left.menu}
+      right={right.menu}
       searchText={searchText}
       setSearchText={setSearchText}
+      rightpanel={selectRight}
+      setRightpanel={setSelectRight}
       section={doc.story.body}
-      {...{bodyindex_settings, noteindex_settings}}
+      {...{noteindex_settings}}
       />
     <HBox style={{overflow: "auto"}}>
       <DragDropContext onDragEnd={onDragEnd}>
-      <SlateTOC
-        style={{maxWidth: "400px", width: "400px"}}
-        section={doc.story.body}
-        include={indexed1}
-        wcFormat={words1}
-        activeID="body"
-        setActive={setActive}
-        />
+      {left.panel}
       <EditorBox
         editor={bodyeditor}
         value={bodybuffer}
@@ -281,16 +294,100 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
         visible={active === "notes"}
         highlight={highlightText}
         />
-      <SlateTOC
-        style={{maxWidth: "300px", width: "300px"}}
+      {right.panel}
+      </DragDropContext>
+    </HBox>
+    </>
+
+  //---------------------------------------------------------------------------
+  // Side panels
+  //---------------------------------------------------------------------------
+
+  function LeftPanel({style}) {
+    const {width, minWidth, maxWidth} = style
+
+    const menu  = <HBox style={{height: "28px", width, minWidth, maxWidth}}>
+      <ChooseVisibleElements elements={bodyindex_settings.indexed}/>
+      <Separator/>
+      <ChooseWordFormat format={bodyindex_settings.words}/>
+    </HBox>
+
+    const panel = <SlateTOC
+      style={style}
+      section={doc.story.body}
+      include={indexed1}
+      wcFormat={words1}
+      activeID="body"
+      setActive={setActive}
+    />
+
+    return {menu, panel}
+  }
+
+  function RightPanel({style}) {
+    const {width, minWidth, maxWidth} = style
+
+    switch(selectRight) {
+      case "noteindex": return NoteIndex()
+      case "wordtable": return WordTable()
+    }
+
+    function NoteIndex() {
+
+      const menu = <HBox style={{height: "28px", width, minWidth, maxWidth}}>
+        <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
+      </HBox>
+
+      const panel = <SlateTOC
+        style={style}
         section={doc.story.notes}
         include={indexed2}
         activeID="notes"
         setActive={setActive}
-        />
-      </DragDropContext>
-    </HBox>
-    </>
+      />
+
+      return {menu, panel}
+    }
+
+    function WordTable() {
+      const wt = Array.from(wordTable(doc.story.body).entries()).map(([word, count]) => ({id: word, count}))
+      //console.log(wt)
+
+      const menu = <HBox style={{height: "28px", width, minWidth, maxWidth}}>
+        <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
+      </HBox>
+
+      // Use this to test performance of table generation
+      /*
+      return <VBox style={style}>
+        Testing, testing...
+      </VBox>
+      /*/
+      const panel = <VBox style={style}>
+        <DataGrid
+        //style={style}
+        onRowClick={params => setSearchText(params.row.id)}
+        //throttleRowsMs={500}
+        //width="100%"
+        density="compact"
+        columns={[
+          {
+            field: "id",
+            headerName: "Word",
+          },
+          {
+            field: "count",
+            headerName: "Count",
+            align: "right", headerAlign: "right",
+          }
+        ]}
+        rows={wt}
+      />
+      </VBox>
+      /**/
+      return {menu, panel}
+    }
+  }
 
   //---------------------------------------------------------------------------
   // Index DnD
@@ -365,39 +462,17 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 // Toolbar
 //-----------------------------------------------------------------------------
 
-function Searching({editor, searchText, setSearchText}) {
-  if(typeof(searchText) !== "string") return <Button>
-    <Icon.Action.Search onClick={ev => setSearchText("")}/>
-  </Button>
-  return <SearchBox
-    key={searchText}
-    size="small"
-    value={searchText}
-    autoFocus
-    onChange={ev => setSearchText(ev.target.value)}
-    onKeyDown={ev => {
-      if(isHotkey("enter", ev)) {
-        ev.preventDefault();
-        ev.stopPropagation();
-        if(searchText === "") setSearchText(undefined)
-        searchFirst(editor, searchText, true)
-      }
-    }}
-  />
-}
-
-function EditToolbar({bodyindex_settings, editor, section, searchText, setSearchText}) {
+function EditToolbar({editor, section, left, right, searchText, setSearchText}) {
 
   return <ToolBox style={{ background: "white" }}>
-    <ChooseVisibleElements elements={bodyindex_settings.indexed}/>
+    {left}
     <Separator/>
-    <ChooseWordFormat format={bodyindex_settings.words}/>
+    <Searching editor={editor} searchText={searchText} setSearchText={setSearchText}/>
+    <Filler/>
     <Separator/>
     <SectionWordInfo sectWithWords={section}/>
     <Separator/>
-    <Searching editor={editor} searchText={searchText} setSearchText={setSearchText}/>
-    <Separator/>
-    <Filler/>
+    {right}
   </ToolBox>
 }
 
@@ -415,6 +490,59 @@ function EditToolbar({bodyindex_settings, editor, section, searchText, setSearch
   </ToolBox>
   }
 */
+
+class Searching extends React.PureComponent {
+
+  render() {
+    const {editor, searchText, setSearchText} = this.props
+
+    if(typeof(searchText) !== "string") return <Button>
+      <Icon.Action.Search onClick={ev => setSearchText("")}/>
+    </Button>
+
+    return <SearchBox
+      key={searchText}
+      size="small"
+      value={searchText}
+      autoFocus
+      onChange={ev => setSearchText(ev.target.value)}
+      onKeyDown={ev => {
+        if(isHotkey("enter", ev)) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          if(searchText === "") setSearchText(undefined)
+          searchFirst(editor, searchText, true)
+        }
+      }}
+    />
+  }
+}
+
+class ChooseRightPanel extends React.PureComponent {
+
+  buttons = {
+    "noteindex": {
+      tooltip: "Notes Index",
+      icon: <Icon.Placeholder />
+    },
+    "wordtable": {
+      tooltip: "Word frequeny",
+      icon: <Icon.Placeholder />
+    },
+  }
+
+  render() {
+    const {selected, setSelected} = this.props
+
+    const choose = {
+      choices: ["noteindex", "wordtable"],
+      value: selected,
+      setValue: setSelected
+    }
+
+    return MakeToggleGroup(this.buttons, choose, true);
+  }
+}
 
 //-----------------------------------------------------------------------------
 

@@ -114,38 +114,37 @@ export function section2lookup(section) {
 // comments, synopses, part & section headers and so on.
 //-----------------------------------------------------------------------------
 
-export function section2lines(section) {
-  const lines = new Array()
+export function text2words(text) {
+  return text.split(/[^\wåäö]+/i).filter(word => word.length)
+}
+
+export function wordcount(text) {
+  return text2words(text).length
+}
+
+export function wordTable(section) {
+  const wt = new Map()
 
   for(const part of section.parts) {
     for(const scene of part.children) {
       for(const p of scene.children) {
-        if(p.type === "p") lines.push(elemAsText(p))
+        if(p.type !== "p") continue
+        for(const word of text2words(elemAsText(p))) {
+          const lowcase = word.toLowerCase()
+          const count = wt.has(lowcase) ? wt.get(lowcase) : 0
+          wt.set(lowcase, count + 1)
+        }
+
       }
     }
   }
 
-  return lines
-}
-
-export function section2words(section) {
-  return section2lines(section)
-    .map(line => line.split(/[^\wåäö]+/i))
-    .flat()
-    .filter(word => word.length)
+  return wt
 }
 
 //-----------------------------------------------------------------------------
 // Count words
 //-----------------------------------------------------------------------------
-
-export function wordcount(text) {
-  return (
-    text
-    .split(/\s+/g)
-    .filter(s => s.length)
-  ).length
-}
 
 function wcParagraph(elem) {
   const text = elemAsText(elem)

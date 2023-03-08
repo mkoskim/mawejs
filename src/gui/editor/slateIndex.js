@@ -28,18 +28,17 @@ import {
 } from "../common/factory";
 
 import {FormatWords} from "../common/components";
-import {sleep} from "../../util";
 import {elemAsText} from "../../document";
 import {wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
-export function SlateTOC({style, section, wcFormat, include, activeID, setActive})
+export function SlateTOC({style, activeID, section, wcFormat, include, setActive})
 {
   const onActivate = useCallback(id => {
     //console.log("Activate:", activeID, id)
     setActive(activeID, id)
-  }, [])
+  }, [activeID])
 
   const total = (["percent", "cumulative"].includes(wcFormat))
     ? section.words?.text

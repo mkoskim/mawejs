@@ -44,8 +44,9 @@ export function SectionWordInfo({sectWithWords}) {
 // Button group to choose which elements are shown
 //-----------------------------------------------------------------------------
 
-export function ChooseVisibleElements({elements}) {
-  const buttons = {
+export class ChooseVisibleElements extends React.PureComponent {
+
+  buttons = {
     "scene": {
       tooltip: "Show scenes",
       icon: <Icon.BlockType.Scene/>
@@ -64,7 +65,10 @@ export function ChooseVisibleElements({elements}) {
     },
   }
 
-  return MakeToggleGroup(buttons, elements)
+  render() {
+    const {elements} = this.props
+    return MakeToggleGroup(this.buttons, elements)
+  }
 }
 
 //-----------------------------------------------------------------------------
