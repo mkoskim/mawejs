@@ -124,7 +124,7 @@ export function toXML(story) {
         optional("deadline", head.deadline),
         optional("covertext", head.covertext),
         optional("version", head.version),
-        toWords("words", head.words)
+        //toWords("words", head.words)
       )
     })
 
@@ -133,6 +133,7 @@ export function toXML(story) {
       return toElem({type, elements: [toText(value)]})
     }
 
+    /*
     function toWords(type, field) {
       if(!field) return undefined
       const elements = toElements(
@@ -145,6 +146,7 @@ export function toXML(story) {
 
       return toElem({type, elements})
     }
+    */
   }
 
   function toPart(part) {

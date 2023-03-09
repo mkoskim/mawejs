@@ -129,18 +129,7 @@ export function fromXML(root) {
       deadline: optional(head, "deadline", elem2Text),
       covertext: optional(head, "covertext", elem2Text),
       version: optional(head, "version", elem2Text),
-      //words: optional(head, "words", parseWords),
     }
-
-    /*
-    function parseWords(words) {
-      return {
-        text: optional(words, "text", elem2Text),
-        missing: optional(words, "missing", elem2Text),
-        comments: optional(words, "comments", elem2Text),
-      }
-    }
-    */
 
     function optional(elem, name, parse) {
       const field = elemFind(elem, name)
