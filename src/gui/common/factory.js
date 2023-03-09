@@ -37,6 +37,7 @@ import {
   Grid,
   Typography,
   Menu, MenuItem,
+  //Select, InputLabel, FormControl,
 } from "@mui/material"
 import {OutlinedInput} from "@mui/material";
 
@@ -51,6 +52,7 @@ export {
   ToggleButton, ToggleButtonGroup,
   Menu, MenuItem,
   isHotkey,
+  //Select, InputLabel, FormControl,
 }
 
 //-----------------------------------------------------------------------------
@@ -336,11 +338,13 @@ export class MakeToggleGroup extends React.PureComponent {
       </ToggleButton>
 
       const {tooltip, icon} = buttons[choice]
-      return <ToggleButton key={choice} value={choice}>
+      if(tooltip) return <ToggleButton key={choice} value={choice}>
         <Tooltip title={tooltip}>
           {icon}
         </Tooltip>
       </ToggleButton>
+
+      return <ToggleButton key={choice} value={choice}>{icon}</ToggleButton>
     }
   }
 }
