@@ -186,6 +186,16 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   const [indexed2, setIndexed2] = useState(["part", "scene", "synopsis"])
 
   //---------------------------------------------------------------------------
+  // Render elements: what we want is to get menu items from subcomponents to
+  // the toolbar.
+
+  const [selectRight, setSelectRight] = useState("noteindex")
+
+  const left  = LeftPanel({style: {maxWidth: "400px", width: "400px"}})
+  //const right = RightPanel({style: })
+  const rightstyle = {maxWidth: "300px", width: "300px"}
+
+  //---------------------------------------------------------------------------
   // Hotkeys
   //---------------------------------------------------------------------------
 
@@ -230,16 +240,6 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
     </HBox>
     </>
   /**/
-
-  //---------------------------------------------------------------------------
-  // Render elements: what we want is to get menu items from subcomponents to
-  // the toolbar.
-
-  const [selectRight, setSelectRight] = useState("wordtable")
-
-  const left  = LeftPanel({style: {maxWidth: "400px", width: "400px"}})
-  //const right = RightPanel({style: })
-  const rightstyle = {maxWidth: "300px", width: "300px"}
 
   //---------------------------------------------------------------------------
 
