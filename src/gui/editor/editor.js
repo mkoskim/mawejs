@@ -219,7 +219,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
     },
     leftstyle:    {maxWidth: "400px", width: "400px"},
     rightstyle:   {maxWidth: "300px", width: "300px"},
-    toolboxstyle: {background: "white", height: "44px"},
+    toolboxstyle: {background: "white"},
   }
 
   //---------------------------------------------------------------------------
@@ -432,6 +432,32 @@ function RightPanel({settings}) {
   }
 }
 
+class ChooseRightPanel extends React.PureComponent {
+
+  buttons = {
+    "noteindex": {
+      tooltip: "Notes Index",
+      icon: <Icon.View.Index />
+    },
+    "wordtable": {
+      tooltip: "Word frequency",
+      icon: <Icon.View.List />
+    },
+  }
+
+  render() {
+    const {selected, setSelected} = this.props
+
+    return <MakeToggleGroup
+      buttons={this.buttons}
+      choices={["noteindex", "wordtable"]}
+      selected={selected}
+      setSelected={setSelected}
+      exclusive={true}
+    />
+  }
+}
+
 //-----------------------------------------------------------------------------
 // Wordtable
 //-----------------------------------------------------------------------------
@@ -457,9 +483,17 @@ function WordTable({section, setSearchText}) {
     Testing, testing...
   </VBox>
   /**/
-  return <div className="VBox TOC">
-    {wt.map(([word, count]) => <WordCountRow key={word} className={"Entry"} word={word} count={count} onSelect={onSelect}/>)}
-  </div>
+  return <VBox style={{overflow: "auto"}}>
+    <ToolBox>
+      <Input
+        size="small"
+      />
+      <Button tooltip="Sort order"><Icon.Arrow.Down/></Button>
+    </ToolBox>
+    <div className="VBox TOC">
+      {wt.map(([word, count]) => <WordCountRow key={word} className={"Entry"} word={word} count={count} onSelect={onSelect}/>)}
+    </div>
+  </VBox>
 }
 
 class WordCountRow extends React.PureComponent {
@@ -492,32 +526,6 @@ class WordCountRow extends React.PureComponent {
   </ToolBox>
   }
 */
-
-class ChooseRightPanel extends React.PureComponent {
-
-  buttons = {
-    "noteindex": {
-      tooltip: "Notes Index",
-      icon: <Icon.Placeholder />
-    },
-    "wordtable": {
-      tooltip: "Word frequeny",
-      icon: <Icon.Placeholder />
-    },
-  }
-
-  render() {
-    const {selected, setSelected} = this.props
-
-    return <MakeToggleGroup
-      buttons={this.buttons}
-      choices={["noteindex", "wordtable"]}
-      selected={selected}
-      setSelected={setSelected}
-      exclusive={true}
-    />
-  }
-}
 
 class Searching extends React.PureComponent {
 

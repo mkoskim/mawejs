@@ -90,9 +90,24 @@ export const Icon = {
   Help: muiIcons.HelpOutline,
   Menu: muiIcons.Menu,
 
-  NewFile: muiIcons.NoteAddOutlined,
-  NewFolder: muiIcons.CreateNewFolderOutlined,
-  AddFiles: muiIcons.FolderOpenOutlined,
+  Arrow: {
+    Left: muiIcons.ArrowLeft,
+    Right: muiIcons.ArrowRight,
+    Up: muiIcons.ArrowDropUp,
+    Down: muiIcons.ArrowDropDown,
+  },
+
+  View: {
+    Index: muiIcons.FormatAlignLeft,
+    List: muiIcons.FormatListNumberedRtl,
+    Edit: muiIcons.ArticleOutlined,
+    Outline: muiIcons.GridViewOutlined,
+    Export: muiIcons.PrintOutlined,
+  },
+
+  //NewFile: muiIcons.NoteAddOutlined,
+  //NewFolder: muiIcons.CreateNewFolderOutlined,
+  //AddFiles: muiIcons.FolderOpenOutlined,
 
   Settings: muiIcons.SettingsOutlined,
 
@@ -370,7 +385,7 @@ export class Input extends React.Component {
 }
 /*/
 export {
-  TextField as Input,
+  OutlinedInput as Input,
 }
 
 export function SearchBox({onCancel, ...props})

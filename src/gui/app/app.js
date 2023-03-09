@@ -235,9 +235,9 @@ function WorkspaceTab({mode, doc, setDoc}) {
   }));
 
   const viewbuttons = {
-    "editor": {tooltip: "Editor", icon: <Icon.Action.Edit/>},
-    "outliner": {tooltip: "Outline", icon: <Icon.Action.Cards/>},
-    "export": {tooltip: "Export", icon: <Icon.Action.Print/>},
+    "editor": {tooltip: "Editor", icon: <Icon.View.Edit/>},
+    "outliner": {tooltip: "Outline", icon: <Icon.View.Outline/>},
+    "export": {tooltip: "Export", icon: <Icon.View.Export/>},
   }
 
   return <ToolBox>
