@@ -64,7 +64,7 @@ import {
 
 import { styled } from '@mui/material/styles';
 import {sleep} from "../../util";
-import {section2words, wordTable} from "../../document/util";
+import {section2words, createWordTable} from "../../document/util";
 
 //import { mawe } from "../../document";
 
@@ -191,9 +191,32 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 
   const [selectRight, setSelectRight] = useState("noteindex")
 
-  const left  = LeftPanel({style: {maxWidth: "400px", width: "400px"}})
+  const leftstyle  = {maxWidth: "400px", width: "400px"}
   //const right = RightPanel({style: })
   const rightstyle = {maxWidth: "300px", width: "300px"}
+
+  //---------------------------------------------------------------------------
+
+  const settings = {
+    doc,
+    selectRight,
+    setSelectRight,
+    searchText,
+    highlightText,
+    setSearchText,
+    activeID: active,
+    setActive,
+    body: {
+      indexed: indexed1,
+      setIndexed: setIndexed1,
+      words: words1,
+      setWords: setWords1
+    },
+    notes: {
+      indexed: indexed2,
+      setIndexed: setIndexed2,
+    }
+  }
 
   //---------------------------------------------------------------------------
   // Hotkeys
@@ -245,18 +268,18 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 
   return <>
     <ToolBox style={{ background: "white" }}>
-      {left.menu}
+      <LeftPanelMenu style={leftstyle} settings={settings}/>
       <Separator/>
       <Searching editor={activeEdit()} searchText={searchText} setSearchText={setSearchText}/>
       <Filler/>
       <Separator/>
       <SectionWordInfo sectWithWords={doc.story.body}/>
       <Separator/>
-      <RightPanelMenu style={rightstyle}/>
+      <RightPanelMenu style={rightstyle} settings={settings}/>
     </ToolBox>
     <HBox style={{overflow: "auto"}}>
       <DragDropContext onDragEnd={onDragEnd}>
-      {left.panel}
+      <LeftPanel style={leftstyle} settings={settings}/>
       <EditorBox
         editor={bodyeditor}
         value={bodybuffer}
@@ -273,115 +296,10 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
         visible={active === "notes"}
         highlight={highlightText}
         />
-      <RightPanel style={rightstyle}/>
+      <RightPanel style={rightstyle} settings={settings} />
       </DragDropContext>
     </HBox>
-    </>
-
-  //---------------------------------------------------------------------------
-  // Left panels
-  //---------------------------------------------------------------------------
-
-  function LeftPanel({style}) {
-    const {width, minWidth, maxWidth} = style
-
-    const menu  = <HBox style={{height: "32px", width, minWidth, maxWidth}}>
-      <ChooseVisibleElements
-        choices={["scene", "synopsis", "missing", "comment"]}
-        selected={indexed1}
-        setSelected={setIndexed1}
-      />
-      <Separator/>
-      <ChooseWordFormat
-        choices={["off", "numbers", "percent", "cumulative"]}
-        selected={words1}
-        setSelected={setWords1}
-      />
-    </HBox>
-
-    const panel = <SlateTOC
-      style={style}
-      section={doc.story.body}
-      include={indexed1}
-      wcFormat={words1}
-      activeID="body"
-      setActive={setActive}
-    />
-
-    return {menu, panel}
-  }
-
-  //---------------------------------------------------------------------------
-  // Right panels
-  //---------------------------------------------------------------------------
-
-  function RightPanelMenu({style}) {
-    const {width, minWidth, maxWidth} = style
-    const menustyle={width, minWidth, maxWidth}
-
-    switch(selectRight) {
-      case "noteindex":
-      case "wordtable":
-        return <HBox style={menustyle}>
-          <Filler />
-          <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
-          </HBox>
-      default: break;
-    }
-    return null
-  }
-
-  function RightPanel({style}) {
-
-    switch(selectRight) {
-      case "noteindex": return NoteIndex()
-      case "wordtable": return WordTable()
-    }
-
-    function NoteIndex() {
-      return <SlateTOC
-        style={style}
-        section={doc.story.notes}
-        include={indexed2}
-        activeID="notes"
-        setActive={setActive}
-      />
-    }
-
-    function WordTable() {
-      const wt = Array.from(wordTable(doc.story.body).entries()).map(([word, count]) => ({id: word, count}))
-      //console.log(wt)
-
-      // Use this to test performance of table generation
-      /*
-      return <VBox style={style}>
-        Testing, testing...
-      </VBox>
-      /*/
-      return <VBox style={style}>
-        <DataGrid
-        //style={style}
-        onRowClick={params => setSearchText(params.row.id)}
-        //throttleRowsMs={500}
-        //width="100%"
-        density="compact"
-        columns={[
-          {
-            field: "id",
-            headerName: "Word",
-          },
-          {
-            field: "count",
-            headerName: "Count",
-            align: "right", headerAlign: "right",
-          }
-        ]}
-        rows={wt}
-      />
-      </VBox>
-      /**/
-    }
-  }
+  </>
 
   //---------------------------------------------------------------------------
   // Index DnD
@@ -450,6 +368,127 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
         return;
     }
   }
+}
+
+//---------------------------------------------------------------------------
+// Left panels
+//---------------------------------------------------------------------------
+
+function LeftPanelMenu({style, settings}) {
+  const {width, minWidth, maxWidth} = style
+  const menustyle={width, minWidth, maxWidth}
+
+  return <HBox style={menustyle}>
+    <ChooseVisibleElements
+      choices={["scene", "synopsis", "missing", "comment"]}
+      selected={settings.body.indexed}
+      setSelected={settings.body.setIndexed}
+    />
+    <Separator/>
+    <ChooseWordFormat
+      choices={["off", "numbers", "percent", "cumulative"]}
+      selected={settings.body.words}
+      setSelected={settings.body.setWords}
+    />
+  </HBox>
+}
+
+function LeftPanel({style, settings}) {
+  const {doc, setActive} = settings
+
+  return <SlateTOC
+    style={style}
+    section={doc.story.body}
+    include={settings.body.indexed}
+    wcFormat={settings.body.words}
+    activeID="body"
+    setActive={setActive}
+  />
+}
+
+//---------------------------------------------------------------------------
+// Right panels
+//---------------------------------------------------------------------------
+
+function RightPanelMenu({style, settings}) {
+  const {selectRight, setSelectRight} = settings
+
+  const {width, minWidth, maxWidth} = style
+  const menustyle={width, minWidth, maxWidth}
+
+  switch(selectRight) {
+    case "noteindex":
+    case "wordtable":
+      return <HBox style={menustyle}>
+        <Filler />
+        <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
+        </HBox>
+    default: break;
+  }
+  return null
+}
+
+function RightPanel({style, settings}) {
+  const {doc, selectRight, setActive, setSearchText} = settings
+
+  switch(selectRight) {
+    case "noteindex":
+      return <SlateTOC
+        style={style}
+        section={doc.story.notes}
+        include={settings.notes.indexed}
+        wcFormat={settings.notes.words}
+        activeID="notes"
+        setActive={setActive}
+      />
+    case "wordtable":
+      return <WordTable
+        style={style}
+        section={doc.story.body}
+        setSearchText={setSearchText}
+      />
+    default: break;
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Wordtable
+//-----------------------------------------------------------------------------
+
+function WordTable({style, section, setSearchText}) {
+  //console.log(doc.story.body.words)
+
+  const wt = Array.from(createWordTable(section).entries()).map(([word, count]) => ({id: word, count}))
+  //console.log(wt)
+
+  // Use this to test performance of table generation
+  /*
+  return <VBox style={style}>
+    Testing, testing...
+  </VBox>
+  /*/
+  return <VBox style={style}>
+    <DataGrid
+    //style={style}
+    onRowClick={params => setSearchText(params.row.id)}
+    //throttleRowsMs={500}
+    //width="100%"
+    density="compact"
+    columns={[
+      {
+        field: "id",
+        headerName: "Word",
+      },
+      {
+        field: "count",
+        headerName: "Count",
+        align: "right", headerAlign: "right",
+      }
+    ]}
+    rows={wt}
+  />
+  </VBox>
+  /**/
 }
 
 //-----------------------------------------------------------------------------

@@ -118,11 +118,31 @@ export function text2words(text) {
   return text.split(/[^\wåäö]+/i).filter(word => word.length)
 }
 
+
 export function wordcount(text) {
   return text2words(text).length
 }
 
-export function wordTable(section) {
+function words2map(words) {
+  const wt = new Map()
+
+  for(const word of words) {
+    const lowcase = word.toLowerCase()
+    const count = wt.has(lowcase) ? wt.get(lowcase) : 0
+    wt.set(lowcase, count + 1)
+  }
+
+  return wt
+}
+
+function wordmapUpdate(map, wt) {
+  for(const [word, count] of wt.entries()) {
+    const prev = map.has(word) ? map.get(word) : 0
+    map.set(word, prev + count)
+  }
+}
+
+export function createWordTable(section) {
   const wt = new Map()
 
   for(const part of section.parts) {
@@ -149,11 +169,13 @@ export function wordTable(section) {
 function wcParagraph(elem) {
   const text = elemAsText(elem)
   const chars = text.length
-  const words = wordcount(text)
+  const words = text2words(text)
+  const wc = words.length
 
   switch(elem.type) {
-    case "p": return { chars, text: words }
-    case "missing": return { chars, missing: words }
+    //case "p": return { chars, text: wc, map: words2map(words) }
+    case "p": return { chars, text: wc }
+    case "missing": return { chars, missing: wc }
     //case "comment": return { chars, comment: words }
   }
   return undefined
@@ -161,6 +183,7 @@ function wcParagraph(elem) {
 
 export function wcChildren(children) {
   var words = {
+    //map: new Map(),
     chars: 0,
     text: 0,
     missing: 0,
@@ -171,6 +194,7 @@ export function wcChildren(children) {
     words.chars += elem.words.chars ?? 0
     words.text += elem.words.text ?? 0
     words.missing += elem.words.missing ?? 0
+    //if(elem.words.map) wordmapUpdate(words.map, elem.words.map)
   }
 
   return words
