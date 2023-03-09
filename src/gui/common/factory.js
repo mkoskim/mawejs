@@ -238,29 +238,34 @@ export function ToolBox({style, ...props}) {
 
 //-----------------------------------------------------------------------------
 
-export function MakeToggleGroup(buttons, group, exclusive) {
-  if(!group?.choices) return null;
+export class MakeToggleGroup extends React.PureComponent {
 
-  function getButton(choice) {
-    if(!(choice in buttons)) return <ToggleButton key={choice} value={choice}>
-      {choice}
-    </ToggleButton>
+  render() {
+    const {buttons, choices, selected, setSelected, exclusive = false} = this.props
 
-    const {tooltip, icon} = buttons[choice]
-    return <ToggleButton key={choice} value={choice}>
-      <Tooltip title={tooltip}>
-        {icon}
-      </Tooltip>
-    </ToggleButton>
+    if(!choices) return null;
+
+    return <BorderlessToggleButtonGroup
+      exclusive={exclusive}
+      value={selected}
+      onChange={(e, value) => (exclusive ? value : true) && setSelected(value)}
+    >
+      {choices.map(choice => makeButton(choice))}
+    </BorderlessToggleButtonGroup>
+
+    function makeButton(choice) {
+      if(!(choice in buttons)) return <ToggleButton key={choice} value={choice}>
+        {choice}
+      </ToggleButton>
+
+      const {tooltip, icon} = buttons[choice]
+      return <ToggleButton key={choice} value={choice}>
+        <Tooltip title={tooltip}>
+          {icon}
+        </Tooltip>
+      </ToggleButton>
+    }
   }
-
-  return <BorderlessToggleButtonGroup
-    exclusive={exclusive}
-    value={group.value}
-    onChange={(e, value) => (exclusive ? value : true) && group.setValue(value)}
-  >
-    {group.choices.map(choice => getButton(choice))}
-  </BorderlessToggleButtonGroup>
 }
 
 const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({

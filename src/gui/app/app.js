@@ -132,8 +132,8 @@ export default function App(props) {
 
   const mode = {
     choices: ["editor", "outliner", "export"],
-    value: _mode,
-    setValue: _setMode,
+    selected: _mode,
+    setSelected: _setMode,
   }
 
   const [focusTo, _setFocusTo] = useState(undefined)
@@ -188,7 +188,7 @@ export default function App(props) {
 function ChooseView({mode, doc, setDoc, focusTo, setFocusTo}) {
   const props={doc, setDoc, focusTo, setFocusTo}
 
-  switch(mode.value) {
+  switch(mode.selected) {
     case "editor": return <SingleEditView {...props}/>
     case "outliner": return <Organizer {...props}/>
     case "export": return <Export {...props}/>
@@ -210,6 +210,12 @@ function WorkspaceTab({mode, doc, setDoc}) {
     "mod+s": (e) => onSaveFile(cbprops),
   }));
 
+  const viewbuttons = {
+    "editor": {tooltip: "Editor", icon: <Icon.Action.Edit/>},
+    "outliner": {tooltip: "Outline", icon: <Icon.Action.Cards/>},
+    "export": {tooltip: "Export", icon: <Icon.Action.Print/>},
+  }
+
   return <ToolBox>
     <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
@@ -226,11 +232,11 @@ function WorkspaceTab({mode, doc, setDoc}) {
     }</PopupState>
 
     <Separator/>
-    {MakeToggleGroup({
-      "editor": {tooltip: "Editor", icon: <Icon.Action.Edit/>},
-      "outliner": {tooltip: "Outline", icon: <Icon.Action.Cards/>},
-      "export": {tooltip: "Export", icon: <Icon.Action.Print/>},
-    }, mode, true)}
+    <MakeToggleGroup
+      buttons={viewbuttons}
+      exclusive={true}
+      {...mode}
+    />
 
     <Separator/>
     <Label text={doc.file?.name ?? "<Unnamed>"}/>

@@ -66,8 +66,13 @@ export class ChooseVisibleElements extends React.PureComponent {
   }
 
   render() {
-    const {elements} = this.props
-    return MakeToggleGroup(this.buttons, elements)
+    const {choices, selected, setSelected} = this.props
+    return <MakeToggleGroup
+      buttons={this.buttons}
+      choices={choices}
+      selected={selected}
+      setSelected={setSelected}
+    />
   }
 }
 
@@ -75,8 +80,9 @@ export class ChooseVisibleElements extends React.PureComponent {
 // Button group to choose how words are shown
 //-----------------------------------------------------------------------------
 
-export function ChooseWordFormat({format}) {
-  const buttons = {
+export class ChooseWordFormat extends React.PureComponent {
+
+  buttons = {
     "off": {
       tooltip: "Don't show words",
       icon: <Icon.StatType.Off />
@@ -95,7 +101,20 @@ export function ChooseWordFormat({format}) {
     },
   }
 
-  return MakeToggleGroup(buttons, format, true)
+  render() {
+
+  }
+
+  render() {
+    const {choices, selected, setSelected} = this.props
+    return <MakeToggleGroup
+      buttons={this.buttons}
+      choices={choices}
+      selected={selected}
+      setSelected={setSelected}
+      exclusive={true}
+    />
+  }
 }
 
 export function FormatWords({format, words, cumulative, total}) {

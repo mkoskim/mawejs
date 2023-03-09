@@ -183,26 +183,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   const [indexed1, setIndexed1] = useState(["part", "scene", "synopsis"])
   const [words1, setWords1] = useState("numbers")
 
-  const bodyindex_settings = {
-    indexed: {
-      choices:  ["scene", "synopsis", "missing", "comment"],
-      value:    indexed1,
-      setValue: setIndexed1,
-    },
-    words: {
-      choices:  ["off", "numbers", "percent", "cumulative"],
-      value:    words1,
-      setValue: setWords1,
-    },
-  }
-
   const [indexed2, setIndexed2] = useState(["part", "scene", "synopsis"])
-
-  const noteindex_settings = {
-    indexed: {
-      value: indexed2,
-    }
-  }
 
   //---------------------------------------------------------------------------
   // Hotkeys
@@ -254,27 +235,25 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   // Render elements: what we want is to get menu items from subcomponents to
   // the toolbar.
 
-  //const [rightpanel, setRightpanel] = useState("noteindex")
   const [selectRight, setSelectRight] = useState("wordtable")
 
   const left  = LeftPanel({style: {maxWidth: "400px", width: "400px"}})
-  const right = RightPanel({style: {maxWidth: "300px", width: "300px"}})
+  //const right = RightPanel({style: })
+  const rightstyle = {maxWidth: "300px", width: "300px"}
 
   //---------------------------------------------------------------------------
 
   return <>
-    <EditToolbar
-      //editor={activeEdit()}
-      editor={bodyeditor}
-      left={left.menu}
-      right={right.menu}
-      searchText={searchText}
-      setSearchText={setSearchText}
-      rightpanel={selectRight}
-      setRightpanel={setSelectRight}
-      section={doc.story.body}
-      {...{noteindex_settings}}
-      />
+    <ToolBox style={{ background: "white" }}>
+      {left.menu}
+      <Separator/>
+      <Searching editor={activeEdit()} searchText={searchText} setSearchText={setSearchText}/>
+      <Filler/>
+      <Separator/>
+      <SectionWordInfo sectWithWords={doc.story.body}/>
+      <Separator/>
+      <RightPanelMenu style={rightstyle}/>
+    </ToolBox>
     <HBox style={{overflow: "auto"}}>
       <DragDropContext onDragEnd={onDragEnd}>
       {left.panel}
@@ -294,22 +273,30 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
         visible={active === "notes"}
         highlight={highlightText}
         />
-      {right.panel}
+      <RightPanel style={rightstyle}/>
       </DragDropContext>
     </HBox>
     </>
 
   //---------------------------------------------------------------------------
-  // Side panels
+  // Left panels
   //---------------------------------------------------------------------------
 
   function LeftPanel({style}) {
     const {width, minWidth, maxWidth} = style
 
-    const menu  = <HBox style={{height: "28px", width, minWidth, maxWidth}}>
-      <ChooseVisibleElements elements={bodyindex_settings.indexed}/>
+    const menu  = <HBox style={{height: "32px", width, minWidth, maxWidth}}>
+      <ChooseVisibleElements
+        choices={["scene", "synopsis", "missing", "comment"]}
+        selected={indexed1}
+        setSelected={setIndexed1}
+      />
       <Separator/>
-      <ChooseWordFormat format={bodyindex_settings.words}/>
+      <ChooseWordFormat
+        choices={["off", "numbers", "percent", "cumulative"]}
+        selected={words1}
+        setSelected={setWords1}
+      />
     </HBox>
 
     const panel = <SlateTOC
@@ -324,8 +311,27 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
     return {menu, panel}
   }
 
-  function RightPanel({style}) {
+  //---------------------------------------------------------------------------
+  // Right panels
+  //---------------------------------------------------------------------------
+
+  function RightPanelMenu({style}) {
     const {width, minWidth, maxWidth} = style
+    const menustyle={width, minWidth, maxWidth}
+
+    switch(selectRight) {
+      case "noteindex":
+      case "wordtable":
+        return <HBox style={menustyle}>
+          <Filler />
+          <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
+          </HBox>
+      default: break;
+    }
+    return null
+  }
+
+  function RightPanel({style}) {
 
     switch(selectRight) {
       case "noteindex": return NoteIndex()
@@ -333,29 +339,18 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
     }
 
     function NoteIndex() {
-
-      const menu = <HBox style={{height: "28px", width, minWidth, maxWidth}}>
-        <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
-      </HBox>
-
-      const panel = <SlateTOC
+      return <SlateTOC
         style={style}
         section={doc.story.notes}
         include={indexed2}
         activeID="notes"
         setActive={setActive}
       />
-
-      return {menu, panel}
     }
 
     function WordTable() {
       const wt = Array.from(wordTable(doc.story.body).entries()).map(([word, count]) => ({id: word, count}))
       //console.log(wt)
-
-      const menu = <HBox style={{height: "28px", width, minWidth, maxWidth}}>
-        <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
-      </HBox>
 
       // Use this to test performance of table generation
       /*
@@ -363,7 +358,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
         Testing, testing...
       </VBox>
       /*/
-      const panel = <VBox style={style}>
+      return <VBox style={style}>
         <DataGrid
         //style={style}
         onRowClick={params => setSearchText(params.row.id)}
@@ -385,7 +380,6 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
       />
       </VBox>
       /**/
-      return {menu, panel}
     }
   }
 
@@ -462,20 +456,6 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 // Toolbar
 //-----------------------------------------------------------------------------
 
-function EditToolbar({editor, section, left, right, searchText, setSearchText}) {
-
-  return <ToolBox style={{ background: "white" }}>
-    {left}
-    <Separator/>
-    <Searching editor={editor} searchText={searchText} setSearchText={setSearchText}/>
-    <Filler/>
-    <Separator/>
-    <SectionWordInfo sectWithWords={section}/>
-    <Separator/>
-    {right}
-  </ToolBox>
-}
-
   /*
   function EditToolbar() {
   const editor = useSlate()
@@ -534,13 +514,13 @@ class ChooseRightPanel extends React.PureComponent {
   render() {
     const {selected, setSelected} = this.props
 
-    const choose = {
-      choices: ["noteindex", "wordtable"],
-      value: selected,
-      setValue: setSelected
-    }
-
-    return MakeToggleGroup(this.buttons, choose, true);
+    return <MakeToggleGroup
+      buttons={this.buttons}
+      choices={["noteindex", "wordtable"]}
+      selected={selected}
+      setSelected={setSelected}
+      exclusive={true}
+    />
   }
 }
 
