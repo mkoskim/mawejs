@@ -36,6 +36,12 @@ At topmost, there is the selection of view. Below that is a toolbar to change se
 the editor. The main editing view contains three parts: (1) index of the draft, (2)
 editor display, and (3) index of notes.
 
+A new feature is showing a pie diagram of the story, and compare it to selected template:
+
+![image](https://user-images.githubusercontent.com/10298548/224183284-2868042d-0488-4d57-b3cc-9140487cc44f.png)
+
+There is currently just K. M. Weiland's story structure templates, but we may add e.g. Blake Snyder's Betasheet as one option.
+
 ## What is Mawe?
 
 Mawe is meant for writing stories - not press articles, blog posts, technical documents or anything else but stories. That means it has tools to split the text mass to somewhat manageable pieces, and keep "meta text" - plans, sketches and such - together with the final result (story itself).
