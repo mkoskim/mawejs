@@ -14,10 +14,11 @@ import React, {
   useEffect, useState, useReducer, useCallback
 } from "react"
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/material/styles';
 
 import {
+  theme,
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Icon, Tooltip,
   ToggleButton, ToggleButtonGroup,
@@ -35,84 +36,11 @@ import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import {SingleEditView} from "../editor/editor";
 import {Organizer} from "../outliner/outliner";
 import {Export} from "../export/export"
+import {Chart} from "../chart/chart"
 
 import {mawe} from "../../document"
 
 import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
-
-//-----------------------------------------------------------------------------
-
-const fs = require("../../system/localfs")
-
-//-----------------------------------------------------------------------------
-
-const myTheme = createTheme({
-  palette: {
-    primary: {
-      main: "#222",
-    },
-  },
-  /*
-  typography: {
-    fontSize: 12,
-  },
-  */
-  components: {
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          paddingLeft: "6px",
-        },
-        input: {
-        }
-      }
-    },
-    MuiInputAdornment: {
-      styleOverrides: {
-        root: {
-        }
-      }
-    },
-    MuiInputBase: {
-      styleOverrides: {
-        root: {
-        }
-      }
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          minWidth: "36px",
-          minHeight: "36px",
-          fontSize: "12pt",
-          lineHeight: 1.0,
-          padding: "4px 4px",
-          margin: 0,
-        },
-      }
-    },
-    MuiToggleButton: {
-      styleOverrides: {
-        root: {
-          minWidth: "36px",
-          minHeight: "36px",
-        },
-      }
-    },
-    MuiBreadcrumbs: {
-      styleOverrides: {
-      }
-    },
-    MuiTooltip: {
-      styleOverrides: {
-        tooltip: {
-          fontSize: "11pt",
-        }
-      }
-    },
-  },
-});
 
 //-----------------------------------------------------------------------------
 
@@ -155,7 +83,7 @@ export default function App(props) {
   );
 
   const mode = {
-    choices: ["editor", "outliner", "export"],
+    choices: ["editor", "outliner", "chart", "export"],
     selected: _mode,
     setSelected: _setMode,
   }
@@ -200,7 +128,7 @@ export default function App(props) {
   const viewprops = {mode, doc, setDoc, focusTo, setFocusTo}
 
   return (
-    <ThemeProvider theme={myTheme}>
+    <ThemeProvider theme={theme}>
     <VBox className="ViewPort">
       <WorkspaceTab {...viewprops}/>
       <ChooseView key={doc.file?.id} {...viewprops}/>
@@ -216,6 +144,7 @@ function ChooseView({mode, doc, setDoc, focusTo, setFocusTo}) {
     case "editor": return <SingleEditView {...props}/>
     case "outliner": return <Organizer {...props}/>
     case "export": return <Export {...props}/>
+    case "chart": return <Chart {...props}/>
     default: break;
   }
   return null;
@@ -237,6 +166,7 @@ function WorkspaceTab({mode, doc, setDoc}) {
   const viewbuttons = {
     "editor": {tooltip: "Editor", icon: <Icon.View.Edit/>},
     "outliner": {tooltip: "Outline", icon: <Icon.View.Outline/>},
+    "chart": {tooltip: "Graphics", icon: <Icon.View.Chart/>},
     "export": {tooltip: "Export", icon: <Icon.View.Export/>},
   }
 
@@ -276,6 +206,8 @@ function WorkspaceTab({mode, doc, setDoc}) {
 }
 
 //-----------------------------------------------------------------------------
+
+const fs = require("../../system/localfs")
 
 const filters = [
   { name: 'Mawe Files', extensions: ['moe', 'mawe', 'mawe.gz'] },

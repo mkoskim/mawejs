@@ -40,6 +40,8 @@ import {
 } from "@mui/material"
 import {OutlinedInput} from "@mui/material";
 
+import { createTheme } from '@mui/material/styles';
+
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export {
   Spinner,
@@ -103,6 +105,7 @@ export const Icon = {
     Edit: muiIcons.ArticleOutlined,
     Outline: muiIcons.GridViewOutlined,
     Export: muiIcons.PrintOutlined,
+    Chart: muiIcons.DonutLarge,
   },
 
   //NewFile: muiIcons.NoteAddOutlined,
@@ -155,6 +158,76 @@ export const Icon = {
   PaperClipHoriz: muiIcons.Attachment,
   PaperClipVert: muiIcons.AttachFile,
 }
+
+//-----------------------------------------------------------------------------
+
+export const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#222",
+    },
+  },
+  /*
+  typography: {
+    fontSize: 12,
+  },
+  */
+  components: {
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          paddingLeft: "6px",
+        },
+        input: {
+        }
+      }
+    },
+    MuiInputAdornment: {
+      styleOverrides: {
+        root: {
+        }
+      }
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+        }
+      }
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          minWidth: "36px",
+          minHeight: "36px",
+          fontSize: "12pt",
+          lineHeight: 1.0,
+          padding: "4px 4px",
+          margin: 0,
+        },
+      }
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          minWidth: "36px",
+          minHeight: "36px",
+        },
+      }
+    },
+    MuiBreadcrumbs: {
+      styleOverrides: {
+      }
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          fontSize: "11pt",
+        }
+      }
+    },
+  },
+});
 
 //-----------------------------------------------------------------------------
 
