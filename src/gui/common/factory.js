@@ -40,8 +40,6 @@ import {
 } from "@mui/material"
 import {OutlinedInput} from "@mui/material";
 
-import {DataGrid} from "@mui/x-data-grid"
-
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export {
   Spinner,
@@ -51,7 +49,6 @@ export {
   ToggleButton, ToggleButtonGroup,
   Menu, MenuItem,
   isHotkey,
-  DataGrid,
 }
 
 //-----------------------------------------------------------------------------
@@ -225,15 +222,7 @@ export {Divider as Separator}
 //-----------------------------------------------------------------------------
 
 export function ToolBox({style, ...props}) {
-  return <HBox style={{
-    paddingLeft: 4, paddingRight: 4,
-    paddingTop: 4, paddingBottom: 4,
-    //backgroundColor: "#F8F8F8",
-    alignItems: "center",
-    borderBottom: "1pt solid lightgray",
-    ...style}}
-    {...props}
-  />
+  return <HBox className="ToolBox" style={style} {...props}/>
 }
 
 //-----------------------------------------------------------------------------
@@ -331,24 +320,73 @@ export function Label({text, variant="body1", style, children, ...props}) {
     </Typography>
 }
 
-export function Input(props) {
-  return <TextField {...props}/>
+/*
+export class Input extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      isFocused: false,
+      currentValue: this.props.value
+    }
+  }
+
+  static defaultProps = {
+    onChange: () => {},
+    onFocus: () => {},
+    onBlur: () => {},
+  }
+
+  handleChange(e){
+    this.setState({ currentValue: e.target.value });
+    this.props.onChange(e);
+  }
+
+  handleFocus(e){
+    this.setState({ isFocused: true });
+    this.props.onFocus(e);
+  }
+
+  handleBlur(e){
+    this.setState({ isFocused: false });
+    this.props.onBlur(e);
+  }
+
+  componentWillReceiveProps(nextProps){
+    if (!this.state.isFocused){
+      this.setState({ currentValue: nextProps.value });
+    }
+  }
+
+  render(){
+    return <input
+      {...this.props}
+      onChange={this.handleChange.bind(this)}
+      onFocus={this.handleFocus.bind(this)}
+      onBlur={this.handleBlur.bind(this)}
+      value={this.state.currentValue}
+    />;
+  }
+}
+/*/
+export {
+  TextField as Input,
 }
 
 export function SearchBox({onCancel, ...props})
 {
-//*
-  return <OutlinedInput
+/*
+  return <Input
     spellCheck={false}
-    startAdornment={
-      <InputAdornment position="start"><Icon.Action.Search /></InputAdornment>
-    }
     {...props}
   />
 /*/
   return <OutlinedInput
     type="search"
     spellCheck={false}
+    startAdornment={
+      <InputAdornment position="start"><Icon.Action.Search /></InputAdornment>
+    }
     {...props}
   />
 /**/

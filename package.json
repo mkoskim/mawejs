@@ -23,7 +23,6 @@
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.11.11",
     "@mui/material": "^5.11.12",
-    "@mui/x-data-grid": "^6.0.0",
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "electron-better-ipc": "^2.0.1",

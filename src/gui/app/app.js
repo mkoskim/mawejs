@@ -58,14 +58,36 @@ const myTheme = createTheme({
   },
   */
   components: {
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          paddingLeft: "6px",
+        },
+        input: {
+        }
+      }
+    },
+    MuiInputAdornment: {
+      styleOverrides: {
+        root: {
+        }
+      }
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+        }
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
-          minWidth: 0,
+          minWidth: "36px",
+          minHeight: "36px",
           fontSize: "12pt",
           lineHeight: 1.0,
-          padding: "8px 8px",
+          padding: "4px 4px",
           margin: 0,
         },
       }
@@ -73,6 +95,8 @@ const myTheme = createTheme({
     MuiToggleButton: {
       styleOverrides: {
         root: {
+          minWidth: "36px",
+          minHeight: "36px",
         },
       }
     },

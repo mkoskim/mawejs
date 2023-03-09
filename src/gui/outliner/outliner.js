@@ -133,7 +133,7 @@ function OutlinerToolbar({settings, section}) {
     <Separator/>
     <ChooseWordFormat format={settings.words}/>
     <Separator/>
-    <SectionWordInfo sectWithWords={section}/>
+    <SectionWordInfo section={section}/>
     <Separator/>
     <Filler/>
   </ToolBox>

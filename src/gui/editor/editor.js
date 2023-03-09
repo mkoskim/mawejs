@@ -54,7 +54,6 @@ import {
   Separator, Loading, addClass,
   Menu, MenuItem,
   isHotkey,
-  DataGrid,
 } from "../common/factory";
 
 import {
@@ -62,9 +61,7 @@ import {
   ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
 
-import { styled } from '@mui/material/styles';
-import {sleep} from "../../util";
-import {section2words, createWordTable} from "../../document/util";
+import {createWordTable} from "../../document/util";
 
 //import { mawe } from "../../document";
 
@@ -191,10 +188,6 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 
   const [selectRight, setSelectRight] = useState("noteindex")
 
-  const leftstyle  = {maxWidth: "400px", width: "400px"}
-  //const right = RightPanel({style: })
-  const rightstyle = {maxWidth: "300px", width: "300px"}
-
   //---------------------------------------------------------------------------
 
   const settings = {
@@ -206,16 +199,27 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
     setSearchText,
     activeID: active,
     setActive,
+    focusTo,
+    setFocusTo,
     body: {
       indexed: indexed1,
       setIndexed: setIndexed1,
       words: words1,
-      setWords: setWords1
-    },
+      setWords: setWords1,
+      editor: bodyeditor,
+      buffer: bodybuffer,
+      onChange: updateBody,
+      },
     notes: {
       indexed: indexed2,
       setIndexed: setIndexed2,
-    }
+      editor: noteeditor,
+      buffer: notebuffer,
+      onChange: updateNotes,
+    },
+    leftstyle:    {maxWidth: "400px", width: "400px"},
+    rightstyle:   {maxWidth: "300px", width: "300px"},
+    toolboxstyle: {background: "white", height: "44px"},
   }
 
   //---------------------------------------------------------------------------
@@ -267,36 +271,14 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   //---------------------------------------------------------------------------
 
   return <>
-    <ToolBox style={{ background: "white" }}>
-      <LeftPanelMenu style={leftstyle} settings={settings}/>
-      <Separator/>
-      <Searching editor={activeEdit()} searchText={searchText} setSearchText={setSearchText}/>
-      <Filler/>
-      <Separator/>
-      <SectionWordInfo sectWithWords={doc.story.body}/>
-      <Separator/>
-      <RightPanelMenu style={rightstyle} settings={settings}/>
-    </ToolBox>
     <HBox style={{overflow: "auto"}}>
       <DragDropContext onDragEnd={onDragEnd}>
-      <LeftPanel style={leftstyle} settings={settings}/>
+      <LeftPanel settings={settings}/>
       <EditorBox
-        editor={bodyeditor}
-        value={bodybuffer}
-        onChange={updateBody}
+        settings={settings}
         mode="Regular"
-        visible={active === "body"}
-        highlight={highlightText}
-        />
-      <EditorBox
-        editor={noteeditor}
-        value={notebuffer}
-        onChange={updateNotes}
-        mode="Regular"
-        visible={active === "notes"}
-        highlight={highlightText}
-        />
-      <RightPanel style={rightstyle} settings={settings} />
+      />
+      <RightPanel settings={settings} />
       </DragDropContext>
     </HBox>
   </>
@@ -374,11 +356,30 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 // Left panels
 //---------------------------------------------------------------------------
 
-function LeftPanelMenu({style, settings}) {
-  const {width, minWidth, maxWidth} = style
-  const menustyle={width, minWidth, maxWidth}
+function LeftPanel({settings}) {
+  const {doc, setActive} = settings
+  const {leftstyle: style} = settings
 
-  return <HBox style={menustyle}>
+  const {width, minWidth, maxWidth, ...rest} = style
+  const widths={width, minWidth, maxWidth}
+
+  return <VBox style={widths}>
+    <LeftPanelMenu settings={settings}/>
+    <SlateTOC
+      style={{...rest, overflow: "auto"}}
+      section={doc.story.body}
+      include={settings.body.indexed}
+      wcFormat={settings.body.words}
+      activeID="body"
+      setActive={setActive}
+    />
+  </VBox>
+}
+
+function LeftPanelMenu({settings}) {
+  const {toolboxstyle} = settings
+
+  return <ToolBox style={toolboxstyle}>
     <ChooseVisibleElements
       choices={["scene", "synopsis", "missing", "comment"]}
       selected={settings.body.indexed}
@@ -390,50 +391,24 @@ function LeftPanelMenu({style, settings}) {
       selected={settings.body.words}
       setSelected={settings.body.setWords}
     />
-  </HBox>
-}
-
-function LeftPanel({style, settings}) {
-  const {doc, setActive} = settings
-
-  return <SlateTOC
-    style={style}
-    section={doc.story.body}
-    include={settings.body.indexed}
-    wcFormat={settings.body.words}
-    activeID="body"
-    setActive={setActive}
-  />
+  </ToolBox>
 }
 
 //---------------------------------------------------------------------------
 // Right panels
 //---------------------------------------------------------------------------
 
-function RightPanelMenu({style, settings}) {
-  const {selectRight, setSelectRight} = settings
-
-  const {width, minWidth, maxWidth} = style
-  const menustyle={width, minWidth, maxWidth}
+function RightPanel({settings}) {
+  const {rightstyle: style, toolboxstyle, doc, selectRight, setSelectRight, setActive, setSearchText} = settings
 
   switch(selectRight) {
     case "noteindex":
-    case "wordtable":
-      return <HBox style={menustyle}>
+      return <VFiller style={style}>
+      <ToolBox style={toolboxstyle}>
         <Filler />
         <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
-        </HBox>
-    default: break;
-  }
-  return null
-}
-
-function RightPanel({style, settings}) {
-  const {doc, selectRight, setActive, setSearchText} = settings
-
-  switch(selectRight) {
-    case "noteindex":
-      return <SlateTOC
+      </ToolBox>
+      <SlateTOC
         style={style}
         section={doc.story.notes}
         include={settings.notes.indexed}
@@ -441,12 +416,18 @@ function RightPanel({style, settings}) {
         activeID="notes"
         setActive={setActive}
       />
+      </VFiller>
     case "wordtable":
-      return <WordTable
-        style={style}
+      return <VFiller style={style}>
+      <ToolBox style={toolboxstyle}>
+        <Filler />
+        <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
+      </ToolBox>
+      <WordTable
         section={doc.story.body}
         setSearchText={setSearchText}
       />
+      </VFiller>
     default: break;
   }
 }
@@ -455,44 +436,46 @@ function RightPanel({style, settings}) {
 // Wordtable
 //-----------------------------------------------------------------------------
 
-function WordTable({style, section, setSearchText}) {
-  //console.log(doc.story.body.words)
+function WordTable({section, setSearchText}) {
 
-  const wt = Array.from(createWordTable(section).entries()).map(([word, count]) => ({id: word, count}))
+  const sortAscending  = (a, b) => (a[1] > b[1]) ? 1 : (a[1] < b[1]) ? -1 : 0
+  const sortDescending = (a, b) => (a[1] < b[1]) ? 1 : (a[1] > b[1]) ? -1 : 0
+
+  //console.log(doc.story.body.words)
+  const table = createWordTable(section)
+  //console.log(table)
+  const wt = Array.from(table.entries())
+    .sort(sortDescending)
+    .slice(0, 100)
   //console.log(wt)
+
+  const onSelect = useCallback(word => setSearchText(word), [setSearchText])
 
   // Use this to test performance of table generation
   /*
   return <VBox style={style}>
     Testing, testing...
   </VBox>
-  /*/
-  return <VBox style={style}>
-    <DataGrid
-    //style={style}
-    onRowClick={params => setSearchText(params.row.id)}
-    //throttleRowsMs={500}
-    //width="100%"
-    density="compact"
-    columns={[
-      {
-        field: "id",
-        headerName: "Word",
-      },
-      {
-        field: "count",
-        headerName: "Count",
-        align: "right", headerAlign: "right",
-      }
-    ]}
-    rows={wt}
-  />
-  </VBox>
   /**/
+  return <div className="VBox TOC">
+    {wt.map(([word, count]) => <WordCountRow key={word} className={"Entry"} word={word} count={count} onSelect={onSelect}/>)}
+  </div>
+}
+
+class WordCountRow extends React.PureComponent {
+  render() {
+    const {word, count, onSelect, className} = this.props
+
+    return <HBox className={className} onClick={e => onSelect(word)}>
+      <Label text={word}/>
+      <Filler/>
+      <Label text={count}/>
+    </HBox>
+  }
 }
 
 //-----------------------------------------------------------------------------
-// Toolbar
+// Editor toolbar
 //-----------------------------------------------------------------------------
 
   /*
@@ -509,33 +492,6 @@ function WordTable({style, section, setSearchText}) {
   </ToolBox>
   }
 */
-
-class Searching extends React.PureComponent {
-
-  render() {
-    const {editor, searchText, setSearchText} = this.props
-
-    if(typeof(searchText) !== "string") return <Button>
-      <Icon.Action.Search onClick={ev => setSearchText("")}/>
-    </Button>
-
-    return <SearchBox
-      key={searchText}
-      size="small"
-      value={searchText}
-      autoFocus
-      onChange={ev => setSearchText(ev.target.value)}
-      onKeyDown={ev => {
-        if(isHotkey("enter", ev)) {
-          ev.preventDefault();
-          ev.stopPropagation();
-          if(searchText === "") setSearchText(undefined)
-          searchFirst(editor, searchText, true)
-        }
-      }}
-    />
-  }
-}
 
 class ChooseRightPanel extends React.PureComponent {
 
@@ -563,16 +519,77 @@ class ChooseRightPanel extends React.PureComponent {
   }
 }
 
+class Searching extends React.PureComponent {
+
+  render() {
+    const {editor, searchText, setSearchText} = this.props
+
+    if(typeof(searchText) !== "string") return <Button
+      tooltip="Search text"
+      size="small"
+    >
+      <Icon.Action.Search onClick={ev => setSearchText("")}/>
+    </Button>
+
+    return <SearchBox
+      key={searchText}
+      size="small"
+      defaultValue={searchText}
+      autoFocus
+      onChange={ev => setSearchText(ev.target.value)}
+      onKeyDown={ev => {
+        if(isHotkey("enter", ev)) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          if(searchText === "") setSearchText(undefined)
+          searchFirst(editor, searchText, true)
+        }
+      }}
+    />
+  }
+}
+
 //-----------------------------------------------------------------------------
 
-function EditorBox({style, editor, value, onChange, mode="Condensed", visible=true, highlight=undefined}) {
-  return <Slate editor={editor} value={value} onChange={onChange}>
-    {visible
-    ? <div className="Filler Board" style={{...style}}>
-        <SlateEditable className={mode} highlight={highlight}/>
-      </div>
-    : null}
+function EditorBox({style, settings, mode="Condensed"}) {
+  const {doc, activeID, toolboxstyle} = settings
+  //const {editor, buffer, onChange} = (activeID === "body") ? settings.body : settings.notes
+  const {searchText, setSearchText} = settings
+  const {highlightText} = settings
+
+  function activeEditor() {
+    switch(activeID) {
+      case "body": return settings.body.editor
+      case "notes": return settings.notes.editor
+    }
+  }
+
+  return <VFiller>
+    <ToolBox style={{...toolboxstyle, borderLeft: "1px solid lightgray", borderRight: "1px solid lightgray"}}>
+      <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText}/>
+      <Filler />
+      <Separator/>
+      <SectionWordInfo section={doc.story.body}/>
+    </ToolBox>
+    <Slate editor={settings.body.editor} value={settings.body.buffer} onChange={settings.body.onChange}>
+    {
+      activeID === "body"
+      ? <div className="Filler Board" style={{...style}}>
+          <SlateEditable className={mode} highlight={highlightText}/>
+        </div>
+      : null
+    }
     </Slate>
+    <Slate editor={settings.notes.editor} value={settings.notes.buffer} onChange={settings.notes.onChange}>
+    {
+      activeID === "notes"
+      ? <div className="Filler Board" style={{...style}}>
+          <SlateEditable className={mode} highlight={highlightText}/>
+        </div>
+      : null
+    }
+    </Slate>
+  </VFiller>
 }
 
 //-----------------------------------------------------------------------------

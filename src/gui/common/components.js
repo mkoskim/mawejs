@@ -31,12 +31,12 @@ import {
 // Document word info
 //-----------------------------------------------------------------------------
 
-export function SectionWordInfo({sectWithWords}) {
-  if(!sectWithWords) return null;
+export function SectionWordInfo({section}) {
+  if(!section) return null;
   return <>
-    <Label>Words: {sectWithWords.words?.text}</Label>
+    <Label>Words: {section.words?.text}</Label>
     <Separator/>
-    <Label>Chars: {sectWithWords.words?.chars}</Label>
+    <Label>Chars: {section.words?.chars}</Label>
     </>
 }
 
@@ -46,7 +46,7 @@ export function SectionWordInfo({sectWithWords}) {
 
 export class ChooseVisibleElements extends React.PureComponent {
 
-  buttons = {
+  static buttons = {
     "scene": {
       tooltip: "Show scenes",
       icon: <Icon.BlockType.Scene/>
@@ -68,7 +68,7 @@ export class ChooseVisibleElements extends React.PureComponent {
   render() {
     const {choices, selected, setSelected} = this.props
     return <MakeToggleGroup
-      buttons={this.buttons}
+      buttons={this.constructor.buttons}
       choices={choices}
       selected={selected}
       setSelected={setSelected}
@@ -82,7 +82,7 @@ export class ChooseVisibleElements extends React.PureComponent {
 
 export class ChooseWordFormat extends React.PureComponent {
 
-  buttons = {
+  static buttons = {
     "off": {
       tooltip: "Don't show words",
       icon: <Icon.StatType.Off />
@@ -102,13 +102,9 @@ export class ChooseWordFormat extends React.PureComponent {
   }
 
   render() {
-
-  }
-
-  render() {
     const {choices, selected, setSelected} = this.props
     return <MakeToggleGroup
-      buttons={this.buttons}
+      buttons={this.constructor.buttons}
       choices={choices}
       selected={selected}
       setSelected={setSelected}
