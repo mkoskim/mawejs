@@ -270,18 +270,16 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 
   //---------------------------------------------------------------------------
 
-  return <>
-    <HBox style={{overflow: "auto"}}>
-      <DragDropContext onDragEnd={onDragEnd}>
-      <LeftPanel settings={settings}/>
-      <EditorBox
-        settings={settings}
-        mode="Regular"
-      />
-      <RightPanel settings={settings} />
-      </DragDropContext>
-    </HBox>
-  </>
+  return <HBox style={{overflow: "auto"}}>
+    <DragDropContext onDragEnd={onDragEnd}>
+    <LeftPanel settings={settings}/>
+    <EditorBox
+      settings={settings}
+      mode="Regular"
+    />
+    <RightPanel settings={settings} />
+    </DragDropContext>
+  </HBox>
 
   //---------------------------------------------------------------------------
   // Index DnD
@@ -366,7 +364,7 @@ function LeftPanel({settings}) {
   return <VBox style={widths}>
     <LeftPanelMenu settings={settings}/>
     <SlateTOC
-      style={{...rest, overflow: "auto"}}
+      style={rest}
       section={doc.story.body}
       include={settings.body.indexed}
       wcFormat={settings.body.words}

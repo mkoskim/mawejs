@@ -62,7 +62,7 @@ export function SlateTOC({style, activeID, section, wcFormat, include, setActive
     [wcFormat, total, cumulative]
   )
 
-  return <VFiller style={{...style}}>
+  return <VBox style={style} className="TOC">
     <PartDropZone
       activeID={activeID}
       parts={section?.parts}
@@ -70,7 +70,7 @@ export function SlateTOC({style, activeID, section, wcFormat, include, setActive
       include={include}
       onActivate={onActivate}
     />
-    </VFiller>
+    </VBox>
 
   //return useDeferredValue(index)
 }
@@ -96,7 +96,7 @@ class PartDropZone extends React.PureComponent {
     const {innerRef, droppableProps, placeholder} = provided
 
     return <div
-      className="VBox TOC"
+      className="VBox"
       ref={innerRef}
       {...droppableProps}
     >

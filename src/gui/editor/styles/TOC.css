@@ -3,8 +3,7 @@
 /* ---------------------------------------------------------------------------- */
 
 .TOC {
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: auto;
   /*
   min-width: 350px;
   max-width: 350px;
