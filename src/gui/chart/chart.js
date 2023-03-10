@@ -91,11 +91,39 @@ function DrawPieChart({section}) {
       icon: "Acts",
       data: [
         {name: "Act I", size: 25, fill: "lightgreen"},
-        {name: "Act II", size: 50, fill: "yellow"},
-        {name: "Act III", size: 25, fill: "orange"},
+        {name: "Act II/1", size: 25, fill: "yellow"},
+        {name: "Midpoint"},
+        {name: "Act II/2", size: 25, fill: "orange"},
+        {name: "Act III", size: 25, fill: "red"},
+      ]
+    },
+    beatsheet: {
+      icon: "Beat Sheet",
+      data: [
+        {name: null, size: 1, fill: "lightgreen"}, // Opening Image
+        {name: "Set-up", size: 10, fill: "lightgreen"},
+        {name: "Catalyst", size: 1, fill: "yellow"},
+        {name: "Debate", size: 13, fill: "lightgreen"},
+        {name: "Choosing Act Two"},
+        {name: "B Story", size: 5, fill: "lightyellow"},
+        {name: "Fun & Games", size: 25, fill: "yellow"},
+        {name: "Midpoint"},
+        {name: "Bad Guys Close In", size: 20, fill: "orange"},
+        {name: "All is Lost"},
+        {name: "Dark Night of the Soul", size: 10, fill: "orange"},
+        {name: "Choosing Act Three"},
+        {name: "Finale", size: 24, fill: "red"},
+        {name: null, size: 1, fill: "orange"}, // Closing Image
       ]
     }
   }
+
+  /*
+  console.log("Beat sheet lenght=", tmplButtons.beatsheet.data
+    .map(data => data.size)
+    .reduce((a, b) => a + b, 0)
+  )
+  */
 
   const [selectTemplate, setSelectTemplate] = useState("plotpoints")
 
@@ -160,7 +188,7 @@ function DrawPieChart({section}) {
 
   const innerLabel = (props) => {
     const {innerRadius, outerRadius} = props
-    const labelRadius = innerRadius * 0.90
+    const labelRadius = innerRadius * 0.85
 
     return labelWithLine({
       ...props,
@@ -223,7 +251,7 @@ function DrawPieChart({section}) {
       <Label text="Template:"/>
       <MakeToggleGroup
         buttons={tmplButtons}
-        choices={["plotpoints", "acts"]}
+        choices={["plotpoints", "acts", "beatsheet"]}
         selected={selectTemplate}
         setSelected={setSelectTemplate}
         exclusive={true}

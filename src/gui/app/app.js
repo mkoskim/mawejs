@@ -79,6 +79,7 @@ export default function App(props) {
   const [_mode, _setMode] = useState(
     "editor"
     //"outliner"
+    //"chart"
     //"export"
   );
 
@@ -166,7 +167,7 @@ function WorkspaceTab({mode, doc, setDoc}) {
   const viewbuttons = {
     "editor": {tooltip: "Editor", icon: <Icon.View.Edit/>},
     "outliner": {tooltip: "Outline", icon: <Icon.View.Outline/>},
-    "chart": {tooltip: "Graphics", icon: <Icon.View.Chart/>},
+    "chart": {tooltip: "Charts", icon: <Icon.View.Chart/>},
     "export": {tooltip: "Export", icon: <Icon.View.Export/>},
   }
 

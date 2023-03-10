@@ -212,6 +212,7 @@ export const theme = createTheme({
     MuiToggleButton: {
       styleOverrides: {
         root: {
+          textTransform: 'none',
           minWidth: "36px",
           minHeight: "36px",
         },
