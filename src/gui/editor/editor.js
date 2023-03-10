@@ -39,9 +39,8 @@ import {
   isAstChange,
 } from "./slateEditor"
 
-import {
-  DocIndex,
-} from "../common/docIndex"
+import {DocIndex} from "../common/docIndex"
+import {WordTable} from "./wordTable"
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
@@ -61,8 +60,6 @@ import {
   SectionWordInfo,
   ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
-
-import {createWordTable} from "../../document/util";
 
 //import { mawe } from "../../document";
 
@@ -461,56 +458,6 @@ class ChooseRightPanel extends React.PureComponent {
       setSelected={setSelected}
       exclusive={true}
     />
-  }
-}
-
-//-----------------------------------------------------------------------------
-// Wordtable
-//-----------------------------------------------------------------------------
-
-function WordTable({section, setSearchText}) {
-
-  const sortAscending  = (a, b) => (a[1] > b[1]) ? 1 : (a[1] < b[1]) ? -1 : 0
-  const sortDescending = (a, b) => (a[1] < b[1]) ? 1 : (a[1] > b[1]) ? -1 : 0
-
-  //console.log(doc.story.body.words)
-  const table = createWordTable(section)
-  //console.log(table)
-  const wt = Array.from(table.entries())
-    .sort(sortDescending)
-    .slice(0, 100)
-  //console.log(wt)
-
-  const onSelect = useCallback(word => setSearchText(word), [setSearchText])
-
-  // Use this to test performance of table generation
-  /*
-  return <VBox style={style}>
-    Testing, testing...
-  </VBox>
-  /**/
-  return <VBox style={{overflow: "auto"}}>
-    <ToolBox>
-      <Input
-        size="small"
-      />
-      <Button tooltip="Sort order"><Icon.Arrow.Down/></Button>
-    </ToolBox>
-    <div className="VBox TOC">
-      {wt.map(([word, count]) => <WordCountRow key={word} className={"Entry"} word={word} count={count} onSelect={onSelect}/>)}
-    </div>
-  </VBox>
-}
-
-class WordCountRow extends React.PureComponent {
-  render() {
-    const {word, count, onSelect, className} = this.props
-
-    return <HBox className={className} onClick={e => onSelect(word)}>
-      <Label text={word}/>
-      <Filler/>
-      <Label text={count}/>
-    </HBox>
   }
 }
 

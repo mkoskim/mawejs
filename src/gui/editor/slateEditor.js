@@ -32,9 +32,13 @@ function searchOffsets(text, re) {
   return Array.from(text.matchAll(re)).map(match => match["index"])
 }
 
-function text2Regexp(text, opts = "gi") {
+export function text2Regexp(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+}
+
+function searchPattern(text, opts = "gi") {
   if(!text) return undefined
-  return new RegExp(text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), opts)
+  return new RegExp(text2Regexp(text), opts)
 }
 
 export function SlateEditable({className, highlight, ...props}) {
@@ -43,7 +47,7 @@ export function SlateEditable({className, highlight, ...props}) {
 
   //console.log("Search:", search)
 
-  const re = useMemo(() => text2Regexp(highlight), [highlight])
+  const re = useMemo(() => searchPattern(highlight), [highlight])
 
   const highlighter = useCallback(
     re
@@ -319,7 +323,7 @@ function searchMatchPrev(re, leaf, path, offset) {
 // Search text from another node
 
 function searchTextForward(editor, text, path, offset) {
-  const re = text2Regexp(text)
+  const re = searchPattern(text)
   const [leaf] = Editor.leaf(editor, path)
   const match = searchMatchNext(re, leaf, path, offset)
   if(match) return match
@@ -333,7 +337,7 @@ function searchTextForward(editor, text, path, offset) {
 }
 
 function searchTextBackward(editor, text, path, offset) {
-  const re = text2Regexp(text)
+  const re = searchPattern(text)
 
   const [leaf] = Editor.leaf(editor, path)
   const match = searchMatchPrev(re, leaf, path, offset)
