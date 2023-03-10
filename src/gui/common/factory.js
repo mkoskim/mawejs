@@ -130,6 +130,16 @@ export const Icon = {
       SaveAs: muiIcons.SaveAsOutlined,
     },
     Replay: muiIcons.Replay,
+    Cached: muiIcons.Cached,
+    Loop: muiIcons.Loop,
+    Rotate: {
+      CW: muiIcons.RotateRight,
+      CCW: muiIcons.RotateLeft,
+    },
+    VerticalAlign: {
+      Top: muiIcons.VerticalAlignTop,
+      Bottom: muiIcons.VerticalAlignBottom,
+    }
   },
 
   Location: {

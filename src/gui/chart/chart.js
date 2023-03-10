@@ -146,11 +146,14 @@ function DrawPieChart({section}) {
     const startRadius = inside ? innerRadius : outerRadius
 
     function textAnchor() {
-      if((midAngle % 360) > 270-10 && (midAngle % 360) < 270+10) return {
+      var mid = midAngle % 360
+      if(mid < 0) mid += 360
+
+      if(mid > 270-10 && mid < 270+10) return {
         textAnchor: "middle",
         dominantBaseline: (inside) ? "auto" : "hanging",
       }
-      if((midAngle % 360) > 90-10 && (midAngle % 360) < 90+10) return {
+      if(mid > 90-10 && mid < 90+10) return {
         textAnchor: "middle",
         dominantBaseline: (inside) ? "hanging" : "auto",
       }
@@ -205,23 +208,27 @@ function DrawPieChart({section}) {
   //const [selectDirection, setSelectDirection] = useState(-1)
 
   const rotateButtons = {
-    "1": {
-      icon: <Icon.Action.Replay style={{transform: "rotate(90deg)"}}/>,
-      tooltip: "Counter Clockwise"
-    },
+    // Clockwise
     "-1": {
-      icon: <Icon.Action.Replay style={{transform: "scaleX(-1) rotate(90deg)"}}/>,
-      tooltip: "Clockwise"
+      tooltip: "Clockwise",
+      //icon: <Icon.Action.Rotate.CW />,
+      icon: <Icon.Action.Loop style={{transform: "scaleX(-1)"}}/>,
+    },
+    // Counter-clockwise
+    "1": {
+      tooltip: "Counter Clockwise",
+      //icon: <Icon.Action.Rotate.CCW />,
+      icon: <Icon.Action.Loop style={{transform: "rotate(0deg)"}}/>,
     },
   }
 
   const startButtons = {
     "90": {
-      icon: <Icon.Arrow.Up/>,
+      icon: <Icon.Action.VerticalAlign.Top/>,
       tooltip: "Top"
     },
     "270": {
-      icon: <Icon.Arrow.Down/>,
+      icon: <Icon.Action.VerticalAlign.Bottom/>,
       tooltip: "Bottom"
     },
   }
@@ -287,7 +294,7 @@ function DrawPieChart({section}) {
       <Separator/>
       <MakeToggleGroup
         buttons={rotateButtons}
-        choices={["1", "-1"]}
+        choices={["-1", "1"]}
         selected={selectRotate}
         setSelected={setSelectRotate}
         exclusive={true}
