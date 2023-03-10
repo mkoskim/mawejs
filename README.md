@@ -5,7 +5,7 @@ This is my mawe (My/Markus Advanced Writer's Editor) implemented with ElectronJS
 
 ## Status
 
-**2023-Mar-11:** Many basic features are working, and several quite advanced features, too. From being fully useful first version, it basically lacks only one thing - story header editing.
+**2023-Mar-11:** Many basic features are working, and several quite advanced features, too. From being fully useful first version, it basically lacks only one thing - story header editing. What I do at the moment, is that I edit header from the XML file directly.
 
 Of course, there are still many features missing. One that I miss most is support for workspaces, the current editor has one file at time. But it still does the basic job pretty well, and has already replaced my previous Python/GTK version in my daily use. It has drag-and-droppable index, searching, outliner, diagrams, file loading and saving, and so on.
 
