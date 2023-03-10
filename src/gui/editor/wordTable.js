@@ -78,7 +78,6 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
   return <VBox style={{overflow: "auto"}}>
     <ToolBox style={{background: "white"}}>
       <Input
-        spellCheck={false}
         value={filterText}
         onChange={ev => setFilterText(ev.target.value)}
       />

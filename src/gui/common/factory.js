@@ -351,14 +351,14 @@ export function Label({text, style, children, ...props}) {
     </span>
 }
 
-export {
-  OutlinedInput as Input,
+export function Input({...props}) {
+  return <OutlinedInput spellCheck={false} {...props}/>
 }
 
 export function SearchBox({...props})
 {
   return <OutlinedInput
-    type="search"
+    //type="search"
     spellCheck={false}
     startAdornment={
       <InputAdornment position="start"><Icon.Action.Search /></InputAdornment>
