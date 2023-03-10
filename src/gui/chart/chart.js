@@ -202,10 +202,9 @@ function DrawPieChart({section}) {
 
   //---------------------------------------------------------------------------
 
+  const [mode, _setMode] = useState("topCCW")
   const [selectStart, setSelectStart] = useState(90)
   const [selectRotate, setSelectRotate] = useState(1)
-
-  const [mode, _setMode] = useState("topCCW")
 
   function setMode(mode) {
     _setMode(mode)

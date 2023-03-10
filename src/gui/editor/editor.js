@@ -16,6 +16,7 @@ import React, {
   useMemo, useCallback,
   useDeferredValue,
   StrictMode,
+  useRef,
 } from 'react';
 
 import {
@@ -165,6 +166,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   // Search
   //---------------------------------------------------------------------------
 
+  const searchBoxRef = useRef(null)
   const [searchText, _setSearchText] = useState()
   const highlightText = useDeferredValue(searchText)
 
@@ -194,6 +196,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
     doc,
     selectRight,
     setSelectRight,
+    searchBoxRef,
     searchText,
     highlightText,
     setSearchText,
@@ -229,19 +232,24 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   useEffect(() => addHotkeys({
     "mod+f": ev => {
       const editor = activeEdit()
-      const focused = ReactEditor.isFocused(editor)
-      if(focused) {
-        const {selection} = editor
-        if(selection) {
-          const text = Editor.string(editor, selection)
-          if(text) {
-            Transforms.select(editor, Range.start(selection))
-            _setSearchText(text)
-            return;
-          }
+      const {selection} = editor
+      //console.log(selection)
+
+      if(selection && !Range.isCollapsed(selection)) {
+        const text = Editor.string(editor, selection)
+        //console.log(text)
+        if(text) {
+          Transforms.select(editor, {
+            focus: Range.start(selection),
+            anchor: Range.end(selection)
+          })
+          _setSearchText(text)
         }
       }
-      if(typeof(searchText) !== "string") _setSearchText("")
+      else {
+        if(typeof(searchText) !== "string") _setSearchText("")
+      }
+      if(searchBoxRef.current) searchBoxRef.current.focus()
     },
     "escape": ev => {
       if(typeof(searchText) === "string") {
@@ -528,7 +536,7 @@ class WordCountRow extends React.PureComponent {
 class Searching extends React.PureComponent {
 
   render() {
-    const {editor, searchText, setSearchText} = this.props
+    const {editor, searchText, setSearchText, searchBoxRef} = this.props
 
     if(typeof(searchText) !== "string") return <Button
       tooltip="Search text"
@@ -538,9 +546,10 @@ class Searching extends React.PureComponent {
     </Button>
 
     return <SearchBox
-      key={searchText}
+      inputRef={searchBoxRef}
       size="small"
-      defaultValue={searchText}
+      //defaultValue={searchText}
+      value={searchText}
       autoFocus
       onChange={ev => setSearchText(ev.target.value)}
       onKeyDown={ev => {
@@ -560,7 +569,7 @@ class Searching extends React.PureComponent {
 function EditorBox({style, settings, mode="Condensed"}) {
   const {doc, activeID, toolboxstyle} = settings
   //const {editor, buffer, onChange} = (activeID === "body") ? settings.body : settings.notes
-  const {searchText, setSearchText} = settings
+  const {searchBoxRef, searchText, setSearchText} = settings
   const {highlightText} = settings
 
   function activeEditor() {
@@ -572,7 +581,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
 
   return <VFiller>
     <ToolBox style={{...toolboxstyle, borderLeft: "1px solid lightgray", borderRight: "1px solid lightgray"}}>
-      <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText}/>
+      <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
       <Separator/>
       <SectionWordInfo section={doc.story.body}/>

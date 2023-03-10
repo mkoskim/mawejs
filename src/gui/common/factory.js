@@ -189,7 +189,7 @@ export const theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          paddingLeft: "6px",
+          paddingLeft: "8px",
         },
         input: {
         }
@@ -211,8 +211,8 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          minWidth: "36px",
-          minHeight: "36px",
+          minWidth: "40px",
+          minHeight: "40px",
           fontSize: "12pt",
           lineHeight: 1.0,
           padding: "4px 4px",
@@ -224,8 +224,8 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
-          minWidth: "36px",
-          minHeight: "36px",
+          minWidth: "40px",
+          minHeight: "40px",
         },
       }
     },
@@ -477,7 +477,7 @@ export {
   OutlinedInput as Input,
 }
 
-export function SearchBox({onCancel, ...props})
+export function SearchBox({...props})
 {
 /*
   return <Input
