@@ -23,7 +23,7 @@ import {
   HFiller, ToolBox, VFiller,
   Button, Label,
   MakeToggleGroup,
-  Select, MenuItem, InputLabel, FormControl, Separator,
+  Select, MenuItem, InputLabel, FormControl, Separator, Icon,
 } from "../common/factory"
 
 //-----------------------------------------------------------------------------
@@ -166,11 +166,11 @@ function DrawPieChart({section}) {
     }
 
     const [sx, sy] = coord(cx, cy, -midAngle, startRadius)
-    const [ex, ey] = coord(cx, cy, -midAngle, labelRadius * ((inside) ? 1.025 : 0.975))
+    const [ex, ey] = coord(cx, cy, -midAngle, labelRadius * ((inside) ? 1.035 : 0.975))
     const [textx, texty] = coord(cx, cy, -midAngle, labelRadius)
 
     return <g>
-      <path d={`M${sx},${sy}L${ex},${ey}`} stroke={fill} fill="none" />
+      <path d={`M${sx},${sy}L${ex},${ey}`} stroke="grey" fill="none" />
       <text x={textx} y={texty} {...textAnchor()}>
         {name}
       </text>
@@ -188,7 +188,7 @@ function DrawPieChart({section}) {
 
   const innerLabel = (props) => {
     const {innerRadius, outerRadius} = props
-    const labelRadius = innerRadius * 0.85
+    const labelRadius = innerRadius * 0.90
 
     return labelWithLine({
       ...props,
@@ -198,9 +198,37 @@ function DrawPieChart({section}) {
 
   //---------------------------------------------------------------------------
 
+  const [selectStart, setSelectStart] = useState("90")
+  const [selectRotate, setSelectRotate] = useState("1")
+
+  //const [selectStart, setSelectStart] = useState(270)
+  //const [selectDirection, setSelectDirection] = useState(-1)
+
+  const rotateButtons = {
+    "1": {
+      icon: <Icon.Action.Replay style={{transform: "rotate(90deg)"}}/>,
+      tooltip: "Counter Clockwise"
+    },
+    "-1": {
+      icon: <Icon.Action.Replay style={{transform: "scaleX(-1) rotate(90deg)"}}/>,
+      tooltip: "Clockwise"
+    },
+  }
+
+  const startButtons = {
+    "90": {
+      icon: <Icon.Arrow.Up/>,
+      tooltip: "Top"
+    },
+    "270": {
+      icon: <Icon.Arrow.Down/>,
+      tooltip: "Bottom"
+    },
+  }
+
   const common = {
-    startAngle: 91,
-    endAngle: 360+89,
+    startAngle: parseInt(selectStart) + parseInt(selectRotate) * 1,
+    endAngle:   parseInt(selectStart) + parseInt(selectRotate) * (360 - 2),
     minAngle: 0,
     cx: "50%",
     cy: "50%",
@@ -251,9 +279,25 @@ function DrawPieChart({section}) {
       <Label text="Template:"/>
       <MakeToggleGroup
         buttons={tmplButtons}
-        choices={["plotpoints", "acts", "beatsheet"]}
+        choices={["acts", "plotpoints", "beatsheet"]}
         selected={selectTemplate}
         setSelected={setSelectTemplate}
+        exclusive={true}
+      />
+      <Separator/>
+      <MakeToggleGroup
+        buttons={rotateButtons}
+        choices={["1", "-1"]}
+        selected={selectRotate}
+        setSelected={setSelectRotate}
+        exclusive={true}
+      />
+      <Separator/>
+      <MakeToggleGroup
+        buttons={startButtons}
+        choices={["90", "270"]}
+        selected={selectStart}
+        setSelected={setSelectStart}
         exclusive={true}
       />
       <Separator/>

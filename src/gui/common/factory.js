@@ -128,7 +128,8 @@ export const Icon = {
       Open: muiIcons.FileOpenOutlined,
       Save: muiIcons.SaveOutlined,
       SaveAs: muiIcons.SaveAsOutlined,
-    }
+    },
+    Replay: muiIcons.Replay,
   },
 
   Location: {
