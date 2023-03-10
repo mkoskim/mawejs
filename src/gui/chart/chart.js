@@ -280,9 +280,8 @@ function DrawPieChart({section}) {
   //---------------------------------------------------------------------------
 
   return <VFiller>
-    <ToolBox>
+    <ToolBox style={{background: "white"}}>
       <HFiller/>
-      <Label text="Element:"/>
       <MakeToggleGroup
         buttons={elemButtons}
         choices={["scenes", "parts"]}
@@ -291,7 +290,6 @@ function DrawPieChart({section}) {
         exclusive={true}
       />
       <Separator/>
-      <Label text="Template:"/>
       <MakeToggleGroup
         buttons={tmplButtons}
         choices={["acts", "plotpoints", "beatsheet"]}

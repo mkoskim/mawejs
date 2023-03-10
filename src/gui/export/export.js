@@ -75,7 +75,7 @@ function ExportToolbar({settings, doc}) {
     <Separator/>
     Format: RTF
     <Separator/>
-    <SectionWordInfo sectWithWords={body}/>
+    <SectionWordInfo section={body}/>
     <Separator/>
     <Filler/>
   </ToolBox>

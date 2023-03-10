@@ -26,7 +26,7 @@ import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
 import { styled } from '@mui/material/styles';
 
 import {
-  Button as XButton, ButtonGroup,
+  Button as MuiButton, ButtonGroup,
   ToggleButton, ToggleButtonGroup,
   Breadcrumbs,
   Chip, Link,
@@ -170,191 +170,6 @@ export const Icon = {
   PaperClipHoriz: muiIcons.Attachment,
   PaperClipVert: muiIcons.AttachFile,
 }
-
-//-----------------------------------------------------------------------------
-
-export const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#222",
-    },
-  },
-  typography: {
-    //fontSize: "12pt",
-  },
-  components: {
-    MuiButtonBase: {
-    },
-    MuiButton: {
-      defaultProps: {
-        size: 'small',
-      },
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          minWidth: "32px",
-        },
-      },
-    },
-    MuiToggleButton: {
-      defaultProps: {
-        size: 'small',
-      },
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-        },
-      },
-    },
-    MuiIconButton: {
-      defaultProps: {
-        size: 'small',
-      },
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          //fontSize: "12pt",
-          lineHeight: 1.0,
-          padding: "4px 4px",
-          margin: 0,
-        },
-      },
-    },
-    MuiFilledInput: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiFormControl: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiFormHelperText: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiInputBase: {
-      defaultProps: {
-        size: "small",
-        margin: 'dense',
-      },
-      styleOverrides: {
-        root: {
-          paddingLeft: "5px",
-        },
-        input: {
-          height: "24px",
-          padding: "4px",
-        }
-      },
-    },
-    MuiOutlinedInput: {
-      defaultProps: {
-        size: "small",
-        margin: 'dense',
-      },
-      styleOverrides: {
-        root: {
-          paddingLeft: "5px",
-        },
-        input: {
-          height: "24px",
-          padding: "4px",
-        }
-      },
-    },
-    MuiTextField: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiInputLabel: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiListItem: {
-      defaultProps: {
-        dense: true,
-      },
-    },
-    MuiFab: {
-      defaultProps: {
-        size: 'small',
-      },
-    },
-    MuiTable: {
-      defaultProps: {
-        size: 'small',
-      },
-    },
-    MuiToolbar: {
-      defaultProps: {
-        variant: 'dense',
-      },
-    },
-    MuiTooltip: {
-      styleOverrides: {
-        tooltip: {
-          fontSize: "11pt",
-        }
-      }
-    },
-  },
-});
-/*
-components: {
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          paddingLeft: "8px",
-        },
-        input: {
-        }
-      }
-    },
-    MuiInputAdornment: {
-      styleOverrides: {
-        root: {
-        }
-      }
-    },
-    MuiInputBase: {
-      styleOverrides: {
-        root: {
-        }
-      }
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          minWidth: "40px",
-          minHeight: "40px",
-          fontSize: "12pt",
-          lineHeight: 1.0,
-          padding: "4px 4px",
-          margin: 0,
-        },
-      }
-    },
-    MuiToggleButton: {
-      styleOverrides: {
-        root: {
-          minWidth: "40px",
-          minHeight: "40px",
-        },
-      }
-    },
-    MuiBreadcrumbs: {
-      styleOverrides: {
-      }
-    },
-  },
-});
-*/
 
 //-----------------------------------------------------------------------------
 
@@ -519,9 +334,9 @@ export {Button, IconButton}
 /*/
 export function Button({tooltip, ...props}) {
   if(tooltip) {
-    return <Tooltip title={tooltip}><XButton {...props}/></Tooltip>
+    return <Tooltip title={tooltip}><MuiButton {...props}/></Tooltip>
   }
-  return <XButton {...props}/>
+  return <MuiButton {...props}/>
 }
 /**/
 
@@ -536,62 +351,12 @@ export function Label({text, style, children, ...props}) {
     </span>
 }
 
-/*
-export class Input extends React.Component {
-
-  constructor(props) {
-    super(props)
-    this.state = {
-      isFocused: false,
-      currentValue: this.props.value
-    }
-  }
-
-  static defaultProps = {
-    onChange: () => {},
-    onFocus: () => {},
-    onBlur: () => {},
-  }
-
-  handleChange(e){
-    this.setState({ currentValue: e.target.value });
-    this.props.onChange(e);
-  }
-
-  handleFocus(e){
-    this.setState({ isFocused: true });
-    this.props.onFocus(e);
-  }
-
-  handleBlur(e){
-    this.setState({ isFocused: false });
-    this.props.onBlur(e);
-  }
-
-  componentWillReceiveProps(nextProps){
-    if (!this.state.isFocused){
-      this.setState({ currentValue: nextProps.value });
-    }
-  }
-
-  render(){
-    return <input
-      {...this.props}
-      onChange={this.handleChange.bind(this)}
-      onFocus={this.handleFocus.bind(this)}
-      onBlur={this.handleBlur.bind(this)}
-      value={this.state.currentValue}
-    />;
-  }
-}
-/*/
 export {
   OutlinedInput as Input,
 }
 
 export function SearchBox({...props})
 {
-//*
   return <OutlinedInput
     type="search"
     spellCheck={false}
@@ -600,7 +365,6 @@ export function SearchBox({...props})
     }
     {...props}
   />
-/**/
 }
 
 export function Loading({className, style}) {
@@ -637,3 +401,157 @@ export function Inform() {
   }
 }
 */
+
+//-----------------------------------------------------------------------------
+// Theme
+//-----------------------------------------------------------------------------
+
+export const theme = createTheme({
+  palette: {
+    primary: { main: "#222", },
+  },
+  typography: {
+    //fontSize: 14,
+  },
+  components: {
+    MuiButtonBase: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          lineHeight: 1.0,
+          fontSize: "12pt",
+          minWidth: "32px",
+          minHeight: "32px",
+          padding: "4px 4px",
+        },
+      },
+    },
+    MuiButton: {
+      defaultProps: {
+        size: 'small',
+      },
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          lineHeight: 1.0,
+          fontSize: "12pt",
+          minWidth: "32px",
+          //minHeight: "32px",
+          //padding: "4px 4px",
+        },
+      },
+    },
+    MuiToggleButton: {
+      defaultProps: {
+        size: 'small',
+      },
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          lineHeight: 1.0,
+          fontSize: "12pt",
+          minWidth: "32px",
+          //minHeight: "32px",
+          //padding: "4px 4px",
+        },
+      },
+    },
+    MuiIconButton: {
+      defaultProps: {
+        size: 'small',
+      },
+      /*
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          //fontSize: "12pt",
+          padding: "4px 4px",
+          //margin: 0,
+        },
+      },
+      */
+    },
+    MuiFilledInput: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiFormControl: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiFormHelperText: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiInputBase: {
+      defaultProps: {
+        size: "small",
+        margin: 'dense',
+      },
+      styleOverrides: {
+        root: {
+          paddingLeft: "5px",
+        },
+        input: {
+          height: "24px",
+          padding: "4px",
+        }
+      },
+    },
+    MuiOutlinedInput: {
+      defaultProps: {
+        size: "small",
+        margin: 'dense',
+      },
+      styleOverrides: {
+        root: {
+          paddingLeft: "5px",
+        },
+        input: {
+          height: "24px",
+          padding: "4px",
+        }
+      },
+    },
+    MuiTextField: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiInputLabel: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiListItem: {
+      defaultProps: {
+        dense: true,
+      },
+    },
+    MuiFab: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
+    MuiTable: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
+    MuiToolbar: {
+      defaultProps: {
+        variant: 'dense',
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          fontSize: "11pt",
+        }
+      }
+    },
+  },
+});
