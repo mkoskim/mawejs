@@ -35,9 +35,9 @@ import {text2Regexp} from "./slateEditor"
 // Wordtable
 //-----------------------------------------------------------------------------
 
-export function WordTable({section, setSearchText}) {
+export function WordTable({section, setSearchText, searchBoxRef}) {
 
-  const [filterText, setFilterText] = useState(undefined)
+  const [filterText, setFilterText] = useState("")
 
   function doFilter(wt) {
     if(!filterText) return Array.from(wt)
@@ -64,7 +64,10 @@ export function WordTable({section, setSearchText}) {
   const wt = doFilter(createWordTable(section))
     .sort(sortAscending ? fSortAscending : fSortDescending)
 
-  const onSelect = useCallback(word => setSearchText(word), [setSearchText])
+  const onSelect = useCallback(word => {
+    setSearchText(word)
+    if(searchBoxRef.current) searchBoxRef.current.focus()
+  }, [setSearchText, searchBoxRef])
 
   // Use this to test performance of table generation
   /*

@@ -240,11 +240,11 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
             focus: Range.start(selection),
             anchor: Range.end(selection)
           })
-          _setSearchText(text)
+          setSearchText(text)
         }
       }
       else {
-        if(typeof(searchText) !== "string") _setSearchText("")
+        if(typeof(searchText) !== "string") setSearchText("")
       }
       if(searchBoxRef.current) searchBoxRef.current.focus()
     },
@@ -402,7 +402,11 @@ function LeftPanelMenu({settings}) {
 //---------------------------------------------------------------------------
 
 function RightPanel({settings}) {
-  const {rightstyle: style, toolboxstyle, doc, selectRight, setSelectRight, setActive, setSearchText} = settings
+  const {
+    rightstyle: style, toolboxstyle, doc,
+    selectRight, setSelectRight, setActive,
+    setSearchText, searchBoxRef,
+  } = settings
 
   switch(selectRight) {
     case "noteindex":
@@ -429,6 +433,7 @@ function RightPanel({settings}) {
       <WordTable
         section={doc.story.body}
         setSearchText={setSearchText}
+        searchBoxRef={searchBoxRef}
       />
       </VFiller>
     default: break;
