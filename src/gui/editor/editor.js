@@ -458,7 +458,7 @@ class ChooseRightPanel extends React.PureComponent {
 
     return <MakeToggleGroup
       buttons={this.buttons}
-      choices={["noteindex", "wordtable"]}
+      choices={["wordtable", "noteindex",]}
       selected={selected}
       setSelected={setSelected}
       exclusive={true}
@@ -504,6 +504,7 @@ class Searching extends React.PureComponent {
       value={searchText}
       autoFocus
       onChange={ev => setSearchText(ev.target.value)}
+      onBlur={ev => {if(!searchText) setSearchText(undefined)}}
       onKeyDown={ev => {
         if(isHotkey("enter", ev)) {
           ev.preventDefault();
