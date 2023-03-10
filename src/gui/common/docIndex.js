@@ -25,15 +25,15 @@ import {
   List, ListItem, ListItemText,
   Grid,
   Separator, Loading, addClass, DeferredRender,
-} from "../common/factory";
+} from "./factory";
 
-import {FormatWords} from "../common/components";
+import {FormatWords} from "./components";
 import {elemAsText} from "../../document";
 import {wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
-export function SlateTOC({style, activeID, section, wcFormat, include, setActive})
+export function DocIndex({style, activeID, section, wcFormat, include, setActive})
 {
   const onActivate = useCallback(id => {
     //console.log("Activate:", activeID, id)

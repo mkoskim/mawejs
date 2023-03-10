@@ -40,8 +40,8 @@ import {
 } from "./slateEditor"
 
 import {
-  SlateTOC,
-} from "./slateIndex"
+  DocIndex,
+} from "../common/docIndex"
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
@@ -371,7 +371,7 @@ function LeftPanel({settings}) {
 
   return <VBox style={widths}>
     <LeftPanelMenu settings={settings}/>
-    <SlateTOC
+    <DocIndex
       style={rest}
       section={doc.story.body}
       include={settings.body.indexed}
@@ -414,7 +414,7 @@ function RightPanel({settings}) {
         <Filler />
         <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
       </ToolBox>
-      <SlateTOC
+      <DocIndex
         style={style}
         section={doc.story.notes}
         include={settings.notes.indexed}
