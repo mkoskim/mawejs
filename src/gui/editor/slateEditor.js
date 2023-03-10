@@ -369,27 +369,19 @@ export function searchBackward(editor, text, doFocus=false) {
 }
 
 function searchWithScroll(editor, text, path, offset, forward=true, doFocus=false) {
-  if(text) {
-    const match = (forward ? searchTextForward : searchTextBackward)(editor, text, path, offset)
+  if(!text) return
 
-    if(match) {
-      const {path, offset} = match
+  const match = (forward ? searchTextForward : searchTextBackward)(editor, text, path, offset)
 
-      scrollToRange(
-        editor,
-        {
-          focus: { path, offset },
-          anchor: { path, offset: offset + text.length }
-        },
-        doFocus
-      )
-      return
-    }
-  }
-  if(path) {
-    scrollToPoint(
+  if(match) {
+    const {path, offset} = match
+
+    scrollToRange(
       editor,
-      { path, offset },
+      {
+        focus: { path, offset },
+        anchor: { path, offset: offset + text.length }
+      },
       doFocus
     )
   }
