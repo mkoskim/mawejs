@@ -772,7 +772,7 @@ export function section2edit(section) {
 //*****************************************************************************
 
 //-----------------------------------------------------------------------------
-// Regroup parts & scenes from flattened buffer
+// Flat buffer -> Regroup parts & scenes
 
 export function edit2grouped(content) {
   //const [head, parts] = splitHead(content)
@@ -818,7 +818,11 @@ export function edit2grouped(content) {
 }
 
 //-----------------------------------------------------------------------------
-// Update parts & scenes
+// Update parts & scenes: To make index rendering faster, we preserve the
+// doc elements whenever possible. Also, during the update we refresh the
+// word counts so that there is no need to recalculate them before rendering
+// index.
+//-----------------------------------------------------------------------------
 
 export function updateSection(buffer, section) {
 

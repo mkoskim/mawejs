@@ -180,12 +180,133 @@ export const theme = createTheme({
       main: "#222",
     },
   },
-  /*
   typography: {
-    fontSize: 12,
+    fontSize: 14,
   },
-  */
   components: {
+    MuiButtonBase: {
+    },
+    MuiButton: {
+      defaultProps: {
+        size: 'small',
+      },
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          minWidth: "32px",
+        },
+      },
+    },
+    MuiToggleButton: {
+      defaultProps: {
+        size: 'small',
+      },
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+        },
+      },
+    },
+    MuiIconButton: {
+      defaultProps: {
+        size: 'small',
+      },
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          //fontSize: "12pt",
+          lineHeight: 1.0,
+          padding: "4px 4px",
+          margin: 0,
+        },
+      },
+    },
+    MuiFilledInput: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiFormControl: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiFormHelperText: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiInputBase: {
+      defaultProps: {
+        size: "small",
+        margin: 'dense',
+      },
+      styleOverrides: {
+        root: {
+          paddingLeft: "5px",
+        },
+        input: {
+          height: "24px",
+          padding: "4px",
+        }
+      },
+    },
+    MuiOutlinedInput: {
+      defaultProps: {
+        size: "small",
+        margin: 'dense',
+      },
+      styleOverrides: {
+        root: {
+          paddingLeft: "5px",
+        },
+        input: {
+          height: "24px",
+          padding: "4px",
+        }
+      },
+    },
+    MuiTextField: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiInputLabel: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiListItem: {
+      defaultProps: {
+        dense: true,
+      },
+    },
+    MuiFab: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
+    MuiTable: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
+    MuiToolbar: {
+      defaultProps: {
+        variant: 'dense',
+      },
+    },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          fontSize: "11pt",
+        }
+      }
+    },
+  },
+});
+/*
+components: {
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
@@ -223,7 +344,6 @@ export const theme = createTheme({
     MuiToggleButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none',
           minWidth: "40px",
           minHeight: "40px",
         },
@@ -233,15 +353,9 @@ export const theme = createTheme({
       styleOverrides: {
       }
     },
-    MuiTooltip: {
-      styleOverrides: {
-        tooltip: {
-          fontSize: "11pt",
-        }
-      }
-    },
   },
 });
+*/
 
 //-----------------------------------------------------------------------------
 
@@ -479,12 +593,7 @@ export {
 
 export function SearchBox({...props})
 {
-/*
-  return <Input
-    spellCheck={false}
-    {...props}
-  />
-/*/
+//*
   return <OutlinedInput
     type="search"
     spellCheck={false}

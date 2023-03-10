@@ -40,7 +40,8 @@ A new feature is showing a pie diagram of the story, and compare it to selected 
 
 ![image](https://user-images.githubusercontent.com/10298548/224184109-1d1e4dc6-afb7-462f-9798-cff04fa2eade.png)
 
-There is currently just K. M. Weiland's story structure templates, but we may add e.g. Blake Snyder's Betasheet as one option.
+There is currently K. M. Weiland's story structure templates and Blake Snyder's Beat Sheet, but we may add more later. It wouldn't be bad, that you could have a collection
+of different templates for various purposes (thrillers, romances, etc).
 
 ## What is Mawe?
 
