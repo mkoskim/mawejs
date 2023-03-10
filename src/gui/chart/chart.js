@@ -20,7 +20,8 @@ import {
 } from "recharts"
 
 import {
-  HFiller, ToolBox, VFiller,
+  HBox, VBox, HFiller, VFiller,
+  ToolBox,
   Button, Label,
   MakeToggleGroup,
   Select, MenuItem, InputLabel, FormControl, Separator, Icon,
@@ -201,41 +202,56 @@ function DrawPieChart({section}) {
 
   //---------------------------------------------------------------------------
 
-  const [selectStart, setSelectStart] = useState("90")
-  const [selectRotate, setSelectRotate] = useState("1")
+  const [selectStart, setSelectStart] = useState(90)
+  const [selectRotate, setSelectRotate] = useState(1)
 
-  //const [selectStart, setSelectStart] = useState(270)
-  //const [selectDirection, setSelectDirection] = useState(-1)
+  const [mode, _setMode] = useState("topCCW")
 
-  const rotateButtons = {
-    // Clockwise
-    "-1": {
-      tooltip: "Clockwise",
-      //icon: <Icon.Action.Rotate.CW />,
-      icon: <Icon.Action.Loop style={{transform: "scaleX(-1)"}}/>,
-    },
-    // Counter-clockwise
-    "1": {
-      tooltip: "Counter Clockwise",
-      //icon: <Icon.Action.Rotate.CCW />,
-      icon: <Icon.Action.Loop style={{transform: "rotate(0deg)"}}/>,
-    },
+  function setMode(mode) {
+    _setMode(mode)
+    switch(mode) {
+      case "topCCW": return setStartRotate(90, 1)
+      case "topCW": return setStartRotate(90, -1)
+      case "bottomCCW": return setStartRotate(270, 1)
+      case "bottomCW": return setStartRotate(270, -1)
+    }
+
+    function setStartRotate(start, rotate) {
+      setSelectStart(start)
+      setSelectRotate(rotate)
+    }
   }
 
-  const startButtons = {
-    "90": {
-      icon: <Icon.Action.VerticalAlign.Top/>,
-      tooltip: "Top"
+  const modeButtons = {
+    // Top / Clockwise
+    "topCW": {
+      tooltip: "Top Clockwise",
+      icon: <Icon.Action.Rotate.CW style={{transform: "rotate(180deg)"}}/>,
+      //icon: <Icon.Action.Loop style={{transform: "scaleX(-1)"}}/>,
     },
-    "270": {
-      icon: <Icon.Action.VerticalAlign.Bottom/>,
-      tooltip: "Bottom"
+    // Top / Counter-Clockwise
+    "topCCW": {
+      tooltip: "Top Counter-clockwise",
+      icon: <Icon.Action.Rotate.CCW style={{transform: "rotate(180deg)"}}/>,
+      //icon: <Icon.Action.Loop style={{transform: "scaleX(-1)"}}/>,
+    },
+    // Top / Clockwise
+    "bottomCW": {
+      tooltip: "Bottom Clockwise",
+      icon: <Icon.Action.Rotate.CW />,
+      //icon: <Icon.Action.Loop style={{transform: "scaleX(-1)"}}/>,
+    },
+    // Top / Counter-Clockwise
+    "bottomCCW": {
+      tooltip: "Bottom Counter-clockwise",
+      icon: <Icon.Action.Rotate.CCW />,
+      //icon: <Icon.Action.Loop style={{transform: "scaleX(-1)"}}/>,
     },
   }
 
   const common = {
-    startAngle: parseInt(selectStart) + parseInt(selectRotate) * 1,
-    endAngle:   parseInt(selectStart) + parseInt(selectRotate) * (360 - 2),
+    startAngle: selectStart + selectRotate * 1,
+    endAngle:   selectStart + selectRotate * (360 - 2),
     minAngle: 0,
     cx: "50%",
     cy: "50%",
@@ -260,20 +276,13 @@ function DrawPieChart({section}) {
     ...common,
   }
 
-  /*
-  const innerRing = {
-    label: innerLabel,
-    innerRadius: "65%",
-    outerRadius: "70%",
-  }
-  */
-
   //---------------------------------------------------------------------------
   // View
   //---------------------------------------------------------------------------
 
   return <VFiller>
     <ToolBox>
+      <HFiller/>
       <Label text="Element:"/>
       <MakeToggleGroup
         buttons={elemButtons}
@@ -293,21 +302,14 @@ function DrawPieChart({section}) {
       />
       <Separator/>
       <MakeToggleGroup
-        buttons={rotateButtons}
-        choices={["-1", "1"]}
-        selected={selectRotate}
-        setSelected={setSelectRotate}
+        buttons={modeButtons}
+        choices={["topCCW", "topCW", "bottomCCW", "bottomCW"]}
+        selected={mode}
+        setSelected={setMode}
         exclusive={true}
       />
       <Separator/>
-      <MakeToggleGroup
-        buttons={startButtons}
-        choices={["90", "270"]}
-        selected={selectStart}
-        setSelected={setSelectStart}
-        exclusive={true}
-      />
-      <Separator/>
+      <HFiller/>
     </ToolBox>
     <VFiller>
       <ResponsiveContainer width="95%" height="95%">
