@@ -181,7 +181,7 @@ export const theme = createTheme({
     },
   },
   typography: {
-    fontSize: 14,
+    //fontSize: "12pt",
   },
   components: {
     MuiButtonBase: {
@@ -528,14 +528,13 @@ export function Button({tooltip, ...props}) {
 
 //-----------------------------------------------------------------------------
 
-export function Label({text, variant="body1", style, children, ...props}) {
-  return <Typography
-    variant={variant}
-    style={{...style}}
-    {...props}
+export function Label({text, style, children, ...props}) {
+  return <span
+      style={{...style}}
+      {...props}
     >
       {text}{children}
-    </Typography>
+    </span>
 }
 
 /*
