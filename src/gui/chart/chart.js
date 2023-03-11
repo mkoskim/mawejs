@@ -18,6 +18,7 @@ import {
   LineChart, Line,
   PieChart, Pie,
 } from "recharts"
+import {SectionWordInfo} from "../common/components"
 
 import {
   HBox, VBox, HFiller, VFiller,
@@ -282,6 +283,8 @@ function DrawPieChart({section}) {
   return <VFiller>
     <ToolBox style={{background: "white"}}>
       <HFiller/>
+      <Separator/>
+      <SectionWordInfo section={section}/>
       <Separator/>
       <MakeToggleGroup
         buttons={elemButtons}
