@@ -175,7 +175,7 @@ function wcParagraph(elem) {
   switch(elem.type) {
     //case "p": return { chars, text: wc, map: words2map(words) }
     case "p": return { chars, text: wc }
-    case "missing": return { chars, missing: wc }
+    case "missing": return { missing: wc }
     //case "comment": return { chars, comment: words }
   }
   return undefined
