@@ -282,6 +282,7 @@ function DrawPieChart({section}) {
   return <VFiller>
     <ToolBox style={{background: "white"}}>
       <HFiller/>
+      <Separator/>
       <MakeToggleGroup
         buttons={elemButtons}
         choices={["scenes", "parts"]}
