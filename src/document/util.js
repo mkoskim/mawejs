@@ -115,9 +115,9 @@ export function section2lookup(section) {
 //-----------------------------------------------------------------------------
 
 export function text2words(text) {
-  return text.split(/[^\wåäö]+/i).filter(word => word.length)
+  //return text.split(/[^\wåäö]+/i).filter(word => word.length)
+  return text.split(/[^\p{L}]+/iu).filter(word => word.length)
 }
-
 
 export function wordcount(text) {
   return text2words(text).length
