@@ -98,20 +98,22 @@ Install the needed tools, if you don't have them already. On Linux you can do th
 
 Clone the repository:
 
-    $ git clone https://github.com/mkoskim/mawe.web.git
+    $ mkdir mawejs
+    $ cd mawejs
+    $ git clone https://github.com/mkoskim/mawejs.git
 
 Get dependencies:
 
-    mawe.web$ npm install
+    mawejs$ npm install
 
 Running (development version):
 
-    mawe.web$ npm run dev
+    mawejs$ npm run dev
 
 If you update the project with 'git pull', you may need to update the libraries, too:
 
-    mawe.web$ git pull
-    mawe.web$ npm install
+    mawejs$ git pull
+    mawejs$ npm install
 
 ## MIT License
 
