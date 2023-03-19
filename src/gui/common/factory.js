@@ -25,12 +25,14 @@ import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
 
 import { styled } from '@mui/material/styles';
 
+import { createTheme } from '@mui/material/styles';
+
 import {
   Button as MuiButton, ButtonGroup,
   ToggleButton, ToggleButtonGroup,
   Breadcrumbs,
   Chip, Link,
-  TextField, InputAdornment,
+  TextField, InputAdornment, OutlinedInput,
   Tooltip as MuiTooltip, tooltipClasses,
   Divider, CircularProgress as Spinner,
   List, ListItem, ListItemText,
@@ -38,9 +40,8 @@ import {
   Menu, MenuItem,
   //Select, InputLabel, FormControl,
 } from "@mui/material"
-import {OutlinedInput} from "@mui/material";
 
-import { createTheme } from '@mui/material/styles';
+//import { enqueueSnackbar, closeSnackbar } from "notistack";
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export {
@@ -378,29 +379,25 @@ export function Loading({className, style}) {
 //-----------------------------------------------------------------------------
 
 /*
-export function Inform() {
-  const snackbar = useSnackbar();
-  const enqueue = snackbar.enqueueSnackbar;
-  const close = snackbar.closeSnackbar;
-
-  return {
-    process: msg => {
-      return enqueue(String(msg), {variant: "info", persist: true});
-    },
-    success: msg => {
-      return enqueue(String(msg), {variant: "success"});
-    },
-    warning: msg => {
-      return enqueue(String(msg), {variant: "warning"});
-    },
-    error: err => {
-      console.log(err);
-      return enqueue(String(err), {variant: "error"});
-    },
-    dismiss: key => close(key),
-  }
+export const Inform = {
+  process: msg => {
+    return enqueueSnackbar(String(msg), {variant: "info", persist: true});
+  },
+  success: msg => {
+    return enqueueSnackbar(String(msg), {variant: "success"});
+  },
+  warning: msg => {
+    return enqueueSnackbar(String(msg), {variant: "warning"});
+  },
+  error: err => {
+    console.log(err);
+    return enqueueSnackbar(String(err), {variant: "error"});
+  },
+  dismiss: key => {
+    closeSnackbar(key)
+  },
 }
-*/
+/**/
 
 //-----------------------------------------------------------------------------
 // Theme

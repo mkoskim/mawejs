@@ -28,8 +28,10 @@ import {
   List, ListItem, ListItemText,
   Grid,
   Separator, Loading, addClass,
-  Menu, MenuItem, MakeToggleGroup,
+  Menu, MenuItem, MakeToggleGroup, Inform,
 } from "../common/factory";
+
+import { SnackbarProvider, enqueueSnackbar } from "notistack";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
@@ -112,7 +114,10 @@ export default function App(props) {
     if(!doc.story) {
       if(doc.load) {
         console.log("Loading:", doc.load)
-        mawe.load(doc.load).then(content => setDoc(content))
+        mawe.load(doc.load).then(content => {
+          setDoc(content)
+          //enqueueSnackbar("Loaded");
+        })
       }
       else if(doc.buffer) {
         setDoc(mawe.create(doc.buffer))
@@ -130,6 +135,7 @@ export default function App(props) {
 
   return (
     <ThemeProvider theme={theme}>
+    <SnackbarProvider />
     <VBox className="ViewPort">
       <WorkspaceTab {...viewprops}/>
       <ChooseView key={doc.file?.id} {...viewprops}/>
@@ -233,6 +239,7 @@ async function onOpenFile({doc, setDoc}) {
 
     console.log("Load file:", filePath)
     setDoc(await mawe.load(filePath))
+    //enqueueSnackbar("Loaded", {variant: "success"});
   }
 }
 
