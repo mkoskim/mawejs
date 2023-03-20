@@ -126,7 +126,7 @@ function DrawPieChart({section}) {
         {size: 1.9, name: "Rikkoutuminen", fill: "yellow"},
         {name: "I näytös"},
         {size: 5.0, name: "Uuden maailman esittely", fill: "lightgreen"},
-        {size: 5.0, name: "Haateiden kohtaaminen", fill: "yellow"},
+        {size: 5.0, name: "Haasteiden kohtaaminen", fill: "yellow"},
         {size: 3.0, name: "Ensimmäinen kulminaatio", fill: "orange"},
         {name: "II näytös"},
         {size: 8.0, name: "Uusi mahdollisuus", fill: "yellow"},

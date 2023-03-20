@@ -187,10 +187,12 @@ function FormatFile(format, settings, body) {
   )
 
   function FormatBody(head, parts) {
+    const content = parts.map(FormatPart).filter(p => p)
+
     return format["body"](
       settings,
       FormatHead(head),
-      parts.map(FormatPart)
+      content
     )
   }
 
@@ -199,10 +201,14 @@ function FormatFile(format, settings, body) {
   }
 
   function FormatPart(part) {
+    const scenes = part.children.map(FormatScene).filter(s => s)
+
+    if(!scenes.length) return null
+
     return format["part"](
       settings,
       part,
-      part.children.map(FormatScene).filter(s => s)
+      scenes
     );
   }
 
@@ -211,6 +217,8 @@ function FormatFile(format, settings, body) {
       .map(s => s.filter(p => p.type !== "br"))
       .filter(s => s.length)
     //console.log(splits)
+
+    if(!splits.length) return null
 
     return format["scene"](
       settings,
