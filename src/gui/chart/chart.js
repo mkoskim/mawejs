@@ -117,6 +117,30 @@ function DrawPieChart({section}) {
         {name: "Finale", size: 24, fill: "red"},
         {name: null, size: 1, fill: "orange"}, // Closing Image
       ]
+    },
+    vogler: {
+      icon: "Vogler",
+      data: [
+        {name: "Prologi"},
+        {size: 3.1, name: "Normaalitila", fill: "lightgreen"},
+        {size: 1.9, name: "Rikkoutuminen", fill: "yellow"},
+        {name: "I näytös"},
+        {size: 5.0, name: "Uuden maailman esittely", fill: "lightgreen"},
+        {size: 5.0, name: "Haateiden kohtaaminen", fill: "yellow"},
+        {size: 3.0, name: "Ensimmäinen kulminaatio", fill: "orange"},
+        {name: "II näytös"},
+        {size: 8.0, name: "Uusi mahdollisuus", fill: "yellow"},
+        {size: 5.0, name: "Toivo herää", fill: "lightgreen"},
+        {size: 5.0, name: "Luolan läheisyys", fill: "orange"},
+        {size: 3.0, name: "Synkkä luola", fill: "red"},
+        {name: "III näytös"},
+        {size: 5.0, name: "Uudelleensyntymä", fill: "yellow"},
+        {size: 5.0, name: "Tietoisuus vaarasta", fill: "orange"},
+        {size: 3.0, name: "Kriisi", fill: "red"},
+        {name: "IV näytös"},
+        {size: 5.0, name: "Kliimaksin rakentaminen", fill: "orange"},
+        {size: 3.0, name: "Kliimaksi", fill: "red"}
+      ]
     }
   }
 
@@ -151,11 +175,11 @@ function DrawPieChart({section}) {
       var mid = midAngle % 360
       if(mid < 0) mid += 360
 
-      if(mid > 270-10 && mid < 270+10) return {
+      if(mid > 270-15 && mid < 270+15) return {
         textAnchor: "middle",
         dominantBaseline: (inside) ? "auto" : "hanging",
       }
-      if(mid > 90-10 && mid < 90+10) return {
+      if(mid > 90-15 && mid < 90+15) return {
         textAnchor: "middle",
         dominantBaseline: (inside) ? "hanging" : "auto",
       }
@@ -296,7 +320,7 @@ function DrawPieChart({section}) {
       <Separator/>
       <MakeToggleGroup
         buttons={tmplButtons}
-        choices={["acts", "plotpoints", "beatsheet"]}
+        choices={["acts", "plotpoints", "beatsheet", "vogler"]}
         selected={selectTemplate}
         setSelected={setSelectTemplate}
         exclusive={true}
