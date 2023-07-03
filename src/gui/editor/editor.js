@@ -539,7 +539,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
       <Separator/>
       <SectionWordInfo section={doc.story.body}/>
     </ToolBox>
-    <Slate editor={settings.body.editor} value={settings.body.buffer} onChange={settings.body.onChange}>
+    <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
     {
       activeID === "body"
       ? <div className="Filler Board" style={{...style}}>
@@ -548,7 +548,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
       : null
     }
     </Slate>
-    <Slate editor={settings.notes.editor} value={settings.notes.buffer} onChange={settings.notes.onChange}>
+    <Slate editor={settings.notes.editor} initialValue={settings.notes.buffer} onChange={settings.notes.onChange}>
     {
       activeID === "notes"
       ? <div className="Filler Board" style={{...style}}>
