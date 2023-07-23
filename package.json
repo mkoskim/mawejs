@@ -21,8 +21,8 @@
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.11.16",
-    "@mui/material": "^5.13.1",
+    "@mui/icons-material": "^5.14.1",
+    "@mui/material": "^5.14.1",
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "electron-better-ipc": "^2.0.1",
@@ -32,7 +32,7 @@
     "fs-extra": "^11.1.1",
     "is-gzip": "^2.0.0",
     "is-hotkey": "^0.2.0",
-    "material-ui-popup-state": "^5.0.8",
+    "material-ui-popup-state": "^5.0.9",
     "nanoid": "^4.0.2",
     "notistack": "^3.0.1",
     "pako": "^2.1.0",
@@ -43,7 +43,7 @@
     "recharts": "^2.7.2",
     "slate": "^0.94.1",
     "slate-history": "^0.93.0",
-    "slate-react": "^0.97.1",
+    "slate-react": "^0.97.2",
     "stream": "^0.0.2",
     "uuid": "^9.0.0",
     "xml-js": "^1.6.11"
@@ -51,10 +51,10 @@
   "devDependencies": {
     "concurrently": "^8.2.0",
     "cross-env": "^7.0.3",
-    "electron": "^25.2.0",
+    "electron": "^25.3.1",
     "electron-builder": "^24.4.0",
     "electron-reload": "^2.0.0-alpha.1",
-    "nodemon": "^2.0.22",
+    "nodemon": "^3.0.1",
     "react-scripts": "^5.0.1",
     "wait-on": "^7.0.1"
   },
