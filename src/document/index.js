@@ -13,6 +13,7 @@ import {asRTF, asHTML} from "./print"
 import {
   getSuffix, suffix2format,
   withWordCounts, elemAsText,
+  file2buf,
 } from "./util";
 
 export const mawe = {
@@ -26,7 +27,7 @@ export const mawe = {
 
     return await fs.rename(file.id, name + suffix);
   },
-  buf2tree, fromXML,
+  file2buf, buf2tree, fromXML,
   toXML, tree2buf,
 
   // Exporting
