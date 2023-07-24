@@ -519,12 +519,12 @@ function withMarkup(editor) {
 
     //console.log("Node:", node)
 
-    if(node.type === "part") {
-      if(Point.equals(selection.focus, Editor.end(editor, path))) {
-        Transforms.move(editor, {distance: 1, unit: "line"})
-        return
-      }
-    }
+    //if(node.type === "part") {
+    //  if(Point.equals(selection.focus, Editor.end(editor, path))) {
+    //    Transforms.move(editor, {distance: 1, unit: "line"})
+    //    return
+    //  }
+    //}
 
     if(RESETEMPTY.includes(node.type) && Node.string(node) == "") {
       Transforms.setNodes(editor, {type: "p"});
@@ -655,6 +655,7 @@ function withFixParts(editor) {
     //console.log("Path/Node:", path, node)
 
     //-------------------------------------------------------------------------
+    // For entire document:
     // 1. Ensure, that we have at least 1 node and that is a part
     // 2. Ensure, that first block is always part
 
@@ -664,6 +665,7 @@ function withFixParts(editor) {
           {type: "part", children: [{text: ""}]},
           {at: path.concat(0)}
         )
+        console.log("FixPart: Empty doc: inserted part")
         return
       }
       if(editor.children[0].type !== "part") {
@@ -671,12 +673,14 @@ function withFixParts(editor) {
           {type: "part"},
           {at: path.concat(0)}
         )
+        console.log("FixPart: First block --> part")
         return
       }
       return normalizeNode(entry)
     }
 
     //-------------------------------------------------------------------------
+    // For single blocks:
     // 3. Ensure, that created part is followed by scene break
     // 4. Ensure, that node after part is a scene
 
@@ -693,6 +697,7 @@ function withFixParts(editor) {
               {type: "scene", id: nanoid(), children: [{text: ""}]},
               {at: p}
             )
+            console.log("FixPart: Block following part --> scene")
             return
           }
         }
@@ -704,6 +709,7 @@ function withFixParts(editor) {
             {type: "scene"},
             {at: path}
           )
+          console.log("FixPart: Block preceded by part --> scene")
           return
         }
       }
