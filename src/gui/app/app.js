@@ -207,7 +207,7 @@ function WorkspaceTab({mode, doc, setDoc}) {
 
     <Separator/>
     <Button tooltip="Open Folder" onClick={e => onOpenFolder(cbprops)}><Icon.Action.Folder /></Button>
-    <Button tooltip="Help"><Icon.Help /></Button>
+    <Button tooltip="Help" onClick={e => onHelp(cbprops)}><Icon.Help /></Button>
     <Button tooltip="Settings"><Icon.Settings /></Button>
   </ToolBox>
 }
@@ -225,6 +225,14 @@ async function onNewFile({doc, setDoc}) {
   setDoc({
     buffer: '<story format="mawe"><body><part/></body><notes><part/></notes></story>'
   })
+}
+
+async function onHelp({doc, setDoc}) {
+  setDoc({})
+  const buffer = await mawe.file2buf({id: "./local/UserGuide.mawe"})
+  const tree = mawe.buf2tree(buffer)
+  const story = mawe.fromXML(tree)
+  setDoc({buffer, tree, story})
 }
 
 async function onOpenFile({doc, setDoc}) {
