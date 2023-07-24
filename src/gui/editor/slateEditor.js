@@ -519,18 +519,31 @@ function withMarkup(editor) {
 
     //console.log("Node:", node)
 
-    //if(node.type === "part") {
-    //  if(Point.equals(selection.focus, Editor.end(editor, path))) {
-    //    Transforms.move(editor, {distance: 1, unit: "line"})
-    //    return
-    //  }
-    //}
+    // If we hit enter at the end of part, and next block is scene, just move the cursor
+    if(node.type === "part") {
+      //console.log("WithMarkup: part")
+      //console.log("- Cursor:", selection.focus)
+      //console.log("- End...:", Editor.end(editor, path))
+      if(Point.equals(selection.focus, Editor.end(editor, path))) {
+        const next = Editor.next(editor, {at: path})
+        if(next) {
+          const [node, path] = next
+          //console.log("- Next:", node)
+          if(node.type === "scene") {
+            Transforms.move(editor, {distance: 1, unit: "line"})
+            return
+          }
+        }
+      }
+    }
 
+    // If we hit enter at empty line, and block type is RESETEMPTY, reset type
     if(RESETEMPTY.includes(node.type) && Node.string(node) == "") {
       Transforms.setNodes(editor, {type: "p"});
       return
     }
 
+    // If we hit enter at line, which has STYLEAFTER, split line and apply style
     if(node.type in STYLEAFTER) {
       const newtype = STYLEAFTER[node.type]
       Editor.withoutNormalizing(editor, () => {
@@ -680,7 +693,7 @@ function withFixParts(editor) {
     }
 
     //-------------------------------------------------------------------------
-    // For single blocks:
+    // For top-level single blocks:
     // 3. Ensure, that created part is followed by scene break
     // 4. Ensure, that node after part is a scene
 
@@ -703,7 +716,7 @@ function withFixParts(editor) {
         }
       } else {
         const prev = Editor.previous(editor, {at: path})
-        if(prev && prev[0].type === "part") {
+        if(prev && prev[0].type === "part" && node.type !== "scene") {
           Transforms.setNodes(
             editor,
             {type: "scene"},
