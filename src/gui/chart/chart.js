@@ -118,6 +118,7 @@ function DrawPieChart({section}) {
         {name: null, size: 1, fill: "orange"}, // Closing Image
       ]
     },
+    /*
     vogler: {
       icon: "Vogler",
       data: [
@@ -141,7 +142,8 @@ function DrawPieChart({section}) {
         {size: 5.0, name: "Kliimaksin rakentaminen", fill: "orange"},
         {size: 3.0, name: "Kliimaksi", fill: "red"}
       ]
-    }
+    },
+    */
   }
 
   /*
@@ -320,7 +322,7 @@ function DrawPieChart({section}) {
       <Separator/>
       <MakeToggleGroup
         buttons={tmplButtons}
-        choices={["acts", "plotpoints", "beatsheet", "vogler"]}
+        choices={["acts", "plotpoints", "beatsheet"]}
         selected={selectTemplate}
         setSelected={setSelectTemplate}
         exclusive={true}
