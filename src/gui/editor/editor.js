@@ -536,8 +536,8 @@ function EditorBox({style, settings, mode="Condensed"}) {
     <ToolBox style={{...toolboxstyle, borderLeft: "1px solid lightgray", borderRight: "1px solid lightgray"}}>
       <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
-      <Separator/>
-      <SectionWordInfo section={doc.story.body}/>
+      {/* <Separator/> */}
+      {/* <SectionWordInfo section={doc.story.body}/> */}
     </ToolBox>
     <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
     {

@@ -62,7 +62,13 @@ export function DocIndex({style, activeID, section, wcFormat, include, setActive
     [wcFormat, total, cumulative]
   )
 
-  return <VBox style={style} className="TOC">
+  return <React.Fragment>
+    <IndexHead
+      //wcTotal={section.words.text}
+      section={section}
+      wcFormat={wcFormat}
+      />
+    <VBox style={style} className="TOC">
     <PartDropZone
       activeID={activeID}
       parts={section?.parts}
@@ -71,8 +77,34 @@ export function DocIndex({style, activeID, section, wcFormat, include, setActive
       onActivate={onActivate}
     />
     </VBox>
-
+    </React.Fragment>
   //return useDeferredValue(index)
+}
+
+//-----------------------------------------------------------------------------
+
+function IndexHead({section, wcFormat}) {
+  const wcFormatFunction = useCallback(
+    (!wcFormat || wcFormat === "off")
+    ? undefined
+    : (id, wcText) => <FormatWords
+      format={"numbers"}
+      words={wcText}
+      //cumulative={cumulative && id in cumulative && cumulative[id]}
+      //total={total}
+    />, [wcFormat]
+  )
+
+  return <IndexItem
+    //id={elem.id}
+    type={"section"}
+    name="Head"
+    words={section.words}
+    wcFormat={wcFormatFunction}
+    //onActivate={onActivate}
+    //{...dragHandleProps}
+  />
+
 }
 
 //-----------------------------------------------------------------------------
@@ -242,19 +274,20 @@ class SceneItem extends React.PureComponent {
 
 class IndexItem extends React.PureComponent {
   render() {
-    const {id, type, name, words, wcFormat, onActivate, ...rest} = this.props
+    const {className, id, type, name, words, wcFormat, onActivate, ...rest} = this.props
 
     //console.log("Render IndexItem:", type, id, name)
 
-    const className = (type === "part") ? "PartName" :
+    const typeClass = (type === "part") ? "PartName" :
       (type === "scene") ? "SceneName" :
+      (type === "section") ? "SectionName" :
       ""
 
     function onClick(ev) {
-      onActivate(id)
+      return onActivate && onActivate(id)
     }
 
-    return <HBox className={addClass(className, "Entry")} onClick={onClick} {...rest}>
+    return <HBox className={addClass(className, typeClass, "Entry")} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       <Filler/>

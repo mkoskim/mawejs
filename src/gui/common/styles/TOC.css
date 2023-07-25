@@ -2,6 +2,11 @@
 /* Document outlining */
 /* ---------------------------------------------------------------------------- */
 
+.SectionName {
+  padding: 6px;
+  border-bottom: 1px solid lightgray;
+}
+
 .TOC {
   overflow: auto;
   /*
