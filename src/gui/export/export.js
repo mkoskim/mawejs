@@ -30,6 +30,11 @@ import { getSuffix } from "../../document/util";
 import { splitByTrailingElem } from "../../util";
 import {SectionWordInfo} from "../common/components";
 
+import { formatRTF } from "./exportRTF";
+import { formatHTML } from "./exportHTML"
+import { formatTXT } from "./exportTXT"
+import { formatTEX } from "./exportTEX"
+
 //-----------------------------------------------------------------------------
 
 const fs = require("../../system/localfs");
@@ -71,29 +76,43 @@ function ExportToolbar({settings, doc}) {
   const {head, parts} = body
 
   return <ToolBox style={{background: "white"}}>
-    <Button onClick={exportRTF}>Export</Button>
-    <Separator/>
-    Format: RTF
+    Export:
+    <Button onClick={exportRTF}>RTF</Button>
+    <Button onClick={exportTEX}>TEX</Button>
+    <Button onClick={exportTXT}>TXT</Button>
     <Separator/>
     <SectionWordInfo section={body}/>
     <Separator/>
     <Filler/>
   </ToolBox>
 
-  async function exportRTF(event) {
-    console.log("Exporting...")
-
+  function exportRTF(event) {
     const content = FormatFile(formatRTF, settings, body)
     //console.log(content)
-
-    const dirname  = await fs.dirname(doc.file.id)
-    const name = await fs.basename(doc.file.id)
-    const suffix = getSuffix(name, [".mawe", ".mawe.gz"]);
-    const basename = await fs.basename(name, suffix);
-    const filename = await fs.makepath(dirname, basename + ".rtf")
-    console.log("Filename:", filename)
-    fs.write(filename, content)
+    exportToFile(doc, ".rtf", content)
   }
+
+  function exportTXT(event) {
+    const content = FormatFile(formatTXT, settings, body)
+    //console.log(content)
+    exportToFile(doc, ".txt", content)
+  }
+
+  function exportTEX(event) {
+    const content = FormatFile(formatTEX, settings, body)
+    //console.log(content)
+    exportToFile(doc, ".tex", content)
+  }
+}
+
+async function exportToFile(doc, filesuffix, content) {
+  const dirname  = await fs.dirname(doc.file.id)
+  const name = await fs.basename(doc.file.id)
+  const suffix = getSuffix(name, [".mawe", ".mawe.gz"]);
+  const basename = await fs.basename(name, suffix);
+  const filename = await fs.makepath(dirname, basename + filesuffix)
+  console.log("Export to:", filename)
+  fs.write(filename, content)
 }
 
 //-----------------------------------------------------------------------------
@@ -240,154 +259,4 @@ function FormatFile(format, settings, body) {
   function FormatParagraph(p) {
     return format[p.type](settings, p)
   }
-}
-
-// ****************************************************************************
-//
-// HTML formatting table
-//
-// ****************************************************************************
-
-const formatHTML = {
-  // File
-  "file": (settings, head, content) => {
-    const author = head.nickname || head.author
-    const title = head.title ?? ""
-    const headinfo = author ? `${author}: ${title}` : title
-    return `<div style="margin-bottom: 1cm">${headinfo}</div>\n` + content
-  },
-
-  // Body
-  "body": (settings, head, parts) => {
-    const {separator} = settings.part
-    const sep = separator ? formatHTML["sep.part"](separator) : "\n"
-    return head + parts.join(sep)
-  },
-
-  //---------------------------------------------------------------------------
-  "sep.part": (text) => `<center style="margin-top: 1cm; margin-bottom: 1cm">${text}</center>\n`,
-  "sep.scene": (text) => `<center style="margin-top: 1cm; margin-bottom: 1cm">${text}</center>\n`,
-
-  //---------------------------------------------------------------------------
-
-  "title": (settings, title) => `<h1>${title}</h1>\n`,
-
-  //---------------------------------------------------------------------------
-
-  // Part
-  "part": (settings, part, scenes) => {
-    const {separator} = settings.scene
-    const sep = separator ? formatHTML["sep.scene"](separator) : "<br/>\n"
-    return `<div id="${part.id}"/>` + scenes.join(sep)
-  },
-
-  // Scene & breaks
-  "scene": (settings, scene, splits) => {
-    return `<div id="${scene.id}"/>` + splits.join("<br/>\n")
-  },
-  "split": (settings, paragraphs) => paragraphs.join("\n"),
-
-  // Paragraph styles
-  "synopsis": (settings, p) => "",
-  "comment": (settings, p) => "",
-  "missing": (settings, p) => `<p id="${p.id}" style="color: rgb(180, 20, 20);">${formatHTML.escape(elemAsText(p))}</p>`,
-  "p": (settings, p) => `<p id="${p.id}">${formatHTML.escape(elemAsText(p))}</p>`,
-
-  //---------------------------------------------------------------------------
-
-  escape: (text) => text
-}
-
-// ****************************************************************************
-//
-// RTF formatting table
-//
-// ****************************************************************************
-
-
-const formatRTF = {
-  "file": (settings, head, content) => {
-    const author = head.nickname || head.author
-    const title = head.title ?? ""
-    const headinfo = author ? `${author}: ${title}` : title
-    const langcode = 1035
-
-    const pgnum = `{\\field{\\*\\fldinst PAGE}}`
-    const pgtot = `{\\field{\\*\\fldinst NUMPAGES}}`
-
-    return `{\\rtf1\\ansi
-{\\fonttbl\\f0\\froman\\fcharset0 Times New Roman;}
-{\\colortbl;\\red0\\green0\\blue0;\\red180\\green20\\blue20;}
-{\\info{\\title ${formatRTF.escape(head.title)}}{\\author ${formatRTF.escape(head.author)}}}
-\\paperh16837\\paperw11905
-\\margl1701\\margr1701\\margt851\\margb1701
-\\sectd\\sbknone
-\\pgwsxn11905\\pghsxn16837
-\\marglsxn1701\\margrsxn1701\\margtsxn1701\\margbsxn1701
-\\gutter0\\ltrsect
-\\deflang${langcode}
-{\\lang${langcode}\\sl-440
-{\\header\\tqr\\tx8496 ${formatRTF.escape(headinfo)}\\tab ${pgnum} / ${pgtot}\\par}
-${content}
-}}\n`
-  },
-
-  //\\headery851\\f0\\fs24\\fi0\\li0\\ri0\\rin0\\lin0
-
-  //---------------------------------------------------------------------------
-  // Body
-  "body": (settings, head, parts) => {
-    const {separator} = settings.part
-    //const sep = separator ? `{\\sb480\\qc\\fs34 ${separator}\\par}\n` : "\n"
-    const sep = separator ? `{\\sb480\\qc ${separator}\\par}\n` : "\n"
-    return head + parts.join(sep)
-  },
-
-  "title": (settings, title) => `{\\qc\\sa480\\b\\fs34 ${formatRTF.escape(title)}\\par}\n`,
-
-  //---------------------------------------------------------------------------
-
-  // Part
-  "part": (settings, part, scenes) => {
-    const {separator} = settings.scene
-    //const sep = separator ? `{\\sb480\\qc\\fs34 ${separator}\\par}\n` : "\n"
-    const sep = separator ? `{\\sb480\\qc ${separator}\\par}\n` : "\n"
-
-    return scenes.filter(s => s.length).join(sep)
-  },
-
-  // Scene & breaks
-  "scene": (settings, scene, splits) => splits.join(""),
-  "split": (settings, split) => "{\\sb480" + split.join("{\\fi567"),
-
-  // Paragraph styles
-  "missing": (settings, p) => `\\cf2 ${formatRTF.escape(elemAsText(p))}\\par}\n`,
-  "p": (settings, p) => `\\cf1 ${formatRTF.escape(elemAsText(p))}\\par}\n`,
-  "synopsis": (settings, p) => undefined,
-  "comment": (settings, p) => undefined,
-
-  //---------------------------------------------------------------------------
-
-  escape: text => {
-    return (text && text
-      .replaceAll('\\', "\\\\")
-      .replaceAll('{', "\\{")
-      .replaceAll('}', "\\}")
-
-      .replaceAll('~', "\\~")
-      .replaceAll('"', "\\'94")
-
-      .replaceAll("å", "\\'e5")
-      .replaceAll("Å", "\\'c5")
-      .replaceAll("ä", "\\'e4")
-      .replaceAll("Ä", "\\'c4")
-      .replaceAll("ö", "\\'f6")
-      .replaceAll("Ö", "\\'d6")
-
-      // If you have copy-pasted text, you may have these
-      .replaceAll('“', "\\'94")
-      .replaceAll('”', "\\'94")
-      .replaceAll('…', "...")
-    )
-  },
 }
