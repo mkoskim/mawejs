@@ -14,6 +14,7 @@ const packages=`\
 \\usepackage[utf8]{inputenc}
 \\usepackage[finnish]{babel}
 \\usepackage{setspace}
+\\usepackage{xcolor}
 
 \\setstretch{1.25}
 \\pagestyle{plain}
@@ -28,8 +29,8 @@ export const formatTEX = {
     return `\
 ${packages}
 \\begin{document}
-\\title{${head.title}}
-\\author{${head.author}}
+\\title{${head.title ?? ""}}
+\\author{${head.author ?? ""}}
 \\date{}
 \\maketitle
 %\\mainmatter
@@ -71,12 +72,29 @@ ${content}
   // Paragraph styles
   "synopsis": (settings, p) => undefined,
   "comment": (settings, p) => undefined,
-  "missing": (settings, p) => `!! ${linify(elemAsText(p))}`,
+  "missing": (settings, p) => `{\\color{red}${linify(elemAsText(p))}}`,
   "p": (settings, p) => `${linify(elemAsText(p))}`,
 }
 
 function escape(text) {
-  return text
+  return (text && text
+    .replaceAll('\\', "{\\textbackslash}")
+    .replaceAll('&', "\\&")
+    .replaceAll('%', "\\%")
+    .replaceAll('$', "\\$")
+    .replaceAll('#', "\\#")
+    .replaceAll('_', "\\_")
+    .replaceAll('{', "\\{")
+    .replaceAll('}', "\\}")
+    .replaceAll('~', "{\\textasciitilde}")
+    .replaceAll('^', "{\\textasciicircum}")
+    .replaceAll('"', "''")
+
+    // If you have copy-pasted text, you may have these
+    .replaceAll('“', "''")
+    .replaceAll('”', "''")
+    .replaceAll('…', "...")
+  )
 }
 
 function linify(text) {
