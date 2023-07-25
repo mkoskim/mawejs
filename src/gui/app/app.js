@@ -228,11 +228,11 @@ async function onNewFile({doc, setDoc}) {
 }
 
 async function onHelp({doc, setDoc}) {
-  setDoc({})
+  //setDoc({})
   const buffer = await mawe.file2buf({id: "./local/UserGuide.mawe"})
-  const tree = mawe.buf2tree(buffer)
-  const story = mawe.fromXML(tree)
-  setDoc({buffer, tree, story})
+  //const tree = mawe.buf2tree(buffer)
+  //const story = mawe.fromXML(tree)
+  setDoc({buffer})
 }
 
 async function onOpenFile({doc, setDoc}) {
