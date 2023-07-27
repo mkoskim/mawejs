@@ -75,6 +75,23 @@ export const theme = createTheme({
         margin: 'dense',
       },
     },
+    MuiInputBase: {
+      defaultProps: {
+        spellCheck: false,
+        size: "small",
+        margin: 'dense',
+      },
+      styleOverrides: {
+        root: {
+          //paddingLeft: "5px",
+        },
+        input: {
+          //height: "24px",
+          //padding: "4px",
+        }
+      },
+    },
+
 /*
     MuiOutlinedInput: {
       defaultProps: {
@@ -106,21 +123,6 @@ export const theme = createTheme({
     MuiFormHelperText: {
       defaultProps: {
         margin: 'dense',
-      },
-    },
-    MuiInputBase: {
-      defaultProps: {
-        size: "small",
-        margin: 'dense',
-      },
-      styleOverrides: {
-        root: {
-          paddingLeft: "5px",
-        },
-        input: {
-          height: "24px",
-          padding: "4px",
-        }
       },
     },
     MuiInputLabel: {

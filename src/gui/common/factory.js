@@ -324,14 +324,18 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 //-----------------------------------------------------------------------------
 
 export function Input({...props}) {
-  return <OutlinedInput spellCheck={false} {...props}/>
+  return <OutlinedInput {...props}/>
 }
 
 export function SearchBox({...props})
 {
   return <OutlinedInput
-    //type="search"
-    spellCheck={false}
+    sx= {{
+      paddingLeft: "5px",
+      height: "32px",
+      padding: "4px",
+    }}
+    //spellCheck={false}
     startAdornment={
       <InputAdornment position="start"><Icon.Action.Search /></InputAdornment>
     }
