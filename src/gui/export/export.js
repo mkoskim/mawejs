@@ -47,7 +47,7 @@ const fs = require("../../system/localfs");
 
 export function Export({ doc, setDoc, focusTo, setFocusTo }) {
 
-  const [format, setFormat] = useState("tex1")
+  const [format, setFormat] = useState("rtf1")
   const [storyType, setStoryType] = useState("short")
   const [chapterElem, setChapterElem] = useState("part")
   const [chapterType, setChapterType] = useState("separated")

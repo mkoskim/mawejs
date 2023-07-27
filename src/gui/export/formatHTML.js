@@ -63,8 +63,8 @@ export const formatHTML = {
 function getHeading(elem, type, pgbreak, chnum) {
   const brk = pgbreak ? "<hr/>" : ""
   switch(type) {
-    case "numbered": return `${brk}<h2 id="${elem.id}">${chnum}.</h2>`
-    case "named": return `${brk}<h2 id="${elem.id}">${chnum}. ${elem.name}</h2>`
+    case "numbered": return `${brk}<h3 id="${elem.id}">${chnum}.</h3>`
+    case "named": return `${brk}<h3 id="${elem.id}">${chnum}. ${elem.name}</h3>`
     default: break;
   }
   return `<a id="${elem.id}"/>`

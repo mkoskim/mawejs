@@ -85,8 +85,8 @@ function Element({element, attributes, ...props}) {
   switch (element.type) {
     case "title": return <h1 {...attributes} {...props}/>
 
-    case "part": return <h2 {...attributes} {...props}/>
-    case "scene": return <h3 {...attributes} {...props}/>
+    case "part": return <h5 {...attributes} {...props}/>
+    case "scene": return <h6 {...attributes} {...props}/>
 
     case "comment":
     case "missing":
