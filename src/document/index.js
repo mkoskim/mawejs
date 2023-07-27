@@ -10,6 +10,8 @@ import {loadmawe, createmawe, buf2tree, fromXML} from "./xmljs/load"
 import {savemawe, tree2buf, toXML} from "./xmljs/save"
 import {asRTF, asHTML} from "./print"
 
+import {info} from "./head"
+
 import {
   getSuffix, suffix2format,
   withWordCounts, elemAsText,
@@ -17,6 +19,8 @@ import {
 } from "./util";
 
 export const mawe = {
+  info,
+
   load,
   create,
   save,

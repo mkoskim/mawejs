@@ -13,10 +13,13 @@ export const formatTXT = {
   // File
   "file": (head, content, options) => {
     //const author = head.nickname || head.author
-    const title = head.title ?? ""
+    const {author, title, subtitle} = head
     //const headinfo = author ? `${author}: ${title}` : title
     return `\
+${center(author)}
+
 ${center(title.toUpperCase())}
+${subtitle ? "\n" + center(subtitle) + "\n" : ""}
 
 ${content}
 `

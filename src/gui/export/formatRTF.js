@@ -47,8 +47,7 @@ export const formatRTF = {
   "file": (head, content, options) => {
     const pgbreak = options.pgbreak ? "\\page" : ""
 
-    const author = head.nickname || head.author
-    const title = head.title ?? ""
+    const {author, title, subtitle} = head
     const headinfo = author ? `${author}: ${title}` : title
     const langcode = 1035
 
@@ -59,21 +58,27 @@ export const formatRTF = {
 ${fonts}
 ${colors}
 {\\info
-{\\title ${escape(head.title)}}
-{\\author ${escape(head.author)}}
+{\\title ${escape(title)}}
+{\\author ${escape(author)}}
 }
 \\deflang${langcode}
 ${singleA4}
 \\sectd\\margtsxn1701
 \\sbknone\\ltrsect\\stextflow0
-{\\lang${langcode}\\sl-440
 
-{\\header\\tqr\\tx8496 ${escape(headinfo)}\\tab ${pgnum} / ${pgtot}\\par}
+{\\header\\lang${langcode}\\tqr\\tx8496
+${escape(headinfo)}\\tab ${pgnum} / ${pgtot}
+\\par}
 
-{\\qc\\sa480\\b\\fs34 ${escape(head.title)}\\par}
+\\lang${langcode}
+\\sl440
+
+{\\sa220\\qc ${escape(author)}\\par}
+{\\sa440\\qc\\b\\fs34 ${escape(title)}\\par}
+${subtitle ? "{\\sa440\\qc\\b\\fs28" + escape(subtitle) + "\\par}" : ""}
 
 ${content}
-}}\n`
+}\n`
   },
 
   //\\headery851\\f0\\fs24\\fi0\\li0\\ri0\\rin0\\lin0

@@ -31,15 +31,17 @@ export const formatTEX = {
   "file": (head, content, options) => {
     const titlepage = options.pgbreak ? "titlepage" : "notitlepage"
     const mainmatter = options.pgbreak ? "\\mainmatter" : ""
-    //const author = head.nickname || head.author
-    //const title = head.title ?? ""
-    //const headinfo = author ? `${author}: ${title}` : title
+    const {author, title, subtitle} = head
+
     return `\
 \\documentclass[oneside,${titlepage},12pt]{book}
 ${packages}
 \\begin{document}
-\\title{${head.title ?? ""}}
-\\author{${head.author ?? ""}}
+\\author{${author ?? ""}}
+\\title{
+  ${title ?? ""}
+  ${subtitle ? "\\\\ \\large " + subtitle : ""}
+}
 \\date{}
 \\maketitle
 ${mainmatter}

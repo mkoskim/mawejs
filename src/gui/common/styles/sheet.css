@@ -104,10 +104,12 @@
   font-size: 17pt;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 0.5in;
+  margin-bottom: 0.25in;
 }
 
 /* Subtitle */ .Sheet h2 {
+  font-size: 14pt;
+  text-align: center;
 }
 
 /* Chapter */ .Sheet h3 {

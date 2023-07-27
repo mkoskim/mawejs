@@ -4,7 +4,7 @@
 //
 //*****************************************************************************
 
-import { elemAsText } from "../../document"
+import { mawe, elemAsText } from "../../document"
 import { splitByTrailingElem } from "../../util";
 
 //-----------------------------------------------------------------------------
@@ -24,7 +24,7 @@ export function FormatBody(settings, format, body) {
   var chnum = 1
 
   return format["file"](
-    head,
+    mawe.info(head),
     FormatBody(parts),
     {
       pgbreak

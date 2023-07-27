@@ -14,14 +14,16 @@ export const formatHTML = {
 
   // File
   "file": (head, content, options) => {
-    const author = head.nickname || head.author
-    const title = head.title ?? ""
+    const {author, title, subtitle} = head
     const headinfo = author ? `${author}: ${title}` : title
     return `\
-    <div style="margin-bottom: 1cm">${headinfo}</div>\n
-    <h1>${title}</h1>
-    ${content}
-    `
+<div style="margin-bottom: 1cm">${headinfo}</div>\n
+<div style="margin-bottom: 0.5in">
+  <h1>${escape(title)}</h1>
+  ${subtitle ? "<h2>" + escape(subtitle) + "</h2>" : ""}
+</div>
+${content}
+`
   },
 
   //---------------------------------------------------------------------------

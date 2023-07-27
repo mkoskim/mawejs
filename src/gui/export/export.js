@@ -35,6 +35,7 @@ import {
 
 import { getSuffix, nanoid } from "../../document/util";
 import { SectionWordInfo } from "../common/components";
+import { mawe } from "../../document"
 
 import { FormatBody } from "./formatDoc"
 
@@ -149,9 +150,9 @@ function ExportSettings({ style, settings, doc }) {
     "txt": formatTXT,
   }[story.format]
 
-  //const story = {doc}
   const { body } = doc.story
-  const { head, parts } = body
+  const { head } = body
+  const info = mawe.info(body.head)
 
   return <VBox style={style} className="ExportSettings">
     <TextField select label="Format" value={story.format} onChange={e => story.setFormat(e.target.value)}>
@@ -165,7 +166,7 @@ function ExportSettings({ style, settings, doc }) {
       <MenuItem value="txt">ASCII Text</MenuItem>
       </TextField>
 
-    <Accordion defaultExpanded disableGutters>
+    <Accordion disableGutters>
     <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type</AccordionSummary>
     <AccordionDetails><VBox>
     <TextField select label="Story Class" value={story.type} onChange={e => story.setType(e.target.value)}>
@@ -186,19 +187,19 @@ function ExportSettings({ style, settings, doc }) {
     </Accordion>
 
     <Accordion disableGutters>
-    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {head.title}</AccordionSummary>
+    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
     <AccordionDetails><VBox>
     <TextField label="Name" value={head.name} onChange={e => settings.setName(e.target.value)}/>
-    <TextField label="Title" value={head.title} onChange={e => settings.setTitle(e.target.value)}/>
-    <TextField label="Subtitle" value={head.subtitle} onChange={e => settings.setSubtitle(e.target.value)}/>
+    <TextField label="Title" value={head.title ?? ""} onChange={e => settings.setTitle(e.target.value)}/>
+    <TextField label="Subtitle" value={head.subtitle ?? ""} onChange={e => settings.setSubtitle(e.target.value)}/>
     </VBox></AccordionDetails>
     </Accordion>
 
     <Accordion disableGutters>
-    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {head.author}</AccordionSummary>
+    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
     <AccordionDetails><VBox>
-    <TextField label="Author" value={head.author} onChange={e => settings.setAuthor(e.target.value)}/>
-    <TextField label="Nickname" value={head.nickname} onChange={e => settings.setNickname(e.target.value)}/>
+    <TextField label="Author" value={head.author ?? ""} onChange={e => settings.setAuthor(e.target.value)}/>
+    <TextField label="Nickname" value={head.nickname ?? ""} onChange={e => settings.setNickname(e.target.value)}/>
     </VBox></AccordionDetails>
     </Accordion>
 
