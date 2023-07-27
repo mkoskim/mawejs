@@ -19,8 +19,7 @@ import isHotkey from 'is-hotkey';
 import { nanoid } from "../../document/util";
 
 import { styled } from '@mui/material/styles';
-
-import { createTheme } from '@mui/material/styles';
+import { theme } from "./theme";
 
 import {
   Button as MuiButton, ButtonGroup,
@@ -34,19 +33,23 @@ import {
   Grid,
   Menu, MenuItem,
   Select, InputLabel, FormControl,
+  Accordion, AccordionSummary, AccordionDetails,
 } from "@mui/material"
 
 //import { enqueueSnackbar, closeSnackbar } from "notistack";
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
+export { theme }
 export {
   Spinner,
   Grid,
   Chip, Link,
+  TextField,
   List, ListItem, ListItemText, ListSubheader,
   ToggleButton, ToggleButtonGroup,
   Menu, MenuItem,
   isHotkey,
+  Accordion, AccordionSummary, AccordionDetails,
 }
 
 //-----------------------------------------------------------------------------
@@ -87,6 +90,8 @@ export const Icon = {
   Circle: muiIcons.Circle,
   Help: muiIcons.HelpOutline,
   Menu: muiIcons.Menu,
+
+  ExpandMore: muiIcons.ExpandMore,
 
   Arrow: {
     Left: muiIcons.ArrowLeft,
@@ -318,20 +323,20 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 
 //-----------------------------------------------------------------------------
 
-export function SelectFrom({name, children, value, setValue}) {
-  const id = nanoid()
-  return <FormControl size="small">
-    <InputLabel id={"label-" + id}>{name}</InputLabel>
-    <Select
-      labelId={"label-" + id}
-      id={id}
-      value={value}
-      label={name}
-      onChange={e => setValue && setValue(e.target.value)}
-    >
-      {children}
-    </Select>
-  </FormControl>
+export function Input({...props}) {
+  return <OutlinedInput spellCheck={false} {...props}/>
+}
+
+export function SearchBox({...props})
+{
+  return <OutlinedInput
+    //type="search"
+    spellCheck={false}
+    startAdornment={
+      <InputAdornment position="start"><Icon.Action.Search /></InputAdornment>
+    }
+    {...props}
+  />
 }
 
 //-----------------------------------------------------------------------------
@@ -367,22 +372,6 @@ export function Label({text, style, children, ...props}) {
     >
       {text}{children}
     </span>
-}
-
-export function Input({...props}) {
-  return <OutlinedInput spellCheck={false} {...props}/>
-}
-
-export function SearchBox({...props})
-{
-  return <OutlinedInput
-    //type="search"
-    spellCheck={false}
-    startAdornment={
-      <InputAdornment position="start"><Icon.Action.Search /></InputAdornment>
-    }
-    {...props}
-  />
 }
 
 export function Loading({className, style}) {
@@ -431,157 +420,3 @@ export const Inform = {
   },
 }
 /**/
-
-//-----------------------------------------------------------------------------
-// Theme
-//-----------------------------------------------------------------------------
-
-export const theme = createTheme({
-  palette: {
-    primary: { main: "#222", },
-  },
-  typography: {
-    //fontSize: 14,
-  },
-  components: {
-    MuiButtonBase: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          lineHeight: 1.0,
-          fontSize: "12pt",
-          minWidth: "32px",
-          minHeight: "32px",
-          padding: "4px 4px",
-        },
-      },
-    },
-    MuiButton: {
-      defaultProps: {
-        size: 'small',
-      },
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          lineHeight: 1.0,
-          fontSize: "12pt",
-          minWidth: "32px",
-          //minHeight: "32px",
-          //padding: "4px 4px",
-        },
-      },
-    },
-    MuiToggleButton: {
-      defaultProps: {
-        size: 'small',
-      },
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          lineHeight: 1.0,
-          fontSize: "12pt",
-          minWidth: "32px",
-          //minHeight: "32px",
-          //padding: "4px 4px",
-        },
-      },
-    },
-    MuiIconButton: {
-      defaultProps: {
-        size: 'small',
-      },
-      /*
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          //fontSize: "12pt",
-          padding: "4px 4px",
-          //margin: 0,
-        },
-      },
-      */
-    },
-    MuiFilledInput: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiFormControl: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiFormHelperText: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiInputBase: {
-      defaultProps: {
-        size: "small",
-        margin: 'dense',
-      },
-      styleOverrides: {
-        root: {
-          paddingLeft: "5px",
-        },
-        input: {
-          height: "24px",
-          padding: "4px",
-        }
-      },
-    },
-    MuiOutlinedInput: {
-      defaultProps: {
-        size: "small",
-        margin: 'dense',
-      },
-      styleOverrides: {
-        root: {
-          paddingLeft: "5px",
-        },
-        input: {
-          height: "24px",
-          padding: "4px",
-        }
-      },
-    },
-    MuiTextField: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiInputLabel: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiListItem: {
-      defaultProps: {
-        dense: true,
-      },
-    },
-    MuiFab: {
-      defaultProps: {
-        size: 'small',
-      },
-    },
-    MuiTable: {
-      defaultProps: {
-        size: 'small',
-      },
-    },
-    MuiToolbar: {
-      defaultProps: {
-        variant: 'dense',
-      },
-    },
-    MuiTooltip: {
-      styleOverrides: {
-        tooltip: {
-          fontSize: "11pt",
-        }
-      }
-    },
-  },
-});

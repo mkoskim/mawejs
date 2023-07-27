@@ -25,8 +25,12 @@ import {
   List, ListItem, ListItemText, ListSubheader,
   Grid,
   Separator, Loading, addClass,
-  SelectFrom,
+  TextField, SelectFrom,
   MenuItem,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  DeferredRender,
 } from "../common/factory";
 
 import { getSuffix, nanoid } from "../../document/util";
@@ -47,6 +51,28 @@ const fs = require("../../system/localfs");
 
 export function Export({ doc, setDoc, focusTo, setFocusTo }) {
 
+  function setHead(head) {
+    setDoc({
+      ...doc,
+      story: {
+        ...doc.story,
+        body: {
+          ...doc.story.body,
+          head: {
+            ...doc.story.body.head,
+            ...head,
+          }
+        }
+      }
+    })
+  }
+
+  function setName(value)  { setHead({name: value}) }
+  function setTitle(value) { setHead({title: value}) }
+  function setSubtitle(value) { setHead({subtitle: value}) }
+  function setAuthor(value) { setHead({author: value}) }
+  function setNickname(value) { setHead({nickname: value}) }
+
   const [format, setFormat] = useState("rtf1")
   const [storyType, setStoryType] = useState("short")
   const [chapterElem, setChapterElem] = useState("part")
@@ -54,6 +80,12 @@ export function Export({ doc, setDoc, focusTo, setFocusTo }) {
 
   const settings = {
     setFocusTo,
+
+    setName,
+    setTitle,
+    setSubtitle,
+    setAuthor,
+    setNickname,
 
     story: {
       format: format,
@@ -117,51 +149,60 @@ function ExportSettings({ style, settings, doc }) {
     "txt": formatTXT,
   }[story.format]
 
+  //const story = {doc}
   const { body } = doc.story
   const { head, parts } = body
 
   return <VBox style={style} className="ExportSettings">
-    <HBox style={{alignItems: "center"}}>
-      <Filler style={{marginRight: "6px"}}>
-        <SelectFrom name="Format" value={story.format} setValue={story.setFormat}>
-        <ListSubheader>RTF</ListSubheader>
-        <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
-        <MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>
-        <ListSubheader>LaTeX</ListSubheader>
-        <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
-        <MenuItem value="tex2">LaTeX, A5, 2-side</MenuItem>
-        <ListSubheader>Other</ListSubheader>
-        <MenuItem value="txt">ASCII Text</MenuItem>
-        </SelectFrom>
-        </Filler>
-        <Button variant="contained" color="success" onClick={e => doExport(e)}>Export</Button>
-      </HBox>
-    <Separator />
-    <SelectFrom name="Style" value={story.type} setValue={story.setType}>
+    <TextField select label="Format" value={story.format} onChange={e => story.setFormat(e.target.value)}>
+      <ListSubheader>RTF</ListSubheader>
+      <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
+      <MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>
+      <ListSubheader>LaTeX</ListSubheader>
+      <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
+      <MenuItem value="tex2">LaTeX, A5, 2-side</MenuItem>
+      <ListSubheader>Other</ListSubheader>
+      <MenuItem value="txt">ASCII Text</MenuItem>
+      </TextField>
+
+    <Accordion defaultExpanded disableGutters>
+    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type</AccordionSummary>
+    <AccordionDetails><VBox>
+    <TextField select label="Story Class" value={story.type} onChange={e => story.setType(e.target.value)}>
       <MenuItem value="short">Short Story</MenuItem>
       <MenuItem value="long">Long Story</MenuItem>
-      </SelectFrom>
-    <SelectFrom name="Chapters" value={chapters.element} setValue={chapters.setElement}>
+      </TextField>
+    <TextField select label="Chapters" value={chapters.element} onChange={e => chapters.setElement(e.target.value)}>
       <MenuItem value="part">Part</MenuItem>
       <MenuItem value="scene">Scene</MenuItem>
       <MenuItem value="none">None</MenuItem>
-      </SelectFrom>
-    <SelectFrom name="Chapter style" value={chapters.type} setValue={chapters.setType}>
+      </TextField>
+    <TextField select name="Chapter style" value={chapters.type} onChange={e => chapters.setType(e.target.value)}>
       <MenuItem value="separated">Separated</MenuItem>
       <MenuItem value="numbered">Numbered</MenuItem>
       <MenuItem value="named">Named</MenuItem>
-      </SelectFrom>
-    {/*}
-    <Separator />
-    <HBox>Title</HBox>
-    <HBox><Radio />Name: <Input/></HBox>
-    <HBox><Radio />Title: <Input/></HBox>
-    <Separator />
-    <HBox>Author</HBox>
-    <HBox><Radio />Author: <Input/></HBox>
-    <HBox><Radio />Nickname: <Input/></HBox>
-    <Separator />
-    */}
+      </TextField>
+    </VBox></AccordionDetails>
+    </Accordion>
+
+    <Accordion disableGutters>
+    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {head.title}</AccordionSummary>
+    <AccordionDetails><VBox>
+    <TextField label="Name" value={head.name} onChange={e => settings.setName(e.target.value)}/>
+    <TextField label="Title" value={head.title} onChange={e => settings.setTitle(e.target.value)}/>
+    <TextField label="Subtitle" value={head.subtitle} onChange={e => settings.setSubtitle(e.target.value)}/>
+    </VBox></AccordionDetails>
+    </Accordion>
+
+    <Accordion disableGutters>
+    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {head.author}</AccordionSummary>
+    <AccordionDetails><VBox>
+    <TextField label="Author" value={head.author} onChange={e => settings.setAuthor(e.target.value)}/>
+    <TextField label="Nickname" value={head.nickname} onChange={e => settings.setNickname(e.target.value)}/>
+    </VBox></AccordionDetails>
+    </Accordion>
+
+    <Button variant="contained" color="success" onClick={e => doExport(e)}>Export</Button>
   </VBox>
 
 /*
@@ -253,9 +294,9 @@ function Preview({ settings, doc }) {
   const { body } = doc.story
 
   return <div className="Filler Board">
-    <div
+    <DeferredRender><div
       className="Sheet Regular"
       dangerouslySetInnerHTML={{ __html: FormatBody(settings, formatHTML, body) }}
-    />
+    /></DeferredRender>
   </div>
 }
