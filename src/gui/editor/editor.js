@@ -60,6 +60,7 @@ import {
   SectionWordInfo,
   ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
+import { mawe } from "../../document";
 
 //import { mawe } from "../../document";
 
@@ -369,6 +370,7 @@ function LeftPanel({settings}) {
   return <VBox style={widths}>
     <LeftPanelMenu settings={settings}/>
     <DocIndex
+      name={mawe.info(doc.story.body.head).title}
       style={rest}
       section={doc.story.body}
       include={settings.body.indexed}
@@ -416,6 +418,7 @@ function RightPanel({settings}) {
         <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
       </ToolBox>
       <DocIndex
+        name="Notes"
         style={style}
         section={doc.story.notes}
         include={settings.notes.indexed}

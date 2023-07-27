@@ -119,19 +119,24 @@ export function toXML(story) {
         optional("title", head.title),
         optional("subtitle", head.subtitle),
         optional("author", head.author),
-        optional("nickname", head.nickname),
+        optional("pseudonym", head.pseudonym),
         optional("translated", head.translated),
         optional("status", head.status),
         optional("deadline", head.deadline),
         optional("covertext", head.covertext),
         optional("version", head.version),
         //toWords("words", head.words)
-      )
+
+        toElem({
+          type: "export",
+          attributes: head.export
+        }),
+        )
     })
 
-    function optional(type, value) {
+    function optional(type, value, attributes) {
       if(!value || value === "") return undefined
-      return toElem({type, elements: [toText(value)]})
+      return toElem({type, attributes, elements: [toText(value)]})
     }
 
     /*

@@ -33,7 +33,7 @@ import {wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
-export function DocIndex({style, activeID, section, wcFormat, include, setActive})
+export function DocIndex({name, style, activeID, section, wcFormat, include, setActive})
 {
   const onActivate = useCallback(id => {
     //console.log("Activate:", activeID, id)
@@ -65,6 +65,7 @@ export function DocIndex({style, activeID, section, wcFormat, include, setActive
   return <React.Fragment>
     <IndexHead
       //wcTotal={section.words.text}
+      name={name}
       section={section}
       wcFormat={wcFormat}
       />
@@ -83,7 +84,7 @@ export function DocIndex({style, activeID, section, wcFormat, include, setActive
 
 //-----------------------------------------------------------------------------
 
-function IndexHead({section, wcFormat}) {
+function IndexHead({name, section, wcFormat}) {
   const wcFormatFunction = useCallback(
     (!wcFormat || wcFormat === "off")
     ? undefined
@@ -98,7 +99,7 @@ function IndexHead({section, wcFormat}) {
   return <IndexItem
     //id={elem.id}
     type={"section"}
-    name="Head"
+    name={name}
     words={section.words}
     wcFormat={wcFormatFunction}
     //onActivate={onActivate}

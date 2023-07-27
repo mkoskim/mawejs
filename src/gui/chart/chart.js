@@ -55,7 +55,7 @@ function DrawPieChart({section}) {
       data: () => section.parts.map(part => {
         return part.children.map(scene => ({
           name: scene.name,
-          size: scene.words.text,
+          size: scene.words.text + scene.words.missing,
         }))
       }).flat()
     },
@@ -63,7 +63,7 @@ function DrawPieChart({section}) {
       icon: "Parts",
       data: () => section.parts.map(p => ({
         name: p.name,
-        size: p.words.text,
+        size: p.words.text + p.words.missing,
       }))
     },
   }

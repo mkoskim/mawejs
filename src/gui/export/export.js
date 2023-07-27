@@ -52,6 +52,8 @@ const fs = require("../../system/localfs");
 
 export function Export({ doc, setDoc, focusTo, setFocusTo }) {
 
+  const {head} = doc.story.body
+
   function setHead(head) {
     setDoc({
       ...doc,
@@ -72,12 +74,23 @@ export function Export({ doc, setDoc, focusTo, setFocusTo }) {
   function setTitle(value) { setHead({title: value}) }
   function setSubtitle(value) { setHead({subtitle: value}) }
   function setAuthor(value) { setHead({author: value}) }
-  function setNickname(value) { setHead({nickname: value}) }
+  function setPseudonym(value) { setHead({pseudonym: value}) }
+
+  function setExport(value) {
+    setHead({
+      export: {
+        ...head.export,
+        ...value
+      }
+    })
+
+  }
+
+  function setStoryType(value) { setExport({type: value}) }
+  function setChapterElem(value) { setExport({chapterelem: value}) }
+  function setChapterType(value) { setExport({chaptertype: value}) }
 
   const [format, setFormat] = useState("rtf1")
-  const [storyType, setStoryType] = useState("short")
-  const [chapterElem, setChapterElem] = useState("part")
-  const [chapterType, setChapterType] = useState("separated")
 
   const settings = {
     setFocusTo,
@@ -86,18 +99,18 @@ export function Export({ doc, setDoc, focusTo, setFocusTo }) {
     setTitle,
     setSubtitle,
     setAuthor,
-    setNickname,
+    setPseudonym,
 
     story: {
       format: format,
-      type: storyType,
+      type: head.export.type,
       setFormat: setFormat,
       setType: setStoryType,
     },
 
     chapters: {
-      element: chapterElem,   // part, scene, none
-      type: chapterType,  // separated, numbered, named
+      element: head.export.chapterelem,   // part, scene, none
+      type: head.export.chaptertype,  // separated, numbered, named
       setElement: setChapterElem,
       setType: setChapterType,
     },
@@ -167,7 +180,7 @@ function ExportSettings({ style, settings, doc }) {
       </TextField>
 
     <Accordion disableGutters>
-    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type</AccordionSummary>
+    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type: {info.type}</AccordionSummary>
     <AccordionDetails><VBox>
     <TextField select label="Story Class" value={story.type} onChange={e => story.setType(e.target.value)}>
       <MenuItem value="short">Short Story</MenuItem>
@@ -199,7 +212,7 @@ function ExportSettings({ style, settings, doc }) {
     <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
     <AccordionDetails><VBox>
     <TextField label="Author" value={head.author ?? ""} onChange={e => settings.setAuthor(e.target.value)}/>
-    <TextField label="Nickname" value={head.nickname ?? ""} onChange={e => settings.setNickname(e.target.value)}/>
+    <TextField label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => settings.setPseudonym(e.target.value)}/>
     </VBox></AccordionDetails>
     </Accordion>
 

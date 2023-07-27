@@ -131,18 +131,34 @@ export function fromXML(root) {
     return {
       title: optional(head, "title", elem2Text),
       subtitle: optional(head, "subtitle", elem2Text),
+
       author: optional(head, "author", elem2Text),
-      nickname: optional(head, "nickname", elem2Text),
+      pseudonym: optional(head, "pseudonym", elem2Text) ?? optional(head, "nickname", elem2Text),
+
       translated: optional(head, "translated", elem2Text),
       status: optional(head, "status", elem2Text),
       deadline: optional(head, "deadline", elem2Text),
       covertext: optional(head, "covertext", elem2Text),
       version: optional(head, "version", elem2Text),
+
+      export: parseExport(head),
     }
 
     function optional(elem, name, parse) {
       const field = elemFind(elem, name)
       return field ? parse(field) : undefined
+    }
+
+    function parseExport(elem) {
+      const field = elemFind(elem, "export")
+
+      const {
+        type = "short",
+        chapterelem = "part",
+        chaptertype = "separated",
+      } = field?.attributes ?? {};
+
+      return {type, chapterelem, chaptertype};
     }
   }
 
