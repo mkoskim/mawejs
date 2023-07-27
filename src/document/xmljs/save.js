@@ -31,6 +31,7 @@ function escape(text) {
   return text && text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
 
@@ -41,7 +42,7 @@ export function toXML(story) {
       uuid: story.uuid ?? getUUID(),
       format: "mawe",
       version: 2,
-      name: escape(story.name)
+      name: escape(story.body?.head?.name)
     },
     elements: [
       toComment("",

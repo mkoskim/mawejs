@@ -69,12 +69,21 @@ export function fromXML(root) {
   if (format !== "mawe") throw Error("Story is not mawe story.");
   if (version > 2) throw Error(`File version ${version} is too new.`)
 
+  // Inject name to body head
+
+  const {head, ...body} = parseBody(elemFind(story, "body"))
+
   return {
     // format - generated at save
     // format version - generated at save
     uuid: uuid ?? getUUID(),
-    name,
-    body: parseBody(elemFind(story, "body")),
+    body: {
+      ...body,
+      head: {
+        ...head,
+        name,
+      }
+    },
     notes: parseNotes(elemFind(story, "notes")),
     versions: elemFindall(story, "version").map(parseVersion),
   }
