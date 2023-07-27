@@ -6,8 +6,9 @@
 
 import {elemAsText} from "../../document"
 
+//-----------------------------------------------------------------------------
+
 const packages=`\
-\\documentclass[oneside,notitlepage,12pt]{book}
 \\usepackage[a5paper]{geometry}
 \\usepackage{times}
 \\usepackage[T1]{fontenc}
@@ -20,60 +21,83 @@ const packages=`\
 \\pagestyle{plain}
 `
 
+//-----------------------------------------------------------------------------
+
 export const formatTEX = {
+  // Info
+  "suffix": ".tex",
+
   // File
-  "file": (settings, head, content) => {
+  "file": (head, content, options) => {
+    const titlepage = options.pgbreak ? "titlepage" : "notitlepage"
+    const mainmatter = options.pgbreak ? "\\mainmatter" : ""
     //const author = head.nickname || head.author
     //const title = head.title ?? ""
     //const headinfo = author ? `${author}: ${title}` : title
     return `\
+\\documentclass[oneside,${titlepage},12pt]{book}
 ${packages}
 \\begin{document}
 \\title{${head.title ?? ""}}
 \\author{${head.author ?? ""}}
 \\date{}
 \\maketitle
-%\\mainmatter
+${mainmatter}
 ${content}
 \\end{document}
 `
   },
 
   //---------------------------------------------------------------------------
-  // Head
-  //"title": (settings, title) => `\\title{${escape(title)}}\n`,
-  "title": (settings, title) => "",
+  // Joining elements
+
+  "body": (parts, options) => {
+    const {separator, pgbreak} = options
+    return parts.join(getSeparator(separator, pgbreak))
+  },
+
+  "part": (part, scenes, options) => {
+    const {type, separator, pgbreak, chnum} = options
+    return getHeading(part, type, pgbreak, chnum) + scenes.join(getSeparator(separator, pgbreak))
+  },
+
+  "scene": (scene, splits, options) => {
+    const {type, separator, pgbreak, chnum} = options
+    return getHeading(scene, type, pgbreak, chnum) + splits.join(getSeparator(separator, pgbreak))
+  },
+
+  "split": (paragraphs) => "\\noindent " + paragraphs.join("\n\n"),
 
   //---------------------------------------------------------------------------
-  // Body
-  "body": (settings, head, parts) => {
-    const {separator} = settings.part
-    //const sep = "\n\n" + escape(separator) + "\n\n"
-    //const sep = `\n\n\\chapter\n\n`
-    const sep = ""
-    return head + parts.join("\n\n\\begin{center}* * *\\end{center}\n\n")
-  },
-
-  //---------------------------------------------------------------------------
-
-  // Part
-  "part": (settings, part, scenes) => {
-    //const {separator} = settings.scene
-    //const sep = separator ? (center(formatTXT["sep.scene"](separator)) + "\n\n" : "\n\n"
-    return scenes.join("\n\n\\par\\null\n\n")
-  },
-
-  // Scene & breaks
-  "scene": (settings, scene, splits) => {
-    return splits.join("\n\n\\par\\null\n\n")
-  },
-  "split": (settings, paragraphs) => "\\noindent " + paragraphs.join("\n\n"),
 
   // Paragraph styles
-  "synopsis": (settings, p) => undefined,
-  "comment": (settings, p) => undefined,
-  "missing": (settings, p) => `{\\color{red}${linify(elemAsText(p))}}`,
-  "p": (settings, p) => `${linify(elemAsText(p))}`,
+  "synopsis": (p) => undefined,
+  "comment": (p) => undefined,
+  "missing": (p) => `{\\color{red}${linify(elemAsText(p))}}`,
+  "p": (p) => `${linify(elemAsText(p))}`,
+}
+
+//-----------------------------------------------------------------------------
+
+function getHeading(elem, type, pgbreak, chnum) {
+  const size = pgbreak ? "\\Large" : "\\large"
+  const sb = pgbreak ? "\\newpage" : "\n\n"
+  const sa = "\n\n\\par\\null\n\n"
+
+  switch(type) {
+    case "numbered": return `${sb}{\\noindent${size} ${chnum}.}${sa}`
+    case "named": return `${sb}{\\noindent${size} ${chnum}. ${escape(elem.name)}}${sa}`
+    default: break;
+  }
+  return ""
+}
+
+function getSeparator(separator, pgbreak) {
+  if(separator) {
+    //if(pgbreak) return "\\page"
+    return "\n\n\\begin{center}* * *\\end{center}\n\n"
+  }
+  return "\n\n\\par\\null\n\n"
 }
 
 function escape(text) {

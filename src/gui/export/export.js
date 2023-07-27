@@ -4,6 +4,7 @@
 //
 // ****************************************************************************
 
+import "./styles/export.css"
 import "../common/styles/sheet.css"
 
 import React, {
@@ -17,23 +18,26 @@ import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Icon, Tooltip,
   ToggleButton, ToggleButtonGroup,
+  Radio,
   Input,
   SearchBox, addHotkeys,
   Label,
-  List, ListItem, ListItemText,
+  List, ListItem, ListItemText, ListSubheader,
   Grid,
   Separator, Loading, addClass,
+  SelectFrom,
+  MenuItem,
 } from "../common/factory";
 
-import {elemAsText} from "../../document"
-import { getSuffix } from "../../document/util";
-import { splitByTrailingElem } from "../../util";
-import {SectionWordInfo} from "../common/components";
+import { getSuffix, nanoid } from "../../document/util";
+import { SectionWordInfo } from "../common/components";
 
-import { formatRTF } from "./exportRTF";
-import { formatHTML } from "./exportHTML"
-import { formatTXT } from "./exportTXT"
-import { formatTEX } from "./exportTEX"
+import { FormatBody } from "./formatDoc"
+
+import { formatRTF } from "./formatRTF";
+import { formatHTML } from "./formatHTML"
+import { formatTXT } from "./formatTXT"
+import { formatTEX } from "./formatTEX"
 
 //-----------------------------------------------------------------------------
 
@@ -41,15 +45,29 @@ const fs = require("../../system/localfs");
 
 //-----------------------------------------------------------------------------
 
-export function Export({doc, setDoc, focusTo, setFocusTo}) {
+export function Export({ doc, setDoc, focusTo, setFocusTo }) {
+
+  const [format, setFormat] = useState("tex1")
+  const [storyType, setStoryType] = useState("short")
+  const [chapterElem, setChapterElem] = useState("part")
+  const [chapterType, setChapterType] = useState("separated")
+
   const settings = {
-    part: {
-      separator: "* * *",
-    },
-    scene: {
-      //separator: "* * *",
-    },
     setFocusTo,
+
+    story: {
+      format: format,
+      type: storyType,
+      setFormat: setFormat,
+      setType: setStoryType,
+    },
+
+    chapters: {
+      element: chapterElem,   // part, scene, none
+      type: chapterType,  // separated, numbered, named
+      setElement: setChapterElem,
+      setType: setChapterType,
+    },
   }
 
   const previewprops = {
@@ -57,56 +75,128 @@ export function Export({doc, setDoc, focusTo, setFocusTo}) {
     doc,
   }
 
-  return <VBox style={{overflow: "auto"}}>
-    <ExportToolbar {...previewprops}/>
-    <HBox style={{overflow: "auto"}}>
-      <ExportIndex style={{width: "300px"}} {...previewprops}/>
-      <Preview {...previewprops}/>
+  return <VBox style={{ overflow: "auto" }}>
+    {/* <ExportToolbar {...previewprops}/> */}
+    <HBox style={{ overflow: "auto" }}>
+      {/* <ExportSettings {...previewprops}/> */}
+      <ExportIndex style={{ maxWidth: "300px", width: "300px" }} {...previewprops} />
+      <Preview {...previewprops} />
       <ExportSettings {...previewprops}/>
     </HBox>
   </VBox>
 }
 
 //-----------------------------------------------------------------------------
-// Export toolbar
+// Export settings
 //-----------------------------------------------------------------------------
 
-function ExportToolbar({settings, doc}) {
-  const {body} = doc.story
-  const {head, parts} = body
+function ExportSettings({ style, settings, doc }) {
 
-  return <ToolBox style={{background: "white"}}>
+  /*
+  const { basename } = doc;
+  const { body } = doc.story
+  const { head, parts } = body
+
+  return <VBox style={{ ...style, background: "white", padding: "8px" }}>
+    <Label>Filename: {basename}</Label>
+    <Separator />
+    <Input label="Title" value={head.title} />
+    <Input label="Subtitle" value={head.subtitle} />
+    <Input label="Author" value={head.author} />
+    <Separator />
+  </VBox>
+  */
+
+  const { story, chapters } = settings
+
+  const formatter = {
+    "rtf1": formatRTF,
+    "rtf2": formatRTF,
+    "tex1": formatTEX,
+    "tex2": formatTEX,
+    "txt": formatTXT,
+  }[story.format]
+
+  const { body } = doc.story
+  const { head, parts } = body
+
+  return <VBox style={style} className="ExportSettings">
+    <HBox style={{alignItems: "center"}}>
+      <Filler style={{marginRight: "6px"}}>
+        <SelectFrom name="Format" value={story.format} setValue={story.setFormat}>
+        <ListSubheader>RTF</ListSubheader>
+        <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
+        <MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>
+        <ListSubheader>LaTeX</ListSubheader>
+        <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
+        <MenuItem value="tex2">LaTeX, A5, 2-side</MenuItem>
+        <ListSubheader>Other</ListSubheader>
+        <MenuItem value="txt">ASCII Text</MenuItem>
+        </SelectFrom>
+        </Filler>
+        <Button variant="contained" color="success" onClick={e => doExport(e)}>Export</Button>
+      </HBox>
+    <Separator />
+    <SelectFrom name="Style" value={story.type} setValue={story.setType}>
+      <MenuItem value="short">Short Story</MenuItem>
+      <MenuItem value="long">Long Story</MenuItem>
+      </SelectFrom>
+    <SelectFrom name="Chapters" value={chapters.element} setValue={chapters.setElement}>
+      <MenuItem value="part">Part</MenuItem>
+      <MenuItem value="scene">Scene</MenuItem>
+      <MenuItem value="none">None</MenuItem>
+      </SelectFrom>
+    <SelectFrom name="Chapter style" value={chapters.type} setValue={chapters.setType}>
+      <MenuItem value="separated">Separated</MenuItem>
+      <MenuItem value="numbered">Numbered</MenuItem>
+      <MenuItem value="named">Named</MenuItem>
+      </SelectFrom>
+    {/*}
+    <Separator />
+    <HBox>Title</HBox>
+    <HBox><Radio />Name: <Input/></HBox>
+    <HBox><Radio />Title: <Input/></HBox>
+    <Separator />
+    <HBox>Author</HBox>
+    <HBox><Radio />Author: <Input/></HBox>
+    <HBox><Radio />Nickname: <Input/></HBox>
+    <Separator />
+    */}
+  </VBox>
+
+/*
+  return <VBox style={style}>
     Export:
     <Button onClick={exportRTF}>RTF</Button>
     <Button onClick={exportTEX}>TEX</Button>
     <Button onClick={exportTXT}>TXT</Button>
-    <Separator/>
-    <SectionWordInfo section={body}/>
-    <Separator/>
-    <Filler/>
-  </ToolBox>
+    <SectionWordInfo section={body} />
+  </VBox>
+*/
 
-  function exportRTF(event) {
-    const content = FormatFile(formatRTF, settings, body)
+  function doExport(event) {
+    const content = FormatBody(settings, formatter, body)
     //console.log(content)
-    exportToFile(doc, ".rtf", content)
+    exportToFile(doc, formatter.suffix, content)
   }
 
+/*
   function exportTXT(event) {
-    const content = FormatFile(formatTXT, settings, body)
+    const content = FormatBody(settings, formatTXT, body)
     //console.log(content)
     exportToFile(doc, ".txt", content)
   }
 
   function exportTEX(event) {
-    const content = FormatFile(formatTEX, settings, body)
+    const content = FormatBody(settings, formatTEX, body)
     //console.log(content)
     exportToFile(doc, ".tex", content)
   }
+*/
 }
 
 async function exportToFile(doc, filesuffix, content) {
-  const dirname  = await fs.dirname(doc.file.id)
+  const dirname = await fs.dirname(doc.file.id)
   const name = await fs.basename(doc.file.id)
   const suffix = getSuffix(name, [".mawe", ".mawe.gz"]);
   const basename = await fs.basename(name, suffix);
@@ -116,147 +206,56 @@ async function exportToFile(doc, filesuffix, content) {
 }
 
 //-----------------------------------------------------------------------------
-// Export settings
-//-----------------------------------------------------------------------------
-
-function ExportSettings({style, settings, doc}) {
-  const {basename} = doc;
-  const {body} = doc.story
-  const {head, parts} = body
-
-  return <VBox style={{...style, background: "white", padding: "8px"}}>
-    <Label>Filename: {basename}</Label>
-    <Separator/>
-    <Input label="Title" value={head.title}/>
-    <Input label="Subtitle" value={head.subtitle}/>
-    <Input label="Author" value={head.author}/>
-    <Separator/>
-  </VBox>
-
-}
-
-//-----------------------------------------------------------------------------
 // Export index
 //-----------------------------------------------------------------------------
 
-function ExportIndex({style, settings, doc}) {
-  const {body} = doc.story
-  const {parts} = body
+function ExportIndex({ style, settings, doc }) {
+  const { body } = doc.story
+  const { parts } = body
 
   return <VFiller className="TOC" style={style}>
-    {parts.map(part => <PartItem key={part.id} part={part}/>)}
+    {parts.map(part => <PartItem key={part.id} settings={settings} part={part} />)}
   </VFiller>
+}
 
-  function PartItem({part}) {
-    const {id, name, children} = part
-    return <>
-      <div
-        className="Entry PartName"
-        onClick={ev => window.location.href=`#${id}`}
-        onDoubleClick={ev => settings.setFocusTo({id})}
-        style={{cursor: "pointer"}}
-        >
-        <span className="Name">{name}</span>
-        </div>
-      {children.map(scene => <SceneItem key={scene.id} scene={scene}/>)}
-    </>
-  }
-
-  function SceneItem({scene}) {
-    const {id, name} = scene
-    return <div
-      className="Entry SceneName"
-      onClick={ev => window.location.href=`#${id}`}
-      onDoubleClick={ev => settings.setFocusTo({id})}
-      style={{cursor: "pointer"}}
-      >
+function PartItem({ settings, part }) {
+  const { id, name, children } = part
+  return <>
+    <div
+      className="Entry PartName"
+      onClick={ev => window.location.href = `#${id}`}
+      onDoubleClick={ev => settings.setFocusTo({ id })}
+      style={{ cursor: "pointer" }}
+    >
       <span className="Name">{name}</span>
-      </div>
-  }
+    </div>
+    {children.map(scene => <SceneItem key={scene.id} settings={settings} scene={scene} />)}
+  </>
+}
+
+function SceneItem({ settings, scene }) {
+  const { id, name } = scene
+  return <div
+    className="Entry SceneName"
+    onClick={ev => window.location.href = `#${id}`}
+    onDoubleClick={ev => settings.setFocusTo({ id })}
+    style={{ cursor: "pointer" }}
+  >
+    <span className="Name">{name}</span>
+  </div>
 }
 
 //-----------------------------------------------------------------------------
 // Export preview
 //-----------------------------------------------------------------------------
 
-function Preview({settings, doc}) {
-  //const titleprops = { settings, head: body.head}
-  //const partsprops = { settings, parts: body.parts }
-
-  const {body} = doc.story
+function Preview({ settings, doc }) {
+  const { body } = doc.story
 
   return <div className="Filler Board">
     <div
-      className="Sheet Real"
-      dangerouslySetInnerHTML={{__html: FormatFile(formatHTML, settings, body)}}
-      />
+      className="Sheet Regular"
+      dangerouslySetInnerHTML={{ __html: FormatBody(settings, formatHTML, body) }}
+    />
   </div>
-}
-
-//-----------------------------------------------------------------------------
-// Formatting engine
-//-----------------------------------------------------------------------------
-
-function FormatFile(format, settings, body) {
-  const {head, parts} = body
-  return format["file"](
-    settings,
-    head,
-    FormatBody(head, parts)
-  )
-
-  function FormatBody(head, parts) {
-    const content = parts.map(FormatPart).filter(p => p)
-
-    return format["body"](
-      settings,
-      FormatHead(head),
-      content
-    )
-  }
-
-  function FormatHead(head) {
-    return format["title"](settings, head.title);
-  }
-
-  function FormatPart(part) {
-    const scenes = part.children.map(FormatScene).filter(s => s)
-
-    if(!scenes.length) return null
-
-    return format["part"](
-      settings,
-      part,
-      scenes
-    );
-  }
-
-  function FormatScene(scene) {
-    const splits = splitByTrailingElem(scene.children, p => p.type === "br")
-      .map(s => s.filter(p => p.type !== "br"))
-      .filter(s => s.length)
-    //console.log(splits)
-
-    if(!splits.length) return null
-
-    return format["scene"](
-      settings,
-      scene,
-      splits.map(FormatSplit).filter(s => s?.length)
-    )
-  }
-
-  function FormatSplit(split) {
-    const content = split.map(FormatParagraph).filter(p => p?.length)
-    //console.log(split, "->", content)
-    if(!content.length) return
-    return format["split"](
-      settings,
-      content
-    )
-  }
-
-  function FormatParagraph(p) {
-    return format[p.type](settings, p)
-  }
 }

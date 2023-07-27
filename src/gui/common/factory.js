@@ -16,12 +16,7 @@ import React, {
 } from "react"
 
 import isHotkey from 'is-hotkey';
-
-/*
-import "@blueprintjs/core/lib/css/blueprint.css";
-import "@blueprintjs/icons/lib/css/blueprint-icons.css";
-import "@blueprintjs/popover2/lib/css/blueprint-popover2.css";
-*/
+import { nanoid } from "../../document/util";
 
 import { styled } from '@mui/material/styles';
 
@@ -35,10 +30,10 @@ import {
   TextField, InputAdornment, OutlinedInput,
   Tooltip as MuiTooltip, tooltipClasses,
   Divider, CircularProgress as Spinner,
-  List, ListItem, ListItemText,
+  List, ListItem, ListItemText, ListSubheader,
   Grid,
   Menu, MenuItem,
-  //Select, InputLabel, FormControl,
+  Select, InputLabel, FormControl,
 } from "@mui/material"
 
 //import { enqueueSnackbar, closeSnackbar } from "notistack";
@@ -48,11 +43,10 @@ export {
   Spinner,
   Grid,
   Chip, Link,
-  List, ListItem, ListItemText,
+  List, ListItem, ListItemText, ListSubheader,
   ToggleButton, ToggleButtonGroup,
   Menu, MenuItem,
   isHotkey,
-  //Select, InputLabel, FormControl,
 }
 
 //-----------------------------------------------------------------------------
@@ -170,6 +164,11 @@ export const Icon = {
   MoreHoriz: muiIcons.MoreHoriz,
   PaperClipHoriz: muiIcons.Attachment,
   PaperClipVert: muiIcons.AttachFile,
+
+  RadioButton: {
+    Unchecked: muiIcons.RadioButtonUnchecked,
+    Checked: muiIcons.RadioButtonChecked,
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -319,6 +318,24 @@ const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 
 //-----------------------------------------------------------------------------
 
+export function SelectFrom({name, children, value, setValue}) {
+  const id = nanoid()
+  return <FormControl size="small">
+    <InputLabel id={"label-" + id}>{name}</InputLabel>
+    <Select
+      labelId={"label-" + id}
+      id={id}
+      value={value}
+      label={name}
+      onChange={e => setValue && setValue(e.target.value)}
+    >
+      {children}
+    </Select>
+  </FormControl>
+}
+
+//-----------------------------------------------------------------------------
+
 export {Breadcrumbs}
 
 //-----------------------------------------------------------------------------
@@ -372,6 +389,22 @@ export function Loading({className, style}) {
   return <Filler className={className} style={style}>
     <Spinner style={{margin: "auto"}}/>
     </Filler>
+}
+
+//-----------------------------------------------------------------------------
+
+export function Radio({style, choice, selected, setSelected}) {
+  const props = {
+    className: "RadioButton",
+    fontSize: "small",
+    style: {...style},
+    onClick: e => setSelected && setSelected(choice),
+  }
+
+  if(selected === choice) {
+    return <Icon.RadioButton.Checked {...props}/>
+  }
+  return <Icon.RadioButton.Unchecked {...props}/>
 }
 
 //-----------------------------------------------------------------------------

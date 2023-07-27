@@ -49,3 +49,11 @@
   borderBottom: "1pt solid lightgray",
   */
 }
+
+.RadioButton {
+  border-radius: 9px;
+}
+
+.RadioButton:hover {
+  background: lightgrey;
+}
