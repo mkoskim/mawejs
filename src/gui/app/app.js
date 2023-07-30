@@ -35,12 +35,12 @@ import { SnackbarProvider, enqueueSnackbar } from "notistack";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
-import {SingleEditView} from "../editor/editor";
-import {Organizer} from "../outliner/outliner";
-import {Export} from "../export/export"
-import {Chart} from "../chart/chart"
+import { SingleEditView } from "../editor/editor";
+import { Organizer } from "../outliner/outliner";
+import { Export } from "../export/export"
+import { Chart } from "../chart/chart"
 
-import {mawe} from "../../document"
+import { mawe } from "../../document"
 
 import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
 
@@ -104,54 +104,57 @@ export default function App(props) {
   const [doc, setDoc] = useState({
     //load: "./local/EmptyDoc.mawe",
     //load: "./local/TestDoc1.mawe"
-    load: "./local/UserGuide.mawe",
-    //load: "./local/mawe2/JazramonGjerta.mawe"
-    //load: "./local/mawe2/JazraGjertaViidakossa.mawe"
+    //load: "./local/UserGuide.mawe",
+    //load: "./local/mawe2/GjertaAvaruudessa.2.mawe"
+    //load: "./local/mawe2/GjertaAvaruudessa.3.mawe"
+    //load: "./local/mawe2/GjertaViidakossa.mawe"
     //load: "./local/mawe2/NeljaBarnaa.mawe",
+    //buffer: '<story format="mawe"><body><part/></body><notes><part/></notes></story>'
+    buffer: '<story format="mawe" />'
   })
 
   useEffect(() => {
-    if(!doc.story) {
-      if(doc.load) {
+    if (!doc.story) {
+      if (doc.load) {
         console.log("Loading:", doc.load)
         mawe.load(doc.load).then(content => {
           setDoc(content)
           //enqueueSnackbar("Loaded");
         })
       }
-      else if(doc.buffer) {
+      else if (doc.buffer) {
         setDoc(mawe.create(doc.buffer))
       }
     }
   }, [doc.file?.id, doc.load, doc.buffer])
 
-  if(!doc.story) return <Loading/>
+  if (!doc.story) return <Loading />
 
   //---------------------------------------------------------------------------
   // Use key to force editor state reset when file is changed: It won't work
   // for generated docs (user guide, new doc), but we fix that later.
 
-  const viewprops = {mode, doc, setDoc, focusTo, setFocusTo}
+  const viewprops = { mode, doc, setDoc, focusTo, setFocusTo }
 
   return (
     <ThemeProvider theme={theme}>
-    <SnackbarProvider />
-    <VBox className="ViewPort">
-      <WorkspaceTab {...viewprops}/>
-      <ChooseView key={doc.file?.id} {...viewprops}/>
+      <SnackbarProvider />
+      <VBox className="ViewPort">
+        <WorkspaceTab {...viewprops} />
+        <ChooseView key={doc.file?.id} {...viewprops} />
       </VBox>
     </ThemeProvider>
   )
 }
 
-function ChooseView({mode, doc, setDoc, focusTo, setFocusTo}) {
-  const props={doc, setDoc, focusTo, setFocusTo}
+function ChooseView({ mode, doc, setDoc, focusTo, setFocusTo }) {
+  const props = { doc, setDoc, focusTo, setFocusTo }
 
-  switch(mode.selected) {
-    case "editor": return <SingleEditView {...props}/>
-    case "outliner": return <Organizer {...props}/>
-    case "export": return <Export {...props}/>
-    case "chart": return <Chart {...props}/>
+  switch (mode.selected) {
+    case "editor": return <SingleEditView {...props} />
+    case "outliner": return <Organizer {...props} />
+    case "export": return <Export {...props} />
+    case "chart": return <Chart {...props} />
     default: break;
   }
   return null;
@@ -159,11 +162,11 @@ function ChooseView({mode, doc, setDoc, focusTo, setFocusTo}) {
 
 //-----------------------------------------------------------------------------
 
-function WorkspaceTab({mode, doc, setDoc}) {
+function WorkspaceTab({ mode, doc, setDoc }) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
-  const cbprops = {doc, setDoc}
+  const cbprops = { doc, setDoc }
 
   useEffect(() => addHotkeys({
     "mod+o": (e) => onOpenFile(cbprops),
@@ -171,41 +174,41 @@ function WorkspaceTab({mode, doc, setDoc}) {
   }));
 
   const viewbuttons = {
-    "editor": {tooltip: "Editor", icon: <Icon.View.Edit/>},
-    "outliner": {tooltip: "Outline", icon: <Icon.View.Outline/>},
-    "chart": {tooltip: "Charts", icon: <Icon.View.Chart/>},
-    "export": {tooltip: "Export", icon: <Icon.View.Export/>},
+    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
+    "outliner": { tooltip: "Outline", icon: <Icon.View.Outline /> },
+    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
+    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
   }
 
   return <ToolBox>
     <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
-      <Button {...bindTrigger(popupState)}><Icon.Menu/></Button>
-      <Menu {...bindMenu(popupState)}>
-        <MenuItem onClick={e => {onNewFile(cbprops); popupState.close(e); }}>New</MenuItem>
-        <MenuItem onClick={e => {onOpenFile(cbprops); popupState.close(e); }}>Open...</MenuItem>
-        <MenuItem onClick={e => {onSaveFile(cbprops); popupState.close(e); }}>Save</MenuItem>
-        <MenuItem onClick={e => {onSaveFileAs(cbprops); popupState.close(e); }}>Save As...</MenuItem>
-        <MenuItem onClick={popupState.close}>Revert</MenuItem>
-        <MenuItem onClick={e => {onOpenFolder(cbprops); popupState.close(e); }}>Open Folder</MenuItem>
-      </Menu>
+        <Button {...bindTrigger(popupState)}><Icon.Menu /></Button>
+        <Menu {...bindMenu(popupState)}>
+          <MenuItem onClick={e => { onNewFile(cbprops); popupState.close(e); }}>New</MenuItem>
+          <MenuItem onClick={e => { onOpenFile(cbprops); popupState.close(e); }}>Open...</MenuItem>
+          <MenuItem onClick={e => { onSaveFile(cbprops); popupState.close(e); }}>Save</MenuItem>
+          <MenuItem onClick={e => { onSaveFileAs(cbprops); popupState.close(e); }}>Save As...</MenuItem>
+          <MenuItem onClick={popupState.close}>Revert</MenuItem>
+          <MenuItem onClick={e => { onOpenFolder(cbprops); popupState.close(e); }}>Open Folder</MenuItem>
+        </Menu>
       </React.Fragment>
-    }</PopupState>
+      }</PopupState>
 
-    <Separator/>
+    <Separator />
     <MakeToggleGroup
       buttons={viewbuttons}
       exclusive={true}
       {...mode}
     />
 
-    <Separator/>
-    <Label text={doc.file?.name ?? "<Unnamed>"}/>
-    <Separator/>
+    <Separator />
+    <Label text={doc.file?.name ?? "<Unnamed>"} />
+    <Separator />
 
-    <Filler/>
+    <Filler />
 
-    <Separator/>
+    <Separator />
     <Button tooltip="Open Folder" onClick={e => onOpenFolder(cbprops)}><Icon.Action.Folder /></Button>
     <Button tooltip="Help" onClick={e => onHelp(cbprops)}><Icon.Help /></Button>
     <Button tooltip="Settings"><Icon.Settings /></Button>
@@ -221,28 +224,28 @@ const filters = [
   { name: 'All Files', extensions: ['*'] }
 ]
 
-async function onNewFile({doc, setDoc}) {
+async function onNewFile({ doc, setDoc }) {
   setDoc({
     buffer: '<story format="mawe"><body><part/></body><notes><part/></notes></story>'
   })
 }
 
-async function onHelp({doc, setDoc}) {
+async function onHelp({ doc, setDoc }) {
   //setDoc({})
-  const buffer = await mawe.file2buf({id: "./local/UserGuide.mawe"})
+  const buffer = await mawe.file2buf({ id: "./local/UserGuide.mawe" })
   //const tree = mawe.buf2tree(buffer)
   //const story = mawe.fromXML(tree)
-  setDoc({buffer})
+  setDoc({ buffer })
 }
 
-async function onOpenFile({doc, setDoc}) {
+async function onOpenFile({ doc, setDoc }) {
   //const dirname = await fs.dirname(doc.file.id)
-  const {canceled, filePaths} = await fileOpenDialog({
+  const { canceled, filePaths } = await fileOpenDialog({
     filters,
     defaultPath: doc.file?.id ?? ".",
     properties: ["OpenFile"],
   })
-  if(!canceled) {
+  if (!canceled) {
     const [filePath] = filePaths
 
     console.log("Load file:", filePath)
@@ -251,29 +254,29 @@ async function onOpenFile({doc, setDoc}) {
   }
 }
 
-async function onSaveFile({doc, setDoc}) {
-  if(doc.file) {
+async function onSaveFile({ doc, setDoc }) {
+  if (doc.file) {
     mawe.save(doc)
     return;
   }
-  onSaveFileAs({doc, setDoc})
+  onSaveFileAs({ doc, setDoc })
 }
 
-async function onSaveFileAs({doc, setDoc}) {
-  const {canceled, filePath} = await fileSaveDialog({
+async function onSaveFileAs({ doc, setDoc }) {
+  const { canceled, filePath } = await fileSaveDialog({
     filters,
     defaultPath: doc.file?.id ?? "./NewDoc.mawe",
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
-  if(!canceled) {
+  if (!canceled) {
     console.log("Save File As", filePath)
     mawe.saveas(doc, filePath)
       .then(() => fs.fstat(filePath))
-      .then(file => setDoc(doc => ({...doc, file})))
+      .then(file => setDoc(doc => ({ ...doc, file })))
   }
 }
 
-async function onOpenFolder({doc}) {
+async function onOpenFolder({ doc }) {
   const dirname = doc.file ? await fs.dirname(doc.file.id) : "."
   console.log("Open folder:", dirname)
   fs.openexternal(dirname)
