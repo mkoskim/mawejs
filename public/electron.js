@@ -85,11 +85,16 @@ async function createWindow()
 // Chrome extensions
 //-----------------------------------------------------------------------------
 
+const reactDevToolsPath = path.resolve(".", "local/ReactDevTools")
+
+/*
 const reactDevToolsPath = path.join(
   os.homedir(),
   //"/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.24.7_0"
-  "/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.27.3_0"
-)
+  // "/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.27.8_0"
+  //"/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.28.0_0"
+  )
+*
 
 /*
 const reduxDevToolsPath = path.join(
@@ -104,9 +109,9 @@ const reduxDevToolsPath = path.join(
 
 const {app, session} = electron;
 
-app.on("ready", async () => {
+app.whenReady().then(async () => {
   try {
-    console.log("Loading extensions...")
+    console.log("Loading extension:", reactDevToolsPath)
     await session.defaultSession.loadExtension(reactDevToolsPath)
     //session.defaultSession.loadExtension(reduxDevToolsPath)
   } catch(e) {

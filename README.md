@@ -3,6 +3,14 @@ mawejs
 
 This is my mawe (My/Markus Advanced Writer's Editor) implemented with ElectronJS.
 
+## React Dev Tools
+
+Download special React DevTools from this link, and save it to mawejs/local/ folder.
+
+https://github.com/facebook/react/issues/25843#issuecomment-1406766561
+
+Extract the zip. If everything went fine, DevTools are loaded when you start the editor next time.
+
 ## Status
 
 **2023-Mar-11:** Many basic features are working, and several quite advanced features, too. From being fully useful first version, it basically lacks only one thing - story header editing. What I do at the moment, is that I edit header from the XML file directly.
