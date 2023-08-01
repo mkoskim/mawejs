@@ -18,6 +18,7 @@ export const formatHTML = {
     const headinfo = author ? `${author}: ${title}` : title
     return `\
 <div style="margin-bottom: 1cm">${headinfo}</div>\n
+<center>${author}</center>
 <div style="margin-bottom: 0.5in">
   <h1>${escape(title)}</h1>
   ${subtitle ? "<h2>" + escape(subtitle) + "</h2>" : ""}

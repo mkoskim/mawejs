@@ -71,7 +71,7 @@ export function SlateEditable({className, highlight, ...props}) {
   )
 
   return <Editable
-    className={addClass(className, "Sheet")}
+    className={className}
     spellCheck={false} // Keep false until you find out how to change language
     renderElement={Element}
     renderLeaf={Leaf}

@@ -381,21 +381,23 @@ function LeftPanel({settings}) {
   </VBox>
 }
 
+const LeftIndexChoices = {
+  visible: ["scene", "synopsis", "missing", "comment"],
+  words: ["off", "numbers", "percent", "cumulative"]
+}
+
 function LeftPanelMenu({settings}) {
   const {toolboxstyle} = settings
 
-  const visibleChoices = useMemo(() => ["scene", "synopsis", "missing", "comment"], [])
-  const wordChoices = useMemo(() => ["off", "numbers", "percent", "cumulative"], [])
-
   return <ToolBox style={toolboxstyle}>
     <ChooseVisibleElements
-      choices={visibleChoices}
+      choices={LeftIndexChoices.visible}
       selected={settings.body.indexed}
       setSelected={settings.body.setIndexed}
     />
     <Separator/>
     <ChooseWordFormat
-      choices={wordChoices}
+      choices={LeftIndexChoices.words}
       selected={settings.body.words}
       setSelected={settings.body.setWords}
     />
@@ -531,6 +533,8 @@ function EditorBox({style, settings, mode="Condensed"}) {
   const {searchBoxRef, searchText, setSearchText} = settings
   const {highlightText} = settings
 
+  const {title, author} = mawe.info(doc.story.body.head)
+
   function activeEditor() {
     switch(activeID) {
       case "body": return settings.body.editor
@@ -549,7 +553,11 @@ function EditorBox({style, settings, mode="Condensed"}) {
     {
       activeID === "body"
       ? <div className="Filler Board" style={{...style}}>
-          <SlateEditable className={mode} highlight={highlightText}/>
+          <div className={addClass("Sheet", mode)}>
+            <center>{author}</center>
+            <h1>{title}</h1>
+            <SlateEditable className="Editable" highlight={highlightText}/>
+          </div>
         </div>
       : null
     }
@@ -558,7 +566,9 @@ function EditorBox({style, settings, mode="Condensed"}) {
     {
       activeID === "notes"
       ? <div className="Filler Board" style={{...style}}>
-          <SlateEditable className={mode} highlight={highlightText}/>
+          <div className={addClass("Sheet", mode)}>
+            <SlateEditable className={mode} highlight={highlightText}/>
+          </div>
         </div>
       : null
     }

@@ -32,6 +32,12 @@
   */
 }
 
+/*
+.Board:focus-within {
+  background: #e5eaee;
+}
+*/
+
 /* ----------------------------------------------------------------------------
 // Sheet
 // ----------------------------------------------------------------------------
@@ -54,6 +60,14 @@
   max-width: 6in;
   min-width: 4.5in;
   min-height: 10in;
+}
+
+.Sheet:focus-within {
+  outline: 2px solid lightblue;
+}
+
+.Sheet > [contenteditable]:focus-visible {
+  outline: 0px;
 }
 
 .Sheet.Condensed {

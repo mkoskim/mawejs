@@ -138,11 +138,12 @@ export default function App(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      <SnackbarProvider />
+      <SnackbarProvider>
       <VBox className="ViewPort">
         <WorkspaceTab {...viewprops} />
         <ChooseView key={doc.file?.id} {...viewprops} />
       </VBox>
+      </SnackbarProvider>
     </ThemeProvider>
   )
 }
