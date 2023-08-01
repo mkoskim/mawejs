@@ -62,12 +62,14 @@
   min-height: 10in;
 }
 
+/* Sheet is outlined, if one of its children have focus */
 .Sheet:focus-within {
   outline: 2px solid lightblue;
 }
 
-.Sheet > [contenteditable]:focus-visible {
-  outline: 0px;
+/* Child in Sheet are not outlined */
+.Sheet > :focus {
+  outline: none;
 }
 
 .Sheet.Condensed {

@@ -556,6 +556,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
           <div className={addClass("Sheet", mode)}>
             <center>{author}</center>
             <h1>{title}</h1>
+            <hr/>
             <SlateEditable className="Editable" highlight={highlightText}/>
           </div>
         </div>
