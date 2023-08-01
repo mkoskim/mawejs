@@ -13,7 +13,7 @@ import "../common/styles/sheet.css"
 
 import React, {
   useState, useEffect, useReducer,
-  useMemo, useCallback,
+  memo, useMemo, useCallback,
   useDeferredValue,
   StrictMode,
   useRef,
@@ -384,15 +384,18 @@ function LeftPanel({settings}) {
 function LeftPanelMenu({settings}) {
   const {toolboxstyle} = settings
 
+  const visibleChoices = useMemo(() => ["scene", "synopsis", "missing", "comment"], [])
+  const wordChoices = useMemo(() => ["off", "numbers", "percent", "cumulative"], [])
+
   return <ToolBox style={toolboxstyle}>
     <ChooseVisibleElements
-      choices={["scene", "synopsis", "missing", "comment"]}
+      choices={visibleChoices}
       selected={settings.body.indexed}
       setSelected={settings.body.setIndexed}
     />
     <Separator/>
     <ChooseWordFormat
-      choices={["off", "numbers", "percent", "cumulative"]}
+      choices={wordChoices}
       selected={settings.body.words}
       setSelected={settings.body.setWords}
     />

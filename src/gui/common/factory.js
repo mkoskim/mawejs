@@ -218,37 +218,63 @@ export function addHotkeys(hotkeys) {
 // Nice guide: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 //-----------------------------------------------------------------------------
 
-export function Box({style, ...props}) {
-  return <div style={style} {...props}/>
+export class Box extends React.PureComponent {
+  render() {
+    const {style, ...props} = this.props
+    return <div style={style} {...props}/>
+  }
 }
 
-export function FlexBox({style, ...props}) {
-  return <div style={{display: "flex", ...style}} {...props} />;
+export class FlexBox extends React.PureComponent {
+  render() {
+    const {style, ...props} = this.props
+    return <div style={{display: "flex", ...style}} {...props} />;
+  }
 }
 
-export function Filler({weight = 1, style, ...props}) {
-  return <div style={{display: "flex", flexGrow: weight, ...style}} {...props}/>
+export class VBox extends React.PureComponent {
+  render() {
+    const {className, ...props} = this.props
+    return <div className={addClass(className, "VBox")} {...props} />
+  }
 }
 
-export function VBox({className, ...props}) {
-  return <div className={addClass(className, "VBox")} {...props} />
+export class HBox extends React.PureComponent {
+  render() {
+    const {className, ...props} = this.props
+    return <div className={addClass(className, "HBox")} {...props}/>
+  }
 }
 
-export function HBox({className, ...props}) {
-  return <div className={addClass(className, "HBox")} {...props}/>
+//-----------------------------------------------------------------------------
+
+export class Filler extends React.PureComponent {
+  render() {
+    const {weight = 1, style, ...props} = this.props
+    return <div style={{display: "flex", flexGrow: weight, ...style}} {...props}/>
+  }
 }
 
-export function VFiller({className, ...props}) {
-  return <div className={addClass(className, "VBox Filler")} {...props} />
+export class VFiller extends React.PureComponent {
+  render() {
+    const {className, ...props} = this.props
+    return <div className={addClass(className, "VBox Filler")} {...props} />
+  }
 }
 
-export function HFiller({className, ...props}) {
-  return <div className={addClass(className, "HBox Filler")} {...props} />
+export class HFiller extends React.PureComponent {
+  render() {
+    const {className, ...props} = this.props
+    return <div className={addClass(className, "HBox Filler")} {...props} />
+  }
 }
 
 //*
-export function Separator({className, fullWidth, ...props}) {
-  return <div className={addClass(className, "Separator")} {...props}/>;
+export class Separator extends React.PureComponent {
+  render() {
+    const {className, fullWidth, ...props} = this.props
+    return <div className={addClass(className, "Separator")} {...props}/>;
+  }
 }
 /*/
 export {Divider as Separator}
@@ -359,23 +385,32 @@ export function ButtonGroup(props) {
 /*
 export {Button, IconButton}
 /*/
-export function Button({tooltip, ...props}) {
-  if(tooltip) {
-    return <Tooltip title={tooltip}><MuiButton {...props}/></Tooltip>
+export class Button extends React.PureComponent {
+
+  render() {
+    const {tooltip, ...props} = this.props
+    if(tooltip) {
+      return <Tooltip title={tooltip}><MuiButton {...props}/></Tooltip>
+    }
+    return <MuiButton {...props}/>
   }
-  return <MuiButton {...props}/>
 }
 /**/
 
 //-----------------------------------------------------------------------------
 
-export function Label({text, style, children, ...props}) {
-  return <span
-      style={{...style}}
-      {...props}
-    >
-      {text}{children}
-    </span>
+export class Label extends React.PureComponent
+{
+  render() {
+    const {text, style, children, ...props} = this.props
+
+    return <span
+        style={{...style}}
+        {...props}
+      >
+        {text}{children}
+      </span>
+  }
 }
 
 export function Loading({className, style}) {

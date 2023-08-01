@@ -11,7 +11,8 @@ import "./app.css"
 /* eslint-disable no-unused-vars */
 
 import React, {
-  useEffect, useState, useReducer, useCallback
+  useEffect, useState, useReducer, useCallback,
+  useMemo,
 } from "react"
 
 import { ThemeProvider } from '@mui/material/styles';
@@ -86,7 +87,6 @@ export default function App(props) {
   );
 
   const mode = {
-    choices: ["editor", "outliner", "chart", "export"],
     selected: _mode,
     setSelected: _setMode,
   }
@@ -173,13 +173,6 @@ function WorkspaceTab({ mode, doc, setDoc }) {
     "mod+s": (e) => onSaveFile(cbprops),
   }));
 
-  const viewbuttons = {
-    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
-    "outliner": { tooltip: "Outline", icon: <Icon.View.Outline /> },
-    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
-    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
-  }
-
   return <ToolBox>
     <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
@@ -196,11 +189,7 @@ function WorkspaceTab({ mode, doc, setDoc }) {
       }</PopupState>
 
     <Separator />
-    <MakeToggleGroup
-      buttons={viewbuttons}
-      exclusive={true}
-      {...mode}
-    />
+    <SelectViewButtons selected={mode.selected} setSelected={mode.setSelected}/>
 
     <Separator />
     <Label text={doc.file?.name ?? "<Unnamed>"} />
@@ -209,10 +198,57 @@ function WorkspaceTab({ mode, doc, setDoc }) {
     <Filler />
 
     <Separator />
-    <Button tooltip="Open Folder" onClick={e => onOpenFolder(cbprops)}><Icon.Action.Folder /></Button>
-    <Button tooltip="Help" onClick={e => onHelp(cbprops)}><Icon.Help /></Button>
-    <Button tooltip="Settings"><Icon.Settings /></Button>
+    <OpenFolderButton filename={doc.file?.id}/>
+    <HelpButton setDoc={setDoc}/>
+    <SettingsButton />
   </ToolBox>
+}
+
+class SelectViewButtons extends React.PureComponent {
+
+  choices = ["editor", "outliner", "chart", "export"]
+  viewbuttons = {
+    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
+    "outliner": { tooltip: "Outline", icon: <Icon.View.Outline /> },
+    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
+    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
+  }
+
+  render() {
+    const {selected, setSelected} = this.props
+    return <MakeToggleGroup
+      exclusive={true}
+      choices={this.choices}
+      selected={selected}
+      setSelected={setSelected}
+      buttons={this.viewbuttons}
+    />
+  }
+}
+
+class OpenFolderButton extends React.PureComponent {
+  render() {
+    const {filename} = this.props
+
+    return <Button tooltip="Open Folder" onClick={e => onOpenFolder(filename)}>
+      <Icon.Action.Folder />
+      </Button>
+  }
+}
+
+class HelpButton extends React.PureComponent {
+  render() {
+    const {setDoc} = this.props
+    return <Button tooltip="Help" onClick={e => onHelp(setDoc)}>
+      <Icon.Help />
+      </Button>
+  }
+}
+
+class SettingsButton extends React.PureComponent {
+  render() {
+    return <Button tooltip="Settings"><Icon.Settings /></Button>
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -224,18 +260,26 @@ const filters = [
   { name: 'All Files', extensions: ['*'] }
 ]
 
-async function onNewFile({ doc, setDoc }) {
-  setDoc({
-    buffer: '<story format="mawe"><body><part/></body><notes><part/></notes></story>'
-  })
+async function onOpenFolder(file) {
+  const dirname = file ? await fs.dirname(file) : "."
+  console.log("Open folder:", dirname)
+  fs.openexternal(dirname)
 }
 
-async function onHelp({ doc, setDoc }) {
+async function onHelp(setDoc) {
   //setDoc({})
   const buffer = await mawe.file2buf({ id: "./local/UserGuide.mawe" })
   //const tree = mawe.buf2tree(buffer)
   //const story = mawe.fromXML(tree)
   setDoc({ buffer })
+}
+
+//-----------------------------------------------------------------------------
+
+async function onNewFile({ doc, setDoc }) {
+  setDoc({
+    buffer: '<story format="mawe"><body><part/></body><notes><part/></notes></story>'
+  })
 }
 
 async function onOpenFile({ doc, setDoc }) {
@@ -274,10 +318,4 @@ async function onSaveFileAs({ doc, setDoc }) {
       .then(() => fs.fstat(filePath))
       .then(file => setDoc(doc => ({ ...doc, file })))
   }
-}
-
-async function onOpenFolder({ doc }) {
-  const dirname = doc.file ? await fs.dirname(doc.file.id) : "."
-  console.log("Open folder:", dirname)
-  fs.openexternal(dirname)
 }
