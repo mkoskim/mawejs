@@ -247,23 +247,24 @@
 */
 
 .Sheet div.part {
-  margin-left: 4pt;
-  margin-right: 4pt;
-  padding-bottom: 2cm;
-  border-bottom: 1pt dashed gray;
-  /*
   border: 1pt dashed gray;
+  padding: 4pt;
+  margin-bottom: 4pt;
+  /*
+  border-bottom: 1pt dashed gray;
   */
 }
 
 .Sheet div.scene {
+  border: 1pt dotted lightgray;
+  padding: 4pt;
+  margin-bottom: 4pt;
+  /*
   margin-left: 4pt;
   margin-right: 4pt;
   padding-left: 4pt;
   padding-right: 4pt;
   margin-bottom: 0.5cm;
-  /*
-  border: 1pt dotted lightgray;
   */
 }
 

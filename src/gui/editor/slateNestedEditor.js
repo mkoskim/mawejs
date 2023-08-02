@@ -612,71 +612,6 @@ function withMarkup(editor) {
 }
 
 //-----------------------------------------------------------------------------
-// Ensure, that:
-// 1) Top level is formed from parts
-// 2) Parts are formed from: (1) heading, and (2) list of scenes
-// 3) Scenes have heading at front
-//-----------------------------------------------------------------------------
-
-function withFixNesting(editor) {
-
-  const { normalizeNode } = editor;
-
-  editor.normalizeNode = entry => {
-    const [node, path] = entry
-
-    if(path.length) return normalizeNode(entry)
-
-    console.log("FixNesting")
-    //*
-    Editor.withoutNormalizing(editor, () => {
-      while(true) {
-        if(mergeParts(node)) continue
-        break;
-      }
-    })
-    //console.log(node.children)
-    /**/
-    return normalizeNode(entry)
-  }
-
-  return editor
-
-  // Merge parts that have no heading
-  function mergeParts(section) {
-    //console.log("Merge parts...")
-    //console.log("Parts")
-    for(const child of Node.children(section, [])) {
-      const [part, path] = child
-      //console.log(part, path)
-      if(path[0] && part.children[0].type !== "hpart") {
-        console.log("Merge part:", path)
-        Transforms.mergeNodes(editor, {at: path})
-        return true
-      }
-    }
-    return false
-  }
-
-  function mergeScenes(part) {
-
-  }
-}
-
-/*
-function fixPart(part, path) {
-  console.log(part, path)
-  const head = Node.descendant(part, [0])
-  console.log(head)
-/*
-  for(const child of Node.nodes(part, {from: [1]})) {
-    const [node, path] = child
-    console.log(node, path)
-  }
-}
-/**/
-
-//-----------------------------------------------------------------------------
 // Ensure that indexable blocks have unique ID
 //-----------------------------------------------------------------------------
 
@@ -719,6 +654,164 @@ function withIDs(editor) {
   }
 
   return editor
+}
+
+//-----------------------------------------------------------------------------
+// Ensure, that:
+// 1) Top level is formed from parts
+// 2) Parts are formed from: (1) heading, and (2) list of scenes
+// 3) Scenes have heading at front
+//-----------------------------------------------------------------------------
+
+function withFixNesting(editor) {
+
+  const { normalizeNode } = editor;
+
+  editor.normalizeNode = entry => {
+    const [node, path] = entry
+
+    if(path.length) return normalizeNode(entry)
+
+    //console.log("FixNesting")
+
+    Editor.withoutNormalizing(editor, () => {
+      while(!checkIntegrity());
+    })
+    return normalizeNode(entry)
+  }
+
+  return editor
+
+  function checkIntegrity() {
+    //-------------------------------------------------------------------------
+    // Check parts
+    //-------------------------------------------------------------------------
+
+    for(const [i, part] of editor.children.entries()) {
+      const partpath = [i]
+      //console.log(partpath, part)
+
+      switch(part.type) {
+        case "part": {
+          if(part.children[0].type !== "hpart") {
+            if(i === 0) {
+              if(!part.children.length) {
+                console.log("insertNode[hpart]")
+                Transforms.insertNodes(editor, {type: "hpart", children: [{text:""}]}, {at: [...partpath, 0]})
+                return false
+              }
+              console.log("setNodes[hpart]:", part.children[0])
+              Transforms.setNodes(editor, {type: "hpart"}, {at: [...partpath, 0]})
+              return false
+            }
+            else if(canMerge("part", partpath)) {
+              console.log("Merge:", part)
+              mergeBlock("part", partpath)
+              return false
+            }
+          }
+          break;
+        }
+        default: {
+          console.log("Wrap[part]:", part)
+          wrapBlock("part", partpath)
+          return false
+        }
+      }
+
+      //-----------------------------------------------------------------------
+      // Check scenes in parts
+      //-----------------------------------------------------------------------
+      for(const [i, scene] of part.children.entries()) {
+        if(i === 0 && scene.type === "hpart") continue
+        const scenepath = [...partpath, i]
+        //console.log(scenepath, scene)
+
+        switch(scene.type) {
+          case "scene": {
+            if(i === 1) {
+              if(!scene.children.length) {
+                console.log("insertNode[hscene]")
+                Transforms.insertNodes(editor, {type: "hscene", children: [{text:""}]}, {at: [...scenepath, 0]})
+                return false
+              }
+              else if(scene.children[0].type !== "hscene") {
+                console.log("setNodes[hscene]:", scene.children[0])
+                Transforms.setNodes(editor, {type: "hscene"}, {at: [...scenepath, 0]})
+                return false
+              }
+            } else {
+              if(!scene.children.length || scene.children[0].type !== "hscene") {
+                if(canMerge("scene", scenepath)) {
+                  console.log("Merge:", scene)
+                  mergeBlock("scene", scenepath)
+                  return false
+                }
+              }
+            }
+            break;
+          }
+          case "hpart": {
+            console.log("Wrap & Lift[part]:", scene)
+            wrapLiftBlock("part", scenepath, scenepath)
+            return false
+          }
+          default: {
+            console.log("Wrap[scene]:", scene)
+            wrapBlock("scene", scenepath)
+            return false
+          }
+        }
+
+        //---------------------------------------------------------------------
+        // Check paragraphs in scenes
+        //---------------------------------------------------------------------
+
+        for(const [i, para] of scene.children.entries()) {
+          if(i === 0 && para.type === "hscene") continue
+          const parapath = [...scenepath, i]
+          //console.log(parapath, para)
+
+          switch(para.type) {
+            case "hscene": {
+              console.log("Wrap & Lift:", para)
+              wrapLiftBlock("scene", parapath, scenepath)
+              return false
+            }
+            case "hpart": {
+              console.log("Lift:", para)
+              liftBlock(parapath);
+              return false
+            }
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  function liftBlock(at) {
+    Transforms.liftNodes(editor, {at})
+  }
+
+  function wrapBlock(type, at) {
+    Transforms.wrapNodes(editor, {type}, {at})
+  }
+
+  function wrapLiftBlock(type, start, end) {
+    const at = { anchor: Editor.start(editor, start), focus: Editor.end(editor, end)}
+    Transforms.wrapNodes(editor, {type}, {at})
+    Transforms.liftNodes(editor, {at: start})
+  }
+
+  function canMerge(type, at) {
+    const prev = Editor.previous(editor, {at})
+    return prev && prev[0].type === type
+  }
+
+  function mergeBlock(type, at) {
+    Transforms.mergeNodes(editor, {at})
+  }
 }
 
 //*****************************************************************************
@@ -775,81 +868,11 @@ export function section2edit(section) {
   }
 }
 
-/*
-export function section2edit(section) {
-  return validate(section2flat(section).map(elem2Edit))
-
-  function validate(buffer) {
-    for(const elem of buffer) {
-
-      expect(elem.id, "Missing ID")
-      expect(elem.type, "Missing type")
-      expect(typeof(elem) === "object", "Not an object")
-      expect(Array.isArray(elem.children), "Children not an array")
-      expect(elem.children.every(child => !child.children), "Children has children.")
-      expect(elem.children.every(child => typeof(child.text) === "string"), "Child has no text.")
-
-      function expect(cond, message) {
-        if(cond) return
-        console.log("ERROR:", elem, message)
-      }
-    }
-    return buffer
-  }
-}
-*/
-
 //*****************************************************************************
 //
 // Slate --> Doc
 //
 //*****************************************************************************
-
-//-----------------------------------------------------------------------------
-// Flat buffer -> Regroup parts & scenes
-
-export function edit2grouped(content) {
-  //const [head, parts] = splitHead(content)
-
-  var grouped = []
-
-  for(var index = 0; index < content.length;) {
-    const elem = content[index]
-
-    console.assert(isPartBreak(elem), "Missing part break")
-    const head = elem
-    var scenes = []
-
-    for(index++; index < content.length;) {
-      const elem = content[index]
-      if(isPartBreak(elem)) break;
-      console.assert(isSceneBreak(elem), "Missing scene break")
-
-      const head = elem
-      var paras = []
-
-      for(index++;index < content.length; index++) {
-        const elem = content[index]
-        if(isPartBreak(elem)) break
-        if(isSceneBreak(elem)) break
-        paras.push(elem)
-      }
-
-      scenes.push([head, paras])
-    }
-    grouped.push([head, scenes])
-  }
-
-  return grouped
-
-  function isPartBreak(elem) {
-    return elem.type === "part"
-  }
-
-  function isSceneBreak(elem) {
-    return elem.type === "scene"
-  }
-}
 
 //-----------------------------------------------------------------------------
 // Update parts & scenes: To make index rendering faster, we preserve the
@@ -859,21 +882,15 @@ export function edit2grouped(content) {
 //-----------------------------------------------------------------------------
 
 export function updateSection(buffer, section) {
-  return section
-}
-
-/*
-export function updateSection(buffer, section) {
 
   //console.log("Update section")
 
   const lookup = section ? section2lookup(section) : {}
   //console.log(lookup)
 
-  const grouped = edit2grouped(buffer)
-  //console.log(grouped)
+  //console.log(buffer)
 
-  const updated = grouped.map(part => edit2part(part, lookup))
+  const updated = buffer.map(part => edit2part(part, lookup))
   const isClean = cmpList(updated, section.parts)
 
   if(isClean) return section
@@ -884,16 +901,20 @@ export function updateSection(buffer, section) {
     words: wcElem({type: "sect", children: updated})
   }
 }
-*/
 
 function edit2part(part, lookup) {
-  const [head, scenes] = part
-  const {id} = head
+  //console.log(part)
+
+  const {id, children} = part
+
+  const [head, ...scenes] = children
+
+  //console.log("Head", head, "Scenes:", scenes)
 
   return checkClean({
     type: "part",
-    name: Node.string(head),
     id,
+    name: Node.string(head),
     children: scenes.map(scene => edit2scene(scene, lookup)),
   }, lookup)
 }
@@ -901,13 +922,15 @@ function edit2part(part, lookup) {
 // Update scene
 
 function edit2scene(scene, lookup) {
-  const [head, paragraphs] = scene
-  const {id} = head;
+  const {id, children} = scene
+  const [head, ...paragraphs] = children
+
+  //console.log("Head", head, "Paragraphs:", paragraphs)
 
   return checkClean({
     type: "scene",
-    name: Node.string(head),
     id,
+    name: Node.string(head),
     children: paragraphs.map(p => edit2paragraph(p, lookup))
   }, lookup)
 }
@@ -915,8 +938,11 @@ function edit2scene(scene, lookup) {
 // Update paragraph
 
 function edit2paragraph(elem, lookup) {
-  const text = Node.string(elem)
+
   const {id, type} = elem
+  const text = Node.string(elem)
+
+  //console.log(elem)
 
   return checkClean({
     type: type === "p" && text === "" ? "br" : type,
