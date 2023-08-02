@@ -38,6 +38,7 @@ import {
   searchFirst, searchForward, searchBackward,
   isAstChange,
 } from "./slateEditor"
+//} from "./slateNestedEditor"
 
 import {DocIndex} from "../common/docIndex"
 import {WordTable} from "./wordTable"
@@ -54,6 +55,7 @@ import {
   Separator, Loading, addClass,
   Menu, MenuItem,
   isHotkey,
+  DeferredRender,
 } from "../common/factory";
 
 import {
@@ -264,12 +266,9 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 
   /*
   return <>
-    <EditToolbar {...{bodyindex_settings, noteindex_settings, bodyFromEdit, searchText, setSearchText}}/>
     <HBox style={{overflow: "auto"}}>
-      <Slate editor={bodyeditor} value={bodybuffer} onChange={updateBody}>
-        <EditorBox mode="Condensed" visible={active === "body"} search={searchText}/>
-        <SlateAST />
-      </Slate>
+      <EditorBox settings={settings} mode="Regular"/>
+      <SlateAST editor={bodyeditor}/>
     </HBox>
     </>
   /**/
@@ -589,10 +588,43 @@ function IndexBox({settings, section, style}) {
 
 //-----------------------------------------------------------------------------
 
-function SlateAST({}) {
-  const editor = useSlate()
+class ASTChildren extends React.PureComponent {
+  render() {
+    const {children} = this.props
+    return children && <div>
+      {"Children: ["}
+      <div style={{paddingLeft: "0.5cm"}}>
+      {children.map((elem, i) => <ASTElement key={elem.id ?? i} elem={elem}/>)}
+      </div>
+      {"]"}
+    </div>
+  }
+}
 
-  return <Pre style={{ width: "50%" }} content={editor.children} />
+class ASTElement extends React.PureComponent {
+  render() {
+    const {elem} = this.props
+    const {children, words, ...props} = elem
+
+    const entries = Object.entries(props)
+    //console.log(entries.map(([key, value]) => ({[key]: value})))
+
+    return <div>
+    {"{"}
+      <div style={{paddingLeft: "0.5cm"}}>
+      {entries.map(([key, value]) => (<div key={key}>{key}: {value}</div>))}
+      <ASTChildren children={children}/>
+      </div>
+    {"}"}
+    </div>
+  }
+}
+
+function SlateAST({editor}) {
+  //return <Pre style={{ width: "50%" }} content={editor.children} />
+  return <div style={{ width: "50%" }}>
+    <ASTChildren children={editor.children}/>
+    </div>
 }
 
 function Pre({ style, content }) {

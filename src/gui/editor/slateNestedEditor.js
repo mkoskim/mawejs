@@ -1,7 +1,7 @@
 //*****************************************************************************
 //*****************************************************************************
 //
-// Slate customizations
+// Nested editing with SlateJS
 //
 //*****************************************************************************
 //*****************************************************************************
@@ -15,6 +15,7 @@ import {
   Range, Point, Path,
   createEditor,
   Descendant,
+  Element,
 } from 'slate'
 
 import { withHistory } from "slate-history"
@@ -42,9 +43,6 @@ function searchPattern(text, opts = "gi") {
 }
 
 export function SlateEditable({className, highlight, ...props}) {
-  //const renderElement = useCallback(props => <Element {...props} />, [])
-  //const renderLeaf = useCallback(props => <Leaf {...props} />, [])
-
   //console.log("Search:", search)
 
   const re = useMemo(() => searchPattern(highlight), [highlight])
@@ -73,41 +71,46 @@ export function SlateEditable({className, highlight, ...props}) {
   return <Editable
     className={className}
     spellCheck={false} // Keep false until you find out how to change language
-    renderElement={Element}
-    renderLeaf={Leaf}
+    renderElement={renderElement}
+    renderLeaf={renderLeaf}
     decorate={highlighter}
     {...props}
   />
 }
 
-function Element({element, attributes, ...props}) {
+function renderElement({element, ...props}) {
 
   switch (element.type) {
     //case "title": return <h1 {...attributes} {...props}/>
 
-    case "part": return <h5 {...attributes} {...props}/>
-    case "scene": return <h6 {...attributes} {...props}/>
+    case "part": return <div className="part" {...props}/>
+    case "scene": return <div className="scene" {...props} />
+
+    case "hpart": return <h5 {...props}/>
+    case "hscene": return <h6 {...props}/>
 
     case "comment":
     case "missing":
     case "synopsis":
-      return <p className={element.type} {...attributes} {...props}/>
+      return <p className={element.type} {...props}/>
 
     case "p":
-    default:
-      if (Node.string(element) === "") {
-        return <div className="emptyline" {...attributes} {...props}/>
-      }
-      return <p {...attributes} {...props}/>
+    default: break;
   }
+
+  if (Node.string(element) === "") {
+    return <div className="emptyline" {...props}/>
+  }
+  return <p {...props}/>
 }
 
-function Leaf({ leaf, attributes, ...props }) {
+function renderLeaf({ leaf, attributes, children}) {
   return <span
     className={leaf.highlight ? "highlight" : undefined}
     {...attributes}
-    {...props}
-  />
+    >
+      {children}
+    </span>
 }
 
 //*****************************************************************************
@@ -395,7 +398,7 @@ export function getEditor() {
     createEditor,
     withHistory,
     withMarkup,
-    withFixParts,
+    withFixNesting,
     withIDs,
     withReact,
     withDebugging,
@@ -430,8 +433,8 @@ function withMarkup(editor) {
   // Markup shortcuts to create styles
 
   const SHORTCUTS = {
-    '** ': {type: "part"},
-    '## ': {type: "scene"},
+    '** ': {type: "hpart"},
+    '## ': {type: "hscene"},
     '>> ': {type: "synopsis"},
     '// ': {type: 'comment'},
     '!! ': {type: 'missing'},
@@ -448,6 +451,19 @@ function withMarkup(editor) {
     //'/*':
     //'::':
   }
+
+  const STYLEAFTER = {
+    "hpart": "hscene",
+    "hscene": "p",
+    "synopsis": "p",
+    "missing": "p",
+  }
+
+  const RESETEMPTY = [
+    "synopsis",
+    "comment",
+    "missing",
+  ]
 
   const { insertText } = editor
 
@@ -480,19 +496,6 @@ function withMarkup(editor) {
   //---------------------------------------------------------------------------
   // Default styles followed by a style
 
-  const STYLEAFTER = {
-    "title": "part",
-    "part": "scene",
-    "scene": "p",
-    "synopsis": "p",
-  }
-
-  const RESETEMPTY = [
-    "synopsis",
-    "comment",
-    "missing",
-  ]
-
   const { insertBreak } = editor
 
   editor.insertBreak = () => {
@@ -501,6 +504,10 @@ function withMarkup(editor) {
     if(!selection) return insertBreak()
     if(!Range.isCollapsed(selection)) return insertBreak()
 
+    const [node, path] = Editor.above(editor, {
+      match: n => Editor.isBlock(editor, n),
+    })
+    /*
     const [match] = Editor.nodes(editor, {
       match: n => elemIsBlock(editor, n)
     })
@@ -508,9 +515,11 @@ function withMarkup(editor) {
     if(!match) return insertBreak()
 
     const [node, path] = match
+    */
 
     //console.log("Node:", node)
 
+    /*
     // If we hit enter at the end of part, and next block is scene, just move the cursor
     if(node.type === "part") {
       //console.log("WithMarkup: part")
@@ -528,6 +537,7 @@ function withMarkup(editor) {
         }
       }
     }
+    */
 
     // If we hit enter at empty line, and block type is RESETEMPTY, reset type
     if(RESETEMPTY.includes(node.type) && Node.string(node) == "") {
@@ -581,6 +591,7 @@ function withMarkup(editor) {
       return deleteBackward(...args)
     }
 
+    /*
     // Don't remove scene, if it is the first one after part break
     if(node.type === "scene") {
       const prev = Editor.previous(editor, {at: path})
@@ -590,6 +601,7 @@ function withMarkup(editor) {
         return
       }
     }
+    */
 
     // Remove formatting
     Transforms.setNodes(editor, {type: 'p'})
@@ -600,6 +612,71 @@ function withMarkup(editor) {
 }
 
 //-----------------------------------------------------------------------------
+// Ensure, that:
+// 1) Top level is formed from parts
+// 2) Parts are formed from: (1) heading, and (2) list of scenes
+// 3) Scenes have heading at front
+//-----------------------------------------------------------------------------
+
+function withFixNesting(editor) {
+
+  const { normalizeNode } = editor;
+
+  editor.normalizeNode = entry => {
+    const [node, path] = entry
+
+    if(path.length) return normalizeNode(entry)
+
+    console.log("FixNesting")
+    //*
+    Editor.withoutNormalizing(editor, () => {
+      while(true) {
+        if(mergeParts(node)) continue
+        break;
+      }
+    })
+    //console.log(node.children)
+    /**/
+    return normalizeNode(entry)
+  }
+
+  return editor
+
+  // Merge parts that have no heading
+  function mergeParts(section) {
+    //console.log("Merge parts...")
+    //console.log("Parts")
+    for(const child of Node.children(section, [])) {
+      const [part, path] = child
+      //console.log(part, path)
+      if(path[0] && part.children[0].type !== "hpart") {
+        console.log("Merge part:", path)
+        Transforms.mergeNodes(editor, {at: path})
+        return true
+      }
+    }
+    return false
+  }
+
+  function mergeScenes(part) {
+
+  }
+}
+
+/*
+function fixPart(part, path) {
+  console.log(part, path)
+  const head = Node.descendant(part, [0])
+  console.log(head)
+/*
+  for(const child of Node.nodes(part, {from: [1]})) {
+    const [node, path] = child
+    console.log(node, path)
+  }
+}
+/**/
+
+//-----------------------------------------------------------------------------
 // Ensure that indexable blocks have unique ID
 //-----------------------------------------------------------------------------
 
@@ -607,7 +684,7 @@ function withIDs(editor) {
 
   const { normalizeNode } = editor;
 
-  editor.normalizeNode = entry => {
+  editor.normalizeNode = (entry)=> {
     const [node, path] = entry
 
     // When argument is whole editor (all blocks)
@@ -617,7 +694,7 @@ function withIDs(editor) {
 
     const blocks = Editor.nodes(editor, {
       at: [],
-      match: (node, path) => path.length === 1 && Editor.isBlock(editor, node),
+      match: (node, path) => !Editor.isEditor(node) && Element.isElement(node),
     })
 
     //console.log(Array.from(blocks))
@@ -644,88 +721,6 @@ function withIDs(editor) {
   return editor
 }
 
-//-----------------------------------------------------------------------------
-// Ensure, that part breaks are followed by scene break
-//-----------------------------------------------------------------------------
-
-function withFixParts(editor) {
-
-  const { normalizeNode } = editor;
-
-  editor.normalizeNode = entry => {
-    const [node, path] = entry
-
-    //console.log("Normalize: Fix parts")
-
-    //console.log("Path/Node:", path, node)
-
-    //-------------------------------------------------------------------------
-    // For entire document:
-    // 1. Ensure, that we have at least 1 node and that is a part
-    // 2. Ensure, that first block is always part
-
-    if(path.length == 0) {
-      if(editor.children.length < 1) {
-        Transforms.insertNodes(editor,
-          {type: "part", children: [{text: ""}]},
-          {at: path.concat(0)}
-        )
-        console.log("FixPart: Empty doc: inserted part")
-        return
-      }
-      if(editor.children[0].type !== "part") {
-        Transforms.setNodes(editor,
-          {type: "part"},
-          {at: path.concat(0)}
-        )
-        console.log("FixPart: First block --> part")
-        return
-      }
-      return normalizeNode(entry)
-    }
-
-    //-------------------------------------------------------------------------
-    // For top-level single blocks:
-    // 3. Ensure, that created part is followed by scene break
-    // 4. Ensure, that node after part is a scene
-
-    if(path.length === 1) {
-      if(node.type === "part") {
-        //console.log("Part", node, path)
-        const next = Editor.next(editor, {at: path})
-        if(next) {
-          //console.log("Check:", next)
-          const [n, p] = next
-          if(n.type !== "scene") {
-            Transforms.insertNodes(
-              editor,
-              {type: "scene", id: nanoid(), children: [{text: ""}]},
-              {at: p}
-            )
-            console.log("FixPart: Block following part --> scene")
-            return
-          }
-        }
-      } else {
-        const prev = Editor.previous(editor, {at: path})
-        if(prev && prev[0].type === "part" && node.type !== "scene") {
-          Transforms.setNodes(
-            editor,
-            {type: "scene"},
-            {at: path}
-          )
-          console.log("FixPart: Block preceded by part --> scene")
-          return
-        }
-      }
-    }
-
-    return normalizeNode(entry)
-  }
-
-  return editor
-}
-
 //*****************************************************************************
 //
 // Doc --> Slate
@@ -733,25 +728,56 @@ function withFixParts(editor) {
 //*****************************************************************************
 
 export function section2edit(section) {
-  return validate(section2flat(section).map(elem2Edit))
+  //console.log(section)
+  //return section2flat(section).map(elem2edit)
 
-  function elem2Edit(elem) {
-    switch(elem.type) {
-      case "part": return {
-        ...elem,
-        children: [{text: elem.name ?? ""}]
-      }
-      case "scene": return {
-        ...elem,
-        children: [{text: elem.name ?? ""}]
-      }
+  return section.parts.map(part2edit)
+
+  function part2edit(part) {
+    const {children, type, id, name} = part
+    return {
+      type: "part",
+      id,
+      children: [
+        {type: "hpart", id: nanoid(), children: [{text: name}]},
+        ...children.map(scene2edit)
+      ],
+    }
+  }
+
+  function scene2edit(scene) {
+    const {type, id, name, children} = scene
+    return {
+      type: "scene",
+      id,
+      children: [
+        {type: "hscene", id: nanoid(), children: [{text: name}]},
+        ...children.map(elem2edit)
+      ]
+    }
+  }
+
+  function elem2edit(elem) {
+    const {type, id, children} = elem;
+
+    switch(type) {
       case "br": return {
-        ...elem,
         type: "p",
+        id,
+        children
       }
     }
-    return elem
+    return {
+      type,
+      id,
+      children
+    }
   }
+}
+
+/*
+export function section2edit(section) {
+  return validate(section2flat(section).map(elem2Edit))
 
   function validate(buffer) {
     for(const elem of buffer) {
@@ -771,6 +797,7 @@ export function section2edit(section) {
     return buffer
   }
 }
+*/
 
 //*****************************************************************************
 //
@@ -832,6 +859,11 @@ export function edit2grouped(content) {
 //-----------------------------------------------------------------------------
 
 export function updateSection(buffer, section) {
+  return section
+}
+
+/*
+export function updateSection(buffer, section) {
 
   //console.log("Update section")
 
@@ -852,6 +884,7 @@ export function updateSection(buffer, section) {
     words: wcElem({type: "sect", children: updated})
   }
 }
+*/
 
 function edit2part(part, lookup) {
   const [head, scenes] = part
