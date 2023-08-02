@@ -81,8 +81,6 @@ export function SlateEditable({className, highlight, ...props}) {
 function renderElement({element, ...props}) {
 
   switch (element.type) {
-    //case "title": return <h1 {...attributes} {...props}/>
-
     case "part": return <div className="part" {...props}/>
     case "scene": return <div className="scene" {...props} />
 
@@ -188,54 +186,26 @@ export function elemPop(editor, id) {
   if(!match) return
 
   const [node, path] = match
-  const [focus, anchor] = range(node, path)
-  if(!focus || !anchor) return
 
-  const block = elemsByRange(editor, anchor, focus)
-  Transforms.removeNodes(editor, {at: {anchor, focus}, hanging: true})
-  return block
+  //console.log("Pop:", path, node)
 
-  function range(node, path) {
-    if(node.type === "part")  return getRange(path, ["part"])
-    if(node.type === "scene") return getRange(path, ["part", "scene"])
-    return []
-  }
-
-  function getRange(path, types) {
-    const match = Editor.next(editor, {
-      at: path,
-      match: (n, p) => Editor.isBlock(editor, n) && types.includes(n.type)
-    })
-    return [
-      Editor.start(editor, path),
-      match ? Editor.before(editor, match[1]) : Editor.end(editor, []),
-    ]
-  }
+  Transforms.removeNodes(editor, {at: path, hanging: true})
+  return node
 }
 
 export function elemPushTo(editor, block, id, index) {
-  const blocktype = block[0].type
+  //console.log("Push", id, index)
 
-  const blocks = [
-    ...(blocktype == "part" ? getParts() : getScenes(id)),
-    [undefined, Editor.end(editor, [])]
-  ]
+  if(!block) return
 
-  //console.log("Pushto:", anchor, blocks, index)
-
-  Transforms.insertNodes(editor, block, {at: blocks[index][1]})
-
-  function getParts() {
-    return elemByTypes(editor, ["part"])
+  function getPath() {
+    if(!id) return [index]
+    const match = elemByID(editor, id)
+    const [node, path] = match
+    return [...path, index+1]
   }
 
-  function getScenes(partid) {
-    const elem = elemByID(editor, partid)
-    const anchor = Editor.after(editor, elem[1])
-    if(!anchor) return []
-    return elemByTypes(editor, ["part", "scene"], anchor)
-  }
-
+  Transforms.insertNodes(editor, block, {at: getPath()})
 }
 
 //-----------------------------------------------------------------------------
@@ -832,7 +802,7 @@ export function section2edit(section) {
       type: "part",
       id,
       children: [
-        {type: "hpart", id: nanoid(), children: [{text: name}]},
+        {type: "hpart", id: nanoid(), children: [{text: name ?? ""}]},
         ...children.map(scene2edit)
       ],
     }
@@ -844,7 +814,7 @@ export function section2edit(section) {
       type: "scene",
       id,
       children: [
-        {type: "hscene", id: nanoid(), children: [{text: name}]},
+        {type: "hscene", id: nanoid(), children: [{text: name ?? ""}]},
         ...children.map(elem2edit)
       ]
     }

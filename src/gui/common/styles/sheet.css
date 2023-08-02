@@ -116,6 +116,10 @@
   margin: 0;
 }
 
+.Sheet .highlight {
+  background: #f7f7b5;
+}
+
 /* Title */ .Sheet h1 {
   font-size: 17pt;
   font-weight: bold;
@@ -247,24 +251,18 @@
 */
 
 .Sheet div.part {
+  /*
   border: 1pt dashed gray;
   padding: 4pt;
   margin-bottom: 4pt;
-  /*
-  border-bottom: 1pt dashed gray;
   */
 }
 
 .Sheet div.scene {
+  /*
   border: 1pt dotted lightgray;
   padding: 4pt;
   margin-bottom: 4pt;
-  /*
-  margin-left: 4pt;
-  margin-right: 4pt;
-  padding-left: 4pt;
-  padding-right: 4pt;
-  margin-bottom: 0.5cm;
   */
 }
 

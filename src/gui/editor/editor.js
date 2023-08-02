@@ -37,7 +37,7 @@ import {
   elemPop, elemPushTo,
   searchFirst, searchForward, searchBackward,
   isAstChange,
-//} from "./slateEditor"
+//} from "./slateFlatEditor"
 } from "./slateNestedEditor"
 
 import {DocIndex} from "../common/docIndex"
@@ -335,7 +335,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
         const srcEdit = getEditor(srcEditID)
         const dstEdit = getEditor(dstEditID)
 
-        //moveElem(srcEdit, draggableId, dstEditID, dstEdit, destination.droppableId, destination.index)
+        moveElem(srcEdit, draggableId, dstEditID, dstEdit, destination.droppableId, destination.index)
         break;
       }
 
@@ -345,7 +345,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
         const srcEdit = getEditor(srcEditID)
         const dstEdit = getEditor(dstEditID)
 
-        //moveElem(srcEdit, draggableId, dstEditID, dstEdit, null, destination.index)
+        moveElem(srcEdit, draggableId, dstEditID, dstEdit, null, destination.index)
         break;
       }
       default:
@@ -555,7 +555,6 @@ function EditorBox({style, settings, mode="Condensed"}) {
           <div className={addClass("Sheet", mode)}>
             <center>{author}</center>
             <h1>{title}</h1>
-            <hr/>
             <SlateEditable className="Editable" highlight={highlightText}/>
           </div>
         </div>

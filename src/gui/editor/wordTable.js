@@ -29,7 +29,8 @@ import {
 } from "../common/factory";
 
 import {createWordTable} from "../../document/util";
-import {text2Regexp} from "./slateEditor"
+//import {text2Regexp} from "./slateFlatEditor"
+import {text2Regexp} from "./slateNestedEditor"
 
 //-----------------------------------------------------------------------------
 // Wordtable
