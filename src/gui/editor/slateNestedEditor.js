@@ -477,37 +477,6 @@ function withMarkup(editor) {
     const [node, path] = Editor.above(editor, {
       match: n => Editor.isBlock(editor, n),
     })
-    /*
-    const [match] = Editor.nodes(editor, {
-      match: n => elemIsBlock(editor, n)
-    })
-
-    if(!match) return insertBreak()
-
-    const [node, path] = match
-    */
-
-    //console.log("Node:", node)
-
-    /*
-    // If we hit enter at the end of part, and next block is scene, just move the cursor
-    if(node.type === "part") {
-      //console.log("WithMarkup: part")
-      //console.log("- Cursor:", selection.focus)
-      //console.log("- End...:", Editor.end(editor, path))
-      if(Point.equals(selection.focus, Editor.end(editor, path))) {
-        const next = Editor.next(editor, {at: path})
-        if(next) {
-          const [node, path] = next
-          //console.log("- Next:", node)
-          if(node.type === "scene") {
-            Transforms.move(editor, {distance: 1, unit: "line"})
-            return
-          }
-        }
-      }
-    }
-    */
 
     // If we hit enter at empty line, and block type is RESETEMPTY, reset type
     if(RESETEMPTY.includes(node.type) && Node.string(node) == "") {
@@ -640,125 +609,152 @@ function withFixNesting(editor) {
   editor.normalizeNode = entry => {
     const [node, path] = entry
 
-    if(path.length) return normalizeNode(entry)
+    //console.log("Check:", path, node)
 
-    //console.log("FixNesting")
+    if(Editor.isEditor(node)) return normalizeNode(entry)
+    if(!Element.isElement(node)) return normalizeNode(entry)
 
-    Editor.withoutNormalizing(editor, () => {
-      while(!checkIntegrity());
-    })
-    return normalizeNode(entry)
+    console.log("FixNesting:", path, node)
+
+    switch(node.type) {
+      // Paragraph styles come first
+      case "hscene":
+        //if(checkParent(node, path, "scene")) return
+        if(checkSceneHdr(node, path)) return;
+        break;
+      case "hpart":
+        //if(checkParent(node, path, "part")) return
+        if(checkPartHdr(node, path)) return
+        break;
+      default:
+        if(checkParent(node, path, "scene")) return
+        break;
+
+      // Block styles come next
+      case "scene":
+        if(checkBlockHeader(node, path, "hscene")) return
+        break
+      case "part":
+        if(checkBlockHeader(node, path, "hpart")) return
+        break;
+    }
+    return
+    //return normalizeNode(entry)
   }
 
   return editor
 
-  function checkIntegrity() {
-    //-------------------------------------------------------------------------
-    // Check parts
-    //-------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
+  // Check, that paragraphs are parented to scenes
+  //---------------------------------------------------------------------------
 
-    for(const [i, part] of editor.children.entries()) {
-      const partpath = [i]
-      //console.log(partpath, part)
+  function checkParent(node, path, type) {
+    console.log("FixNesting: Check parent", node, path, type)
+    const [parent, ppath] = Editor.parent(editor, path)
+    if(parent.type !== type) {
+      console.log("FixNesting: Wrapping", path, node, type)
+      wrapBlock(type, path)
+      return true
+    }
+  }
 
-      switch(part.type) {
-        case "part": {
-          if(part.children[0].type !== "hpart") {
-            if(i === 0) {
-              if(!part.children.length) {
-                console.log("insertNode[hpart]")
-                Transforms.insertNodes(editor, {type: "hpart", children: [{text:""}]}, {at: [...partpath, 0]})
-                return false
-              }
-              console.log("setNodes[hpart]:", part.children[0])
-              Transforms.setNodes(editor, {type: "hpart"}, {at: [...partpath, 0]})
-              return false
-            }
-            else if(canMerge("part", partpath)) {
-              console.log("Merge:", part)
-              mergeBlock("part", partpath)
-              return false
-            }
-          }
-          break;
+  //---------------------------------------------------------------------------
+  // Check, if scene header is at the beginning of scene block - if not, make
+  // it one.
+  //---------------------------------------------------------------------------
+
+  function checkSceneHdr(hscene, path) {
+    const index = path[path.length-1]
+    const [parent, ppath] = Editor.parent(editor, path)
+
+    //console.log("hscene", parent)
+    if(parent.type === "part") {
+      console.log("FixNesting: Wrapping", path, hscene, "scene")
+      wrapBlock("scene", path)
+      return true
+    }
+    if(index !== 0)  {
+      console.log("FixNesting: Splitting", path, hscene, "scene")
+      wrapBlock("scene", path, ppath)
+      return true
+    }
+    return false
+  }
+
+  //---------------------------------------------------------------------------
+
+  function checkPartHdr(hpart, path) {
+    const index = path[path.length-1]
+    const [parent, ppath] = Editor.parent(editor, path)
+    console.log("hpart", parent)
+
+    if(parent.type === "scene") {
+      wrapBlock("part", path)
+      return true
+    }
+    if(index !== 0)  {
+      wrapBlock("part", path, ppath)
+      return true
+    }
+    return false
+  }
+
+  //---------------------------------------------------------------------------
+  // Ensure, that blocks have correct header element
+  //---------------------------------------------------------------------------
+
+  function checkBlockHeader(block, path, type) {
+    const index = path.slice(-1)[0]
+    const isEmpty = !block.children.length
+    const header = isEmpty ? undefined : block.children[0].type
+    const isFirst = index === (block.type === "part" ? 0 : 1)
+    const [parent, ppath] = Editor.parent(editor, path)
+
+    // Check block parenting
+    //*
+    switch(block.type) {
+      case "part": {
+        if(parent.type === "part" || parent.type === "scene") {
+          liftBlock(path)
+          return true
         }
-        default: {
-          console.log("Wrap[part]:", part)
-          wrapBlock("part", partpath)
-          return false
-        }
+        break;
       }
-
-      //-----------------------------------------------------------------------
-      // Check scenes in parts
-      //-----------------------------------------------------------------------
-      for(const [i, scene] of part.children.entries()) {
-        if(i === 0 && scene.type === "hpart") continue
-        const scenepath = [...partpath, i]
-        //console.log(scenepath, scene)
-
-        switch(scene.type) {
-          case "scene": {
-            if(i === 1) {
-              if(!scene.children.length) {
-                console.log("insertNode[hscene]")
-                Transforms.insertNodes(editor, {type: "hscene", children: [{text:""}]}, {at: [...scenepath, 0]})
-                return false
-              }
-              else if(scene.children[0].type !== "hscene") {
-                console.log("setNodes[hscene]:", scene.children[0])
-                Transforms.setNodes(editor, {type: "hscene"}, {at: [...scenepath, 0]})
-                return false
-              }
-            } else {
-              if(!scene.children.length || scene.children[0].type !== "hscene") {
-                if(canMerge("scene", scenepath)) {
-                  console.log("Merge:", scene)
-                  mergeBlock("scene", scenepath)
-                  return false
-                }
-              }
-            }
-            break;
-          }
-          case "hpart": {
-            console.log("Wrap & Lift[part]:", scene)
-            wrapLiftBlock("part", scenepath, scenepath)
-            return false
-          }
-          default: {
-            console.log("Wrap[scene]:", scene)
-            wrapBlock("scene", scenepath)
-            return false
-          }
+      case "scene": {
+        if(parent.type === "scene") {
+          liftBlock(path)
+          return true
         }
-
-        //---------------------------------------------------------------------
-        // Check paragraphs in scenes
-        //---------------------------------------------------------------------
-
-        for(const [i, para] of scene.children.entries()) {
-          if(i === 0 && para.type === "hscene") continue
-          const parapath = [...scenepath, i]
-          //console.log(parapath, para)
-
-          switch(para.type) {
-            case "hscene": {
-              console.log("Wrap & Lift:", para)
-              wrapLiftBlock("scene", parapath, scenepath)
-              return false
-            }
-            case "hpart": {
-              console.log("Lift:", para)
-              liftBlock(parapath);
-              return false
-            }
-          }
-        }
+        break;
       }
     }
-    return true;
+    /**/
+
+    //console.log("Block", isEmpty, header, path, block)
+
+    if(isFirst) {
+      //console.log("First")
+      if(isEmpty) {
+        Transforms.insertNodes(editor, {type, children: [{text:""}]}, {at: [...path, 0]})
+        return true;
+      }
+      else if(header !== type) {
+        Transforms.setNodes(editor, {type}, {at: [...path, 0]})
+        return true
+      }
+      return false
+    }
+
+    if(header !== type) {
+      //console.log("Merging", path)
+      mergeBlock(block.type, path)
+      return true
+    }
+
+    return false
   }
+
+  //---------------------------------------------------------------------------
 
   function liftBlock(at) {
     Transforms.liftNodes(editor, {at})
