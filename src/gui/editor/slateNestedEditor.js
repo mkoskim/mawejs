@@ -792,19 +792,12 @@ export function section2edit(section) {
   }
 
   function elem2edit(elem) {
-    const {type, id, children} = elem;
+    const {type} = elem;
 
-    switch(type) {
-      case "br": return {
-        type: "p",
-        id,
-        children
-      }
-    }
+    if(type !== "br") return elem
     return {
-      type,
-      id,
-      children
+      ...elem,
+      type: "p"
     }
   }
 }
@@ -879,17 +872,7 @@ function edit2scene(scene, lookup) {
 // Update paragraph
 
 function edit2paragraph(elem, lookup) {
-
-  const {id, type} = elem
-  const text = Node.string(elem)
-
-  //console.log(elem)
-
-  return checkClean({
-    type: type === "p" && text === "" ? "br" : type,
-    id,
-    children: [{type: "text", text}],
-  }, lookup)
+  return checkClean(elem, lookup)
 }
 
 function checkClean(elem, lookup) {
@@ -897,6 +880,8 @@ function checkClean(elem, lookup) {
 
   if(lookup.has(id)) {
     const orig = lookup.get(id)
+
+    if(elem === orig) return orig
 
     if(cmpType(elem, orig)) switch(elem.type) {
       case "part":
@@ -945,6 +930,7 @@ function cmpType(elem, orig) {
 }
 
 function cmpList(a, b) {
+  if(a === b) return true
   if(a.length !== b.length) return false
   return a.every((elem, index) => elem === b[index])
 }
