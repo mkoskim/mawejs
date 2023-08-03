@@ -16,7 +16,6 @@ import React, {
 } from "react"
 
 import isHotkey from 'is-hotkey';
-import { nanoid } from "../../document/util";
 
 import { styled } from '@mui/material/styles';
 import { theme } from "./theme";

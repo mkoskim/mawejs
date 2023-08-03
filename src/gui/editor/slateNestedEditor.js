@@ -20,8 +20,9 @@ import {
 
 import { withHistory } from "slate-history"
 import { addClass, Icon } from '../common/factory';
-import { sleep, uuid, nanoid, splitByLeadingElem } from '../../util';
-import {section2flat, section2lookup, wcElem, wordcount} from '../../document/util';
+import { sleep, nanoid } from '../../util';
+import {section2lookup, wcElem} from '../../document/util';
+import isHotkey from 'is-hotkey';
 
 //-----------------------------------------------------------------------------
 //
@@ -51,41 +52,63 @@ import {section2flat, section2lookup, wcElem, wordcount} from '../../document/ut
 //
 //*****************************************************************************
 
-function renderElement({element, ...props}) {
+function searchOffsets(text, re) {
+  return Array.from(text.matchAll(re)).map(match => match["index"])
+}
+
+export function text2Regexp(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+}
+
+function searchPattern(text, opts = "gi") {
+  if(!text) return undefined
+  return new RegExp(text2Regexp(text), opts)
+}
+
+function renderElement({element, attributes, children}) {
+
+  const {folded} = element
 
   switch (element.type) {
-    case "part": return <div className="part" {...props}/>
-    case "scene": return <div className="scene" {...props} />
+    case "part": return <div className={addClass("part", folded ? "folded" : "")} {...attributes}>{children}</div>
+    case "scene": return <div className={addClass("scene", folded ? "folded" : "")} {...attributes}>{children}</div>
 
-    case "hpart": return <h5 {...props}/>
-    case "hscene": return <h6 {...props}/>
+    case "hpart": return <h5 {...attributes}>{children}</h5>
+    case "hscene": return <h6 {...attributes}>{children}</h6>
 
     case "comment":
     case "missing":
     case "synopsis":
-      return <p className={element.type} {...props}/>
+      return <p className={element.type} {...attributes}>{children}</p>
 
     case "p":
     default: break;
   }
 
   if (Node.string(element) === "") {
-    return <div className="emptyline" {...props}/>
+    return <div className="emptyline" {...attributes}>{children}</div>
   }
-  return <p {...props}/>
+  return <p {...attributes}>{children}</p>
 }
 
 function renderLeaf({ leaf, attributes, children}) {
   return <span
     className={leaf.highlight ? "highlight" : undefined}
     {...attributes}
-    >
-      {children}
-    </span>
+  >{children}</span>
 }
 
 export function SlateEditable({className, highlight, ...props}) {
   //console.log("Search:", search)
+
+  const editor = useSlate()
+
+  const onKeyDown = useCallback(event => {
+    if (isHotkey("alt+f", event)) {
+      event.preventDefault()
+      toggleFold(editor)
+    }
+  }, [editor])
 
   const re = useMemo(() => searchPattern(highlight), [highlight])
 
@@ -116,21 +139,31 @@ export function SlateEditable({className, highlight, ...props}) {
     renderElement={renderElement}
     renderLeaf={renderLeaf}
     decorate={highlighter}
+    onKeyDown={onKeyDown}
     {...props}
   />
 }
 
-function searchOffsets(text, re) {
-  return Array.from(text.matchAll(re)).map(match => match["index"])
-}
+//-----------------------------------------------------------------------------
 
-export function text2Regexp(text) {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
-}
+function toggleFold(editor) {
+  const { selection } = editor
 
-function searchPattern(text, opts = "gi") {
-  if(!text) return undefined
-  return new RegExp(text2Regexp(text), opts)
+  if(!selection) return
+  if(!Range.isCollapsed(selection)) return
+
+  const { anchor } = selection
+  //const [node, path] = Editor.node(editor, anchor)
+  //console.log("Toggle fold", path, node)
+
+  const [node, path] = Editor.above(editor, {
+    at: anchor,
+    match: n => Element.isElement(n) && (n.type === "scene" || n.type === "part"),
+  })
+
+  console.log("Parent:", node)
+  const {folded} = node
+  Transforms.setNodes(editor, {folded: !folded}, {at: path})
 }
 
 //*****************************************************************************
@@ -394,6 +427,26 @@ export function getEditor() {
     withMarkup,
     withReact,
   ].reduce((editor, func) => func(editor), undefined)
+}
+
+//-----------------------------------------------------------------------------
+// Folding support
+//-----------------------------------------------------------------------------
+
+const withFolding = editor => {
+  const { isVoid } = editor
+
+  editor.isVoid = element => {
+    switch(element.type) {
+      case "part":
+      case "scene":
+        return element.folded
+      default: break;
+    }
+    return isVoid(element)
+  }
+
+  return editor
 }
 
 //-----------------------------------------------------------------------------
@@ -794,11 +847,8 @@ export function section2edit(section) {
   function elem2edit(elem) {
     const {type} = elem;
 
-    if(type !== "br") return elem
-    return {
-      ...elem,
-      type: "p"
-    }
+    if(type === "br") return {...elem, type: "p"}
+    return elem
   }
 }
 
