@@ -5,7 +5,7 @@ This is my mawe (My/Markus Advanced Writer's Editor) implemented with ElectronJS
 
 ## React Dev Tools
 
-Download special React DevTools from this link, and save it to mawejs/local/ folder.
+Download special React DevTools from this link, make mawejs/local/ReactDevTools/ folder and save zip there.
 
 https://github.com/facebook/react/issues/25843#issuecomment-1406766561
 
