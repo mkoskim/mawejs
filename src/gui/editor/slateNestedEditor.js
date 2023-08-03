@@ -619,7 +619,7 @@ function withFixNesting(editor) {
     if(Editor.isEditor(node)) return normalizeNode(entry)
     if(!Element.isElement(node)) return normalizeNode(entry)
 
-    console.log("Fix:", path, node)
+    //console.log("Fix:", path, node)
 
     switch(node.type) {
       // Paragraph styles come first
@@ -708,7 +708,7 @@ function withFixNesting(editor) {
 
     if(!index) return false
 
-    console.log("wrap hpart")
+    //console.log("wrap hpart")
     wrapBlock("part", path)
     //Editor.withoutNormalizing(editor, () => wrapLiftBlock("part", path))
     //Transforms.insertNodes(editor, {type: "p", children: [{text:""}]}, {at: Editor.after(editor, path)})
@@ -729,7 +729,7 @@ function withFixNesting(editor) {
 
     if(hdrtype === type) return false
 
-    console.log("Wrong header", path, block, hdrtype, isEmpty)
+    //console.log("Wrong header", path, block, hdrtype, isEmpty)
 
     //if(isFirst || !canMerge(type, path)) {
     if(isFirst) {
