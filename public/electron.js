@@ -118,7 +118,7 @@ app.whenReady().then(async () => {
     console.log("Error:", e)
   }
   createWindow();
-  globalShortcut.register('CommandOrControl+Q', () => { app.quit() });
+  //globalShortcut.register('CommandOrControl+Q', () => { app.quit() });
 });
 
 app.on("window-all-closed", () => {

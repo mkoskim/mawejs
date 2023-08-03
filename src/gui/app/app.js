@@ -44,6 +44,7 @@ import { Chart } from "../chart/chart"
 import { mawe } from "../../document"
 
 import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
+import { appQuit } from "../../system/host"
 
 //-----------------------------------------------------------------------------
 
@@ -97,6 +98,12 @@ export default function App(props) {
     _setMode("editor")
     _setFocusTo(value)
   }, [])
+
+  //---------------------------------------------------------------------------
+
+  useEffect(() => addHotkeys({
+    "mod+q": (e) => appQuit(),
+  }));
 
   //---------------------------------------------------------------------------
   // TODO: Improve doc architecture!!!
@@ -185,6 +192,7 @@ function WorkspaceTab({ mode, doc, setDoc }) {
           <MenuItem onClick={e => { onSaveFileAs(cbprops); popupState.close(e); }}>Save As...</MenuItem>
           <MenuItem onClick={popupState.close}>Revert</MenuItem>
           <MenuItem onClick={e => { onOpenFolder(cbprops); popupState.close(e); }}>Open Folder</MenuItem>
+          <MenuItem onClick={e => { appQuit(); popupState.close(e); }}>Exit</MenuItem>
         </Menu>
       </React.Fragment>
       }</PopupState>

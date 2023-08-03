@@ -389,30 +389,11 @@ export function getEditor() {
   return [
     createEditor,
     withHistory,
-    withMarkup,
     withFixNesting,
     withIDs,
+    withMarkup,
     withReact,
-    withDebugging,
   ].reduce((editor, func) => func(editor), undefined)
-}
-
-//-----------------------------------------------------------------------------
-// Debugging
-//-----------------------------------------------------------------------------
-
-function withDebugging(editor) {
-  const { normalizeNode } = editor;
-
-  /*
-  editor.normalizeNode = entry => {
-    const [node, path] = entry
-    console.log("Normalize:", path)
-    return normalizeNode(entry)
-  }
-  /**/
-
-  return editor
 }
 
 //-----------------------------------------------------------------------------

@@ -8,6 +8,7 @@
 
 module.exports = { ipcDispatch }
 
+const hostapp = require("./hostapp")
 const hostfs = require("./hostfs");
 const dialog = require("./hostdialog");
 
@@ -17,6 +18,13 @@ function ipcDispatch(channel, params, browserWindow) {
   //console.log("IPC:", channel, cmd, args)
 
   switch(channel) {
+    case "host": {
+      switch(cmd) {
+        case "quit": return hostapp.quit()
+        default: break;
+      }
+      throw Error(`IPC: ${channel}/${cmd}: Not implemented.`);
+    }
     case "hostfs": {
       switch(cmd) {
         case "fstat": return hostfs.fsGetFileEntry(...args);
