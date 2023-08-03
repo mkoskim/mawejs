@@ -23,23 +23,65 @@ import { addClass, Icon } from '../common/factory';
 import { sleep, uuid, nanoid, splitByLeadingElem } from '../../util';
 import {section2flat, section2lookup, wcElem, wordcount} from '../../document/util';
 
+//-----------------------------------------------------------------------------
+//
+// Short description of buffer format:
+//
+// children = [
+//  part: [
+//    hpart (part header/name)
+//    scene: [
+//      hscene (scene header/name)
+//      paragraph
+//      paragraph
+//      ...
+//    ]
+//    scene
+//    scene
+//  ]
+//  part
+//  part
+//]
+//
+//-----------------------------------------------------------------------------
+
 //*****************************************************************************
 //
-// Rendering
+// Buffer rendering
 //
 //*****************************************************************************
 
-function searchOffsets(text, re) {
-  return Array.from(text.matchAll(re)).map(match => match["index"])
+function renderElement({element, ...props}) {
+
+  switch (element.type) {
+    case "part": return <div className="part" {...props}/>
+    case "scene": return <div className="scene" {...props} />
+
+    case "hpart": return <h5 {...props}/>
+    case "hscene": return <h6 {...props}/>
+
+    case "comment":
+    case "missing":
+    case "synopsis":
+      return <p className={element.type} {...props}/>
+
+    case "p":
+    default: break;
+  }
+
+  if (Node.string(element) === "") {
+    return <div className="emptyline" {...props}/>
+  }
+  return <p {...props}/>
 }
 
-export function text2Regexp(text) {
-  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
-}
-
-function searchPattern(text, opts = "gi") {
-  if(!text) return undefined
-  return new RegExp(text2Regexp(text), opts)
+function renderLeaf({ leaf, attributes, children}) {
+  return <span
+    className={leaf.highlight ? "highlight" : undefined}
+    {...attributes}
+    >
+      {children}
+    </span>
 }
 
 export function SlateEditable({className, highlight, ...props}) {
@@ -78,37 +120,17 @@ export function SlateEditable({className, highlight, ...props}) {
   />
 }
 
-function renderElement({element, ...props}) {
-
-  switch (element.type) {
-    case "part": return <div className="part" {...props}/>
-    case "scene": return <div className="scene" {...props} />
-
-    case "hpart": return <h5 {...props}/>
-    case "hscene": return <h6 {...props}/>
-
-    case "comment":
-    case "missing":
-    case "synopsis":
-      return <p className={element.type} {...props}/>
-
-    case "p":
-    default: break;
-  }
-
-  if (Node.string(element) === "") {
-    return <div className="emptyline" {...props}/>
-  }
-  return <p {...props}/>
+function searchOffsets(text, re) {
+  return Array.from(text.matchAll(re)).map(match => match["index"])
 }
 
-function renderLeaf({ leaf, attributes, children}) {
-  return <span
-    className={leaf.highlight ? "highlight" : undefined}
-    {...attributes}
-    >
-      {children}
-    </span>
+export function text2Regexp(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+}
+
+function searchPattern(text, opts = "gi") {
+  if(!text) return undefined
+  return new RegExp(text2Regexp(text), opts)
 }
 
 //*****************************************************************************
@@ -530,18 +552,6 @@ function withMarkup(editor) {
       return deleteBackward(...args)
     }
 
-    /*
-    // Don't remove scene, if it is the first one after part break
-    if(node.type === "scene") {
-      const prev = Editor.previous(editor, {at: path})
-      if(prev && prev[0].type === "part") {
-        const next = Editor.next(editor, {at: path})
-        if(!next || next[0].type === "scene") return deleteBackward(...args)
-        return
-      }
-    }
-    */
-
     // Remove formatting
     Transforms.setNodes(editor, {type: 'p'})
     return
@@ -596,10 +606,7 @@ function withIDs(editor) {
 }
 
 //-----------------------------------------------------------------------------
-// Ensure, that:
-// 1) Top level is formed from parts
-// 2) Parts are formed from: (1) heading, and (2) list of scenes
-// 3) Scenes have heading at front
+// Try to maintain buffer integrity:
 //-----------------------------------------------------------------------------
 
 function withFixNesting(editor) {
@@ -609,34 +616,47 @@ function withFixNesting(editor) {
   editor.normalizeNode = entry => {
     const [node, path] = entry
 
-    //console.log("Check:", path, node)
-
     if(Editor.isEditor(node)) return normalizeNode(entry)
     if(!Element.isElement(node)) return normalizeNode(entry)
 
-    console.log("FixNesting:", path, node)
+    console.log("Fix:", path, node)
 
     switch(node.type) {
       // Paragraph styles come first
-      case "hscene":
-        //if(checkParent(node, path, "scene")) return
-        if(checkSceneHdr(node, path)) return;
-        break;
       case "hpart":
-        //if(checkParent(node, path, "part")) return
+        if(checkParent(node, path, "part")) return
         if(checkPartHdr(node, path)) return
+        break;
+      case "hscene":
+        if(checkParent(node, path, "scene")) return
+        if(checkSceneHdr(node, path)) return;
         break;
       default:
         if(checkParent(node, path, "scene")) return
         break;
 
       // Block styles come next
-      case "scene":
-        if(checkBlockHeader(node, path, "hscene")) return
-        break
-      case "part":
-        if(checkBlockHeader(node, path, "hpart")) return
+      case "part": {
+        const [parent] = Editor.parent(editor, path)
+        if(!Editor.isEditor(parent)) {
+          liftBlock(path)
+          return;
+        }
+        if(checkBlock(node, path, "hpart")) return
         break;
+      }
+      case "scene": {
+        const [parent] = Editor.parent(editor, path)
+        if(Editor.isEditor(parent)) {
+          wrapBlock("part", path)
+          return;
+        } else if(parent.type !== "part") {
+          liftBlock(path)
+          return
+        }
+        if(checkBlock(node, path, "hscene")) return
+        break
+      }
     }
     return
     //return normalizeNode(entry)
@@ -645,14 +665,16 @@ function withFixNesting(editor) {
   return editor
 
   //---------------------------------------------------------------------------
-  // Check, that paragraphs are parented to scenes
+  // Check, that paragraphs are parented to scenes, and scenes are parented to
+  // parts: if not, put it into a scene wrapping and let further processing
+  // merge it.
   //---------------------------------------------------------------------------
 
   function checkParent(node, path, type) {
-    console.log("FixNesting: Check parent", node, path, type)
+    //console.log("FixNesting: Check parent", node, path, type)
     const [parent, ppath] = Editor.parent(editor, path)
     if(parent.type !== type) {
-      console.log("FixNesting: Wrapping", path, node, type)
+      //console.log("FixNesting: Wrapping", path, node, type)
       wrapBlock(type, path)
       return true
     }
@@ -665,93 +687,68 @@ function withFixNesting(editor) {
 
   function checkSceneHdr(hscene, path) {
     const index = path[path.length-1]
-    const [parent, ppath] = Editor.parent(editor, path)
+    //const [parent, ppath] = Editor.parent(editor, path)
 
     //console.log("hscene", parent)
-    if(parent.type === "part") {
-      console.log("FixNesting: Wrapping", path, hscene, "scene")
-      wrapBlock("scene", path)
-      return true
-    }
-    if(index !== 0)  {
-      console.log("FixNesting: Splitting", path, hscene, "scene")
-      wrapBlock("scene", path, ppath)
-      return true
-    }
-    return false
+
+    if(!index) return false
+
+    //console.log("FixNesting: Splitting", path, hscene, "scene")
+    //Editor.withoutNormalizing(editor, () => wrapLiftBlock("scene", path))
+    wrapBlock("scene", path)
+    return true
   }
 
   //---------------------------------------------------------------------------
 
   function checkPartHdr(hpart, path) {
     const index = path[path.length-1]
-    const [parent, ppath] = Editor.parent(editor, path)
-    console.log("hpart", parent)
+    //const [parent, ppath] = Editor.parent(editor, path)
+    //console.log("hpart", parent)
 
-    if(parent.type === "scene") {
-      wrapBlock("part", path)
-      return true
-    }
-    if(index !== 0)  {
-      wrapBlock("part", path, ppath)
-      return true
-    }
-    return false
+    if(!index) return false
+
+    console.log("wrap hpart")
+    wrapBlock("part", path)
+    //Editor.withoutNormalizing(editor, () => wrapLiftBlock("part", path))
+    //Transforms.insertNodes(editor, {type: "p", children: [{text:""}]}, {at: Editor.after(editor, path)})
+    return true
   }
 
   //---------------------------------------------------------------------------
   // Ensure, that blocks have correct header element
   //---------------------------------------------------------------------------
 
-  function checkBlockHeader(block, path, type) {
+  function checkBlock(block, path, type) {
     const index = path.slice(-1)[0]
     const isEmpty = !block.children.length
-    const header = isEmpty ? undefined : block.children[0].type
-    const isFirst = index === (block.type === "part" ? 0 : 1)
+    const hdrpath = [...path, 0]
+    const hdrtype = isEmpty ? undefined : block.children[0].type
+    const isFirst = (block.type === "part" ? !index : index < 2)
     const [parent, ppath] = Editor.parent(editor, path)
 
-    // Check block parenting
-    //*
-    switch(block.type) {
-      case "part": {
-        if(parent.type === "part" || parent.type === "scene") {
-          liftBlock(path)
-          return true
-        }
-        break;
-      }
-      case "scene": {
-        if(parent.type === "scene") {
-          liftBlock(path)
-          return true
-        }
-        break;
-      }
-    }
-    /**/
+    if(hdrtype === type) return false
 
-    //console.log("Block", isEmpty, header, path, block)
+    console.log("Wrong header", path, block, hdrtype, isEmpty)
 
+    //if(isFirst || !canMerge(type, path)) {
     if(isFirst) {
-      //console.log("First")
-      if(isEmpty) {
-        Transforms.insertNodes(editor, {type, children: [{text:""}]}, {at: [...path, 0]})
-        return true;
-      }
-      else if(header !== type) {
-        Transforms.setNodes(editor, {type}, {at: [...path, 0]})
+      if(hdrtype === "scene") {
+        Transforms.setNodes(editor, {type}, {at: [...hdrpath, 0]})
         return true
       }
-      return false
-    }
-
-    if(header !== type) {
-      //console.log("Merging", path)
-      mergeBlock(block.type, path)
+      if(isEmpty) {
+        Transforms.insertNodes(editor, {type, children: [{text:""}]}, {at: hdrpath})
+        return true;
+      }
+      Transforms.setNodes(editor, {type}, {at: hdrpath})
       return true
     }
 
-    return false
+    // Blocks without heading are appended to preceding block
+    //console.log("Merging", path)
+    mergeBlock(block.type, path)
+    return true
   }
 
   //---------------------------------------------------------------------------
@@ -764,10 +761,10 @@ function withFixNesting(editor) {
     Transforms.wrapNodes(editor, {type}, {at})
   }
 
-  function wrapLiftBlock(type, start, end) {
-    const at = { anchor: Editor.start(editor, start), focus: Editor.end(editor, end)}
+  function wrapLiftBlock(type, at) {
+    //const at = { anchor: Editor.start(editor, start), focus: Editor.end(editor, end)}
     Transforms.wrapNodes(editor, {type}, {at})
-    Transforms.liftNodes(editor, {at: start})
+    Transforms.liftNodes(editor, {at})
   }
 
   function canMerge(type, at) {
