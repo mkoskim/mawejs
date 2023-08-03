@@ -543,18 +543,17 @@ function withMarkup(editor) {
     // Beginning of line?
     if(!Point.equals(selection.anchor, Editor.start(editor, path))) return deleteBackward(...args)
 
-    // Merge plain paragraphs to scene
-    if(node.type === "p") {
-      const prev = Editor.previous(editor, {at: path})
-      if(prev && prev[0].type === "scene") {
-        Transforms.setNodes(editor, {type: "scene"})
-      }
-      return deleteBackward(...args)
+    switch(node.type) {
+      case "missing":
+      case "comment":
+      case "synopsis":
+        // Remove formatting
+        Transforms.setNodes(editor, {type: 'p'})
+        return
+      default: break;
     }
 
-    // Remove formatting
-    Transforms.setNodes(editor, {type: 'p'})
-    return
+    return deleteBackward(...args)
   }
 
   return editor
@@ -589,7 +588,7 @@ function withIDs(editor) {
       const [node, path] = block
 
       if(!node.id || ids.has(node.id)) {
-        console.log("ID clash fixed:", path)
+        //console.log("ID clash fixed:", path)
         const id = nanoid()
         Transforms.setNodes(editor, {id}, {at: path})
         ids.add(id)
@@ -613,53 +612,69 @@ function withFixNesting(editor) {
 
   const { normalizeNode } = editor;
 
+  // The order of nodes coming to be normalized is bottom-up:
+  // first comes the text block, then the paragraph block containing the text,
+  // then the scene where paragraph belongs to, then part, and finally the
+  // editor itself.
+
   editor.normalizeNode = entry => {
     const [node, path] = entry
 
-    if(Editor.isEditor(node)) return normalizeNode(entry)
-    if(!Element.isElement(node)) return normalizeNode(entry)
+    if(Text.isText(node)) return normalizeNode(entry)
 
     //console.log("Fix:", path, node)
+
+    if(Editor.isEditor(node)) {
+      const [first, at] = Editor.node(editor, [0, 0])
+      //console.log("First:", first)
+      if(first.type === "hpart") return normalizeNode(entry)
+      //*
+      if(first.type === "scene") {
+        Transforms.unwrapNodes(editor, {at})
+      }
+      Transforms.setNodes(editor, {type: "hpart"}, {at})
+      /**/
+      return
+    }
 
     switch(node.type) {
       // Paragraph styles come first
       case "hpart":
-        if(checkParent(node, path, "part")) return
-        if(checkPartHdr(node, path)) return
+        if(!checkParent(node, path, "part")) return
+        if(!checkHeader(node, path, "part")) return
         break;
       case "hscene":
-        if(checkParent(node, path, "scene")) return
-        if(checkSceneHdr(node, path)) return;
+        if(!checkParent(node, path, "scene")) return
+        if(!checkHeader(node, path, "scene")) return;
         break;
       default:
-        if(checkParent(node, path, "scene")) return
+        if(!checkParent(node, path, "scene")) return
         break;
 
       // Block styles come next
       case "part": {
-        const [parent] = Editor.parent(editor, path)
-        if(!Editor.isEditor(parent)) {
+        if(path.length > 1) {
           liftBlock(path)
           return;
         }
-        if(checkBlock(node, path, "hpart")) return
+        if(!checkBlockHeader(node, path, "hpart")) return
+        if(node.children.length > 1 && !checkFirstHeader(node.children[1], [...path, 1], "hscene")) return
         break;
       }
       case "scene": {
-        const [parent] = Editor.parent(editor, path)
-        if(Editor.isEditor(parent)) {
+        if(path.length < 2) {
           wrapBlock("part", path)
           return;
-        } else if(parent.type !== "part") {
+        } else if(path.length > 2) {
           liftBlock(path)
           return
         }
-        if(checkBlock(node, path, "hscene")) return
+        if(!checkBlockHeader(node, path, "hscene")) return
         break
       }
     }
-    return
-    //return normalizeNode(entry)
+    //return
+    return normalizeNode(entry)
   }
 
   return editor
@@ -673,85 +688,72 @@ function withFixNesting(editor) {
   function checkParent(node, path, type) {
     //console.log("FixNesting: Check parent", node, path, type)
     const [parent, ppath] = Editor.parent(editor, path)
-    if(parent.type !== type) {
-      //console.log("FixNesting: Wrapping", path, node, type)
-      wrapBlock(type, path)
-      return true
-    }
+
+    if(parent.type === type) return true
+
+    //console.log("FixNesting: Wrapping", path, node, type)
+    wrapBlock(type, path)
+    return false
   }
 
   //---------------------------------------------------------------------------
-  // Check, if scene header is at the beginning of scene block - if not, make
-  // it one.
+  // Check, if header is at the beginning of block - if not, make it one.
   //---------------------------------------------------------------------------
 
-  function checkSceneHdr(hscene, path) {
+  function checkHeader(node, path, type) {
     const index = path[path.length-1]
     //const [parent, ppath] = Editor.parent(editor, path)
 
     //console.log("hscene", parent)
 
-    if(!index) return false
+    if(!index) return true
 
     //console.log("FixNesting: Splitting", path, hscene, "scene")
-    //Editor.withoutNormalizing(editor, () => wrapLiftBlock("scene", path))
-    wrapBlock("scene", path)
-    return true
-  }
-
-  //---------------------------------------------------------------------------
-
-  function checkPartHdr(hpart, path) {
-    const index = path[path.length-1]
-    //const [parent, ppath] = Editor.parent(editor, path)
-    //console.log("hpart", parent)
-
-    if(!index) return false
-
-    //console.log("wrap hpart")
-    wrapBlock("part", path)
-    //Editor.withoutNormalizing(editor, () => wrapLiftBlock("part", path))
-    //Transforms.insertNodes(editor, {type: "p", children: [{text:""}]}, {at: Editor.after(editor, path)})
-    return true
+    Editor.withoutNormalizing(editor, () => wrapLiftBlock(type, path))
+    //wrapBlock("scene", path)
+    return false
   }
 
   //---------------------------------------------------------------------------
   // Ensure, that blocks have correct header element
   //---------------------------------------------------------------------------
 
-  function checkBlock(block, path, type) {
-    const index = path.slice(-1)[0]
-    const isEmpty = !block.children.length
-    const hdrpath = [...path, 0]
-    const hdrtype = isEmpty ? undefined : block.children[0].type
-    const isFirst = (block.type === "part" ? !index : index < 2)
-    const [parent, ppath] = Editor.parent(editor, path)
+  function checkBlockHeader(block, path, type) {
 
-    if(hdrtype === type) return false
-
-    //console.log("Wrong header", path, block, hdrtype, isEmpty)
-
-    //if(isFirst || !canMerge(type, path)) {
-    if(isFirst) {
-      if(hdrtype === "scene") {
-        Transforms.setNodes(editor, {type}, {at: [...hdrpath, 0]})
-        return true
-      }
-      if(isEmpty) {
-        Transforms.insertNodes(editor, {type, children: [{text:""}]}, {at: hdrpath})
-        return true;
-      }
-      Transforms.setNodes(editor, {type}, {at: hdrpath})
-      return true
+    if(!block.children.length) {
+      Transforms.removeNodes(editor, {at: path})
+      return false;
     }
 
-    // Blocks without heading are appended to preceding block
-    //console.log("Merging", path)
-    mergeBlock(block.type, path)
-    return true
+    const hdrtype = block.children[0].type
+
+    // Does the block have correct header type?
+    if(hdrtype === type) return true
+
+    if(prevType(path) === block.type) {
+      mergeBlock(block.type, path)
+      return false
+    }
+    return true;
+  }
+
+  function checkFirstHeader(block, path, type) {
+    const hdrtype = block.children[0].type
+
+    // Does the block have correct header type?
+    if(hdrtype === type) return true
+
+    //Transforms.insertNodes(editor, {type, children: [{text:""}]}, {at: [...path, 0]})
+    Transforms.setNodes(editor, {type}, {at: [...path, 0]})
+    return false
   }
 
   //---------------------------------------------------------------------------
+
+  function prevType(at) {
+    const prev = Editor.previous(editor, {at})
+    return prev && prev[0].type
+  }
 
   function liftBlock(at) {
     Transforms.liftNodes(editor, {at})
@@ -765,11 +767,6 @@ function withFixNesting(editor) {
     //const at = { anchor: Editor.start(editor, start), focus: Editor.end(editor, end)}
     Transforms.wrapNodes(editor, {type}, {at})
     Transforms.liftNodes(editor, {at})
-  }
-
-  function canMerge(type, at) {
-    const prev = Editor.previous(editor, {at})
-    return prev && prev[0].type === type
   }
 
   function mergeBlock(type, at) {
