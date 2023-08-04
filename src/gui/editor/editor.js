@@ -38,7 +38,7 @@ import {
   searchFirst, searchForward, searchBackward,
   isAstChange,
 //} from "./slateFlatEditor"
-} from "./slateNestedEditor"
+} from "./slateEditor"
 
 import {DocIndex} from "../common/docIndex"
 import {WordTable} from "./wordTable"

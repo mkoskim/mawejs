@@ -30,7 +30,7 @@ import {
 
 import {createWordTable} from "../../document/util";
 //import {text2Regexp} from "./slateFlatEditor"
-import {text2Regexp} from "./slateNestedEditor"
+import {text2Regexp} from "./slateEditor"
 
 //-----------------------------------------------------------------------------
 // Wordtable

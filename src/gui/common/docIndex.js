@@ -173,17 +173,18 @@ class PartItem extends React.PureComponent {
         type={elem.type}
         name={elem.name}
         words={elem.words}
+        folded={elem.folded}
         wcFormat={wcFormat}
         onActivate={onActivate}
         {...dragHandleProps}
       />
-      <SceneDropZone
+      {!elem.folded && <SceneDropZone
         id={elem.id}
         scenes={elem.children}
         include={include}
         wcFormat={wcFormat}
         onActivate={onActivate}
-      />
+      />}
     </div>
   }
 }
@@ -256,11 +257,12 @@ class SceneItem extends React.PureComponent {
       id={elem.id}
       type={elem.type}
       name={elem.name}
+      folded={elem.folded}
       words={elem.words}
       wcFormat={wcFormat}
       onActivate={onActivate}
     />
-    {bookmarks.map(elem => <IndexItem
+    {!elem.folded && bookmarks.map(elem => <IndexItem
       key={elem.id}
       id={elem.id}
       type={elem.type}
@@ -275,7 +277,7 @@ class SceneItem extends React.PureComponent {
 
 class IndexItem extends React.PureComponent {
   render() {
-    const {className, id, type, name, words, wcFormat, onActivate, ...rest} = this.props
+    const {className, id, type, name, folded, words, wcFormat, onActivate, ...rest} = this.props
 
     //console.log("Render IndexItem:", type, id, name)
 
@@ -284,11 +286,13 @@ class IndexItem extends React.PureComponent {
       (type === "section") ? "SectionName" :
       ""
 
+    const foldClass = (folded) ? "Folded" : ""
+
     function onClick(ev) {
       return onActivate && onActivate(id)
     }
 
-    return <HBox className={addClass(className, typeClass, "Entry")} onClick={onClick} {...rest}>
+    return <HBox className={addClass(className, typeClass, foldClass, "Entry")} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       <Filler/>

@@ -132,6 +132,10 @@
   */
 }
 
+.TOC .Entry.Folded {
+  opacity: 33%;
+}
+
 .TOC .Entry:hover {
   background-color: lightgrey;
 }

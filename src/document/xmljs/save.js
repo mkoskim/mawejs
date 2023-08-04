@@ -156,23 +156,25 @@ export function toXML(story) {
   }
 
   function toPart(part) {
-    const {name} = part;
+    const {name, folded} = part;
     return toElem({
       type: "part",
       attributes: {
         name: escape(name),
+        folded: folded ? true : undefined,
       },
       elements: part.children.map(toScene)
     })
   }
 
   function toScene(scene) {
-    const {name} = scene
+    const {name, folded} = scene
 
     return toElem({
       type: "scene",
       attributes: {
         name: escape(name),
+        folded: folded ? true : undefined,
       },
       elements: scene.children.map(doc2js)
     })

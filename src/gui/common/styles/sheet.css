@@ -107,6 +107,76 @@
 }
 
 /* ----------------------------------------------------------------------------
+// Scene & part divs
+// ----------------------------------------------------------------------------
+*/
+
+.Sheet div.part {
+  margin-bottom: 0.5cm;
+  /*
+  border: 1pt dashed gray;
+  padding: 4pt;
+  margin-bottom: 4pt;
+  */
+}
+
+.Sheet div.scene {
+  margin-bottom: 0.5cm;
+  /*
+  border: 1pt dotted lightgray;
+  padding: 4pt;
+  margin-bottom: 4pt;
+  */
+}
+
+/* ----------------------------------------------------------------------------
+// Folding
+// ----------------------------------------------------------------------------
+*/
+
+.Sheet div.folded {
+  margin: 0;
+  margin-left: -4pt;
+  padding-left: 4pt;
+  margin-top: 4pt;
+  margin-bottom: 4pt;
+  /*
+  background: rgb(247, 247, 247);
+  */
+}
+
+.Sheet div.folded::after {
+  margin-left: 6pt;
+  content: "•••";
+  font-size: 10pt;
+  color: grey;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+  padding-right: 4pt;
+  padding-left: 4pt;
+  /*
+  */
+}
+
+.Sheet div.folded h5,
+.Sheet div.folded h6 {
+  display: inline;
+/*
+*/
+}
+
+.Sheet div.fold {
+  display: none;
+  /*
+  user-select: none;
+  background: rgb(247, 247, 247);
+  border: 1pt dotted lightgray;
+  padding: 4pt;
+  margin: 4pt;
+  */
+}
+
+/* ----------------------------------------------------------------------------
 // Sheet Subelements
 // ----------------------------------------------------------------------------
 */
@@ -124,7 +194,7 @@
   font-size: 17pt;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 0.25in;
+  margin-bottom: 1cm;
 }
 
 /* Subtitle */ .Sheet h2 {
@@ -145,68 +215,39 @@
   border-top: 1px dashed LightSteelBlue;
 }
 
+/* ----------------------------------------------------------------------------
+// Part & scene headings
+// ----------------------------------------------------------------------------
+*/
+
 /* Part */ .Sheet h5 {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 11pt;
   font-weight: bold;
   color: #888;
+/*
+  padding-top: 4pt;
+  padding-bottom: 4pt;
   text-align: center;
   margin-top: 0.5cm;
   margin-bottom: 0.5cm;
-/*
-  border: 1pt solid lightgray;
-  border-radius: 6pt;
-  border-top: 1pt dotted gray;
-  border-bottom: 1pt dotted gray;
-  border-top: 1pt dashed gray;
-  font-family: inherit;
-  font-weight: bold;
 */
 }
 
 .Sheet h5::before {
   counter-increment: part;
-/*
-  content: "** ";
-  margin-right: 4pt;
-  content: "** " counter(part, upper-roman);
-  background: #EEE;
-  padding: 2pt;
-  padding-left: 4pt;
-  padding-right: 4pt;
-*/
 }
 
 /* Scene*/ .Sheet h6 {
   font-size: inherit;
   font-weight: bold;
   color: #888;
-  margin-top: 0.5cm;
   /*
-  position: relative;
-  font-size: 11pt;
-  font-family: Arial, Helvetica, sans-serif;
-  font-family: Arial, Helvetica, sans-serif;
-  background: var(--synopsis-bg);
-  color: gray;
-  font-weight: inherit;
-  color:rgb(77, 77, 77);
-  font-weight: bold;
-  font-family: inherit;
-  font-size: inherit;
-  font-size: 11pt;
+  padding-top: 4pt;
+  padding-bottom: 4pt;
+  margin-top: 0.5cm;
   */
 }
-
-/*
-.Sheet h3::before {
-  background: #EEE;
-  padding: 2pt;
-  padding-left: 4pt;
-  padding-right: 4pt;
-  margin-right: 6pt;
-}
-*/
 
 .Sheet h6::before {
   margin-right: 8pt;
@@ -215,69 +256,6 @@
 .Sheet h6::before {
   counter-increment: scene;
   content: counter(scene) ".";
-/*
-  margin-left: -0.5cm;
-  content: "## " counter(scene) ".";
-  position: absolute;
-  left: -0.5cm;
-  content: "#"
-*/
-}
-
-/*
-.Sheet h4 {
-  background: var(--synopsis-bg);
-  color: var(--synopsis-fg);
-}
-
-.Sheet h4::before {
-  content: ">> ";
-  border: 1pt solid gray;
-  border-radius: 4pt;
-  padding: 1pt;
-  padding-left: 4pt;
-  padding-right: 4pt;
-  margin-left: 2pt;
-  margin-right: 4pt;
-  margin-left: -4pt;
-  padding-top: 2pt;
-  padding-bottom: 2pt;
-}
-*/
-
-/* ----------------------------------------------------------------------------
-// Scene & part divs, not yet used
-// ----------------------------------------------------------------------------
-*/
-
-.Sheet div.part {
-  /*
-  border: 1pt dashed gray;
-  padding: 4pt;
-  margin-bottom: 4pt;
-  */
-}
-
-.Sheet div.scene {
-  /*
-  border: 1pt dotted lightgray;
-  padding: 4pt;
-  margin-bottom: 4pt;
-  */
-}
-
-.Sheet div.folded h5,
-.Sheet div.folded h6 {
-  background: rgb(240, 237, 237);
-}
-
-.Sheet div.part.folded h6 {
-  display: none;
-}
-
-.Sheet div.folded p,
-.Sheet div.folded div.emptyline {
-  display: none;
 }
 
 /* ----------------------------------------------------------------------------

@@ -163,21 +163,22 @@ export function fromXML(root) {
   }
 
   function parsePart(part) {
-    const {name} = part.attributes ?? {};
+    const {name, folded} = part.attributes ?? {};
     const children = (part.elements ?? []).map(parseScene)
     const words = wcChildren(children)
 
     return {
       type: "part",
-      name,
       id: nanoid(),
+      name,
+      folded: (folded === "true") ? true : undefined,
       children,
       words,
     }
   }
 
   function parseScene(scene) {
-    const {name} = scene.attributes ?? {};
+    const {name, folded} = scene.attributes ?? {};
     const children = (scene.elements ?? []).map(js2doc).map(elem => ({...elem, words: wcElem(elem)}))
     const words = wcChildren(children)
 
@@ -185,6 +186,7 @@ export function fromXML(root) {
       type: "scene",
       id: nanoid(),
       name,
+      folded: (folded === "true") ? true : undefined,
       children,
       words,
     }
