@@ -189,6 +189,10 @@ function toggleFold(editor) {
   /*/
   const {folded} = node
   Transforms.setNodes(editor, {folded: !folded}, {at: path})
+  if(!folded) {
+    Transforms.select(editor, path)
+    Transforms.collapse(editor)
+  }
   /**/
 }
 
