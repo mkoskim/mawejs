@@ -267,21 +267,8 @@
 }
 
 .Sheet div.folded {
-  background: lightgray;
-  /*
-  */
-}
-
-/*
-.Sheet .folded * {
   display: none;
 }
-
-
-.Sheet .folded h6 {
-  display: block;
-}
-*/
 
 /* ----------------------------------------------------------------------------
 // Sheet Subelements

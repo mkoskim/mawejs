@@ -65,30 +65,40 @@ function searchPattern(text, opts = "gi") {
   return new RegExp(text2Regexp(text), opts)
 }
 
-function renderElement({element, attributes, children}) {
+function renderElement({element, attributes, ...props}) {
 
-  const {folded} = element
+  const {children} = props
+  const {name, type, folded} = element
 
-  switch (element.type) {
-    case "part": return <div className={addClass("part", folded ? "folded" : "")} {...attributes}>{children}</div>
-    case "scene": return <div className={addClass("scene", folded ? "folded" : "")} {...attributes}>{children}</div>
+  switch (type) {
+    case "part":
+      if(!folded) return <div className="part" {...attributes} {...props}/>
+      return <div contentEditable="false" {...attributes}>
+        <p>{name} {children} ...</p>
+        </div>
 
-    case "hpart": return <h5 {...attributes}>{children}</h5>
-    case "hscene": return <h6 {...attributes}>{children}</h6>
+    case "scene":
+      if(!folded) return <div className="scene" {...attributes} {...props}/>
+      return <div contentEditable="false" {...attributes}>
+        <p>{name} {children} ...</p>
+        </div>
+
+    case "hpart": return <h5 {...attributes} {...props}/>
+    case "hscene": return <h6 {...attributes} {...props}/>
 
     case "comment":
     case "missing":
     case "synopsis":
-      return <p className={element.type} {...attributes}>{children}</p>
+      return <p className={element.type} {...attributes} {...props}/>
 
     case "p":
     default: break;
   }
 
   if (Node.string(element) === "") {
-    return <div className="emptyline" {...attributes}>{children}</div>
+    return <div className="emptyline" {...attributes} {...props}/>
   }
-  return <p {...attributes}>{children}</p>
+  return <p {...attributes} {...props}/>
 }
 
 function renderLeaf({ leaf, attributes, children}) {
@@ -147,6 +157,9 @@ export function SlateEditable({className, highlight, ...props}) {
 //-----------------------------------------------------------------------------
 
 function toggleFold(editor) {
+
+  return
+
   const { selection } = editor
 
   if(!selection) return
@@ -162,8 +175,23 @@ function toggleFold(editor) {
   })
 
   console.log("Parent:", node)
-  const {folded} = node
-  Transforms.setNodes(editor, {folded: !folded}, {at: path})
+
+  function getFolded(node) {
+    const {folded} = node
+    if(folded) return folded
+    return {
+      ...node,
+      folded: node,
+      children: [{text:""}],
+    }
+  }
+
+  Editor.withoutNormalizing(editor, () => {
+    Transforms.removeNodes(editor, {at:path})
+    Transforms.insertNodes(editor, getFolded(node), {at: path})
+    Transforms.setSelection(editor, path)
+  })
+  //Transforms.setNodes(editor, {folded: !folded}, {at: path})
 }
 
 //*****************************************************************************
@@ -422,6 +450,7 @@ export function getEditor() {
   return [
     createEditor,
     withHistory,
+    withFolding,
     withFixNesting,
     withIDs,
     withMarkup,
@@ -676,10 +705,12 @@ function withFixNesting(editor) {
       case "hpart":
         if(!checkParent(node, path, "part")) return
         if(!checkHeader(node, path, "part")) return
+        if(!updateParentName(node, path)) return
         break;
       case "hscene":
         if(!checkParent(node, path, "scene")) return
         if(!checkHeader(node, path, "scene")) return;
+        if(!updateParentName(node, path)) return
         break;
       default:
         if(!checkParent(node, path, "scene")) return
@@ -745,6 +776,18 @@ function withFixNesting(editor) {
     //console.log("FixNesting: Splitting", path, hscene, "scene")
     Editor.withoutNormalizing(editor, () => wrapLiftBlock(type, path))
     //wrapBlock("scene", path)
+    return false
+  }
+
+  function updateParentName(node, path) {
+    console.log("Update name:", node, path)
+    const [parent, at] = Editor.parent(editor, path)
+    console.log("- Parent:", parent, at)
+
+    const {name} = parent
+    const text = Node.string(node)
+    if(name === text) return true
+    Transforms.setNodes(editor, {name: text}, {at})
     return false
   }
 
@@ -824,6 +867,7 @@ export function section2edit(section) {
     const {children, type, id, name} = part
     return {
       type: "part",
+      name,
       id,
       children: [
         {type: "hpart", id: nanoid(), children: [{text: name ?? ""}]},
@@ -836,6 +880,7 @@ export function section2edit(section) {
     const {type, id, name, children} = scene
     return {
       type: "scene",
+      name,
       id,
       children: [
         {type: "hscene", id: nanoid(), children: [{text: name ?? ""}]},
@@ -889,16 +934,16 @@ export function updateSection(buffer, section) {
 function edit2part(part, lookup) {
   //console.log(part)
 
-  const {id, children} = part
+  const {id, name, folded, children} = part
 
-  const [head, ...scenes] = children
+  const [head, ...scenes] = folded?.children ?? children
 
   //console.log("Head", head, "Scenes:", scenes)
 
   return checkClean({
     type: "part",
     id,
-    name: Node.string(head),
+    name,
     children: scenes.map(scene => edit2scene(scene, lookup)),
   }, lookup)
 }
@@ -906,15 +951,15 @@ function edit2part(part, lookup) {
 // Update scene
 
 function edit2scene(scene, lookup) {
-  const {id, children} = scene
-  const [head, ...paragraphs] = children
+  const {id, name, folded, children} = scene
+  const [head, ...paragraphs] = folded?.children ?? children
 
   //console.log("Head", head, "Paragraphs:", paragraphs)
 
   return checkClean({
     type: "scene",
     id,
-    name: Node.string(head),
+    name,
     children: paragraphs.map(p => edit2paragraph(p, lookup))
   }, lookup)
 }
