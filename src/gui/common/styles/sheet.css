@@ -266,7 +266,17 @@
   */
 }
 
-.Sheet div.folded {
+.Sheet .folded h5,
+.Sheet .folded h6 {
+  background: rgb(240, 237, 237);
+}
+
+.Sheet .part.folded h6 {
+  display: none;
+}
+
+.Sheet .folded p,
+.Sheet .folded div.emptyline {
   display: none;
 }
 

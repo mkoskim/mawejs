@@ -72,16 +72,10 @@ function renderElement({element, attributes, ...props}) {
 
   switch (type) {
     case "part":
-      if(!folded) return <div className="part" {...attributes} {...props}/>
-      return <div contentEditable="false" {...attributes}>
-        <p>{name} {children} ...</p>
-        </div>
+      return <div className={addClass("part", folded ? "folded" : "")} {...attributes} {...props}/>
 
     case "scene":
-      if(!folded) return <div className="scene" {...attributes} {...props}/>
-      return <div contentEditable="false" {...attributes}>
-        <p>{name} {children} ...</p>
-        </div>
+      return <div className={addClass("scene", folded ? "folded" : "")} {...attributes} {...props}/>
 
     case "hpart": return <h5 {...attributes} {...props}/>
     case "hscene": return <h6 {...attributes} {...props}/>
@@ -176,6 +170,7 @@ function toggleFold(editor) {
 
   console.log("Parent:", node)
 
+  /*
   function getFolded(node) {
     const {folded} = node
     if(folded) return folded
@@ -191,7 +186,10 @@ function toggleFold(editor) {
     Transforms.insertNodes(editor, getFolded(node), {at: path})
     Transforms.setSelection(editor, path)
   })
-  //Transforms.setNodes(editor, {folded: !folded}, {at: path})
+  /*/
+  const {folded} = node
+  Transforms.setNodes(editor, {folded: !folded}, {at: path})
+  /**/
 }
 
 //*****************************************************************************
@@ -450,32 +448,11 @@ export function getEditor() {
   return [
     createEditor,
     withHistory,
-    withFolding,
     withFixNesting,
     withIDs,
     withMarkup,
     withReact,
   ].reduce((editor, func) => func(editor), undefined)
-}
-
-//-----------------------------------------------------------------------------
-// Folding support
-//-----------------------------------------------------------------------------
-
-const withFolding = editor => {
-  const { isVoid } = editor
-
-  editor.isVoid = element => {
-    switch(element.type) {
-      case "part":
-      case "scene":
-        return element.folded
-      default: break;
-    }
-    return isVoid(element)
-  }
-
-  return editor
 }
 
 //-----------------------------------------------------------------------------
@@ -754,6 +731,11 @@ function withFixNesting(editor) {
     //console.log("FixNesting: Check parent", node, path, type)
     const [parent, ppath] = Editor.parent(editor, path)
 
+    if(parent.folded) {
+      Transforms.unsetNodes(editor, "folded", {at: ppath})
+      return false
+    }
+
     if(parent.type === type) return true
 
     //console.log("FixNesting: Wrapping", path, node, type)
@@ -936,7 +918,7 @@ function edit2part(part, lookup) {
 
   const {id, name, folded, children} = part
 
-  const [head, ...scenes] = folded?.children ?? children
+  const [head, ...scenes] = children
 
   //console.log("Head", head, "Scenes:", scenes)
 
@@ -952,7 +934,7 @@ function edit2part(part, lookup) {
 
 function edit2scene(scene, lookup) {
   const {id, name, folded, children} = scene
-  const [head, ...paragraphs] = folded?.children ?? children
+  const [head, ...paragraphs] = children
 
   //console.log("Head", head, "Paragraphs:", paragraphs)
 
