@@ -136,13 +136,13 @@
 
 .Sheet div.folded {
   margin: 0;
+/*
   margin-left: -4pt;
   padding-left: 4pt;
   margin-top: 4pt;
   margin-bottom: 4pt;
-  /*
   background: rgb(247, 247, 247);
-  */
+*/
 }
 
 .Sheet div.folded::after {
@@ -161,19 +161,14 @@
 .Sheet div.folded h5,
 .Sheet div.folded h6 {
   display: inline;
-/*
-*/
+  /*
+  */
 }
 
-.Sheet div.fold {
-  display: none;
-  /*
-  user-select: none;
-  background: rgb(247, 247, 247);
-  border: 1pt dotted lightgray;
-  padding: 4pt;
-  margin: 4pt;
-  */
+.Sheet div.folded p,
+.Sheet div.folded div.emptyline,
+.Sheet .part.folded div.scene {
+  display: none
 }
 
 /* ----------------------------------------------------------------------------

@@ -87,8 +87,6 @@ function renderElement({element, attributes, ...props}) {
     case "hpart": return <h5 {...attributes} {...props}/>
     case "hscene": return <h6 {...attributes} {...props}/>
 
-    case "fold": return <div className="fold" contentEditable={false} {...attributes} {...props}/>
-
     case "comment":
     case "missing":
     case "synopsis":
@@ -292,41 +290,11 @@ function toggleFold(editor) {
 
 //-----------------------------------------------------------------------------
 
-function foldContent(content) {
-  return [{
-    type: "fold",
-    id: nanoid(),
-    children: content
-  }]
-}
-
-function unfoldContent(content) {
-  return content.map(e => e.type === "fold" ? e.children : [e]).flat()
-}
-
 function doFold(editor, node, path, folded) {
 
   if((node.folded ?? false) === folded) return;
 
-  console.log("Folding:", folded, node)
-
-  // Fold
-  if(folded) {
-    Transforms.setNodes(editor, {folded}, {at: path})
-
-    const range =
-      node.children.length > 2
-      ? Editor.range(editor, [...path, 1], [...path, node.children.length-1])
-      : [...path, 1]
-    console.log("- Folding:", range)
-    Transforms.wrapNodes(editor, {type: "fold", id: nanoid()}, {at: range, hanging: true})
-  }
-  // Unfold
-  else {
-    Transforms.unwrapNodes(editor, {at: [...path, 1]})
-
-    Transforms.setNodes(editor, {folded}, {at: path})
-  }
+  Transforms.setNodes(editor, {folded}, {at: path})
 }
 
 //*****************************************************************************
@@ -653,12 +621,6 @@ function withFixNesting(editor) {
       return
     }
 
-    // Don't check fold blocks
-    if(node.type === "fold") return normalizeNode(entry)
-
-    // If element is inside fold block, don't check it
-    if(getParent(editor, path, "fold")) return normalizeNode(entry)
-
     switch(node.type) {
       // Paragraph styles come first
       case "hpart":
@@ -682,7 +644,6 @@ function withFixNesting(editor) {
           return;
         }
         if(!checkBlockHeader(node, path, "hpart")) return
-        if(node.folded) break;
         if(node.children.length > 1 && !checkFirstHeader(node.children[1], [...path, 1], "hscene")) return
         break;
       }
@@ -772,7 +733,6 @@ function withFixNesting(editor) {
 
     const prev = Editor.previous(editor, {at: path})
 
-    console.log("- Previous:", prev)
     if(!prev) return true
     if(prev[0].type !== block.type) return true
 
@@ -811,8 +771,6 @@ export function section2edit(section) {
   function part2edit(part) {
     const {children, type, id, name, folded} = part
 
-    const content = children.map(scene2edit)
-
     return {
       type: "part",
       name,
@@ -820,15 +778,13 @@ export function section2edit(section) {
       folded,
       children: [
         {type: "hpart", id: nanoid(), children: [{text: name ?? ""}]},
-        ...(folded ? foldContent(content) : content)
+        ...children.map(scene2edit)
       ],
     }
   }
 
   function scene2edit(scene) {
     const {type, id, name, children, folded} = scene
-
-    const content = children.map(elem2edit)
 
     return {
       type: "scene",
@@ -837,7 +793,7 @@ export function section2edit(section) {
       folded,
       children: [
         {type: "hscene", id: nanoid(), children: [{text: name ?? ""}]},
-        ...(folded ? foldContent(content) : content)
+        ...children.map(elem2edit)
       ]
     }
   }
@@ -898,7 +854,7 @@ function edit2part(part, lookup) {
     id,
     name,
     folded,
-    children: unfoldContent(scenes).map(scene => edit2scene(scene, lookup)),
+    children: scenes.map(scene => edit2scene(scene, lookup)),
   }, lookup)
 }
 
@@ -915,7 +871,7 @@ function edit2scene(scene, lookup) {
     id,
     name,
     folded,
-    children: unfoldContent(paragraphs).map(p => edit2paragraph(p, lookup))
+    children: paragraphs.map(p => edit2paragraph(p, lookup))
   }, lookup)
 }
 
