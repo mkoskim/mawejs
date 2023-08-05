@@ -366,7 +366,7 @@ function withMarkup(editor) {
       const newtype = STYLEAFTER[node.type]
       Editor.withoutNormalizing(editor, () => {
         Transforms.splitNodes(editor, {always: true})
-        Transforms.setNodes(editor, {type: newtype})
+        Transforms.setNodes(editor, {type: newtype, id: nanoid()})
       })
       return
     }
@@ -777,9 +777,9 @@ export function section2edit(section) {
     children: []
   }]
 
-  const content = parts.map(part2edit)
-  console.log(content)
-  return content
+  const buffer = parts.map(part2edit)
+  //console.log(buffer)
+  return buffer
 
   function part2edit(part, index) {
     const {children, type, id, name, folded} = part

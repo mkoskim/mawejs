@@ -80,7 +80,7 @@ export default function App(props) {
   }
   */
 
-  const [_mode, _setMode] = useState(
+  const [_mode, setMode] = useState(
     "editor"
     //"outliner"
     //"chart"
@@ -89,15 +89,8 @@ export default function App(props) {
 
   const mode = {
     selected: _mode,
-    setSelected: _setMode,
+    setSelected: setMode,
   }
-
-  const [focusTo, _setFocusTo] = useState(undefined)
-
-  const setFocusTo = useCallback(value => {
-    _setMode("editor")
-    _setFocusTo(value)
-  }, [])
 
   //---------------------------------------------------------------------------
 
@@ -141,21 +134,31 @@ export default function App(props) {
   // Use key to force editor state reset when file is changed: It won't work
   // for generated docs (user guide, new doc), but we fix that later.
 
-  const viewprops = { mode, doc, setDoc, focusTo, setFocusTo }
+  const viewprops = { mode, setMode, doc, setDoc }
 
   return (
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
       <VBox className="ViewPort">
         <WorkspaceTab {...viewprops} />
-        <ChooseView key={doc.file?.id} {...viewprops} />
+        <WorkArea key={doc.file?.id} {...viewprops} />
       </VBox>
       </SnackbarProvider>
     </ThemeProvider>
   )
 }
 
-function ChooseView({ mode, doc, setDoc, focusTo, setFocusTo }) {
+//-----------------------------------------------------------------------------
+
+function WorkArea({ mode, setMode, doc, setDoc }) {
+
+  const [focusTo, _setFocusTo] = useState(undefined)
+
+  const setFocusTo = useCallback(value => {
+    setMode("editor")
+    _setFocusTo(value)
+  }, [])
+
   const props = { doc, setDoc, focusTo, setFocusTo }
 
   switch (mode.selected) {
