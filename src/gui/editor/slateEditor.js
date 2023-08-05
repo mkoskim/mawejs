@@ -254,16 +254,31 @@ function onKeyDown(event, editor) {
 //*****************************************************************************
 
 function foldAll(editor, folded) {
-  const matches = Editor.nodes(editor, {
-    at: [],
-    match: n => Element.isElement(n) && n.type === "part"
-  })
+
+  function getParts() {
+    return Editor.nodes(editor, {
+      at: [],
+      match: n => Element.isElement(n) && n.type === "part"
+    })
+  }
+
+  function getFolded() {
+    return Editor.nodes(editor, {
+      at: [],
+      match: n => Element.isElement(n) && n.folded
+    })
+  }
+
+  const matches = folded ? getParts() : getFolded()
+
   for(const [node, path] of matches) {
     doFold(editor, node, path, folded)
   }
 
-  Transforms.select(editor, [0])
-  Transforms.collapse(editor)
+  if(folded) {
+    Transforms.select(editor, [0])
+    Transforms.collapse(editor)
+  }
 }
 
 function toggleFold(editor) {
