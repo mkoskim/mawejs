@@ -9,6 +9,7 @@ STORY: UserGuide
 <body>
 <head>
 <title>User's Guide</title>
+<export type="short" chapterelem="part" chaptertype="separated"/>
 </head>
 <!--/
 ===============================================================================
@@ -19,17 +20,28 @@ STORY: UserGuide
 <p>Either keep reading, or press "Open" or "New" to start a new doc.</p>
 <p>Or do both.</p>
 <p>(At some point of future) User's Guide can be accessed from "Help" button.</p>
-<br/>
+<p/>
 </scene>
 </part>
-<part name="MaweJS">
+<part name="Quick Reference">
+<scene>
+<p>Quick reference of commands, read further if you are new to editor.</p>
+<p>Markup:</p>
+<p>** - start a part</p>
+<p>## - start a scene</p>
+<p>&gt;&gt; - make a synopsis</p>
+<p>// - make a comment</p>
+<p>!! - make a missing piece</p>
+</scene>
+</part>
+<part name="MaweJS: Introduction">
 <scene name="Design Principles">
 <p>As an editor, one thing you might notice right away is the scarciness of formatting options. You may wonder, how you will...</p>
 <p>...change font? Change text or background color?</p>
 <p>...Justify paragraphs? Make them center aligned?</p>
 <p>...apply bold, italic and so on? Make a bulleted list?</p>
 <p>...modify header styles? Heck, why are the headers above _grey_ with small fonts, almost blending in? Why don't they stand out from text?</p>
-<br/>
+<p/>
 <p>You can't do that, not in the way you think.</p>
 <p>MaweJS is not an editor to styling your text.</p>
 <p>MaweJS is not even a WYSIWYG editor!</p>
@@ -38,35 +50,35 @@ STORY: UserGuide
 <scene name="It is the manuscript">
 <p>Keeping the formatting options very scarce is INTENTIONAL!</p>
 <p>Many writers have very bad habit to stay tuning the fonts, their faces, layout, headers and such when you give them an opportunity to do so. The sad thing is that those things do not matter for the publisher - they will anyways use their own fonts and design their own layout once you get your manuscript to be published. That's why many writers are still using editors like Notepad or similar, just to make them to concentrate on the text itself.</p>
-<br/>
+<p/>
 <p>Everything in MaweJS revolves around your manuscript. For that purpose, take a look this editor page. Unlike in Scrivener or similar, you see the entire manuscript in one single page.</p>
 <p>The sole idea is that this draft edit and its content you are reading now is the center of the editor. I have also an idea that everything written to draft editor will be part of your exported draft, thought that principle has certain exceptions:</p>
 <p>1. Part and scene breaks: these need to be visible for writer.</p>
 <p>2. Annotations: synopses, comments and marks for missing text.</p>
 <p>3. Notes section: There needs to be some room to write notes, that are not part of your draft. It is not intended, that you first sketch your story in notes. No, it is intended to be your clipboard to keep things cut out from draft, and a freeform sketch pad when you need one.</p>
 <p>But overall I try to follow that principle. For example, there is no "exclude" feature to exclude parts or scenes from draft, e.g. marking them as comments or notes, invisible or so. Why would you write something to draft, that is not intended to be exported?</p>
-<p>Yes, but I think I need to implement a feature to exclude something from exported draft in the "Export preview" view. The reason for that is that time to time you want to share some parts of your drafts with your peers, for example, just some changed parts. But that will be *export* feature, not *editor* feature.</p>
-<br/>
-<p>It is very unlikely that you can ever embed images to draft. Your publishing editor most probably will not like them at all. Except, of course, if you are writing and drawing a graphic novel, but in this case MaweJS is not exactly made for your needs...</p>
-<p>It is very unlikely, that MaweJS will support text alignment, explicit page breaks and such things. Your publishing editor will probably not like these, except if you are writing poems. But MaweJS is not specifically made to write poems, so it does not fulfill all the needs of poets.</p>
-<p>It is very, very unlikely that draft will ever support tables, super and subscripts, equations and such. Your publishing editor most probably would not like them, too. Except, of course, if you are writing a technical manual, a nonficitional book about something, a scientific analysis or so. But MaweJS is not exactly made for writing such documents and probably can't fulfill all your needs.</p>
-<p>As a general rule, MaweJS will only support document styles and elements that your publishing editor or judge in a writing competition will like to see, and for most parts that means plain text.</p>
-<p>It is slightly possible, that at some point draft editor MAY support bold and italics styles. I personally disregard books that use font styling extensively, but I have also noted that they come handy in certain situations, for example, when writing a story that resembles press article or scientific report, or when story includes such parts. But I need to think hard how I want to support such things.</p>
-<p>MaweJS might support footnotes at some point, they might come handy in certain situations.</p>
-<br/>
-<p>What may happen is that the editor will be integrated to some sort of "wiki" editor. I have some initial ideas to extend notes section so that you can create linkable and taggable pages to it, possibly with images.</p>
-<br/>
+<p>Yes, but to be honest, I think I need to implement a feature to exclude something from exported draft in the "Export preview" view. The reason for that is that time to time you want to share some parts of your drafts with your peers, for example, just some changed parts. But that will be *export* feature, not *editor* feature.</p>
+<p/>
+<p>It is very unlikely that you can ever embed images to draft. Your publishing editor most probably will not like them at all. Except, of course, if you are writing and drawing a graphic novel, but in this case MaweJS is not exactly made for your needs.</p>
+<p>It is very unlikely, that MaweJS will support text alignment, explicit page breaks and such things. Your publishing editor will probably not like these, except if you are the one layouting the text to be published or you are writing poems. But MaweJS is not specifically made to write poems, nor design layouts, so it does not fulfill all the needs of poets.</p>
+<p>It is very, very unlikely that draft will ever support tables, super and subscripts, equations and such. Your publishing editor most probably would not like them. Except, of course, if you are writing a technical manual, a nonficitional book about something, a scientific analysis or so. But MaweJS is not exactly made for writing such documents and probably can't fulfill all your needs.</p>
+<p>As a general rule, MaweJS will only support document styles and elements that your publishing editor or judges in a writing competition will like to see, and for most parts that means plain text.</p>
+<p>It is slightly possible, that at some point draft editor MAY support bold and italics styles. I personally disregard books that use font styling extensively, but I have also noted that they come handy in certain situations, for example, when writing a story that resembles press article or scientific report, or when story includes such parts. But I need to think hard how I want to support such things. Also, MaweJS might support footnotes at some point, they might come handy in certain situations.</p>
+<p/>
 <p>From one point of view, MaweJS is closer to Notepad than to Microsoft Word or Googledocs. MaweJS is sort of "Notepad on steroids" in that sense, that in addition to have bunch of plain text, you can add marks to split it to smaller pieces, and to annotate it. These are two of MaweJS's main purposes:</p>
 <p>1. It is a Notepad editor that allows you to split text to chunks, and to organize (add, move, modify and delete) those text chunks, and</p>
 <p>2. In addition to text itself, it also stores the metatext - comments, descriptions and such - with the text.</p>
-<br/>
+<p/>
+<p>What may happen is that the editor will be integrated to some sort of "wiki" editor. I have some initial ideas to extend notes section so that you can create linkable and taggable pages to it, possibly with images.</p>
 </scene>
 <scene name="MaweJS as Strucured Editor">
 <p>Splitting text to chunks and moving them around makes MaweJS also so called "structured editor". It is not the only one, vice versa, there are many well-known structured editors around for story writers. So, how MaweJS differs from e.g. Scrivener, yWriter or Manuskript?</p>
-<p>One of the main design principles of MaweJS is that you should just start writing, just like opening a Notepad when you come up with an idea. Unlike in many other structured editors, you don't have to make _any_ preparation before starting to write the story itself.</p>
-<p>Instead, the tools are intended to be taken in use _when_ you need them.</p>
-<p>For example: You don't need to create scenes or parts in advance. You split your text to scenes and parts when you feel you need to split your text to smaller, movable pieces. You don't need to describe a scene beforehand: you write descriptions when you need them.</p>
-<br/>
+<p>One of the main design principles of MaweJS is:</p>
+<p>"Just start writing."</p>
+<p>...just like opening a Notepad when you come up with an idea. Unlike in many other structured editors, you don't have to make _any_ preparation before starting to write the story itself.</p>
+<p>Instead, the tools are intended to be taken in use _when_and_only_when_ you need them.</p>
+<p>For example: You don't need to create scenes or parts in advance. You split your text to scenes and parts when you feel you need to split your text to smaller, movable pieces. You don't need to describe a scene beforehand: you write descriptions to scenes when you need them.</p>
+<p/>
 </scene>
 </part>
 <part name="Tutorial">
@@ -78,55 +90,60 @@ STORY: UserGuide
 </scene>
 <scene name="Terminology">
 <p>Terminology, you may skip this now, come back later:</p>
-<br/>
+<p/>
 <p>SECTION: A section is the largest part of text you handle as one. By all its simplicity, it is sort of synonym to a story, although some stories spread over multiple volumes, they are not completed in one section. There are two visible sections here: the "body" you are reading now, which is indexed at left side (&lt;--) and "notes" indexed at right side (--&gt;).</p>
+<p/>
 <p>BODY: In this context, "body" refers to story's active draft, and MaweJS is only meant to write those drafts. The others are "notes" and (in future) "version" / "versions".</p>
+<p/>
 <p>NOTES: "Notes" is a section shared by all versions (including body) of a story. It holds all the stuff not included to draft.</p>
+<p/>
 <p>VERSION: (Future) "Version" means an archived body. Body and versions are all drafts: "body" is the active one you write, "versions" are the older ones you want to keep for later use. For example: a version can be your earlier completed draft when you are writing a new one. It can also be the version of your draft you sent to a particular writing competition, or the one sent to certain publisher. It can also be a translation of your draft.</p>
-<br/>
+<p/>
 <p>Sections are split to smaller pieces.</p>
-<br/>
-<p>SCENE: Scene is smallest undividable piece of text, the fundamental building block for a story. The basic definition of a scene is that if its content is splitted and mixed randomly within a text, those two parts do not make sense anymore. Text written inside a scene will always move together.</p>
-<p>IMPORTANT: In the end, a story is a carefully crafted sequence of scenes. That is where we concentrate on, and let me repeat it: "Story is carefully crafted sequence of scenes." - What MaweJS is all about is just to write and organize scenes in good order to make a story. Everything outside crafting and organizing scene sequence is outside of its scope.</p>
-<br/>
-<p>BOOKMARK: A scene can be injeted by "synopsis", "missing" and "comment" lines. These lines get their entry in index, but you can't move them out from a scene. So, what if you need to move them? Split the scene. As easy as that.</p>
-<br/>
+<p/>
+<p>SCENE: Scene is smallest undividable piece of text, the fundamental building block for a story. The basic definition of a scene is that if its content is splitted and mixed randomly within a text, those parts do not make sense anymore. Text written inside a scene will always move together.</p>
+<p>VERY IMPORTANT! In the end, a story is a carefully crafted sequence of scenes. That is where we concentrate on, and let me repeat it: "Story is carefully crafted sequence of scenes." - What MaweJS is all about is just to write and organize scenes in good order to make a story. Everything outside crafting and organizing scene sequence is outside of its scope.</p>
+<p/>
+<p>BOOKMARK: A scene can be injected by "synopsis", "missing" and "comment" lines. These lines get their entry in index, but you can't move them out from a scene. What if you need to move them? Split the scene. As easy as that.</p>
+<p/>
 <p>PART: Part is an element collecting several logically related scenes together. It is now called part just for historical reasons. We might need to rename it to "chapter" or simply a "group".</p>
-<p>Whenever you want some scenes to move together, place them into same part. Unlike scenes, parts are generally more "stable" pieces, it seldomly makes any sense to move them around: instead, you move scenes between parts. But - if you need, you can move parts, too, and you can create temporary parts to collect scenes to move around.</p>
+<p>Whenever you want some scenes to move together, place them into same part. Unlike scenes, parts are generally more "stable" pieces, it seldomly makes any sense to move them around: instead, you move scenes between parts. But - if you need, you can move parts, too, and you can always create temporary parts to collect scenes to move around.</p>
 <p>As creating scenes and parts are easy, you can easily make temporary parts, move some scenes to it, move them around and then move scenes outside of the part and delete the temporarily created part.</p>
-<br/>
+<p/>
 <p>SUMMARY: "Body" and "Notes" are sections. Sections are made of parts. Parts are made of scenes. Scenes can be injected with bookmarks: missing, comment and synopses.</p>
-<br/>
+<p/>
 </scene>
 <scene name="UI Basics">
-<p>&lt;-- At left: body index. At right: notes index. --&gt;</p>
-<br/>
+<p>&lt;--Left: body index. Right: notes index. --&gt;</p>
+<p/>
 <p>*Try it yourself:* clicking index takes you to different sections, parts, scenes and bookmarks.</p>
-<br/>
-<p>There are two horisontal toolbars at the top. The topmost has overall controls like mnu for loading and saving files, and switching views. The one below it has controls for this view, for example change what is included in index and how word counts are shown.</p>
-<br/>
-<p>*Try it yourself:* Click "missing" text pieces visible to index. Change the word count format.</p>
-<br/>
-<p>*Try it yourself:* At the topmost toolbar, switch between editor, outliner and export preview.</p>
+<p/>
+<p>There are two horisontal toolbars at the top. The topmost has overall controls like menu for loading and saving files, and switching views. The one below it has controls for this view, for example change what is included in index and how word counts are shown.</p>
+<p/>
+<p>*Try it yourself:* Click "Show missing" icon to make missing text visible to index.</p>
+<p>Change the word count format.</p>
+<p/>
+<p>*Try it yourself:* At the topmost toolbar, switch between editor, outliner, chart and export preview.</p>
 </scene>
 <scene name="Scenes: Splitting text">
 <p>The main feature of MaweJS is to split large text chunk to more manageable pieces. Unlike you think, a scene break is not a header:</p>
 </scene>
-<scene name="--> This is scene break, not a header &lt;---">
+<scene name="--&gt; This is scene break, not a header &lt;---">
 <p>Unlike in conventional unstructured editors - Googledocs, Microsoft Word, Libre Office - in MaweJS we are not really applying styles to text. Parts and scenes are breaks to split text to smaller pieces. All text inside a scene move together. All scenes inside a part move together.</p>
-<p>The scene and part names are only for you, so that you know what the part or scene is all about. It is not exported. Maybe at some point we make a special scene or break to give chapter names.</p>
-<br/>
+<p>The scene and part names are only for you(*), so that you know what the part or scene is all about. It is not exported. Maybe at some point we make a special scene or break to give chapter names.</p>
+<p>(*) Except that there are now an export feature for named chapters, and by choosing it, depending if you make chapters from parts or scenes, it will come visible!</p>
+<p/>
 <p>*Try it yourself:* In the index, try drag items - you will see that scenes move as a one piece, and scenes are moved with parts. Try to reorganize this document.</p>
 </scene>
 <scene name="Try it yourself: Splitting">
 <p>To create scene, type "##" at the beginning of line.</p>
-<br/>
+<p/>
 <p>*Try it yourself:" Below is a buch of text, and a place marked with red where you like to split the text to a new scene:</p>
-<br/>
+<p/>
 <p>...Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 <missing>&lt;-- Type "##" + space bar</missing>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum...</p>
-<br/>
+<p/>
 <p>To reset the line back to normal text, press backspace at the beginning of the line. Try it yourself:</p>
 </scene>
 <scene name="&lt;-- Press backspace">
@@ -135,25 +152,25 @@ STORY: UserGuide
 <scene name="Scene numbering">
 <p>Take a look to the main index at left.</p>
 <p>You will notice that scene numbers are coutinuous, not resetted at part breaks.</p>
-<p>Scene is not something like "2.3", "third scene in second part", but instead your entire story is built up from the sequence of scenes. In a big picture, you will be much more interested in how many scenes your story has, than how many parts it has or how many scenes there is in one particular part.</p>
+<p>Scene is not something like "2.3", "third scene in second part", but instead your entire story is built up from the sequence of scenes. In a big picture, you will be much more interested in how many and how long scenes your story has, than how many parts it has or how many scenes there is in one particular part.</p>
 <p>Similarly, parts are not numbered. It is up to you, how many parts you like to have in your story. Depending of your story, you may use parts to make visual clues in your exported draft.</p>
-<br/>
+<p/>
 <p>How many parts your story has, or how many scenes there are in specific part, those things are entirely up to you.</p>
 <p>Some writers write long scenes, some write smaller. Some writers compose stories from many small scenes, some compose their stories from fewer and larger scenes, some writers have lots of large scenes.</p>
 </scene>
 <scene name="Bookmarks">
-<p>In addition to plain text, there are three types of elements you can place inside scenes:</p>
-<br/>
+<p>In addition to plain text and scene breaks, there are three types of elements you can place inside scenes:</p>
+<p/>
 <p>MISSING: Mark to indicate that something is missing at this point. You may have questions, you may have some hard parts that need more time for resolving, and so on. Remember that:</p>
 <missing>Missing texts ARE INCLUDED to draft! The sole idea is that you get rid of all missing pieces!</missing>
 <p>That is why you don't want them to exist in your final draft anymore! Your goal is that all the hard parts are resolved.</p>
 <p>Exporting missing is also useful, when you share your incomplete manuscript with fellow writers or your editor, so that they can see that there are some missing parts in the text.</p>
-<br/>
+<p/>
 <p>COMMENT: Comment is note to yourself.</p>
 <comment>Comments ARE NOT exported to draft.</comment>
 <comment>They are only for you.</comment>
 <p>You can leave them to your final draft, if you like. Comments are things to remind you about what you done, how you resolved issues and such, so that when you need to come back to your draft you remember what it was about.</p>
-<br/>
+<p/>
 <p>SYNOPSIS: Synopsis line is a bulleted list item for your scene. When outlining a scene, you list things that happens in that particular scene, and for that purpose you use synopsis lines.</p>
 <p>As an example, take a look for the following scene and how it looks in the index:</p>
 </scene>
@@ -167,7 +184,7 @@ STORY: UserGuide
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum...</p>
 <synopsis>Albert leaves the room devastated</synopsis>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum...</p>
-<br/>
+<p/>
 <p>Look at the index left, and you probably got the idea. You have a scene, and you have a list of events happening in that scene.</p>
 <p>Try also buttons controlling the visibility of elements. You see how you can set missing text and comments visible and invisible. You can also take off both synopsis and scenes from index. You can also try clicking the items in the index to take you to the chosen line.</p>
 </scene>
@@ -180,10 +197,10 @@ STORY: UserGuide
 <p>&lt;-- Type "!!" + spacebar to change this line to missing text. Missing uses red color and exclamation mark.</p>
 <p>&lt;-- Type "//" + spacebar to change this line to comment. Comments use green color and slash, common to many programming languages.</p>
 <p>&lt;-- Type "&gt;&gt;" + spacebar to change this line to synopsis.</p>
-<br/>
+<p/>
 <p>Changing formats:</p>
 <comment>&lt;-- Type "!!" + spacebar to change this comment to missing, or "&gt;&gt;" to change the line to synopsis. Type "//" + spacebar to change the line back to comment.</comment>
-<br/>
+<p/>
 <p>Resetting formats:</p>
 <comment>&lt;-- Press backspace at the beginning of the line to remove format.</comment>
 <comment>If the line is empty, pressing ENTER will remove the formatting. Try pressing enter on the line below:</comment>
@@ -196,19 +213,19 @@ STORY: UserGuide
 </scene>
 <scene name="Word Counts">
 <p>Word counts and their intendended purposes.</p>
-<br/>
+<p/>
 <p>OFF: No word counts.</p>
-<br/>
+<p/>
 <p>NUMBERS: This is pretty self-explanatory. You can see the word counts of individual scenes, as well as summed counts for parts. In the toolbar, exclude scenes from index: you will only see the accumulated word counts for parts.</p>
-<br/>
+<p/>
 <p>PERCENTAGE: Percentage count is similar to plain numbers, but it may show you better where your main chunks of text is located.</p>
-<br/>
+<p/>
 <p>CUMULATIVE: Cumulative percentage allows you to track the progression of your story. It can be helpful, if you utilize some story structures, like Blake Snyder's "Beat Sheet" or K. M. Weiland's character arcs. For example, Weiland divides the story to three parts:</p>
 <p>(1) Act I at 0-25%,</p>
 <p>(2) Act II at 25-75%, with midpoint at around 50%, and</p>
 <p>(3) Act III at 75-100%.</p>
 <p>With cumulative word count you can identify, where your story points are.</p>
-<br/>
+<p/>
 </scene>
 </part>
 <part name="Search &amp; Replace">
@@ -229,9 +246,9 @@ STORY: UserGuide
 <p>IAmLookingFor</p>
 <p>IAmLookingForIAmLookingFor</p>
 <p>IAmLookingFor</p>
-<br/>
+<p/>
 <p>Press Ctrl-G (Find next). That will take you to the next match. To go backwards, press Shift-Ctrl-G (find previous). The easiest way to do this is to keep your left hand on Ctrl-G, and press right shift with your right hand. Try it out few times.</p>
-<br/>
+<p/>
 </scene>
 <scene name="Replacing">
 <p>The easiest way to find &amp; replace is:</p>
@@ -241,13 +258,14 @@ STORY: UserGuide
 <p>(4) overwrite it,</p>
 <p>(5) select your overwrite and copy that (Ctrl-C), and</p>
 <p>(6) go through your document with Ctrl-G / Shift-Ctrl-G (search forward / backward) and pressing Ctrl-V (paste) to replace text.</p>
-<br/>
+<p/>
 <p>So:</p>
 <p>(1) Select this --&gt; IAmReplacingThis &lt;--</p>
 <p>(2) Press Ctrl-F to make it a search text.</p>
-<p>(3) Press ENTER to replace it with e.g. "something".</p>
-<p>(4) Select what you wrote as replacement.</p>
-<p>(5) Copy it to clipboard with Ctrl-C.</p>
+<p>(3) Press ENTER to come back to selection</p>
+<p>(4) Replace it with e.g. "something".</p>
+<p>(5) Select what you wrote as replacement.</p>
+<p>(6) Copy it to clipboard with Ctrl-C.</p>
 <p>Press Ctrl-G / Shift-Ctrl-G to go through matches, and press Ctrl-V (paste) to replace the match. Try it out here:</p>
 <p>iamreplacingthis IAMREPLACINGTHIS</p>
 <p>IAmReplacingThis IAMreplacingTHIS</p>
@@ -255,9 +273,9 @@ STORY: UserGuide
 <p>IAmReplacingThisIAmReplacingThis</p>
 <p>IAmReplacingThis IAmReplacingThis</p>
 <p>IAmReplacingThis</p>
-<br/>
+<p/>
 <p>As you can see, search is case insensitive.</p>
-<br/>
+<p/>
 </scene>
 </part>
 <part name="Drag'n'drop">
@@ -266,13 +284,13 @@ STORY: UserGuide
 </scene>
 </part>
 <part name="Notes section">
-<scene name="Take a look to notes -->">
+<scene name="Take a look to notes --&gt;">
 <p>Take a look to index at your right hand, notes --&gt;</p>
 <p>In addition to this manuscript canvas, there is a parallel canvas called "notes". This is meant to store your notes, sketches, research, links and so, out from your story draft. It is kept together with the draft editor to make it at hands while you write.</p>
 <p>You start writing your story here in main body. But when you are writing, you most probably do some sketching, do some research to find out how things work and so on. When your story progress forward, you want these things out from draft, but you don't want to forget them.</p>
 <p>Solution: Move them to notes.</p>
 <p>It is up to you how you organize your notes. I, personally, I usually have part named "cuts", written scenes or parts of them moved to notes. I also usually have a part for characters, one scene for main characters, and one annotated scene for side characters.</p>
-<br/>
+<p/>
 </scene>
 <scene name="Drag'n'drop">
 <p>You can drag-n-drop items between body and notes. Just keep in mind, that undoing does not undo intersection drag'n'drops.</p>
@@ -285,7 +303,7 @@ STORY: UserGuide
 <p>- It is intended that you outline your story with (1) part names, (2) scene names, and (3) synopsis lines.</p>
 <p>- It is intended, that each description is attached to a bunch of text: you don't do outlining just because of outlining, but to describe the text attached to it.</p>
 <p>- It is not intended, that you write separate synopses, descriptions or so. Most probably you do lots of sketching when outlining, but the result of sketching and planning should somehow relate to actual text being written.</p>
-<br/>
+<p/>
 <p>Outline is sort of a PPT presentation:</p>
 <p>Backcover text (from head)</p>
 <p>Part name / description</p>
@@ -296,17 +314,17 @@ STORY: UserGuide
 <p>- - - Scene name /description - - - - &gt; text</p>
 <p>Part name / description</p>
 <p>...</p>
-<br/>
+<p/>
 <p>Maybe in the future we create an editor mode showing your story the way it is shown above: show only outline elements, and allow only adding, modifying and removing them.</p>
 <p>...</p>
 </scene>
 <scene name="NOTICE">
 <p>Notice, that part, scene and synopsis description can be long. It does not need to be short. For example:</p>
-<br/>
+<p/>
 </scene>
 <scene name="Scene name/description can be long. It can describe what happens here, and there is no need to make it shorter. But more probably it is better to keep scene description short and move the more detailed descriptions to synopsis lines:">
 <synopsis>But in practise, it is probably easier to cut long scene descriptions to synopses. Instead of describing your scene content in the scene name, you add "bullets" in form of synopsis line inside your scene to describe things.</synopsis>
-<br/>
+<p/>
 <p>All in all, outlining is important for larger texts, but keep in mind that the plain text is the thing you want to produce. Scenes, synopses and all other things are just aids to get you there.</p>
 </scene>
 </part>
@@ -318,26 +336,34 @@ STORY: UserGuide
 <p>$ gzip MyStory.mawe</p>
 <p>$ ls</p>
 <p>MyStory.mawe.gz</p>
-<br/>
+<p/>
 <p>MaweJS keeps compression: if you load in a compressed story file, it will be saved as compressed file.</p>
 <p>(Future) change compression on/off.</p>
 </scene>
 </part>
-<part name="Missing/Future Features">
+<part name="To be written">
 <scene name="Decrease clutter: Folding etc">
+<p>(Implemented in v0.2.0. Write something about it)</p>
 <p>Intended features to decrease the amount of unnecessary pieces in the editor:</p>
-<br/>
+<p/>
 <p>Scene / part folding: Show and hide scenes and parts, so that you can concentrate on the ones you are working at that time. Folding could affect to index, to text, or both at the same time: when you fold a scene here in editor, it is also folded in the index.</p>
-<br/>
+<p/>
 <p>Float / off-page comments etc. Move comments to margins, out of the way. This is basically easy. The hard part is to make them also editable! You need to be able to pull out the comment from margin, edit it, and push it to margin again.</p>
-<br/>
+<p/>
+</scene>
+</part>
+<part name="Missing/Future Features">
+<scene name="Scene fillers">
+<p>You have outlined your story. You are ready to write it. The problem: word counts do not indicate where you are.</p>
+<p>Possible solution: Make a filler element, that generates enough "lorem" to get to your target word count.</p>
+<p>Don't expect to see this feature soon. There are many more important features waiting.</p>
 </scene>
 <scene name="Collections">
 <p>Create a workspace from multiple files, write a prologue and epilogue, and export workspace stories as one RTF document.</p>
 <p>This could be useful for:</p>
 <p>- Creating collections from your short stories</p>
 <p>- Splitting a long story to smaller parts in separate files</p>
-<br/>
+<p/>
 </scene>
 <scene name="Plot Liner">
 <p>In addition to Outliner, we may want to implement a "plot liner".</p>
@@ -345,58 +371,51 @@ STORY: UserGuide
 <p>1. Scenes at rows</p>
 <p>2. Plot lines at columns</p>
 <p>You move your scenes to specific column, indicating that it tells about that specific plot line. Also, it would be really good that you could add hidden elements to plot lines telling how it advances at the background during one scene.</p>
-<br/>
+<p/>
 </scene>
 <scene name="Tags, Pages, Cards">
 <p>At the moment, elements inside Notes section are not "referrable" from draft. But that can change: we may create an entire new class of elements, pages or cards or whatever, that can be linked to scenes.</p>
-<br/>
-</scene>
-<scene name="Scene fillers">
-<p>You have outlined your story. You are ready to write it. The problem: word counts do not indicate where you are.</p>
-<p>Possible solution: Make a filler element, that generates enough "lorem" to get to your target word count.</p>
-<p>Don't expect to see this feature soon. There are many more important features waiting.</p>
+<p/>
 </scene>
 <scene name="Multiple sections">
 <p>Currently, manuscript body is one single section.</p>
 <p>At some point, for large stories, we might need to add multiple sections to a body.</p>
-<br/>
+<p/>
 </scene>
 <scene name="Future: Split view">
 <p>Edit two sections at the same time. For example, your current draft with your previous one.</p>
 </scene>
 <scene name="Future: Moving elements between stories">
 <p>Planned future feature is a tool to move elements - parts and scenes - between several files. This feature is for:</p>
-<br/>
+<p/>
 <p>1. Splitting stories: while writing, you get ideas that do not eventually incorporate to the story. Instead, you may find them worth of writing another story. Move them out to separate documents.</p>
 <p>Similarly, sometimes you see that your story gets growing out of its bounds, it is coming to a series of books. Then it will be useful to be able to create new documents and move parts there.</p>
-<br/>
+<p/>
 <p>2. Merging stories: while writing, you may read your older sketches and realize that there is things in some other stories you could apply to the one you are writing. Move those things from that other document to your story.</p>
-<br/>
+<p/>
 </scene>
 <scene name="Future: Importing">
 <p>Importing text in different formats.</p>
 <p>Importing text to parts or scenes.</p>
-<br/>
+<p/>
 </scene>
 <scene name="Future: Exporting formats">
 <p>Export first supports only plain RTF. In the future, we might take the other export formats supported by ancient moe editor:</p>
 <p>- HTML file.</p>
 <p>- EPUB: ZIP-compressed file, story splitted to separate HTML files with index.</p>
 <p>- MD/BB: Various markup languages, like MD (Markdown), used in various net sites (BB, Bulletin Board). This was originally made to publish stories in net forums.</p>
-<br/>
+<p/>
 </scene>
 </part>
 <part name="Migration">
 <scene name="You tried and didn't like">
 <p>You wrote your story with MaweJS, but you didn't like it. You want to use another story editor. What to do?</p>
 <p>In general, .mawe file is standard XML file, and it can be processed with any XML tool to extract sections, parts and scenes.</p>
-<br/>
-</scene>
-<scene name="Future: Project export">
-<p>We could pick a set of competitive editors, and make a migration feature for them.</p>
-<p>yWriter is pretty easy.</p>
+<p/>
+<p>As MaweJS is not commercial product, I have not much intentions to keep people using it, if they don't like it. Better support for migrating MaweJS files to other editors are great. The only problem is that I don't have myself these competitive products to write the code to migrate .mawe files to them.</p>
+<p>Anyways, some systems are easy, like yWriter.</p>
 <p>How about other editors?</p>
-<br/>
+<p/>
 </scene>
 </part>
 </body>
