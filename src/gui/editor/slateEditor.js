@@ -150,7 +150,11 @@ export function SlateEditable({className, highlight, ...props}) {
   />
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Custom hotkeys
+//
+//*****************************************************************************
 
 const isKey_AltF = isHotkey("Alt+F")
 const isKey_AltA = isHotkey("Alt+A")
@@ -249,71 +253,6 @@ function onKeyDown(event, editor) {
 
 //*****************************************************************************
 //
-// Folding
-//
-//*****************************************************************************
-
-function foldAll(editor, folded) {
-
-  function getParts() {
-    return Editor.nodes(editor, {
-      at: [],
-      match: n => Element.isElement(n) && n.type === "part"
-    })
-  }
-
-  function getFolded() {
-    return Editor.nodes(editor, {
-      at: [],
-      match: n => Element.isElement(n) && n.folded
-    })
-  }
-
-  const matches = folded ? getParts() : getFolded()
-
-  for(const [node, path] of matches) {
-    doFold(editor, node, path, folded)
-  }
-
-  if(folded) {
-    Transforms.select(editor, [0])
-    Transforms.collapse(editor)
-  }
-}
-
-function toggleFold(editor) {
-  const { selection } = editor
-
-  if(!selection) return
-  if(!Range.isCollapsed(selection)) return
-
-  const { anchor } = selection
-  //const [node, path] = Editor.node(editor, anchor)
-  //console.log("Toggle fold", path, node)
-
-  const [node, path] = Editor.above(editor, {
-    at: anchor,
-    match: n => Element.isElement(n) && (n.type === "scene" || n.type === "part"),
-  })
-
-  const folded = !node.folded
-  doFold(editor, node, path, folded)
-
-  Transforms.select(editor, path)
-  Transforms.collapse(editor)
-}
-
-//-----------------------------------------------------------------------------
-
-function doFold(editor, node, path, folded) {
-
-  if((node.folded ?? false) === folded) return;
-
-  Transforms.setNodes(editor, {folded}, {at: path})
-}
-
-//*****************************************************************************
-//
 // Editor customizations
 //
 //*****************************************************************************
@@ -329,76 +268,6 @@ export function getEditor() {
     withProtectFolds,     // Keep low! Prevents messing with folded blocks
     withReact,
   ].reduce((editor, func) => func(editor), undefined)
-}
-
-//-----------------------------------------------------------------------------
-// Folded block protection: The main principle is to protect the hidden block
-// from changes. If it can't be prevented, the block is unfolded.
-//-----------------------------------------------------------------------------
-
-/*
-function cursorInFolded(editor) {
-  const {selection} = editor
-
-  if(!selection) return false
-  if(!Range.isCollapsed(selection)) return false
-
-  //const { anchor } = selection
-  const match = Editor.above(editor, {
-    match: n => Element.isElement(n) && (n.type === "fold" || n.folded),
-  })
-
-  if(match) return true
-  return false
-}
-*/
-
-function withProtectFolds(editor) {
-  const {
-    deleteBackward, deleteForward,
-    insertText, insertBreak,
-    apply,
-  } = editor
-
-  function unfoldSelection() {
-    const match = Editor.above(editor, {
-      match: n => Element.isElement(n) && n.folded,
-    })
-    if(!match) return false
-    const [node, path] = match
-    doFold(editor, node, path, false)
-    return true
-  }
-
-  editor.insertBreak = () => {
-    if(!unfoldSelection()) insertBreak()
-  }
-
-  editor.deleteBackward = (options) => {
-    unfoldSelection()
-    deleteBackward(options)
-  }
-
-  editor.deleteForward = (options) => {
-    unfoldSelection()
-    deleteForward(options)
-  }
-
-  editor.insertText = (text, options) => {
-    unfoldSelection()
-    //console.log("insertText", text, options)
-    insertText(text, options)
-  }
-
-  /*
-  const {isVoid} = editor
-  editor.isVoid = elem => {
-    if(elem.type === "fold") return true
-    return isVoid(elem)
-  }
-  */
-
-  return editor
 }
 
 //-----------------------------------------------------------------------------
@@ -431,7 +300,7 @@ function withMarkup(editor) {
   }
 
   const STYLEAFTER = {
-    "hpart": "hscene",
+    "hpart": "p",
     "hscene": "p",
     "synopsis": "p",
     "missing": "p",
@@ -547,9 +416,11 @@ function withMarkup(editor) {
   return editor
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
 // Ensure that indexable blocks have unique ID
-//-----------------------------------------------------------------------------
+//
+//*****************************************************************************
 
 function withIDs(editor) {
 
@@ -592,29 +463,169 @@ function withIDs(editor) {
   return editor
 }
 
-//-----------------------------------------------------------------------------
-// Try to maintain buffer integrity:
+//*****************************************************************************
+//
+// Folding
+//
+//*****************************************************************************
+
+function foldAll(editor, folded) {
+
+  function getParts() {
+    return Editor.nodes(editor, {
+      at: [],
+      match: n => Element.isElement(n) && n.type === "part"
+    })
+  }
+
+  function getFolded() {
+    return Editor.nodes(editor, {
+      at: [],
+      match: n => Element.isElement(n) && n.folded
+    })
+  }
+
+  const matches = folded ? getParts() : getFolded()
+
+  for(const [node, path] of matches) {
+    doFold(editor, node, path, folded)
+  }
+
+  if(folded) {
+    Transforms.select(editor, [0])
+    Transforms.collapse(editor)
+  }
+}
+
+function toggleFold(editor) {
+  const { selection } = editor
+
+  if(!selection) return
+  if(!Range.isCollapsed(selection)) return
+
+  const { anchor } = selection
+  //const [node, path] = Editor.node(editor, anchor)
+  //console.log("Toggle fold", path, node)
+
+  const [node, path] = Editor.above(editor, {
+    at: anchor,
+    match: n => Element.isElement(n) && (n.type === "scene" || n.type === "part"),
+  })
+
+  const folded = !node.folded
+  doFold(editor, node, path, folded)
+
+  Transforms.select(editor, path)
+  Transforms.collapse(editor)
+}
+
 //-----------------------------------------------------------------------------
 
-function getParent(editor, path, ...types) {
-  const parent = Editor.above(
-    editor,
-    {
-      at: path,
-      match: n => Element.isElement(n) && types.includes(n.type)
-    }
-  )
-  return parent
+function doFold(editor, node, path, folded) {
+
+  if((node.folded ?? false) === folded) return;
+
+  Transforms.setNodes(editor, {folded}, {at: path})
 }
+
+//-----------------------------------------------------------------------------
+// Folded block protection: The main principle is to protect the hidden block
+// from changes. If it can't be prevented, the block is unfolded.
+//-----------------------------------------------------------------------------
+
+function withProtectFolds(editor) {
+  const {
+    deleteBackward, deleteForward,
+    insertText, insertBreak,
+    apply,
+  } = editor
+
+  function unfoldSelection() {
+    const match = Editor.above(editor, {
+      match: n => Element.isElement(n) && n.folded,
+    })
+    if(!match) return false
+    const [node, path] = match
+    doFold(editor, node, path, false)
+    return true
+  }
+
+  editor.insertBreak = () => {
+    if(!unfoldSelection()) insertBreak()
+  }
+
+  editor.deleteBackward = (options) => {
+    unfoldSelection()
+    deleteBackward(options)
+  }
+
+  editor.deleteForward = (options) => {
+    unfoldSelection()
+    deleteForward(options)
+  }
+
+  editor.insertText = (text, options) => {
+    unfoldSelection()
+    //console.log("insertText", text, options)
+    insertText(text, options)
+  }
+
+  /*
+  const {isVoid} = editor
+  editor.isVoid = elem => {
+    if(elem.type === "fold") return true
+    return isVoid(elem)
+  }
+  */
+
+  return editor
+}
+
+//*****************************************************************************
+//
+// Maintain nested buffer integrity
+//
+//*****************************************************************************
+
+//-----------------------------------------------------------------------------
+// This is bit complex, mainly because it needs to be done in the order
+// the normalize() feeds elements.
+//
+// normalize() feeds elements in bottom-up order. That means, that if you
+// press "A" to insert a letter A to text block, the blocks are coming to
+// normalizer() in following order:
+//
+//    1. Text node where the letter was inserted
+//    2. Paragraph block containing the text node
+//    3. Scene block containing the paragraph
+//    4. Part block containing the scene
+//    5. Editor containing the part
+//
+// What we strive for, is that:
+//
+//    1. Every part starts with part header
+//    2. Every scene starts with scene header
+//
+// How we do that? As headers are the elements explicitly placed by user,
+// we try to make the nesting match to the placement of headers.
+//
+// AS WITH FLAT EDITOR, headers are in fact *breaks*.
+//
+// So,
+//
+//    1. If you remove header, merge the block to previous one
+//    2. If you place header in middle of scene, split the group from
+//       that point (either to new scene or new part)
+//
+// There are two places where header is forced: (1) first part, and (2) first
+// scene in the part. I try to get rid of that restriction, it would help
+// greatly!
+//
+//-----------------------------------------------------------------------------
 
 function withFixNesting(editor) {
 
   const { normalizeNode } = editor;
-
-  // The order of nodes coming to be normalized is bottom-up:
-  // first comes the text block, then the paragraph block containing the text,
-  // then the scene where paragraph belongs to, then part, and finally the
-  // editor itself.
 
   editor.normalizeNode = entry => {
     const [node, path] = entry
@@ -622,19 +633,7 @@ function withFixNesting(editor) {
     //console.log("Fix:", path, node)
 
     if(Text.isText(node)) return normalizeNode(entry)
-
-    if(Editor.isEditor(node)) {
-      const [first, at] = Editor.node(editor, [0, 0])
-      //console.log("First:", first)
-      if(first.type === "hpart") return normalizeNode(entry)
-      //*
-      if(first.type === "scene") {
-        Transforms.unwrapNodes(editor, {at})
-      }
-      Transforms.setNodes(editor, {type: "hpart"}, {at})
-      /**/
-      return
-    }
+    if(Editor.isEditor(node)) return normalizeNode(entry)
 
     switch(node.type) {
       // Paragraph styles come first
@@ -659,7 +658,6 @@ function withFixNesting(editor) {
           return;
         }
         if(!checkBlockHeader(node, path, "hpart")) return
-        if(node.children.length > 1 && !checkFirstHeader(node.children[1], [...path, 1], "hscene")) return
         break;
       }
       case "scene": {
@@ -671,6 +669,9 @@ function withFixNesting(editor) {
           return
         }
         if(!checkBlockHeader(node, path, "hscene")) return
+        const match = Editor.next(editor, {at: path})
+        if(!match) break;
+        if(!checkBlockHeader(match[0], match[1], "hscene")) return
         break
       }
     }
@@ -757,18 +758,6 @@ function withFixNesting(editor) {
 
     return false
   }
-
-  function checkFirstHeader(block, path, type) {
-
-    const hdrtype = block.children[0].type
-
-    // Does the block have correct header type?
-    if(hdrtype === type) return true
-
-    //Transforms.insertNodes(editor, {type, children: [{text:""}]}, {at: [...path, 0]})
-    Transforms.setNodes(editor, {type}, {at: [...path, 0]})
-    return false
-  }
 }
 
 //*****************************************************************************
@@ -779,12 +768,33 @@ function withFixNesting(editor) {
 
 export function section2edit(section) {
   //console.log(section)
-  //return section2flat(section).map(elem2edit)
 
-  return section.parts.map(part2edit)
+  const children = section.parts
 
-  function part2edit(part) {
+  const parts = children.length ? children : [{
+    type: "part",
+    id: nanoid(),
+    children: []
+  }]
+
+  const content = parts.map(part2edit)
+  console.log(content)
+  return content
+
+  function part2edit(part, index) {
     const {children, type, id, name, folded} = part
+
+    const head = (!index && !name) ? [] : [{
+      type: "hpart",
+      id: nanoid(),
+      children: [{text: name ?? ""}]
+    }]
+
+    const scenes = children.length ? children : [{
+      type: "scene",
+      id: nanoid(),
+      children: []
+    }]
 
     return {
       type: "part",
@@ -792,14 +802,25 @@ export function section2edit(section) {
       id,
       folded,
       children: [
-        {type: "hpart", id: nanoid(), children: [{text: name ?? ""}]},
-        ...children.map(scene2edit)
+        ...head,
+        ...scenes.map(scene2edit)
       ],
     }
   }
 
-  function scene2edit(scene) {
+  function scene2edit(scene, index) {
     const {type, id, name, children, folded} = scene
+
+    const head = (!index && !name) ? [] : [{
+      type: "hscene",
+      id: nanoid(),
+      children: [{text: name ?? ""}]}]
+
+    const paragraphs = children.length ? children : [{
+      type: "p",
+      id: nanoid(),
+      children: [{text: ""}]
+    }]
 
     return {
       type: "scene",
@@ -807,8 +828,8 @@ export function section2edit(section) {
       id,
       folded,
       children: [
-        {type: "hscene", id: nanoid(), children: [{text: name ?? ""}]},
-        ...children.map(elem2edit)
+        ...head,
+        ...paragraphs.map(elem2edit)
       ]
     }
   }
@@ -855,12 +876,17 @@ export function updateSection(buffer, section) {
   }
 }
 
+function filterCtrlTags(blocks) {
+  const ctrltypes = ["hpart", "hscene"]
+  return blocks.filter(block => !ctrltypes.includes(block.type))
+}
+
 function edit2part(part, lookup) {
   //console.log(part)
 
   const {id, name, folded, children} = part
 
-  const [head, ...scenes] = children
+  const scenes = filterCtrlTags(children)
 
   //console.log("Head", head, "Scenes:", scenes)
 
@@ -877,7 +903,7 @@ function edit2part(part, lookup) {
 
 function edit2scene(scene, lookup) {
   const {id, name, folded, children} = scene
-  const [head, ...paragraphs] = children
+  const paragraphs = filterCtrlTags(children)
 
   //console.log("Head", head, "Paragraphs:", paragraphs)
 
