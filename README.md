@@ -13,9 +13,9 @@ Extract the zip. If everything went fine, DevTools are loaded when you start the
 
 ## Status
 
-**2023-Mar-11:** Many basic features are working, and several quite advanced features, too. From being fully useful first version, it basically lacks only one thing - story header editing. What I do at the moment, is that I edit header from the XML file directly.
+Check out discussions page for status and other info:
 
-Of course, there are still many features missing. One that I miss most is support for workspaces, the current editor has one file at time. But it still does the basic job pretty well, and has already replaced my previous Python/GTK version in my daily use. It has drag-and-droppable index, searching, outliner, diagrams, file loading and saving, and so on.
+https://github.com/mkoskim/mawejs/discussions
 
 ## How does it look like?
 
@@ -33,6 +33,38 @@ A new feature is showing a pie diagram of the story, and compare it to selected 
 
 There is currently K. M. Weiland's story structure templates and Blake Snyder's Beat Sheet, but we may add more later. It wouldn't be bad, that you could have a collection
 of different templates for various purposes (thrillers, romances, etc).
+
+## Installing
+
+Install the needed tools, if you don't have them already. On Linux you can do that from command line, on Windows you can get the installation packages from web:
+
+    $ sudo apt install git
+    $ sudo apt install npm
+
+Clone the repository:
+
+    $ mkdir mawejs
+    $ cd mawejs
+    $ git clone https://github.com/mkoskim/mawejs.git
+
+Get dependencies:
+
+    mawejs$ npm install
+
+Running (development version):
+
+    mawejs$ npm run dev
+
+If you update the project with 'git pull', you may need to update the libraries, too:
+
+    mawejs$ git pull
+    mawejs$ npm install
+
+## Example files
+
+You can test MaweJS with example files located in examples/
+
+https://github.com/mkoskim/mawejs/tree/master/examples
 
 ## What is Mawe?
 
@@ -96,32 +128,6 @@ Even thought Python mawe was a huge improvement to older versions, the truth is 
 Implementing the editor with ElectronJS should greatly improve this side. I have also planned integrating the editor to cloud storages (Dropbox, gDrive), so that you could access them wherever you have internet connection.
 
 In this editor version, I try really hard to concentrate on fluent user interface.
-
-## Installing
-
-Install the needed tools, if you don't have them already. On Linux you can do that from command line, on Windows you can get the installation packages from web:
-
-    $ sudo apt install git
-    $ sudo apt install npm
-
-Clone the repository:
-
-    $ mkdir mawejs
-    $ cd mawejs
-    $ git clone https://github.com/mkoskim/mawejs.git
-
-Get dependencies:
-
-    mawejs$ npm install
-
-Running (development version):
-
-    mawejs$ npm run dev
-
-If you update the project with 'git pull', you may need to update the libraries, too:
-
-    mawejs$ git pull
-    mawejs$ npm install
 
 ## MIT License
 
