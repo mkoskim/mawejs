@@ -70,19 +70,24 @@ export {
 //
 //*****************************************************************************
 
+// Turn some debug features on/off - off by default
+
+const debug = {
+  //blocks: "withBorders",  // Borders around part & scene div's to make them visible
+}
+
 function renderElement({element, attributes, ...props}) {
 
-  const {children} = props
-  const {name, type, folded} = element
+  const {type, folded} = element
 
   const foldClass = folded ? "folded" : ""
 
   switch (type) {
     case "part":
-      return <div className={addClass("part", foldClass)} {...attributes} {...props}/>
+      return <div className={addClass("part", foldClass, debug?.blocks)} {...attributes} {...props}/>
 
     case "scene":
-      return <div className={addClass("scene", foldClass)} {...attributes} {...props}/>
+      return <div className={addClass("scene", foldClass, debug?.blocks)} {...attributes} {...props}/>
 
     case "hpart": return <h5 {...attributes} {...props}/>
     case "hscene": return <h6 {...attributes} {...props}/>
@@ -735,8 +740,6 @@ function withFixNesting(editor) {
 
   function checkBlockHeader(block, path, type) {
 
-    //if(block.folded) return true;
-
     if(!block.children.length) {
       Transforms.removeNodes(editor, {at: path})
       return false;
@@ -747,18 +750,25 @@ function withFixNesting(editor) {
     // Does the block have correct header type?
     if(hdrtype === type) return true
 
-    Transforms.setNodes(editor, {name: undefined}, {at: path})
-
     const prev = Editor.previous(editor, {at: path})
 
-    if(!prev) return true
-    if(prev[0].type !== block.type) return true
+    // Can we merge headingless block?
+    if(prev && prev[0].type === block.type) {
+      doFold(editor, prev[0], prev[1], false)
+      doFold(editor, block, path, false)
+      Transforms.mergeNodes(editor, {at: path})
 
-    doFold(editor, prev[0], prev[1], false)
-    doFold(editor, block, path, false)
-    Transforms.mergeNodes(editor, {at: path})
+      return false
+    }
 
-    return false
+    // We can't - if the block has name, clear it
+    if(block.name) {
+      Transforms.setNodes(editor, {name: undefined}, {at: path})
+      return false
+    }
+
+    // Otherwise the block is fine as it is
+    return true
   }
 }
 

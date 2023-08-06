@@ -114,21 +114,25 @@
 .Sheet div.part {
   counter-increment: part;
   margin-bottom: 0.5cm;
-  /*
-  border: 1pt dashed gray;
-  padding: 4pt;
-  margin-bottom: 4pt;
-  */
 }
 
 .Sheet div.scene {
   counter-increment: scene;
   margin-bottom: 0.5cm;
-  /*
+}
+
+/* For debugging purposes: make part & scene div's visible */
+
+.Sheet div.part.withBorders {
+  border: 1pt dashed gray;
+  padding: 4pt;
+  margin-bottom: 4pt;
+}
+
+.Sheet div.scene.withBorders {
   border: 1pt dotted lightgray;
   padding: 4pt;
   margin-bottom: 4pt;
-  */
 }
 
 /* ----------------------------------------------------------------------------
