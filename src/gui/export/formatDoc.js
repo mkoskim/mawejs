@@ -16,10 +16,16 @@ import { splitByTrailingElem } from "../../util";
 //
 //-----------------------------------------------------------------------------
 
-export function FormatBody(settings, format, body) {
+export function FormatBody(format, body) {
   const { head, parts } = body
+  const story = {
+    type: head.export.type
+  }
+  const chapters = {
+    element: head.export.chapterelem,
+    type: head.export.chaptertype,
+  }
 
-  const {story, chapters} = settings
   const pgbreak = story.type === "long"
   var chnum = 1
 

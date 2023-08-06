@@ -295,7 +295,7 @@ async function onHelp(setDoc) {
 
 async function onNewFile({ doc, setDoc }) {
   setDoc({
-    buffer: '<story format="mawe"><body><part/></body><notes><part/></notes></story>'
+    buffer: '<story format="mawe" />'
   })
 }
 

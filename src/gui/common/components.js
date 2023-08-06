@@ -17,15 +17,17 @@ import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Icon, Tooltip,
   ToggleButton, ToggleButtonGroup, MakeToggleGroup,
-  Input,
+  TextField, Input,
   SearchBox, addHotkeys,
   Label,
   List, ListItem, ListItemText,
   Grid,
   Separator, Loading, addClass,
   Menu, MenuItem,
+  Accordion, AccordionSummary, AccordionDetails,
 } from "../common/factory";
 
+import { mawe } from "../../document"
 
 //-----------------------------------------------------------------------------
 // Document word info
@@ -38,6 +40,81 @@ export function SectionWordInfo({section}) {
     <Separator/>
     <Label>Chars: {section.words?.chars}</Label>
     </>
+}
+
+//-----------------------------------------------------------------------------
+// Head info editing box
+//-----------------------------------------------------------------------------
+
+export function setDocHead(setDoc, value) {
+  setDoc(doc => ({
+    ...doc,
+    story: {
+      ...doc.story,
+      body: {
+        ...doc.story.body,
+        head: {
+          ...doc.story.body.head,
+          ...value,
+        }
+      }
+    }
+  }))
+}
+
+export function setDocExport(setDoc, value) {
+  setDoc(doc => {
+    //console.log(doc.story.body.head.export, value)
+    return {
+      ...doc,
+      story: {
+        ...doc.story,
+        body: {
+          ...doc.story.body,
+          head: {
+            ...doc.story.body.head,
+            export: {
+              ...doc.story.body.head.export,
+              ...value,
+            }
+          }
+        }
+      }
+    }
+  })
+}
+
+export function setDocName(setDoc, value)  { setDocHead(setDoc, {name: value}) }
+export function setDocTitle(setDoc, value) { setDocHead(setDoc, {title: value}) }
+export function setDocSubtitle(setDoc, value) { setDocHead(setDoc, {subtitle: value}) }
+export function setDocAuthor(setDoc, value) { setDocHead(setDoc, {author: value}) }
+export function setDocPseudonym(setDoc, value) { setDocHead(setDoc, {pseudonym: value}) }
+
+export function setDocStoryType(setDoc, value) { setDocExport(setDoc, {type: value}) }
+export function setDocChapterElem(setDoc, value) { setDocExport(setDoc, {chapterelem: value}) }
+export function setDocChapterType(setDoc, value) { setDocExport(setDoc, {chaptertype: value}) }
+
+export function EditHead({head, setDoc}) {
+  const info = mawe.info(head)
+
+  return <>
+    <Accordion disableGutters>
+    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
+    <AccordionDetails><VBox>
+    <TextField label="Name" value={head.name ?? ""} onChange={e => setDocName(setDoc, e.target.value)}/>
+    <TextField label="Title" value={head.title ?? ""} onChange={e => setDocTitle(setDoc, e.target.value)}/>
+    <TextField label="Subtitle" value={head.subtitle ?? ""} onChange={e => setDocSubtitle(setDoc, e.target.value)}/>
+    </VBox></AccordionDetails>
+    </Accordion>
+
+    <Accordion disableGutters>
+    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
+    <AccordionDetails><VBox>
+    <TextField label="Author" value={head.author ?? ""} onChange={e => setDocAuthor(setDoc, e.target.value)}/>
+    <TextField label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => setDocPseudonym(setDoc, e.target.value)}/>
+    </VBox></AccordionDetails>
+    </Accordion>
+  </>
 }
 
 //-----------------------------------------------------------------------------
