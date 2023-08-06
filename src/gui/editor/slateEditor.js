@@ -747,6 +747,8 @@ function withFixNesting(editor) {
     // Does the block have correct header type?
     if(hdrtype === type) return true
 
+    Transforms.setNodes(editor, {name: undefined}, {at: path})
+
     const prev = Editor.previous(editor, {at: path})
 
     if(!prev) return true
