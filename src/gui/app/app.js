@@ -102,14 +102,17 @@ export default function App(props) {
   // TODO: Improve doc architecture!!!
 
   const [doc, setDoc] = useState({
-    //load: "./local/EmptyDoc.mawe",
-    //load: "./local/TestDoc1.mawe"
-    //load: "./local/UserGuide.mawe",
+    //load: "./examples/Empty.mawe",
+    //load: "./examples/TestDoc1.mawe"
+    //load: "./examples/TestDoc2.mawe"
+    //load: "./examples/UserGuide.mawe",
+    //load: "./examples/Lorem30k.mawe"
+    //load: "./examples/Compressed.mawe.gz"
+
     //load: "./local/mawe2/GjertaAvaruudessa.2.mawe"
     //load: "./local/mawe2/GjertaAvaruudessa.3.mawe"
     //load: "./local/mawe2/GjertaViidakossa.mawe"
     //load: "./local/mawe2/NeljaBarnaa.mawe",
-    //buffer: '<story format="mawe"><body><part/></body><notes><part/></notes></story>'
     buffer: '<story format="mawe" />'
   })
 
