@@ -724,6 +724,10 @@ function withFixNesting(editor) {
 
     const {name} = parent
     const text = Node.string(node)
+    if("**"+text === name) {
+      Transforms.setNodes(editor, {name: undefined}, {at})
+      return false
+    }
     if(name === text) return true
     Transforms.setNodes(editor, {name: text}, {at})
     return false
