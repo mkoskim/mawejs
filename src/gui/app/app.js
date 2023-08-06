@@ -283,7 +283,9 @@ async function onOpenFolder(file) {
 
 async function onHelp(setDoc) {
   //setDoc({})
-  const buffer = await mawe.file2buf({ id: "./local/UserGuide.mawe" })
+  const utf8decoder = new TextDecoder();
+  const buffer = utf8decoder.decode(await fs.readResource("examples/UserGuide.mawe"))
+  //console.log(buffer)
   //const tree = mawe.buf2tree(buffer)
   //const story = mawe.fromXML(tree)
   setDoc({ buffer })

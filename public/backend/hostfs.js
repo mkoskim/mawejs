@@ -16,9 +16,12 @@ module.exports = {
   fsDirname, fsBasename, fsExtname,
   fsRelpath,
   fsMakepath,
+  fsReadResource,
   }
 
 //-----------------------------------------------------------------------------
+
+const isDev = require("electron-is-dev");
 
 const fs = require("fs-extra");
 const path = require('path');
@@ -104,7 +107,7 @@ function fsGetParentDir(fileid) {
   return fsGetFileEntry(dirid);
 }
 
-async function fsGetLocation(name)
+function fsGetLocation(name)
 {
   const os = require("os");
   const {app} = require("electron");
@@ -172,6 +175,15 @@ function fsOpenExternal(fileid) {
   return shell.openPath(fileid)
 
   //shell.showItemInFolder('filepath') // Show the given file in a file manager. If possible, select the file.
+}
+
+function fsReadResource(fileid) {
+  if(isDev) {
+    return fsRead(path.join(fsGetLocation("appPath"), fileid))
+  }
+  else {
+    return fsRead(path.join(process.resourcesPath, fileid))
+  }
 }
 
 //-----------------------------------------------------------------------------

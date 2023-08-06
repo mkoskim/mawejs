@@ -97,6 +97,10 @@ export function openexternal(fileid) {
   return fscall("openexternal", fileid);
 }
 
+export function readResource(fileid) {
+  return fscall("readresource", fileid)
+}
+
 //-----------------------------------------------------------------------------
 
 export async function splitpath(fileid) {

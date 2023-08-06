@@ -37,6 +37,7 @@ function ipcDispatch(channel, params, browserWindow) {
         case "readdir": return hostfs.fsReadDir(...args);
         case "rename": return hostfs.fsRename(...args);
         case "openexternal": return hostfs.fsOpenExternal(...args);
+        case "readresource": return hostfs.fsReadResource(...args);
         case "dirname": return hostfs.fsDirname(...args);
         case "relpath": return hostfs.fsRelpath(...args);
         case "basename": return hostfs.fsBasename(...args);
