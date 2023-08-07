@@ -111,7 +111,7 @@ function ExportSettings({ style, doc, setDoc, format, setFormat }) {
       <MenuItem value="scene">Scene</MenuItem>
       <MenuItem value="none">None</MenuItem>
       </TextField>
-    <TextField select name="Chapter style" value={head.export.chaptertype} onChange={e => setDocChapterType(setDoc, e.target.value)}>
+    <TextField select label="Chapter style" value={head.export.chaptertype} onChange={e => setDocChapterType(setDoc, e.target.value)}>
       <MenuItem value="separated">Separated</MenuItem>
       <MenuItem value="numbered">Numbered</MenuItem>
       <MenuItem value="named">Named</MenuItem>

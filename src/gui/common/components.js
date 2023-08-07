@@ -94,27 +94,30 @@ export function setDocStoryType(setDoc, value) { setDocExport(setDoc, {type: val
 export function setDocChapterElem(setDoc, value) { setDocExport(setDoc, {chapterelem: value}) }
 export function setDocChapterType(setDoc, value) { setDocExport(setDoc, {chaptertype: value}) }
 
-export function EditHead({head, setDoc}) {
-  const info = mawe.info(head)
+export class EditHead extends React.PureComponent {
+  render() {
+    const {head, setDoc} = this.props
+    const info = mawe.info(head)
 
-  return <>
-    <Accordion disableGutters>
-    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
-    <AccordionDetails><VBox>
-    <TextField label="Name" value={head.name ?? ""} onChange={e => setDocName(setDoc, e.target.value)}/>
-    <TextField label="Title" value={head.title ?? ""} onChange={e => setDocTitle(setDoc, e.target.value)}/>
-    <TextField label="Subtitle" value={head.subtitle ?? ""} onChange={e => setDocSubtitle(setDoc, e.target.value)}/>
-    </VBox></AccordionDetails>
-    </Accordion>
+    return <>
+      <Accordion disableGutters>
+      <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
+      <AccordionDetails><VBox>
+      <TextField label="Name" value={head.name ?? ""} onChange={e => setDocName(setDoc, e.target.value)}/>
+      <TextField label="Title" value={head.title ?? ""} onChange={e => setDocTitle(setDoc, e.target.value)}/>
+      <TextField label="Subtitle" value={head.subtitle ?? ""} onChange={e => setDocSubtitle(setDoc, e.target.value)}/>
+      </VBox></AccordionDetails>
+      </Accordion>
 
-    <Accordion disableGutters>
-    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
-    <AccordionDetails><VBox>
-    <TextField label="Author" value={head.author ?? ""} onChange={e => setDocAuthor(setDoc, e.target.value)}/>
-    <TextField label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => setDocPseudonym(setDoc, e.target.value)}/>
-    </VBox></AccordionDetails>
-    </Accordion>
-  </>
+      <Accordion disableGutters>
+      <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
+      <AccordionDetails><VBox>
+      <TextField label="Author" value={head.author ?? ""} onChange={e => setDocAuthor(setDoc, e.target.value)}/>
+      <TextField label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => setDocPseudonym(setDoc, e.target.value)}/>
+      </VBox></AccordionDetails>
+      </Accordion>
+    </>
+  }
 }
 
 //-----------------------------------------------------------------------------
