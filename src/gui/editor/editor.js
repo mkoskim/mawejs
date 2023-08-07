@@ -222,7 +222,6 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
     },
     leftstyle:    {maxWidth: "400px", width: "400px"},
     rightstyle:   {maxWidth: "300px", width: "300px"},
-    toolboxstyle: {background: "white"},
   }
 
   //---------------------------------------------------------------------------
@@ -358,6 +357,18 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 }
 
 //---------------------------------------------------------------------------
+// Toolbar styles
+//---------------------------------------------------------------------------
+
+const styles = {
+  toolbox: {
+    left: {background: "white", borderRight: "1px solid lightgray"},
+    mid: {background: "white"},
+    right: {background: "white", borderLeft: "1px solid lightgray"},
+  }
+}
+
+//---------------------------------------------------------------------------
 // Left panels
 //---------------------------------------------------------------------------
 
@@ -388,9 +399,8 @@ const LeftIndexChoices = {
 }
 
 function LeftPanelMenu({settings}) {
-  const {toolboxstyle} = settings
 
-  return <ToolBox style={toolboxstyle}>
+  return <ToolBox style={styles.toolbox.left}>
     <ChooseVisibleElements
       choices={LeftIndexChoices.visible}
       selected={settings.body.indexed}
@@ -411,7 +421,7 @@ function LeftPanelMenu({settings}) {
 
 function RightPanel({settings}) {
   const {
-    rightstyle: style, toolboxstyle, doc,
+    rightstyle: style, doc,
     selectRight, setSelectRight, setActive,
     setSearchText, searchBoxRef,
   } = settings
@@ -419,7 +429,7 @@ function RightPanel({settings}) {
   switch(selectRight) {
     case "noteindex":
       return <VFiller style={style}>
-      <ToolBox style={toolboxstyle}>
+      <ToolBox style={styles.toolbox.right}>
         <Filler />
         <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
       </ToolBox>
@@ -435,7 +445,7 @@ function RightPanel({settings}) {
       </VFiller>
     case "wordtable":
       return <VFiller style={style}>
-      <ToolBox style={toolboxstyle}>
+      <ToolBox style={styles.toolbox.right}>
         <Filler />
         <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
       </ToolBox>
@@ -529,7 +539,7 @@ class Searching extends React.PureComponent {
 //-----------------------------------------------------------------------------
 
 function EditorBox({style, settings, mode="Condensed"}) {
-  const {doc, activeID, toolboxstyle} = settings
+  const {doc, activeID} = settings
   //const {editor, buffer, onChange} = (activeID === "body") ? settings.body : settings.notes
   const {searchBoxRef, searchText, setSearchText} = settings
   const {highlightText} = settings
@@ -545,28 +555,29 @@ function EditorBox({style, settings, mode="Condensed"}) {
   }
 
   return <VFiller>
-    <ToolBox style={{...toolboxstyle, borderLeft: "1px solid lightgray", borderRight: "1px solid lightgray"}}>
+    <ToolBox style={styles.toolbox.left}>
       <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
       {/* <EditHeadButton head={head} setDoc={settings.setDoc} /> */}
       {/* <Separator/> */}
       {/* <SectionWordInfo section={doc.story.body}/> */}
     </ToolBox>
+    {/* Editor board and sheet */}
     <div className="Filler Board" style={{...style}}>
-    <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
-    {
-      activeID === "body"
-      ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
-      : null
-    }
-    </Slate>
-    <Slate editor={settings.notes.editor} initialValue={settings.notes.buffer} onChange={settings.notes.onChange}>
-    {
-      activeID === "notes"
-      ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
-      : null
-    }
-    </Slate>
+      <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
+      {
+        activeID === "body"
+        ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
+        : null
+      }
+      </Slate>
+      <Slate editor={settings.notes.editor} initialValue={settings.notes.buffer} onChange={settings.notes.onChange}>
+      {
+        activeID === "notes"
+        ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
+        : null
+      }
+      </Slate>
     </div>
   </VFiller>
 }
