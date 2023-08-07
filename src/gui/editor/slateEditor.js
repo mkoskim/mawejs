@@ -29,7 +29,7 @@ import {
   searchFirst, searchForward, searchBackward,
   focusByID, focusByPath,
   hasElem,
-  elemPushTo, elemPop,
+  dndElemPushTo, dndElemPop,
   elemIsBlock,
 } from "./slateHelpers"
 
@@ -39,7 +39,7 @@ export {
   searchFirst, searchForward, searchBackward,
   focusByID, focusByPath,
   hasElem,
-  elemPushTo, elemPop,
+  dndElemPushTo, dndElemPop,
 }
 
 //-----------------------------------------------------------------------------

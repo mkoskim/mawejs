@@ -16,6 +16,7 @@ import {
 import { ReactEditor } from 'slate-react'
 
 import { sleep } from '../../util';
+import { nanoid } from 'nanoid';
 
 //-----------------------------------------------------------------------------
 // Search pattern
@@ -102,9 +103,15 @@ export function elemsByRange(editor, anchor, focus) {
 }
 
 //-----------------------------------------------------------------------------
-// Pop elems
+// Drag'n'drop po and push
 
-export function elemPop(editor, id) {
+// Ensure that pop'd element has correct heading
+
+export function checkPopHeading(node) {
+}
+
+
+export function dndElemPop(editor, id) {
   const match = elemByID(editor, id)
   if(!match) return
 
@@ -113,22 +120,63 @@ export function elemPop(editor, id) {
   //console.log("Pop:", path, node)
 
   Transforms.removeNodes(editor, {at: path, hanging: true})
+
+  const htype = (node.type === "part") ? "hpart" : "hscene"
+
+  // Has the pop'd element a header? If not, make one
+  if(!node.children.length || node.children[0].type !== htype) return {
+    ...node,
+    children: [
+      {type: htype, id: nanoid(), children: [{text: "..."}]},
+      ...node.children
+    ]
+  }
   return node
 }
 
-export function elemPushTo(editor, block, id, index) {
+export function dndElemPushTo(editor, block, id, index) {
   //console.log("Push", id, index)
 
   if(!block) return
 
-  function getPath() {
-    if(!id) return [index]
-    const match = elemByID(editor, id)
-    const [node, path] = match
-    return [...path, index+1]
+  function getParent() {
+    if(!id) return [editor, []]
+    return elemByID(editor, id)
   }
 
-  Transforms.insertNodes(editor, block, {at: getPath()})
+  const [parent, ppath] = getParent()
+
+  function getChildIndex(parent) {
+    if(parent.type === "part") {
+      if(parent.children.length && parent.children[0].type === "hpart") {
+        return index+1
+      }
+    }
+    return index
+  }
+
+  const childindex = getChildIndex(parent)
+  const childpath = [...ppath, childindex]
+
+  if(parent.children.length > childindex) {
+    const node = parent.children[childindex]
+    const htype = (node.type === "part") ? "hpart" : "hscene"
+
+    if(!node.children.length || node.children[0].type !== htype) {
+      Transforms.insertNodes(editor,
+        {
+          type: htype,
+          id: nanoid(),
+          children: [{text: "..."}]
+        },
+        {at: [...childpath, 0]}
+      )
+    }
+  }
+
+  //console.log("Index at:", [...ppath, index])
+  //console.log("Insert at:", childpath)
+  Transforms.insertNodes(editor, block, {at: childpath})
 }
 
 //-----------------------------------------------------------------------------

@@ -34,7 +34,7 @@ import {
   section2edit, updateSection,
   hasElem,
   focusByPath, focusByID,
-  elemPop, elemPushTo,
+  dndElemPop, dndElemPushTo,
   searchFirst, searchForward, searchBackward,
   isAstChange,
 } from "./slateEditor"
@@ -62,6 +62,7 @@ import {
   ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
 import { mawe } from "../../document";
+import {checkPopHeading} from "./slateHelpers";
 
 //import { mawe } from "../../document";
 
@@ -319,8 +320,10 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
     }
 
     function moveElem(srcEdit, srcId, dstEditID, dstEdit, dstId, dstIndex) {
-      elemPushTo(dstEdit,
-        elemPop(srcEdit, srcId),
+      console.log("moveElem", srcId, dstId, dstIndex)
+
+      dndElemPushTo(dstEdit,
+        dndElemPop(srcEdit, srcId),
         dstId,
         dstIndex
       )
