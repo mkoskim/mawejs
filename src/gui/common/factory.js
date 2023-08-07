@@ -137,7 +137,8 @@ export const Icon = {
     VerticalAlign: {
       Top: muiIcons.VerticalAlignTop,
       Bottom: muiIcons.VerticalAlignBottom,
-    }
+    },
+    HeadInfo: muiIcons.FormatAlignCenter,
   },
 
   Location: {

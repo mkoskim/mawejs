@@ -142,14 +142,14 @@
 
 .Sheet div.folded {
   margin: 0;
-/*
+  /*
   margin-left: -4pt;
   padding-left: 4pt;
   margin-top: 4pt;
   margin-bottom: 4pt;
   background: rgb(247, 247, 247);
   animation: splash 0.1s linear;
-*/
+  */
 }
 
 @keyframes splash {
