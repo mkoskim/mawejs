@@ -8,7 +8,7 @@
 
 /* eslint-disable no-unused-vars */
 
-import "./outliner.css"
+import "./organizer.css"
 
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 

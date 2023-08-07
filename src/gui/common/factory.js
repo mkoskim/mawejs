@@ -103,7 +103,7 @@ export const Icon = {
     Index: muiIcons.FormatAlignLeft,
     List: muiIcons.FormatListNumberedRtl,
     Edit: muiIcons.ArticleOutlined,
-    Outline: muiIcons.GridViewOutlined,
+    Organize: muiIcons.GridViewOutlined,
     Export: muiIcons.PrintOutlined,
     Chart: muiIcons.DonutLarge,
   },

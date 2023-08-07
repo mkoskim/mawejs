@@ -39,7 +39,7 @@ import { SnackbarProvider, enqueueSnackbar } from "notistack";
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
 import { SingleEditView } from "../editor/editor";
-import { Organizer } from "../outliner/outliner";
+import { Organizer } from "../organizer/organizer";
 import { Export } from "../export/export"
 import { Chart } from "../chart/chart"
 
@@ -83,8 +83,8 @@ export default function App(props) {
   */
 
   const [_mode, setMode] = useState(
-    "editor"
-    //"outliner"
+    //"editor"
+    "organizer"
     //"chart"
     //"export"
   );
@@ -112,10 +112,10 @@ export default function App(props) {
     //load: "./examples/Compressed.mawe.gz"
 
     //load: "./local/mawe2/GjertaAvaruudessa.2.mawe"
-    //load: "./local/mawe2/GjertaAvaruudessa.3.mawe"
+    load: "./local/mawe2/GjertaAvaruudessa.3.mawe"
     //load: "./local/mawe2/GjertaViidakossa.mawe"
     //load: "./local/mawe2/NeljaBarnaa.mawe",
-    buffer: '<story format="mawe" />'
+    //buffer: '<story format="mawe" />'
   })
 
   useEffect(() => {
@@ -168,7 +168,7 @@ function WorkArea({ mode, setMode, doc, setDoc }) {
 
   switch (mode.selected) {
     case "editor": return <SingleEditView {...props} />
-    case "outliner": return <Organizer {...props} />
+    case "organizer": return <Organizer {...props} />
     case "export": return <Export {...props} />
     case "chart": return <Chart {...props} />
     default: break;
@@ -227,10 +227,10 @@ function WorkspaceTab({ mode, doc, setDoc }) {
 
 class SelectViewButtons extends React.PureComponent {
 
-  choices = ["editor", "outliner", "chart", "export"]
+  choices = ["editor", "organizer", "chart", "export"]
   viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
-    "outliner": { tooltip: "Outline", icon: <Icon.View.Outline /> },
+    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
     "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
     "export": { tooltip: "Export", icon: <Icon.View.Export /> },
   }

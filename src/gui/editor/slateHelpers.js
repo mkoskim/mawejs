@@ -127,7 +127,7 @@ export function dndElemPop(editor, id) {
   if(!node.children.length || node.children[0].type !== htype) return {
     ...node,
     children: [
-      {type: htype, id: nanoid(), children: [{text: "..."}]},
+      {type: htype, id: nanoid(), children: [{text: ""}]},
       ...node.children
     ]
   }
@@ -139,27 +139,28 @@ export function dndElemPushTo(editor, block, id, index) {
 
   if(!block) return
 
-  function getParent() {
+  function getContainer() {
     if(!id) return [editor, []]
     return elemByID(editor, id)
   }
 
-  const [parent, ppath] = getParent()
+  const [container, cpath] = getContainer()
 
-  function getChildIndex(parent) {
-    if(parent.type === "part") {
-      if(parent.children.length && parent.children[0].type === "hpart") {
+  function getChildIndex(container) {
+    const {type, children} = container
+    if(type === "part") {
+      if(children.length && children[0].type === "hpart") {
         return index+1
       }
     }
     return index
   }
 
-  const childindex = getChildIndex(parent)
-  const childpath = [...ppath, childindex]
+  const childindex = getChildIndex(container)
+  const childpath = [...cpath, childindex]
 
-  if(parent.children.length > childindex) {
-    const node = parent.children[childindex]
+  if(container.children.length > childindex) {
+    const node = container.children[childindex]
     const htype = (node.type === "part") ? "hpart" : "hscene"
 
     if(!node.children.length || node.children[0].type !== htype) {
@@ -167,7 +168,7 @@ export function dndElemPushTo(editor, block, id, index) {
         {
           type: htype,
           id: nanoid(),
-          children: [{text: "..."}]
+          children: [{text: ""}]
         },
         {at: [...childpath, 0]}
       )
