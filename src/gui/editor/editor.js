@@ -62,7 +62,6 @@ import {
   ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
 import { mawe } from "../../document";
-import {checkPopHeading} from "./slateHelpers";
 
 //import { mawe } from "../../document";
 
@@ -553,30 +552,22 @@ function EditorBox({style, settings, mode="Condensed"}) {
       {/* <Separator/> */}
       {/* <SectionWordInfo section={doc.story.body}/> */}
     </ToolBox>
+    <div className="Filler Board" style={{...style}}>
     <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
     {
       activeID === "body"
-      ? <div className="Filler Board" style={{...style}}>
-          <div className={addClass("Sheet", mode)}>
-            <center>{author}</center>
-            <h1>{title}</h1>
-            <SlateEditable className="Editable" highlight={highlightText}/>
-          </div>
-        </div>
+      ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
       : null
     }
     </Slate>
     <Slate editor={settings.notes.editor} initialValue={settings.notes.buffer} onChange={settings.notes.onChange}>
     {
       activeID === "notes"
-      ? <div className="Filler Board" style={{...style}}>
-          <div className={addClass("Sheet", mode)}>
-            <SlateEditable className={mode} highlight={highlightText}/>
-          </div>
-        </div>
+      ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
       : null
     }
     </Slate>
+    </div>
   </VFiller>
 }
 
