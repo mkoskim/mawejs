@@ -83,8 +83,8 @@ export default function App(props) {
   */
 
   const [_mode, setMode] = useState(
-    //"editor"
-    "organizer"
+    "editor"
+    //"organizer"
     //"chart"
     //"export"
   );
