@@ -8,6 +8,7 @@
   /*
   display: flex;
   flex-wrap: wrap;
+  flex-direction: column;
   */
   overflow-x: auto;
 
@@ -19,11 +20,12 @@
 
 .Organizer div.Part {
   display: flex;
-  flex-direction: column;
   /*
+  flex-direction: row;
   flex-wrap: wrap;
   */
 
+  background: skyblue;
   border: 3px solid lightgray;
   border-radius: 6px;
   margin: 4pt;
@@ -41,7 +43,9 @@
 
 .Organizer .Part > .Name {
   padding: 4pt;
+  /*
   border-bottom: 2pt solid lightgray;
+  */
   background: lightgoldenrodyellow;
 }
 
@@ -51,8 +55,7 @@
   */
   min-height: 100px;
   flex-grow: 1;
-  background: skyblue;
-  padding: 4pt;
+  padding: 4pt 2pt;
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -74,11 +77,10 @@
   border-radius: 6px;
   padding: 8px;
 
+  margin: 0pt 2pt;
+  /*
   margin-top: 2pt;
   margin-bottom: 2pt;
-
-  /*
-  margin: 4pt;
   padding-top: 6pt;
   padding-bottom: 6pt;
   */

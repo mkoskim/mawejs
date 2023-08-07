@@ -127,11 +127,22 @@ export function Organizer({doc, setDoc, setFocusTo}) {
 //-----------------------------------------------------------------------------
 
 function OutlinerToolbar({settings, section}) {
+  const {indexed, words} = settings
 
   return <ToolBox style={{ background: "white" }}>
-    <ChooseVisibleElements elements={settings.indexed}/>
+    <Label>Experimental</Label>
     <Separator/>
-    <ChooseWordFormat format={settings.words}/>
+    <ChooseVisibleElements
+      choices={indexed.choices}
+      selected={indexed.value}
+      setSelected={indexed.setValue}
+      />
+    <Separator/>
+    <ChooseWordFormat
+      choices={words.choices}
+      selected={words.value}
+      setSelected={words.setValue}
+      />
     <Separator/>
     <SectionWordInfo section={section}/>
     <Separator/>
@@ -214,7 +225,6 @@ function OrganizerView({doc, setFocusTo}) {
     </Droppable>
 
     <hr/>
-
     </div>
 }
 
@@ -241,7 +251,7 @@ function PartView({settings, part, index}) {
     return <div
       ref={innerRef}
       {...draggableProps}
-      className="Part"
+      className="VBox Part"
       >
       <HBox
         className="Name"
@@ -262,6 +272,7 @@ function PartView({settings, part, index}) {
       </HBox>
       <Droppable
         droppableId={part.id}
+        //direction="horizontal"
         type="scene"
         >
         {sceneDroppable}
@@ -276,7 +287,7 @@ function PartView({settings, part, index}) {
       draggingOverWith  // draggable id
     } = snapshot
 
-    return <div className="List"
+    return <div className="VBox List"
       ref={innerRef}
       {...droppableProps}
       >
