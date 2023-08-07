@@ -724,10 +724,6 @@ function withFixNesting(editor) {
 
     const {name} = parent
     const text = Node.string(node)
-    if("**"+text === name) {
-      Transforms.setNodes(editor, {name: undefined}, {at})
-      return false
-    }
     if(name === text) return true
     Transforms.setNodes(editor, {name: text}, {at})
     return false
@@ -750,7 +746,8 @@ function withFixNesting(editor) {
 
     // Does the block have correct header type?
     if(hdrtype === type) return true
-
+    Transforms.setNodes(editor, {name: undefined}, {at: path})
+    
     const prev = Editor.previous(editor, {at: path})
 
     if(!prev) return true
