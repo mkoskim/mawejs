@@ -37,7 +37,6 @@ import {
   elemPop, elemPushTo,
   searchFirst, searchForward, searchBackward,
   isAstChange,
-//} from "./slateFlatEditor"
 } from "./slateEditor"
 
 import {DocIndex} from "../common/docIndex"
@@ -58,11 +57,9 @@ import {
   DeferredRender,
 } from "../common/factory";
 
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
-
 import {
   SectionWordInfo,
-  ChooseVisibleElements, ChooseWordFormat, EditHead,
+  ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
 import { mawe } from "../../document";
 
@@ -527,20 +524,6 @@ class Searching extends React.PureComponent {
   }
 }
 
-class EditHeadButton extends React.PureComponent {
-  render() {
-    const {head, setDoc} = this.props
-    return <PopupState variant="popover" popupId="head-edit">
-    {(popupState) => <React.Fragment>
-      <Button {...bindTrigger(popupState)} tooltip="Edit story info"><Icon.Action.HeadInfo /></Button>
-      <Menu {...bindMenu(popupState)}>
-        <EditHead head={head} setDoc={setDoc}/>
-      </Menu>
-    </React.Fragment>
-    }</PopupState>
-  }
-}
-
 //-----------------------------------------------------------------------------
 
 function EditorBox({style, settings, mode="Condensed"}) {
@@ -563,7 +546,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
     <ToolBox style={{...toolboxstyle, borderLeft: "1px solid lightgray", borderRight: "1px solid lightgray"}}>
       <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
-      <EditHeadButton head={head} setDoc={settings.setDoc} />
+      {/* <EditHeadButton head={head} setDoc={settings.setDoc} /> */}
       {/* <Separator/> */}
       {/* <SectionWordInfo section={doc.story.body}/> */}
     </ToolBox>

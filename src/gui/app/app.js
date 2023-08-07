@@ -32,6 +32,8 @@ import {
   Menu, MenuItem, MakeToggleGroup, Inform,
 } from "../common/factory";
 
+import { EditHead } from "../common/components";
+
 import { SnackbarProvider, enqueueSnackbar } from "notistack";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
@@ -180,6 +182,9 @@ function WorkspaceTab({ mode, doc, setDoc }) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
+  const {body} = doc.story
+  const {head} = body
+
   const cbprops = { doc, setDoc }
 
   useEffect(() => addHotkeys({
@@ -209,6 +214,7 @@ function WorkspaceTab({ mode, doc, setDoc }) {
     <Separator />
     <Label text={doc.file?.name ?? "<Unnamed>"} />
     <Separator />
+    <EditHeadButton head={head} setDoc={setDoc} />
 
     <Filler />
 
@@ -238,6 +244,20 @@ class SelectViewButtons extends React.PureComponent {
       setSelected={setSelected}
       buttons={this.viewbuttons}
     />
+  }
+}
+
+class EditHeadButton extends React.PureComponent {
+  render() {
+    const {head, setDoc} = this.props
+    return <PopupState variant="popover" popupId="head-edit">
+    {(popupState) => <React.Fragment>
+      <Button {...bindTrigger(popupState)} tooltip="Edit story info"><Icon.Action.HeadInfo /></Button>
+      <Menu {...bindMenu(popupState)}>
+        <EditHead head={head} setDoc={setDoc}/>
+      </Menu>
+    </React.Fragment>
+    }</PopupState>
   }
 }
 
