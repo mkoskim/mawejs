@@ -217,7 +217,8 @@ export function toXML(story) {
   function toText(text) {
     return {
       type: "text",
-      text: text.replace(/\s+/gu, ' ').trim(),
+      text,
+      //text: text.replace(/\s+/gu, ' ').trim(),
     }
   }
 

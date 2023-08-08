@@ -199,6 +199,13 @@ export function fromXML(root) {
     const text = elem.elements ? elem.elements.map(elem => elem.text ?? "").join() : ""
     //console.log("Elem", elem)
     //const {children} = recurse(elem)
+
+    if(type === "element" && name === "p" && !text.length) return {
+      type: "br",
+      id: nanoid(),
+      children: []
+    }
+
     return {
       type: name ?? type,
       id: nanoid(),

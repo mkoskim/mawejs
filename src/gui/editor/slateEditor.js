@@ -849,7 +849,7 @@ export function section2edit(section) {
   function elem2edit(elem) {
     const {type} = elem;
 
-    if(type === "br") return {...elem, type: "p"}
+    if(type === "br") return {...elem, type: "p", children: [{text: ""}]}
     return elem
   }
 }
@@ -931,6 +931,9 @@ function edit2scene(scene, lookup) {
 // Update paragraph
 
 function edit2paragraph(elem, lookup) {
+  if (elem.type === "p" && Node.string(elem) === "") {
+    return checkClean({type: "br", id: elem.id, children: []}, lookup)
+  }
   return checkClean(elem, lookup)
 }
 
