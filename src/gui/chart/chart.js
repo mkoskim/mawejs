@@ -17,6 +17,7 @@ import {
   BarChart, Bar,
   LineChart, Line,
   PieChart, Pie,
+  Cell,
 } from "recharts"
 import {SectionWordInfo} from "../common/components"
 
@@ -33,8 +34,59 @@ import {
 export function Chart({doc}) {
   const section = doc.story.body
 
-  return <DrawPieChart section={section}/>
+  return <ChartView section={section}/>
     //return <DrawBarChart section={section}/>
+}
+
+//-----------------------------------------------------------------------------
+// Data generation for pie chart
+//-----------------------------------------------------------------------------
+
+function elemLabel(elem) {
+  const {name, words} = elem
+  return {
+    name,
+    size: words.text + words.missing,
+  }
+}
+
+function elemData(elem) {
+  const {words} = elem
+  return [
+    {
+      name: null,
+      size: words.text,
+      fill: "lightblue",
+      stroke: "lightblue",
+    },
+    {
+      name: null,
+      size: words.missing,
+      fill: "plum",
+      stroke: "plum",
+    }
+  ]
+}
+
+function partLabels(section) {
+  return section.parts.map(part => elemLabel(part))
+}
+
+function partData(section) {
+  return section.parts.map(part => elemData(part)).flat()
+}
+
+
+function sceneLabels(section) {
+  return section.parts.map(part => (
+    part.children.map(scene => elemLabel(scene))
+  )).flat()
+}
+
+function sceneData(section) {
+  return section.parts.map(part => (
+    part.children.map(scene => elemData(scene)).flat()
+  )).flat()
 }
 
 //*****************************************************************************
@@ -43,38 +95,42 @@ export function Chart({doc}) {
 //
 //*****************************************************************************
 
-function DrawPieChart({section}) {
+function ChartView({section}) {
 
   //---------------------------------------------------------------------------
-  // Data
+  // Story data
   //---------------------------------------------------------------------------
 
   const elemButtons = {
     scenes: {
       icon: "Scenes",
-      data: () => section.parts.map(part => {
-        return part.children.map(scene => ({
-          name: scene.name,
-          size: scene.words.text + scene.words.missing,
-        }))
-      }).flat()
+      labels: () => sceneLabels(section),
+      data: () => sceneData(section),
     },
     parts: {
       icon: "Parts",
-      data: () => section.parts.map(p => ({
-        name: p.name,
-        size: p.words.text + p.words.missing,
-      }))
+      labels: () => partLabels(section),
+      data: () => partData(section),
     },
   }
 
   const [selectElement, setSelectElement] = useState("scenes")
 
   //---------------------------------------------------------------------------
-  // Templates
+  // Story templates
   //---------------------------------------------------------------------------
 
   const tmplButtons = {
+    acts: {
+      icon: "Acts",
+      data: [
+        {size: 25, name: "Act I", fill: "lightgreen"},
+        {size: 25, name: "Act II/1", fill: "yellow"},
+        {name: "Midpoint"},
+        {size: 25, name: "Act II/2", fill: "orange"},
+        {size: 25, name: "Act III", fill: "red"},
+      ]
+    },
     plotpoints: {
       icon: "Plot Points",
       data: [
@@ -89,33 +145,23 @@ function DrawPieChart({section}) {
         {size:  2.5, fill: "orange", name: "Resolution"}
       ]
     },
-    acts: {
-      icon: "Acts",
-      data: [
-        {name: "Act I", size: 25, fill: "lightgreen"},
-        {name: "Act II/1", size: 25, fill: "yellow"},
-        {name: "Midpoint"},
-        {name: "Act II/2", size: 25, fill: "orange"},
-        {name: "Act III", size: 25, fill: "red"},
-      ]
-    },
     beatsheet: {
       icon: "Beat Sheet",
       data: [
-        {name: null, size: 1, fill: "lightgreen"}, // Opening Image
-        {name: "Set-up", size: 10, fill: "lightgreen"},
-        {name: "Catalyst", size: 1, fill: "yellow"},
-        {name: "Debate", size: 13, fill: "lightgreen"},
+        {size:  1, name: null, fill: "lightgreen"}, // Opening Image
+        {size: 10, name: "Set-up", fill: "lightgreen"},
+        {size:  1, name: "Catalyst", fill: "yellow"},
+        {size: 13, name: "Debate", fill: "lightgreen"},
         {name: "Choosing Act Two"},
-        {name: "B Story", size: 5, fill: "lightyellow"},
-        {name: "Fun & Games", size: 25, fill: "yellow"},
+        {size:  5, name: "B Story", fill: "lightyellow"},
+        {size: 25, name: "Fun & Games", fill: "yellow"},
         {name: "Midpoint"},
-        {name: "Bad Guys Close In", size: 20, fill: "orange"},
+        {size: 20, name: "Bad Guys Close In", fill: "orange"},
         {name: "All is Lost"},
-        {name: "Dark Night of the Soul", size: 10, fill: "orange"},
+        {size: 10, name: "Dark Night of the Soul", fill: "orange"},
         {name: "Choosing Act Three"},
-        {name: "Finale", size: 24, fill: "red"},
-        {name: null, size: 1, fill: "orange"}, // Closing Image
+        {size: 24, name: "Finale", fill: "red"},
+        {size:  1, name: null, fill: "orange"}, // Closing Image
       ]
     },
     /*
@@ -147,13 +193,16 @@ function DrawPieChart({section}) {
   }
 
   /*
-  console.log("Beat sheet lenght=", tmplButtons.beatsheet.data
+  console.log("Beat sheet length=", tmplButtons.beatsheet.data
     .map(data => data.size)
     .reduce((a, b) => a + b, 0)
   )
   */
 
   const [selectTemplate, setSelectTemplate] = useState("plotpoints")
+
+  //---------------------------------------------------------------------------
+  // Labels
 
   //---------------------------------------------------------------------------
 
@@ -228,6 +277,8 @@ function DrawPieChart({section}) {
   }
 
   //---------------------------------------------------------------------------
+  // Controls
+  //---------------------------------------------------------------------------
 
   const [mode, _setMode] = useState("topCCW")
   const [selectStart, setSelectStart] = useState(90)
@@ -275,6 +326,10 @@ function DrawPieChart({section}) {
     },
   }
 
+  //---------------------------------------------------------------------------
+  // Chart ring
+  //---------------------------------------------------------------------------
+
   const common = {
     startAngle: selectStart + selectRotate * 1,
     endAngle:   selectStart + selectRotate * (360 - 2),
@@ -290,7 +345,6 @@ function DrawPieChart({section}) {
     labelRadius: "90%",
     outerRadius: "85%",
     innerRadius: "75%",
-    fill: "lightblue",
     ...common,
   }
 
@@ -338,23 +392,48 @@ function DrawPieChart({section}) {
       <Separator/>
       <HFiller/>
     </ToolBox>
-    <VFiller>
-      <ResponsiveContainer width="95%" height="95%">
-      <PieChart>
-        <Pie
-          //data={parts}
-          data={elemButtons[selectElement].data()}
-          dataKey="size"
-          {...outerRing}
-        />
-        <Pie
-          data={tmplButtons[selectTemplate].data}
-          dataKey="size"
-          {...innerRing}
-        />
-      </PieChart>
-      </ResponsiveContainer>
-    </VFiller>
+    <DrawPieChart
+      innerRing={innerRing}
+      innerData={tmplButtons[selectTemplate].data}
+      outerRing={outerRing}
+      outerData={elemButtons[selectElement].data()}
+      outerLabels={elemButtons[selectElement].labels()}
+      />
+  </VFiller>
+}
+
+//*****************************************************************************
+//
+// Story pie chart
+//
+//*****************************************************************************
+
+function DrawPieChart({innerRing, innerData, outerRing, outerData, outerLabels}) {
+
+  //console.log("Data:", outerData)
+
+  return <VFiller>
+    <ResponsiveContainer width="95%" height="95%">
+    <PieChart>
+      <Pie
+        data={innerData}
+        dataKey="size"
+        {...innerRing}
+      />
+      <Pie
+        data={outerData}
+        dataKey="size"
+        {...outerRing}
+      />
+      <Pie
+        data={outerLabels}
+        dataKey="size"
+        {...outerRing}
+        fill="none"
+        stroke="grey"
+      />
+    </PieChart>
+    </ResponsiveContainer>
   </VFiller>
 }
 
