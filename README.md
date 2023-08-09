@@ -1,21 +1,30 @@
-mawejs
+MaweJS
 ======
 
-This is my mawe (My/Markus Advanced Writer's Editor) implemented with ElectronJS.
+Looking for editor for your story? Notepad, Word and Googledocs are too little,
+and Scrivener, Manuskript and yWriter are too much? You like Word-style text editors
+to write stories, but with larger stories it becomes difficult to restructure it.
+You have tried Scrivener-style editors, but you hate how you need to set up so
+many things before starting to write.
 
-## React Dev Tools
+How about trying MaweJS?
 
-Download special React DevTools from this link, make mawejs/local/ReactDevTools/ folder and save zip there.
+## MaweJS, story editor for plantsers
 
-https://github.com/facebook/react/issues/25843#issuecomment-1406766561
+Writers can be coarsely divided to two types: pantsers and planners. **Pantsers**
+start writing the story and let the flow take them anywhere it goes. **Planners**
+(or sometimes called plotters) first make plans and outlines before writing the story.
 
-Extract the zip. If everything went fine, DevTools are loaded when you start the editor next time.
+Pantsers are fine with Notepad or Word. Planners are catered with dedicated
+tools like Scrivener and its alikes like Manuskript and yWriter.
 
-## Status
+But there is thrid category: **plantsers**. These writers are something between
+pantsers and planners, and I happen to be one. I just start writing the story,
+but at some point I start to make some plans for it.
 
-Check out discussions page for status and other info:
-
-https://github.com/mkoskim/mawejs/discussions
+Sadly, neither Notepad nor Scrivener fully support plantsers. That's why I needed
+a tool for myself, that's why I wrote Mawe with Python/GTK, and now with
+ElectronJS, Javascript and React.
 
 ## How does it look like?
 
@@ -33,6 +42,8 @@ A new feature is showing a pie diagram of the story, and compare it to selected 
 
 There is currently K. M. Weiland's story structure templates and Blake Snyder's Beat Sheet, but we may add more later. It wouldn't be bad, that you could have a collection
 of different templates for various purposes (thrillers, romances, etc).
+
+# Development
 
 ## Installing
 
@@ -60,24 +71,36 @@ If you update the project with 'git pull', you may need to update the libraries,
     mawejs$ git pull
     mawejs$ npm install
 
+## React Dev Tools
+
+Instructions to get React DevTools working: https://github.com/mkoskim/mawejs/discussions/131
+
+## Status
+
+Check out discussions page for status and other info:
+
+https://github.com/mkoskim/mawejs/discussions
+
 ## Example files
 
 You can test MaweJS with example files located in examples/
 
 https://github.com/mkoskim/mawejs/tree/master/examples
 
-## What is Mawe?
+# What is Mawe?
 
 Mawe is meant for writing stories - not press articles, blog posts, technical documents or anything else but stories. That means it has tools to split the text mass to somewhat manageable pieces, and keep "meta text" - plans, sketches and such - together with the final result (story itself).
+
+## History
 
 It is the third version of my homebrew editors to write stories. History:
 
 1. **moe** (Markus' / My Own Editor): Once I started writing stories, I wrote them in one
    text file. I started to split them to multiple pieces, and I wanted an editor to
-   collect them together to form a draft.
+   collect them together to form a draft. Repository: https://github.com/mkoskim/moe
 
 2. **mawe** (Markus' / My Advances Writer's Editor): Written with Python/GTK. The main
-   feature between moe and mawe is that mawe not only joins story pieces, but it allows you to edit them as one big bunch.
+   feature between moe and mawe is that mawe not only joins story pieces, but it allows you to edit them as one big bunch. Repository: https://github.com/mkoskim/mawe
 
 3. **maweJS**: mawe written with ElectronJS, NodeJS and React. I realized that Python/GTK
    is not going anywhere, it is used to write firmware software to Linux, nothing else.
@@ -88,6 +111,9 @@ be loaded to newer ones. Also, I have something like 200-300 stories on my disk,
 with various editors, and I really want my new versions to load the older ones.
 
 ## Design Principles
+
+Plantsers are something between pantsers and planners. So MaweJS aimed for plantsers is something
+between Word and Scrivener.
 
 Mawe's main design principle is *"Just start writing"* - you should be able to start writing your story right after starting the editor just like opening a notepad. Some structured editors need considerable work before you can start writing. Basically you need to structure your story beforehand, before starting to write it.
 
