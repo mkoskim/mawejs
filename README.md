@@ -1,11 +1,12 @@
 MaweJS
 ======
 
-Looking for editor for your story? Notepad, Word and Googledocs are too little,
+Looking for an editor for your story? Notepad, Word and Googledocs are too little,
 and Scrivener, Manuskript and yWriter are too much? You like Word-style text editors
 to write stories, but with larger stories it becomes difficult to restructure it.
 You have tried Scrivener-style editors, but you hate how you need to set up so
-many things before starting to write.
+many things before starting to write, and you feel uncomfortable editing your
+story scene-by-scene, you'd like to add things here and there.
 
 How about trying MaweJS?
 
@@ -18,9 +19,10 @@ start writing the story and let the flow take them anywhere it goes. **Planners*
 Pantsers are fine with Notepad or Word. Planners are catered with dedicated
 tools like Scrivener and its alikes like Manuskript and yWriter.
 
-But there is thrid category: **plantsers**. These writers are something between
-pantsers and planners, and I happen to be one. I just start writing the story,
-but at some point I start to make some plans for it.
+But there is third category: **plantsers**. These writers are something between
+pantsers and planners, and I happen to be one. I just start writing the story like
+a pantser, but at some point I start making plans and restructuring the story like
+a planner.
 
 Sadly, neither Notepad nor Scrivener fully support plantsers. That's why I needed
 a tool for myself, that's why I wrote Mawe with Python/GTK, and now with
