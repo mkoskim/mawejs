@@ -112,10 +112,10 @@ export default function App(props) {
     //load: "./examples/Compressed.mawe.gz"
 
     //load: "./local/mawe2/GjertaAvaruudessa.2.mawe"
-    load: "./local/mawe2/GjertaAvaruudessa.3.mawe"
+    //load: "./local/mawe2/GjertaAvaruudessa.3.mawe"
     //load: "./local/mawe2/GjertaViidakossa.mawe"
     //load: "./local/mawe2/NeljaBarnaa.mawe",
-    //buffer: '<story format="mawe" />'
+    buffer: '<story format="mawe" />'
   })
 
   useEffect(() => {
