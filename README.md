@@ -1,5 +1,4 @@
-MaweJS
-======
+# MaweJS
 
 Looking for an editor for your story? Notepad, Word and Googledocs are too little,
 and Scrivener, Manuskript and yWriter are too much? You like Word-style text editors
@@ -10,7 +9,7 @@ story scene-by-scene, you'd like to add things here and there.
 
 How about trying MaweJS?
 
-## MaweJS, story editor for plantsers
+## MaweJS, Story Editor for Plantsers
 
 Writers can be coarsely divided to two types: pantsers and planners. **Pantsers**
 start writing the story and let the flow take them anywhere it goes. **Planners**
@@ -95,7 +94,9 @@ Mawe is meant for writing stories - not press articles, blog posts, technical do
 
 ## History
 
-It is the third version of my homebrew editors to write stories. History:
+See also: https://github.com/mkoskim/mawejs/wiki/Short-history-of-MaweJS
+
+MaweJS is the third generation of my homebrew story editors:
 
 1. **moe** (Markus' / My Own Editor): Once I started writing stories, I wrote them in one
    text file. I started to split them to multiple pieces, and I wanted an editor to
@@ -114,7 +115,7 @@ with various editors, and I really want my new versions to load the older ones.
 
 ## Design Principles
 
-Plantsers are something between pantsers and planners. So MaweJS aimed for plantsers is something
+Plantsers are something between pantsers and planners. So MaweJS - aimed for plantsers - is something
 between Word and Scrivener.
 
 Mawe's main design principle is *"Just start writing"* - you should be able to start writing your story right after starting the editor just like opening a notepad. Some structured editors need considerable work before you can start writing. Basically you need to structure your story beforehand, before starting to write it.
