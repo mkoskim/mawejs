@@ -31,6 +31,7 @@ import {
 
 import {elemAsText} from "../../document";
 import {wcChildren, wcCumulative} from "../../document/util";
+import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
 
 //-----------------------------------------------------------------------------
 // Organizer
@@ -45,20 +46,11 @@ export function Organizer({doc, setDoc, setFocusTo}) {
       />
     </DragDropContext>
 
-  function findPart(doc, partID) {
-    return (
-      doc.story.body.parts.find(part => part.id === partID) ||
-      doc.story.notes.parts.find(part => part.id === partID)
-    )
+  function onDragEnd(result) {
+    onDragEndUpdateDoc(doc, setDoc, result)
   }
 
-  function findSect(doc, sectID) {
-    switch(sectID) {
-      case "body": return doc.story.body;
-      case "notes": return doc.story.notes;
-    }
-  }
-
+  /*
   function onDragEnd(result) {
     console.log("onDragEnd:", result)
 
@@ -122,6 +114,7 @@ export function Organizer({doc, setDoc, setFocusTo}) {
         break;
     }
   }
+  */
 }
 
 //-----------------------------------------------------------------------------

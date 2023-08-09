@@ -33,11 +33,11 @@ import {wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
-export function DocIndex({name, style, activeID, section, wcFormat, include, setActive})
+export function DocIndex({name, style, activeID, section, wcFormat, include, setActive, unfold})
 {
   const onActivate = useCallback(id => {
     //console.log("Activate:", activeID, id)
-    setActive(activeID, id)
+    if(setActive) setActive(activeID, id)
   }, [activeID])
 
   const total = (["percent", "cumulative"].includes(wcFormat))
@@ -62,23 +62,22 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
     [wcFormat, total, cumulative]
   )
 
-  return <React.Fragment>
+  return <VBox style={style} className="TOC">
     <IndexHead
       //wcTotal={section.words.text}
       name={name}
       section={section}
       wcFormat={wcFormat}
       />
-    <VBox style={style} className="TOC">
     <PartDropZone
       activeID={activeID}
       parts={section?.parts}
       wcFormat={wcFormatFunction}
       include={include}
       onActivate={onActivate}
+      unfold={unfold}
     />
     </VBox>
-    </React.Fragment>
   //return useDeferredValue(index)
 }
 
@@ -125,7 +124,7 @@ class PartDropZone extends React.PureComponent {
   }
 
   DropZone(provided, snapshot) {
-    const {parts, wcFormat, include, onActivate} = this.props
+    const {parts, wcFormat, include, onActivate, unfold} = this.props
     const {innerRef, droppableProps, placeholder} = provided
 
     return <div
@@ -140,6 +139,7 @@ class PartDropZone extends React.PureComponent {
       include={include}
       wcFormat={wcFormat}
       onActivate={onActivate}
+      unfold={unfold}
       />)}
     {placeholder}
     </div>
@@ -160,7 +160,7 @@ class PartItem extends React.PureComponent {
   }
 
   Draggable(provided, snapshot) {
-    const {elem, include, wcFormat, onActivate} = this.props
+    const {elem, include, wcFormat, onActivate, unfold} = this.props
     const {innerRef, draggableProps, dragHandleProps} = provided
 
     return <div
@@ -173,12 +173,12 @@ class PartItem extends React.PureComponent {
         type={elem.type}
         name={elem.name}
         words={elem.words}
-        folded={elem.folded}
+        folded={!unfold ?? elem.folded}
         wcFormat={wcFormat}
         onActivate={onActivate}
         {...dragHandleProps}
       />
-      {!elem.folded && <SceneDropZone
+      {(unfold || !elem.folded) && <SceneDropZone
         id={elem.id}
         scenes={elem.children}
         include={include}

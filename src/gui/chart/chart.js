@@ -29,14 +29,62 @@ import {
   Select, MenuItem, InputLabel, FormControl, Separator, Icon,
 } from "../common/factory"
 
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
+import { DocIndex } from "../common/docIndex";
+import { mawe } from "../../document";
+
 //-----------------------------------------------------------------------------
 
-export function Chart({doc}) {
-  const section = doc.story.body
+export function Chart({doc, setDoc}) {
+  //const section = doc.story.body
 
-  return <ChartView section={section}/>
-    //return <DrawBarChart section={section}/>
+  return <DragDropContext onDragEnd={onDragEnd}>
+    <HBox style={{overflow: "auto"}}>
+    <VBox style={{maxWidth: "300px", borderRight: "1px solid lightgray"}}>
+      <IndexToolbar />
+      <DocIndex
+        name={mawe.info(doc.story.body.head).title}
+        section={doc.story.body}
+        activeID="body"
+        include={["part", "scene"]}
+        wcFormat={["numbers"]}
+        unfold={true}
+      />
+    </VBox>
+    <ChartView doc={doc}/>
+    </HBox>
+    </DragDropContext>
+
+  function onDragEnd(result) {
+    onDragEndUpdateDoc(doc, setDoc, result)
+  }
 }
+
+//-----------------------------------------------------------------------------
+// Const styles
+//-----------------------------------------------------------------------------
+
+const styles = {
+  toolbar: {
+    background: "white",
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Index toolbar
+//-----------------------------------------------------------------------------
+
+function IndexToolbar({}) {
+  return <ToolBox style={styles.toolbar}>
+    <Button>Test</Button>
+  </ToolBox>
+}
+
+//-----------------------------------------------------------------------------
+// Chart toolbar
+//-----------------------------------------------------------------------------
+
 
 //-----------------------------------------------------------------------------
 // Data generation for pie chart
@@ -95,7 +143,9 @@ function sceneData(section) {
 //
 //*****************************************************************************
 
-function ChartView({section}) {
+function ChartView({doc}) {
+
+  const section = doc.story.body
 
   //---------------------------------------------------------------------------
   // Story data
@@ -360,8 +410,8 @@ function ChartView({section}) {
   // View
   //---------------------------------------------------------------------------
 
-  return <VFiller>
-    <ToolBox style={{background: "white"}}>
+  return <VFiller style={{overflow: "auto"}}>
+    <ToolBox style={styles.toolbar}>
       <HFiller/>
       <Separator/>
       <SectionWordInfo section={section}/>
@@ -412,8 +462,8 @@ function DrawPieChart({innerRing, innerData, outerRing, outerData, outerLabels})
 
   //console.log("Data:", outerData)
 
-  return <VFiller>
-    <ResponsiveContainer width="95%" height="95%">
+  //*
+  return <ResponsiveContainer width="95%" height="95%">
     <PieChart>
       <Pie
         data={innerData}
@@ -433,8 +483,8 @@ function DrawPieChart({innerRing, innerData, outerRing, outerData, outerLabels})
         stroke="grey"
       />
     </PieChart>
-    </ResponsiveContainer>
-  </VFiller>
+  </ResponsiveContainer>
+  /**/
 }
 
 //*****************************************************************************
