@@ -171,6 +171,10 @@ export class ChooseWordFormat extends React.PureComponent {
       tooltip: "Words as numbers",
       icon: <Icon.StatType.Words />,
     },
+    "compact": {
+      tooltip: "Compact format",
+      icon: <Icon.Placeholder />
+    },
     "percent": {
       tooltip: "Words as percent",
       icon: <Icon.StatType.Percent />
@@ -193,12 +197,60 @@ export class ChooseWordFormat extends React.PureComponent {
   }
 }
 
-export function FormatWords({format, words, cumulative, total}) {
-  if(words !== undefined) switch(format) {
-    case "numbers": return <span>{words}</span>
-    case "percent": return <span>{Number(100.0 * words / total).toFixed(1)}</span>
-    case "cumulative": return <span>{cumulative !== undefined && Number(100.0 * cumulative / total).toFixed(1)}</span>
-    default: break;
+//-----------------------------------------------------------------------------
+// Word formatter
+//-----------------------------------------------------------------------------
+
+export class FormatWords extends React.PureComponent {
+
+  static styles = {
+    missing: {color: "red"},
+    bluestar: {color: "#59F", fontSize: 14, marginRight: "4px"},
   }
-  return null;
+
+  number(words, missing) {
+    if(missing) {
+      return <>
+        <span style={this.constructor.styles.missing}>{missing}</span>
+        <span>
+          &nbsp;/&nbsp;
+          {words}
+        </span>
+      </>
+    }
+    return <>
+      {words ? <Icon.Starred sx={this.constructor.styles.bluestar}/> : null}
+      <span>{words}</span>
+    </>
+  }
+
+  compact(words, missing) {
+    if(missing) {
+      return <span style={this.constructor.styles.missing}>{words}</span>
+    }
+    return <span>{words}</span>
+  }
+
+  percent(words, missing, total) {
+    if(!total) return <span>0.0</span>
+    return this.compact(Number(100.0 * words / total).toFixed(1), missing)
+  }
+
+  cumulative(cumulative, missing, total) {
+    return this.percent(cumulative, missing, total)
+  }
+
+  render() {
+    const {format, words, missing, cumulative, total} = this.props
+    const summed = words + missing
+
+    if(words !== undefined) switch(format) {
+      case "numbers": return this.number(summed, missing)
+      case "compact": return this.compact(summed, missing)
+      case "percent": return this.percent(summed, missing, total)
+      case "cumulative": return this.cumulative(cumulative, missing, total)
+      default: break;
+    }
+    return null;
+  }
 }

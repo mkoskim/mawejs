@@ -41,7 +41,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   }, [activeID])
 
   const total = (["percent", "cumulative"].includes(wcFormat))
-    ? section.words?.text
+    ? (section.words?.text + section.words?.missing)
     : undefined
 
   const cumulative = (wcFormat == "cumulative")
@@ -53,14 +53,16 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   const wcFormatFunction = useCallback(
     (!wcFormat || wcFormat === "off")
     ? undefined
-    : (id, wcText) => <FormatWords
+    : (id, words) => <FormatWords
       format={wcFormat}
-      words={wcText}
+      words={words.text}
+      missing={words.missing}
       cumulative={cumulative && id in cumulative && cumulative[id]}
       total={total}
     />,
     [wcFormat, total, cumulative]
   )
+  //console.log(wcFormatFunction)
 
   return <VBox style={style} className="TOC">
     <IndexHead
@@ -87,9 +89,10 @@ function IndexHead({name, section, wcFormat}) {
   const wcFormatFunction = useCallback(
     (!wcFormat || wcFormat === "off")
     ? undefined
-    : (id, wcText) => <FormatWords
+    : (id, words) => <FormatWords
       format={"numbers"}
-      words={wcText}
+      words={words.text}
+      missing={words.missing}
       //cumulative={cumulative && id in cumulative && cumulative[id]}
       //total={total}
     />, [wcFormat]
@@ -173,7 +176,7 @@ class PartItem extends React.PureComponent {
         type={elem.type}
         name={elem.name}
         words={elem.words}
-        folded={!unfold ?? elem.folded}
+        folded={!unfold && elem.folded}
         wcFormat={wcFormat}
         onActivate={onActivate}
         {...dragHandleProps}
@@ -296,11 +299,14 @@ class IndexItem extends React.PureComponent {
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       <Filler/>
+      {wcFormat && wcFormat(id, words)}
+      {/*
       <ItemWords
         id={id}
         words={words}
         wcFormat={wcFormat}
       />
+      */}
     </HBox>
   }
 }
@@ -322,26 +328,5 @@ class ItemLabel extends React.PureComponent {
   render() {
     const {name} = this.props
     return <span className="Name">{name}</span>
-  }
-}
-
-class ItemWords extends React.PureComponent {
-  render() {
-    const {wcFormat, id, words} = this.props
-    if(!wcFormat || !words) return null;
-
-    const wcText = words?.text
-    const wcMissing = words?.missing
-
-    return <React.Fragment>{
-      wcMissing
-      ? (<React.Fragment>
-        <span style={{color: "red"}}>{wcMissing}</span>
-        <span>&nbsp;/&nbsp;</span>
-        </React.Fragment>)
-      : (wcText ? <Icon.Starred sx={{color: "#59F", fontSize: 14, marginRight: "4px"}}/> : null)
-      }
-      {wcFormat(id, wcText)}
-    </React.Fragment>
   }
 }
