@@ -162,6 +162,7 @@ export const Icon = {
   StatType: {
     Off: muiIcons.VisibilityOff,
     Words: muiIcons.Numbers,
+    Compact: muiIcons.Compress,
     Percent: muiIcons.Percent,
     Cumulative: muiIcons.SignalCellularAlt,
   },

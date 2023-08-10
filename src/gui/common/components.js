@@ -30,19 +30,6 @@ import {
 import { mawe } from "../../document"
 
 //-----------------------------------------------------------------------------
-// Document word info
-//-----------------------------------------------------------------------------
-
-export function SectionWordInfo({section}) {
-  if(!section) return null;
-  return <>
-    <Label>Words: {section.words?.text}</Label>
-    <Separator/>
-    <Label>Chars: {section.words?.chars}</Label>
-    </>
-}
-
-//-----------------------------------------------------------------------------
 // Head info editing box
 //-----------------------------------------------------------------------------
 
@@ -172,8 +159,8 @@ export class ChooseWordFormat extends React.PureComponent {
       icon: <Icon.StatType.Words />,
     },
     "compact": {
-      tooltip: "Compact format",
-      icon: <Icon.Placeholder />
+      tooltip: "Compact word count",
+      icon: <Icon.StatType.Compact style={{transform: "rotate(90deg)"}}/>
     },
     "percent": {
       tooltip: "Words as percent",
@@ -253,4 +240,17 @@ export class FormatWords extends React.PureComponent {
     }
     return null;
   }
+}
+
+//-----------------------------------------------------------------------------
+// Document word info
+//-----------------------------------------------------------------------------
+
+export function SectionWordInfo({section}) {
+  if(!section) return null;
+  return <>
+    <Label>Words: {section.words?.text}</Label>
+    <Separator/>
+    <Label>Chars: {section.words?.chars}</Label>
+    </>
 }
