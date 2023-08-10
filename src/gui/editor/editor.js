@@ -272,6 +272,15 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
     </>
   /**/
 
+  /*
+  return <>
+  <HBox style={{overflow: "auto"}}>
+    <EditorBox settings={settings} mode="Regular"/>
+    <Pre style={{width: "50%"}} content={bodyeditor}/>
+  </HBox>
+  </>
+  /**/
+
   //---------------------------------------------------------------------------
 
   return <HBox style={{overflow: "auto"}}>
@@ -598,7 +607,7 @@ class ASTChildren extends React.PureComponent {
   render() {
     const {children} = this.props
     return children && <div>
-      {"Children: ["}
+      {"children: ["}
       <div style={{paddingLeft: "0.5cm"}}>
       {children.map((elem, i) => <ASTElement key={elem.id ?? i} elem={elem}/>)}
       </div>
@@ -610,13 +619,13 @@ class ASTChildren extends React.PureComponent {
 class ASTElement extends React.PureComponent {
   render() {
     const {elem} = this.props
-    const {children, words, ...props} = elem
+    const {type, children, words, ...props} = elem
 
     const entries = Object.entries(props)
     //console.log(entries.map(([key, value]) => ({[key]: value})))
 
     return <div>
-    {"{"}
+    {`${type}: {`}
       <div style={{paddingLeft: "0.5cm"}}>
       {entries.map(([key, value]) => (<div key={key}>{key}: {value}</div>))}
       <ASTChildren children={children}/>

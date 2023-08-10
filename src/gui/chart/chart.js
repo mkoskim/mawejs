@@ -48,7 +48,7 @@ export function Chart({doc, setDoc}) {
         section={doc.story.body}
         activeID="body"
         include={["part", "scene"]}
-        wcFormat={["numbers"]}
+        wcFormat={"numbers"}
         unfold={true}
       />
     </VBox>
