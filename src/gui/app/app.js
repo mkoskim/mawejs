@@ -156,17 +156,6 @@ export default function App(props) {
 
 //-----------------------------------------------------------------------------
 
-const views = {
-  choices: ["editor", "organizer", "outliner", "chart", "export"],
-  buttons: {
-    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
-    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
-    "outliner": { tooltip: "Outliner", icon: <Icon.View.Outline style={{color: "MediumOrchid"}}/>},
-    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
-    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
-  },
-}
-
 function WorkArea({ mode, setMode, doc, setDoc }) {
 
   const [focusTo, _setFocusTo] = useState(undefined)
