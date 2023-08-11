@@ -7,7 +7,8 @@
 //*****************************************************************************
 
 import {elemAsText} from "../../document";
-import {Label} from "../common/factory";
+import {splitByLeadingElem} from "../../util";
+import {HBox, Label} from "../common/factory";
 
 export function Outliner({doc, setDoc}) {
   const {story} = doc
@@ -18,6 +19,8 @@ export function Outliner({doc, setDoc}) {
   </div>
 
 }
+
+//-----------------------------------------------------------------------------
 
 const styles = {
   part: {
@@ -36,8 +39,15 @@ const styles = {
     marginTop: "4pt",
     marginBottom: "4pt",
     padding: "4pt",
+  },
+  synopsisblock: {
+    width: "400px",
+    minWidth: "400px",
+    maxWidth: "400px",
   }
 }
+
+//-----------------------------------------------------------------------------
 
 function PartItem({part}) {
   return <div style={styles.part}>
@@ -46,15 +56,46 @@ function PartItem({part}) {
   </div>
 }
 
+//-----------------------------------------------------------------------------
+
 function SceneItem({scene}) {
   return <div style={styles.scene}>
     <Label>Scene: {scene.name}</Label>
-    <ParaBlock paragraphs={scene.children}/>
+    <SplitBlock paragraphs={scene.children}/>
   </div>
 }
 
-function ParaBlock({paragraphs}) {
-  return <div style={styles.parablock}>
+//-----------------------------------------------------------------------------
+
+function SplitBlock({paragraphs}) {
+  const annotated = splitByLeadingElem(paragraphs, p => p.type === "synopsis").filter(b => b.length)
+
+  console.log("Blocks:", annotated)
+  return <>
+    {annotated.map(block => <BlockWithHead block={block}/>)}
+    </>
+}
+
+function BlockWithHead({block}) {
+
+  function fetchHead(annotated) {
+    const [head, ...body] = annotated
+    if(head.type === "synopsis") return [[head], body]
+    return [[], annotated]
+  }
+
+  const [synopsis, content] = fetchHead(block)
+  //const synopses = paragraphs.filter(p => p.type === "synopsis")
+  //const other = paragraphs.filter(p => p.type !== "synopsis")
+
+  return <HBox>
+    <ParaBlock style={styles.synopsisblock} paragraphs={synopsis}/>
+    <ParaBlock paragraphs={content}/>
+  </HBox>
+}
+
+function ParaBlock({style, paragraphs}) {
+  return <div style={{...styles.parablock, ...style}}>
     {paragraphs.map(p => <p key={p.id}>{elemAsText(p)}</p>)}
   </div>
 }
