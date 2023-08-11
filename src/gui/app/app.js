@@ -42,6 +42,7 @@ import { SingleEditView } from "../editor/editor";
 import { Organizer } from "../organizer/organizer";
 import { Export } from "../export/export"
 import { Chart } from "../chart/chart"
+import { Outliner } from "../outliner/outliner"
 
 import { mawe } from "../../document"
 
@@ -155,6 +156,17 @@ export default function App(props) {
 
 //-----------------------------------------------------------------------------
 
+const views = {
+  choices: ["editor", "organizer", "outliner", "chart", "export"],
+  buttons: {
+    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
+    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
+    "outliner": { tooltip: "Outliner", icon: <Icon.View.Outline style={{color: "MediumOrchid"}}/>},
+    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
+    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
+  },
+}
+
 function WorkArea({ mode, setMode, doc, setDoc }) {
 
   const [focusTo, _setFocusTo] = useState(undefined)
@@ -171,6 +183,7 @@ function WorkArea({ mode, setMode, doc, setDoc }) {
     case "organizer": return <Organizer {...props} />
     case "export": return <Export {...props} />
     case "chart": return <Chart {...props} />
+    case "outliner": return <Outliner {...props}/>
     default: break;
   }
   return null;
@@ -209,7 +222,13 @@ function WorkspaceTab({ mode, doc, setDoc }) {
       }</PopupState>
 
     <Separator />
-    <SelectViewButtons selected={mode.selected} setSelected={mode.setSelected}/>
+    <MakeToggleGroup
+      exclusive={true}
+      choices={views.choices}
+      selected={mode.selected}
+      setSelected={mode.setSelected}
+      buttons={views.buttons}
+    />
 
     <Separator />
     <Label text={doc.file?.name ?? "<Unnamed>"} />
@@ -223,28 +242,6 @@ function WorkspaceTab({ mode, doc, setDoc }) {
     <HelpButton setDoc={setDoc}/>
     <SettingsButton />
   </ToolBox>
-}
-
-class SelectViewButtons extends React.PureComponent {
-
-  choices = ["editor", "organizer", "chart", "export"]
-  viewbuttons = {
-    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
-    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
-    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
-    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
-  }
-
-  render() {
-    const {selected, setSelected} = this.props
-    return <MakeToggleGroup
-      exclusive={true}
-      choices={this.choices}
-      selected={selected}
-      setSelected={setSelected}
-      buttons={this.viewbuttons}
-    />
-  }
 }
 
 class EditHeadButton extends React.PureComponent {
