@@ -49,72 +49,6 @@ export function Organizer({doc, setDoc, setFocusTo}) {
   function onDragEnd(result) {
     onDragEndUpdateDoc(doc, setDoc, result)
   }
-
-  /*
-  function onDragEnd(result) {
-    console.log("onDragEnd:", result)
-
-    const {type, source, destination} = result;
-    //console.log(type)
-
-    if(!destination) return;
-
-    if(source.droppableId === destination.droppableId) {
-      if(source.index === destination.index) return;
-    }
-
-    //console.log(source, "-->", destination)
-
-    function updateSection(section) {
-      const parts = section.parts.map(part => ({
-        ...part,
-        words: wcChildren(part.children)
-      }))
-      return {
-        ...section,
-        parts,
-        words: wcChildren(parts)
-      }
-    }
-
-    function updateDoc() {
-      setDoc({
-        ...doc,
-        story: {
-          ...doc.story,
-          body: updateSection(doc.story.body),
-          notes: updateSection(doc.story.notes)
-        }
-      })
-    }
-
-    switch(type) {
-      case "scene": {
-        const sourcePart = findPart(doc, source.droppableId);
-        const destinationPart = findPart(doc, destination.droppableId);
-
-        const scene = sourcePart.children[source.index]
-        sourcePart.children.splice(source.index, 1)
-        destinationPart.children.splice(destination.index, 0, scene)
-        updateDoc()
-        break;
-      }
-      case "part": {
-        const sourceSect = findSect(doc, source.droppableId);
-        const destinationSect = findSect(doc, destination.droppableId);
-
-        const part = sourceSect.parts[source.index]
-        sourceSect.parts.splice(source.index, 1)
-        destinationSect.parts.splice(destination.index, 0, part)
-        updateDoc()
-        break;
-      }
-      default:
-        console.log("Unknown draggable type:", type, result)
-        break;
-    }
-  }
-  */
 }
 
 //-----------------------------------------------------------------------------
@@ -161,10 +95,10 @@ function OrganizerView({doc, setFocusTo}) {
       setValue: setIndexed1,
     },
     words: {
-      choices:  ["off", "numbers", "percent", "cumulative"],
+      choices:  ["off", "numbers", "compact", "percent", "cumulative"],
       value:    words1,
       setValue: setWords1,
-      total: body.words.text,
+      total: body.words.text + body.words.missing,
       cumulative: wcCumulative(body)
     },
     focusTo: id => setFocusTo({sectID: "body", id}),
@@ -257,6 +191,7 @@ function PartView({settings, part, index}) {
           ? <FormatWords
             format={settings.words.value}
             words={words?.text}
+            missing={words?.missing}
             total={settings.words.total}
             cumulative={settings.words.cumulative[part.id]}
           />
