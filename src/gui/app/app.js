@@ -156,17 +156,6 @@ export default function App(props) {
 
 //-----------------------------------------------------------------------------
 
-const views = {
-  choices: ["editor", "organizer", "outliner", "chart", "export"],
-  buttons: {
-    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
-    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
-    "outliner": { tooltip: "Outliner", icon: <Icon.View.Outline style={{color: "MediumOrchid"}}/>},
-    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
-    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
-  },
-}
-
 function WorkArea({ mode, setMode, doc, setDoc }) {
 
   const [focusTo, _setFocusTo] = useState(undefined)
@@ -191,10 +180,11 @@ function WorkArea({ mode, setMode, doc, setDoc }) {
 
 class SelectViewButtons extends React.PureComponent {
 
-  choices = ["editor", "organizer", "chart", "export"]
+  choices = ["editor", "organizer", "outliner", "chart", "export"]
   viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
     "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
+    "outliner": { tooltip: "Outliner", icon: <Icon.View.Outline style={{color: "MediumOrchid"}}/>},
     "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
     "export": { tooltip: "Export", icon: <Icon.View.Export /> },
   }
@@ -244,14 +234,7 @@ function WorkspaceTab({ mode, doc, setDoc }) {
       }</PopupState>
 
     <Separator />
-    <MakeToggleGroup
-      exclusive={true}
-      choices={views.choices}
-      selected={mode.selected}
-      setSelected={mode.setSelected}
-      buttons={views.buttons}
-    />
-
+    <SelectViewButtons selected={mode.selected} setSelected={mode.setSelected} />
     <Separator />
     <Label text={doc.file?.name ?? "<Unnamed>"} />
     <Separator />
