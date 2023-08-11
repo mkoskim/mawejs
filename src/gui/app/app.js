@@ -176,6 +176,28 @@ function WorkArea({ mode, setMode, doc, setDoc }) {
   return null;
 }
 
+class SelectViewButtons extends React.PureComponent {
+
+  choices = ["editor", "organizer", "chart", "export"]
+  viewbuttons = {
+    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
+    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
+    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
+    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
+  }
+
+  render() {
+    const {selected, setSelected} = this.props
+    return <MakeToggleGroup
+      exclusive={true}
+      choices={this.choices}
+      selected={selected}
+      setSelected={setSelected}
+      buttons={this.viewbuttons}
+    />
+  }
+}
+
 //-----------------------------------------------------------------------------
 
 function WorkspaceTab({ mode, doc, setDoc }) {
@@ -223,28 +245,6 @@ function WorkspaceTab({ mode, doc, setDoc }) {
     <HelpButton setDoc={setDoc}/>
     <SettingsButton />
   </ToolBox>
-}
-
-class SelectViewButtons extends React.PureComponent {
-
-  choices = ["editor", "organizer", "chart", "export"]
-  viewbuttons = {
-    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
-    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
-    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
-    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
-  }
-
-  render() {
-    const {selected, setSelected} = this.props
-    return <MakeToggleGroup
-      exclusive={true}
-      choices={this.choices}
-      selected={selected}
-      setSelected={setSelected}
-      buttons={this.viewbuttons}
-    />
-  }
 }
 
 class EditHeadButton extends React.PureComponent {
