@@ -429,6 +429,30 @@ function withMarkup(editor) {
 
 function withIDs(editor) {
 
+  function recurseNodes(node) {
+    if (Element.isElement(node)) {
+      node.id = nanoid();
+      node.children.forEach(recurseNodes);
+    }
+  };
+
+  const { apply } = editor;
+
+  editor.apply = (operation) => {
+    if (operation.type === "insert_node") {
+      recurseNodes(operation.node);
+      return apply(operation);
+    }
+
+    if (operation.type === "split_node") {
+      operation.properties.id = nanoid();
+      return apply(operation);
+    }
+
+    return apply(operation);
+  };
+
+  /*
   const { normalizeNode } = editor;
 
   editor.normalizeNode = (entry)=> {
@@ -464,6 +488,7 @@ function withIDs(editor) {
 
     return normalizeNode(entry)
   }
+  /**/
 
   return editor
 }
