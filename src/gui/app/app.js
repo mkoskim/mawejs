@@ -94,6 +94,7 @@ export default function App(props) {
   // TODO: Improve doc architecture!!!
 
   const [command, setCommand] = useState({
+    action: "set", buffer: '<story format="mawe" />'
     //action: "resource", filename: "examples/UserGuide.mawe",
 
     //load: "./examples/Empty.mawe",
@@ -103,11 +104,10 @@ export default function App(props) {
     //load: "./examples/Lorem30k.mawe"
     //load: "./examples/Compressed.mawe.gz"
 
-    action: "load", filename: "./local/mawe2/GjertaAvaruudessa.3.mawe"
+    //action: "load", filename: "./local/mawe2/GjertaAvaruudessa.3.mawe"
     //load: "./local/mawe2/GjertaViidakossa.mawe"
     //load: "./local/mawe2/NeljaBarnaa.mawe",
     //action: "load", filename: "./local/cantread.mawe",
-    //buffer: '<story format="mawe" />'
   })
 
   const [doc, setDoc] = useState(null)
