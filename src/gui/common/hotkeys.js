@@ -21,8 +21,9 @@ export const IsKey = {
   CtrlF: isHotkey("Mod+F"),
   CtrlG: isHotkey("Mod+G"),
   CtrlShiftG: isHotkey("Shift+Mod+G"),
-  CtrlQ: isHotkey("Mod+Q"),
   CtrlO: isHotkey("Mod+O"),
+  CtrlN: isHotkey("Mod+N"),
+  CtrlQ: isHotkey("Mod+Q"),
   CtrlS: isHotkey("Mod+S"),
 
 }
