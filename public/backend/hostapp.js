@@ -8,6 +8,7 @@
 
 module.exports = {
   quit,
+  log,
 }
 
 //-----------------------------------------------------------------------------
@@ -18,4 +19,8 @@ const {app} = require("electron");
 
 function quit() {
   app.quit();
+}
+
+function log(message) {
+  console.log(message)
 }

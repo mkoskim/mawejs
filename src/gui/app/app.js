@@ -39,6 +39,9 @@ import { SnackbarProvider, enqueueSnackbar, closeSnackbar } from "notistack";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
+import {useContext, SettingsContext, CmdContext, DocContext} from "./context"
+import {useImmer} from "use-immer"
+
 import { SingleEditView } from "../editor/editor";
 import { Organizer } from "../organizer/organizer";
 import { Export } from "../export/export"
@@ -48,14 +51,33 @@ import { mawe } from "../../document"
 import { nanoid } from '../../util';
 
 import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
-import { appQuit } from "../../system/host"
+import { appQuit, appLog } from "../../system/host"
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Application main
+//
+//*****************************************************************************
 
 export default function App(props) {
+  useEffect(() => addHotkeys([
+    [IsKey.CtrlQ,  (e) => appQuit()],
+  ]));
 
-  //console.log("App")
+  return <ThemeProvider theme={theme}>
+    <SnackbarProvider TransitionProps={{direction: "up"}}>
+      <AppSettings />
+    </SnackbarProvider>
+  </ThemeProvider>
+}
 
+//*****************************************************************************
+//
+// Handling settings
+//
+//*****************************************************************************
+
+function AppSettings(props) {
   /*
   const dispatch = useDispatch()
 
@@ -84,17 +106,38 @@ export default function App(props) {
   }
   */
 
+  // Testing, sketching...
+  const [settings, setSettings] = useImmer({
+    account: {
+      author: "X",
+    },
+    view: {
+      mode: "editor",
+    }
+  })
+
+  return <SettingsContext.Provider value={{settings, setSettings}}>
+    <AppCommand />
+  </SettingsContext.Provider>
+}
+
+//*****************************************************************************
+//
+// App command (load, save, ...) interface
+//
+//*****************************************************************************
+
+function AppCommand(props) {
+
   //---------------------------------------------------------------------------
 
-  useEffect(() => addHotkeys([
-    [IsKey.CtrlQ,  (e) => appQuit()],
-  ]));
+  const [doc, setDoc] = useState(null)
 
   //---------------------------------------------------------------------------
   // TODO: Improve doc architecture!!!
 
   const [command, setCommand] = useState({
-    action: "set", buffer: '<story format="mawe" />'
+    //action: "set", buffer: '<story format="mawe" />'
     //action: "resource", filename: "examples/UserGuide.mawe",
 
     //load: "./examples/Empty.mawe",
@@ -104,13 +147,11 @@ export default function App(props) {
     //load: "./examples/Lorem30k.mawe"
     //load: "./examples/Compressed.mawe.gz"
 
-    //action: "load", filename: "./local/mawe2/GjertaAvaruudessa.3.mawe"
+    action: "load", filename: "./local/mawe2/GjertaAvaruudessa.3.mawe"
     //load: "./local/mawe2/GjertaViidakossa.mawe"
     //load: "./local/mawe2/NeljaBarnaa.mawe",
     //action: "load", filename: "./local/cantread.mawe",
   })
-
-  const [doc, setDoc] = useState(null)
 
   //---------------------------------------------------------------------------
   // Doc command interface: Let's try this, we can give command, which then
@@ -176,28 +217,26 @@ export default function App(props) {
 
   //---------------------------------------------------------------------------
 
-  const [mode, setMode] = useState(
-    "editor"
-    //"organizer"
-    //"chart"
-    //"export"
-  );
+  return <CmdContext.Provider value={{command, setCommand}}>
+    <DocContext.Provider value={{doc, setDoc}}>
+      <View />
+    </DocContext.Provider>
+  </CmdContext.Provider>
+}
+
+function View({}) {
+
+  const {doc} = useContext(DocContext)
 
   //---------------------------------------------------------------------------
   // Use key to force editor state reset when file is changed: It won't work
   // for generated docs (user guide, new doc), but we fix that later.
 
-  const viewprops = { command, setCommand, mode, setMode, doc, setDoc }
-
   return (
-    <ThemeProvider theme={theme}>
-      <SnackbarProvider>
       <VBox className="ViewPort">
-        <WorkspaceTab {...viewprops} />
-        <ViewSwitch key={doc?.key} {...viewprops} />
+        <WorkspaceTab />
+        <ViewSwitch key={doc?.key} />
       </VBox>
-      </SnackbarProvider>
-    </ThemeProvider>
   )
 }
 
@@ -225,12 +264,14 @@ class SelectViewButtons extends React.PureComponent {
   }
 }
 
-function ViewSwitch({ mode, setMode, doc, setDoc }) {
+function ViewSwitch() {
 
+  const {settings, setSettings} = useContext(SettingsContext)
+  const {doc, setDoc} = useContext(DocContext)
   const [focusTo, _setFocusTo] = useState(undefined)
 
   const setFocusTo = useCallback(value => {
-    setMode("editor")
+    setSettings(draft => { draft.view.mode = "editor" })
     _setFocusTo(value)
   }, [])
 
@@ -238,7 +279,7 @@ function ViewSwitch({ mode, setMode, doc, setDoc }) {
 
   if(!doc?.story) return <Loading />
 
-  switch (mode) {
+  switch (settings.view.mode) {
     case "editor": return <SingleEditView {...props} />
     case "organizer": return <Organizer {...props} />
     case "export": return <Export {...props} />
@@ -250,10 +291,14 @@ function ViewSwitch({ mode, setMode, doc, setDoc }) {
 
 //-----------------------------------------------------------------------------
 
-function WorkspaceTab({ setCommand, mode, setMode, doc, setDoc }) {
+function WorkspaceTab() {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
+  const {setCommand} = useContext(CmdContext)
+  const {doc, setDoc} = useContext(DocContext)
+  const {settings, setSettings} = useContext(SettingsContext)
+  const setMode = useCallback(value => setSettings(draft => {draft.view.mode = value}), [])
   const file = doc?.file
 
   useEffect(() => addHotkeys([
@@ -266,7 +311,7 @@ function WorkspaceTab({ setCommand, mode, setMode, doc, setDoc }) {
     <FileMenu setCommand={setCommand} file={file}/>
     <Separator/>
 
-    <DocInfoBar mode={mode} setMode={setMode} doc={doc} setDoc={setDoc}/>
+    <DocInfoBar mode={settings.view.mode} setMode={setMode} doc={doc} setDoc={setDoc}/>
 
     <Filler />
     <Separator />
@@ -376,7 +421,6 @@ async function onOpenFolder(file) {
 }
 
 async function onHelp(setCommand) {
-  //setDoc({})
   setCommand({action: "resource", filename: "examples/UserGuide.mawe"})
 }
 
