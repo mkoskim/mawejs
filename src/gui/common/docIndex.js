@@ -20,7 +20,7 @@ import {
   ToolBox, Button, Icon, Tooltip,
   ToggleButton, ToggleButtonGroup,
   Input,
-  SearchBox, addHotkeys,
+  SearchBox,
   Label,
   List, ListItem, ListItemText,
   Grid,

@@ -47,13 +47,13 @@ import {
   ToolBox, Button, Icon, Tooltip,
   ToggleButton, ToggleButtonGroup, MakeToggleGroup,
   Input,
-  SearchBox, addHotkeys,
+  SearchBox,
+  IsKey, addHotkeys,
   Label,
   List, ListItem, ListItemText,
   Grid,
   Separator, Loading, addClass,
   Menu, MenuItem,
-  isHotkey,
   DeferredRender,
 } from "../common/factory";
 
@@ -214,8 +214,8 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   // Hotkeys
   //---------------------------------------------------------------------------
 
-  useEffect(() => addHotkeys({
-    "mod+f": ev => {
+  useEffect(() => addHotkeys([
+    [IsKey.CtrlF, ev => {
       const editor = activeEdit()
       const {selection} = editor
       //console.log(selection)
@@ -235,16 +235,16 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
         if(typeof(searchText) !== "string") setSearchText("")
       }
       if(searchBoxRef.current) searchBoxRef.current.focus()
-    },
-    "escape": ev => {
+    }],
+    [IsKey.Escape, ev => {
       if(typeof(searchText) === "string") {
         _setSearchText(undefined)
         ReactEditor.focus(activeEdit())
       }
-    },
-    "mod+g": ev => searchForward(activeEdit(), searchText, true),
-    "shift+mod+g": ev => searchBackward(activeEdit(), searchText, true)
-  }));
+    }],
+    [IsKey.CtrlG,  ev => searchForward(activeEdit(), searchText, true)],
+    [IsKey.CtrlShiftG, ev => searchBackward(activeEdit(), searchText, true)]
+  ]));
 
   //---------------------------------------------------------------------------
   // Debug/development view
@@ -520,7 +520,7 @@ class Searching extends React.PureComponent {
       onChange={ev => setSearchText(ev.target.value)}
       onBlur={ev => {if(!searchText) setSearchText(undefined)}}
       onKeyDown={ev => {
-        if(isHotkey("enter", ev)) {
+        if(IsKey.Enter(ev)) {
           ev.preventDefault();
           ev.stopPropagation();
           if(searchText === "") setSearchText(undefined)

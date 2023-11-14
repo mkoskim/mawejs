@@ -75,9 +75,9 @@ function FileBrowser({ selected, ...props }) {
 function ListDir({ directory, options }) {
   const dispatch = useDispatch()
 
-  useEffect(() => addHotkeys({
-    "mod+f": () => dispatch(action.CWD.search("")),
-  }));
+  useEffect(() => addHotkeys([
+    [IsKey.CtrlF, () => dispatch(action.CWD.search(""))],
+  ]));
 
   const [state, setState] = useState({
     fetched: undefined,
@@ -254,9 +254,9 @@ function SearchDir({ directory, search, options, style }) {
   }
 
   useEffect(() => {
-    return addHotkeys({
-      "escape": cancelSearch,
-    })
+    return addHotkeys([
+      [IsKey.Escape, cancelSearch],
+    ])
   })
 
   const [scanner, setScanner] = useState(undefined);

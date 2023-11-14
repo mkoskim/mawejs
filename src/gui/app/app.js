@@ -24,7 +24,8 @@ import {
   ToolBox, Button, Icon, Tooltip,
   ToggleButton, ToggleButtonGroup,
   Input,
-  SearchBox, addHotkeys,
+  SearchBox,
+  IsKey, addHotkeys,
   Label,
   List, ListItem, ListItemText,
   Grid,
@@ -96,9 +97,9 @@ export default function App(props) {
 
   //---------------------------------------------------------------------------
 
-  useEffect(() => addHotkeys({
-    "mod+q": (e) => appQuit(),
-  }));
+  useEffect(() => addHotkeys([
+    [IsKey.CtrlQ,  (e) => appQuit()],
+  ]));
 
   //---------------------------------------------------------------------------
   // TODO: Improve doc architecture!!!
@@ -209,10 +210,10 @@ function WorkspaceTab({ mode, doc, setDoc }) {
 
   const cbprops = { doc, setDoc }
 
-  useEffect(() => addHotkeys({
-    "mod+o": (e) => onOpenFile(cbprops),
-    "mod+s": (e) => onSaveFile(cbprops),
-  }));
+  useEffect(() => addHotkeys([
+    [IsKey.CtrlO, (e) => onOpenFile(cbprops)],
+    [IsKey.CtrlS, (e) => onSaveFile(cbprops)],
+  ]));
 
   return <ToolBox>
     <PopupState variant="popover" popupId="file-menu">
