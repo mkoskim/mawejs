@@ -95,7 +95,7 @@ function renderElement({element, attributes, ...props}) {
     case "comment":
     case "missing":
     case "synopsis":
-      return <p className={element.type} {...attributes} {...props}/>
+      return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
 
     case "p":
     default: break;
@@ -512,9 +512,12 @@ function toggleFold(editor) {
   //const [node, path] = Editor.node(editor, anchor)
   //console.log("Toggle fold", path, node)
 
+  //const foldable = ["part", "scene", "synopsis", "comment", "missing"]
+  const foldable = ["part", "scene"]
+
   const [node, path] = Editor.above(editor, {
     at: anchor,
-    match: n => Element.isElement(n) && (n.type === "scene" || n.type === "part"),
+    match: n => Element.isElement(n) && (foldable.includes(n.type)),
   })
 
   const folded = !node.folded
