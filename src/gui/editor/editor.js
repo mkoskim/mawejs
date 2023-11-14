@@ -64,6 +64,7 @@ import {
 
 import { mawe } from "../../document";
 import { produce } from "immer";
+import { useContext, SettingsContext} from "../app/context";
 
 //import { mawe } from "../../document";
 
@@ -108,19 +109,25 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   //---------------------------------------------------------------------------
 
   const updateBody = useCallback(buffer => {
-    if(isAstChange(bodyeditor)) setDoc(doc => produce(doc, draft => {
-      draft.story.body = updateSection(buffer, doc.story.body)
-    }))
+    if(!isAstChange(bodyeditor)) return
+    const updated = updateSection(buffer, doc.story.body)
+    setDoc(produce(draft => {draft.story.body = updated}))
   }, [bodyeditor])
 
   const updateNotes = useCallback(buffer => {
-    if(isAstChange(noteeditor)) setDoc(doc => produce(doc, draft => {
-      draft.story.notes = updateSection(buffer, doc.story.notes)
-    }))
+    if(!isAstChange(noteeditor)) return
+    const updated = updateSection(buffer, doc.story.notes)
+    setDoc(produce(draft => {draft.story.notes = updated}))
   }, [noteeditor])
 
   //---------------------------------------------------------------------------
-  // Section selection
+  // Settings
+  //---------------------------------------------------------------------------
+
+  const {settings: _settings, setSettings} = useContext(SettingsContext)
+
+  //---------------------------------------------------------------------------
+  // Section selection + focusing
   //---------------------------------------------------------------------------
 
   const [active, _setActive] = useState(focusTo?.sectID ?? "body")
@@ -164,8 +171,12 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   // Index settings: Change these to component props
   //---------------------------------------------------------------------------
 
-  const [indexed1, setIndexed1] = useState(["part", "scene", "synopsis"])
-  const [words1, setWords1] = useState("numbers")
+  const indexed1 = _settings.editor.body.indexed;
+  const setIndexed1 = useCallback(value => setSettings(draft => {draft.editor.body.indexed = value}))
+  const words1 = _settings.editor.body.words
+  const setWords1 = useCallback(value => setSettings(draft => {draft.editor.body.words = value}))
+  //const [indexed1, setIndexed1] = useState(["part", "scene", "synopsis"])
+  //const [words1, setWords1] = useState("numbers")
 
   const [indexed2, setIndexed2] = useState(["part", "scene", "synopsis"])
 
