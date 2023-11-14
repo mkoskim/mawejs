@@ -15,8 +15,6 @@ import React, {
   useDeferredValue,
 } from "react"
 
-import isHotkey from 'is-hotkey';
-
 import { styled } from '@mui/material/styles';
 import { theme } from "./theme";
 
@@ -35,6 +33,9 @@ import {
   Accordion, AccordionSummary, AccordionDetails,
 } from "@mui/material"
 
+import {Icon} from "./icons"
+import {IsKey, addHotkeys} from "./hotkeys"
+
 //import { enqueueSnackbar, closeSnackbar } from "notistack";
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
@@ -47,8 +48,12 @@ export {
   List, ListItem, ListItemText, ListSubheader,
   ToggleButton, ToggleButtonGroup,
   Menu, MenuItem,
-  isHotkey,
   Accordion, AccordionSummary, AccordionDetails,
+}
+
+export {
+  Icon,
+  IsKey, addHotkeys,
 }
 
 //-----------------------------------------------------------------------------
@@ -73,111 +78,6 @@ export function Tooltip(props) {
 }
 
 //-----------------------------------------------------------------------------
-// Icons
-//-----------------------------------------------------------------------------
-
-const muiIcons = require("@mui/icons-material/")
-//console.log("Icons", require("@material-ui/icons/"))
-
-// Material icons
-export const Icon = {
-  Placeholder: muiIcons.LightbulbOutlined,
-
-  Close: muiIcons.Close,
-  Star: muiIcons.StarOutlineOutlined,
-  Starred: muiIcons.Star,
-  Circle: muiIcons.Circle,
-  Help: muiIcons.HelpOutline,
-  Menu: muiIcons.Menu,
-
-  ExpandMore: muiIcons.ExpandMore,
-
-  Arrow: {
-    Left: muiIcons.ArrowLeft,
-    Right: muiIcons.ArrowRight,
-    Up: muiIcons.ArrowDropUp,
-    Down: muiIcons.ArrowDropDown,
-  },
-
-  View: {
-    Index: muiIcons.FormatAlignLeft,
-    List: muiIcons.FormatListNumberedRtl,
-    Edit: muiIcons.ArticleOutlined,
-    Organize: muiIcons.GridViewOutlined,
-    Export: muiIcons.PrintOutlined,
-    Chart: muiIcons.DonutLarge,
-  },
-
-  //NewFile: muiIcons.NoteAddOutlined,
-  //NewFolder: muiIcons.CreateNewFolderOutlined,
-  //AddFiles: muiIcons.FolderOpenOutlined,
-
-  Settings: muiIcons.SettingsOutlined,
-
-  Action: {
-    Search: muiIcons.Search,
-    Edit: muiIcons.ArticleOutlined,
-    Cards: muiIcons.GridViewOutlined,
-    Transfer: muiIcons.SwapHorizontalCircleOutlined,
-    Print: muiIcons.PrintOutlined,
-    Folder: muiIcons.FolderOutlined,
-    File: {
-      New: muiIcons.NoteAddOutlined,
-      Open: muiIcons.FileOpenOutlined,
-      Save: muiIcons.SaveOutlined,
-      SaveAs: muiIcons.SaveAsOutlined,
-    },
-    Replay: muiIcons.Replay,
-    Cached: muiIcons.Cached,
-    Loop: muiIcons.Loop,
-    Rotate: {
-      CW: muiIcons.RotateRight,
-      CCW: muiIcons.RotateLeft,
-    },
-    VerticalAlign: {
-      Top: muiIcons.VerticalAlignTop,
-      Bottom: muiIcons.VerticalAlignBottom,
-    },
-    HeadInfo: muiIcons.DescriptionOutlined,
-  },
-
-  Location: {
-    Home: muiIcons.Home,
-    Favorites: muiIcons.Favorite,
-  },
-
-  FileType: {
-    Folder: muiIcons.Folder,
-    File: muiIcons.InsertDriveFileOutlined,
-    Unknown: muiIcons.BrokenImageOutlined,
-    Selected: muiIcons.CheckBox,
-  },
-
-  BlockType: {
-    Scene: muiIcons.FormatAlignJustifyOutlined,
-    Synopsis: muiIcons.FormatAlignRightOutlined,
-    Comment: muiIcons.Comment,
-    Missing: muiIcons.Report,
-  },
-  StatType: {
-    Off: muiIcons.VisibilityOff,
-    Words: muiIcons.Numbers,
-    Compact: muiIcons.Compress,
-    Percent: muiIcons.Percent,
-    Cumulative: muiIcons.SignalCellularAlt,
-  },
-
-  MoreHoriz: muiIcons.MoreHoriz,
-  PaperClipHoriz: muiIcons.Attachment,
-  PaperClipVert: muiIcons.AttachFile,
-
-  RadioButton: {
-    Unchecked: muiIcons.RadioButtonUnchecked,
-    Checked: muiIcons.RadioButtonChecked,
-  }
-}
-
-//-----------------------------------------------------------------------------
 
 export function DeferredRender({children}) {
   //return props.children
@@ -193,26 +93,6 @@ export const isNotEmpty = x => !!x;
 
 export function addClass(...classNames) {
   return classNames.filter(isNotEmpty).join(" ");
-}
-
-export function addHotkeys(hotkeys) {
-  const handler = event => {
-    for(const key in hotkeys) {
-      if(isHotkey(key, event)) {
-        //event.preventDefault();
-        event.stopPropagation();
-        if(hotkeys[key]) hotkeys[key]();
-      }
-    }
-  }
-
-  //console.log("Adding hotkeys")
-  document.addEventListener("keydown", handler);
-
-  return () => {
-    //console.log("Removing hotkeys")
-    document.removeEventListener("keydown", handler)
-  }
 }
 
 //-----------------------------------------------------------------------------

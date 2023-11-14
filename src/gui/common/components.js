@@ -18,7 +18,7 @@ import {
   ToolBox, Button, Icon, Tooltip,
   ToggleButton, ToggleButtonGroup, MakeToggleGroup,
   TextField, Input,
-  SearchBox, addHotkeys,
+  SearchBox,
   Label,
   List, ListItem, ListItemText,
   Grid,
@@ -27,59 +27,22 @@ import {
   Accordion, AccordionSummary, AccordionDetails,
 } from "../common/factory";
 
+import { produce } from 'immer';
 import { mawe } from "../../document"
 
 //-----------------------------------------------------------------------------
 // Head info editing box
 //-----------------------------------------------------------------------------
 
-export function setDocHead(setDoc, value) {
-  setDoc(doc => ({
-    ...doc,
-    story: {
-      ...doc.story,
-      body: {
-        ...doc.story.body,
-        head: {
-          ...doc.story.body.head,
-          ...value,
-        }
-      }
-    }
-  }))
-}
+export function setDocName(setDoc, value)  { setDoc(produce(draft => {draft.story.body.head.name = value})) }
+export function setDocTitle(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.title = value}))}
+export function setDocSubtitle(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.subtitle = value}))}
+export function setDocAuthor(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.author = value}))}
+export function setDocPseudonym(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.pseudonym = value}))}
 
-export function setDocExport(setDoc, value) {
-  setDoc(doc => {
-    //console.log(doc.story.body.head.export, value)
-    return {
-      ...doc,
-      story: {
-        ...doc.story,
-        body: {
-          ...doc.story.body,
-          head: {
-            ...doc.story.body.head,
-            export: {
-              ...doc.story.body.head.export,
-              ...value,
-            }
-          }
-        }
-      }
-    }
-  })
-}
-
-export function setDocName(setDoc, value)  { setDocHead(setDoc, {name: value}) }
-export function setDocTitle(setDoc, value) { setDocHead(setDoc, {title: value}) }
-export function setDocSubtitle(setDoc, value) { setDocHead(setDoc, {subtitle: value}) }
-export function setDocAuthor(setDoc, value) { setDocHead(setDoc, {author: value}) }
-export function setDocPseudonym(setDoc, value) { setDocHead(setDoc, {pseudonym: value}) }
-
-export function setDocStoryType(setDoc, value) { setDocExport(setDoc, {type: value}) }
-export function setDocChapterElem(setDoc, value) { setDocExport(setDoc, {chapterelem: value}) }
-export function setDocChapterType(setDoc, value) { setDocExport(setDoc, {chaptertype: value}) }
+export function setDocStoryType(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.type = value}))}
+export function setDocChapterElem(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.chapterelem = value}))}
+export function setDocChapterType(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.chaptertype = value}))}
 
 export class EditHead extends React.PureComponent {
   render() {

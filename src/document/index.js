@@ -15,7 +15,7 @@ import {info} from "./head"
 import {
   getSuffix, suffix2format,
   withWordCounts, elemAsText,
-  file2buf,
+  file2buf, decodebuf,
 } from "./util";
 
 export const mawe = {
@@ -31,7 +31,7 @@ export const mawe = {
 
     return await fs.rename(file.id, name + suffix);
   },
-  file2buf, buf2tree, fromXML,
+  decodebuf, file2buf, buf2tree, fromXML,
   toXML, tree2buf,
 
   // Exporting

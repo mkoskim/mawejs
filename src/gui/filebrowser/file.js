@@ -22,7 +22,6 @@ import {
   ToolBox,
   Label, Icon,
   addClass,
-  addHotkeys,
 } from "../common/factory";
 
 const fs = require("../../storage/localfs")

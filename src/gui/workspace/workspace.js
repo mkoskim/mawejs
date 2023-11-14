@@ -33,7 +33,6 @@ import {
   Label,
   addClass,
   Spinner, Loading,
-  addHotkeys,
   Icon,
 } from "../common/factory";
 

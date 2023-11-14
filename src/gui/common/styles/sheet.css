@@ -184,6 +184,12 @@
   display: none
 }
 
+.Sheet p.folded {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ----------------------------------------------------------------------------
 // Sheet Subelements
 // ----------------------------------------------------------------------------
