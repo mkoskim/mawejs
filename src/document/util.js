@@ -41,7 +41,11 @@ export async function file2buf(file) {
   const compressed = isGzip(buffer)
   //console.log("Buffer:", buffer)
   //console.log("isGzip:", compressed)
-  return utf8decoder.decode(compressed ? gunzip(buffer) : buffer);
+  return decodebuf(compressed ? gunzip(buffer) : buffer);
+}
+
+export function decodebuf(buffer) {
+  return utf8decoder.decode(buffer)
 }
 
 export async function buf2file(doc, buffer) {

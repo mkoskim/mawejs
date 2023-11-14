@@ -94,6 +94,8 @@ export default function App(props) {
   // TODO: Improve doc architecture!!!
 
   const [command, setCommand] = useState({
+    //action: "resource", filename: "examples/UserGuide.mawe",
+
     //load: "./examples/Empty.mawe",
     //load: "./examples/TestDoc1.mawe"
     //load: "./examples/TestDoc2.mawe"
@@ -101,11 +103,10 @@ export default function App(props) {
     //load: "./examples/Lorem30k.mawe"
     //load: "./examples/Compressed.mawe.gz"
 
-    //load: "./local/mawe2/GjertaAvaruudessa.2.mawe"
     action: "load", filename: "./local/mawe2/GjertaAvaruudessa.3.mawe"
     //load: "./local/mawe2/GjertaViidakossa.mawe"
     //load: "./local/mawe2/NeljaBarnaa.mawe",
-    //load: "./local/cantread.mawe",
+    //action: "load", filename: "./local/cantread.mawe",
     //buffer: '<story format="mawe" />'
   })
 
@@ -139,6 +140,17 @@ export default function App(props) {
         })
         break;
       }
+      case "resource": {
+        const {filename} = command
+        fs.readResource(filename)
+          .then(buffer => {
+            setDoc({
+              ...mawe.create(mawe.decodebuf(buffer)),
+              key: nanoid(),
+            })
+          })
+        break;
+      }
       case "save": {
         mawe.save(doc)
           .then(() => enqueueSnackbar(`Saved ${command.name}`, {variant: "success"}))
@@ -148,9 +160,9 @@ export default function App(props) {
       case "saveas": {
         const {filename} = command
         mawe.saveas(doc, filename)
-          .then(() => {
-            setDoc(doc => ({ ...doc, file: { id: filename } }))
-            enqueueSnackbar(`Saved ${command.name}`, {variant: "success"})
+          .then(file => {
+            setDoc(doc => ({ ...doc, file }))
+            enqueueSnackbar(`Saved ${file.name}`, {variant: "success"})
           })
           .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
         break;
@@ -365,12 +377,7 @@ async function onOpenFolder(file) {
 
 async function onHelp(setCommand) {
   //setDoc({})
-  const utf8decoder = new TextDecoder();
-  const buffer = utf8decoder.decode(await fs.readResource("examples/UserGuide.mawe"))
-  //console.log(buffer)
-  //const tree = mawe.buf2tree(buffer)
-  //const story = mawe.fromXML(tree)
-  setCommand({ action: "set", buffer })
+  setCommand({action: "resource", filename: "examples/UserGuide.mawe"})
 }
 
 //-----------------------------------------------------------------------------
