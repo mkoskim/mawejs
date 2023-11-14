@@ -61,7 +61,9 @@ import {
   SectionWordInfo,
   ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
+
 import { mawe } from "../../document";
+import { produce } from "immer";
 
 //import { mawe } from "../../document";
 
@@ -106,31 +108,15 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   //---------------------------------------------------------------------------
 
   const updateBody = useCallback(buffer => {
-    if(isAstChange(bodyeditor)) setDoc(doc => {
-      const updated = updateSection(buffer, doc.story.body)
-      //console.log(updated)
-      return {
-        ...doc,
-        story: {
-          ...doc.story,
-          body: updated,
-        }
-      }
-    })
+    if(isAstChange(bodyeditor)) setDoc(doc => produce(doc, draft => {
+      draft.story.body = updateSection(buffer, doc.story.body)
+    }))
   }, [bodyeditor])
 
   const updateNotes = useCallback(buffer => {
-    if(isAstChange(noteeditor)) setDoc(doc => {
-      const updated = updateSection(buffer, doc.story.notes)
-      //console.log(updated)
-      return {
-        ...doc,
-        story: {
-          ...doc.story,
-          notes: updated,
-        }
-      }
-    })
+    if(isAstChange(noteeditor)) setDoc(doc => produce(doc, draft => {
+      draft.story.notes = updateSection(buffer, doc.story.notes)
+    }))
   }, [noteeditor])
 
   //---------------------------------------------------------------------------
