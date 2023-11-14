@@ -35,7 +35,7 @@ import {
 
 import { EditHead } from "../common/components";
 
-import { SnackbarProvider, enqueueSnackbar } from "notistack";
+import { SnackbarProvider, enqueueSnackbar, closeSnackbar } from "notistack";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
@@ -102,7 +102,7 @@ export default function App(props) {
     //load: "./examples/Compressed.mawe.gz"
 
     //load: "./local/mawe2/GjertaAvaruudessa.2.mawe"
-    load: "./local/mawe2/GjertaAvaruudessa.3.mawe"
+    action: "load", filename: "./local/mawe2/GjertaAvaruudessa.3.mawe"
     //load: "./local/mawe2/GjertaViidakossa.mawe"
     //load: "./local/mawe2/NeljaBarnaa.mawe",
     //load: "./local/cantread.mawe",
@@ -116,41 +116,49 @@ export default function App(props) {
   // updates doc/story.
 
   useEffect(() => {
-    if(command?.load) {
-      console.log("Loading:", command.load)
-      mawe.load(command.load)
-        .then(content => {
-          setDoc({
-            ...content,
-            key: nanoid(),
+    const {action} = command
+    switch(action) {
+      case "load": {
+        const {filename} = command
+        mawe.load(filename)
+          .then(content => {
+            setDoc({
+              ...content,
+              key: nanoid(),
+            })
+            enqueueSnackbar(`Loaded: ${content.file.name}`, {variant: "success"});
           })
-          enqueueSnackbar("Loaded", {variant: "success"});
+          .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
+        break;
+      }
+      case "set": {
+        const {buffer} = command
+        setDoc({
+          ...mawe.create(buffer),
+          key: nanoid(),
         })
-        .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
-    }
-    else if(command?.buffer) {
-      setDoc({
-        ...mawe.create(command.buffer),
-        key: nanoid(),
-      })
-    }
-    else if(command?.save) {
-      mawe.save(doc)
-        .then(() => enqueueSnackbar("Saved", {variant: "success"}))
-        .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
-    }
-    else if(command?.saveas) {
-      const filePath = command.saveas
-      console.log("Save File As", filePath)
-      mawe.saveas(doc, filePath)
-        .then(() => {
-          setDoc(doc => ({ ...doc, file: { id: filePath } }))
-          enqueueSnackbar("Saved", {variant: "success"})
-        })
-        .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
-    }
-    if(command?.error) {
-      enqueueSnackbar(command.error, {variant: "error"});
+        break;
+      }
+      case "save": {
+        mawe.save(doc)
+          .then(() => enqueueSnackbar(`Saved ${command.name}`, {variant: "success"}))
+          .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
+        break;
+      }
+      case "saveas": {
+        const {filename} = command
+        mawe.saveas(doc, filename)
+          .then(() => {
+            setDoc(doc => ({ ...doc, file: { id: filename } }))
+            enqueueSnackbar(`Saved ${command.name}`, {variant: "success"})
+          })
+          .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
+        break;
+      }
+      case "error": {
+        enqueueSnackbar(command.message, {variant: "error"});
+        break;
+      }
     }
   }, [command])
 
@@ -362,13 +370,14 @@ async function onHelp(setCommand) {
   //console.log(buffer)
   //const tree = mawe.buf2tree(buffer)
   //const story = mawe.fromXML(tree)
-  setCommand({ buffer })
+  setCommand({ action: "set", buffer })
 }
 
 //-----------------------------------------------------------------------------
 
 async function onNewFile({ setCommand }) {
   setCommand({
+    action: "set",
     buffer: '<story format="mawe" />'
   })
 }
@@ -381,16 +390,20 @@ async function onOpenFile({ setCommand, file }) {
     properties: ["OpenFile"],
   })
   if (!canceled) {
-    const [filePath] = filePaths
+    const [filename] = filePaths
 
-    console.log("Load file:", filePath)
-    setCommand({load: filePath})
+    console.log("Load file:", filename)
+    setCommand({
+      action: "load",
+      filename,
+      name: await fs.basename(filename)
+    })
   }
 }
 
 async function onSaveFile({ setCommand, file }) {
   if (file) {
-    setCommand({save: true})
+    setCommand({action: "save", name: file.name})
     return;
   }
   onSaveFileAs({ setCommand, file })
@@ -403,6 +416,10 @@ async function onSaveFileAs({ setCommand, file }) {
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
   if (!canceled) {
-    setCommand({saveas: filePath})
+    setCommand({
+      action: "saveas",
+      filename: filePath,
+      name: await fs.basename(filePath)
+    })
   }
 }
