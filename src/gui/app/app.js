@@ -279,7 +279,7 @@ function WorkspaceTab({doc, setDoc}) {
   const {settings, setSettings} = useContext(SettingsContext)
   const {view} = settings
   const {setCommand} = useContext(CmdContext)
-  const setMode = useCallback(value => setSettings(draft => {draft.view.mode = value}), [])
+  const setMode = useCallback(value => setSettings(draft => {draft.view.selected = value}), [])
   const file = doc?.file
 
   useEffect(() => addHotkeys([
