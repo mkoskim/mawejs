@@ -35,7 +35,7 @@ import {
 
 import { EditHead } from "../common/components";
 
-import { SnackbarProvider, enqueueSnackbar, closeSnackbar } from "notistack";
+import { SnackbarProvider, enqueueSnackbar } from "notistack";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
@@ -65,7 +65,7 @@ export default function App(props) {
   ]));
 
   return <ThemeProvider theme={theme}>
-    <SnackbarProvider TransitionProps={{direction: "up"}}>
+    <SnackbarProvider>
       <AppSettings />
     </SnackbarProvider>
   </ThemeProvider>
@@ -132,79 +132,72 @@ function AppCommand() {
   const {settings} = useContext(SettingsContext)
 
   //---------------------------------------------------------------------------
+  // TODO: Improve doc architecture!!!
 
   const [doc, setDoc] = useState(null)
 
   //---------------------------------------------------------------------------
-  // TODO: Improve doc architecture!!!
+  // Doc command interface: Let's try this, we can send commands here to top
+  // level from subcomponents to perform all kinds of things. Maybe there is
+  // some similar React design patterns out there?
 
   const [command, setCommand] = useState(settings.command)
-
-  //---------------------------------------------------------------------------
-  // Doc command interface: Let's try this, we can give command, which then
-  // updates doc/story.
 
   useEffect(() => {
     const {action} = command
     switch(action) {
-      case "load": {
-        const {filename} = command
-        mawe.load(filename)
-          .then(content => {
-            setDoc({
-              ...content,
-              key: nanoid(),
-            })
-            enqueueSnackbar(`Loaded: ${content.file.name}`, {variant: "success"});
-          })
-          .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
-        break;
-      }
-      case "set": {
-        const {buffer} = command
-        setDoc({
-          ...mawe.create(buffer),
-          key: nanoid(),
-        })
-        break;
-      }
-      case "resource": {
-        const {filename} = command
-        fs.readResource(filename)
-          .then(buffer => {
-            setDoc({
-              ...mawe.create(mawe.decodebuf(buffer)),
-              key: nanoid(),
-            })
-          })
-        break;
-      }
-      case "save": {
-        mawe.save(doc)
-          .then(() => enqueueSnackbar(`Saved ${command.name}`, {variant: "success"}))
-          .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
-        break;
-      }
-      case "saveas": {
-        const {filename} = command
-        mawe.saveas(doc, filename)
-          .then(file => {
-            setDoc(doc => ({ ...doc, file }))
-            enqueueSnackbar(`Saved ${file.name}`, {variant: "success"})
-          })
-          .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
-        break;
-      }
-      case "error": {
-        enqueueSnackbar(command.message, {variant: "error"});
-        break;
-      }
+      case "load": { docFromFile(command); break; }
+      case "save": { docSave(command); break; }
+      case "set": { docFromBuffer(command); break; }
+      case "resource": { docFromResource(command); break; }
+      case "saveas": { docSaveAs(command); break; }
+      case "error": { Inform.error(command.message); break; }
     }
   }, [command])
 
+  function docFromFile({filename}) {
+    mawe.load(filename)
+    .then(content => {
+      setDoc({
+        ...content,
+        key: nanoid(),
+      })
+      Inform.success(`Loaded: ${content.file.name}`);
+    })
+    .catch(err => Inform.error(err))
+  }
+
+  function docFromBuffer({buffer}) {
+    setDoc({
+      ...mawe.create(buffer),
+      key: nanoid(),
+    })
+  }
+
+  function docFromResource({filename}) {
+    fs.readResource(filename)
+    .then(buffer => docFromBuffer(mawe.decodebuf(buffer)))
+    .catch(err => Inform.error(err))
+  }
+
+  function docSave() {
+    mawe.save(doc)
+    .then(() => Inform.success(`Saved ${command.name}`))
+    .catch(err => Inform.error(err))
+  }
+
+  function docSaveAs({filename}) {
+    mawe.saveas(doc, filename)
+    .then(file => {
+      setDoc(doc => ({ ...doc, file }))
+      Inform.success(`Saved ${file.name}`)
+    })
+    .catch(err => Inform.error(err))
+  }
+
   //---------------------------------------------------------------------------
 
-  return <CmdContext.Provider value={{command, setCommand}}>
+  return <CmdContext.Provider value={{setCommand}}>
       <View doc={doc} setDoc={setDoc}/>
   </CmdContext.Provider>
 }
@@ -404,8 +397,6 @@ async function onHelp(setCommand) {
   setCommand({action: "resource", filename: "examples/UserGuide.mawe"})
 }
 
-//-----------------------------------------------------------------------------
-
 async function onNewFile({ setCommand }) {
   setCommand({
     action: "set",
@@ -424,17 +415,13 @@ async function onOpenFile({ setCommand, file }) {
     const [filename] = filePaths
 
     console.log("Load file:", filename)
-    setCommand({
-      action: "load",
-      filename,
-      name: await fs.basename(filename)
-    })
+    setCommand({action: "load", filename})
   }
 }
 
 async function onSaveFile({ setCommand, file }) {
   if (file) {
-    setCommand({action: "save", name: file.name})
+    setCommand({action: "save"})
     return;
   }
   onSaveFileAs({ setCommand, file })
@@ -447,10 +434,6 @@ async function onSaveFileAs({ setCommand, file }) {
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
   if (!canceled) {
-    setCommand({
-      action: "saveas",
-      filename: filePath,
-      name: await fs.basename(filePath)
-    })
+    setCommand({action: "saveas", filename: filePath})
   }
 }
