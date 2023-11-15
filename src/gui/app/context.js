@@ -1,6 +1,6 @@
 //*****************************************************************************
 //
-// React Contexts to be imported
+// Application React Contexts to be imported and used
 //
 //*****************************************************************************
 
@@ -10,13 +10,23 @@ import {
 
 export { useContext }
 
+//-----------------------------------------------------------------------------
+// Settings Context hold persistent settings, and manages their loading,
+// saving and distribution to correct components.
+//-----------------------------------------------------------------------------
+
 export const SettingsContext = createContext(null)
+
+//-----------------------------------------------------------------------------
+// "Command" Context is meant for subcomponents to trigger top level components
+// to perform certain operations (loading & saving files, and so on)
+//-----------------------------------------------------------------------------
 
 export const CmdContext = createContext(null)
 
 //-----------------------------------------------------------------------------
 //
-// Settings
+// Settings: This is sketching, the framework needs all sorts of considerations
 //
 //-----------------------------------------------------------------------------
 

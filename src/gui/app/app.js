@@ -73,7 +73,8 @@ export default function App(props) {
 
 //*****************************************************************************
 //
-// Handling settings
+// Handling settings: The main thing here is not to render anything before
+// settings are loaded.
 //
 //*****************************************************************************
 
@@ -117,7 +118,7 @@ function AppSettings(props) {
   if(!settings) return null
 
   return <SettingsContext.Provider value={{settings, setSettings}}>
-    <AppCommand />
+    <AppCommand startup={settings.command}/>
   </SettingsContext.Provider>
 }
 
@@ -127,9 +128,9 @@ function AppSettings(props) {
 //
 //*****************************************************************************
 
-function AppCommand() {
+function AppCommand({startup}) {
 
-  const {settings} = useContext(SettingsContext)
+  //const {settings} = useContext(SettingsContext)
 
   //---------------------------------------------------------------------------
   // TODO: Improve doc architecture!!!
@@ -141,7 +142,7 @@ function AppCommand() {
   // level from subcomponents to perform all kinds of things. Maybe there is
   // some similar React design patterns out there?
 
-  const [command, setCommand] = useState(settings.command)
+  const [command, setCommand] = useState(startup)
 
   useEffect(() => {
     const {action} = command
