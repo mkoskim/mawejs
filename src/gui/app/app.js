@@ -12,7 +12,7 @@ import "./app.css"
 
 import React, {
   useEffect, useState, useReducer, useCallback,
-  useMemo,
+  useMemo, useContext,
 } from "react"
 
 import { ThemeProvider } from '@mui/material/styles';
@@ -39,7 +39,9 @@ import { SnackbarProvider, enqueueSnackbar } from "notistack";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
-import {useContext, SettingsContext, CmdContext, settingsLoad} from "./context"
+import {CmdContext} from "./context"
+import {SettingsContext, settingsLoad } from "./settings"
+
 import {useImmer} from "use-immer"
 
 import { SingleEditView } from "../editor/editor";
