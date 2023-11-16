@@ -5,10 +5,8 @@
 //*****************************************************************************
 
 import {
-  createContext, useContext,
+  createContext
 } from "react"
-
-export { useContext }
 
 export const SettingsContext = createContext(null)
 
@@ -54,7 +52,6 @@ const defaults = {
   // View selections
   view: {
     selected: "editor",
-    choices: ["editor", "organizer", "chart", "export"],
   },
 
   // Base editor settings

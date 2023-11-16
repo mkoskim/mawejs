@@ -16,7 +16,7 @@ import React, {
   memo, useMemo, useCallback,
   useDeferredValue,
   StrictMode,
-  useRef,
+  useRef, useContext,
 } from 'react';
 
 import {
@@ -64,7 +64,7 @@ import {
 
 import { mawe } from "../../document";
 import { produce } from "immer";
-import { useContext, SettingsContext} from "../app/settings";
+import { SettingsContext} from "../app/settings";
 
 //import { mawe } from "../../document";
 

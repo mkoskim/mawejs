@@ -223,6 +223,7 @@ function View({doc, setDoc}) {
 
 class SelectViewButtons extends React.PureComponent {
 
+  choices = ["editor", "organizer", "chart", "export"]
   viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
     "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
@@ -231,10 +232,10 @@ class SelectViewButtons extends React.PureComponent {
   }
 
   render() {
-    const {choices, selected, setSelected} = this.props
+    const {selected, setSelected} = this.props
     return <MakeToggleGroup
       exclusive={true}
-      choices={choices}
+      choices={this.choices}
       selected={selected}
       setSelected={setSelected}
       buttons={this.viewbuttons}
@@ -287,7 +288,7 @@ function WorkspaceTab({doc, setDoc}) {
   return <ToolBox>
     <FileMenu setCommand={setCommand} file={file}/>
     <Separator/>
-    <SelectViewButtons choices={view.choices} selected={view.selected} setSelected={setMode}/>
+    <SelectViewButtons selected={view.selected} setSelected={setMode}/>
     <Separator/>
 
     <DocInfoBar mode={settings.view.mode} setMode={setMode} doc={doc} setDoc={setDoc}/>

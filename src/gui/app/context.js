@@ -5,10 +5,8 @@
 //*****************************************************************************
 
 import {
-  createContext, useContext,
+  createContext
 } from "react"
-
-export { useContext }
 
 //-----------------------------------------------------------------------------
 // "Command" Context is meant for subcomponents to trigger top level components
