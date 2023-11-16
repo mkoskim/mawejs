@@ -8,6 +8,9 @@ STORY: undefined
 /-->
 <body>
 <head>
+<title>Frankenstein</title>
+<subtitle>The Modern Prometheus</subtitle>
+<author>Mary Wollstonecraft Shelley</author>
 <export type="short" chapterelem="part" chaptertype="separated"/>
 </head>
 <!--/
