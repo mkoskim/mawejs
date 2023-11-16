@@ -270,12 +270,12 @@ class SelectViewButtons extends React.PureComponent {
 
 function ViewSwitch({doc, setDoc}) {
 
-  const {view} = useContext(SettingsContext)
+  const {view, setView} = useContext(SettingsContext)
 
   const [focusTo, _setFocusTo] = useState(undefined)
 
   const setFocusTo = useCallback(value => {
-    setDoc(produce(draft => { view.selected = "editor" }))
+    setView(produce(view => {view.selected = "editor"}))
     _setFocusTo(value)
   }, [])
 
@@ -320,7 +320,7 @@ function WorkspaceTab({doc, setDoc}) {
 
   function WithDoc() {
     const {view, setView} = useContext(SettingsContext)
-    const setMode = useCallback(value => setView(produce(view => view.selected = value), []))
+    const setMode = useCallback(value => setView(produce(view => {view.selected = value}), []))
 
     return <ToolBox>
       <FileMenu setCommand={setCommand} file={file}/>
