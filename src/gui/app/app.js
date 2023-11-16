@@ -126,7 +126,7 @@ export default function App(props) {
 
   function docFromResource({filename}) {
     fs.readResource(filename)
-    .then(buffer => docFromBuffer(mawe.decodebuf(buffer)))
+    .then(buffer => docFromBuffer({buffer: mawe.decodebuf(buffer)}))
     .catch(err => Inform.error(err))
   }
 
