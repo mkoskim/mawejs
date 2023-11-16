@@ -12,7 +12,7 @@ import "./app.css"
 
 import React, {
   useEffect, useState, useReducer, useCallback,
-  useMemo,
+  useMemo, useContext,
 } from "react"
 
 import { ThemeProvider } from '@mui/material/styles';
@@ -35,9 +35,19 @@ import {
 
 import { EditHead } from "../common/components";
 
-import { SnackbarProvider, enqueueSnackbar, closeSnackbar } from "notistack";
+import { SnackbarProvider } from "notistack";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+
+import {CmdContext} from "./context"
+import {
+  SettingsContext,
+  getViewDefaults,
+  getStartupCommand, useSetting
+} from "./settings"
+
+import {produce} from "immer"
+import {useImmer} from "use-immer"
 
 import { SingleEditView } from "../editor/editor";
 import { Organizer } from "../organizer/organizer";
@@ -45,16 +55,49 @@ import { Export } from "../export/export"
 import { Chart } from "../chart/chart"
 
 import { mawe } from "../../document"
-import { nanoid } from '../../util';
+import { nanoid, sleep } from '../../util';
 
 import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
-import { appQuit } from "../../system/host"
+import { appQuit, appLog } from "../../system/host"
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Application main
+//
+//*****************************************************************************
 
 export default function App(props) {
+  useEffect(() => addHotkeys([
+    [IsKey.CtrlQ,  (e) => appQuit()],
+  ]));
 
-  //console.log("App")
+  return <ThemeProvider theme={theme}>
+    <SnackbarProvider>
+      <AppSettings />
+    </SnackbarProvider>
+  </ThemeProvider>
+}
+
+//*****************************************************************************
+//
+// Handling settings: The main thing here is not to render anything before
+// settings are loaded.
+//
+//*****************************************************************************
+
+function AppSettings(props) {
+
+  /*
+  // Testing, sketching...
+  const [settings, setSettings] = useImmer(null)
+
+  useEffect(() => {
+    console.log("Loading settings...")
+    loadSettings()
+    .then(s => setSettings(() => s))
+    .catch(err => setSettings(() => getDefaultSettings()))
+  }, [])
+  */
 
   /*
   const dispatch = useDispatch()
@@ -84,134 +127,125 @@ export default function App(props) {
   }
   */
 
-  //---------------------------------------------------------------------------
+  const [loaded, setLoaded] = useSetting("loaded")
 
-  useEffect(() => addHotkeys([
-    [IsKey.CtrlQ,  (e) => appQuit()],
-  ]));
+  const settings = {
+    loaded, setLoaded,
+  }
+
+  //if(!settings) return null
+
+  return <SettingsContext.Provider value={settings}>
+    <AppCommand/>
+  </SettingsContext.Provider>
+}
+
+//*****************************************************************************
+//
+// App command (load, save, ...) interface
+//
+//*****************************************************************************
+
+function AppCommand() {
+
+  const settings = useContext(SettingsContext)
 
   //---------------------------------------------------------------------------
   // TODO: Improve doc architecture!!!
 
-  const [command, setCommand] = useState({
-    action: "set", buffer: '<story format="mawe" />'
-    //action: "resource", filename: "examples/UserGuide.mawe",
-
-    //load: "./examples/Empty.mawe",
-    //load: "./examples/TestDoc1.mawe"
-    //load: "./examples/TestDoc2.mawe"
-    //load: "./examples/UserGuide.mawe",
-    //load: "./examples/Lorem30k.mawe"
-    //load: "./examples/Compressed.mawe.gz"
-
-    //action: "load", filename: "./local/mawe2/GjertaAvaruudessa.3.mawe"
-    //load: "./local/mawe2/GjertaViidakossa.mawe"
-    //load: "./local/mawe2/NeljaBarnaa.mawe",
-    //action: "load", filename: "./local/cantread.mawe",
-  })
-
   const [doc, setDoc] = useState(null)
 
   //---------------------------------------------------------------------------
-  // Doc command interface: Let's try this, we can give command, which then
-  // updates doc/story.
+  // Doc command interface: Let's try this, we can send commands here to top
+  // level from subcomponents to perform all kinds of things. Maybe there is
+  // some similar React design patterns out there?
+
+  const [command, setCommand] = useState(() => getStartupCommand(settings))
 
   useEffect(() => {
     const {action} = command
     switch(action) {
-      case "load": {
-        const {filename} = command
-        mawe.load(filename)
-          .then(content => {
-            setDoc({
-              ...content,
-              key: nanoid(),
-            })
-            enqueueSnackbar(`Loaded: ${content.file.name}`, {variant: "success"});
-          })
-          .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
-        break;
-      }
-      case "set": {
-        const {buffer} = command
-        setDoc({
-          ...mawe.create(buffer),
-          key: nanoid(),
-        })
-        break;
-      }
-      case "resource": {
-        const {filename} = command
-        fs.readResource(filename)
-          .then(buffer => {
-            setDoc({
-              ...mawe.create(mawe.decodebuf(buffer)),
-              key: nanoid(),
-            })
-          })
-        break;
-      }
-      case "save": {
-        mawe.save(doc)
-          .then(() => enqueueSnackbar(`Saved ${command.name}`, {variant: "success"}))
-          .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
-        break;
-      }
-      case "saveas": {
-        const {filename} = command
-        mawe.saveas(doc, filename)
-          .then(file => {
-            setDoc(doc => ({ ...doc, file }))
-            enqueueSnackbar(`Saved ${file.name}`, {variant: "success"})
-          })
-          .catch(err => enqueueSnackbar(String(err), {variant: "error"}))
-        break;
-      }
-      case "error": {
-        enqueueSnackbar(command.message, {variant: "error"});
-        break;
-      }
+      case "load": { docFromFile(command); break; }
+      case "save": { docSave(command); break; }
+      case "set": { docFromBuffer(command); break; }
+      case "resource": { docFromResource(command); break; }
+      case "saveas": { docSaveAs(command); break; }
+      case "error": { Inform.error(command.message); break; }
     }
   }, [command])
 
+  return <CmdContext.Provider value={{setCommand}}>
+      <View key={doc?.key} doc={doc} setDoc={setDoc}/>
+  </CmdContext.Provider>
+
   //---------------------------------------------------------------------------
 
-  const [mode, setMode] = useState(
-    "editor"
-    //"organizer"
-    //"chart"
-    //"export"
-  );
+  function docFromFile({filename}) {
+    mawe.load(filename)
+    .then(content => {
+      setDoc({
+        ...content,
+        key: nanoid(),
+      })
+      settings.setLoaded(content.file.id)
+      Inform.success(`Loaded: ${content.file.name}`);
+    })
+    .catch(err => Inform.error(err))
+  }
+
+  function docFromBuffer({buffer}) {
+    setDoc({
+      ...mawe.create(buffer),
+      key: nanoid(),
+    })
+  }
+
+  function docFromResource({filename}) {
+    fs.readResource(filename)
+    .then(buffer => docFromBuffer(mawe.decodebuf(buffer)))
+    .catch(err => Inform.error(err))
+  }
+
+  function docSave() {
+    mawe.save(doc)
+    .then(() => Inform.success(`Saved ${command.name}`))
+    .catch(err => Inform.error(err))
+  }
+
+  function docSaveAs({filename}) {
+    mawe.saveas(doc, filename)
+    .then(file => {
+      setDoc(doc => ({ ...doc, file }))
+      Inform.success(`Saved ${file.name}`)
+    })
+    .catch(err => Inform.error(err))
+  }
+}
+
+function View({doc, setDoc}) {
 
   //---------------------------------------------------------------------------
   // Use key to force editor state reset when file is changed: It won't work
   // for generated docs (user guide, new doc), but we fix that later.
 
-  const viewprops = { command, setCommand, mode, setMode, doc, setDoc }
+  const settings = useContext(SettingsContext)
+
+  //const [view, setView] = useSetting(doc?.file?.id, getViewDefaults(null))
+  const [view, setView] = useState(() => getViewDefaults())
 
   return (
-    <ThemeProvider theme={theme}>
-      <SnackbarProvider>
+    <SettingsContext.Provider value={{...settings, view, setView}}>
       <VBox className="ViewPort">
-        <WorkspaceTab {...viewprops} />
-        <ViewSwitch key={doc?.key} {...viewprops} />
+        <WorkspaceTab doc={doc} setDoc={setDoc}/>
+        <ViewSwitch doc={doc} setDoc={setDoc}/>
       </VBox>
-      </SnackbarProvider>
-    </ThemeProvider>
+    </SettingsContext.Provider>
   )
 }
 
 //-----------------------------------------------------------------------------
 
 class SelectViewButtons extends React.PureComponent {
-
-  choices = ["editor", "organizer", "chart", "export"]
-  viewbuttons = {
-    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
-    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
-    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
-    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
-  }
 
   render() {
     const {selected, setSelected} = this.props
@@ -223,14 +257,25 @@ class SelectViewButtons extends React.PureComponent {
       buttons={this.viewbuttons}
     />
   }
+
+  choices = ["editor", "organizer", "chart", "export"]
+
+  viewbuttons = {
+    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
+    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
+    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
+    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
+  }
 }
 
-function ViewSwitch({ mode, setMode, doc, setDoc }) {
+function ViewSwitch({doc, setDoc}) {
+
+  const {view} = useContext(SettingsContext)
 
   const [focusTo, _setFocusTo] = useState(undefined)
 
   const setFocusTo = useCallback(value => {
-    setMode("editor")
+    setDoc(produce(draft => { view.selected = "editor" }))
     _setFocusTo(value)
   }, [])
 
@@ -238,7 +283,7 @@ function ViewSwitch({ mode, setMode, doc, setDoc }) {
 
   if(!doc?.story) return <Loading />
 
-  switch (mode) {
+  switch (view.selected) {
     case "editor": return <SingleEditView {...props} />
     case "organizer": return <Organizer {...props} />
     case "export": return <Export {...props} />
@@ -250,10 +295,11 @@ function ViewSwitch({ mode, setMode, doc, setDoc }) {
 
 //-----------------------------------------------------------------------------
 
-function WorkspaceTab({ setCommand, mode, setMode, doc, setDoc }) {
+function WorkspaceTab({doc, setDoc}) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
+  const {setCommand} = useContext(CmdContext)
   const file = doc?.file
 
   useEffect(() => addHotkeys([
@@ -262,18 +308,35 @@ function WorkspaceTab({ setCommand, mode, setMode, doc, setDoc }) {
     [IsKey.CtrlS, (e) => onSaveFile({setCommand, file})],
   ]));
 
-  return <ToolBox>
-    <FileMenu setCommand={setCommand} file={file}/>
-    <Separator/>
+  if(!doc) return <WithoutDoc/>
+  return <WithDoc/>
 
-    <DocInfoBar mode={mode} setMode={setMode} doc={doc} setDoc={setDoc}/>
+  function WithoutDoc() {
+    return <ToolBox>
+      <FileMenu setCommand={setCommand} file={file}/>
+      <Separator/>
+    </ToolBox>
+  }
 
-    <Filler />
-    <Separator />
-    <OpenFolderButton filename={doc?.file?.id}/>
-    <HelpButton setCommand={setCommand}/>
-    <SettingsButton />
-</ToolBox>
+  function WithDoc() {
+    const {view, setView} = useContext(SettingsContext)
+    const setMode = useCallback(value => setView(produce(view => view.selected = value), []))
+
+    return <ToolBox>
+      <FileMenu setCommand={setCommand} file={file}/>
+      <Separator/>
+      <SelectViewButtons selected={view.selected} setSelected={setMode}/>
+      <Separator/>
+
+      <DocInfoBar doc={doc} setDoc={setDoc}/>
+
+      <Filler />
+      <Separator />
+      <OpenFolderButton filename={doc?.file?.id}/>
+      <HelpButton setCommand={setCommand}/>
+      <SettingsButton />
+    </ToolBox>
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -302,7 +365,7 @@ class FileMenu extends React.PureComponent {
 
 class DocInfoBar extends React.PureComponent {
   render() {
-    const {mode, setMode, doc, setDoc} = this.props
+    const {doc, setDoc} = this.props
 
     if(!doc) return null
 
@@ -311,9 +374,6 @@ class DocInfoBar extends React.PureComponent {
     const {head} = body
 
     return <>
-      <SelectViewButtons selected={mode} setSelected={setMode}/>
-
-      <Separator />
       <Label text={filename}/>
       <Separator />
       <EditHeadButton head={head} setDoc={setDoc} />
@@ -376,11 +436,8 @@ async function onOpenFolder(file) {
 }
 
 async function onHelp(setCommand) {
-  //setDoc({})
   setCommand({action: "resource", filename: "examples/UserGuide.mawe"})
 }
-
-//-----------------------------------------------------------------------------
 
 async function onNewFile({ setCommand }) {
   setCommand({
@@ -400,17 +457,13 @@ async function onOpenFile({ setCommand, file }) {
     const [filename] = filePaths
 
     console.log("Load file:", filename)
-    setCommand({
-      action: "load",
-      filename,
-      name: await fs.basename(filename)
-    })
+    setCommand({action: "load", filename})
   }
 }
 
 async function onSaveFile({ setCommand, file }) {
   if (file) {
-    setCommand({action: "save", name: file.name})
+    setCommand({action: "save"})
     return;
   }
   onSaveFileAs({ setCommand, file })
@@ -423,10 +476,6 @@ async function onSaveFileAs({ setCommand, file }) {
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
   if (!canceled) {
-    setCommand({
-      action: "saveas",
-      filename: filePath,
-      name: await fs.basename(filePath)
-    })
+    setCommand({action: "saveas", filename: filePath})
   }
 }

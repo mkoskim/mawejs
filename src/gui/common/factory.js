@@ -36,7 +36,7 @@ import {
 import {Icon} from "./icons"
 import {IsKey, addHotkeys} from "./hotkeys"
 
-//import { enqueueSnackbar, closeSnackbar } from "notistack";
+import { enqueueSnackbar, closeSnackbar } from "notistack";
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export { theme }
@@ -320,11 +320,8 @@ export function Radio({style, choice, selected, setSelected}) {
 // Inform user about things that are happening or happened.
 //-----------------------------------------------------------------------------
 
-/*
+//*
 export const Inform = {
-  process: msg => {
-    return enqueueSnackbar(String(msg), {variant: "info", persist: true});
-  },
   success: msg => {
     return enqueueSnackbar(String(msg), {variant: "success"});
   },
@@ -337,6 +334,9 @@ export const Inform = {
   },
   dismiss: key => {
     closeSnackbar(key)
+  },
+  process: msg => {
+    return enqueueSnackbar(String(msg), {variant: "info", persist: true});
   },
 }
 /**/

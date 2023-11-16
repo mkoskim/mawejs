@@ -10,7 +10,7 @@
 // Bridge
 //-----------------------------------------------------------------------------
 
-function dlgcall(cmd, ...args) {
+function syscall(cmd, ...args) {
   return window.ipc.callMain("host", [cmd, ...args]);
 }
 
@@ -19,5 +19,9 @@ function dlgcall(cmd, ...args) {
 //-----------------------------------------------------------------------------
 
 export function appQuit(options) {
-  return dlgcall("quit", options);
+  return syscall("quit", options);
+}
+
+export function appLog(message) {
+  return syscall("log", message);
 }

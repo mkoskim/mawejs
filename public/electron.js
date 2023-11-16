@@ -69,6 +69,8 @@ async function createWindow()
   mainWindow.on("closed", () => (mainWindow = null));
 
   mainWindow.setMenu(null);
+  console.log("Languages:", mainWindow.webContents.session.availableSpellCheckerLanguages)
+  //mainWindow.webContents.session.setSpellCheckerLanguages(['fi'])
   mainWindow.webContents.openDevTools();
 
   if(isDev)
