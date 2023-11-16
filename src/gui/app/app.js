@@ -111,7 +111,7 @@ export default function App(props) {
         ...content,
         key: nanoid(),
       })
-      settings.setLoaded(content.file.id)
+      setLoaded(content.file.id)
       Inform.success(`Loaded: ${content.file.name}`);
     })
     .catch(err => Inform.error(err))
@@ -154,22 +154,19 @@ export default function App(props) {
 
 function View({doc, setDoc}) {
 
-  //---------------------------------------------------------------------------
-  // Use key to force editor state reset when file is changed: It won't work
-  // for generated docs (user guide, new doc), but we fix that later.
-
+  // Inject view settings to settings
   const settings = useContext(SettingsContext)
 
   //const [view, setView] = useSetting(doc?.file?.id, getViewDefaults(null))
   const [view, setView] = useState(() => getViewDefaults())
 
-  const withView = useMemo(() => ({
+  const settingsWithView = useMemo(() => ({
     ...settings,
     view, setView,
   }), [settings, view, setView])
 
   return (
-    <SettingsContext.Provider value={withView}>
+    <SettingsContext.Provider value={settingsWithView}>
       <VBox className="ViewPort">
         <WorkspaceTab doc={doc} setDoc={setDoc}/>
         <ViewSwitch doc={doc} setDoc={setDoc}/>

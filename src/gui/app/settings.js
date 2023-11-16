@@ -6,14 +6,12 @@
 
 import {
   createContext,
-  Dispatch, SetStateAction, useEffect, useState,
+  useEffect, useState,
 } from "react"
 
 import { useImmer } from "use-immer";
 
 export const SettingsContext = createContext(null)
-
-const fs = require("../../system/localfs")
 
 //*****************************************************************************
 //
@@ -39,6 +37,7 @@ export function useSetting(key, defaultValue) {
     }
   }, [key, value]);
 
+  //console.log("Setting:", key, "=", value)
   return [value, setValue];
 }
 
