@@ -71,95 +71,13 @@ export default function App(props) {
     [IsKey.CtrlQ,  (e) => appQuit()],
   ]));
 
-  return <ThemeProvider theme={theme}>
-    <SnackbarProvider>
-      <AppSettings />
-    </SnackbarProvider>
-  </ThemeProvider>
-}
-
-//*****************************************************************************
-//
-// Handling settings: The main thing here is not to render anything before
-// settings are loaded.
-//
-//*****************************************************************************
-
-function AppSettings(props) {
-
-  /*
-  // Testing, sketching...
-  const [settings, setSettings] = useImmer(null)
-
-  useEffect(() => {
-    console.log("Loading settings...")
-    loadSettings()
-    .then(s => setSettings(() => s))
-    .catch(err => setSettings(() => getDefaultSettings()))
-  }, [])
-  */
-
-  /*
-  const dispatch = useDispatch()
-
-  //---------------------------------------------------------------------------
-  // Run initializes & wait them to finish
-
-  useEffect(() => {
-    console.log("Initializing...")
-    dispatch(action.CWD.resolve("./local"))
-    //dispatch(CWD.location("home"))
-    //dispatch(onOpen({id: "./local/Beltane.A.mawe.gz", name: "Beltane.A.mawe.gz"}))
-    dispatch(action.workspace.init())
-    dispatch(action.doc.init())
-  }, [])
-
-  const status = [
-    useSelector(state => state.workspace.status),
-    useSelector(state => state.doc.status),
-  ]
-
-  console.log("Status:", status)
-
-  if(!status.every(s => s))
-  {
-    return <View.Starting />
-  }
-  */
-
   const [loaded, setLoaded] = useSetting("loaded")
 
   const settings = {
     loaded, setLoaded,
   }
 
-  //if(!settings) return null
-
-  return <SettingsContext.Provider value={settings}>
-    <AppCommand/>
-  </SettingsContext.Provider>
-}
-
-//*****************************************************************************
-//
-// App command (load, save, ...) interface
-//
-//*****************************************************************************
-
-function AppCommand() {
-
-  const settings = useContext(SettingsContext)
-
-  //---------------------------------------------------------------------------
-  // TODO: Improve doc architecture!!!
-
   const [doc, setDoc] = useState(null)
-
-  //---------------------------------------------------------------------------
-  // Doc command interface: Let's try this, we can send commands here to top
-  // level from subcomponents to perform all kinds of things. Maybe there is
-  // some similar React design patterns out there?
-
   const [command, setCommand] = useState(() => getStartupCommand(settings))
 
   useEffect(() => {
@@ -174,9 +92,15 @@ function AppCommand() {
     }
   }, [command])
 
-  return <CmdContext.Provider value={{setCommand}}>
-      <View key={doc?.key} doc={doc} setDoc={setDoc}/>
-  </CmdContext.Provider>
+  return <ThemeProvider theme={theme}>
+    <SnackbarProvider>
+      <SettingsContext.Provider value={settings}>
+        <CmdContext.Provider value={{setCommand}}>
+          <View key={doc?.key} doc={doc} setDoc={setDoc}/>
+        </CmdContext.Provider>
+      </SettingsContext.Provider>
+    </SnackbarProvider>
+  </ThemeProvider>
 
   //---------------------------------------------------------------------------
 
@@ -208,7 +132,7 @@ function AppCommand() {
 
   function docSave() {
     mawe.save(doc)
-    .then(() => Inform.success(`Saved ${command.name}`))
+    .then(file => Inform.success(`Saved ${file.name}`))
     .catch(err => Inform.error(err))
   }
 
@@ -221,6 +145,12 @@ function AppCommand() {
     .catch(err => Inform.error(err))
   }
 }
+
+//*****************************************************************************
+//
+// Document view
+//
+//*****************************************************************************
 
 function View({doc, setDoc}) {
 
