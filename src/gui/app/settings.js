@@ -5,10 +5,78 @@
 //*****************************************************************************
 
 import {
-  createContext
+  createContext,
+  Dispatch, SetStateAction, useEffect, useState,
 } from "react"
 
+import { useImmer } from "use-immer";
+
 export const SettingsContext = createContext(null)
+
+const fs = require("../../system/localfs")
+
+//*****************************************************************************
+//
+// Local Storage item
+//
+//*****************************************************************************
+
+export function useSetting(key, defaultValue) {
+  const [value, setValue] = useState(() => {
+    if(!key) return defaultValue
+    const value = window.localStorage.getItem(key);
+
+    return value ? JSON.parse(value) : defaultValue;
+  });
+
+  useEffect(() => {
+    if(key) {
+      if(value) {
+        window.localStorage.setItem(key, JSON.stringify(value));
+      } else {
+        window.localStorage.removeItem(key)
+      }
+    }
+  }, [key, value]);
+
+  return [value, setValue];
+}
+
+export function getStartupCommand(settings) {
+
+  const {loaded} = settings
+
+  if(loaded) return { action: "load", filename: loaded }
+
+  return { action: "set", buffer: '<story format="mawe" />' }
+}
+
+//*****************************************************************************
+//
+// File specific settings
+//
+//*****************************************************************************
+
+export function getViewDefaults(file) {
+  // Settings based on file.id
+
+  return {
+    // View selections
+    selected: "editor",
+
+    // Base editor settings
+    editor: {
+      active: "body",     // body / notes
+      body: {
+        indexed: ["part", "scene", "synopsis"],
+        words: "numbers",
+      },
+      notes: {
+        indexed: ["part", "scene", "synopsis"],
+      },
+    },
+  }
+}
 
 //-----------------------------------------------------------------------------
 //
@@ -30,43 +98,4 @@ const defaults = {
       chaptertype: "separated"
     },
   },
-
-  // Start-up command (what to load)
-  command: {
-    //action: "set", buffer: '<story format="mawe" />'
-    //action: "resource", filename: "examples/UserGuide.mawe",
-
-    //load: "./examples/Empty.mawe",
-    //load: "./examples/TestDoc1.mawe"
-    //load: "./examples/TestDoc2.mawe"
-    //load: "./examples/UserGuide.mawe",
-    //load: "./examples/Lorem30k.mawe"
-    //load: "./examples/Compressed.mawe.gz"
-
-    action: "load", filename: "./local/mawe2/GjertaAvaruudessa.3.mawe"
-    //action: "load", filename: "./local/mawe2/GjertaViidakossa.mawe"
-    //load: "./local/mawe2/NeljaBarnaa.mawe",
-    //action: "load", filename: "./local/cantread.mawe",
-  },
-
-  // View selections
-  view: {
-    selected: "editor",
-  },
-
-  // Base editor settings
-  editor: {
-    active: "body",     // body / notes
-    body: {
-      indexed: ["part", "scene", "synopsis"],
-      words: "numbers",
-    },
-    notes: {
-      indexed: ["part", "scene", "synopsis"],
-    },
-  },
-}
-
-export function settingsLoad() {
-  return defaults
 }

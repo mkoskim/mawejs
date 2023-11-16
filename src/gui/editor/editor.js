@@ -64,9 +64,8 @@ import {
 
 import { mawe } from "../../document";
 import { produce } from "immer";
+//import {getFileSettings, useSetting} from "../app/settings";
 import { SettingsContext} from "../app/settings";
-
-//import { mawe } from "../../document";
 
 //-----------------------------------------------------------------------------
 
@@ -121,12 +120,6 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   }, [noteeditor])
 
   //---------------------------------------------------------------------------
-  // Settings
-  //---------------------------------------------------------------------------
-
-  const {settings: _settings, setSettings} = useContext(SettingsContext)
-
-  //---------------------------------------------------------------------------
   // Section selection + focusing
   //---------------------------------------------------------------------------
 
@@ -171,10 +164,12 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   // Index settings: Change these to component props
   //---------------------------------------------------------------------------
 
-  const indexed1 = _settings.editor.body.indexed;
-  const setIndexed1 = useCallback(value => setSettings(draft => {draft.editor.body.indexed = value}))
-  const words1 = _settings.editor.body.words
-  const setWords1 = useCallback(value => setSettings(draft => {draft.editor.body.words = value}))
+  const {view, setView} = useContext(SettingsContext)
+
+  const indexed1 = view.editor.body.indexed;
+  const setIndexed1 = useCallback(value => setView(produce(draft => {draft.editor.body.indexed = value})))
+  const words1 = view.editor.body.words
+  const setWords1 = useCallback(value => setView(produce(draft => {draft.editor.body.words = value})))
 
   const [indexed2, setIndexed2] = useState(["part", "scene", "synopsis"])
 

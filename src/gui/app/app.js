@@ -35,13 +35,18 @@ import {
 
 import { EditHead } from "../common/components";
 
-import { SnackbarProvider, enqueueSnackbar } from "notistack";
+import { SnackbarProvider } from "notistack";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
 import {CmdContext} from "./context"
-import {SettingsContext, settingsLoad } from "./settings"
+import {
+  SettingsContext,
+  getViewDefaults,
+  getStartupCommand, useSetting
+} from "./settings"
 
+import {produce} from "immer"
 import {useImmer} from "use-immer"
 
 import { SingleEditView } from "../editor/editor";
@@ -82,12 +87,17 @@ export default function App(props) {
 
 function AppSettings(props) {
 
+  /*
   // Testing, sketching...
   const [settings, setSettings] = useImmer(null)
 
   useEffect(() => {
-    setSettings(draft => settingsLoad())
+    console.log("Loading settings...")
+    loadSettings()
+    .then(s => setSettings(() => s))
+    .catch(err => setSettings(() => getDefaultSettings()))
   }, [])
+  */
 
   /*
   const dispatch = useDispatch()
@@ -117,10 +127,16 @@ function AppSettings(props) {
   }
   */
 
-  if(!settings) return null
+  const [loaded, setLoaded] = useSetting("loaded")
 
-  return <SettingsContext.Provider value={{settings, setSettings}}>
-    <AppCommand startup={settings.command}/>
+  const settings = {
+    loaded, setLoaded,
+  }
+
+  //if(!settings) return null
+
+  return <SettingsContext.Provider value={settings}>
+    <AppCommand/>
   </SettingsContext.Provider>
 }
 
@@ -130,9 +146,9 @@ function AppSettings(props) {
 //
 //*****************************************************************************
 
-function AppCommand({startup}) {
+function AppCommand() {
 
-  //const {settings} = useContext(SettingsContext)
+  const settings = useContext(SettingsContext)
 
   //---------------------------------------------------------------------------
   // TODO: Improve doc architecture!!!
@@ -144,7 +160,7 @@ function AppCommand({startup}) {
   // level from subcomponents to perform all kinds of things. Maybe there is
   // some similar React design patterns out there?
 
-  const [command, setCommand] = useState(startup)
+  const [command, setCommand] = useState(() => getStartupCommand(settings))
 
   useEffect(() => {
     const {action} = command
@@ -158,6 +174,12 @@ function AppCommand({startup}) {
     }
   }, [command])
 
+  return <CmdContext.Provider value={{setCommand}}>
+      <View key={doc?.key} doc={doc} setDoc={setDoc}/>
+  </CmdContext.Provider>
+
+  //---------------------------------------------------------------------------
+
   function docFromFile({filename}) {
     mawe.load(filename)
     .then(content => {
@@ -165,6 +187,7 @@ function AppCommand({startup}) {
         ...content,
         key: nanoid(),
       })
+      settings.setLoaded(content.file.id)
       Inform.success(`Loaded: ${content.file.name}`);
     })
     .catch(err => Inform.error(err))
@@ -197,12 +220,6 @@ function AppCommand({startup}) {
     })
     .catch(err => Inform.error(err))
   }
-
-  //---------------------------------------------------------------------------
-
-  return <CmdContext.Provider value={{setCommand}}>
-      <View doc={doc} setDoc={setDoc}/>
-  </CmdContext.Provider>
 }
 
 function View({doc, setDoc}) {
@@ -211,25 +228,24 @@ function View({doc, setDoc}) {
   // Use key to force editor state reset when file is changed: It won't work
   // for generated docs (user guide, new doc), but we fix that later.
 
+  const settings = useContext(SettingsContext)
+
+  //const [view, setView] = useSetting(doc?.file?.id, getViewDefaults(null))
+  const [view, setView] = useState(() => getViewDefaults())
+
   return (
+    <SettingsContext.Provider value={{...settings, view, setView}}>
       <VBox className="ViewPort">
         <WorkspaceTab doc={doc} setDoc={setDoc}/>
-        <ViewSwitch key={doc?.key} doc={doc} setDoc={setDoc}/>
+        <ViewSwitch doc={doc} setDoc={setDoc}/>
       </VBox>
+    </SettingsContext.Provider>
   )
 }
 
 //-----------------------------------------------------------------------------
 
 class SelectViewButtons extends React.PureComponent {
-
-  choices = ["editor", "organizer", "chart", "export"]
-  viewbuttons = {
-    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
-    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
-    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
-    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
-  }
 
   render() {
     const {selected, setSelected} = this.props
@@ -241,15 +257,25 @@ class SelectViewButtons extends React.PureComponent {
       buttons={this.viewbuttons}
     />
   }
+
+  choices = ["editor", "organizer", "chart", "export"]
+
+  viewbuttons = {
+    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
+    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
+    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
+    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
+  }
 }
 
 function ViewSwitch({doc, setDoc}) {
 
-  const {settings, setSettings} = useContext(SettingsContext)
+  const {view} = useContext(SettingsContext)
+
   const [focusTo, _setFocusTo] = useState(undefined)
 
   const setFocusTo = useCallback(value => {
-    setSettings(draft => { draft.view.selected = "editor" })
+    setDoc(produce(draft => { view.selected = "editor" }))
     _setFocusTo(value)
   }, [])
 
@@ -257,7 +283,7 @@ function ViewSwitch({doc, setDoc}) {
 
   if(!doc?.story) return <Loading />
 
-  switch (settings.view.selected) {
+  switch (view.selected) {
     case "editor": return <SingleEditView {...props} />
     case "organizer": return <Organizer {...props} />
     case "export": return <Export {...props} />
@@ -273,10 +299,7 @@ function WorkspaceTab({doc, setDoc}) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
-  const {settings, setSettings} = useContext(SettingsContext)
-  const {view} = settings
   const {setCommand} = useContext(CmdContext)
-  const setMode = useCallback(value => setSettings(draft => {draft.view.selected = value}), [])
   const file = doc?.file
 
   useEffect(() => addHotkeys([
@@ -285,20 +308,35 @@ function WorkspaceTab({doc, setDoc}) {
     [IsKey.CtrlS, (e) => onSaveFile({setCommand, file})],
   ]));
 
-  return <ToolBox>
-    <FileMenu setCommand={setCommand} file={file}/>
-    <Separator/>
-    <SelectViewButtons selected={view.selected} setSelected={setMode}/>
-    <Separator/>
+  if(!doc) return <WithoutDoc/>
+  return <WithDoc/>
 
-    <DocInfoBar mode={settings.view.mode} setMode={setMode} doc={doc} setDoc={setDoc}/>
+  function WithoutDoc() {
+    return <ToolBox>
+      <FileMenu setCommand={setCommand} file={file}/>
+      <Separator/>
+    </ToolBox>
+  }
 
-    <Filler />
-    <Separator />
-    <OpenFolderButton filename={doc?.file?.id}/>
-    <HelpButton setCommand={setCommand}/>
-    <SettingsButton />
-  </ToolBox>
+  function WithDoc() {
+    const {view, setView} = useContext(SettingsContext)
+    const setMode = useCallback(value => setView(produce(view => view.selected = value), []))
+
+    return <ToolBox>
+      <FileMenu setCommand={setCommand} file={file}/>
+      <Separator/>
+      <SelectViewButtons selected={view.selected} setSelected={setMode}/>
+      <Separator/>
+
+      <DocInfoBar doc={doc} setDoc={setDoc}/>
+
+      <Filler />
+      <Separator />
+      <OpenFolderButton filename={doc?.file?.id}/>
+      <HelpButton setCommand={setCommand}/>
+      <SettingsButton />
+    </ToolBox>
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -327,7 +365,7 @@ class FileMenu extends React.PureComponent {
 
 class DocInfoBar extends React.PureComponent {
   render() {
-    const {mode, setMode, doc, setDoc} = this.props
+    const {doc, setDoc} = this.props
 
     if(!doc) return null
 
