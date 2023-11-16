@@ -42,9 +42,7 @@ export function useSetting(key, defaultValue) {
   return [value, setValue];
 }
 
-export function getStartupCommand(settings) {
-
-  const {loaded} = settings
+export function getStartupCommand(loaded) {
 
   if(loaded) return { action: "load", filename: loaded }
 

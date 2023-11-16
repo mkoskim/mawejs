@@ -73,12 +73,12 @@ export default function App(props) {
 
   const [loaded, setLoaded] = useSetting("loaded")
 
-  const settings = {
+  const settings = useMemo(() => ({
     loaded, setLoaded,
-  }
+  }), [loaded, setLoaded])
 
   const [doc, setDoc] = useState(null)
-  const [command, setCommand] = useState(() => getStartupCommand(settings))
+  const [command, setCommand] = useState(() => getStartupCommand(loaded))
 
   useEffect(() => {
     const {action} = command
@@ -95,7 +95,7 @@ export default function App(props) {
   return <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <SettingsContext.Provider value={settings}>
-        <CmdContext.Provider value={{setCommand}}>
+        <CmdContext.Provider value={setCommand}>
           <View key={doc?.key} doc={doc} setDoc={setDoc}/>
         </CmdContext.Provider>
       </SettingsContext.Provider>
@@ -163,8 +163,13 @@ function View({doc, setDoc}) {
   //const [view, setView] = useSetting(doc?.file?.id, getViewDefaults(null))
   const [view, setView] = useState(() => getViewDefaults())
 
+  const withView = useMemo(() => ({
+    ...settings,
+    view, setView,
+  }), [settings, view, setView])
+
   return (
-    <SettingsContext.Provider value={{...settings, view, setView}}>
+    <SettingsContext.Provider value={withView}>
       <VBox className="ViewPort">
         <WorkspaceTab doc={doc} setDoc={setDoc}/>
         <ViewSwitch doc={doc} setDoc={setDoc}/>
@@ -209,9 +214,9 @@ function ViewSwitch({doc, setDoc}) {
     _setFocusTo(value)
   }, [])
 
-  const props = { doc, setDoc, focusTo, setFocusTo }
-
   if(!doc?.story) return <Loading />
+
+  const props = { doc, setDoc, focusTo, setFocusTo }
 
   switch (view.selected) {
     case "editor": return <SingleEditView {...props} />
@@ -229,7 +234,7 @@ function WorkspaceTab({doc, setDoc}) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
-  const {setCommand} = useContext(CmdContext)
+  const setCommand = useContext(CmdContext)
   const file = doc?.file
 
   useEffect(() => addHotkeys([
@@ -238,35 +243,40 @@ function WorkspaceTab({doc, setDoc}) {
     [IsKey.CtrlS, (e) => onSaveFile({setCommand, file})],
   ]));
 
-  if(!doc) return <WithoutDoc/>
-  return <WithDoc/>
+  if(!doc) return <WithoutDoc doc={doc}/>
+  return <WithDoc doc={doc} setDoc={setDoc}/>
+}
 
-  function WithoutDoc() {
-    return <ToolBox>
-      <FileMenu setCommand={setCommand} file={file}/>
-      <Separator/>
-    </ToolBox>
-  }
+function WithoutDoc({doc}) {
+  const setCommand = useContext(CmdContext)
+  const file = doc?.file
 
-  function WithDoc() {
-    const {view, setView} = useContext(SettingsContext)
-    const setMode = useCallback(value => setView(produce(view => {view.selected = value}), []))
+  return <ToolBox>
+    <FileMenu setCommand={setCommand} file={file}/>
+    <Separator/>
+  </ToolBox>
+}
 
-    return <ToolBox>
-      <FileMenu setCommand={setCommand} file={file}/>
-      <Separator/>
-      <SelectViewButtons selected={view.selected} setSelected={setMode}/>
-      <Separator/>
+function WithDoc({doc, setDoc}) {
+  const setCommand = useContext(CmdContext)
+  const file = doc?.file
+  const {view, setView} = useContext(SettingsContext)
+  const setMode = useCallback(value => setView(produce(view => {view.selected = value})), [])
 
-      <DocInfoBar doc={doc} setDoc={setDoc}/>
+  return <ToolBox>
+    <FileMenu setCommand={setCommand} file={file}/>
+    <Separator/>
+    <SelectViewButtons selected={view.selected} setSelected={setMode}/>
+    <Separator/>
 
-      <Filler />
-      <Separator />
-      <OpenFolderButton filename={doc?.file?.id}/>
-      <HelpButton setCommand={setCommand}/>
-      <SettingsButton />
-    </ToolBox>
-  }
+    <DocInfoBar doc={doc} setDoc={setDoc}/>
+
+    <Filler />
+    <Separator />
+    <OpenFolderButton filename={doc?.file?.id}/>
+    <HelpButton setCommand={setCommand}/>
+    <SettingsButton />
+  </ToolBox>
 }
 
 //-----------------------------------------------------------------------------

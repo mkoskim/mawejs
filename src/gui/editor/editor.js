@@ -166,9 +166,9 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   const {view, setView} = useContext(SettingsContext)
 
   const indexed1 = view.editor.body.indexed;
-  const setIndexed1 = useCallback(value => setView(produce(draft => {draft.editor.body.indexed = value})))
+  const setIndexed1 = useCallback(value => setView(produce(draft => {draft.editor.body.indexed = value})), [setView])
   const words1 = view.editor.body.words
-  const setWords1 = useCallback(value => setView(produce(draft => {draft.editor.body.words = value})))
+  const setWords1 = useCallback(value => setView(produce(draft => {draft.editor.body.words = value})), [setView])
 
   const [indexed2, setIndexed2] = useState(["part", "scene", "synopsis"])
 
