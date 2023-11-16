@@ -64,7 +64,6 @@ import {
 
 import { mawe } from "../../document";
 import { produce } from "immer";
-//import {getFileSettings, useSetting} from "../app/settings";
 import { SettingsContext} from "../app/settings";
 
 //-----------------------------------------------------------------------------
