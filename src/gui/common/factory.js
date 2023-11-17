@@ -28,7 +28,7 @@ import {
   Divider, CircularProgress as Spinner,
   List, ListItem, ListItemText, ListSubheader,
   Grid,
-  Menu, MenuItem,
+  Menu, MenuItem, MenuList,
   Select, InputLabel, FormControl,
   Accordion, AccordionSummary, AccordionDetails,
 } from "@mui/material"
@@ -47,7 +47,7 @@ export {
   TextField,
   List, ListItem, ListItemText, ListSubheader,
   ToggleButton, ToggleButtonGroup,
-  Menu, MenuItem,
+  Menu, MenuItem, MenuList,
   Accordion, AccordionSummary, AccordionDetails,
 }
 

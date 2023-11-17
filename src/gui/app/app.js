@@ -25,7 +25,8 @@ import {
   IsKey, addHotkeys,
   Label,
   Separator, Loading, addClass,
-  Menu, MenuItem, Inform,
+  Menu, MenuItem, MenuList, ListSubheader,
+  Inform,
 } from "../common/factory";
 
 import { EditHeadButton, OpenFolderButton } from "../common/components";
@@ -111,7 +112,6 @@ export default function App(props) {
   //---------------------------------------------------------------------------
 
   function docFromFile({filename}) {
-    recentRemove({id: filename}, recent, setRecent)
     mawe.load(filename)
     .then(content => {
       setDoc({
@@ -121,7 +121,10 @@ export default function App(props) {
       recentAdd(content.file, recent, setRecent)
       Inform.success(`Loaded: ${content.file.name}`);
     })
-    .catch(err => Inform.error(err))
+    .catch(err => {
+      recentRemove({id: filename}, recent, setRecent)
+      Inform.error(err)
+    })
   }
 
   function docFromBuffer({buffer}) {
@@ -144,10 +147,10 @@ export default function App(props) {
   }
 
   function docSaveAs({filename}) {
-    recentRemove(doc.file, recent, setRecent)
     mawe.saveas(doc, filename)
     .then(file => {
       setDoc(doc => ({ ...doc, file }))
+      //recentRemove(doc.file, recent, setRecent)
       recentAdd(file, recent, setRecent)
       Inform.success(`Saved ${file.name}`)
     })
@@ -282,10 +285,12 @@ class RecentItems extends React.PureComponent {
   render() {
     const {recent, setCommand, popupState} = this.props
     if(!recent?.length) return null
+    const [first, ...rest] = recent
     return <>
       <Separator />
       {/* <MenuItem>Recent:</MenuItem> */}
-      {recent.slice(0, 5).map(entry => <MenuItem key={entry.id} onClick={(e => { cmdLoadFile({setCommand, filename: entry.id}); popupState.close(e); })}>{entry.name}</MenuItem>)}
+      <MenuItem disabled={true} key={first.id} onClick={(e => { cmdLoadFile({setCommand, filename: first.id}); popupState.close(e); })}>{first.name}</MenuItem>
+      {rest.slice(0, 4).map(entry => <MenuItem key={entry.id} onClick={(e => { cmdLoadFile({setCommand, filename: entry.id}); popupState.close(e); })}>{entry.name}</MenuItem>)}
     </>
   }
 }
