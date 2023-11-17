@@ -265,7 +265,7 @@ class FileMenu extends React.PureComponent {
           <MenuItem onClick={e => { cmdOpenFile({setCommand, file}); popupState.close(e); }}>Open...</MenuItem>
           <RecentItems recent={recent} setCommand={setCommand} popupState={popupState}/>
           <Separator/>
-          <MenuItem disabled={!docopen} onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>Save</MenuItem>
+          <MenuItem disabled={!file} onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>Save</MenuItem>
           <MenuItem disabled={!docopen} onClick={e => { cmdSaveFileAs({setCommand, file}); popupState.close(e); }}>Save As...</MenuItem>
           <MenuItem disabled={!docopen} onClick={e => { cmdCloseFile({setCommand, file}); popupState.close(e); }}>Close</MenuItem>
           {/*
