@@ -285,12 +285,10 @@ class RecentItems extends React.PureComponent {
   render() {
     const {recent, setCommand, popupState} = this.props
     if(!recent?.length) return null
-    const [first, ...rest] = recent
     return <>
       <Separator />
       {/* <MenuItem>Recent:</MenuItem> */}
-      <MenuItem disabled={true} key={first.id} onClick={(e => { cmdLoadFile({setCommand, filename: first.id}); popupState.close(e); })}>{first.name}</MenuItem>
-      {rest.slice(0, 4).map(entry => <MenuItem key={entry.id} onClick={(e => { cmdLoadFile({setCommand, filename: entry.id}); popupState.close(e); })}>{entry.name}</MenuItem>)}
+      {recent.slice(0, 5).map(entry => <MenuItem key={entry.id} onClick={(e => { cmdLoadFile({setCommand, filename: entry.id}); popupState.close(e); })}>{entry.name}</MenuItem>)}
     </>
   }
 }
