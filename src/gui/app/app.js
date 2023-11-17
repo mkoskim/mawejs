@@ -64,7 +64,6 @@ import { mawe } from "../../document"
 import { nanoid, sleep } from '../../util';
 
 import { appQuit, appLog } from "../../system/host"
-import {Divider} from "@mui/material";
 
 const fs = require("../../system/localfs")
 
@@ -260,7 +259,7 @@ function WithoutDoc() {
   const setCommand = useContext(CmdContext)
 
   return <ToolBox>
-    <FileMenu setCommand={setCommand} file={undefined}/>
+    <FileMenu setCommand={setCommand}/>
     <Separator/>
     <Filler />
     <Separator />
@@ -302,6 +301,7 @@ function WithDoc({doc, setDoc}) {
 class FileMenu extends React.PureComponent {
   render() {
     const {setCommand, file} = this.props
+    const nofile = !file
 
     return <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
@@ -309,13 +309,15 @@ class FileMenu extends React.PureComponent {
         <Menu {...bindMenu(popupState)}>
           <MenuItem onClick={e => { cmdNewFile({setCommand}); popupState.close(e); }}>New</MenuItem>
           <MenuItem onClick={e => { cmdOpenFile({setCommand, file}); popupState.close(e); }}>Open...</MenuItem>
-          <MenuItem onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>Save</MenuItem>
-          <MenuItem onClick={e => { cmdSaveFileAs({setCommand, file}); popupState.close(e); }}>Save As...</MenuItem>
+          <Separator/>
+          <MenuItem disabled={nofile} onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>Save</MenuItem>
+          <MenuItem disabled={nofile} onClick={e => { cmdSaveFileAs({setCommand, file}); popupState.close(e); }}>Save As...</MenuItem>
+          <MenuItem disabled={nofile} onClick={e => { cmdCloseFile({setCommand, file}); popupState.close(e); }}>Close</MenuItem>
           {/*
           <MenuItem onClick={popupState.close}>Revert</MenuItem>
           <MenuItem onClick={e => { popupState.close(e); }}>Open Folder</MenuItem>
           */}
-          <Divider/>
+          <Separator/>
           <MenuItem onClick={e => { appQuit(); popupState.close(e); }}>Exit</MenuItem>
         </Menu>
       </React.Fragment>
