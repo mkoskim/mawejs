@@ -22,18 +22,13 @@ import {
   theme,
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Icon, Tooltip,
-  ToggleButton, ToggleButtonGroup,
-  Input,
-  SearchBox,
   IsKey, addHotkeys,
   Label,
-  List, ListItem, ListItemText,
-  Grid,
   Separator, Loading, addClass,
-  Menu, MenuItem, MakeToggleGroup, Inform,
+  Menu, MenuItem, Inform,
 } from "../common/factory";
 
-import { EditHead, OpenFolderButton } from "../common/components";
+import { EditHeadButton, OpenFolderButton } from "../common/components";
 
 import { SnackbarProvider } from "notistack";
 
@@ -52,13 +47,9 @@ import {
   getStartupCommand, useSetting
 } from "./settings"
 
+import { ViewSelectButtons, ViewSwitch } from "./views";
 import {produce} from "immer"
 import {useImmer} from "use-immer"
-
-import { SingleEditView } from "../editor/editor";
-import { Organizer } from "../organizer/organizer";
-import { Export } from "../export/export"
-import { Chart } from "../chart/chart"
 
 import { mawe } from "../../document"
 import { nanoid, sleep } from '../../util';
@@ -189,56 +180,6 @@ function View({doc, setDoc}) {
 
 //-----------------------------------------------------------------------------
 
-class SelectViewButtons extends React.PureComponent {
-
-  render() {
-    const {selected, setSelected} = this.props
-    return <MakeToggleGroup
-      exclusive={true}
-      choices={this.choices}
-      selected={selected}
-      setSelected={setSelected}
-      buttons={this.viewbuttons}
-    />
-  }
-
-  choices = ["editor", "organizer", "chart", "export"]
-
-  viewbuttons = {
-    "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
-    "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
-    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
-    "export": { tooltip: "Export", icon: <Icon.View.Export /> },
-  }
-}
-
-function ViewSwitch({doc, setDoc}) {
-
-  const {view, setView} = useContext(SettingsContext)
-
-  const [focusTo, _setFocusTo] = useState(undefined)
-
-  const setFocusTo = useCallback(value => {
-    setView(produce(view => {view.selected = "editor"}))
-    _setFocusTo(value)
-  }, [])
-
-  if(!doc?.story) return null
-
-  const props = { doc, setDoc, focusTo, setFocusTo }
-
-  switch (view.selected) {
-    case "editor": return <SingleEditView {...props} />
-    case "organizer": return <Organizer {...props} />
-    case "export": return <Export {...props} />
-    case "chart": return <Chart {...props} />
-    default: break;
-  }
-  return null;
-}
-
-//-----------------------------------------------------------------------------
-
 function WorkspaceTab({doc, setDoc}) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
@@ -272,6 +213,7 @@ function WithDoc({doc, setDoc}) {
   const setCommand = useContext(CmdContext)
   const file = doc?.file
   const filename = file?.name ?? "<Unnamed>"
+  const {head} = doc.story.body
   const {view, setView} = useContext(SettingsContext)
   const setMode = useCallback(value => setView(produce(view => {view.selected = value})), [])
 
@@ -282,10 +224,11 @@ function WithDoc({doc, setDoc}) {
   return <ToolBox>
     <FileMenu setCommand={setCommand} file={file}/>
     <Separator/>
-    <SelectViewButtons selected={view.selected} setSelected={setMode}/>
+    <ViewSelectButtons selected={view.selected} setSelected={setMode}/>
     <Separator/>
     <Label text={filename}/>
     <Separator/>
+    <EditHeadButton head={head} setDoc={setDoc} expanded={true}/>
     <OpenFolderButton filename={file?.id}/>
     <CloseButton setCommand={setCommand}/>
 

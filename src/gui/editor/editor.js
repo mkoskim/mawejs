@@ -555,7 +555,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
 
   return <VFiller>
     <ToolBox style={styles.toolbox.left}>
-      <EditHeadButton head={head} setDoc={settings.setDoc} expanded={true}/>
+      {/* <EditHeadButton head={head} setDoc={settings.setDoc} expanded={true}/> */}
       <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
       {/* <OpenFolderButton filename={doc.file?.id}/> */}
