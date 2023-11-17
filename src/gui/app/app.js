@@ -231,7 +231,7 @@ function WithDoc({setCommand, doc, setDoc, recent}) {
   ]))
 
   return <ToolBox>
-    <FileMenu docopen={!!doc} setCommand={setCommand} file={file} recent={recent}/>
+    <FileMenu hasdoc={true} setCommand={setCommand} file={file} recent={recent}/>
     <Separator/>
     <ViewSelectButtons selected={view.selected} setSelected={setMode}/>
     <Separator/>
@@ -252,7 +252,7 @@ function WithDoc({setCommand, doc, setDoc, recent}) {
 
 class FileMenu extends React.PureComponent {
   render() {
-    const {setCommand, file, recent, docopen} = this.props
+    const {setCommand, file, recent, hasdoc} = this.props
 
     return <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
@@ -263,8 +263,8 @@ class FileMenu extends React.PureComponent {
           <RecentItems recent={recent} setCommand={setCommand} popupState={popupState}/>
           <Separator/>
           <MenuItem disabled={!file} onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>Save</MenuItem>
-          <MenuItem disabled={!docopen} onClick={e => { cmdSaveFileAs({setCommand, file}); popupState.close(e); }}>Save As...</MenuItem>
-          <MenuItem disabled={!docopen} onClick={e => { cmdCloseFile({setCommand, file}); popupState.close(e); }}>Close</MenuItem>
+          <MenuItem disabled={!hasdoc} onClick={e => { cmdSaveFileAs({setCommand, file}); popupState.close(e); }}>Save As...</MenuItem>
+          <MenuItem disabled={!hasdoc} onClick={e => { cmdCloseFile({setCommand, file}); popupState.close(e); }}>Close</MenuItem>
           {/*
           <MenuItem onClick={popupState.close}>Revert</MenuItem>
           <MenuItem onClick={e => { popupState.close(e); }}>Open Folder</MenuItem>
