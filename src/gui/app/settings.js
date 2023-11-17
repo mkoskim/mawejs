@@ -41,12 +41,29 @@ export function useSetting(key, defaultValue) {
   return [value, setValue];
 }
 
+//-----------------------------------------------------------------------------
+
+export function recentAdd(file, recent, setRecent) {
+  setRecent([
+    { name: file.name, id: file.id },
+    ...recent.filter(entry => entry.id !== file.id)
+  ])
+}
+
+export function recentRemove(file, recent, setRecent) {
+  if(file) setRecent([
+    ...recent.filter(entry => entry.id !== file.id)
+  ])
+}
+
+/*
 export function getStartupCommand(loaded) {
 
   if(loaded) return { action: "load", filename: loaded }
 
   return { action: "set", buffer: '<story format="mawe" />' }
 }
+*/
 
 //*****************************************************************************
 //

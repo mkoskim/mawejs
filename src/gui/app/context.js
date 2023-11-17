@@ -43,6 +43,11 @@ export async function cmdNewFile({ setCommand }) {
   })
 }
 
+export function cmdLoadFile({setCommand, filename}) {
+  console.log("Load file:", filename)
+  setCommand({action: "load", filename})
+}
+
 export async function cmdOpenFile({ setCommand, file }) {
   //const dirname = await fs.dirname(doc.file.id)
   const { canceled, filePaths } = await fileOpenDialog({
@@ -52,9 +57,7 @@ export async function cmdOpenFile({ setCommand, file }) {
   })
   if (!canceled) {
     const [filename] = filePaths
-
-    console.log("Load file:", filename)
-    setCommand({action: "load", filename})
+    cmdLoadFile({setCommand, filename})
   }
 }
 

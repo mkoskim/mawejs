@@ -37,6 +37,7 @@ import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import {
   CmdContext,
   cmdCloseFile,
+  cmdLoadFile,
   cmdNewFile, cmdOpenFile, cmdOpenFolder, cmdOpenHelp,
   cmdSaveFile, cmdSaveFileAs
 } from "./context"
@@ -44,7 +45,7 @@ import {
 import {
   SettingsContext,
   getViewDefaults,
-  getStartupCommand, useSetting
+  getStartupCommand, useSetting, recentRemove, recentAdd
 } from "./settings"
 
 import { ViewSelectButtons, ViewSwitch } from "./views";
@@ -69,16 +70,17 @@ export default function App(props) {
     [IsKey.CtrlQ,  (e) => appQuit()],
   ]));
 
-  const [loaded, setLoaded] = useSetting("loaded")
+  const [recent, setRecent] = useSetting("recent", [])
 
   const settings = useMemo(() => ({
-    loaded, setLoaded,
-  }), [loaded, setLoaded])
+    recent, setRecent,
+  }), [recent, setRecent])
 
   const [doc, setDoc] = useState(null)
-  const [command, setCommand] = useState(() => getStartupCommand(loaded))
+  const [command, setCommand] = useState()
 
   useEffect(() => {
+    if(!command) return
     const {action} = command
     switch(action) {
       case "load": { docFromFile(command); break; }
@@ -90,6 +92,11 @@ export default function App(props) {
       case "error": { Inform.error(command.message); break; }
     }
   }, [command])
+
+  useEffect(() => {
+    //console.log("Recent:", recent)
+    if(recent?.length) cmdLoadFile({setCommand, filename: recent[0].id})
+  }, [])
 
   return <ThemeProvider theme={theme}>
     <SnackbarProvider>
@@ -104,13 +111,14 @@ export default function App(props) {
   //---------------------------------------------------------------------------
 
   function docFromFile({filename}) {
+    recentRemove({id: filename}, recent, setRecent)
     mawe.load(filename)
     .then(content => {
       setDoc({
         ...content,
         key: nanoid(),
       })
-      setLoaded(content.file.id)
+      recentAdd(content.file, recent, setRecent)
       Inform.success(`Loaded: ${content.file.name}`);
     })
     .catch(err => Inform.error(err))
@@ -136,9 +144,11 @@ export default function App(props) {
   }
 
   function docSaveAs({filename}) {
+    recentRemove(doc.file, recent, setRecent)
     mawe.saveas(doc, filename)
     .then(file => {
       setDoc(doc => ({ ...doc, file }))
+      recentAdd(file, recent, setRecent)
       Inform.success(`Saved ${file.name}`)
     })
     .catch(err => Inform.error(err))
@@ -184,6 +194,7 @@ function WorkspaceTab({doc, setDoc}) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
+  const {recent} = useContext(SettingsContext)
   const setCommand = useContext(CmdContext)
   const file = doc?.file
 
@@ -192,15 +203,16 @@ function WorkspaceTab({doc, setDoc}) {
     [IsKey.CtrlO, (e) => cmdOpenFile({setCommand, file})],
   ]));
 
-  if(!doc) return <WithoutDoc/>
-  return <WithDoc doc={doc} setDoc={setDoc}/>
+  //console.log("Recent:", recent)
+  if(!doc) return <WithoutDoc recent={recent}/>
+  return <WithDoc recent={recent} doc={doc} setDoc={setDoc}/>
 }
 
-function WithoutDoc() {
+function WithoutDoc({recent}) {
   const setCommand = useContext(CmdContext)
 
   return <ToolBox>
-    <FileMenu setCommand={setCommand}/>
+    <FileMenu setCommand={setCommand} recent={recent}/>
     <Separator/>
     <Filler />
     <Separator />
@@ -209,7 +221,7 @@ function WithoutDoc() {
   </ToolBox>
 }
 
-function WithDoc({doc, setDoc}) {
+function WithDoc({doc, setDoc, recent}) {
   const setCommand = useContext(CmdContext)
   const file = doc?.file
   const filename = file?.name ?? "<Unnamed>"
@@ -222,7 +234,7 @@ function WithDoc({doc, setDoc}) {
   ]))
 
   return <ToolBox>
-    <FileMenu setCommand={setCommand} file={file}/>
+    <FileMenu setCommand={setCommand} file={file} recent={recent}/>
     <Separator/>
     <ViewSelectButtons selected={view.selected} setSelected={setMode}/>
     <Separator/>
@@ -243,7 +255,7 @@ function WithDoc({doc, setDoc}) {
 
 class FileMenu extends React.PureComponent {
   render() {
-    const {setCommand, file} = this.props
+    const {setCommand, file, recent} = this.props
     const nofile = !file
 
     return <PopupState variant="popover" popupId="file-menu">
@@ -252,6 +264,7 @@ class FileMenu extends React.PureComponent {
         <Menu {...bindMenu(popupState)}>
           <MenuItem onClick={e => { cmdNewFile({setCommand}); popupState.close(e); }}>New</MenuItem>
           <MenuItem onClick={e => { cmdOpenFile({setCommand, file}); popupState.close(e); }}>Open...</MenuItem>
+          <RecentItems recent={recent} setCommand={setCommand} popupState={popupState}/>
           <Separator/>
           <MenuItem disabled={nofile} onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>Save</MenuItem>
           <MenuItem disabled={nofile} onClick={e => { cmdSaveFileAs({setCommand, file}); popupState.close(e); }}>Save As...</MenuItem>
@@ -266,6 +279,18 @@ class FileMenu extends React.PureComponent {
       </React.Fragment>
       }
     </PopupState>
+  }
+}
+
+class RecentItems extends React.PureComponent {
+  render() {
+    const {recent, setCommand, popupState} = this.props
+    if(!recent?.length) return null
+    return <>
+      <Separator />
+      {/* <MenuItem>Recent:</MenuItem> */}
+      {recent.slice(0, 5).map(entry => <MenuItem key={entry.id} onClick={(e => { cmdLoadFile({setCommand, filename: entry.id}); popupState.close(e); })}>{entry.name}</MenuItem>)}
+    </>
   }
 }
 
