@@ -10,7 +10,7 @@ import "./styles/TOC.css"
 
 import React, {
   useCallback, useEffect,
-  useDeferredValue, useMemo,
+  useDeferredValue, useMemo, memo,
 } from "react"
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -85,7 +85,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
 
 //-----------------------------------------------------------------------------
 
-function IndexHead({name, section, wcFormat}) {
+const IndexHead = memo(({name, section, wcFormat}) => {
   const wcFormatFunction = useCallback(
     (!wcFormat || wcFormat === "off")
     ? undefined
@@ -107,8 +107,7 @@ function IndexHead({name, section, wcFormat}) {
     //onActivate={onActivate}
     //{...dragHandleProps}
   />
-
-}
+})
 
 //-----------------------------------------------------------------------------
 

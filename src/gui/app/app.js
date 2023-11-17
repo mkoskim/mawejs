@@ -248,21 +248,19 @@ function WorkspaceTab({doc, setDoc}) {
   const file = doc?.file
 
   useEffect(() => addHotkeys([
-    [IsKey.CtrlN, (e) => cmdNewFile({setCommand, file})],
+    [IsKey.CtrlN, (e) => cmdNewFile({setCommand})],
     [IsKey.CtrlO, (e) => cmdOpenFile({setCommand, file})],
-    [IsKey.CtrlS, (e) => cmdSaveFile({setCommand, file})],
   ]));
 
-  if(!doc) return <WithoutDoc doc={doc}/>
+  if(!doc) return <WithoutDoc/>
   return <WithDoc doc={doc} setDoc={setDoc}/>
 }
 
-function WithoutDoc({doc}) {
+function WithoutDoc() {
   const setCommand = useContext(CmdContext)
-  const file = doc?.file
 
   return <ToolBox>
-    <FileMenu setCommand={setCommand} file={file}/>
+    <FileMenu setCommand={setCommand} file={undefined}/>
     <Separator/>
     <Filler />
     <Separator />
@@ -277,6 +275,10 @@ function WithDoc({doc, setDoc}) {
   const filename = file?.name ?? "<Unnamed>"
   const {view, setView} = useContext(SettingsContext)
   const setMode = useCallback(value => setView(produce(view => {view.selected = value})), [])
+
+  useEffect(() => addHotkeys([
+    [IsKey.CtrlS, (e) => cmdSaveFile({setCommand, file})],
+  ]))
 
   return <ToolBox>
     <FileMenu setCommand={setCommand} file={file}/>
