@@ -11,6 +11,7 @@ import React, {
   useMemo, useCallback,
   useDeferredValue,
   StrictMode,
+  useContext,
 } from 'react';
 
 import {
@@ -18,7 +19,7 @@ import {
   ToolBox, Button, Icon, Tooltip,
   ToggleButton, ToggleButtonGroup, MakeToggleGroup,
   TextField, Input,
-  SearchBox, addHotkeys,
+  SearchBox,
   Label,
   List, ListItem, ListItemText,
   Grid,
@@ -27,67 +28,34 @@ import {
   Accordion, AccordionSummary, AccordionDetails,
 } from "../common/factory";
 
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+
+import { produce } from 'immer';
 import { mawe } from "../../document"
+import {cmdOpenFolder} from '../app/context';
+import {Popover} from '@mui/material';
 
 //-----------------------------------------------------------------------------
 // Head info editing box
 //-----------------------------------------------------------------------------
 
-export function setDocHead(setDoc, value) {
-  setDoc(doc => ({
-    ...doc,
-    story: {
-      ...doc.story,
-      body: {
-        ...doc.story.body,
-        head: {
-          ...doc.story.body.head,
-          ...value,
-        }
-      }
-    }
-  }))
-}
+export function setDocName(setDoc, value)  { setDoc(produce(draft => {draft.story.body.head.name = value})) }
+export function setDocTitle(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.title = value}))}
+export function setDocSubtitle(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.subtitle = value}))}
+export function setDocAuthor(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.author = value}))}
+export function setDocPseudonym(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.pseudonym = value}))}
 
-export function setDocExport(setDoc, value) {
-  setDoc(doc => {
-    //console.log(doc.story.body.head.export, value)
-    return {
-      ...doc,
-      story: {
-        ...doc.story,
-        body: {
-          ...doc.story.body,
-          head: {
-            ...doc.story.body.head,
-            export: {
-              ...doc.story.body.head.export,
-              ...value,
-            }
-          }
-        }
-      }
-    }
-  })
-}
-
-export function setDocName(setDoc, value)  { setDocHead(setDoc, {name: value}) }
-export function setDocTitle(setDoc, value) { setDocHead(setDoc, {title: value}) }
-export function setDocSubtitle(setDoc, value) { setDocHead(setDoc, {subtitle: value}) }
-export function setDocAuthor(setDoc, value) { setDocHead(setDoc, {author: value}) }
-export function setDocPseudonym(setDoc, value) { setDocHead(setDoc, {pseudonym: value}) }
-
-export function setDocStoryType(setDoc, value) { setDocExport(setDoc, {type: value}) }
-export function setDocChapterElem(setDoc, value) { setDocExport(setDoc, {chapterelem: value}) }
-export function setDocChapterType(setDoc, value) { setDocExport(setDoc, {chaptertype: value}) }
+export function setDocStoryType(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.type = value}))}
+export function setDocChapterElem(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.chapterelem = value}))}
+export function setDocChapterType(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.chaptertype = value}))}
 
 export class EditHead extends React.PureComponent {
   render() {
-    const {head, setDoc} = this.props
+    const {head, setDoc, expanded} = this.props
     const info = mawe.info(head)
 
     return <>
-      <Accordion disableGutters>
+      <Accordion disableGutters defaultExpanded={expanded}>
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
       <AccordionDetails><VBox>
       <TextField label="Name" value={head.name ?? ""} onChange={e => setDocName(setDoc, e.target.value)}/>
@@ -96,7 +64,7 @@ export class EditHead extends React.PureComponent {
       </VBox></AccordionDetails>
       </Accordion>
 
-      <Accordion disableGutters>
+      <Accordion disableGutters defaultExpanded={expanded}>
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
       <AccordionDetails><VBox>
       <TextField label="Author" value={head.author ?? ""} onChange={e => setDocAuthor(setDoc, e.target.value)}/>
@@ -104,6 +72,39 @@ export class EditHead extends React.PureComponent {
       </VBox></AccordionDetails>
       </Accordion>
     </>
+  }
+}
+
+export class EditHeadButton extends React.PureComponent {
+  render() {
+    const {head, setDoc, expanded} = this.props
+    return <PopupState variant="popover" popupId="head-edit">
+    {(popupState) => <React.Fragment>
+      <Button {...bindTrigger(popupState)} tooltip="Edit story info"><Icon.Action.HeadInfo /></Button>
+      <Popover {...bindMenu(popupState)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+      >
+        <EditHead head={head} setDoc={setDoc} expanded={expanded}/>
+      </Popover>
+    </React.Fragment>
+    }</PopupState>
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Button group to choose which elements are shown
+//-----------------------------------------------------------------------------
+
+export class OpenFolderButton extends React.PureComponent {
+  render() {
+    const {filename} = this.props
+    //console.log("OpenFolderButton:", filename)
+    return <Button tooltip="Open Folder" onClick={e => cmdOpenFolder(filename)}>
+      <Icon.Action.Folder />
+      </Button>
   }
 }
 

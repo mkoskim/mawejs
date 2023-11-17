@@ -16,7 +16,7 @@ import React, {
   memo, useMemo, useCallback,
   useDeferredValue,
   StrictMode,
-  useRef,
+  useRef, useContext,
 } from 'react';
 
 import {
@@ -47,23 +47,25 @@ import {
   ToolBox, Button, Icon, Tooltip,
   ToggleButton, ToggleButtonGroup, MakeToggleGroup,
   Input,
-  SearchBox, addHotkeys,
+  SearchBox,
+  IsKey, addHotkeys,
   Label,
   List, ListItem, ListItemText,
   Grid,
   Separator, Loading, addClass,
   Menu, MenuItem,
-  isHotkey,
   DeferredRender,
 } from "../common/factory";
 
 import {
   SectionWordInfo,
   ChooseVisibleElements, ChooseWordFormat,
+  EditHeadButton, OpenFolderButton,
 } from "../common/components";
-import { mawe } from "../../document";
 
-//import { mawe } from "../../document";
+import { mawe } from "../../document";
+import { produce } from "immer";
+import { SettingsContext} from "../app/settings";
 
 //-----------------------------------------------------------------------------
 
@@ -106,35 +108,19 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   //---------------------------------------------------------------------------
 
   const updateBody = useCallback(buffer => {
-    if(isAstChange(bodyeditor)) setDoc(doc => {
-      const updated = updateSection(buffer, doc.story.body)
-      //console.log(updated)
-      return {
-        ...doc,
-        story: {
-          ...doc.story,
-          body: updated,
-        }
-      }
-    })
+    if(!isAstChange(bodyeditor)) return
+    const updated = updateSection(buffer, doc.story.body)
+    setDoc(produce(draft => {draft.story.body = updated}))
   }, [bodyeditor])
 
   const updateNotes = useCallback(buffer => {
-    if(isAstChange(noteeditor)) setDoc(doc => {
-      const updated = updateSection(buffer, doc.story.notes)
-      //console.log(updated)
-      return {
-        ...doc,
-        story: {
-          ...doc.story,
-          notes: updated,
-        }
-      }
-    })
+    if(!isAstChange(noteeditor)) return
+    const updated = updateSection(buffer, doc.story.notes)
+    setDoc(produce(draft => {draft.story.notes = updated}))
   }, [noteeditor])
 
   //---------------------------------------------------------------------------
-  // Section selection
+  // Section selection + focusing
   //---------------------------------------------------------------------------
 
   const [active, _setActive] = useState(focusTo?.sectID ?? "body")
@@ -178,8 +164,12 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   // Index settings: Change these to component props
   //---------------------------------------------------------------------------
 
-  const [indexed1, setIndexed1] = useState(["part", "scene", "synopsis"])
-  const [words1, setWords1] = useState("numbers")
+  const {view, setView} = useContext(SettingsContext)
+
+  const indexed1 = view.editor.body.indexed;
+  const setIndexed1 = useCallback(value => setView(produce(draft => {draft.editor.body.indexed = value})), [setView])
+  const words1 = view.editor.body.words
+  const setWords1 = useCallback(value => setView(produce(draft => {draft.editor.body.words = value})), [setView])
 
   const [indexed2, setIndexed2] = useState(["part", "scene", "synopsis"])
 
@@ -228,8 +218,8 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   // Hotkeys
   //---------------------------------------------------------------------------
 
-  useEffect(() => addHotkeys({
-    "mod+f": ev => {
+  useEffect(() => addHotkeys([
+    [IsKey.CtrlF, ev => {
       const editor = activeEdit()
       const {selection} = editor
       //console.log(selection)
@@ -249,16 +239,16 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
         if(typeof(searchText) !== "string") setSearchText("")
       }
       if(searchBoxRef.current) searchBoxRef.current.focus()
-    },
-    "escape": ev => {
+    }],
+    [IsKey.Escape, ev => {
       if(typeof(searchText) === "string") {
         _setSearchText(undefined)
         ReactEditor.focus(activeEdit())
       }
-    },
-    "mod+g": ev => searchForward(activeEdit(), searchText, true),
-    "shift+mod+g": ev => searchBackward(activeEdit(), searchText, true)
-  }));
+    }],
+    [IsKey.CtrlG,  ev => searchForward(activeEdit(), searchText, true)],
+    [IsKey.CtrlShiftG, ev => searchBackward(activeEdit(), searchText, true)]
+  ]));
 
   //---------------------------------------------------------------------------
   // Debug/development view
@@ -534,7 +524,7 @@ class Searching extends React.PureComponent {
       onChange={ev => setSearchText(ev.target.value)}
       onBlur={ev => {if(!searchText) setSearchText(undefined)}}
       onKeyDown={ev => {
-        if(isHotkey("enter", ev)) {
+        if(IsKey.Enter(ev)) {
           ev.preventDefault();
           ev.stopPropagation();
           if(searchText === "") setSearchText(undefined)
@@ -565,9 +555,10 @@ function EditorBox({style, settings, mode="Condensed"}) {
 
   return <VFiller>
     <ToolBox style={styles.toolbox.left}>
+      {/* <EditHeadButton head={head} setDoc={settings.setDoc} expanded={true}/> */}
       <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
-      {/* <EditHeadButton head={head} setDoc={settings.setDoc} /> */}
+      {/* <OpenFolderButton filename={doc.file?.id}/> */}
       {/* <Separator/> */}
       {/* <SectionWordInfo section={doc.story.body}/> */}
     </ToolBox>

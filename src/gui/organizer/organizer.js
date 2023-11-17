@@ -19,7 +19,7 @@ import {
   VBox, HBox, HFiller, VFiller,
   Filler, Separator,
   ToolBox, Button, Input,
-  SearchBox, addHotkeys,
+  SearchBox,
   Label,
   Loading,
 } from "../common/factory";

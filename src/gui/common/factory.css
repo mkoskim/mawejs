@@ -38,15 +38,13 @@
 }
 
 .ToolBox {
-  padding: 4px;
+  padding: 2px;
   align-items: center;
   border-bottom: 1pt solid lightgray;
   /*
   paddingLeft: 4, paddingRight: 4,
   paddingTop: 4, paddingBottom: 4,
   //backgroundColor: "#F8F8F8",
-  alignItems: "center",
-  borderBottom: "1pt solid lightgray",
   */
 }
 

@@ -18,10 +18,9 @@ import {
 } from 'slate'
 
 import { withHistory } from "slate-history"
-import { addClass, Icon } from '../common/factory';
+import { addClass, IsKey, Icon } from '../common/factory';
 import { nanoid } from '../../util';
 import {section2lookup, wcElem} from '../../document/util';
-import isHotkey from 'is-hotkey';
 
 import {
   text2Regexp, searchOffsets, searchPattern,
@@ -95,7 +94,7 @@ function renderElement({element, attributes, ...props}) {
     case "comment":
     case "missing":
     case "synopsis":
-      return <p className={element.type} {...attributes} {...props}/>
+      return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
 
     case "p":
     default: break;
@@ -161,30 +160,23 @@ export function SlateEditable({className, highlight, ...props}) {
 //
 //*****************************************************************************
 
-const isKey_AltF = isHotkey("Alt+F")
-const isKey_AltA = isHotkey("Alt+A")
-const isKey_AltS = isHotkey("Alt+S")
-
-const isKey_AltUp = isHotkey("Alt+Up")
-const isKey_AltDown = isHotkey("Alt+Down")
-
 function onKeyDown(event, editor) {
 
   //---------------------------------------------------------------------------
   // Folding
   //---------------------------------------------------------------------------
 
-  if (isKey_AltF(event)) {
+  if (IsKey.AltF(event)) {
     event.preventDefault()
     toggleFold(editor)
     return
   }
-  if (isKey_AltA(event)) {
+  if (IsKey.AltA(event)) {
     event.preventDefault()
     foldAll(editor, true)
     return
   }
-  if (isKey_AltS(event)) {
+  if (IsKey.AltS(event)) {
     event.preventDefault()
     foldAll(editor, false)
     return
@@ -194,7 +186,7 @@ function onKeyDown(event, editor) {
   // Moving
   //---------------------------------------------------------------------------
 
-  if(isKey_AltUp(event)) {
+  if(IsKey.AltUp(event)) {
     event.preventDefault()
 
     const current = Editor.above(editor, {
@@ -214,7 +206,7 @@ function onKeyDown(event, editor) {
     return
   }
 
-  if(isKey_AltDown(event)) {
+  if(IsKey.AltDown(event)) {
     event.preventDefault()
 
     const current = Editor.above(editor, {
@@ -238,7 +230,7 @@ function onKeyDown(event, editor) {
   // Misc
   //---------------------------------------------------------------------------
 
-  if(isHotkey("Alt+L", event)) {
+  if(IsKey.AltL(event)) {
     event.preventDefault()
     Transforms.insertText(editor,
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis " +
@@ -512,9 +504,12 @@ function toggleFold(editor) {
   //const [node, path] = Editor.node(editor, anchor)
   //console.log("Toggle fold", path, node)
 
+  //const foldable = ["part", "scene", "synopsis", "comment", "missing"]
+  const foldable = ["part", "scene"]
+
   const [node, path] = Editor.above(editor, {
     at: anchor,
-    match: n => Element.isElement(n) && (n.type === "scene" || n.type === "part"),
+    match: n => Element.isElement(n) && (foldable.includes(n.type)),
   })
 
   const folded = !node.folded

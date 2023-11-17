@@ -20,7 +20,7 @@ import {
   ToggleButton, ToggleButtonGroup,
   Radio,
   Input,
-  SearchBox, addHotkeys,
+  SearchBox,
   Label,
   List, ListItem, ListItemText, ListSubheader,
   Grid,
