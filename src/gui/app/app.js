@@ -204,13 +204,11 @@ function WorkspaceTab({doc, setDoc}) {
   ]));
 
   //console.log("Recent:", recent)
-  if(!doc) return <WithoutDoc recent={recent}/>
-  return <WithDoc recent={recent} doc={doc} setDoc={setDoc}/>
+  if(!doc) return <WithoutDoc setCommand={setCommand} recent={recent}/>
+  return <WithDoc setCommand={setCommand} recent={recent} doc={doc} setDoc={setDoc}/>
 }
 
-function WithoutDoc({recent}) {
-  const setCommand = useContext(CmdContext)
-
+function WithoutDoc({setCommand, recent}) {
   return <ToolBox>
     <FileMenu setCommand={setCommand} recent={recent}/>
     <Separator/>
@@ -221,8 +219,7 @@ function WithoutDoc({recent}) {
   </ToolBox>
 }
 
-function WithDoc({doc, setDoc, recent}) {
-  const setCommand = useContext(CmdContext)
+function WithDoc({setCommand, doc, setDoc, recent}) {
   const file = doc?.file
   const filename = file?.name ?? "<Unnamed>"
   const {head} = doc.story.body
