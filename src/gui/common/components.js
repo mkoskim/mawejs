@@ -11,6 +11,7 @@ import React, {
   useMemo, useCallback,
   useDeferredValue,
   StrictMode,
+  useContext,
 } from 'react';
 
 import {
@@ -27,8 +28,12 @@ import {
   Accordion, AccordionSummary, AccordionDetails,
 } from "../common/factory";
 
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+
 import { produce } from 'immer';
 import { mawe } from "../../document"
+import {cmdOpenFolder} from '../app/context';
+import {Popover} from '@mui/material';
 
 //-----------------------------------------------------------------------------
 // Head info editing box
@@ -46,11 +51,11 @@ export function setDocChapterType(setDoc, value) { setDoc(produce(draft => {draf
 
 export class EditHead extends React.PureComponent {
   render() {
-    const {head, setDoc} = this.props
+    const {head, setDoc, expanded} = this.props
     const info = mawe.info(head)
 
     return <>
-      <Accordion disableGutters>
+      <Accordion disableGutters defaultExpanded={expanded}>
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
       <AccordionDetails><VBox>
       <TextField label="Name" value={head.name ?? ""} onChange={e => setDocName(setDoc, e.target.value)}/>
@@ -59,7 +64,7 @@ export class EditHead extends React.PureComponent {
       </VBox></AccordionDetails>
       </Accordion>
 
-      <Accordion disableGutters>
+      <Accordion disableGutters defaultExpanded={expanded}>
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
       <AccordionDetails><VBox>
       <TextField label="Author" value={head.author ?? ""} onChange={e => setDocAuthor(setDoc, e.target.value)}/>
@@ -67,6 +72,39 @@ export class EditHead extends React.PureComponent {
       </VBox></AccordionDetails>
       </Accordion>
     </>
+  }
+}
+
+export class EditHeadButton extends React.PureComponent {
+  render() {
+    const {head, setDoc, expanded} = this.props
+    return <PopupState variant="popover" popupId="head-edit">
+    {(popupState) => <React.Fragment>
+      <Button {...bindTrigger(popupState)} tooltip="Edit story info"><Icon.Action.HeadInfo /></Button>
+      <Popover {...bindMenu(popupState)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+      >
+        <EditHead head={head} setDoc={setDoc} expanded={expanded}/>
+      </Popover>
+    </React.Fragment>
+    }</PopupState>
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Button group to choose which elements are shown
+//-----------------------------------------------------------------------------
+
+export class OpenFolderButton extends React.PureComponent {
+  render() {
+    const {filename} = this.props
+    //console.log("OpenFolderButton:", filename)
+    return <Button tooltip="Open Folder" onClick={e => cmdOpenFolder(filename)}>
+      <Icon.Action.Folder />
+      </Button>
   }
 }
 

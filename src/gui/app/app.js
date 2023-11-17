@@ -33,13 +33,19 @@ import {
   Menu, MenuItem, MakeToggleGroup, Inform,
 } from "../common/factory";
 
-import { EditHead } from "../common/components";
+import { EditHead, OpenFolderButton } from "../common/components";
 
 import { SnackbarProvider } from "notistack";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
-import {CmdContext} from "./context"
+import {
+  CmdContext,
+  cmdCloseFile,
+  cmdNewFile, cmdOpenFile, cmdOpenFolder, cmdOpenHelp,
+  cmdSaveFile, cmdSaveFileAs
+} from "./context"
+
 import {
   SettingsContext,
   getViewDefaults,
@@ -57,8 +63,10 @@ import { Chart } from "../chart/chart"
 import { mawe } from "../../document"
 import { nanoid, sleep } from '../../util';
 
-import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
 import { appQuit, appLog } from "../../system/host"
+import {Divider} from "@mui/material";
+
+const fs = require("../../system/localfs")
 
 //*****************************************************************************
 //
@@ -88,6 +96,7 @@ export default function App(props) {
       case "set": { docFromBuffer(command); break; }
       case "resource": { docFromResource(command); break; }
       case "saveas": { docSaveAs(command); break; }
+      case "close": { docClose(command); break; }
       case "error": { Inform.error(command.message); break; }
     }
   }, [command])
@@ -143,6 +152,10 @@ export default function App(props) {
       Inform.success(`Saved ${file.name}`)
     })
     .catch(err => Inform.error(err))
+  }
+
+  function docClose() {
+    setDoc(null)
   }
 }
 
@@ -211,7 +224,7 @@ function ViewSwitch({doc, setDoc}) {
     _setFocusTo(value)
   }, [])
 
-  if(!doc?.story) return <Loading />
+  if(!doc?.story) return null
 
   const props = { doc, setDoc, focusTo, setFocusTo }
 
@@ -235,9 +248,9 @@ function WorkspaceTab({doc, setDoc}) {
   const file = doc?.file
 
   useEffect(() => addHotkeys([
-    [IsKey.CtrlN, (e) => onNewFile({setCommand, file})],
-    [IsKey.CtrlO, (e) => onOpenFile({setCommand, file})],
-    [IsKey.CtrlS, (e) => onSaveFile({setCommand, file})],
+    [IsKey.CtrlN, (e) => cmdNewFile({setCommand, file})],
+    [IsKey.CtrlO, (e) => cmdOpenFile({setCommand, file})],
+    [IsKey.CtrlS, (e) => cmdSaveFile({setCommand, file})],
   ]));
 
   if(!doc) return <WithoutDoc doc={doc}/>
@@ -251,12 +264,17 @@ function WithoutDoc({doc}) {
   return <ToolBox>
     <FileMenu setCommand={setCommand} file={file}/>
     <Separator/>
+    <Filler />
+    <Separator />
+    <HelpButton setCommand={setCommand}/>
+    <SettingsButton />
   </ToolBox>
 }
 
 function WithDoc({doc, setDoc}) {
   const setCommand = useContext(CmdContext)
   const file = doc?.file
+  const filename = file?.name ?? "<Unnamed>"
   const {view, setView} = useContext(SettingsContext)
   const setMode = useCallback(value => setView(produce(view => {view.selected = value})), [])
 
@@ -265,12 +283,13 @@ function WithDoc({doc, setDoc}) {
     <Separator/>
     <SelectViewButtons selected={view.selected} setSelected={setMode}/>
     <Separator/>
-
-    <DocInfoBar doc={doc} setDoc={setDoc}/>
+    <Label text={filename}/>
+    <Separator/>
+    <OpenFolderButton filename={file?.id}/>
+    <CloseButton setCommand={setCommand}/>
 
     <Filler />
     <Separator />
-    <OpenFolderButton filename={doc?.file?.id}/>
     <HelpButton setCommand={setCommand}/>
     <SettingsButton />
   </ToolBox>
@@ -286,12 +305,15 @@ class FileMenu extends React.PureComponent {
       {(popupState) => <React.Fragment>
         <Button {...bindTrigger(popupState)}><Icon.Menu /></Button>
         <Menu {...bindMenu(popupState)}>
-          <MenuItem onClick={e => { onNewFile({setCommand}); popupState.close(e); }}>New</MenuItem>
-          <MenuItem onClick={e => { onOpenFile({setCommand, file}); popupState.close(e); }}>Open...</MenuItem>
-          <MenuItem onClick={e => { onSaveFile({setCommand, file}); popupState.close(e); }}>Save</MenuItem>
-          <MenuItem onClick={e => { onSaveFileAs({setCommand, file}); popupState.close(e); }}>Save As...</MenuItem>
+          <MenuItem onClick={e => { cmdNewFile({setCommand}); popupState.close(e); }}>New</MenuItem>
+          <MenuItem onClick={e => { cmdOpenFile({setCommand, file}); popupState.close(e); }}>Open...</MenuItem>
+          <MenuItem onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>Save</MenuItem>
+          <MenuItem onClick={e => { cmdSaveFileAs({setCommand, file}); popupState.close(e); }}>Save As...</MenuItem>
+          {/*
           <MenuItem onClick={popupState.close}>Revert</MenuItem>
           <MenuItem onClick={e => { popupState.close(e); }}>Open Folder</MenuItem>
+          */}
+          <Divider/>
           <MenuItem onClick={e => { appQuit(); popupState.close(e); }}>Exit</MenuItem>
         </Menu>
       </React.Fragment>
@@ -300,52 +322,10 @@ class FileMenu extends React.PureComponent {
   }
 }
 
-class DocInfoBar extends React.PureComponent {
-  render() {
-    const {doc, setDoc} = this.props
-
-    if(!doc) return null
-
-    const filename = doc.file?.name ?? "<Unnamed>"
-    const {body} = doc.story
-    const {head} = body
-
-    return <>
-      <Label text={filename}/>
-      <Separator />
-      <EditHeadButton head={head} setDoc={setDoc} />
-    </>
-  }
-}
-
-class EditHeadButton extends React.PureComponent {
-  render() {
-    const {head, setDoc} = this.props
-    return <PopupState variant="popover" popupId="head-edit">
-    {(popupState) => <React.Fragment>
-      <Button {...bindTrigger(popupState)} tooltip="Edit story info"><Icon.Action.HeadInfo /></Button>
-      <Menu {...bindMenu(popupState)}>
-        <EditHead head={head} setDoc={setDoc}/>
-      </Menu>
-    </React.Fragment>
-    }</PopupState>
-  }
-}
-
-class OpenFolderButton extends React.PureComponent {
-  render() {
-    const {filename} = this.props
-
-    return <Button tooltip="Open Folder" onClick={e => onOpenFolder(filename)}>
-      <Icon.Action.Folder />
-      </Button>
-  }
-}
-
 class HelpButton extends React.PureComponent {
   render() {
     const {setCommand} = this.props
-    return <Button tooltip="Help" onClick={e => onHelp(setCommand)}>
+    return <Button tooltip="Help" onClick={e => cmdOpenHelp(setCommand)}>
       <Icon.Help />
       </Button>
   }
@@ -357,62 +337,11 @@ class SettingsButton extends React.PureComponent {
   }
 }
 
-//-----------------------------------------------------------------------------
-
-const fs = require("../../system/localfs")
-
-const filters = [
-  { name: 'Mawe Files', extensions: ['moe', 'mawe', 'mawe.gz'] },
-  { name: 'All Files', extensions: ['*'] }
-]
-
-async function onOpenFolder(file) {
-  const dirname = file ? await fs.dirname(file) : "."
-  console.log("Open folder:", dirname)
-  fs.openexternal(dirname)
-}
-
-async function onHelp(setCommand) {
-  setCommand({action: "resource", filename: "examples/UserGuide.mawe"})
-}
-
-async function onNewFile({ setCommand }) {
-  setCommand({
-    action: "set",
-    buffer: '<story format="mawe" />'
-  })
-}
-
-async function onOpenFile({ setCommand, file }) {
-  //const dirname = await fs.dirname(doc.file.id)
-  const { canceled, filePaths } = await fileOpenDialog({
-    filters,
-    defaultPath: file?.id ?? ".",
-    properties: ["OpenFile"],
-  })
-  if (!canceled) {
-    const [filename] = filePaths
-
-    console.log("Load file:", filename)
-    setCommand({action: "load", filename})
-  }
-}
-
-async function onSaveFile({ setCommand, file }) {
-  if (file) {
-    setCommand({action: "save"})
-    return;
-  }
-  onSaveFileAs({ setCommand, file })
-}
-
-async function onSaveFileAs({ setCommand, file }) {
-  const { canceled, filePath } = await fileSaveDialog({
-    filters,
-    defaultPath: file?.id ?? "./NewDoc.mawe",
-    properties: ["createDirectory", "showOverwriteConfirmation"],
-  })
-  if (!canceled) {
-    setCommand({action: "saveas", filename: filePath})
+class CloseButton extends React.PureComponent {
+  render() {
+    const {setCommand} = this.props
+    return <Button tooltip="Close" onClick={e => cmdCloseFile({setCommand})}>
+      <Icon.Close />
+      </Button>
   }
 }

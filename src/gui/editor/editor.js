@@ -60,6 +60,7 @@ import {
 import {
   SectionWordInfo,
   ChooseVisibleElements, ChooseWordFormat,
+  EditHeadButton, OpenFolderButton,
 } from "../common/components";
 
 import { mawe } from "../../document";
@@ -554,9 +555,10 @@ function EditorBox({style, settings, mode="Condensed"}) {
 
   return <VFiller>
     <ToolBox style={styles.toolbox.left}>
+      <EditHeadButton head={head} setDoc={settings.setDoc} expanded={true}/>
       <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
-      {/* <EditHeadButton head={head} setDoc={settings.setDoc} /> */}
+      {/* <OpenFolderButton filename={doc.file?.id}/> */}
       {/* <Separator/> */}
       {/* <SectionWordInfo section={doc.story.body}/> */}
     </ToolBox>
