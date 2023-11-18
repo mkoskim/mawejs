@@ -499,44 +499,18 @@ class ChooseRightPanel extends React.PureComponent {
   }
 */
 
-// class Searching extends React.PureComponent {
-
-//   render() {
-//     const {editor, searchText, setSearchText, searchBoxRef} = this.props
-
-//     if(typeof(searchText) !== "string") return <Button
-//       tooltip="Search text"
-//       size="small"
-//     >
-//       <Icon.Action.Search onClick={ev => setSearchText("")}/>
-//     </Button>
-
-//     return <SearchBox
-//       inputRef={searchBoxRef}
-//       size="small"
-//       //defaultValue={searchText}
-//       value={searchText}
-//       autoFocus
-//       onChange={ev => setSearchText(ev.target.value)}
-//       onBlur={ev => {if(!searchText) setSearchText(undefined)}}
-//       onKeyDown={ev => {
-//         if(IsKey.Enter(ev)) {
-//           ev.preventDefault();
-//           ev.stopPropagation();
-//           if(searchText === "") setSearchText(undefined)
-//           searchFirst(editor, searchText, true)
-//         }
-//       }}
-//     />
-//   }
-// }
-
 class Searching extends React.PureComponent {
+  // Simulates pressing ESC key
+  handleEscBehavior = () => {
+    // Call the method that you would normally call when ESC is pressed
+    this.props.setSearchText(undefined);
+  }
+
   /**
    * Clears the current search text.
    */
   clearSearch = () => {
-    this.props.setSearchText("");
+    this.handleEscBehavior();
   }
 
   /**
@@ -555,6 +529,19 @@ class Searching extends React.PureComponent {
 
   render() {
     const { editor, searchText, setSearchText, searchBoxRef } = this.props;
+
+    // Define inline styles for icon-like buttons
+    const iconButtonStyle = {
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      padding: '0',
+      margin: '0 5px',
+      fontSize: '16px',
+      color: '#333',
+      outline: 'none',
+    };
+
 
     // Render a search icon button if no search text is defined.
     if (typeof(searchText) !== "string") {
@@ -588,13 +575,15 @@ class Searching extends React.PureComponent {
             }
           }}
         />
-        <button onClick={this.clearSearch}>X</button>
-        <button onClick={this.searchPrevious}>↑</button>
-        <button onClick={this.searchNext}>↓</button>
-      </div>
+        <button style={iconButtonStyle} onClick={this.clearSearch} title="Clear search">✖️</button> {}
+        <button style={iconButtonStyle} onClick={this.searchPrevious} title="Previous search result">↑</button> {}
+        <button style={iconButtonStyle} onClick={this.searchNext} title="Next search result">↓</button> {}
+       </div>
     );
   }
 }
+
+
 
 
 //-----------------------------------------------------------------------------
