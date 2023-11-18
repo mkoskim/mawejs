@@ -69,7 +69,7 @@ async function createWindow()
   mainWindow.on("closed", () => (mainWindow = null));
 
   mainWindow.setMenu(null);
-  console.log("Languages:", mainWindow.webContents.session.availableSpellCheckerLanguages)
+  //console.log("Languages:", mainWindow.webContents.session.availableSpellCheckerLanguages)
   //mainWindow.webContents.session.setSpellCheckerLanguages(['fi'])
   mainWindow.webContents.openDevTools();
 
@@ -96,7 +96,7 @@ const reactDevToolsPath = path.join(
   // "/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.27.8_0"
   //"/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.28.0_0"
   )
-*
+*/
 
 /*
 const reduxDevToolsPath = path.join(
