@@ -504,36 +504,91 @@ class ChooseRightPanel extends React.PureComponent {
 */
 
 class Searching extends React.PureComponent {
+  // Simulates pressing ESC key
+  handleEscBehavior = () => {
+    // Call the method that you would normally call when ESC is pressed
+    this.props.setSearchText(undefined);
+  }
+
+  /**
+   * Clears the current search text.
+   */
+  clearSearch = () => {
+    this.handleEscBehavior();
+  }
+
+  /**
+   * Navigates to the next search result.
+   */
+  searchNext = () => {
+    searchForward(this.props.editor, this.props.searchText, true);
+  }
+
+  /**
+   * Navigates to the previous search result.
+   */
+  searchPrevious = () => {
+    searchBackward(this.props.editor, this.props.searchText, true);
+  }
 
   render() {
-    const {editor, searchText, setSearchText, searchBoxRef} = this.props
+    const { editor, searchText, setSearchText, searchBoxRef } = this.props;
 
-    if(typeof(searchText) !== "string") return <Button
-      tooltip="Search text"
-      size="small"
-    >
-      <Icon.Action.Search onClick={ev => setSearchText("")}/>
-    </Button>
+    // Define inline styles for icon-like buttons
+    const iconButtonStyle = {
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      padding: '0',
+      margin: '0 5px',
+      fontSize: '16px',
+      color: '#333',
+      outline: 'none',
+    };
 
-    return <SearchBox
-      inputRef={searchBoxRef}
-      size="small"
-      //defaultValue={searchText}
-      value={searchText}
-      autoFocus
-      onChange={ev => setSearchText(ev.target.value)}
-      onBlur={ev => {if(!searchText) setSearchText(undefined)}}
-      onKeyDown={ev => {
-        if(IsKey.Enter(ev)) {
-          ev.preventDefault();
-          ev.stopPropagation();
-          if(searchText === "") setSearchText(undefined)
-          searchFirst(editor, searchText, true)
-        }
-      }}
-    />
+
+    // Render a search icon button if no search text is defined.
+    if (typeof(searchText) !== "string") {
+      return (
+        <Button
+          tooltip="Search text"
+          size="small"
+        >
+          <Icon.Action.Search onClick={ev => setSearchText("")}/>
+        </Button>
+      );
+    }
+
+    // Render the search box with additional controls for clearing the search text,
+    // and navigating through search results.
+    return (
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <SearchBox
+          inputRef={searchBoxRef}
+          size="small"
+          value={searchText}
+          autoFocus
+          onChange={ev => setSearchText(ev.target.value)}
+          onBlur={ev => { if (!searchText) setSearchText(undefined) }}
+          onKeyDown={ev => {
+            if (IsKey.Enter(ev)) {
+              ev.preventDefault();
+              ev.stopPropagation();
+              if (searchText === "") setSearchText(undefined);
+              searchFirst(editor, searchText, true);
+            }
+          }}
+        />
+        <button style={iconButtonStyle} onClick={this.clearSearch} title="Clear search">✖️</button> {}
+        <button style={iconButtonStyle} onClick={this.searchPrevious} title="Previous search result">↑</button> {}
+        <button style={iconButtonStyle} onClick={this.searchNext} title="Next search result">↓</button> {}
+       </div>
+    );
   }
 }
+
+
+
 
 //-----------------------------------------------------------------------------
 
