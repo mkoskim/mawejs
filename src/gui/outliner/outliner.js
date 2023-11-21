@@ -14,7 +14,7 @@ export function Outliner({doc, setDoc}) {
   const {story} = doc
   const {body} = story
 
-  return <div>
+  return <div style={{overflow: "auto"}}>
     {body.parts.map(part => <PartItem key={part.id} part={part}/>)}
   </div>
 
@@ -52,7 +52,7 @@ const styles = {
 function PartItem({part}) {
   return <div style={styles.part}>
     <Label>Part: {part.name}</Label>
-    {part.children.map(scene => <SceneItem key={scene.id} scene={scene}/>)}
+    {/*!part.folded &&*/ part.children.map(scene => <SceneItem key={scene.id} scene={scene}/>)}
   </div>
 }
 
@@ -61,7 +61,7 @@ function PartItem({part}) {
 function SceneItem({scene}) {
   return <div style={styles.scene}>
     <Label>Scene: {scene.name}</Label>
-    <SplitBlock paragraphs={scene.children}/>
+    {/*!scene.folded &&*/ <SplitBlock paragraphs={scene.children}/>}
   </div>
 }
 
@@ -89,13 +89,31 @@ function BlockWithHead({block}) {
   //const other = paragraphs.filter(p => p.type !== "synopsis")
 
   return <HBox>
-    <ParaBlock style={styles.synopsisblock} paragraphs={synopsis}/>
-    <ParaBlock paragraphs={content}/>
+    <SynopsisBlock paragraphs={synopsis}/>
+    {/* <ContentBlock paragraphs={content}/> */}
   </HBox>
 }
 
+function SynopsisBlock({paragraphs}) {
+  return <ParaBlock style={styles.synopsisblock} paragraphs={paragraphs}/>
+}
+
+function ContentBlock({paragraphs}) {
+  return <ParaBlock paragraphs={paragraphs}/>
+}
+
 function ParaBlock({style, paragraphs}) {
-  return <div style={{...styles.parablock, ...style}}>
-    {paragraphs.map(p => <p key={p.id}>{elemAsText(p)}</p>)}
+  return <div className="Sheet" style={{...styles.parablock, ...style}}>
+    {paragraphs.map(p => <Paragraph key={p.id} type={p.type} text={elemAsText(p)}/>)}
   </div>
+}
+
+function Paragraph({type, text}) {
+  switch(type) {
+    case "missing":
+    case "comment":
+      return <p className={type}>{text}</p>
+    default: break;
+  }
+  return <p>{text}</p>
 }
