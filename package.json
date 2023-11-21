@@ -43,7 +43,7 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "^18.2.0",
     "react-infinite-scroll-component": "^6.1.0",
-    "recharts": "^2.9.3",
+    "recharts": "^2.10.1",
     "slate": "^0.100.0",
     "slate-history": "^0.100.0",
     "slate-react": "^0.101.0",
