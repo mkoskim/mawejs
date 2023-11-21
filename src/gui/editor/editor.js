@@ -429,8 +429,8 @@ function RightPanel({settings}) {
     case "noteindex":
       return <VFiller style={style}>
       <ToolBox style={styles.toolbox.right}>
-        <Filler />
         <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
+        <Filler />
       </ToolBox>
       <DocIndex
         name="Notes"
@@ -445,8 +445,8 @@ function RightPanel({settings}) {
     case "wordtable":
       return <VFiller style={style}>
       <ToolBox style={styles.toolbox.right}>
-        <Filler />
         <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
+        <Filler />
       </ToolBox>
       <WordTable
         section={doc.story.body}
@@ -471,12 +471,14 @@ class ChooseRightPanel extends React.PureComponent {
     },
   }
 
+  choices = ["noteindex", "wordtable",]
+
   render() {
     const {selected, setSelected} = this.props
 
     return <MakeToggleGroup
       buttons={this.buttons}
-      choices={["wordtable", "noteindex",]}
+      choices={this.choices}
       selected={selected}
       setSelected={setSelected}
       exclusive={true}
