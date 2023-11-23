@@ -33,6 +33,7 @@ export const Icon = {
     Organize: muiIcons.GridViewOutlined,
     Export: muiIcons.PrintOutlined,
     Chart: muiIcons.DonutLarge,
+    Outline: muiIcons.SummarizeOutlined,
   },
 
   //NewFile: muiIcons.NoteAddOutlined,
