@@ -27,11 +27,6 @@ const commonHeading = `\
 \\usepackage{xfp}
 
 \\setstretch{1.25}
-\\pagestyle{plain}
-
-\\makeatletter
-\\def\\subtitle#1{\\gdef\\@subtitle{#1}}
-\\makeatother
 `
 
 function renewCommands(options, sides) {
@@ -39,6 +34,8 @@ function renewCommands(options, sides) {
 
   return `\
 \\makeatletter
+
+\\def\\subtitle#1{\\gdef\\@subtitle{#1}}
 
 \\renewcommand\\maketitle{
   ${options.pgbreak ? "\\null\\vskip 4cm" : ""}
@@ -69,9 +66,8 @@ function renewCommands(options, sides) {
 }
 
 \\newcommand\\separator[1]{
-  \\vskip 0.5in
+  \\vskip 24pt
   \\begin{center}#1\\end{center}
-  %\\vskip 12pt
 }
 
 \\newcommand{\\doifmultipleof}[2]{%
@@ -98,10 +94,21 @@ function FileHeading(head, options, sides) {
   return `\
 ${paperSize(sides)}
 ${commonHeading}
+\\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Macros
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+${renewCommands(options, sides)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Doc Info
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \\author{${author ?? ""}}
 \\title{${title ?? ""}}
 \\subtitle{${subtitle ?? ""}}
-\\date{}
 `
 }
 
@@ -123,9 +130,9 @@ const formatTEX = {
 \\documentclass[${sides},${titlepage},12pt]{book}
 ${FileHeading(head, options, sides)}
 
-\\begin{document}
-${renewCommands(options, sides)}
+\\pagestyle{plain}
 \\maketitle
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${content}
@@ -191,8 +198,7 @@ export const formatTEX2 = {
     return `\
 \\documentclass[${sides},${titlepage},12pt]{book}
 ${FileHeading(head, options, sides)}
-\\begin{document}
-${renewCommands(options, sides)}
+\\pagestyle{plain}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
