@@ -8,8 +8,14 @@ import { elemAsText } from "../../document"
 
 //-----------------------------------------------------------------------------
 
+function paperSize(sides) {
+  if(sides === "twoside") {
+    return "\\usepackage[a5paper, inner=1.25in, outer=0.5in, top=0.5in]{geometry}"
+  }
+  return "\\usepackage[a5paper, top=0.5in]{geometry}"
+}
+
 const commonHeading = `\
-\\usepackage[a5paper]{geometry}
 \\usepackage{times}
 \\usepackage[T1]{fontenc}
 \\usepackage[utf8]{inputenc}
@@ -62,6 +68,12 @@ function renewCommands(options, sides) {
   \\vskip 0.5cm
 }
 
+\\newcommand\\separator[1]{
+  \\vskip 0.5in
+  \\begin{center}#1\\end{center}
+  %\\vskip 12pt
+}
+
 \\newcommand{\\doifmultipleof}[2]{%
   \\ifnum\\numexpr((#2)/(#1))*(#1)-(#2)=0
     \\expandafter\\@firstoftwo
@@ -80,10 +92,11 @@ function renewCommands(options, sides) {
 `
 }
 
-function FileHeading(head, options) {
+function FileHeading(head, options, sides) {
   const { author, title, subtitle } = head
 
   return `\
+${paperSize(sides)}
 ${commonHeading}
 \\author{${author ?? ""}}
 \\title{${title ?? ""}}
@@ -108,7 +121,7 @@ const formatTEX = {
 
     return `\
 \\documentclass[${sides},${titlepage},12pt]{book}
-${FileHeading(head, options)}
+${FileHeading(head, options, sides)}
 
 \\begin{document}
 ${renewCommands(options, sides)}
@@ -171,35 +184,34 @@ export const formatTEX2 = {
   "file": (head, content, options) => {
     const sides = "twoside"
     const titlepage = options.pgbreak ? "titlepage" : "notitlepage"
-    // const mainmatter = options.pgbreak ? "\\mainmatter" : ""
+    const frontmatter = options.pgbreak ? "\\frontmatter\\pagestyle{empty}" : ""
+    const mainmatter  = options.pgbreak ? "\\mainmatter\\pagestyle{plain}" : ""
+    const backmatter  = options.pgbreak ? "\\backmatter\\pagestyle{empty}" : ""
 
     return `\
 \\documentclass[${sides},${titlepage},12pt]{book}
-${FileHeading(head, options)}
+${FileHeading(head, options, sides)}
 \\begin{document}
 ${renewCommands(options, sides)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\\frontmatter
-\\pagestyle{empty}
+${frontmatter}
 \\maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\\mainmatter
-\\pagestyle{plain}
+${mainmatter}
 ${content}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\\backmatter
-\\pagestyle{empty}
+${backmatter}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \\backcover
-Takakansiteksti
+\\null
 \\end{document}
 `
   },
@@ -231,7 +243,7 @@ function getHeading(elem, type, pgbreak, chnum) {
 function getSeparator(separator, pgbreak) {
   if (separator) {
     //if(pgbreak) return "\\page"
-    return "\n\n\\begin{center}* * *\\end{center}\n\n"
+    return "\n\n\\separator{* * *}\n\n"
   }
   return "\n\n\\par\\null\n\n"
 }
