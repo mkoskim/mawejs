@@ -44,7 +44,7 @@ import { FormatBody } from "./formatDoc"
 import { formatRTF } from "./formatRTF";
 import { formatHTML } from "./formatHTML"
 import { formatTXT } from "./formatTXT"
-import { formatTEX } from "./formatTEX"
+import { formatTEX1, formatTEX2 } from "./formatTEX"
 
 //-----------------------------------------------------------------------------
 
@@ -76,8 +76,8 @@ function ExportSettings({ style, doc, setDoc, format, setFormat }) {
   const formatter = {
     "rtf1": formatRTF,
     "rtf2": formatRTF,
-    "tex1": formatTEX,
-    "tex2": formatTEX,
+    "tex1": formatTEX1,
+    "tex2": formatTEX2,
     "txt": formatTXT,
   }[format]
 
