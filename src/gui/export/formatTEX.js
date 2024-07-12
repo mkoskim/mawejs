@@ -55,20 +55,19 @@ function renewCommands(options, sides) {
   ${options.pgbreak ? newpage : "\\vskip 48pt"}
 }
 
+\\newcommand{\\RNum}[1]{\\uppercase\\expandafter{\\romannumeral #1\\relax}}
+
 \\renewcommand\\chapter[2]{
   ${options.pgbreak ? newpage : "\\vskip 36pt"}
+  \\begin{center}
   \\ifthenelse{\\equal{#1}{}}
-  {{\\Large\\noindent #2}}
-  {
-    \\ifthenelse{\\equal{#2}{}}
-    {{\\Large\\noindent #1}}
-    {{\\begin{center}
-      \\chaptername{} #1\\vskip 12pt
-      \\large\\bfseries #2
-      \\end{center}
-    }}
-  }
-  \\vskip 48pt
+  {}
+  {{\\RNum{#1}\\vskip 12pt}}
+  \\ifthenelse{\\equal{#2}{}}
+  {}
+  {{\\bfseries #2}}
+  \\end{center}
+  ${options.pgbreak ? "\\vskip 48pt" : "\\vskip 18pt"}
 }
 
 \\newcommand\\separator[1]{
