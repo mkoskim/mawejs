@@ -26,7 +26,9 @@ const commonHeading = `\
 \\usepackage{ifthen}
 \\usepackage{xfp}
 
-\\setstretch{1.25}
+\\setstretch{1.2}
+\\frenchspacing
+\\sloppy
 `
 
 function renewCommands(options, sides) {
@@ -41,16 +43,16 @@ function renewCommands(options, sides) {
   ${options.pgbreak ? "\\null\\vskip 4cm" : ""}
   {\\center
     {\\@author \\par}
-    \\vskip 1em
+    \\vskip 12pt
     {\\LARGE \\@title \\par}%
     \\ifthenelse{\\equal{\\@subtitle}{\\empty}}
     {}
     {
-      \\vskip 1.5em
-      {\\Large \\@subtitle \\par}
+      \\vskip 8pt
+      {\\large \\@subtitle \\par}
     }
   }
-  ${options.pgbreak ? newpage : "\\vskip 1cm"}
+  ${options.pgbreak ? newpage : "\\vskip 48pt"}
 }
 
 \\renewcommand\\chapter[2]{
@@ -62,7 +64,7 @@ function renewCommands(options, sides) {
     {{\\Large\\noindent #1}}
     {{\\Large\\noindent #1. #2}}
   }
-  \\vskip 0.5cm
+  \\vskip 48pt
 }
 
 \\newcommand\\separator[1]{
@@ -124,20 +126,26 @@ const formatTEX = {
   "file": (head, content, options) => {
     const sides = "oneside"
     const titlepage = options.pgbreak ? "titlepage" : "notitlepage"
+    const frontmatter = options.pgbreak ? "\\frontmatter\\pagestyle{empty}" : "\\pagestyle{plain}"
+    const mainmatter  = options.pgbreak ? "\\mainmatter\\pagestyle{plain}" : ""
+    const backmatter  = options.pgbreak ? "\\backmatter\\pagestyle{empty}" : ""
     // const mainmatter = options.pgbreak ? "\\mainmatter" : ""
 
     return `\
 \\documentclass[${sides},${titlepage},12pt]{book}
 ${FileHeading(head, options, sides)}
 
-\\pagestyle{plain}
+${frontmatter}
 \\maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+${mainmatter}
 ${content}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+${backmatter}
 
 \\end{document}
 `
