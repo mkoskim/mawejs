@@ -10,9 +10,9 @@ import { elemAsText } from "../../document"
 
 function paperSize(sides) {
   if(sides === "twoside") {
-    return "\\usepackage[a5paper, inner=1.25in, outer=0.5in, top=0.5in]{geometry}"
+    return "\\usepackage[a5paper, nohead, top=0.5in, inner=1.25in, outer=0.5in]{geometry}"
   }
-  return "\\usepackage[a5paper, top=0.5in]{geometry}"
+  return "\\usepackage[a5paper, nohead, top=0.5in]{geometry}"
 }
 
 const commonHeading = `\
@@ -45,7 +45,7 @@ function renewCommands(options, sides) {
     {\\@author \\par}
     \\vskip 12pt
     {\\LARGE \\@title \\par}%
-    \\ifthenelse{\\equal{\\@subtitle}{\\empty}}
+    \\ifthenelse{\\equal{\\@subtitle}{}}
     {}
     {
       \\vskip 8pt
@@ -56,13 +56,17 @@ function renewCommands(options, sides) {
 }
 
 \\renewcommand\\chapter[2]{
-  ${options.pgbreak ? newpage : "\\vskip 1cm"}
+  ${options.pgbreak ? newpage : "\\vskip 36pt"}
   \\ifthenelse{\\equal{#1}{}}
   {{\\Large\\noindent #2}}
   {
     \\ifthenelse{\\equal{#2}{}}
     {{\\Large\\noindent #1}}
-    {{\\Large\\noindent #1. #2}}
+    {{\\begin{center}
+      \\chaptername{} #1\\vskip 12pt
+      \\large\\bfseries #2
+      \\end{center}
+    }}
   }
   \\vskip 48pt
 }
