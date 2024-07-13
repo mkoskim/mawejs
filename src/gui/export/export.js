@@ -29,6 +29,7 @@ import {
   MenuItem,
   Accordion, AccordionSummary, AccordionDetails,
   DeferredRender,
+  Inform,
 } from "../common/factory";
 
 import { getSuffix, nanoid } from "../../document/util";
@@ -92,7 +93,7 @@ function ExportSettings({ style, doc, setDoc, format, setFormat }) {
       <MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>
       <ListSubheader>LaTeX</ListSubheader>
       <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
-      <MenuItem value="tex2">LaTeX, A5, 2-side</MenuItem>
+      <MenuItem value="tex2">LaTeX, A5 booklet</MenuItem>
       <ListSubheader>Other</ListSubheader>
       <MenuItem value="txt">ASCII Text</MenuItem>
       </TextField>
@@ -137,6 +138,8 @@ async function exportToFile(doc, filesuffix, content) {
   const filename = await fs.makepath(dirname, basename + filesuffix)
   console.log("Export to:", filename)
   fs.write(filename, content)
+  .then(file => Inform.success(`Exported: ${file.name}`))
+  .catch(err => Inform.error(err))
 }
 
 //-----------------------------------------------------------------------------

@@ -26,7 +26,7 @@ const commonHeading = `\
 \\usepackage{ifthen}
 \\usepackage{xfp}
 
-\\setstretch{1.2}
+\\setstretch{1.25}
 \\frenchspacing
 \\sloppy
 `
@@ -40,7 +40,7 @@ function renewCommands(options, sides) {
 \\def\\subtitle#1{\\gdef\\@subtitle{#1}}
 
 \\renewcommand\\maketitle{
-  ${options.pgbreak ? "\\null\\vskip 4cm" : ""}
+  \\if@titlepage{\\null\\vskip 4cm}
   {\\center
     {\\@author \\par}
     \\vskip 12pt
@@ -54,6 +54,8 @@ function renewCommands(options, sides) {
   }
   ${options.pgbreak ? newpage : "\\vskip 48pt"}
 }
+
+\\newcommand\\innertitle{{\\center{\\Large\\@title\\vskip 48pt}}}
 
 \\newcommand{\\RNum}[1]{\\uppercase\\expandafter{\\romannumeral #1\\relax}}
 
@@ -144,6 +146,7 @@ ${frontmatter}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${mainmatter}
+${options.pgbreak ? "" : ""}
 ${content}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -192,7 +195,7 @@ export const formatTEX1 = {
 }
 
 //-----------------------------------------------------------------------------
-// Twosided booklet TEX
+// Twosided booklet TEX: Always insert title page, and backcover
 //-----------------------------------------------------------------------------
 
 export const formatTEX2 = {
@@ -201,10 +204,15 @@ export const formatTEX2 = {
   // File
   "file": (head, content, options) => {
     const sides = "twoside"
-    const titlepage = options.pgbreak ? "titlepage" : "notitlepage"
-    const frontmatter = options.pgbreak ? "\\frontmatter\\pagestyle{empty}" : ""
-    const mainmatter  = options.pgbreak ? "\\mainmatter\\pagestyle{plain}" : ""
-    const backmatter  = options.pgbreak ? "\\backmatter\\pagestyle{empty}" : ""
+    //const titlepage = options.pgbreak ? "titlepage" : "notitlepage"
+    //const frontmatter = options.pgbreak ? "\\frontmatter\\pagestyle{empty}" : ""
+    //const mainmatter  = options.pgbreak ? "\\mainmatter\\pagestyle{plain}" : ""
+    //const backmatter  = options.pgbreak ? "\\backmatter\\pagestyle{empty}" : ""
+
+    const titlepage = "titlepage"
+    const frontmatter = "\\frontmatter\\pagestyle{empty}"
+    const mainmatter  = "\\mainmatter\\pagestyle{plain}"
+    const backmatter  = "\\backmatter\\pagestyle{empty}"
 
     return `\
 \\documentclass[${sides},${titlepage},12pt]{book}
@@ -219,6 +227,7 @@ ${frontmatter}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${mainmatter}
+${options.pgbreak ? "" : "\\innertitle"}
 ${content}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
