@@ -24,6 +24,7 @@ import { SingleEditView } from "../editor/editor";
 import { Organizer } from "../organizer/organizer";
 import { Chart } from "../chart/chart"
 import { Export } from "../export/export"
+import { Outliner } from "../outliner/outliner"
 
 //-----------------------------------------------------------------------------
 
@@ -40,13 +41,14 @@ export class ViewSelectButtons extends React.PureComponent {
     />
   }
 
-  choices = ["editor", "organizer", "chart", "export"]
+  choices = ["editor", "outliner", "organizer", "chart", "export"]
 
   viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
     "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
     "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
     "export": { tooltip: "Export", icon: <Icon.View.Export /> },
+    "outliner": { tooltip: "Outline", icon: <Icon.View.Outline style={{color: "MediumOrchid"}} /> },
   }
 }
 
@@ -70,6 +72,7 @@ export function ViewSwitch({doc, setDoc}) {
     case "organizer": return <Organizer {...props} />
     case "export": return <Export {...props} />
     case "chart": return <Chart {...props} />
+    case "outliner": return <Outliner {...props} />
     default: break;
   }
   return null;
