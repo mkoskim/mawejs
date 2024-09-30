@@ -53,6 +53,7 @@
 
 .TOC .PartName .Name::before {
   counter-increment: part;
+  content: counter(part) ". ";
 /*
   content: counter(part, upper-roman) "\00a0-\00a0";
 */
@@ -81,7 +82,9 @@
 /* ---------------------------------------------------------------------------- */
 
 .TOC div.Scene {
+  padding-left: 0.5cm !important;
   /*
+  padding-left: 0.25cm;
   border: 2px solid lightgray;
   border-radius: 3px;
   margin: 3pt;
@@ -112,7 +115,7 @@
 }
 
 .TOC .SceneName .Name::before {
-  width: 1cm;
+  /* width: 1cm; */
   counter-increment: scene;
   content: counter(scene) ". ";
 }
