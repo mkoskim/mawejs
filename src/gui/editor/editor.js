@@ -393,7 +393,7 @@ function LeftPanel({settings}) {
 }
 
 const LeftIndexChoices = {
-  visible: ["scene", "synopsis", "missing", "comment"],
+  visible: ["scene", "synopsis", "missing", "fill", "comment"],
   words: ["off", "numbers", "compact", "cumulative", "percent"]
 }
 

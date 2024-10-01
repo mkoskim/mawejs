@@ -22,6 +22,7 @@ function ipcDispatch(channel, params, browserWindow) {
       switch(cmd) {
         case "quit": return hostapp.quit(...args)
         case "log": return hostapp.log(...args)
+        case "beep": return hostapp.beep(...args)
         default: break;
       }
       throw Error(`IPC: ${channel}/${cmd}: Not implemented.`);

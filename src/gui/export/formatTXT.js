@@ -46,8 +46,8 @@ ${content}
   "split": (paragraphs) => paragraphs.join("\n    "),
 
   // Paragraph styles
-  "synopsis": (p) => undefined,
-  "comment": (sp) => undefined,
+  //"synopsis": (p) => undefined,
+  //"comment": (sp) => undefined,
   "missing": (p) => `!! ${linify(elemAsText(p))}`,
   "p": (p) => `${linify(elemAsText(p))}`,
 }

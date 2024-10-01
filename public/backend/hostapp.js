@@ -9,11 +9,12 @@
 module.exports = {
   quit,
   log,
+  beep,
 }
 
 //-----------------------------------------------------------------------------
 
-const {app} = require("electron");
+const {app, shell} = require("electron");
 
 //-----------------------------------------------------------------------------
 
@@ -23,4 +24,9 @@ function quit() {
 
 function log(message) {
   console.log(message)
+}
+
+function beep() {
+  console.log("Beep")
+  shell.beep()
 }

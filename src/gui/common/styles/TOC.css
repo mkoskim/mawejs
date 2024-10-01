@@ -2,6 +2,8 @@
 /* Document outlining */
 /* ---------------------------------------------------------------------------- */
 
+@import "colors.css";
+
 .SectionName {
   padding: 6px;
   border-bottom: 1px solid lightgray;
@@ -155,8 +157,8 @@
   min-width: 7pt;
   max-width: 7pt;
   border: 1px solid grey;
-  margin-right: 6pt;
   margin-left: 0.5cm;
+  margin-right: 6pt;
   /*
   margin-left: 8pt;
   border-radius: 4pt;
@@ -171,7 +173,14 @@
 }
 */
 
+/**/
 .TOC .Entry .Box.comment { background: rgb(71, 207, 71); }
-.TOC .Entry .Box.missing { background: rgb(252, 44, 44); }
-.TOC .Entry .Box.synopsis { background: rgb(243, 243, 12); }
-
+.TOC .Entry .Box.missing { background: rgb(232, 14, 14); }
+.TOC .Entry .Box.fill { background: rgb(252, 84, 252); }
+.TOC .Entry .Box.synopsis { background: rgb(243, 243, 62); }
+/*/
+.TOC .Entry .Box.comment { background: var(--comment-fg); }
+.TOC .Entry .Box.missing { background: var(--missing-fg); }
+.TOC .Entry .Box.fill { background: var(--fill-fg); }
+.TOC .Entry .Box.synopsis { background: var(--synopsis-fg); }
+/**/

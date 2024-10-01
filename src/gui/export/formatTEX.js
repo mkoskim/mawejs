@@ -180,8 +180,8 @@ ${backmatter}
   //---------------------------------------------------------------------------
 
   // Paragraph styles
-  "synopsis": (p) => undefined,
-  "comment": (p) => undefined,
+  //"synopsis": (p) => undefined,
+  //"comment": (p) => undefined,
   "missing": (p) => `{\\color{red}${linify(elemAsText(p))}}`,
   "p": (p) => `${linify(elemAsText(p))}`,
 }

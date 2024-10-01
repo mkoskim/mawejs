@@ -53,8 +53,8 @@ ${content}
   //---------------------------------------------------------------------------
   // Paragraph splits
 
-  "synopsis": (p) => null,
-  "comment": (p) => null,
+  // "synopsis": (p) => null,
+  // "comment": (p) => null,
   "missing": (p) => `<p id="${p.id}" style="color: rgb(180, 20, 20);">${escape(elemAsText(p))}</p>`,
   "p": (p) => `<p id="${p.id}">${escape(elemAsText(p))}</p>`,
 

@@ -5,16 +5,7 @@
 // ----------------------------------------------------------------------------
 */
 
-:root {
-  --synopsis-fg: rgb(80, 80, 11);
-  --synopsis-bg:#fdfdd6;
-
-  --missing-fg: rgb(190, 3, 3);
-  --missing-bg: #f8e7e7;
-
-  --comment-fg: rgb(6, 61, 6);
-  --comment-bg: #e7ffe7;
-}
+@import "colors.css";
 
 /* ---------------------------------------------------------------------------- */
 /* Board for scrollbars */
@@ -315,7 +306,7 @@
 }
 
 .Sheet .fill {
-  color: var(--missing-fg);
+  color: var(--fill-fg);
   /*
   background: var(--missing-bg);
   */

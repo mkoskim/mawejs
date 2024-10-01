@@ -127,6 +127,10 @@ export class ChooseVisibleElements extends React.PureComponent {
       tooltip: "Show missing",
       icon: <Icon.BlockType.Missing />
     },
+    "fill": {
+      tooltip: "Show fillers",
+      icon: <Icon.BlockType.Filler />
+    },
     "comment": {
       tooltip: "Show comments",
       icon: <Icon.BlockType.Comment />

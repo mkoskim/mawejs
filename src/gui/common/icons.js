@@ -85,6 +85,7 @@ export const Icon = {
     Synopsis: muiIcons.FormatAlignRightOutlined,
     Comment: muiIcons.Comment,
     Missing: muiIcons.Report,
+    Filler: muiIcons.AddBox,
   },
   StatType: {
     Off: muiIcons.VisibilityOff,

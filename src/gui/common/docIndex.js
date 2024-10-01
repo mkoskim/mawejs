@@ -76,7 +76,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   // Included items
   //---------------------------------------------------------------------------
 
-  const includeItems = include.includes("missing") ? [...include, "fill"] : include;
+  const includeItems = (include.includes("missing") && !include.includes("fill")) ? [...include, "fill"] : include;
 
   //---------------------------------------------------------------------------
   // Index
@@ -334,7 +334,6 @@ class ItemIcon extends React.PureComponent {
     switch (type) {
       case "missing":
       case "fill":
-        return <span className={addClass("Box", "missing")} />
       case "comment":
       case "synopsis":
         return <span className={addClass("Box", type)} />

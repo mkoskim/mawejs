@@ -94,6 +94,7 @@ export function FormatBody(format, body) {
   }
 
   function FormatParagraph(p) {
-    return format[p.type](p)
+    const formatter = format[p.type];
+    return formatter && formatter(p)
   }
 }

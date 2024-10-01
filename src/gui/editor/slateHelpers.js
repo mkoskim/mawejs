@@ -17,6 +17,7 @@ import { ReactEditor } from 'slate-react'
 
 import { sleep } from '../../util';
 import { nanoid } from 'nanoid';
+import { appBeep } from '../../system/host';
 
 //-----------------------------------------------------------------------------
 // Search pattern
@@ -338,5 +339,7 @@ function searchWithScroll(editor, text, path, offset, forward=true, doFocus=fals
       },
       doFocus
     )
+  } else {
+    appBeep();
   }
 }
