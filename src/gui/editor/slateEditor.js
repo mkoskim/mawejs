@@ -462,6 +462,24 @@ function withIDs(editor) {
 
 //*****************************************************************************
 //
+// With Word Count
+//
+//*****************************************************************************
+
+function withWordCount(editor) {
+  const { normalizeNode } = editor;
+
+  editor.normalizeNode = (entry)=> {
+    const [node, path] = entry
+
+    return normalizeNode(entry);
+  }
+
+  return editor;
+}
+
+//*****************************************************************************
+//
 // Folding
 //
 //*****************************************************************************
