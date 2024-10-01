@@ -52,6 +52,18 @@ function elemIsType(editor, elem, type) {
 }
 
 //-----------------------------------------------------------------------------
+// Check, if element is inside folded block
+
+function elemIsFolded(editor, path) {
+  for(const np of Node.levels(editor, path)) {
+    const [node, path] = np
+    //console.log("Node:", node);
+    if(node.folded) return true;
+  }
+  return false;
+}
+
+//-----------------------------------------------------------------------------
 
 // Return true, if editor operations change content
 // Return false, if operations only change selection
@@ -266,9 +278,10 @@ function searchTextForward(editor, text, path, offset) {
   if(match) return match
 
   const next = Editor.next(editor, {
-    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && searchOffsets(n.text, re).length
+    match: (n, p) => !Path.equals(path, p) && !elemIsFolded(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
   })
   if(!next) return undefined
+
   //console.log(next)
   return searchMatchNext(re, next[0], next[1])
 }
@@ -281,7 +294,7 @@ function searchTextBackward(editor, text, path, offset) {
   if(match) return match
 
   const prev = Editor.previous(editor, {
-    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && searchOffsets(n.text, re).length
+    match: (n, p) => !Path.equals(path, p) && !elemIsFolded(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
   })
   if(!prev) return undefined
   //console.log(next)
