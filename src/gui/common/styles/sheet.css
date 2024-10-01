@@ -279,7 +279,7 @@
 
 /* ---------------------------------------------------------------------------- */
 
-.Sheet .missing, .Sheet .comment, .Sheet .synopsis {
+.Sheet .missing, .Sheet .comment, .Sheet .synopsis, .Sheet .fill {
 /*
   padding-top: 4pt;
   padding-bottom: 4pt;
@@ -305,6 +305,26 @@
 
 .Sheet .missing::before {
   content: "!!";
+  margin-right: 4pt;
+/*
+  background: var(--missing-bg);
+  padding: 2pt;
+  padding-left: 4pt;
+  padding-right: 4pt;
+*/
+}
+
+.Sheet .fill {
+  color: var(--missing-fg);
+  /*
+  background: var(--missing-bg);
+  */
+  /* color: rgb(155, 28, 28); */
+  /* border-left: 4px solid #D88; */
+}
+
+.Sheet .fill::before {
+  content: "++ Fill:";
   margin-right: 4pt;
 /*
   background: var(--missing-bg);

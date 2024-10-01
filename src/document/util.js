@@ -180,6 +180,10 @@ function wcParagraph(elem) {
     //case "p": return { chars, text: wc, map: words2map(words) }
     case "p": return { chars, text: wc }
     case "missing": return { missing: wc }
+    case "fill":
+      const fill = parseInt(text)
+      console.log("Fill:", fill)
+      return { missing: (isNaN(fill) ? 0 : fill) }
     //case "comment": return { chars, comment: words }
   }
   return undefined
@@ -214,6 +218,7 @@ export function wcElem(elem) {
 
     case "p":
     case "missing":
+    case "fill":
       return wcParagraph(elem)
 
     default:
