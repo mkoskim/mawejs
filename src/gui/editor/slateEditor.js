@@ -20,7 +20,7 @@ import {
 import { withHistory } from "slate-history"
 import { addClass, IsKey, Icon } from '../common/factory';
 import { nanoid } from '../../util';
-import {section2lookup, wcElem} from '../../document/util';
+import {elemAsText, section2lookup, wcElem} from '../../document/util';
 
 import {
   text2Regexp, searchOffsets, searchPattern,
@@ -94,6 +94,7 @@ function renderElement({element, attributes, ...props}) {
     case "comment":
     case "missing":
     case "synopsis":
+    case "fill":
       return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
 
     case "p":
@@ -304,15 +305,13 @@ function withMarkup(editor) {
     '>> ': {type: "synopsis"},
     '// ': {type: 'comment'},
     '!! ': {type: 'missing'},
+    '++ ': {type: 'fill'},
     //'-- ': ,
-    //'++ ': ,
     //'<<':
     //'((':
     //'))':
     //'==':
     //'??':
-    //'++':
-    //'--':
     //'%%':
     //'/*':
     //'::':
@@ -323,12 +322,23 @@ function withMarkup(editor) {
     "hscene": "p",
     "synopsis": "p",
     "missing": "p",
+    "fill": "p",
   }
 
   const RESETEMPTY = [
     "synopsis",
     "comment",
     "missing",
+    "fill",
+  ]
+
+  const UNFORMAT_ON_BKSPACE = [
+    "missing",
+    "fill",
+    "comment",
+    "synopsis",
+    "hpart",
+    "hscene",
   ]
 
   const { insertText } = editor
@@ -417,16 +427,10 @@ function withMarkup(editor) {
     // Beginning of line?
     if(!Point.equals(selection.anchor, Editor.start(editor, path))) return deleteBackward(...args)
 
-    switch(node.type) {
-      case "missing":
-      case "comment":
-      case "synopsis":
-      case "hpart":
-      case "hscene":
+    if(UNFORMAT_ON_BKSPACE.includes(node.type)) {
         // Remove formatting
         Transforms.setNodes(editor, {type: 'p'})
         return
-      default: break;
     }
 
     return deleteBackward(...args)
@@ -884,7 +888,10 @@ export function section2edit(section) {
   function elem2edit(elem) {
     const {type} = elem;
 
-    if(type === "br") return {...elem, type: "p", children: [{text: ""}]}
+    switch(type) {
+      case "br": return {...elem, type: "p", children: [{text: ""}]}
+      default: break;
+    }
     return elem
   }
 }

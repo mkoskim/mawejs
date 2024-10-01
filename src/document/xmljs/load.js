@@ -200,12 +200,13 @@ export function fromXML(root) {
     //console.log("Elem", elem)
     //const {children} = recurse(elem)
 
-    if(type === "element" && name === "p" && !text.length) return {
-      type: "br",
-      id: nanoid(),
-      children: []
+    if(type === "element") {
+      if(name === "p" && !text.length) return {
+        type: "br",
+        id: nanoid(),
+        children: []
+      }
     }
-
     return {
       type: name ?? type,
       id: nanoid(),
