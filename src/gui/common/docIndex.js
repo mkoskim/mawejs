@@ -35,10 +35,18 @@ import {wcCumulative} from "../../document/util";
 
 export function DocIndex({name, style, activeID, section, wcFormat, include, setActive, unfold})
 {
+  //---------------------------------------------------------------------------
+  // Actiovation function
+  //---------------------------------------------------------------------------
+
   const onActivate = useCallback(id => {
     //console.log("Activate:", activeID, id)
     if(setActive) setActive(activeID, id)
   }, [activeID])
+
+  //---------------------------------------------------------------------------
+  // Word counts
+  //---------------------------------------------------------------------------
 
   const total = (["percent", "cumulative"].includes(wcFormat))
     ? (section.words?.text + section.words?.missing)
@@ -64,6 +72,16 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   )
   //console.log(wcFormatFunction)
 
+  //---------------------------------------------------------------------------
+  // Included items
+  //---------------------------------------------------------------------------
+
+  const includeItems = include.includes("missing") ? [...include, "fill"] : include;
+
+  //---------------------------------------------------------------------------
+  // Index
+  //---------------------------------------------------------------------------
+
   return <VBox style={style} className="TOC">
     <IndexHead
       //wcTotal={section.words.text}
@@ -75,7 +93,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
       activeID={activeID}
       parts={section?.parts}
       wcFormat={wcFormatFunction}
-      include={include}
+      include={includeItems}
       onActivate={onActivate}
       unfold={unfold}
     />
@@ -315,6 +333,8 @@ class ItemIcon extends React.PureComponent {
     const {type} = this.props
     switch (type) {
       case "missing":
+      case "fill":
+        return <span className={addClass("Box", "missing")} />
       case "comment":
       case "synopsis":
         return <span className={addClass("Box", type)} />
