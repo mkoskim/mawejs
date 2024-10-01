@@ -394,7 +394,7 @@ function LeftPanel({settings}) {
 
 const LeftIndexChoices = {
   visible: ["scene", "synopsis", "missing", "comment"],
-  words: ["off", "numbers", "compact", "percent", "cumulative"]
+  words: ["off", "numbers", "compact", "cumulative", "percent"]
 }
 
 function LeftPanelMenu({settings}) {

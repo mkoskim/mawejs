@@ -48,12 +48,12 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   // Word counts
   //---------------------------------------------------------------------------
 
-  const total = (["percent", "cumulative"].includes(wcFormat))
-    ? (section.words?.text + section.words?.missing)
+  const cumulative = (["percent", "cumulative"].includes(wcFormat))
+    ? wcCumulative(section)
     : undefined
 
-  const cumulative = (wcFormat == "cumulative")
-    ? wcCumulative(section)
+    const total = (["percent"].includes(wcFormat))
+    ? (section.words?.text + section.words?.missing)
     : undefined
 
   //if(activeID === "body") console.log("Index:", total, cumulative)

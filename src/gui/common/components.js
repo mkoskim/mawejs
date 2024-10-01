@@ -163,13 +163,13 @@ export class ChooseWordFormat extends React.PureComponent {
       tooltip: "Compact word count",
       icon: <Icon.StatType.Compact style={{transform: "rotate(90deg)"}}/>
     },
-    "percent": {
-      tooltip: "Words as percent",
-      icon: <Icon.StatType.Percent />
-    },
     "cumulative": {
-      tooltip: "Words as cumulative percent",
+      tooltip: "Words as cumulative",
       icon: <Icon.StatType.Cumulative />
+    },
+    "percent": {
+      tooltip: "Words as cumulative percent",
+      icon: <Icon.StatType.Percent />
     },
   }
 
@@ -225,7 +225,8 @@ export class FormatWords extends React.PureComponent {
   }
 
   cumulative(cumulative, missing, total) {
-    return this.percent(cumulative, missing, total)
+    //return this.percent(cumulative, missing, total)
+    return this.compact(cumulative, missing)
   }
 
   render() {
@@ -235,7 +236,7 @@ export class FormatWords extends React.PureComponent {
     if(words !== undefined) switch(format) {
       case "numbers": return this.number(summed, missing)
       case "compact": return this.compact(summed, missing)
-      case "percent": return this.percent(summed, missing, total)
+      case "percent": return this.percent(cumulative, missing, total)
       case "cumulative": return this.cumulative(cumulative, missing, total)
       default: break;
     }
