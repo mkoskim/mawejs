@@ -227,6 +227,28 @@ function onKeyDown(event, editor) {
   }
 
   //---------------------------------------------------------------------------
+  // Headings
+  //---------------------------------------------------------------------------
+
+  if(IsKey.CtrlAlt0(event)) {
+    event.preventDefault()
+    Transforms.setNodes(editor, {type: "p"})
+    return ;
+  }
+
+  if(IsKey.CtrlAlt1(event)) {
+    event.preventDefault()
+    Transforms.setNodes(editor, {type: "hpart"})
+    return ;
+  }
+
+  if(IsKey.CtrlAlt2(event)) {
+    event.preventDefault()
+    Transforms.setNodes(editor, {type: "hscene"})
+    return ;
+  }
+
+  //---------------------------------------------------------------------------
   // Misc
   //---------------------------------------------------------------------------
 
