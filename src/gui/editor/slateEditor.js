@@ -249,6 +249,30 @@ function onKeyDown(event, editor) {
     return ;
   }
 
+  if(IsKey.CtrlAltC(event)) {
+    event.preventDefault()
+    Transforms.setNodes(editor, {type: "comment"})
+    return ;
+  }
+
+  if(IsKey.CtrlAltM(event)) {
+    event.preventDefault()
+    Transforms.setNodes(editor, {type: "missing"})
+    return ;
+  }
+
+  if(IsKey.CtrlAltS(event)) {
+    event.preventDefault()
+    Transforms.setNodes(editor, {type: "synopsis"})
+    return ;
+  }
+
+  if(IsKey.CtrlAltF(event)) {
+    event.preventDefault()
+    Transforms.setNodes(editor, {type: "fill"})
+    return ;
+  }
+
   //---------------------------------------------------------------------------
   // Misc
   //---------------------------------------------------------------------------

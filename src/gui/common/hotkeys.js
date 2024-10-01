@@ -38,6 +38,11 @@ export const IsKey = {
   CtrlAlt8: isHotkey("Mod+Alt+8"),
   CtrlAlt9: isHotkey("Mod+Alt+9"),
 
+  CtrlAltC: isHotkey("Mod+Alt+C"),
+  CtrlAltF: isHotkey("Mod+Alt+F"),
+  CtrlAltM: isHotkey("Mod+Alt+M"),
+  CtrlAltS: isHotkey("Mod+Alt+S"),
+
 }
 
 export {isHotkey}
