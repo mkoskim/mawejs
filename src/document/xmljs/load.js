@@ -162,32 +162,60 @@ export function fromXML(root) {
     }
   }
 
-  function parsePart(part) {
+  function parsePart(part, index) {
     const {name, folded} = part.attributes ?? {};
-    const children = (part.elements ?? []).map(parseScene)
+    const header = (!index && !name) ? [] : [{
+      type: "hpart",
+      id: nanoid(),
+      children: [{text: name ?? ""}],
+      words: {}
+    }]
+    const empty = [{
+      type: "scene",
+      id: nanoid(),
+      children: []
+    }]
+    const children = (part.elements ?? empty).map(parseScene)
     const words = wcChildren(children)
 
     return {
       type: "part",
       id: nanoid(),
-      name,
+      //name,
       folded: (folded === "true") ? true : undefined,
-      children,
+      children: [
+        ...header,
+        ...children,
+      ],
       words,
     }
   }
 
-  function parseScene(scene) {
+  function parseScene(scene, index) {
     const {name, folded} = scene.attributes ?? {};
-    const children = (scene.elements ?? []).map(js2doc).map(elem => ({...elem, words: wcElem(elem)}))
+    const header = (!index && !name) ? [] : [{
+      type: "hscene",
+      id: nanoid(),
+      children: [{text: name ?? ""}],
+      words: {}
+    }]
+    const empty = [{
+      type: "p",
+      id: nanoid(),
+      children: [{text: ""}]
+    }]
+    const children = (scene.elements ?? empty).map(js2doc).map(elem => ({...elem, words: wcElem(elem)}))
     const words = wcChildren(children)
 
     return {
       type: "scene",
       id: nanoid(),
-      name,
+      //name,
       folded: (folded === "true") ? true : undefined,
-      children,
+      children: [
+        ...header,
+        ...children,
+      ],
       words,
     }
   }

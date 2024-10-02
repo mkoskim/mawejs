@@ -20,7 +20,7 @@ import {
 import { withHistory } from "slate-history"
 import { addClass, IsKey, Icon } from '../common/factory';
 import { nanoid } from '../../util';
-import {elemAsText, section2lookup, wcElem} from '../../document/util';
+import {elemAsText, section2lookup, wcElem, wcCompare, filterCtrlTags} from '../../document/util';
 
 import {
   text2Regexp, searchOffsets, searchPattern,
@@ -308,9 +308,10 @@ export function getEditor() {
   return [
     createEditor,
     withHistory,
-    withMarkup,
-    withFixNesting,
     withIDs,              // Autogenerate IDs
+    withWordCount,
+    withFixNesting,
+    withMarkup,
     withProtectFolds,     // Keep low! Prevents messing with folded blocks
     withReact,
   ].reduce((editor, func) => func(editor), undefined)
@@ -527,6 +528,12 @@ function withWordCount(editor) {
 
   editor.normalizeNode = (entry)=> {
     const [node, path] = entry
+
+    const words = wcElem(node)
+    if(!wcCompare(words, node.words)) {
+      Transforms.setNodes(editor, {words}, {at: path})
+      return;
+    }
 
     return normalizeNode(entry);
   }
@@ -890,11 +897,6 @@ export function updateSection(buffer, section) {
     parts: updated,
     words: wcElem({type: "sect", children: updated})
   }
-}
-
-function filterCtrlTags(blocks) {
-  const ctrltypes = ["hpart", "hscene"]
-  return blocks.filter(block => !ctrltypes.includes(block.type))
 }
 
 function edit2part(part, lookup) {

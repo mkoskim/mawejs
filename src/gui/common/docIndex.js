@@ -28,7 +28,7 @@ import {
 } from "./factory";
 
 import {FormatWords} from "./components";
-import {elemAsText} from "../../document";
+import {elemAsText, elemName, filterCtrlTags} from "../../document";
 import {wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
@@ -191,7 +191,7 @@ class PartItem extends React.PureComponent {
       <IndexItem
         id={elem.id}
         type={elem.type}
-        name={elem.name}
+        name={elemName(elem)}
         words={elem.words}
         folded={!unfold && elem.folded}
         wcFormat={wcFormat}
@@ -229,7 +229,7 @@ class SceneDropZone extends React.PureComponent {
       ref={innerRef}
       {...droppableProps}
     >
-    {include.includes("scene") && scenes.map((elem, index) => <SceneItem
+    {include.includes("scene") && filterCtrlTags(scenes).map((elem, index) => <SceneItem
       key={elem.id}
       index={index}
       elem={elem}
@@ -276,7 +276,7 @@ class SceneItem extends React.PureComponent {
     <IndexItem
       id={elem.id}
       type={elem.type}
-      name={elem.name}
+      name={elemName(elem)}
       folded={elem.folded}
       words={elem.words}
       wcFormat={wcFormat}

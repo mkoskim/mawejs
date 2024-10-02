@@ -64,6 +64,11 @@ export async function buf2file(doc, buffer) {
 
 //-----------------------------------------------------------------------------
 
+export function filterCtrlTags(blocks) {
+  const ctrltypes = ["hpart", "hscene"]
+  return blocks.filter(block => !ctrltypes.includes(block.type))
+}
+
 export function elemAsText(elem) {
   if(!elem?.children) return ""
   return (
@@ -77,6 +82,22 @@ export function elemTags(elem) {
   if(!elem?.children) return []
   if(elem.type !== "tags") return []
   return elemAsText(elem).split(",").map(s => s.trim().toLowerCase()).filter(s => s)
+}
+
+export function elemName(elem) {
+  if(elem.type === "part") {
+    if(elem.children.length && elem.children[0].type === "hpart") {
+      return elemAsText(elem.children[0]);
+    }
+    return undefined
+  }
+  if(elem.type === "scene") {
+    if(elem.children.length && elem.children[0].type === "hscene") {
+      return elemAsText(elem.children[0]);
+    }
+    return undefined
+  }
+  return undefined
 }
 
 //-----------------------------------------------------------------------------
@@ -233,6 +254,14 @@ export function wcChildren(children) {
   }
 
   return words
+}
+
+export function wcCompare(a, b) {
+  return (
+    a?.chars === b?.chars &&
+    a?.text === b?.text &&
+    a?.missing === b?.missing
+  )
 }
 
 export function wcElem(elem) {
