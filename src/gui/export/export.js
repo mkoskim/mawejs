@@ -32,7 +32,7 @@ import {
   Inform,
 } from "../common/factory";
 
-import { getSuffix, nanoid } from "../../document/util";
+import { elemName, getSuffix, nanoid, filterCtrlTags } from "../../document/util";
 import {
   EditHead, SectionWordInfo,
   setDocStoryType, setDocChapterElem, setDocChapterType,
@@ -151,12 +151,13 @@ function ExportIndex({ style, doc, setFocusTo }) {
   const { parts } = body
 
   return <VFiller className="TOC" style={style}>
-    {parts.map(part => <PartItem key={part.id} part={part} setFocusTo={setFocusTo}/>)}
+    {filterCtrlTags(parts).map(part => <PartItem key={part.id} part={part} setFocusTo={setFocusTo}/>)}
   </VFiller>
 }
 
 function PartItem({ part, setFocusTo }) {
-  const { id, name, children } = part
+  const { id, children } = part
+  const name = elemName(part)
   return <>
     <div
       className="Entry PartName"
@@ -166,12 +167,13 @@ function PartItem({ part, setFocusTo }) {
     >
       <span className="Name">{name}</span>
     </div>
-    {children.map(scene => <SceneItem key={scene.id} scene={scene} setFocusTo={setFocusTo}/>)}
+    {filterCtrlTags(children).map(scene => <SceneItem key={scene.id} scene={scene} setFocusTo={setFocusTo}/>)}
   </>
 }
 
 function SceneItem({ scene, setFocusTo }) {
-  const { id, name } = scene
+  const { id } = scene
+  const name = elemName(scene)
   return <div
     className="Entry SceneName"
     onClick={ev => window.location.href = `#${id}`}
