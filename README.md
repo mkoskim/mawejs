@@ -27,6 +27,22 @@ Sadly, neither Notepad nor Scrivener fully support plantsers. That's why I neede
 a tool for myself, that's why I wrote Mawe with Python/GTK, and now with
 ElectronJS, Javascript and React.
 
+## Status
+
+Check out discussions page for status and other info:
+
+https://github.com/mkoskim/mawejs/discussions
+
+**Oct 2, 2024:** There are now two fancy features implemented.
+First are **filler elements**. You can create a filler by typing "++" at the
+beginning of the line, and entering a number makes it to report as many missing words.
+This helps you to fill gaps, so that you can design the story structure before you
+have written the story.
+
+The other new thing are **tags**. Type "@" at the beginning of the line, and you can
+enter a comma-separated list of tags. There is also a tag view in the right panel.
+Clicking a tag will make scenes containing that tag visible, and fold all the others.
+
 ## How does it look like?
 
 Live screenshot while editing one of my stories (written in Finnish):
@@ -75,12 +91,6 @@ If you update the project with 'git pull', you may need to update the libraries,
 ## React Dev Tools
 
 Instructions to get React DevTools working: https://github.com/mkoskim/mawejs/discussions/131
-
-## Status
-
-Check out discussions page for status and other info:
-
-https://github.com/mkoskim/mawejs/discussions
 
 ## Example files
 
