@@ -28,7 +28,7 @@ import {
 } from "./factory";
 
 import {FormatWords} from "./components";
-import {elemAsText, elemName, filterCtrlTags} from "../../document";
+import {elemAsText, elemName, filterCtrlElems} from "../../document";
 import {wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
@@ -229,7 +229,7 @@ class SceneDropZone extends React.PureComponent {
       ref={innerRef}
       {...droppableProps}
     >
-    {include.includes("scene") && filterCtrlTags(scenes).map((elem, index) => <SceneItem
+    {include.includes("scene") && filterCtrlElems(scenes).map((elem, index) => <SceneItem
       key={elem.id}
       index={index}
       elem={elem}

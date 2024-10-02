@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid as getUUID, buf2file, elemName, filterCtrlTags} from "../util";
+import {uuid as getUUID, buf2file, elemName, filterCtrlElems} from "../util";
 import { js2xml } from "xml-js";
 
 //----------------------------------------------------------------------------
@@ -165,7 +165,7 @@ export function toXML(story) {
         name: escape(name),
         folded: folded ? true : undefined,
       },
-      elements: filterCtrlTags(part.children).map(toScene)
+      elements: filterCtrlElems(part.children).map(toScene)
     })
   }
 
@@ -179,7 +179,7 @@ export function toXML(story) {
         name: escape(name),
         folded: folded ? true : undefined,
       },
-      elements: filterCtrlTags(scene.children).map(doc2js)
+      elements: filterCtrlElems(scene.children).map(doc2js)
     })
   }
 

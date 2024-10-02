@@ -20,7 +20,7 @@ import {
 import { withHistory } from "slate-history"
 import { addClass, IsKey, Icon } from '../common/factory';
 import { nanoid } from '../../util';
-import {elemAsText, section2lookup, wcElem, wcCompare, filterCtrlTags} from '../../document/util';
+import {elemAsText, section2lookup, wcElem, wcCompare, filterCtrlElems} from '../../document/util';
 
 import {
   text2Regexp, searchOffsets, searchPattern,

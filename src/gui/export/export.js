@@ -32,7 +32,7 @@ import {
   Inform,
 } from "../common/factory";
 
-import { elemName, getSuffix, nanoid, filterCtrlTags } from "../../document/util";
+import { elemName, getSuffix, nanoid, filterCtrlElems } from "../../document/util";
 import {
   EditHead, SectionWordInfo,
   setDocStoryType, setDocChapterElem, setDocChapterType,
@@ -151,7 +151,7 @@ function ExportIndex({ style, doc, setFocusTo }) {
   const { parts } = body
 
   return <VFiller className="TOC" style={style}>
-    {filterCtrlTags(parts).map(part => <PartItem key={part.id} part={part} setFocusTo={setFocusTo}/>)}
+    {filterCtrlElems(parts).map(part => <PartItem key={part.id} part={part} setFocusTo={setFocusTo}/>)}
   </VFiller>
 }
 
@@ -167,7 +167,7 @@ function PartItem({ part, setFocusTo }) {
     >
       <span className="Name">{name}</span>
     </div>
-    {filterCtrlTags(children).map(scene => <SceneItem key={scene.id} scene={scene} setFocusTo={setFocusTo}/>)}
+    {filterCtrlElems(children).map(scene => <SceneItem key={scene.id} scene={scene} setFocusTo={setFocusTo}/>)}
   </>
 }
 

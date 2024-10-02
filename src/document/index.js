@@ -14,7 +14,7 @@ import {info} from "./head"
 
 import {
   getSuffix, suffix2format,
-  elemAsText, elemName, filterCtrlTags,
+  elemAsText, elemName, filterCtrlElems,
   file2buf, decodebuf,
 } from "./util";
 
@@ -38,7 +38,7 @@ export const mawe = {
   asRTF, asHTML,
 }
 
-export {elemAsText, elemName, filterCtrlTags}
+export {elemAsText, elemName, filterCtrlElems}
 
 //-----------------------------------------------------------------------------
 

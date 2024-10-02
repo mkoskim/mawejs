@@ -32,7 +32,7 @@ import {
 import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
 import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
 import {DocIndex} from "../common/docIndex";
-import {elemName, filterCtrlTags, mawe} from "../../document";
+import {elemName, filterCtrlElems, mawe} from "../../document";
 
 //-----------------------------------------------------------------------------
 
@@ -235,13 +235,13 @@ function partData(section) {
 
 function sceneLabels(section) {
   return section.parts.map(part => (
-    filterCtrlTags(part.children).map(scene => elemLabel(scene))
+    filterCtrlElems(part.children).map(scene => elemLabel(scene))
   )).flat()
 }
 
 function sceneData(section) {
   return section.parts.map(part => (
-    filterCtrlTags(part.children).map(scene => elemData(scene)).flat()
+    filterCtrlElems(part.children).map(scene => elemData(scene)).flat()
   )).flat()
 }
 

@@ -64,7 +64,7 @@ export async function buf2file(doc, buffer) {
 
 //-----------------------------------------------------------------------------
 
-export function filterCtrlTags(blocks) {
+export function filterCtrlElems(blocks) {
   const ctrltypes = ["hpart", "hscene"]
   return blocks.filter(block => !ctrltypes.includes(block.type))
 }
@@ -76,12 +76,6 @@ export function elemAsText(elem) {
     .map(elem => elem.text)
     .join()
   )
-}
-
-export function elemTags(elem) {
-  if(!elem?.children) return []
-  if(elem.type !== "tags") return []
-  return elemAsText(elem).split(",").map(s => s.trim().toLowerCase()).filter(s => s)
 }
 
 export function elemName(elem) {
@@ -98,6 +92,16 @@ export function elemName(elem) {
     return undefined
   }
   return undefined
+}
+
+//-----------------------------------------------------------------------------
+// Element tags
+//-----------------------------------------------------------------------------
+
+export function elemTags(elem) {
+  if(!elem?.children) return []
+  if(elem.type !== "tags") return []
+  return elemAsText(elem).split(",").map(s => s.trim().toLowerCase()).filter(s => s)
 }
 
 //-----------------------------------------------------------------------------
@@ -178,30 +182,11 @@ function wcParagraph(elem) {
 }
 
 export function wcChildren(children) {
-  var words = {
-    //map: new Map(),
-    chars: 0,
-    text: 0,
-    missing: 0,
-  }
-
-  for(const elem of children) {
-    if(!elem.words) continue
-    words.chars += elem.words.chars ?? 0
-    words.text += elem.words.text ?? 0
-    words.missing += elem.words.missing ?? 0
-    //if(elem.words.map) wordmapUpdate(words.map, elem.words.map)
-  }
-
-  return words
-}
-
-export function wcCompare(a, b) {
-  return (
-    a?.chars === b?.chars &&
-    a?.text === b?.text &&
-    a?.missing === b?.missing
-  )
+  return children.filter(elem => elem.words).reduce((words, elem) => ({
+    chars: words.chars + (elem.words.chars ?? 0),
+    text: words.text + (elem.words.text ?? 0),
+    missing: words.missing + (elem.words.missing ?? 0),
+  }), {chars: 0, text: 0, missing: 0})
 }
 
 export function wcElem(elem) {
@@ -225,6 +210,14 @@ export function wcElem(elem) {
       break;
   }
   return undefined
+}
+
+export function wcCompare(a, b) {
+  return (
+    a?.chars === b?.chars &&
+    a?.text === b?.text &&
+    a?.missing === b?.missing
+  )
 }
 
 export function wcCumulative(section) {

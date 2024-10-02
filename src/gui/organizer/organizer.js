@@ -30,7 +30,7 @@ import {
 } from "../common/components";
 
 import {elemAsText} from "../../document";
-import {elemName, filterCtrlTags, wcCumulative} from "../../document/util";
+import {elemName, filterCtrlElems, wcCumulative} from "../../document/util";
 import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
 
 //-----------------------------------------------------------------------------
@@ -220,7 +220,7 @@ function PartView({settings, part, index}) {
       ref={innerRef}
       {...droppableProps}
       >
-      {filterCtrlTags(part.children).map((scene, index) => <SceneView key={scene.id} index={index} settings={settings} scene={scene}/>)}
+      {filterCtrlElems(part.children).map((scene, index) => <SceneView key={scene.id} index={index} settings={settings} scene={scene}/>)}
       {placeholder}
     </div>
   }
