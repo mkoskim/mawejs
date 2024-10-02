@@ -40,7 +40,7 @@ export class ViewSelectButtons extends React.PureComponent {
     />
   }
 
-  choices = ["editor", "organizer", "chart", "export"]
+  choices = ["editor", "chart", "export"]
 
   viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
