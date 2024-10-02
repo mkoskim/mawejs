@@ -95,6 +95,7 @@ function renderElement({element, attributes, ...props}) {
     case "missing":
     case "synopsis":
     case "fill":
+    case "tags":
       return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
 
     case "p":
@@ -330,6 +331,7 @@ function withMarkup(editor) {
     '// ': {type: 'comment'},
     '!! ': {type: 'missing'},
     '++ ': {type: 'fill'},
+    '@ ': {type: 'tags'},
     //'-- ': ,
     //'<<':
     //'((':
@@ -347,6 +349,7 @@ function withMarkup(editor) {
     "synopsis": "p",
     "missing": "p",
     "fill": "p",
+    "tags": "p",
   }
 
   const RESETEMPTY = [
@@ -354,6 +357,7 @@ function withMarkup(editor) {
     "comment",
     "missing",
     "fill",
+    "tags",
   ]
 
   const UNFORMAT_ON_BKSPACE = [
@@ -361,6 +365,7 @@ function withMarkup(editor) {
     "fill",
     "comment",
     "synopsis",
+    "tags",
     "hpart",
     "hscene",
   ]

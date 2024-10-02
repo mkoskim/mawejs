@@ -270,59 +270,31 @@
 
 /* ---------------------------------------------------------------------------- */
 
-.Sheet .missing, .Sheet .comment, .Sheet .synopsis, .Sheet .fill {
-/*
-  padding-top: 4pt;
-  padding-bottom: 4pt;
-  font-family: Arial, Helvetica, sans-serif;
-*/
-/*
-  padding: 4pt;
-  text-indent: 0;
-  margin-top: 4pt;
-  margin-bottom: 4pt;
-  margin-left: 1cm;
-  */
-}
-
 .Sheet .missing {
   color: var(--missing-fg);
-  /*
-  background: var(--missing-bg);
-  */
-  /* color: rgb(155, 28, 28); */
-  /* border-left: 4px solid #D88; */
 }
 
 .Sheet .missing::before {
   content: "!!";
   margin-right: 4pt;
-/*
-  background: var(--missing-bg);
-  padding: 2pt;
-  padding-left: 4pt;
-  padding-right: 4pt;
-*/
 }
 
 .Sheet .fill {
   color: var(--fill-fg);
-  /*
-  background: var(--missing-bg);
-  */
-  /* color: rgb(155, 28, 28); */
-  /* border-left: 4px solid #D88; */
 }
 
 .Sheet .fill::before {
   content: "++ Fill:";
   margin-right: 4pt;
-/*
-  background: var(--missing-bg);
-  padding: 2pt;
-  padding-left: 4pt;
-  padding-right: 4pt;
-*/
+}
+
+.Sheet .tags {
+  color: var(--tags-fg);
+}
+
+.Sheet .tags::before {
+  content: "@";
+  margin-right: 4pt;
 }
 
 .Sheet .comment {

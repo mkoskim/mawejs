@@ -1,7 +1,7 @@
 //*****************************************************************************
 //*****************************************************************************
 //
-// Word Table component
+// Tag Table component
 //
 //*****************************************************************************
 //*****************************************************************************
@@ -28,16 +28,31 @@ import {
   isHotkey,
 } from "../common/factory";
 
-import {createWordTable} from "../../document/util";
+import {createTagTable} from "../../document/util";
 //import {text2Regexp} from "./slateFlatEditor"
-import {text2Regexp} from "./slateEditor"
+//import {text2Regexp} from "./slateEditor"
 
 //-----------------------------------------------------------------------------
 // Wordtable
 //-----------------------------------------------------------------------------
 
-export function WordTable({section, setSearchText, searchBoxRef}) {
+export function TagTable({section}) {
 
+  const tags = createTagTable(section)
+
+  /*
+  return <VBox style={{overflow: "auto"}}>
+    Testing, testing...
+  </VBox>
+  /*/
+  return <VBox style={{overflow: "auto"}}>
+    <div className="VBox TOC">
+      {tags.map(key => <TagRow key={key} className={"Entry"} word={key}/>)}
+    </div>
+  </VBox>
+  /**/
+
+/*
   const [filterText, setFilterText] = useState("")
 
   function doFilter(wt) {
@@ -70,37 +85,15 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
     if(searchBoxRef.current) searchBoxRef.current.focus()
   }, [setSearchText, searchBoxRef])
 
-  // Use this to test performance of table generation
-  /*
-  return <VBox style={style}>
-    Testing, testing...
-  </VBox>
-  /**/
-  return <VBox style={{overflow: "auto"}}>
-    <ToolBox style={{background: "white"}}>
-      <Input
-        value={filterText}
-        onChange={ev => setFilterText(ev.target.value)}
-      />
-      <Button tooltip="Sort order" onClick={ev => setSortAscending(!sortAscending)}>
-        {sortAscending ? <Icon.Arrow.Up/>: <Icon.Arrow.Down/>}
-      </Button>
-    </ToolBox>
-    <div className="VBox TOC">
-      {wt.slice(0, 100).map(([word, count]) => <WordCountRow key={word} className={"Entry"} word={word} count={count} onSelect={onSelect}/>)}
-    </div>
-  </VBox>
+*/
 }
 
-class WordCountRow extends React.PureComponent {
+class TagRow extends React.PureComponent {
   render() {
-    const {word, count, onSelect, className} = this.props
+    const {word, className} = this.props
 
-    return <HBox className={className} onClick={e => onSelect(word)}>
+    return <HBox className={className}>
       <Label text={word}/>
-      <Filler/>
-      <Label text={count}/>
     </HBox>
   }
 }
-

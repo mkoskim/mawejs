@@ -135,6 +135,10 @@ export class ChooseVisibleElements extends React.PureComponent {
       tooltip: "Show comments",
       icon: <Icon.BlockType.Comment />
     },
+    "tags": {
+      tooltip: "Show tags",
+      icon: <Icon.BlockType.Tags />
+    },
   }
 
   render() {
