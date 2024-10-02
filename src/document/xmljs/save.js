@@ -6,12 +6,13 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid as getUUID, buf2file} from "../util";
+import {uuid as getUUID, buf2file, elemName, filterCtrlTags} from "../util";
 import { js2xml } from "xml-js";
 
 //----------------------------------------------------------------------------
 
 export async function savemawe(doc) {
+  //throw new Error("Save disabled.")
   const buffer = tree2buf(toXML(doc.story))
   return await buf2file(doc, buffer)
 }
@@ -156,19 +157,21 @@ export function toXML(story) {
   }
 
   function toPart(part) {
-    const {name, folded} = part;
+    const {folded} = part;
+    const name = elemName(part)
     return toElem({
       type: "part",
       attributes: {
         name: escape(name),
         folded: folded ? true : undefined,
       },
-      elements: part.children.map(toScene)
+      elements: filterCtrlTags(part.children).map(toScene)
     })
   }
 
   function toScene(scene) {
-    const {name, folded} = scene
+    const {folded} = scene
+    const name = elemName(scene)
 
     return toElem({
       type: "scene",
@@ -176,7 +179,7 @@ export function toXML(story) {
         name: escape(name),
         folded: folded ? true : undefined,
       },
-      elements: scene.children.map(doc2js)
+      elements: filterCtrlTags(scene.children).map(doc2js)
     })
   }
 

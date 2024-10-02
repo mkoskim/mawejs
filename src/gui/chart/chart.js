@@ -32,7 +32,7 @@ import {
 import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
 import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
 import {DocIndex} from "../common/docIndex";
-import {mawe} from "../../document";
+import {elemName, filterCtrlTags, mawe} from "../../document";
 
 //-----------------------------------------------------------------------------
 
@@ -198,7 +198,8 @@ function ChartToolbar({settings}) {
 //-----------------------------------------------------------------------------
 
 function elemLabel(elem) {
-  const {name, words} = elem
+  const {words} = elem
+  const name = elemName(elem)
   return {
     name,
     size: words.text + words.missing,
@@ -234,13 +235,13 @@ function partData(section) {
 
 function sceneLabels(section) {
   return section.parts.map(part => (
-    part.children.map(scene => elemLabel(scene))
+    filterCtrlTags(part.children).map(scene => elemLabel(scene))
   )).flat()
 }
 
 function sceneData(section) {
   return section.parts.map(part => (
-    part.children.map(scene => elemData(scene)).flat()
+    filterCtrlTags(part.children).map(scene => elemData(scene)).flat()
   )).flat()
 }
 

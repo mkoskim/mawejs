@@ -67,6 +67,7 @@ import {
 import { mawe } from "../../document";
 import { produce } from "immer";
 import { SettingsContext} from "../app/settings";
+import { wcElem } from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
@@ -98,9 +99,6 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   const bodyeditor = useMemo(() => getEditor(), [])
   const noteeditor = useMemo(() => getEditor(), [])
 
-  const [bodybuffer, _setBodyBuffer] = useState(() => section2edit(doc.story.body))
-  const [notebuffer, _setNoteBuffer] = useState(() => section2edit(doc.story.notes))
-
   //console.log(doc.story.body)
   //console.log(bodybuffer)
 
@@ -109,15 +107,21 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   //---------------------------------------------------------------------------
 
   const updateBody = useCallback(buffer => {
-    if(!isAstChange(bodyeditor)) return
-    const updated = updateSection(buffer, doc.story.body)
-    setDoc(produce(draft => {draft.story.body = updated}))
+    if(isAstChange(bodyeditor)) {
+      setDoc(produce(draft => {
+        draft.story.body.parts = buffer;
+        draft.story.body.words = wcElem({type: "sect", children: buffer})
+      }))
+    }
   }, [bodyeditor])
 
   const updateNotes = useCallback(buffer => {
-    if(!isAstChange(noteeditor)) return
-    const updated = updateSection(buffer, doc.story.notes)
-    setDoc(produce(draft => {draft.story.notes = updated}))
+    if(isAstChange(noteeditor)) {
+      setDoc(produce(draft => {
+        draft.story.notes.parts = buffer
+        draft.story.notes.words = wcElem({type: "sect", children: buffer})
+      }))
+    }
   }, [noteeditor])
 
   //---------------------------------------------------------------------------
@@ -201,14 +205,14 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
       words: words1,
       setWords: setWords1,
       editor: bodyeditor,
-      buffer: bodybuffer,
+      buffer: doc.story.body.parts,
       onChange: updateBody,
       },
     notes: {
       indexed: indexed2,
       setIndexed: setIndexed2,
       editor: noteeditor,
-      buffer: notebuffer,
+      buffer: doc.story.notes.parts,
       onChange: updateNotes,
     },
     leftstyle:    {maxWidth: "400px", width: "400px"},

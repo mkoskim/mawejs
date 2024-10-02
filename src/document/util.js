@@ -64,6 +64,11 @@ export async function buf2file(doc, buffer) {
 
 //-----------------------------------------------------------------------------
 
+export function filterCtrlTags(blocks) {
+  const ctrltypes = ["hpart", "hscene"]
+  return blocks.filter(block => !ctrltypes.includes(block.type))
+}
+
 export function elemAsText(elem) {
   if(!elem?.children) return ""
   return (
@@ -79,44 +84,20 @@ export function elemTags(elem) {
   return elemAsText(elem).split(",").map(s => s.trim().toLowerCase()).filter(s => s)
 }
 
-//-----------------------------------------------------------------------------
-// Flat section
-//-----------------------------------------------------------------------------
-
-export function section2flat(section) {
-  const flat = new Array()
-
-  for(const part of section.parts) {
-    flat.push(part)
-    for(const scene of part.children) {
-      flat.push(scene)
-      for(const p of scene.children) {
-        flat.push(p)
-      }
+export function elemName(elem) {
+  if(elem.type === "part") {
+    if(elem.children.length && elem.children[0].type === "hpart") {
+      return elemAsText(elem.children[0]);
     }
+    return undefined
   }
-
-  return flat
-}
-
-//-----------------------------------------------------------------------------
-// Make lookup table
-//-----------------------------------------------------------------------------
-
-export function section2lookup(section) {
-  const lookup = new Map()
-
-  for(const part of section.parts) {
-    lookup.set(part.id, part)
-    for(const scene of part.children) {
-      lookup.set(scene.id, scene)
-      for(const p of scene.children) {
-        lookup.set(p.id, p)
-      }
+  if(elem.type === "scene") {
+    if(elem.children.length && elem.children[0].type === "hscene") {
+      return elemAsText(elem.children[0]);
     }
+    return undefined
   }
-
-  return lookup
+  return undefined
 }
 
 //-----------------------------------------------------------------------------
@@ -131,25 +112,6 @@ export function text2words(text) {
 
 export function wordcount(text) {
   return text2words(text).length
-}
-
-function words2map(words) {
-  const wt = new Map()
-
-  for(const word of words) {
-    const lowcase = word.toLowerCase()
-    const count = wt.has(lowcase) ? wt.get(lowcase) : 0
-    wt.set(lowcase, count + 1)
-  }
-
-  return wt
-}
-
-function wordmapUpdate(map, wt) {
-  for(const [word, count] of wt.entries()) {
-    const prev = map.has(word) ? map.get(word) : 0
-    map.set(word, prev + count)
-  }
 }
 
 export function createWordTable(section) {
@@ -211,7 +173,6 @@ function wcParagraph(elem) {
       const fill = Math.max(0, parseInt(text))
       //console.log("Fill:", fill)
       return { missing: (isNaN(fill) ? 0 : fill) }
-    //case "comment": return { chars, comment: words }
   }
   return undefined
 }
@@ -233,6 +194,14 @@ export function wcChildren(children) {
   }
 
   return words
+}
+
+export function wcCompare(a, b) {
+  return (
+    a?.chars === b?.chars &&
+    a?.text === b?.text &&
+    a?.missing === b?.missing
+  )
 }
 
 export function wcElem(elem) {

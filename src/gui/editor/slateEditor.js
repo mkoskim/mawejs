@@ -20,7 +20,7 @@ import {
 import { withHistory } from "slate-history"
 import { addClass, IsKey, Icon } from '../common/factory';
 import { nanoid } from '../../util';
-import {elemAsText, section2lookup, wcElem} from '../../document/util';
+import {elemAsText, section2lookup, wcElem, wcCompare, filterCtrlTags} from '../../document/util';
 
 import {
   text2Regexp, searchOffsets, searchPattern,
@@ -97,15 +97,15 @@ function renderElement({element, attributes, ...props}) {
     case "synopsis":
     case "fill":
     case "tags":
-        return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
+      return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
+
+    case "br":
+      return <div className="emptyline" {...attributes} {...props}/>
 
     case "p":
     default: break;
   }
 
-  if (Node.string(element) === "") {
-    return <div className="emptyline" {...attributes} {...props}/>
-  }
   return <p {...attributes} {...props}/>
 }
 
@@ -230,7 +230,7 @@ function onKeyDown(event, editor) {
   }
 
   //---------------------------------------------------------------------------
-  // Headings
+  // Block styles
   //---------------------------------------------------------------------------
 
   if(IsKey.CtrlAlt0(event)) {
@@ -293,8 +293,9 @@ function onKeyDown(event, editor) {
       "Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, " +
       "fringilla."
     )
+    Transforms.insertNodes(editor, {type: "p", id: nanoid(), children: [{text: ""}]})
     return
-    }
+  }
 }
 
 //*****************************************************************************
@@ -308,9 +309,11 @@ export function getEditor() {
   return [
     createEditor,
     withHistory,
-    withMarkup,
-    withFixNesting,
     withIDs,              // Autogenerate IDs
+    withWordCount,
+    withBreaks,
+    withFixNesting,
+    withMarkup,
     withProtectFolds,     // Keep low! Prevents messing with folded blocks
     withReact,
   ].reduce((editor, func) => func(editor), undefined)
@@ -528,11 +531,50 @@ function withWordCount(editor) {
   editor.normalizeNode = (entry)=> {
     const [node, path] = entry
 
+    const words = wcElem(node)
+    if(!wcCompare(words, node.words)) {
+      Transforms.setNodes(editor, {words}, {at: path})
+      return;
+    }
+
     return normalizeNode(entry);
   }
 
   return editor;
 }
+
+//*****************************************************************************
+//
+// With Breaks
+//
+//*****************************************************************************
+
+function withBreaks(editor) {
+  const { normalizeNode } = editor;
+
+  editor.normalizeNode = (entry)=> {
+    const [node, path] = entry
+
+    if(node.type === "p") {
+      if(Node.string(node) === "") {
+        Transforms.setNodes(editor, {type: "br"}, {at: path})
+        return
+      }
+    }
+    if(node.type === "br") {
+      if(Node.string(node) !== "") {
+        Transforms.setNodes(editor, {type: "p"}, {at: path})
+        return
+      }
+    }
+
+    return normalizeNode(entry);
+  }
+
+  return editor;
+}
+
+
 
 //-----------------------------------------------------------------------------
 // Folded block protection: The main principle is to protect the hidden block
@@ -646,12 +688,10 @@ function withFixNesting(editor) {
       case "hpart":
         if(!checkParent(node, path, "part")) return
         if(!checkIsFirst(node, path, "part")) return
-        if(!updateParentName(node, path)) return
         break;
       case "hscene":
         if(!checkParent(node, path, "scene")) return
         if(!checkIsFirst(node, path, "scene")) return;
-        if(!updateParentName(node, path)) return
         break;
       default:
         if(!checkParent(node, path, "scene")) return
@@ -723,18 +763,6 @@ function withFixNesting(editor) {
     return false
   }
 
-  function updateParentName(node, path) {
-    //console.log("Update name:", node, path)
-    const [parent, at] = Editor.parent(editor, path)
-    //console.log("- Parent:", parent, at)
-
-    const {name} = parent
-    const text = Node.string(node)
-    if(name === text) return true
-    Transforms.setNodes(editor, {name: text}, {at})
-    return false
-  }
-
   //---------------------------------------------------------------------------
   // Ensure, that blocks have correct header element
   //---------------------------------------------------------------------------
@@ -762,242 +790,7 @@ function withFixNesting(editor) {
       return false
     }
 
-    // We can't - if the block has name, clear it
-    if(block.name) {
-      Transforms.setNodes(editor, {name: undefined}, {at: path})
-      return false
-    }
-
     // Otherwise the block is fine as it is
     return true
   }
-}
-
-//*****************************************************************************
-//
-// Doc --> Slate
-//
-//*****************************************************************************
-
-export function section2edit(section) {
-  //console.log(section)
-
-  const children = section.parts
-
-  const parts = children.length ? children : [{
-    type: "part",
-    id: nanoid(),
-    children: []
-  }]
-
-  const buffer = parts.map(part2edit)
-  //console.log(buffer)
-  return buffer
-
-  function part2edit(part, index) {
-    const {children, type, id, name, folded} = part
-
-    const head = (!index && !name) ? [] : [{
-      type: "hpart",
-      id: nanoid(),
-      children: [{text: name ?? ""}]
-    }]
-
-    const scenes = children.length ? children : [{
-      type: "scene",
-      id: nanoid(),
-      children: []
-    }]
-
-    return {
-      type: "part",
-      name,
-      id,
-      folded,
-      children: [
-        ...head,
-        ...scenes.map(scene2edit)
-      ],
-    }
-  }
-
-  function scene2edit(scene, index) {
-    const {type, id, name, children, folded} = scene
-
-    const head = (!index && !name) ? [] : [{
-      type: "hscene",
-      id: nanoid(),
-      children: [{text: name ?? ""}]}]
-
-    const paragraphs = children.length ? children : [{
-      type: "p",
-      id: nanoid(),
-      children: [{text: ""}]
-    }]
-
-    return {
-      type: "scene",
-      name,
-      id,
-      folded,
-      children: [
-        ...head,
-        ...paragraphs.map(elem2edit)
-      ]
-    }
-  }
-
-  function elem2edit(elem) {
-    const {type} = elem;
-
-    switch(type) {
-      case "br": return {...elem, type: "p", children: [{text: ""}]}
-      default: break;
-    }
-    return elem
-  }
-}
-
-//*****************************************************************************
-//
-// Slate --> Doc
-//
-//*****************************************************************************
-
-//-----------------------------------------------------------------------------
-// Update parts & scenes: To make index rendering faster, we preserve the
-// doc elements whenever possible. Also, during the update we refresh the
-// word counts so that there is no need to recalculate them before rendering
-// index.
-//-----------------------------------------------------------------------------
-
-export function updateSection(buffer, section) {
-
-  //console.log("Update section")
-
-  const lookup = section ? section2lookup(section) : {}
-  //console.log(lookup)
-
-  //console.log(buffer)
-
-  const updated = buffer.map(part => edit2part(part, lookup))
-  const isClean = cmpList(updated, section.parts)
-
-  if(isClean) return section
-
-  return {
-    ...section,
-    parts: updated,
-    words: wcElem({type: "sect", children: updated})
-  }
-}
-
-function filterCtrlTags(blocks) {
-  const ctrltypes = ["hpart", "hscene"]
-  return blocks.filter(block => !ctrltypes.includes(block.type))
-}
-
-function edit2part(part, lookup) {
-  //console.log(part)
-
-  const {id, name, folded, children} = part
-
-  const scenes = filterCtrlTags(children)
-
-  //console.log("Head", head, "Scenes:", scenes)
-
-  return checkClean({
-    type: "part",
-    id,
-    name,
-    folded,
-    children: scenes.map(scene => edit2scene(scene, lookup)),
-  }, lookup)
-}
-
-// Update scene
-
-function edit2scene(scene, lookup) {
-  const {id, name, folded, children} = scene
-  const paragraphs = filterCtrlTags(children)
-
-  //console.log("Head", head, "Paragraphs:", paragraphs)
-
-  return checkClean({
-    type: "scene",
-    id,
-    name,
-    folded,
-    children: paragraphs.map(p => edit2paragraph(p, lookup))
-  }, lookup)
-}
-
-// Update paragraph
-
-function edit2paragraph(elem, lookup) {
-  if (elem.type === "p" && Node.string(elem) === "") {
-    return checkClean({type: "br", id: elem.id, children: []}, lookup)
-  }
-  return checkClean(elem, lookup)
-}
-
-function checkClean(elem, lookup) {
-  const {id} = elem
-
-  if(lookup.has(id)) {
-    const orig = lookup.get(id)
-
-    if(elem === orig) return orig
-
-    if(cmpType(elem, orig)) switch(elem.type) {
-      case "part":
-      case "scene":
-        if(cmpNamedGroup(elem, orig)) return orig
-        break;
-      case "br": return orig;
-      default:
-        if(elem.children[0].text === orig.children[0].text) return orig
-        break;
-    }
-    //console.log(`Update ${elem.type}:`, id)
-  } else {
-    //console.log(`Create ${elem.type}`, id)
-  }
-
-  return {
-    ...elem,
-    words: wcElem(elem)
-  }
-}
-
-function cmpNamedGroup(elem, orig) {
-  return (
-    cmpTypeName(elem, orig) &&
-    elem.folded === orig.folded &&
-    cmpChildren(elem, orig)
-  )
-}
-
-function cmpChildren(elem, orig) {
-  return cmpList(elem.children, orig.children)
-}
-
-function cmpTypeName(elem, orig) {
-  return (
-    cmpType(elem, orig) &&
-    elem.name === orig.name
-  )
-}
-
-function cmpType(elem, orig) {
-  return (
-    elem.id === orig.id &&
-    elem.type === orig.type
-  )
-}
-
-function cmpList(a, b) {
-  if(a === b) return true
-  if(a.length !== b.length) return false
-  return a.every((elem, index) => elem === b[index])
 }
