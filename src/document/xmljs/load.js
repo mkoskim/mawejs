@@ -232,7 +232,7 @@ export function fromXML(root) {
       if(name === "p" && !text.length) return {
         type: "br",
         id: nanoid(),
-        children: []
+        children: [{text: ""}]
       }
     }
     return {

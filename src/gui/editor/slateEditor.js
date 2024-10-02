@@ -97,15 +97,15 @@ function renderElement({element, attributes, ...props}) {
     case "synopsis":
     case "fill":
     case "tags":
-        return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
+      return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
+
+    case "br":
+      return <div className="emptyline" {...attributes} {...props}/>
 
     case "p":
     default: break;
   }
 
-  if (Node.string(element) === "") {
-    return <div className="emptyline" {...attributes} {...props}/>
-  }
   return <p {...attributes} {...props}/>
 }
 
@@ -310,6 +310,7 @@ export function getEditor() {
     withHistory,
     withIDs,              // Autogenerate IDs
     withWordCount,
+    withBreaks,
     withFixNesting,
     withMarkup,
     withProtectFolds,     // Keep low! Prevents messing with folded blocks
@@ -540,6 +541,39 @@ function withWordCount(editor) {
 
   return editor;
 }
+
+//*****************************************************************************
+//
+// With Breaks
+//
+//*****************************************************************************
+
+function withBreaks(editor) {
+  const { normalizeNode } = editor;
+
+  editor.normalizeNode = (entry)=> {
+    const [node, path] = entry
+
+    if(node.type === "p") {
+      if(Node.string(node) === "") {
+        Transforms.setNodes(editor, {type: "br"}, {at: path})
+        return
+      }
+    }
+    if(node.type === "br") {
+      if(Node.string(node) !== "") {
+        Transforms.setNodes(editor, {type: "p"}, {at: path})
+        return
+      }
+    }
+
+    return normalizeNode(entry);
+  }
+
+  return editor;
+}
+
+
 
 //-----------------------------------------------------------------------------
 // Folded block protection: The main principle is to protect the hidden block
