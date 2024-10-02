@@ -18,6 +18,7 @@ import { ReactEditor } from 'slate-react'
 import { sleep } from '../../util';
 import { nanoid } from 'nanoid';
 import { appBeep } from '../../system/host';
+import {elemTags} from '../../document/util';
 
 //-----------------------------------------------------------------------------
 // Search pattern
@@ -314,6 +315,45 @@ export function doFold(editor, node, path, folded) {
 
 export function foldByTags(editor, tags) {
   console.log("FoldByTags:", tags)
+
+  const tagset = new Set(tags)
+
+  // Go through parts
+  for(const part of Node.children(editor, []))
+  {
+    const [node, path] = part
+
+    var parttags = new Set()
+
+    // Go through scenes
+    for(const scene of Node.children(editor, path)) {
+      const [node, path] = scene
+      if(node.type !== "scene") continue
+
+      const scenetags = new Set()
+
+      // Go through blocks and get tags
+      for(const elem of Node.children(editor, path)) {
+        const [node, path] = elem
+
+        for(const key of elemTags(node)) {
+          scenetags.add(key)
+        }
+      }
+
+      const hastags = tagset.intersection(scenetags).size > 0
+      Transforms.setNodes(editor, {folded: !hastags}, {at: path})
+
+      //console.log("Scene:", path, node.type, hastags, scenetags);
+
+      parttags = parttags.union(scenetags)
+    }
+
+    const hastags = tagset.intersection(parttags).size > 0
+    Transforms.setNodes(editor, {folded: !hastags}, {at: path})
+
+    //console.log("Part:", path, node.type, hastags, parttags);
+  }
 }
 
 //*****************************************************************************

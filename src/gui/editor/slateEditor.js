@@ -97,7 +97,7 @@ function renderElement({element, attributes, ...props}) {
     case "synopsis":
     case "fill":
     case "tags":
-      return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
+        return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
 
     case "p":
     default: break;
