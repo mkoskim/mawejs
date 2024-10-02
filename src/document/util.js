@@ -73,6 +73,12 @@ export function elemAsText(elem) {
   )
 }
 
+export function elemTags(elem) {
+  if(!elem?.children) return []
+  if(elem.type !== "tags") return []
+  return elemAsText(elem).split(",").map(s => s.trim().toLowerCase()).filter(s => s)
+}
+
 //-----------------------------------------------------------------------------
 // Flat section
 //-----------------------------------------------------------------------------
@@ -176,8 +182,7 @@ export function createTagTable(section) {
   for(const part of section.parts) {
     for(const scene of part.children) {
       for(const p of scene.children) {
-        if(p.type !== "tags") continue
-        const keys = elemAsText(p).split(",").map(s => s.trim().toLowerCase()).filter(s => s)
+        const keys = elemTags(p)
         for(const key of keys) {
           tags.add(key);
         }

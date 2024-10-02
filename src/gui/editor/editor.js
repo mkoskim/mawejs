@@ -439,6 +439,7 @@ function RightPanelContent({settings}) {
     rightstyle: style, doc,
     selectRight, setActive,
     setSearchText, searchBoxRef,
+    body,
   } = settings
 
   switch(selectRight) {
@@ -460,6 +461,7 @@ function RightPanelContent({settings}) {
       />
     case "tagtable":
       return <TagTable
+        editor={body.editor}
         section={doc.story.body}
       />
     default: break;
