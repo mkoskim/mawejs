@@ -59,6 +59,10 @@ Live screenshot while editing one of my stories (written in Finnish):
 
 ![image](https://user-images.githubusercontent.com/10298548/218349525-c385016b-f2f3-4605-9601-5fd095345646.png)
 
+If you like to see the result, the story in the editor is available online:
+
+https://jumalhamara.wordpress.com/gjerta-avaruudessa/
+
 At topmost, there is the selection of view. Below that is a toolbar to change settings in
 the editor. The main editing view contains three parts: (1) index of the draft, (2)
 editor display, and (3) index of notes.
