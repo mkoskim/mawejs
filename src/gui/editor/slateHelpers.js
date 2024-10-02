@@ -342,15 +342,18 @@ export function foldByTags(editor, tags) {
       }
 
       const hastags = tagset.intersection(scenetags).size > 0
-      Transforms.setNodes(editor, {folded: !hastags}, {at: path})
-
+      if(node.folded !== !hastags) {
+        Transforms.setNodes(editor, {folded: !hastags}, {at: path})
+      }
       //console.log("Scene:", path, node.type, hastags, scenetags);
 
       parttags = parttags.union(scenetags)
     }
 
     const hastags = tagset.intersection(parttags).size > 0
-    Transforms.setNodes(editor, {folded: !hastags}, {at: path})
+    if(node.folded !== !hastags) {
+      Transforms.setNodes(editor, {folded: !hastags}, {at: path})
+    }
 
     //console.log("Part:", path, node.type, hastags, parttags);
   }

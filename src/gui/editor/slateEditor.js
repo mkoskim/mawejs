@@ -503,7 +503,7 @@ function withIDs(editor) {
       const [node, path] = block
 
       if(!node.id || ids.has(node.id)) {
-        console.log("ID clash fixed:", path)
+        console.log("ID clash fixed:", node.id, path)
         const id = nanoid()
         Transforms.setNodes(editor, {id}, {at: path})
         ids.add(id)
@@ -545,7 +545,7 @@ function withWordCount(editor) {
 
 //*****************************************************************************
 //
-// With Breaks
+// With Breaks (br elements)
 //
 //*****************************************************************************
 
@@ -573,8 +573,6 @@ function withBreaks(editor) {
 
   return editor;
 }
-
-
 
 //-----------------------------------------------------------------------------
 // Folded block protection: The main principle is to protect the hidden block
