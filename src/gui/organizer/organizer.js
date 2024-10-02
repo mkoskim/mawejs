@@ -30,7 +30,7 @@ import {
 } from "../common/components";
 
 import {elemAsText} from "../../document";
-import {wcChildren, wcCumulative} from "../../document/util";
+import {elemName, filterCtrlTags, wcCumulative} from "../../document/util";
 import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
 
 //-----------------------------------------------------------------------------
@@ -174,6 +174,7 @@ function PartView({settings, part, index}) {
   function partDraggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
     const {words} = part;
+    const name = elemName(part)
 
     return <div
       ref={innerRef}
@@ -185,7 +186,7 @@ function PartView({settings, part, index}) {
         onDoubleClick={ev => settings.focusTo(part.id)}
         {...dragHandleProps}
       >
-        {part.name && part.name !== "" ? part.name : "<Unnamed>"}
+        {name && name !== "" ? name : "<Unnamed>"}
         <Filler/>
         {(settings.words?.value && settings.words.value !== "off")
           ? <FormatWords
@@ -219,7 +220,7 @@ function PartView({settings, part, index}) {
       ref={innerRef}
       {...droppableProps}
       >
-      {part.children.map((scene, index) => <SceneView key={scene.id} index={index} settings={settings} scene={scene}/>)}
+      {filterCtrlTags(part.children).map((scene, index) => <SceneView key={scene.id} index={index} settings={settings} scene={scene}/>)}
       {placeholder}
     </div>
   }
@@ -245,6 +246,7 @@ function SceneView({index, settings, scene}) {
     } = snapshot
 
     const {indexed} = settings
+    const name = elemName(scene)
     const bookmarks = scene.children.filter(p => indexed.value.includes(p.type));
 
     return <div className="VBox Scene"
@@ -253,7 +255,7 @@ function SceneView({index, settings, scene}) {
       {...draggableProps}
       {...dragHandleProps}  // Move these inside to create handle
     >
-      <div className="Name">{scene.name && scene.name !== "" ? scene.name : "<Unnamed>"}</div>
+      <div className="Name">{name && name !== "" ? name : "<Unnamed>"}</div>
       {bookmarks.length
         ? <React.Fragment>
           <Separator/>
