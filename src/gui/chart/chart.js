@@ -32,7 +32,7 @@ import {
 import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
 import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
 import {DocIndex} from "../common/docIndex";
-import {mawe} from "../../document";
+import {elemName, mawe} from "../../document";
 
 //-----------------------------------------------------------------------------
 
@@ -198,7 +198,8 @@ function ChartToolbar({settings}) {
 //-----------------------------------------------------------------------------
 
 function elemLabel(elem) {
-  const {name, words} = elem
+  const {words} = elem
+  const name = elemName(elem)
   return {
     name,
     size: words.text + words.missing,
