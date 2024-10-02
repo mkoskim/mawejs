@@ -33,6 +33,7 @@ export const Icon = {
     Organize: muiIcons.GridViewOutlined,
     Export: muiIcons.PrintOutlined,
     Chart: muiIcons.DonutLarge,
+    Tags: muiIcons.Label,
   },
 
   //NewFile: muiIcons.NoteAddOutlined,
@@ -86,6 +87,7 @@ export const Icon = {
     Comment: muiIcons.Comment,
     Missing: muiIcons.Report,
     Filler: muiIcons.AddBox,
+    Tags: muiIcons.Label,
   },
   StatType: {
     Off: muiIcons.VisibilityOff,

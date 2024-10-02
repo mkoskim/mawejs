@@ -41,6 +41,7 @@ import {
 
 import {DocIndex} from "../common/docIndex"
 import {WordTable} from "./wordTable"
+import {TagTable} from "./tagTable"
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
@@ -393,7 +394,7 @@ function LeftPanel({settings}) {
 }
 
 const LeftIndexChoices = {
-  visible: ["scene", "synopsis", "missing", "fill", "comment"],
+  visible: ["scene", "synopsis", "missing", "fill", "comment", "tags"],
   words: ["off", "numbers", "compact", "cumulative", "percent"]
 }
 
@@ -420,19 +421,29 @@ function LeftPanelMenu({settings}) {
 
 function RightPanel({settings}) {
   const {
+    rightstyle: style,
+    selectRight, setSelectRight
+  } = settings
+
+  return <VFiller style={style}>
+      <ToolBox style={styles.toolbox.right}>
+        <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
+        <Filler />
+      </ToolBox>
+      <RightPanelContent settings={settings}/>
+    </VFiller>
+}
+
+function RightPanelContent({settings}) {
+  const {
     rightstyle: style, doc,
-    selectRight, setSelectRight, setActive,
+    selectRight, setActive,
     setSearchText, searchBoxRef,
   } = settings
 
   switch(selectRight) {
     case "noteindex":
-      return <VFiller style={style}>
-      <ToolBox style={styles.toolbox.right}>
-        <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
-        <Filler />
-      </ToolBox>
-      <DocIndex
+      return <DocIndex
         name="Notes"
         style={style}
         section={doc.story.notes}
@@ -441,19 +452,16 @@ function RightPanel({settings}) {
         activeID="notes"
         setActive={setActive}
       />
-      </VFiller>
     case "wordtable":
-      return <VFiller style={style}>
-      <ToolBox style={styles.toolbox.right}>
-        <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
-        <Filler />
-      </ToolBox>
-      <WordTable
+      return <WordTable
         section={doc.story.body}
         setSearchText={setSearchText}
         searchBoxRef={searchBoxRef}
       />
-      </VFiller>
+    case "tagtable":
+      return <TagTable
+        section={doc.story.body}
+      />
     default: break;
   }
 }
@@ -469,9 +477,13 @@ class ChooseRightPanel extends React.PureComponent {
       tooltip: "Word frequency",
       icon: <Icon.View.List />
     },
+    "tagtable": {
+      tooltip: "Tags",
+      icon: <Icon.View.Tags />
+    },
   }
 
-  choices = ["noteindex", "wordtable",]
+  choices = ["noteindex", "wordtable", "tagtable"]
 
   render() {
     const {selected, setSelected} = this.props

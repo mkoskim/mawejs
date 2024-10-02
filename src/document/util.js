@@ -167,6 +167,28 @@ export function createWordTable(section) {
 }
 
 //-----------------------------------------------------------------------------
+// Create tag table from section
+//-----------------------------------------------------------------------------
+
+export function createTagTable(section) {
+  const tags = new Set()
+
+  for(const part of section.parts) {
+    for(const scene of part.children) {
+      for(const p of scene.children) {
+        if(p.type !== "tags") continue
+        const keys = elemAsText(p).split(",").map(s => s.trim().toLowerCase()).filter(s => s)
+        for(const key of keys) {
+          tags.add(key);
+        }
+      }
+    }
+  }
+
+  return Array.from(tags)
+}
+
+//-----------------------------------------------------------------------------
 // Count words
 //-----------------------------------------------------------------------------
 
@@ -223,6 +245,7 @@ export function wcElem(elem) {
 
     default:
     //case "synopsis":
+    //case "tag":
     //case "comment":
     //case "br":
       break;
