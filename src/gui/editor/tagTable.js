@@ -29,71 +29,34 @@ import {
 } from "../common/factory";
 
 import {createTagTable} from "../../document/util";
-//import {text2Regexp} from "./slateFlatEditor"
-//import {text2Regexp} from "./slateEditor"
+import {foldByTags} from './slateHelpers';
 
 //-----------------------------------------------------------------------------
 // Wordtable
 //-----------------------------------------------------------------------------
 
-export function TagTable({section}) {
+export function TagTable({editor, section}) {
 
   const tags = createTagTable(section)
 
-  /*
-  return <VBox style={{overflow: "auto"}}>
-    Testing, testing...
-  </VBox>
-  /*/
+  const onSelect = useCallback(tag => {
+    //console.log("Tag:", tag)
+    foldByTags(editor, [tag]);
+  }, [editor])
+
   return <VBox style={{overflow: "auto"}}>
     <div className="VBox TOC">
-      {tags.map(key => <TagRow key={key} className={"Entry"} word={key}/>)}
+      {tags.map(tag => <TagRow key={tag} className={"Entry"} tag={tag} onSelect={onSelect}/>)}
     </div>
   </VBox>
-  /**/
-
-/*
-  const [filterText, setFilterText] = useState("")
-
-  function doFilter(wt) {
-    if(!filterText) return Array.from(wt)
-
-    const table = new Array()
-    const re = new RegExp(`^${text2Regexp(filterText)}`, "gi")
-
-    for(const entry of wt) {
-      const [key, count] = entry
-      re.lastIndex = 0
-      if(key.match(re)) table.push(entry)
-    }
-    return table
-  }
-
-  const [sortAscending, setSortAscending] = useState(false)
-
-  const fSortAscending  = (a, b) => (a[1] > b[1]) ? 1 : (a[1] < b[1]) ? -1 : 0
-  const fSortDescending = (a, b) => (a[1] < b[1]) ? 1 : (a[1] > b[1]) ? -1 : 0
-
-  //console.log(doc.story.body.words)
-  //const table = createWordTable(section)
-  //console.log(table)
-  const wt = doFilter(createWordTable(section))
-    .sort(sortAscending ? fSortAscending : fSortDescending)
-
-  const onSelect = useCallback(word => {
-    setSearchText(word)
-    if(searchBoxRef.current) searchBoxRef.current.focus()
-  }, [setSearchText, searchBoxRef])
-
-*/
 }
 
 class TagRow extends React.PureComponent {
   render() {
-    const {word, className} = this.props
+    const {tag, onSelect, className} = this.props
 
-    return <HBox className={className}>
-      <Label text={word}/>
+    return <HBox className={className} onClick={e => onSelect(tag)}>
+      <Label text={tag}/>
     </HBox>
   }
 }

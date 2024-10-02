@@ -244,6 +244,80 @@ export async function scrollToRange(editor, range, focus) {
 
 //*****************************************************************************
 //
+// Folding
+//
+//*****************************************************************************
+
+export function foldAll(editor, folded) {
+
+  function getParts() {
+    return Editor.nodes(editor, {
+      at: [],
+      match: n => Element.isElement(n) && n.type === "part"
+    })
+  }
+
+  function getFolded() {
+    return Editor.nodes(editor, {
+      at: [],
+      match: n => Element.isElement(n) && n.folded
+    })
+  }
+
+  const matches = folded ? getParts() : getFolded()
+
+  for(const [node, path] of matches) {
+    doFold(editor, node, path, folded)
+  }
+
+  if(folded) {
+    Transforms.select(editor, [0])
+    Transforms.collapse(editor)
+  }
+}
+
+export function toggleFold(editor) {
+  const { selection } = editor
+
+  if(!selection) return
+  if(!Range.isCollapsed(selection)) return
+
+  const { anchor } = selection
+  //const [node, path] = Editor.node(editor, anchor)
+  //console.log("Toggle fold", path, node)
+
+  //const foldable = ["part", "scene", "synopsis", "comment", "missing"]
+  const foldable = ["part", "scene"]
+
+  const [node, path] = Editor.above(editor, {
+    at: anchor,
+    match: n => Element.isElement(n) && (foldable.includes(n.type)),
+  })
+
+  const folded = !node.folded
+  doFold(editor, node, path, folded)
+
+  Transforms.select(editor, path)
+  Transforms.collapse(editor)
+}
+
+//-----------------------------------------------------------------------------
+
+export function doFold(editor, node, path, folded) {
+
+  if((node.folded ?? false) === folded) return;
+
+  Transforms.setNodes(editor, {folded}, {at: path})
+}
+
+//-----------------------------------------------------------------------------
+
+export function foldByTags(editor, tags) {
+  console.log("FoldByTags:", tags)
+}
+
+//*****************************************************************************
+//
 // Searching
 //
 //*****************************************************************************
