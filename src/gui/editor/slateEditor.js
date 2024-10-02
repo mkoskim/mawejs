@@ -293,8 +293,9 @@ function onKeyDown(event, editor) {
       "Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, " +
       "fringilla."
     )
+    Transforms.insertNodes(editor, {type: "p", id: nanoid(), children: [{text: ""}]})
     return
-    }
+  }
 }
 
 //*****************************************************************************
