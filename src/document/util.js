@@ -101,46 +101,6 @@ export function elemName(elem) {
 }
 
 //-----------------------------------------------------------------------------
-// Flat section
-//-----------------------------------------------------------------------------
-
-export function section2flat(section) {
-  const flat = new Array()
-
-  for(const part of section.parts) {
-    flat.push(part)
-    for(const scene of part.children) {
-      flat.push(scene)
-      for(const p of scene.children) {
-        flat.push(p)
-      }
-    }
-  }
-
-  return flat
-}
-
-//-----------------------------------------------------------------------------
-// Make lookup table
-//-----------------------------------------------------------------------------
-
-export function section2lookup(section) {
-  const lookup = new Map()
-
-  for(const part of section.parts) {
-    lookup.set(part.id, part)
-    for(const scene of part.children) {
-      lookup.set(scene.id, scene)
-      for(const p of scene.children) {
-        lookup.set(p.id, p)
-      }
-    }
-  }
-
-  return lookup
-}
-
-//-----------------------------------------------------------------------------
 // Split words only: This includes only words in paragraphs, not words in
 // comments, synopses, part & section headers and so on.
 //-----------------------------------------------------------------------------
@@ -152,25 +112,6 @@ export function text2words(text) {
 
 export function wordcount(text) {
   return text2words(text).length
-}
-
-function words2map(words) {
-  const wt = new Map()
-
-  for(const word of words) {
-    const lowcase = word.toLowerCase()
-    const count = wt.has(lowcase) ? wt.get(lowcase) : 0
-    wt.set(lowcase, count + 1)
-  }
-
-  return wt
-}
-
-function wordmapUpdate(map, wt) {
-  for(const [word, count] of wt.entries()) {
-    const prev = map.has(word) ? map.get(word) : 0
-    map.set(word, prev + count)
-  }
 }
 
 export function createWordTable(section) {
@@ -232,7 +173,6 @@ function wcParagraph(elem) {
       const fill = Math.max(0, parseInt(text))
       //console.log("Fill:", fill)
       return { missing: (isNaN(fill) ? 0 : fill) }
-    //case "comment": return { chars, comment: words }
   }
   return undefined
 }
