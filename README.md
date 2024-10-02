@@ -43,7 +43,17 @@ The other new thing are **tags**. Type "@" at the beginning of the line, and you
 enter a comma-separated list of tags. There is also a tag view in the right panel.
 Clicking a tag will make scenes containing that tag visible, and fold all the others.
 
-## How does it look like?
+# Writing with MaweJS
+
+How MaweJS really operates?
+
+## Just start writing
+
+When you create a new file, you can just start writing your story, just like opening Notepad or Word. There is absolutely no any kind of setups to do, just start writing.
+
+![image](https://github.com/user-attachments/assets/ac6a0420-1665-4328-82c8-682f669f2d1a)
+
+## Apply tools when you need them
 
 Live screenshot while editing one of my stories (written in Finnish):
 
@@ -53,12 +63,24 @@ At topmost, there is the selection of view. Below that is a toolbar to change se
 the editor. The main editing view contains three parts: (1) index of the draft, (2)
 editor display, and (3) index of notes.
 
-A new feature is showing a pie diagram of the story, and compare it to selected template:
+**Scene splitting:** The most powerful feature in MaweJS is, that it is internally a structured editor just like Manuskript, yWriter or Scrivener. When your text mass grows, you can start splitting your text to scenes, and gather scenes together to groups. Splitting text to scenes and groups works just like applying headers in editors like Word or LibreOffice:
+
+![image](https://github.com/user-attachments/assets/ff634076-0e99-4b0b-ae95-a6892e591805)
+
+**Moving around:** Splitting your text to scenes allows you to move them around with drag-and-drop. Putting them in the same group allows you to move bunch of related scenes at once. There are two "sections": your draft and notes.
+
+**Folding:** Furthermore, a very powerful tool for writing is **folding**, you can hide parts of your text when working with other parts (the story in the screenshot is Frankenstein):
+
+![image](https://github.com/user-attachments/assets/01398352-c686-4a94-b937-616eda253154)
+
+**Story structure:** You can view your a pie diagram of the story, and compare it to selected template:
 
 ![image](https://user-images.githubusercontent.com/10298548/224184109-1d1e4dc6-afb7-462f-9798-cff04fa2eade.png)
 
 There is currently K. M. Weiland's story structure templates and Blake Snyder's Beat Sheet, but we may add more later. It wouldn't be bad, that you could have a collection
 of different templates for various purposes (thrillers, romances, etc).
+
+**Other tools:** There are number of different block types - comment, synopsis, missing text - for various purposes. With missing text and fillers you can mark incomplete places, and see those in the index. You can leave yourself comments, if you feel that you need to remember something, if you ever touch that piece again.
 
 # Development
 
