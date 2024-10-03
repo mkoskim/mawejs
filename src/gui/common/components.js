@@ -261,8 +261,6 @@ export function SectionInfo({setDoc, section}) {
   if(!section) return null;
 
   const {head} = section
-  const {author, title} = mawe.info(head)
-
   const header = getHeader(head)
 
   const {chars, text, missing} = {
@@ -277,13 +275,25 @@ export function SectionInfo({setDoc, section}) {
     <Separator/>
     <WordInfo text={text} missing={missing}/>
     <Separator/>
-    <Label>Chars: {chars}</Label>
-    </>
+    <CharInfo chars={chars}/>
+  </>
 }
 
-function WordInfo({text, missing}) {
-  if(missing) {
-    return <Label>Words: {text + missing} ({text} / {missing})</Label>
+export class WordInfo extends React.PureComponent {
+  render() {
+    const {text, missing} = this.props;
+
+    if(missing) {
+      return <Label>Words: {text + missing} ({text} / {missing})</Label>
+    }
+    return <Label>Words: {text}</Label>
   }
-  return <Label>Words: {text}</Label>
+}
+
+export class CharInfo extends React.PureComponent {
+  render() {
+    const {chars} = this.props;
+
+    return <Label>Chars: {chars}</Label>
+  }
 }
