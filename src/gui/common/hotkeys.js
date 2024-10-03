@@ -11,6 +11,7 @@ export const IsKey = {
   Escape: isHotkey("Escape"),
   Enter: isHotkey("Enter"),
 
+  // Alt keys
   AltA: isHotkey("Alt+A"),
   AltF: isHotkey("Alt+F"),
   AltL: isHotkey("Alt+L"),
@@ -18,15 +19,20 @@ export const IsKey = {
   AltUp: isHotkey("Alt+Up"),
   AltDown: isHotkey("Alt+Down"),
 
+  // Ctrl keys
+  CtrlB: isHotkey("Mod+B"),
   CtrlF: isHotkey("Mod+F"),
   CtrlG: isHotkey("Mod+G"),
-  CtrlShiftG: isHotkey("Shift+Mod+G"),
+  CtrlI: isHotkey("Ctrl+I"),
   CtrlO: isHotkey("Mod+O"),
   CtrlN: isHotkey("Mod+N"),
   CtrlQ: isHotkey("Mod+Q"),
   CtrlS: isHotkey("Mod+S"),
 
+  // Ctrl+Shift keys
+  CtrlShiftG: isHotkey("Shift+Mod+G"),
 
+  // Ctrl+Alt keys
   CtrlAlt0: isHotkey("Mod+Alt+0"),
   CtrlAlt1: isHotkey("Mod+Alt+1"),
   CtrlAlt2: isHotkey("Mod+Alt+2"),
