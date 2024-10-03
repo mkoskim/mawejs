@@ -29,7 +29,7 @@ import {
   Inform,
 } from "../common/factory";
 
-import { OpenFolderButton, SectionInfo } from "../common/components";
+import { OpenFolderButton, SectionInfo, WordInfo, CharInfo } from "../common/components";
 
 import { SnackbarProvider } from "notistack";
 
@@ -225,28 +225,37 @@ function WithoutDoc({setCommand, recent}) {
 function WithDoc({setCommand, doc, setDoc, recent}) {
   const file = doc?.file
   const filename = file?.name ?? "<Unnamed>"
-  const {head} = doc.story.body
+  const body = doc.story.body
+  //const {head} = body
   const {view, setView} = useContext(SettingsContext)
   const setMode = useCallback(value => setView(produce(view => {view.selected = value})), [])
+
+  const {chars, text, missing} = {
+    chars: 0,
+    text: 0,
+    missing: 0,
+    ...(body.words ?? {})
+  }
 
   useEffect(() => addHotkeys([
     [IsKey.CtrlS, (e) => cmdSaveFile({setCommand, file})],
   ]))
 
   return <ToolBox>
-    <FileMenu hasdoc={true} setCommand={setCommand} file={file} recent={recent}/>
-    <Separator/>
+    <FileMenu hasdoc={true} setCommand={setCommand} file={file} text={filename} recent={recent}/>
+    <Separator />
     <ViewSelectButtons selected={view.selected} setSelected={setMode}/>
     <Separator/>
-    <Label text={filename}/>
-    <Separator/>
-    <SectionInfo section={doc.story.body} setDoc={setDoc}/>
-    <Separator />
-    <OpenFolderButton filename={file?.id}/>
-    <CloseButton setCommand={setCommand}/>
-    <Separator />
+    <SectionInfo section={body} setDoc={setDoc}/>
 
     <Filler />
+    <Separator/>
+    <WordInfo text={text} missing={missing}/>
+    <Separator/>
+    <CharInfo chars={chars}/>
+    <Separator/>
+    <OpenFolderButton filename={file?.id}/>
+    {/* <CloseButton setCommand={setCommand}/> */}
     <Separator />
     <HelpButton setCommand={setCommand}/>
     <SettingsButton />
@@ -257,11 +266,11 @@ function WithDoc({setCommand, doc, setDoc, recent}) {
 
 class FileMenu extends React.PureComponent {
   render() {
-    const {setCommand, file, recent, hasdoc} = this.props
+    const {setCommand, file, text, recent, hasdoc} = this.props
 
     return <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
-        <Button {...bindTrigger(popupState)}><Icon.Menu /></Button>
+        <Button {...bindTrigger(popupState)}>{text ?? <Icon.Menu />}</Button>
         <Menu {...bindMenu(popupState)}>
           <MenuItem onClick={e => { cmdNewFile({setCommand}); popupState.close(e); }}>New</MenuItem>
           <MenuItem onClick={e => { cmdOpenFile({setCommand, file}); popupState.close(e); }}>Open...</MenuItem>

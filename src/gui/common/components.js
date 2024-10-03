@@ -263,19 +263,8 @@ export function SectionInfo({setDoc, section}) {
   const {head} = section
   const header = getHeader(head)
 
-  const {chars, text, missing} = {
-    chars: 0,
-    text: 0,
-    missing: 0,
-    ...(section.words ?? {})
-  }
-
   return <>
     <EditHeadButton text={header} setDoc={setDoc} head={head} expanded={true}/>
-    <Separator/>
-    <WordInfo text={text} missing={missing}/>
-    <Separator/>
-    <CharInfo chars={chars}/>
   </>
 }
 
