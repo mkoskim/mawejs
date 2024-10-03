@@ -10,7 +10,7 @@ STORY: undefined
 <head>
 <title>Frankenstein</title>
 <subtitle>The Modern Prometheus</subtitle>
-<author>Mary Wollstonecraft Shelley</author>
+<author>Mary Shelley</author>
 <export type="short" chapterelem="part" chaptertype="separated"/>
 </head>
 <!--/
@@ -18,7 +18,6 @@ STORY: undefined
 /-->
 <part name="PREFACE">
 <scene name="Preface">
-<synopsis/>
 <p>The Project Gutenberg eBook of Frankenstein; Or, The Modern Prometheus</p>
 <p>This ebook is for the use of anyone anywhere in the United States and most other parts of the world at no cost and with almost no restrictions whatsoever. You may copy it, give it away or re-use it under the terms of the Project Gutenberg License included with this ebook or online at www.gutenberg.org. If you are not located in the United States, you will have to check the laws of the country where you are located before using this eBook.</p>
 <p>Title: Frankenstein; Or, The Modern Prometheus</p>
@@ -48,7 +47,8 @@ STORY: undefined
 <p>AND CUMMING, DUBLIN.</p>
 <p>1831.</p>
 <br/>
-<synopsis>INTRODUCTION.</synopsis>
+</scene>
+<scene name="INTRODUCTION">
 <p>The Publishers of the Standard Novels, in selecting "Frankenstein" for one of their series, expressed a wish that I should furnish them with some account of the origin of the story. I am the more willing to comply, because I shall thus give a general answer to the question, so very frequently asked me—"How I, when a young girl, came to think of, and to dilate upon, so very hideous an idea?" It is true that I am very averse to bringing myself forward in print; but as my account will only appear as an appendage to a former production, and as it will be confined to such topics as have connection with my authorship alone, I can scarcely accuse myself of a personal intrusion.</p>
 <p>It is not singular that, as the daughter of two persons of distinguished literary celebrity, I should very early in life have thought of writing. As a child I scribbled; and my favourite pastime, during the hours given me for recreation, was to "write stories." Still I had a dearer pleasure than this, which was the formation of castles in the air—the indulging in waking dreams—the following up trains of thought, which had for their subject the formation of a succession of imaginary incidents. My dreams were at once more fantastic and agreeable than my writings. In the latter I was a close imitator—rather doing as others had done, than putting down the suggestions of my own mind. What I wrote was intended at least for one other eye—my childhood's companion and friend; but my dreams were all my own; I accounted for them to nobody; they were my refuge when annoyed—my dearest pleasure when free.</p>
 <p>I lived principally in the country as a girl, and passed a considerable time in Scotland. I made occasional visits to the more picturesque parts; but my habitual residence was on the blank and dreary northern shores of the Tay, near Dundee. Blank and dreary on retrospection I call them; they were not so to me then. They were the eyry of freedom, and the pleasant region where unheeded I could commune with the creatures of my fancy. I wrote then—but in a most common-place style. It was beneath the trees of the grounds belonging to our house, or on the bleak sides of the woodless mountains near, that my true compositions, the airy flights of my imagination, were born and fostered. I did not make myself the heroine of my tales. Life appeared to me too common-place an affair as regarded myself. I could not figure to myself that romantic woes or wonderful events would ever be my lot; but I was not confined to my own identity, and I could people the hours with creations far more interesting to me at that age, than my own sensations.</p>
@@ -70,7 +70,8 @@ STORY: undefined
 <br/>
 <p>London, October 15, 1831.</p>
 <br/>
-<synopsis>PREFACE.</synopsis>
+</scene>
+<scene name="PREFACE">
 <p>The event on which this fiction is founded, has been supposed, by Dr. Darwin, and some of the physiological writers of Germany, as not of impossible occurrence. I shall not be supposed as according the remotest degree of serious faith to such an imagination; yet, in assuming it as the basis of a work of fancy, I have not considered myself as merely weaving a series of supernatural terrors. The event on which the interest of the story depends is exempt from the disadvantages of a mere tale of spectres or enchantment. It was recommended by the novelty of the situations which it developes; and, however impossible as a physical fact, affords a point of view to the imagination for the delineating of human passions more comprehensive and commanding than any which the ordinary relations of existing events can yield.</p>
 <p>I have thus endeavoured to preserve the truth of the elementary principles of human nature, while I have not scrupled to innovate upon their combinations. The Iliad, the tragic poetry of Greece,—Shakspeare, in the Tempest, and Midsummer Night's Dream,—and most especially Milton, in Paradise Lost, conform to this rule; and the most humble novelist, who seeks to confer or receive amusement from his labours, may, without presumption, apply to prose fiction a licence, or rather a rule, from the adoption of which so many exquisite combinations of human feeling have resulted in the highest specimens of poetry.</p>
 <p>The circumstance on which my story rests was suggested in casual conversation. It was commenced partly as a source of amusement, and partly as an expedient for exercising any untried resources of mind. Other motives were mingled with these, as the work proceeded. I am by no means indifferent to the manner in which whatever moral tendencies exist in the sentiments or characters it contains shall affect the reader; yet my chief concern in this respect has been limited to the avoiding the enervating effects of the novels of the present day, and to the exhibition of the amiableness of domestic affection, and the excellence of universal virtue. The opinions which naturally spring from the character and situation of the hero are by no means to be conceived as existing always in my own conviction; nor is any inference justly to be drawn from the following pages as prejudicing any philosophical doctrine of whatever kind.</p>
@@ -79,7 +80,8 @@ STORY: undefined
 <br/>
 <p>Marlow, September, 1817.</p>
 <br/>
-<synopsis>TITLE</synopsis>
+</scene>
+<scene name="TITLE">
 <p>FRANKENSTEIN;</p>
 <p>OR,</p>
 <p>THE MODERN PROMETHEUS.</p>
@@ -1083,7 +1085,11 @@ NOTES
 ===============================================================================
 /-->
 <notes>
-<part/>
+<part>
+<scene>
+<p/>
+</scene>
+</part>
 </notes>
 <!--/
 ===============================================================================
