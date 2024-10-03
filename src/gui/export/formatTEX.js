@@ -59,15 +59,19 @@ function renewCommands(options, sides) {
 
 \\newcommand{\\RNum}[1]{\\uppercase\\expandafter{\\romannumeral #1\\relax}}
 
+\\newcommand{\\chNumber}[1]{
+}
+
 \\renewcommand\\chapter[2]{
   ${options.pgbreak ? newpage : "\\vskip 36pt"}
   \\begin{center}
-  \\ifthenelse{\\equal{#1}{}}
-  {}
-  {{\\RNum{#1}\\vskip 12pt}}
-  \\ifthenelse{\\equal{#2}{}}
-  {}
-  {{\\bfseries #2}}
+    \\if@titlepage
+      \\ifthenelse{\\equal{#1}{}}{}{\\RNum{#1}\\vskip 12pt}
+      \\ifthenelse{\\equal{#2}{}}{}{\\textbf{#2}}
+    \\else
+      \\ifthenelse{\\equal{#1}{}}{}{\\textbf{#1. }}
+      \\ifthenelse{\\equal{#2}{}}{}{\\textbf{#2}}
+    \\fi
   \\end{center}
   ${options.pgbreak ? "\\vskip 48pt" : "\\vskip 18pt"}
 }
