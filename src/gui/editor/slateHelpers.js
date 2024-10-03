@@ -267,9 +267,11 @@ export function foldAll(editor, folded) {
 
   const matches = folded ? getParts() : getFolded()
 
-  for(const [node, path] of matches) {
-    doFold(editor, node, path, folded)
-  }
+  Editor.withoutNormalizing(editor, () => {
+    for(const [node, path] of matches) {
+      doFold(editor, node, path, folded)
+    }
+  })
 
   if(folded) {
     Transforms.select(editor, [0])
@@ -317,6 +319,7 @@ export function foldByTags(editor, tags) {
   console.log("FoldByTags:", tags)
 
   const tagset = new Set(tags)
+  var folders = []
 
   // Go through parts
   for(const part of Node.children(editor, []))
@@ -342,21 +345,23 @@ export function foldByTags(editor, tags) {
       }
 
       const hastags = tagset.intersection(scenetags).size > 0
-      if(node.folded !== !hastags) {
-        Transforms.setNodes(editor, {folded: !hastags}, {at: path})
-      }
+      folders.push({node, path, folded: !hastags})
       //console.log("Scene:", path, node.type, hastags, scenetags);
 
       parttags = parttags.union(scenetags)
     }
 
     const hastags = tagset.intersection(parttags).size > 0
-    if(node.folded !== !hastags) {
-      Transforms.setNodes(editor, {folded: !hastags}, {at: path})
-    }
+    folders.push({node, path, folded: !hastags})
 
     //console.log("Part:", path, node.type, hastags, parttags);
   }
+
+  Editor.withoutNormalizing(editor, () => {
+    for(const {node, path, folded} of folders) {
+      doFold(editor, node, path, folded)
+    }
+  })
 }
 
 //*****************************************************************************

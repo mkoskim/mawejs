@@ -25,7 +25,8 @@ import {
   GridViewOutlined,
   PrintOutlined,
   DonutLarge,
-  Label,
+
+  Label, LabelOutlined, AlternateEmail,
 
   SettingsOutlined,
 
@@ -103,7 +104,7 @@ export const Icon = {
     Organize: GridViewOutlined,
     Export: PrintOutlined,
     Chart: DonutLarge,
-    Tags: Label,
+    Tags: AlternateEmail,
   },
 
   //NewFile: NoteAddOutlined,
@@ -157,7 +158,7 @@ export const Icon = {
     Comment: Comment,
     Missing: Report,
     Filler: AddBox,
-    Tags: Label,
+    Tags: AlternateEmail,
   },
   StatType: {
     Off: VisibilityOff,

@@ -35,7 +35,13 @@ STORY: UserGuide
 <p>!! - Ctrl-Alt-M - make a missing piece</p>
 <p>++ - Ctrl-Alt-F - make a filler element</p>
 <br/>
-<p>&lt;-- Try it here.</p>
+<p>Other shortcuts:</p>
+<p>Alt-F - Toggle fold</p>
+<p>Alt-A - Fold all</p>
+<p>Alt-S - Unfold (show) all</p>
+<p>Ctrl-F - Search</p>
+<p>Ctrl-G - Find next</p>
+<p>Ctrl-Shift-G - Find previous</p>
 <br/>
 <p>You can use either markup or shortcuts to change the type of previous line.</p>
 <br/>
