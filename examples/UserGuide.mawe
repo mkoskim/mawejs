@@ -27,7 +27,7 @@ STORY: UserGuide
 <scene>
 <p>Quick reference of commands, read further if you are new to editor.</p>
 <br/>
-<p>Markup &amp; shortcuts:</p>
+<p><b>Paragraph styles</b> (markup and shortcut):</p>
 <p>Ctrl-Alt-0 - reset to a paragraph.</p>
 <p>** - Ctrl-Alt-1 - start a part</p>
 <p>## - Ctrl-Alt-2 - start a scene</p>
@@ -37,7 +37,11 @@ STORY: UserGuide
 <p>++ - Ctrl-Alt-F - make a filler element</p>
 <p>@ - make a tag element</p>
 <br/>
-<p>Other shortcuts:</p>
+<p><b>Text styles:</b></p>
+<p>Ctrl-B - Bold</p>
+<p>Ctrl-I - Italic</p>
+<br/>
+<p><b>Other shortcuts:</b></p>
 <p>Alt-F - Toggle fold</p>
 <p>Alt-A - Fold all</p>
 <p>Alt-S - Unfold (show) all</p>
@@ -100,7 +104,7 @@ STORY: UserGuide
 <scene name="Scenes: Splitting text">
 <p>The main feature of MaweJS is to split large text chunk to more manageable pieces. Unlike you think, a scene break is not a header:</p>
 </scene>
-<scene name="--&gt; This is scene break, not a header &lt;---">
+<scene name="--> This is scene break, not a header <---">
 <p>Unlike in conventional unstructured editors - Googledocs, Microsoft Word, Libre Office - in MaweJS we are not really applying styles to text. Parts and scenes are breaks to split text to smaller pieces. All text inside a scene move together. All scenes inside a part move together.</p>
 <p>The scene and part names are only for you(*), so that you know what the part or scene is all about. It is not exported. Maybe at some point we make a special scene or break to give chapter names.</p>
 <p>(*) Except that there are now an export feature for named chapters, and by choosing it, depending if you make chapters from parts or scenes, it will come visible!</p>
@@ -119,7 +123,7 @@ STORY: UserGuide
 <br/>
 <p>To reset the line back to normal text, press backspace at the beginning of the line. Try it yourself:</p>
 </scene>
-<scene name="&lt;-- Press backspace">
+<scene name="<-- Press backspace">
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum...</p>
 </scene>
 <scene name="Scene numbering">
@@ -289,7 +293,7 @@ STORY: UserGuide
 </scene>
 </part>
 <part name="Notes section">
-<scene name="Take a look to notes --&gt;">
+<scene name="Take a look to notes -->">
 <p>Take a look to index at your right hand, notes --&gt;</p>
 <p>In addition to this manuscript canvas, there is a parallel canvas called "notes". This is meant to store your notes, sketches, research, links and so, out from your story draft. It is kept together with the draft editor to make it at hands while you write.</p>
 <p>You start writing your story here in main body. But when you are writing, you most probably do some sketching, do some research to find out how things work and so on. When your story progress forward, you want these things out from draft, but you don't want to forget them.</p>
@@ -531,11 +535,4 @@ NOTES
 </scene>
 </part>
 </notes>
-<!--/
-===============================================================================
-
-VERSIONS
-
-===============================================================================
-/-->
 </story>
