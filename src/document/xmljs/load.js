@@ -231,7 +231,7 @@ export function fromXML(root) {
 
     const text = children.map(child => child.text).join("")
 
-    //console.log(children)
+    console.log(children)
     //console.log(text)
 
     return {
@@ -256,7 +256,7 @@ export function fromXML(root) {
     if(elem.type === "text") {
       return {text: elem.text, ...marks}
     }
-    return elem.elements.map(e => parseMarks(e, addMark(elem, marks))).flat()
+    return elem.elements?.map(e => parseMarks(e, addMark(elem, marks))).flat() ?? [{text: ""}]
   }
 
   //---------------------------------------------------------------------------

@@ -7,7 +7,7 @@
 //*****************************************************************************
 
 import {loadmawe, createmawe, buf2tree, fromXML} from "./xmljs/load"
-import {savemawe, tree2buf, toXML} from "./xmljs/save"
+import {savemawe, toXML} from "./xmljs/save"
 import {asRTF, asHTML} from "./print"
 
 import {info} from "./head"
@@ -32,7 +32,7 @@ export const mawe = {
     return await fs.rename(file.id, name + suffix);
   },
   decodebuf, file2buf, buf2tree, fromXML,
-  toXML, tree2buf,
+  toXML,
 
   // Exporting
   asRTF, asHTML,
