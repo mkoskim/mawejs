@@ -40,7 +40,7 @@ function renewCommands(options, sides) {
 \\def\\subtitle#1{\\gdef\\@subtitle{#1}}
 
 \\renewcommand\\maketitle{
-  \\if@titlepage{\\null\\vskip 4cm}
+  \\if@titlepage{\\null\\vskip 4cm}\\fi
   {\\center
     {\\@author \\par}
     \\vskip 12pt
@@ -185,12 +185,6 @@ ${backmatter}
   "missing": (p, text) => `{\\color{red}${linify(text)}}`,
   "p": (p, text) => `${linify(text)}`,
 
-  // Paragraph styles
-  "missing": (p, text) => `\\cf2 ${text}\\par}\n`,
-  "p": (p, text) => ` ${text}\\par}\n`,
-  //"synopsis": (p) => undefined,
-  //"comment": (p) => undefined,
-
   "b": (text) => `\\textbf{${text}}`,
   "i": (text) => `\\textit{${text}}`,
   "text": (text) => escape(text),
@@ -306,7 +300,7 @@ function escape(text) {
 }
 
 function linify(text) {
-  const words = escape(text).split(" ").filter(p => p.length)
+  const words = text.split(" ").filter(p => p.length)
   var lines = [""]
   for (const word of words) {
     const last = lines[lines.length - 1]
@@ -322,6 +316,6 @@ function linify(text) {
 }
 
 function center(text) {
-  const escaped = escape(text)
-  return escaped.padStart((40 + escaped.length / 2), " ")
+  //const escaped = escape(text)
+  return text.padStart((40 + text.length / 2), " ")
 }
