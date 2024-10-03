@@ -71,7 +71,7 @@ import { wcElem } from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
-export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
+export function SingleEditView({doc, updateDoc, focusTo, setFocusTo}) {
 
   //---------------------------------------------------------------------------
   // For development purposes:
@@ -108,19 +108,19 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 
   const updateBody = useCallback(buffer => {
     if(isAstChange(bodyeditor)) {
-      setDoc(produce(draft => {
-        draft.story.body.parts = buffer;
-        draft.story.body.words = wcElem({type: "sect", children: buffer})
-      }))
+      updateDoc(doc => {
+        doc.story.body.parts = buffer;
+        doc.story.body.words = wcElem({type: "sect", children: buffer})
+      })
     }
   }, [bodyeditor])
 
   const updateNotes = useCallback(buffer => {
     if(isAstChange(noteeditor)) {
-      setDoc(produce(draft => {
-        draft.story.notes.parts = buffer
-        draft.story.notes.words = wcElem({type: "sect", children: buffer})
-      }))
+      updateDoc(doc => {
+        doc.story.notes.parts = buffer
+        doc.story.notes.words = wcElem({type: "sect", children: buffer})
+      })
     }
   }, [noteeditor])
 
@@ -188,7 +188,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 
   const settings = {
     doc,
-    setDoc,
+    updateDoc,
     selectRight,
     setSelectRight,
     searchBoxRef,
@@ -628,7 +628,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
 
   return <VFiller>
     <ToolBox style={styles.toolbox.left}>
-      {/* <EditHeadButton head={head} setDoc={settings.setDoc} expanded={true}/> */}
+      {/* <EditHeadButton head={head} updateDoc={settings.updateDoc} expanded={true}/> */}
       <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
       {/* <OpenFolderButton filename={doc.file?.id}/> */}

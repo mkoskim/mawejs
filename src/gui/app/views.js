@@ -50,7 +50,7 @@ export class ViewSelectButtons extends React.PureComponent {
   }
 }
 
-export function ViewSwitch({doc, setDoc}) {
+export function ViewSwitch({doc, updateDoc}) {
 
   const {view, setView} = useContext(SettingsContext)
 
@@ -63,11 +63,11 @@ export function ViewSwitch({doc, setDoc}) {
 
   if(!doc?.story) return null
 
-  const props = { doc, setDoc, focusTo, setFocusTo }
+  const props = { doc, updateDoc, focusTo, setFocusTo }
 
   switch (view.selected) {
     case "editor": return <SingleEditView {...props} />
-    case "organizer": return <Organizer {...props} />
+    //case "organizer": return <Organizer {...props} />
     case "export": return <Export {...props} />
     case "chart": return <Chart {...props} />
     default: break;

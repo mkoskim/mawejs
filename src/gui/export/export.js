@@ -35,7 +35,7 @@ import {
 import { elemName, getSuffix, nanoid, filterCtrlElems } from "../../document/util";
 import {
   EditHead, SectionWordInfo,
-  setDocStoryType, setDocChapterElem, setDocChapterType,
+  updateDocStoryType, updateDocChapterElem, updateDocChapterType,
 } from "../common/components";
 
 import { storyType } from "../../document/head"
@@ -53,7 +53,7 @@ const fs = require("../../system/localfs");
 
 //-----------------------------------------------------------------------------
 
-export function Export({ doc, setDoc, focusTo, setFocusTo }) {
+export function Export({ doc, updateDoc, focusTo, setFocusTo }) {
 
   const [format, setFormat] = useState("rtf1")
 
@@ -63,7 +63,7 @@ export function Export({ doc, setDoc, focusTo, setFocusTo }) {
       {/* <ExportSettings {...previewprops}/> */}
       <ExportIndex style={{ maxWidth: "300px", width: "300px" }} doc={doc} setFocusTo={setFocusTo}/>
       <Preview doc={doc}/>
-      <ExportSettings doc={doc} setDoc={setDoc} format={format} setFormat={setFormat}/>
+      <ExportSettings doc={doc} updateDoc={updateDoc} format={format} setFormat={setFormat}/>
     </HBox>
   </VBox>
 }
@@ -72,7 +72,7 @@ export function Export({ doc, setDoc, focusTo, setFocusTo }) {
 // Export settings
 //-----------------------------------------------------------------------------
 
-function ExportSettings({ style, doc, setDoc, format, setFormat }) {
+function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
 
   const formatter = {
     "rtf1": formatRTF,
@@ -101,16 +101,16 @@ function ExportSettings({ style, doc, setDoc, format, setFormat }) {
     <Accordion disableGutters>
     <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type: {storyType(doc.story)}</AccordionSummary>
     <AccordionDetails><VBox>
-    <TextField select label="Story Class" value={exports.type} onChange={e => setDocStoryType(setDoc, e.target.value)}>
+    <TextField select label="Story Class" value={exports.type} onChange={e => updateDocStoryType(updateDoc, e.target.value)}>
       <MenuItem value="short">Short Story</MenuItem>
       <MenuItem value="long">Long Story</MenuItem>
       </TextField>
-    <TextField select label="Chapters" value={exports.chapterelem} onChange={e => setDocChapterElem(setDoc, e.target.value)}>
+    <TextField select label="Chapters" value={exports.chapterelem} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
       <MenuItem value="part">Part</MenuItem>
       <MenuItem value="scene">Scene</MenuItem>
       <MenuItem value="none">None</MenuItem>
       </TextField>
-    <TextField select label="Chapter style" value={exports.chaptertype} onChange={e => setDocChapterType(setDoc, e.target.value)}>
+    <TextField select label="Chapter style" value={exports.chaptertype} onChange={e => updateDocChapterType(updateDoc, e.target.value)}>
       <MenuItem value="separated">Separated</MenuItem>
       <MenuItem value="numbered">Numbered</MenuItem>
       <MenuItem value="named">Named</MenuItem>
@@ -118,7 +118,7 @@ function ExportSettings({ style, doc, setDoc, format, setFormat }) {
     </VBox></AccordionDetails>
     </Accordion>
 
-    <EditHead head={head} setDoc={setDoc}/>
+    <EditHead head={head} updateDoc={updateDoc}/>
   </VBox>
 
   function doExport(event) {

@@ -36,7 +36,7 @@ import {elemName, filterCtrlElems, mawe} from "../../document";
 
 //-----------------------------------------------------------------------------
 
-export function Chart({doc, setDoc}) {
+export function Chart({doc, updateDoc}) {
   //const section = doc.story.body
 
   return <DragDropContext onDragEnd={onDragEnd}>
@@ -44,7 +44,6 @@ export function Chart({doc, setDoc}) {
       <VBox style={{maxWidth: "300px", borderRight: "1px solid lightgray"}}>
         <IndexToolbar />
         <DocIndex
-          name={mawe.info(doc.story.body.head).title}
           section={doc.story.body}
           activeID="body"
           include={["part", "scene"]}
@@ -57,7 +56,7 @@ export function Chart({doc, setDoc}) {
   </DragDropContext>
 
   function onDragEnd(result) {
-    onDragEndUpdateDoc(doc, setDoc, result)
+    onDragEndUpdateDoc(doc, updateDoc, result)
   }
 }
 
