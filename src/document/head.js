@@ -14,6 +14,11 @@ export function info(head) {
   }
 }
 
+export function getHeader(head) {
+  const {author, title} = info(head)
+  return (author ? `${author}: ` : "") + (title ?? "<New Story>")
+}
+
 function getTitle(head) {
   if(head.title) {
     return {
@@ -38,7 +43,7 @@ function getAuthor(head) {
 }
 
 function getType(head) {
-  switch(head.export.type) {
+  switch(head.export?.type) {
     case "short": return "Short"
     case "long": return "Long"
   }

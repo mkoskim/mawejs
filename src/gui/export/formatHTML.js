@@ -5,6 +5,7 @@
 // ****************************************************************************
 
 import {elemAsText} from "../../document"
+import {getHeader} from "../../document/head"
 
 // ****************************************************************************
 
@@ -15,12 +16,12 @@ export const formatHTML = {
   // File
   "file": (head, content, options) => {
     const {author, title, subtitle} = head
-    const headinfo = author ? `${author}: ${title}` : title
+    const headinfo = getHeader(head)
     return `\
 <div style="margin-bottom: 1cm">${headinfo}</div>\n
-<center>${author}</center>
+<center>${escape(author ?? "")}</center>
 <div style="margin-bottom: 0.5in">
-  <h1>${escape(title)}</h1>
+  <h1>${escape(title ?? "<New Story>")}</h1>
   ${subtitle ? "<h2>" + escape(subtitle) + "</h2>" : ""}
 </div>
 ${content}

@@ -34,6 +34,7 @@ import { produce } from 'immer';
 import { mawe } from "../../document"
 import {cmdOpenFolder} from '../app/context';
 import {Popover} from '@mui/material';
+import {getHeader} from '../../document/head';
 
 //-----------------------------------------------------------------------------
 // Head info editing box
@@ -262,7 +263,7 @@ export function SectionInfo({setDoc, section}) {
   const {head} = section
   const {author, title} = mawe.info(head)
 
-  const docName = (author ? `${author}: ` : "") + (title ?? "<Unnamed>")
+  const header = getHeader(head)
 
   const {chars, text, missing} = {
     chars: 0,
@@ -272,7 +273,7 @@ export function SectionInfo({setDoc, section}) {
   }
 
   return <>
-    <EditHeadButton text={docName} setDoc={setDoc} head={head} expanded={true}/>
+    <EditHeadButton text={header} setDoc={setDoc} head={head} expanded={true}/>
     <Separator/>
     <WordInfo text={text} missing={missing}/>
     <Separator/>

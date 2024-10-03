@@ -5,6 +5,7 @@
 // ****************************************************************************
 
 import {elemAsText} from "../../document"
+import {getHeader} from "../../document/head"
 
 //-----------------------------------------------------------------------------
 
@@ -48,7 +49,7 @@ export const formatRTF = {
     const pgbreak = options.pgbreak ? "\\page" : ""
 
     const {author, title, subtitle} = head
-    const headinfo = author ? `${author}: ${title}` : title
+    const headinfo = getHeader(head)
     const langcode = 1035
 
     const pgnum = `{\\field{\\*\\fldinst PAGE}}`
