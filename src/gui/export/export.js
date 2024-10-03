@@ -38,7 +38,7 @@ import {
   setDocStoryType, setDocChapterElem, setDocChapterType,
 } from "../common/components";
 
-import { mawe } from "../../document"
+import { storyType } from "../../document/head"
 
 import { FormatBody } from "./formatDoc"
 
@@ -82,9 +82,7 @@ function ExportSettings({ style, doc, setDoc, format, setFormat }) {
     "txt": formatTXT,
   }[format]
 
-  const { body } = doc.story
-  const { head } = body
-  const info = mawe.info(body.head)
+  const { head, exports } = doc.story
 
   return <VBox style={style} className="ExportSettings">
     <TextField select label="Format" value={format} onChange={e => setFormat(e.target.value)}>
@@ -101,18 +99,18 @@ function ExportSettings({ style, doc, setDoc, format, setFormat }) {
     <Button variant="contained" color="success" onClick={e => doExport(e)}>Export</Button>
 
     <Accordion disableGutters>
-    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type: {info.type}</AccordionSummary>
+    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type: {storyType(doc.story)}</AccordionSummary>
     <AccordionDetails><VBox>
-    <TextField select label="Story Class" value={head.export.type} onChange={e => setDocStoryType(setDoc, e.target.value)}>
+    <TextField select label="Story Class" value={exports.type} onChange={e => setDocStoryType(setDoc, e.target.value)}>
       <MenuItem value="short">Short Story</MenuItem>
       <MenuItem value="long">Long Story</MenuItem>
       </TextField>
-    <TextField select label="Chapters" value={head.export.chapterelem} onChange={e => setDocChapterElem(setDoc, e.target.value)}>
+    <TextField select label="Chapters" value={exports.chapterelem} onChange={e => setDocChapterElem(setDoc, e.target.value)}>
       <MenuItem value="part">Part</MenuItem>
       <MenuItem value="scene">Scene</MenuItem>
       <MenuItem value="none">None</MenuItem>
       </TextField>
-    <TextField select label="Chapter style" value={head.export.chaptertype} onChange={e => setDocChapterType(setDoc, e.target.value)}>
+    <TextField select label="Chapter style" value={exports.chaptertype} onChange={e => setDocChapterType(setDoc, e.target.value)}>
       <MenuItem value="separated">Separated</MenuItem>
       <MenuItem value="numbered">Numbered</MenuItem>
       <MenuItem value="named">Named</MenuItem>
@@ -124,7 +122,7 @@ function ExportSettings({ style, doc, setDoc, format, setFormat }) {
   </VBox>
 
   function doExport(event) {
-    const content = FormatBody(formatter, body)
+    const content = FormatBody(formatter, doc.story)
     //console.log(content)
     exportToFile(doc, formatter.suffix, content)
   }
@@ -189,12 +187,10 @@ function SceneItem({ scene, setFocusTo }) {
 //-----------------------------------------------------------------------------
 
 function Preview({ doc }) {
-  const { body } = doc.story
-
   return <div className="Filler Board">
     <DeferredRender><div
       className="Sheet Regular"
-      dangerouslySetInnerHTML={{ __html: FormatBody(formatHTML, body) }}
+      dangerouslySetInnerHTML={{ __html: FormatBody(formatHTML, doc.story) }}
     /></DeferredRender>
   </div>
 }

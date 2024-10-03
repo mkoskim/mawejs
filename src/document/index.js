@@ -55,19 +55,11 @@ async function load(file) {
   if (format === "mawe") {
     //const suffix = getSuffix(file, [".mawe", ".mawe.gz"]);
     //const basename = await fs.basename(file.name, suffix);
-    const {buffer, tree, story} = await loadmawe(file);
+    const story = await loadmawe(file);
 
     return {
       file,
-      story,
-      //basename,
-      //suffix,
-      //buffer,
-      //tree,
-      //story: {
-      //  ...story,
-      //name: story.name ?? basename,
-      //}
+      ...story
     }
   }
 

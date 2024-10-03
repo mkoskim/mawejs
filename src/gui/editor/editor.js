@@ -386,7 +386,6 @@ function LeftPanel({settings}) {
   return <VBox style={widths}>
     <LeftPanelMenu settings={settings}/>
     <DocIndex
-      name={mawe.info(doc.story.body.head).title}
       style={rest}
       section={doc.story.body}
       include={settings.body.indexed}
@@ -449,7 +448,6 @@ function RightPanelContent({settings}) {
   switch(selectRight) {
     case "noteindex":
       return <DocIndex
-        name="Notes"
         style={style}
         section={doc.story.notes}
         include={settings.notes.indexed}
@@ -618,8 +616,8 @@ function EditorBox({style, settings, mode="Condensed"}) {
   const {searchBoxRef, searchText, setSearchText} = settings
   const {highlightText} = settings
 
-  const {head} = doc.story.body
-  const {title, author} = mawe.info(head)
+  //const {head} = doc.story
+  //const {title, author} = mawe.info(head)
 
   function activeEditor() {
     switch(activeID) {

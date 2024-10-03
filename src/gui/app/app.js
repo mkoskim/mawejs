@@ -54,7 +54,6 @@ import {produce} from "immer"
 import {useImmer} from "use-immer"
 
 import { mawe } from "../../document"
-import { nanoid, sleep } from '../../util';
 
 import { appQuit, appLog } from "../../system/host"
 
@@ -99,6 +98,7 @@ export default function App(props) {
     if(recent?.length) cmdLoadFile({setCommand, filename: recent[0].id})
   }, [])
 
+  console.log("Key:", doc?.key)
   return <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <SettingsContext.Provider value={settings}>
@@ -114,10 +114,7 @@ export default function App(props) {
   function docFromFile({filename}) {
     mawe.load(filename)
     .then(content => {
-      setDoc({
-        ...content,
-        key: nanoid(),
-      })
+      setDoc(content)
       recentAdd(content.file, recent, setRecent)
       Inform.success(`Loaded: ${content.file.name}`);
     })
@@ -128,10 +125,7 @@ export default function App(props) {
   }
 
   function docFromBuffer({buffer}) {
-    setDoc({
-      ...mawe.create(buffer),
-      key: nanoid(),
-    })
+    setDoc(mawe.create(buffer))
   }
 
   function docFromResource({filename}) {
@@ -225,8 +219,7 @@ function WithoutDoc({setCommand, recent}) {
 function WithDoc({setCommand, doc, setDoc, recent}) {
   const file = doc?.file
   const filename = file?.name ?? "<Unnamed>"
-  const body = doc.story.body
-  const {head} = body
+  const {head, body} = doc.story
   const {view, setView} = useContext(SettingsContext)
   const setMode = useCallback(value => setView(produce(view => {view.selected = value})), [])
 

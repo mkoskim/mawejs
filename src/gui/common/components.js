@@ -40,15 +40,15 @@ import {getHeader} from '../../document/head';
 // Head info editing box
 //-----------------------------------------------------------------------------
 
-export function setDocName(setDoc, value)  { setDoc(produce(draft => {draft.story.body.head.name = value})) }
-export function setDocTitle(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.title = value}))}
-export function setDocSubtitle(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.subtitle = value}))}
-export function setDocAuthor(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.author = value}))}
-export function setDocPseudonym(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.pseudonym = value}))}
+export function setDocName(setDoc, value)  { setDoc(produce(draft => {draft.story.head.name = value})) }
+export function setDocTitle(setDoc, value) { setDoc(produce(draft => {draft.story.head.title = value}))}
+export function setDocSubtitle(setDoc, value) { setDoc(produce(draft => {draft.story.head.subtitle = value}))}
+export function setDocAuthor(setDoc, value) { setDoc(produce(draft => {draft.story.head.author = value}))}
+export function setDocPseudonym(setDoc, value) { setDoc(produce(draft => {draft.story.head.pseudonym = value}))}
 
-export function setDocStoryType(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.type = value}))}
-export function setDocChapterElem(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.chapterelem = value}))}
-export function setDocChapterType(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.chaptertype = value}))}
+export function setDocStoryType(setDoc, value) { setDoc(produce(draft => {draft.story.exports.type = value}))}
+export function setDocChapterElem(setDoc, value) { setDoc(produce(draft => {draft.story.exports.chapterelem = value}))}
+export function setDocChapterType(setDoc, value) { setDoc(produce(draft => {draft.story.exports.chaptertype = value}))}
 
 export class EditHead extends React.PureComponent {
   render() {

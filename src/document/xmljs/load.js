@@ -13,8 +13,8 @@ import { xml2js } from "xml-js";
 // File structure:
 //
 // <story format="mawe" uuid="xxx">
+//    <head> ... </head>
 //    <body name="v2.2">
-//      <head> ... </head>
 //      <part> ... </part>
 //      <part> ... </part>
 //      ...
@@ -24,14 +24,6 @@ import { xml2js } from "xml-js";
 //      <part> ... </part>
 //      ...
 //    </notes>
-//    <version name="A">
-//      <head> ... </head>
-//      <part> ... </part>
-//      <part> ... </part>
-//      ...
-//    </version>
-//    <version name="B"> ... </version>
-//    ...
 //
 //-----------------------------------------------------------------------------
 
@@ -43,10 +35,11 @@ export async function loadmawe(file) {
 
 export function createmawe(buffer) {
   const tree = buf2tree(buffer)
+  const story = fromXML(tree)
+  console.log("Story:", story)
   return {
-    buffer,
-    tree,
-    story: fromXML(tree)
+    key: nanoid(),
+    story
   }
 }
 
@@ -55,8 +48,6 @@ export function buf2tree(buffer) {
     compact: false,
     ignoreComment: true,
   });
-  //const parser = new DOMParser();
-  //return parser.parseFromString(buffer, "text/xml");
 }
 
 export function fromXML(root) {
@@ -71,38 +62,30 @@ export function fromXML(root) {
 
   // Inject name to body head
 
-  const {head, ...body} = parseBody(elemFind(story, "body"))
+  const bodyElem  = elemFind(story, "body")
+  const headElem  = elemFind(story, "head") ?? elemFind(bodyElem, "head")
+  const expElem   = elemFind(story, "export") ?? elemFind(headElem, "export")
+  const notesElem = elemFind(story, "notes")
+
+  const head  = parseHead(headElem)
+  const body  = parseSection(bodyElem)
+  const notes = parseSection(notesElem)
+  const exports = parseExport(expElem)
 
   return {
     // format - generated at save
     // format version - generated at save
     uuid: uuid ?? getUUID(),
-    body: {
-      ...body,
-      head: {
-        ...head,
-        name,
-      }
+    head: {
+      ...head,
+      name,
     },
-    notes: parseNotes(elemFind(story, "notes")),
-    versions: elemFindall(story, "version").map(parseVersion),
+    exports,
+    body,
+    notes,
   }
 
   //---------------------------------------------------------------------------
-
-  function parseBody(body, extras = {}) {
-
-    return {
-      ...extras,
-      lang: "fi",
-      head: parseHead(elemFind(body, "head")),
-      ...parseSection(body)
-    }
-  }
-
-  function parseNotes(notes) {
-    return parseSection(notes)
-  }
 
   function parseSection(section) {
     function getParts() {
@@ -117,12 +100,6 @@ export function fromXML(root) {
       parts,
       words,
     }
-  }
-
-  function parseVersion(version) {
-    const {created} = version;
-
-    return parseBody(version, {created})
   }
 
   //---------------------------------------------------------------------------
@@ -149,16 +126,14 @@ export function fromXML(root) {
       return field ? parse(field) : undefined
     }
 
-    function parseExport(elem) {
-      const field = elemFind(elem, "export")
+  }
 
-      const {
-        type = "short",
-        chapterelem = "part",
-        chaptertype = "separated",
-      } = field?.attributes ?? {};
-
-      return {type, chapterelem, chaptertype};
+  function parseExport(elem) {
+    return {
+      type: "short",
+      chapterelem: "part",
+      chaptertype: "separated",
+      ...(elem?.attributes ?? {})
     }
   }
 
@@ -285,12 +260,12 @@ export function fromXML(root) {
 
   function elemFind(parent, name) {
     if(!parent?.elements) return undefined;
-    return parent.elements.find(e => e.name === name)
+    return parent.elements.find(e => e.type === "element" && e.name === name)
   }
 
   function elemFindall(parent, name) {
     if(!parent?.elements) return []
-    return parent.elements.filter(e => e.name === name)
+    return parent.elements.filter(e => e.type === "element" && e.name === name)
   }
 
   function elem2Text(elem) {

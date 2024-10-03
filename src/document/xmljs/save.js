@@ -19,102 +19,6 @@ export async function savemawe(doc) {
 //*****************************************************************************
 //*****************************************************************************
 //
-// Creating XML buffer
-//
-//*****************************************************************************
-//*****************************************************************************
-
-// Quick fix: xml-js does not escape string attributes
-function toText(text) {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    //.replace(/"/g, '&quot;')
-  ;
-}
-
-function toAttrValue(value) {
-  return value.toString()
-    .replace(/&/g, '&amp;')
-    //.replace(/</g, '&lt;')
-    //.replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-  ;
-}
-
-function xmlAttribute(key, value) {
-  //console.log(key, value)
-  if(value === undefined || value === null)
-  {
-    return ""
-  }
-  return `${key}="${toAttrValue(value.toString())}"`
-}
-
-function xmlAttributes(attributes) {
-  if(!attributes) return ""
-
-  const entries = Object.entries(attributes)
-  return entries.map(([key, value]) => xmlAttribute(key, value)).filter(s => s).join(" ")
-}
-
-function xmlElemOpen(elem, isEmpty="") {
-  if(elem.type === "element") {
-    const name = elem.name
-    const attrs = xmlAttributes(elem.attributes)
-    if(attrs) {
-      return `<${name} ${attrs}${isEmpty}>`
-    }
-    return `<${name}${isEmpty}>`
-  }
-  return ""
-}
-
-function xmlElemClose(elem) {
-  if(elem.type === "element") {
-    return `</${elem.name}>`
-  }
-  return ""
-}
-
-function xmlElem(elem, ...content) {
-  const value = content.join("")
-  if(!value) {
-    return xmlElemOpen(elem, "/");
-  }
-  return [
-    xmlElemOpen(elem),
-    value,
-    xmlElemClose(elem)
-  ].join("")
-}
-
-function xmlLines(root, ...lines) {
-  return [
-    xmlElemOpen(root),
-    ...lines.filter(s => s),
-    xmlElemClose(root)
-  ].join("\n")
-}
-
-function xmlComment(...lines) {
-  return ["<!--/", ...lines.map(toText), "/-->"].join("\n")
-}
-
-//-----------------------------------------------------------------------------
-
-function toElem({type, attributes = undefined}) {
-  return {
-    type: "element",
-    name: type,
-    attributes,
-  }
-}
-
-//*****************************************************************************
-//*****************************************************************************
-//
 // Export tree as XML buffer
 //
 //*****************************************************************************
@@ -129,14 +33,19 @@ export function toXML(story) {
         uuid: story.uuid ?? getUUID(),
         format: "mawe",
         version: 2,
-        name: story.body?.head?.name
+        name: story.head?.name
       }
     }),
     xmlComment(
       "===============================================================================",
       "",
-      `STORY: ${story.body?.head?.name}`,
+      `STORY: ${story.head?.name}`,
       "",
+      "===============================================================================",
+    ),
+    toHead(story.head),
+    toExport(story.exports),
+    xmlComment(
       "===============================================================================",
     ),
     toBody(story.body),
@@ -148,32 +57,6 @@ export function toXML(story) {
       "===============================================================================",
     ),
     toNotes(story.notes)
-  )
-}
-
-//-----------------------------------------------------------------------------
-// Body & notes
-//-----------------------------------------------------------------------------
-
-function toBody(body) {
-  const {head, parts} = body;
-
-  return xmlLines(
-    toElem({type: "body"}),
-    toHead(head),
-    xmlComment(
-      "===============================================================================",
-    ),
-    ...parts.map(toPart),
-  )
-}
-
-function toNotes(notes) {
-  const {parts} = notes;
-
-  return xmlLines(
-    toElem({type: "notes"}),
-    ...parts.map(toPart)
   )
 }
 
@@ -193,14 +76,38 @@ function toHead(head) {
     optional("deadline", head.deadline),
     optional("covertext", head.covertext),
     optional("version", head.version),
-
-    xmlElem(toElem({type: "export", attributes: head.export})),
   )
 
   function optional(type, value, attributes) {
     if(!value || value === "") return ""
     return xmlElem(toElem({type, attributes}), toText(value))
   }
+}
+
+function toExport(exports) {
+  return xmlElem(toElem({type: "export", attributes: exports}))
+}
+
+//-----------------------------------------------------------------------------
+// Body & notes
+//-----------------------------------------------------------------------------
+
+function toBody(body) {
+  const {head, parts} = body;
+
+  return xmlLines(
+    toElem({type: "body"}),
+    ...parts.map(toPart),
+  )
+}
+
+function toNotes(notes) {
+  const {parts} = notes;
+
+  return xmlLines(
+    toElem({type: "notes"}),
+    ...parts.map(toPart)
+  )
 }
 
 //-----------------------------------------------------------------------------
@@ -278,4 +185,98 @@ function toMarks(elem) {
   const {text} = elem;
 
   return isBold(elem, isItalic(elem, toText(text)))
+}
+
+//*****************************************************************************
+//*****************************************************************************
+//
+// Creating XML buffer
+//
+//*****************************************************************************
+//*****************************************************************************
+
+function toElem({type, attributes = undefined}) {
+  return {
+    type: "element",
+    name: type,
+    attributes,
+  }
+}
+
+// Quick fix: xml-js does not escape string attributes
+function toText(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    //.replace(/"/g, '&quot;')
+  ;
+}
+
+function toAttrValue(value) {
+  return value.toString()
+    .replace(/&/g, '&amp;')
+    //.replace(/</g, '&lt;')
+    //.replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+  ;
+}
+
+function xmlAttribute(key, value) {
+  //console.log(key, value)
+  if(value === undefined || value === null)
+  {
+    return ""
+  }
+  return `${key}="${toAttrValue(value.toString())}"`
+}
+
+function xmlAttributes(attributes) {
+  if(!attributes) return ""
+
+  const entries = Object.entries(attributes)
+  return entries.map(([key, value]) => xmlAttribute(key, value)).filter(s => s).join(" ")
+}
+
+function xmlElemOpen(elem, isEmpty="") {
+  if(elem.type === "element") {
+    const name = elem.name
+    const attrs = xmlAttributes(elem.attributes)
+    if(attrs) {
+      return `<${name} ${attrs}${isEmpty}>`
+    }
+    return `<${name}${isEmpty}>`
+  }
+  return ""
+}
+
+function xmlElemClose(elem) {
+  if(elem.type === "element") {
+    return `</${elem.name}>`
+  }
+  return ""
+}
+
+function xmlElem(elem, ...content) {
+  const value = content.join("")
+  if(!value) {
+    return xmlElemOpen(elem, "/");
+  }
+  return [
+    xmlElemOpen(elem),
+    value,
+    xmlElemClose(elem)
+  ].join("")
+}
+
+function xmlLines(root, ...lines) {
+  return [
+    xmlElemOpen(root),
+    ...lines.filter(s => s),
+    xmlElemClose(root)
+  ].join("\n")
+}
+
+function xmlComment(...lines) {
+  return ["<!--/", ...lines.map(toText), "/-->"].join("\n")
 }
