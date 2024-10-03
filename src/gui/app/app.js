@@ -98,7 +98,7 @@ export default function App(props) {
     if(recent?.length) cmdLoadFile({setCommand, filename: recent[0].id})
   }, [])
 
-  console.log("Key:", doc?.key)
+  //console.log("Key:", doc?.key)
   return <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <SettingsContext.Provider value={settings}>

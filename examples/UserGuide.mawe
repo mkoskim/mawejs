@@ -6,14 +6,14 @@ STORY: UserGuide
 
 ===============================================================================
 /-->
-<body>
 <head>
 <title>User's Guide</title>
-<export type="short" chapterelem="part" chaptertype="separated"/>
 </head>
+<export type="short" chapterelem="part" chaptertype="separated"/>
 <!--/
 ===============================================================================
 /-->
+<body>
 <part name="Welcome!">
 <scene name="Welcome!">
 <p>Welcome page for new users.</p>

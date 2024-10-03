@@ -6,16 +6,16 @@ STORY: undefined
 
 ===============================================================================
 /-->
-<body>
 <head>
 <title>Frankenstein</title>
 <subtitle>The Modern Prometheus</subtitle>
 <author>Mary Shelley</author>
-<export type="short" chapterelem="part" chaptertype="separated"/>
 </head>
+<export type="short" chapterelem="part" chaptertype="separated"/>
 <!--/
 ===============================================================================
 /-->
+<body>
 <part name="PREFACE">
 <scene name="Preface">
 <p>The Project Gutenberg eBook of Frankenstein; Or, The Modern Prometheus</p>
@@ -1087,15 +1087,8 @@ NOTES
 <notes>
 <part>
 <scene>
-<p/>
+<br/>
 </scene>
 </part>
 </notes>
-<!--/
-===============================================================================
-
-VERSIONS
-
-===============================================================================
-/-->
 </story>

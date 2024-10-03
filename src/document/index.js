@@ -67,12 +67,7 @@ async function load(file) {
 }
 
 function create(buffer) {
-  const {tree, story} = createmawe(buffer);
-  return {
-    //buffer,
-    //tree,
-    story
-  }
+  return createmawe(buffer);
 }
 
 //-----------------------------------------------------------------------------

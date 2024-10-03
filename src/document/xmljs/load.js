@@ -36,7 +36,7 @@ export async function loadmawe(file) {
 export function createmawe(buffer) {
   const tree = buf2tree(buffer)
   const story = fromXML(tree)
-  console.log("Story:", story)
+  //console.log("Story:", story)
   return {
     key: nanoid(),
     story
