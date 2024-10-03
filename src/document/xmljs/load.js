@@ -204,7 +204,7 @@ export function fromXML(root) {
       id: nanoid(),
       children: [{text: ""}]
     }]
-    const children = (scene.elements ?? empty).map(js2doc).map(elem => ({...elem, words: wcElem(elem)}))
+    const children = (scene.elements ?? empty).map(parseParagraph).map(elem => ({...elem, words: wcElem(elem)}))
     const words = wcChildren(children)
 
     return {
@@ -218,6 +218,45 @@ export function fromXML(root) {
       ],
       words,
     }
+  }
+
+  //---------------------------------------------------------------------------
+
+  function parseParagraph(elem, index) {
+    //console.log(elem)
+
+    const {name, type} = elem
+
+    const children = elem.elements?.map(e => parseMarks(e, {})).flat() ?? [{text: ""}]
+
+    const text = children.map(child => child.text).join("")
+
+    //console.log(children)
+    //console.log(text)
+
+    return {
+      type: (type === "element" && name === "p" && !text) ? "br" : (name ?? type),
+      id: nanoid(),
+      children
+    }
+  }
+
+  //---------------------------------------------------------------------------
+
+  function addMark(elem, marks) {
+    if(elem.type === "element") {
+      if(elem.name === "b") return {...marks, bold: true}
+      if(elem.name === "i") return {...marks, italic: true}
+    }
+    return marks
+  }
+
+  function parseMarks(elem, marks) {
+
+    if(elem.type === "text") {
+      return {text: elem.text, ...marks}
+    }
+    return elem.elements?.map(e => parseMarks(e, addMark(elem, marks))).flat() ?? [{text: ""}]
   }
 
   //---------------------------------------------------------------------------

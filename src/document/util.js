@@ -55,11 +55,15 @@ export async function buf2file(doc, buffer) {
   // sent for saving.
   //console.log(file)
 
+  /*
+  return await fs.write("savetest.mawe", buffer);
+  /*/
   if(file.id.endsWith(".gz")) {
     return await fs.write(file.id, gzip(buffer, {level: 9}));
   } else {
     return await fs.write(file.id, buffer);
   }
+  /**/
 }
 
 //-----------------------------------------------------------------------------
@@ -74,7 +78,7 @@ export function elemAsText(elem) {
   return (
     elem.children
     .map(elem => elem.text)
-    .join()
+    .join("")
   )
 }
 

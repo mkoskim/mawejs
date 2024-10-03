@@ -110,10 +110,16 @@ function renderElement({element, attributes, ...props}) {
 }
 
 function renderLeaf({ leaf, attributes, children}) {
-  return <span
-    className={leaf.highlight ? "highlight" : undefined}
-    {...attributes}
-  >{children}</span>
+  if(leaf.bold) {
+    children = <strong>{children}</strong>
+  }
+  if(leaf.italic) {
+    children = <em>{children}</em>
+  }
+  if(leaf.highlight) {
+    children = <span className="highlight">{children}</span>
+  }
+  return <span {...attributes}>{children}</span>
 }
 
 export function SlateEditable({className, highlight, ...props}) {
@@ -159,11 +165,46 @@ export function SlateEditable({className, highlight, ...props}) {
 
 //*****************************************************************************
 //
+// Helpers
+//
+//*****************************************************************************
+
+function isMarkActive(editor, format) {
+  const marks = Editor.marks(editor)
+  return marks ? marks[format] === true : false
+}
+
+function toggleMark(editor, format) {
+  const isActive = isMarkActive(editor, format)
+  if (isActive) {
+    Editor.removeMark(editor, format)
+  } else {
+    Editor.addMark(editor, format, true)
+  }
+}
+//*****************************************************************************
+//
 // Custom hotkeys
 //
 //*****************************************************************************
 
 function onKeyDown(event, editor) {
+
+  //---------------------------------------------------------------------------
+  // Styles
+  //---------------------------------------------------------------------------
+
+  if (IsKey.CtrlB(event)) {
+    event.preventDefault()
+    toggleMark(editor, "bold")
+    return
+  }
+
+  if (IsKey.CtrlI(event)) {
+    event.preventDefault()
+    toggleMark(editor, "italic")
+    return
+  }
 
   //---------------------------------------------------------------------------
   // Folding

@@ -107,10 +107,15 @@ ${content}
   //---------------------------------------------------------------------------
 
   // Paragraph styles
-  "missing": (p) => `\\cf2 ${escape(elemAsText(p))}\\par}\n`,
-  "p": (p) => ` ${escape(elemAsText(p))}\\par}\n`,
+  "missing": (p, text) => `\\cf2 ${text}\\par}\n`,
+  "p": (p, text) => ` ${text}\\par}\n`,
   //"synopsis": (p) => undefined,
   //"comment": (p) => undefined,
+
+  "b": (text) => `{\\b ${text}}`,
+  "i": (text) => `{\\i ${text}}`,
+  "text": (text) => escape(text),
+
 
   //---------------------------------------------------------------------------
 }

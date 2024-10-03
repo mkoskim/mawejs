@@ -29,7 +29,7 @@ import {
   Inform,
 } from "../common/factory";
 
-import { OpenFolderButton, SectionInfo, WordInfo, CharInfo } from "../common/components";
+import { OpenFolderButton, HeadInfo, WordInfo, CharInfo } from "../common/components";
 
 import { SnackbarProvider } from "notistack";
 
@@ -226,7 +226,7 @@ function WithDoc({setCommand, doc, setDoc, recent}) {
   const file = doc?.file
   const filename = file?.name ?? "<Unnamed>"
   const body = doc.story.body
-  //const {head} = body
+  const {head} = body
   const {view, setView} = useContext(SettingsContext)
   const setMode = useCallback(value => setView(produce(view => {view.selected = value})), [])
 
@@ -246,7 +246,7 @@ function WithDoc({setCommand, doc, setDoc, recent}) {
     <Separator />
     <ViewSelectButtons selected={view.selected} setSelected={setMode}/>
     <Separator/>
-    <SectionInfo section={body} setDoc={setDoc}/>
+    <HeadInfo head={head} setDoc={setDoc}/>
 
     <Filler />
     <Separator/>
