@@ -26,6 +26,7 @@ STORY: UserGuide
 <part name="Quick Reference">
 <scene>
 <p>Quick reference of commands, read further if you are new to editor.</p>
+<br/>
 <p>Markup &amp; shortcuts:</p>
 <p>Ctrl-Alt-0 - reset to a paragraph.</p>
 <p>** - Ctrl-Alt-1 - start a part</p>
@@ -34,6 +35,7 @@ STORY: UserGuide
 <p>// - Ctrl-Alt-C - make a comment</p>
 <p>!! - Ctrl-Alt-M - make a missing piece</p>
 <p>++ - Ctrl-Alt-F - make a filler element</p>
+<p>@ - make a tag element</p>
 <br/>
 <p>Other shortcuts:</p>
 <p>Alt-F - Toggle fold</p>
@@ -42,8 +44,6 @@ STORY: UserGuide
 <p>Ctrl-F - Search</p>
 <p>Ctrl-G - Find next</p>
 <p>Ctrl-Shift-G - Find previous</p>
-<br/>
-<p>You can use either markup or shortcuts to change the type of previous line.</p>
 <br/>
 </scene>
 </part>
