@@ -257,15 +257,16 @@ export class FormatWords extends React.PureComponent {
 // Document word info
 //-----------------------------------------------------------------------------
 
-export function SectionInfo({setDoc, section}) {
-  if(!section) return null;
+export class HeadInfo extends React.PureComponent {
 
-  const {head} = section
-  const header = getHeader(head)
+  render() {
+    const {setDoc, head} = this.props
+    const header = getHeader(head)
 
-  return <>
-    <EditHeadButton text={header} setDoc={setDoc} head={head} expanded={true}/>
-  </>
+    return <>
+      <EditHeadButton text={header} setDoc={setDoc} head={head} expanded={true}/>
+    </>
+  }
 }
 
 export class WordInfo extends React.PureComponent {
