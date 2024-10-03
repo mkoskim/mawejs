@@ -3,107 +3,177 @@
 // Icons
 //-----------------------------------------------------------------------------
 
-const muiIcons = require("@mui/icons-material/")
-//console.log("Icons", require("@material-ui/icons/"))
+import {
+  LightbulbOutlined,
+  Close,
+  StarOutlineOutlined,
+  Star,
+  Circle,
+  HelpOutline,
+  Menu,
+
+  ExpandMore,
+
+  ArrowLeft,
+  ArrowRight,
+  ArrowDropUp,
+  ArrowDropDown,
+
+  FormatAlignLeft,
+  FormatListNumberedRtl,
+  ArticleOutlined,
+  GridViewOutlined,
+  PrintOutlined,
+  DonutLarge,
+  Label,
+
+  SettingsOutlined,
+
+  Search,
+  SwapHorizontalCircleOutlined,
+  FolderOutlined,
+  NoteAddOutlined,
+  FileOpenOutlined,
+  SaveOutlined,
+  SaveAsOutlined,
+
+  Replay,
+  Cached,
+  Loop,
+  RotateRight,
+  RotateLeft,
+
+  VerticalAlignTop,
+  VerticalAlignBottom,
+  DescriptionOutlined,
+
+  Home,
+  Favorite,
+
+  Folder,
+  InsertDriveFileOutlined,
+  BrokenImageOutlined,
+  CheckBox,
+
+  FormatAlignJustifyOutlined,
+  FormatAlignRightOutlined,
+  Comment,
+  Report,
+  AddBox,
+
+  VisibilityOff,
+  Numbers,
+  Compress,
+  Percent,
+  SignalCellularAlt,
+
+  MoreHoriz,
+  Attachment,
+  AttachFile,
+
+  RadioButtonUnchecked,
+  RadioButtonChecked,
+
+} from '@mui/icons-material';
 
 // Material icons
 export const Icon = {
-  Placeholder: muiIcons.LightbulbOutlined,
+  Placeholder: LightbulbOutlined,
 
-  Close: muiIcons.Close,
-  Star: muiIcons.StarOutlineOutlined,
-  Starred: muiIcons.Star,
-  Circle: muiIcons.Circle,
-  Help: muiIcons.HelpOutline,
-  Menu: muiIcons.Menu,
+  Close: Close,
+  Star: StarOutlineOutlined,
+  Starred: Star,
+  Circle: Circle,
+  Help: HelpOutline,
+  Menu: Menu,
 
-  ExpandMore: muiIcons.ExpandMore,
+  ExpandMore: ExpandMore,
 
   Arrow: {
-    Left: muiIcons.ArrowLeft,
-    Right: muiIcons.ArrowRight,
-    Up: muiIcons.ArrowDropUp,
-    Down: muiIcons.ArrowDropDown,
+    Left: ArrowLeft,
+    Right: ArrowRight,
+    Up: ArrowDropUp,
+    Down: ArrowDropDown,
   },
 
   View: {
-    Index: muiIcons.FormatAlignLeft,
-    List: muiIcons.FormatListNumberedRtl,
-    Edit: muiIcons.ArticleOutlined,
-    Organize: muiIcons.GridViewOutlined,
-    Export: muiIcons.PrintOutlined,
-    Chart: muiIcons.DonutLarge,
-    Tags: muiIcons.Label,
+    Index: FormatAlignLeft,
+    List: FormatListNumberedRtl,
+    Edit: ArticleOutlined,
+    Organize: GridViewOutlined,
+    Export: PrintOutlined,
+    Chart: DonutLarge,
+    Tags: Label,
   },
 
-  //NewFile: muiIcons.NoteAddOutlined,
-  //NewFolder: muiIcons.CreateNewFolderOutlined,
-  //AddFiles: muiIcons.FolderOpenOutlined,
+  //NewFile: NoteAddOutlined,
+  //NewFolder: CreateNewFolderOutlined,
+  //AddFiles: FolderOpenOutlined,
 
-  Settings: muiIcons.SettingsOutlined,
+  Settings: SettingsOutlined,
 
   Action: {
-    Search: muiIcons.Search,
-    Edit: muiIcons.ArticleOutlined,
-    Cards: muiIcons.GridViewOutlined,
-    Transfer: muiIcons.SwapHorizontalCircleOutlined,
-    Print: muiIcons.PrintOutlined,
-    Folder: muiIcons.FolderOutlined,
+    Search: Search,
+    Edit: ArticleOutlined,
+    Cards: GridViewOutlined,
+    Transfer: SwapHorizontalCircleOutlined,
+    Print: PrintOutlined,
+    Folder: FolderOutlined,
     File: {
-      New: muiIcons.NoteAddOutlined,
-      Open: muiIcons.FileOpenOutlined,
-      Save: muiIcons.SaveOutlined,
-      SaveAs: muiIcons.SaveAsOutlined,
+      New: NoteAddOutlined,
+      Open: FileOpenOutlined,
+      Save: SaveOutlined,
+      SaveAs: SaveAsOutlined,
     },
-    Replay: muiIcons.Replay,
-    Cached: muiIcons.Cached,
-    Loop: muiIcons.Loop,
+    Replay: Replay,
+    Cached: Cached,
+    Loop: Loop,
     Rotate: {
-      CW: muiIcons.RotateRight,
-      CCW: muiIcons.RotateLeft,
+      CW: RotateRight,
+      CCW: RotateLeft,
     },
     VerticalAlign: {
-      Top: muiIcons.VerticalAlignTop,
-      Bottom: muiIcons.VerticalAlignBottom,
+      Top: VerticalAlignTop,
+      Bottom: VerticalAlignBottom,
     },
-    HeadInfo: muiIcons.DescriptionOutlined,
+    HeadInfo: DescriptionOutlined,
   },
 
   Location: {
-    Home: muiIcons.Home,
-    Favorites: muiIcons.Favorite,
+    Home: Home,
+    Favorites: Favorite,
   },
 
   FileType: {
-    Folder: muiIcons.Folder,
-    File: muiIcons.InsertDriveFileOutlined,
-    Unknown: muiIcons.BrokenImageOutlined,
-    Selected: muiIcons.CheckBox,
+    Folder: Folder,
+    File: InsertDriveFileOutlined,
+    Unknown: BrokenImageOutlined,
+    Selected: CheckBox,
   },
 
   BlockType: {
-    Scene: muiIcons.FormatAlignJustifyOutlined,
-    Synopsis: muiIcons.FormatAlignRightOutlined,
-    Comment: muiIcons.Comment,
-    Missing: muiIcons.Report,
-    Filler: muiIcons.AddBox,
-    Tags: muiIcons.Label,
+    Scene: FormatAlignJustifyOutlined,
+    Synopsis: FormatAlignRightOutlined,
+    Comment: Comment,
+    Missing: Report,
+    Filler: AddBox,
+    Tags: Label,
   },
   StatType: {
-    Off: muiIcons.VisibilityOff,
-    Words: muiIcons.Numbers,
-    Compact: muiIcons.Compress,
-    Percent: muiIcons.Percent,
-    Cumulative: muiIcons.SignalCellularAlt,
+    Off: VisibilityOff,
+    Words: Numbers,
+    Compact: Compress,
+    Percent: Percent,
+    Cumulative: SignalCellularAlt,
   },
 
-  MoreHoriz: muiIcons.MoreHoriz,
-  PaperClipHoriz: muiIcons.Attachment,
-  PaperClipVert: muiIcons.AttachFile,
+  MoreHoriz: MoreHoriz,
+  PaperClipHoriz: Attachment,
+  PaperClipVert: AttachFile,
 
   RadioButton: {
-    Unchecked: muiIcons.RadioButtonUnchecked,
-    Checked: muiIcons.RadioButtonChecked,
+    Unchecked: RadioButtonUnchecked,
+    Checked: RadioButtonChecked,
   }
 }
 
