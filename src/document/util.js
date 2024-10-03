@@ -78,7 +78,7 @@ export function elemAsText(elem) {
   return (
     elem.children
     .map(elem => elem.text)
-    .join()
+    .join("")
   )
 }
 

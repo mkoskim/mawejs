@@ -16,9 +16,9 @@ export const formatTXT = {
     const {author, title, subtitle} = head
     //const headinfo = author ? `${author}: ${title}` : title
     return `\
-${center(author)}
+${center(author ?? "")}
 
-${center(title.toUpperCase())}
+${center(title.toUpperCase()) ?? ""}
 ${subtitle ? "\n" + center(subtitle) + "\n" : ""}
 
 ${content}
@@ -48,8 +48,12 @@ ${content}
   // Paragraph styles
   //"synopsis": (p) => undefined,
   //"comment": (sp) => undefined,
-  "missing": (p) => `!! ${linify(elemAsText(p))}`,
-  "p": (p) => `${linify(elemAsText(p))}`,
+  "missing": (p,text) => `!! ${linify(text)}`,
+  "p": (p, text) => `${linify(text)}`,
+
+  "b": (text) => `*${text}*`,
+  "i": (text) => `_${text}_`,
+  "text": (text) => text,
 }
 
 //-----------------------------------------------------------------------------

@@ -182,8 +182,18 @@ ${backmatter}
   // Paragraph styles
   //"synopsis": (p) => undefined,
   //"comment": (p) => undefined,
-  "missing": (p) => `{\\color{red}${linify(elemAsText(p))}}`,
-  "p": (p) => `${linify(elemAsText(p))}`,
+  "missing": (p, text) => `{\\color{red}${linify(text)}}`,
+  "p": (p, text) => `${linify(text)}`,
+
+  // Paragraph styles
+  "missing": (p, text) => `\\cf2 ${text}\\par}\n`,
+  "p": (p, text) => ` ${text}\\par}\n`,
+  //"synopsis": (p) => undefined,
+  //"comment": (p) => undefined,
+
+  "b": (text) => `\\textbf{${text}}`,
+  "i": (text) => `\\textit{${text}}`,
+  "text": (text) => escape(text),
 }
 
 //-----------------------------------------------------------------------------

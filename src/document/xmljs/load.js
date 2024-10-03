@@ -231,7 +231,7 @@ export function fromXML(root) {
 
     const text = children.map(child => child.text).join("")
 
-    console.log(children)
+    //console.log(children)
     //console.log(text)
 
     return {

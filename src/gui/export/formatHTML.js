@@ -56,8 +56,12 @@ ${content}
 
   // "synopsis": (p) => null,
   // "comment": (p) => null,
-  "missing": (p) => `<p id="${p.id}" style="color: rgb(180, 20, 20);">${escape(elemAsText(p))}</p>`,
-  "p": (p) => `<p id="${p.id}">${escape(elemAsText(p))}</p>`,
+  "missing": (p, text) => `<p id="${p.id}" style="color: rgb(180, 20, 20);">${text}</p>`,
+  "p": (p, text) => `<p id="${p.id}">${text}</p>`,
+
+  "b": (text) => `<strong>${text}</strong>`,
+  "i": (text) => `<em>${text}</em>`,
+  "text": (text) => escape(text),
 
   //---------------------------------------------------------------------------
 }

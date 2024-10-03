@@ -95,6 +95,15 @@ export function FormatBody(format, body) {
 
   function FormatParagraph(p) {
     const formatter = format[p.type];
-    return formatter && formatter(p)
+    if(!formatter) return
+    const text = p.children.map(FormatMarks).join("")
+    return formatter(p, text)
+  }
+
+  function FormatMarks(split) {
+    var text = format["text"](split.text)
+    if(split.bold) text = format["b"](text)
+    if(split.italic) text = format["i"](text)
+    return text
   }
 }
