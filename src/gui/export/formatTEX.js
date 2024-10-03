@@ -4,7 +4,7 @@
 //
 // ****************************************************************************
 
-import { elemAsText } from "../../document"
+import { elemAsText, elemName } from "../../document"
 
 //-----------------------------------------------------------------------------
 
@@ -248,7 +248,7 @@ ${backmatter}
 function getHeading(elem, type, pgbreak, chnum) {
   switch(type) {
     case "numbered": return `\n\n\\chapter{${chnum}}{}\n\n`
-    case "named": return `\n\n\\chapter{${chnum}}{${escape(elem.name)}}\n\n`
+    case "named": return `\n\n\\chapter{${chnum}}{${escape(elemName(elem))}}\n\n`
     default: break;
   }
   return ""

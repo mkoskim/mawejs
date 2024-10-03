@@ -4,7 +4,7 @@
 //
 // ****************************************************************************
 
-import {elemAsText} from "../../document"
+import {elemAsText, elemName} from "../../document"
 import {getHeader} from "../../document/head"
 
 //-----------------------------------------------------------------------------
@@ -121,7 +121,7 @@ function getHeading(elem, type, pgbreak, chnum) {
   const brk = pgbreak ? "\\pagebb" : "\\sb480"
   switch(type) {
     case "numbered": return `{${brk}\\b\\fs28 ${chnum}.\\par}\n`
-    case "named": return `{${brk}\\b\\fs28 ${chnum}. ${escape(elem.name)}\\par}\n`
+    case "named": return `{${brk}\\b\\fs28 ${chnum}. ${escape(elemName(elem))}\\par}\n`
     default: break;
   }
   return ""

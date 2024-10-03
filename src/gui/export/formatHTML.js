@@ -4,7 +4,7 @@
 //
 // ****************************************************************************
 
-import {elemAsText} from "../../document"
+import {elemAsText, elemName} from "../../document"
 import {getHeader} from "../../document/head"
 
 // ****************************************************************************
@@ -68,7 +68,7 @@ function getHeading(elem, type, pgbreak, chnum) {
   const brk = pgbreak ? "<hr/>" : ""
   switch(type) {
     case "numbered": return `${brk}<h3 id="${elem.id}">${chnum}.</h3>`
-    case "named": return `${brk}<h3 id="${elem.id}">${chnum}. ${elem.name}</h3>`
+    case "named": return `${brk}<h3 id="${elem.id}">${chnum}. ${elemName(elem)}</h3>`
     default: break;
   }
   return `<a id="${elem.id}"/>`

@@ -4,7 +4,7 @@
 //
 // ****************************************************************************
 
-import {elemAsText} from "../../document"
+import {elemAsText, elemName} from "../../document"
 
 export const formatTXT = {
   // Info
@@ -61,7 +61,7 @@ function getHeading(elem, type, pgbreak, chnum) {
 
   switch(type) {
     case "numbered": return `${chnum}.\n\n`
-    case "named": return `${chnum}. ${escape(elem.name)}\n\n`
+    case "named": return `${chnum}. ${escape(elemName(elem))}\n\n`
     default: break;
   }
   return ""
