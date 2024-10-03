@@ -262,6 +262,8 @@ export function SectionInfo({setDoc, section}) {
   const {head} = section
   const {author, title} = mawe.info(head)
 
+  const docName = (author ? `${author}: ` : "") + (title ?? "<Unnamed>")
+
   const {chars, text, missing} = {
     chars: 0,
     text: 0,
@@ -270,7 +272,7 @@ export function SectionInfo({setDoc, section}) {
   }
 
   return <>
-    <EditHeadButton text={`${author}: ${title}`} setDoc={setDoc} head={head} expanded={true}/>
+    <EditHeadButton text={docName} setDoc={setDoc} head={head} expanded={true}/>
     <Separator/>
     <WordInfo text={text} missing={missing}/>
     <Separator/>
