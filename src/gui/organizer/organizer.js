@@ -25,7 +25,6 @@ import {
 } from "../common/factory";
 
 import {
-  SectionWordInfo,
   ChooseVisibleElements, ChooseWordFormat, FormatWords,
 } from "../common/components";
 
@@ -70,8 +69,6 @@ function OutlinerToolbar({settings, section}) {
       selected={words.value}
       setSelected={words.setValue}
       />
-    <Separator/>
-    <SectionWordInfo section={section}/>
     <Separator/>
     <Filler/>
   </ToolBox>

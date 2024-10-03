@@ -29,7 +29,7 @@ import {
   Inform,
 } from "../common/factory";
 
-import { EditHeadButton, OpenFolderButton } from "../common/components";
+import { OpenFolderButton, SectionInfo } from "../common/components";
 
 import { SnackbarProvider } from "notistack";
 
@@ -240,9 +240,11 @@ function WithDoc({setCommand, doc, setDoc, recent}) {
     <Separator/>
     <Label text={filename}/>
     <Separator/>
-    <EditHeadButton head={head} setDoc={setDoc} expanded={true}/>
+    <SectionInfo section={doc.story.body} setDoc={setDoc}/>
+    <Separator />
     <OpenFolderButton filename={file?.id}/>
     <CloseButton setCommand={setCommand}/>
+    <Separator />
 
     <Filler />
     <Separator />

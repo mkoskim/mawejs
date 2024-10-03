@@ -83,12 +83,6 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   //---------------------------------------------------------------------------
 
   return <VBox style={style} className="TOC">
-    <IndexHead
-      //wcTotal={section.words.text}
-      name={name}
-      section={section}
-      wcFormat={wcFormat}
-      />
     <PartDropZone
       activeID={activeID}
       parts={section?.parts}

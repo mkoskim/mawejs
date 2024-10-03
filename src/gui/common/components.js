@@ -77,10 +77,10 @@ export class EditHead extends React.PureComponent {
 
 export class EditHeadButton extends React.PureComponent {
   render() {
-    const {head, setDoc, expanded} = this.props
+    const {text, head, setDoc, expanded} = this.props
     return <PopupState variant="popover" popupId="head-edit">
     {(popupState) => <React.Fragment>
-      <Button {...bindTrigger(popupState)} tooltip="Edit story info"><Icon.Action.HeadInfo /></Button>
+      <Button {...bindTrigger(popupState)} tooltip="Edit story info">{text}</Button>
       <Popover {...bindMenu(popupState)}
         anchorOrigin={{
           vertical: 'bottom',
@@ -256,11 +256,31 @@ export class FormatWords extends React.PureComponent {
 // Document word info
 //-----------------------------------------------------------------------------
 
-export function SectionWordInfo({section}) {
+export function SectionInfo({setDoc, section}) {
   if(!section) return null;
+
+  const {head} = section
+  const {author, title} = mawe.info(head)
+
+  const {chars, text, missing} = {
+    chars: 0,
+    text: 0,
+    missing: 0,
+    ...(section.words ?? {})
+  }
+
   return <>
-    <Label>Words: {section.words?.text}</Label>
+    <EditHeadButton text={`${author}: ${title}`} setDoc={setDoc} head={head} expanded={true}/>
     <Separator/>
-    <Label>Chars: {section.words?.chars}</Label>
+    <WordInfo text={text} missing={missing}/>
+    <Separator/>
+    <Label>Chars: {chars}</Label>
     </>
+}
+
+function WordInfo({text, missing}) {
+  if(missing) {
+    return <Label>Words: {text + missing} ({text} / {missing})</Label>
+  }
+  return <Label>Words: {text}</Label>
 }
