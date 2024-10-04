@@ -6,21 +6,21 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import React, { useState, useEffect, useMemo, useCallback, useDeferredValue } from 'react';
-import { useSlate, Editable, withReact, ReactEditor } from 'slate-react'
+import React, { useMemo, useCallback } from 'react';
+import { useSlate, Editable, withReact } from 'slate-react'
 import {
   Editor,
   Node, Text,
   Transforms,
-  Range, Point, Path,
+  Range, Point,
   createEditor,
   Element,
 } from 'slate'
 
 import { withHistory } from "slate-history"
-import { addClass, IsKey, Icon } from '../common/factory';
+import { addClass, IsKey } from '../common/factory';
 import { nanoid } from '../../util';
-import {elemAsText, section2lookup, wcElem, wcCompare, filterCtrlElems} from '../../document/util';
+import { wcElem, wcCompare} from '../../document/util';
 
 import {
   text2Regexp, searchOffsets, searchPattern,

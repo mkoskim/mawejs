@@ -8,10 +8,8 @@ import "./styles/export.css"
 import "../common/styles/sheet.css"
 
 import React, {
-  useState, useEffect, useReducer,
   useMemo, useCallback,
   useDeferredValue,
-  StrictMode,
 } from 'react';
 
 import {
@@ -46,7 +44,7 @@ import { formatRTF } from "./formatRTF";
 import { formatHTML } from "./formatHTML"
 import { formatTXT } from "./formatTXT"
 import { formatTEX1, formatTEX2 } from "./formatTEX"
-import { setFocusTo } from "../app/views";
+import { setFocusTo } from "../editor/editor";
 
 //-----------------------------------------------------------------------------
 
@@ -183,33 +181,33 @@ function ExportIndex({ style, doc, updateDoc }) {
   const { parts } = doc.body
 
   return <VFiller className="TOC" style={style}>
-    {filterCtrlElems(parts).map(part => <PartItem key={part.id} part={part} updateDoc={updateDoc}/>)}
+    {filterCtrlElems(parts).map(part => <PartItem key={part.id} part={part} doc={doc} updateDoc={updateDoc}/>)}
   </VFiller>
 }
 
-function PartItem({ part, updateDoc }) {
+function PartItem({ part, doc, updateDoc }) {
   const { id, children } = part
   const name = elemName(part)
   return <>
     <div
       className="Entry PartName"
       onClick={ev => window.location.href = `#${id}`}
-      onDoubleClick={ev => setFocusTo(updateDoc, { id })}
+      onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
       style={{ cursor: "pointer" }}
     >
       <span className="Name">{name}</span>
     </div>
-    {filterCtrlElems(children).map(scene => <SceneItem key={scene.id} scene={scene} updateDoc={updateDoc}/>)}
+    {filterCtrlElems(children).map(scene => <SceneItem key={scene.id} scene={scene} doc={doc} updateDoc={updateDoc}/>)}
   </>
 }
 
-function SceneItem({ scene, updateDoc }) {
+function SceneItem({ scene, doc, updateDoc }) {
   const { id } = scene
   const name = elemName(scene)
   return <div
     className="Entry SceneName"
     onClick={ev => window.location.href = `#${id}`}
-    onDoubleClick={ev => setFocusTo(updateDoc, { id })}
+    onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
     style={{ cursor: "pointer" }}
   >
     <span className="Name">{name}</span>

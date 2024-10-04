@@ -7,7 +7,6 @@
 //*****************************************************************************
 
 import React, {
-  useState,
   useCallback,
 } from "react"
 
@@ -112,6 +111,16 @@ function IndexToolbar({ }) {
 //
 //*****************************************************************************
 
+function mode2rotate(mode) {
+  switch (mode) {
+    case "topCCW":    return { start:  90, rotate:  1}
+    case "topCW":     return { start:  90, rotate: -1}
+    case "bottomCCW": return { start: 270, rotate:  1}
+    case "bottomCW":  return { start: 270, rotate: -1}
+  }
+  return { start: 0, rotate: 1 }
+}
+
 function ChartView({doc, updateDoc}) {
 
   const section = doc.body
@@ -120,11 +129,9 @@ function ChartView({doc, updateDoc}) {
   // Data selection
   //---------------------------------------------------------------------------
 
-  //const [selectElement, setSelectElement] = useState("scenes")
-  //const [selectTemplate, setSelectTemplate] = useState("plotpoints")
-
   const setElements = useCallback(value => updateDoc(doc => {doc.ui.chart.elements = value}), [updateDoc])
   const setTemplate = useCallback(value => updateDoc(doc => {doc.ui.chart.template = value}), [updateDoc])
+  const setMode     = useCallback((mode) => {updateDoc(doc => {doc.ui.chart.mode = mode})}, [updateDoc])
 
   /*
   console.log("Beat sheet length=", tmplButtons.beatsheet.data
@@ -137,24 +144,7 @@ function ChartView({doc, updateDoc}) {
   // Chart directions
   //---------------------------------------------------------------------------
 
-  //const [mode, _setMode] = useState("topCCW")
-  const [selectStart, setSelectStart] = useState(90)
-  const [selectRotate, setSelectRotate] = useState(1)
-
-  const setMode = useCallback((mode) => {
-    updateDoc(doc => doc.ui.chart.mode = mode)
-    switch (mode) {
-      case "topCCW": return setStartRotate(90, 1)
-      case "topCW": return setStartRotate(90, -1)
-      case "bottomCCW": return setStartRotate(270, 1)
-      case "bottomCW": return setStartRotate(270, -1)
-    }
-
-    function setStartRotate(start, rotate) {
-      setSelectStart(start)
-      setSelectRotate(rotate)
-    }
-  }, [updateDoc])
+  const {start: selectStart, rotate: selectRotate} = mode2rotate(doc.ui.chart.mode)
 
   //---------------------------------------------------------------------------
   // View

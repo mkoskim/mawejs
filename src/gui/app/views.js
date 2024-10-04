@@ -1,13 +1,13 @@
 //*****************************************************************************
 //*****************************************************************************
 //
-// Edit view selection
+// View selection
 //
 //*****************************************************************************
 //*****************************************************************************
 
 import React, {
-  useState, useCallback,
+  useCallback,
 } from "react"
 
 import {
@@ -19,14 +19,15 @@ import { Organizer } from "../organizer/organizer";
 import { Chart } from "../chart/chart"
 import { Export } from "../export/export"
 
-//-----------------------------------------------------------------------------
-// Chart settings
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// View settings
+//
+//*****************************************************************************
 
 export function loadViewSettings(settings) {
   return {
     selected: "editor",
-    focusTo: undefined,
     ...(settings?.attributes ?? {})
   }
 }
@@ -42,15 +43,11 @@ export function saveViewSettings(settings) {
 export function getViewMode(doc) { return doc.ui.view.selected; }
 export function setViewMode(updateDoc, value) { updateDoc(doc => {doc.ui.view.selected = value})}
 
-export function getFocusTo(doc) { return doc.ui.view.focusTo; }
-export function setFocusTo(updateDoc, value) {
-  updateDoc(doc => {
-    doc.ui.view.selected = "editor"
-    doc.ui.view.focusTo = value
-  })
-}
-
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// View selection
+//
+//*****************************************************************************
 
 export class ViewSelectButtons extends React.PureComponent {
 
