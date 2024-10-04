@@ -7,18 +7,12 @@
 //*****************************************************************************
 
 import React, {
-  useState, useCallback, useContext,
+  useState, useCallback,
 } from "react"
-
-import {produce} from "immer"
 
 import {
   Icon, MakeToggleGroup,
 } from "../common/factory";
-
-import {
-  SettingsContext,
-} from "./settings"
 
 import { SingleEditView } from "../editor/editor";
 import { Organizer } from "../organizer/organizer";
@@ -39,7 +33,7 @@ export function loadViewSettings(settings) {
 export function saveViewSettings(settings) {
   return {type: "view",
     attributes: {
-      selected: settings.selected,
+      //selected: settings.selected,
     }
   }
 }

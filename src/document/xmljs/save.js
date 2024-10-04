@@ -279,6 +279,8 @@ function xmlElemClose(elem) {
 }
 
 function xmlElem(root, ...content) {
+  if(!root) return ""
+
   const elem = toElem(root)
   const value = content.join("")
   if(!value) {
@@ -292,6 +294,8 @@ function xmlElem(root, ...content) {
 }
 
 function xmlLines(root, ...lines) {
+  if(!root) return ""
+
   const value = lines.filter(s => s).join("\n")
   if(!value) {
     return xmlElem(root)
@@ -305,6 +309,8 @@ function xmlLines(root, ...lines) {
 }
 
 function xmlTree(root) {
+  if(!root) return ""
+
   const value = (root.elements?.map(xmlTree) ?? []).filter(s => s).join("\n")
 
   if(!value) {

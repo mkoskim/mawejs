@@ -20,7 +20,6 @@ import {
   PieChart, Pie,
   Cell,
 } from "recharts"
-import {SectionWordInfo} from "../common/components"
 
 import {
   HBox, VBox, HFiller, VFiller,
