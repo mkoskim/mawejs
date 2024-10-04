@@ -64,6 +64,7 @@ import {
 
 import { wcElem } from "../../document/util";
 import { elemFind } from "../../document/xmljs/load";
+import { getFocusTo, setFocusTo } from "../app/views";
 
 //-----------------------------------------------------------------------------
 // Editor settings
@@ -116,7 +117,7 @@ export function saveEditorSettings(settings) {
 // Editor view
 //-----------------------------------------------------------------------------
 
-export function SingleEditView({doc, updateDoc, focusTo, setFocusTo}) {
+export function SingleEditView({doc, updateDoc}) {
 
   //---------------------------------------------------------------------------
   // For development purposes:
@@ -170,6 +171,7 @@ export function SingleEditView({doc, updateDoc, focusTo, setFocusTo}) {
   // Section selection + focusing
   //---------------------------------------------------------------------------
 
+  const focusTo = getFocusTo(doc)
   const [active, _setActive] = useState(focusTo?.sectID ?? "body")
 
   //console.log("ActiveID:", active)
@@ -177,7 +179,7 @@ export function SingleEditView({doc, updateDoc, focusTo, setFocusTo}) {
   const setActive = useCallback((sectID, elemID) => {
     //console.log("setActive:", sectID, elemID)
     _setActive(sectID)
-    setFocusTo({id: elemID})
+    setFocusTo(updateDoc, {id: elemID})
   })
 
   const activeEdit = useCallback(() => {

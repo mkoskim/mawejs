@@ -26,6 +26,7 @@ import { Export } from "../export/export"
 export function loadViewSettings(settings) {
   return {
     selected: "editor",
+    focusTo: undefined,
     ...(settings?.attributes ?? {})
   }
 }
@@ -36,6 +37,17 @@ export function saveViewSettings(settings) {
       //selected: settings.selected,
     }
   }
+}
+
+export function getViewMode(doc) { return doc.ui.view.selected; }
+export function setViewMode(updateDoc, value) { updateDoc(doc => {doc.ui.view.selected = value})}
+
+export function getFocusTo(doc) { return doc.ui.view.focusTo; }
+export function setFocusTo(updateDoc, value) {
+  updateDoc(doc => {
+    doc.ui.view.selected = "editor"
+    doc.ui.view.focusTo = value
+  })
 }
 
 //-----------------------------------------------------------------------------
@@ -65,18 +77,11 @@ export class ViewSelectButtons extends React.PureComponent {
 
 export function ViewSwitch({doc, updateDoc}) {
 
-  const [focusTo, _setFocusTo] = useState(undefined)
-
-  const setFocusTo = useCallback(value => {
-    updateDoc(doc => {doc.ui.view.selected = "editor"})
-    _setFocusTo(value)
-  }, [])
-
   if(!doc) return null
 
-  const props = { doc, updateDoc, focusTo, setFocusTo }
+  const props = { doc, updateDoc }
 
-  switch (doc.ui.view.selected) {
+  switch (getViewMode(doc)) {
     case "editor": return <SingleEditView {...props} />
     //case "organizer": return <Organizer {...props} />
     case "export": return <Export {...props} />

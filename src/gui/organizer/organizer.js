@@ -36,12 +36,12 @@ import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
 // Organizer
 //-----------------------------------------------------------------------------
 
-export function Organizer({doc, updateDoc, setFocusTo}) {
+export function Organizer({doc, updateDoc}) {
 
   return <DragDropContext onDragEnd={onDragEnd}>
       <OrganizerView
         doc={doc}
-        setFocusTo={setFocusTo}
+        updateDoc={updateDoc}
       />
     </DragDropContext>
 
@@ -76,7 +76,7 @@ function OutlinerToolbar({settings, section}) {
 
 //-----------------------------------------------------------------------------
 
-function OrganizerView({doc, setFocusTo}) {
+function OrganizerView({doc, updateDoc}) {
   //console.log("Organizer: Doc:", doc)
 
   const {body, notes} = doc
@@ -97,7 +97,7 @@ function OrganizerView({doc, setFocusTo}) {
       total: body.words.text + body.words.missing,
       cumulative: wcCumulative(body)
     },
-    focusTo: id => setFocusTo({sectID: "body", id}),
+    //focusTo: id => setFocusTo({sectID: "body", id}),
   }
 
   const note_settings = {
@@ -107,7 +107,7 @@ function OrganizerView({doc, setFocusTo}) {
     words: {
       value: "off",
     },
-    focusTo: id => setFocusTo({sectID: "notes", id}),
+    //focusTo: id => setFocusTo({sectID: "notes", id}),
   }
 
   return <div className="Filler Organizer" style={{overflow: "auto"}}>
@@ -179,7 +179,7 @@ function PartView({settings, part, index}) {
       >
       <HBox
         className="Name"
-        onDoubleClick={ev => settings.focusTo(part.id)}
+        //onDoubleClick={ev => settings.focusTo(part.id)}
         {...dragHandleProps}
       >
         {name && name !== "" ? name : "<Unnamed>"}
@@ -247,7 +247,7 @@ function SceneView({index, settings, scene}) {
 
     return <div className="VBox Scene"
       ref={innerRef}
-      onDoubleClick={ev => settings.focusTo(scene.id)}
+      //onDoubleClick={ev => settings.focusTo(scene.id)}
       {...draggableProps}
       {...dragHandleProps}  // Move these inside to create handle
     >

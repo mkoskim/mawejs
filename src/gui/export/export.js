@@ -46,6 +46,7 @@ import { formatRTF } from "./formatRTF";
 import { formatHTML } from "./formatHTML"
 import { formatTXT } from "./formatTXT"
 import { formatTEX1, formatTEX2 } from "./formatTEX"
+import { setFocusTo } from "../app/views";
 
 //-----------------------------------------------------------------------------
 
@@ -53,7 +54,7 @@ const fs = require("../../system/localfs");
 
 //-----------------------------------------------------------------------------
 
-export function Export({ doc, updateDoc, focusTo, setFocusTo }) {
+export function Export({ doc, updateDoc }) {
 
   const [format, setFormat] = useState("rtf1")
 
@@ -61,7 +62,7 @@ export function Export({ doc, updateDoc, focusTo, setFocusTo }) {
     {/* <ExportToolbar {...previewprops}/> */}
     <HBox style={{ overflow: "auto" }}>
       {/* <ExportSettings {...previewprops}/> */}
-      <ExportIndex style={{ maxWidth: "300px", width: "300px" }} doc={doc} setFocusTo={setFocusTo}/>
+      <ExportIndex style={{ maxWidth: "300px", width: "300px" }} doc={doc} updateDoc={updateDoc}/>
       <Preview doc={doc}/>
       <ExportSettings doc={doc} updateDoc={updateDoc} format={format} setFormat={setFormat}/>
     </HBox>
@@ -144,37 +145,37 @@ async function exportToFile(doc, filesuffix, content) {
 // Export index
 //-----------------------------------------------------------------------------
 
-function ExportIndex({ style, doc, setFocusTo }) {
+function ExportIndex({ style, doc, updateDoc }) {
   const { parts } = doc.body
 
   return <VFiller className="TOC" style={style}>
-    {filterCtrlElems(parts).map(part => <PartItem key={part.id} part={part} setFocusTo={setFocusTo}/>)}
+    {filterCtrlElems(parts).map(part => <PartItem key={part.id} part={part} updateDoc={updateDoc}/>)}
   </VFiller>
 }
 
-function PartItem({ part, setFocusTo }) {
+function PartItem({ part, updateDoc }) {
   const { id, children } = part
   const name = elemName(part)
   return <>
     <div
       className="Entry PartName"
       onClick={ev => window.location.href = `#${id}`}
-      onDoubleClick={ev => setFocusTo({ id })}
+      onDoubleClick={ev => setFocusTo(updateDoc, { id })}
       style={{ cursor: "pointer" }}
     >
       <span className="Name">{name}</span>
     </div>
-    {filterCtrlElems(children).map(scene => <SceneItem key={scene.id} scene={scene} setFocusTo={setFocusTo}/>)}
+    {filterCtrlElems(children).map(scene => <SceneItem key={scene.id} scene={scene} updateDoc={updateDoc}/>)}
   </>
 }
 
-function SceneItem({ scene, setFocusTo }) {
+function SceneItem({ scene, updateDoc }) {
   const { id } = scene
   const name = elemName(scene)
   return <div
     className="Entry SceneName"
     onClick={ev => window.location.href = `#${id}`}
-    onDoubleClick={ev => setFocusTo({ id })}
+    onDoubleClick={ev => setFocusTo(updateDoc, { id })}
     style={{ cursor: "pointer" }}
   >
     <span className="Name">{name}</span>
