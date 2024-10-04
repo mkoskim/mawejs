@@ -119,12 +119,6 @@ export function elemsByRange(editor, anchor, focus) {
 //-----------------------------------------------------------------------------
 // Drag'n'drop po and push
 
-// Ensure that pop'd element has correct heading
-
-export function checkPopHeading(node) {
-}
-
-
 export function dndElemPop(editor, id) {
   const match = elemByID(editor, id)
   if(!match) return

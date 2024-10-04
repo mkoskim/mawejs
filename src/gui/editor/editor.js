@@ -191,17 +191,11 @@ export function SingleEditView({doc, updateDoc}) {
   /**/
 
   //---------------------------------------------------------------------------
-  // slate buffers
+  // sections
   //---------------------------------------------------------------------------
-
-  //console.log("Story ID:", doc.story.uuid)
 
   const bodyeditor = useMemo(() => getEditor(), [])
   const noteeditor = useMemo(() => getEditor(), [])
-
-  //---------------------------------------------------------------------------
-  // Get updates from Slate, and apply them to doc, too
-  //---------------------------------------------------------------------------
 
   const updateBody = useCallback(buffer => {
     trackMarks(bodyeditor, doc, updateDoc)
@@ -389,7 +383,7 @@ export function SingleEditView({doc, updateDoc}) {
     //console.log(type, source, "-->", destination)
 
     function moveElem(srcEdit, srcId, dstEditID, dstEdit, dstId, dstIndex) {
-      console.log("moveElem", srcId, dstId, dstIndex)
+      console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
 
       dndElemPushTo(dstEdit,
         dndElemPop(srcEdit, srcId),
@@ -402,8 +396,8 @@ export function SingleEditView({doc, updateDoc}) {
 
     switch(type) {
       case "scene": {
-        const srcEditID = getSectIDByElemID(doc, source.droppableId)
-        const dstEditID = getSectIDByElemID(doc, destination.droppableId)
+        const srcEditID = getSectIDByElemID(source.droppableId)
+        const dstEditID = getSectIDByElemID(destination.droppableId)
         const srcEdit = getEditorBySectID(srcEditID)
         const dstEdit = getEditorBySectID(dstEditID)
 
@@ -422,7 +416,7 @@ export function SingleEditView({doc, updateDoc}) {
       }
       default:
         console.log("Unknown draggable type:", type, result)
-        return;
+        break;
     }
   }
 }
