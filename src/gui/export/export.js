@@ -82,7 +82,7 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
     "txt": formatTXT,
   }[format]
 
-  const { head, exports } = doc.story
+  const { head, exports } = doc
 
   return <VBox style={style} className="ExportSettings">
     <TextField select label="Format" value={format} onChange={e => setFormat(e.target.value)}>
@@ -99,7 +99,7 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
     <Button variant="contained" color="success" onClick={e => doExport(e)}>Export</Button>
 
     <Accordion disableGutters>
-    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type: {storyType(doc.story)}</AccordionSummary>
+    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type: {storyType(doc)}</AccordionSummary>
     <AccordionDetails><VBox>
     <TextField select label="Story Class" value={exports.type} onChange={e => updateDocStoryType(updateDoc, e.target.value)}>
       <MenuItem value="short">Short Story</MenuItem>
@@ -122,7 +122,7 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
   </VBox>
 
   function doExport(event) {
-    const content = FormatBody(formatter, doc.story)
+    const content = FormatBody(formatter, doc)
     //console.log(content)
     exportToFile(doc, formatter.suffix, content)
   }
@@ -145,8 +145,7 @@ async function exportToFile(doc, filesuffix, content) {
 //-----------------------------------------------------------------------------
 
 function ExportIndex({ style, doc, setFocusTo }) {
-  const { body } = doc.story
-  const { parts } = body
+  const { parts } = doc.body
 
   return <VFiller className="TOC" style={style}>
     {filterCtrlElems(parts).map(part => <PartItem key={part.id} part={part} setFocusTo={setFocusTo}/>)}
@@ -190,7 +189,7 @@ function Preview({ doc }) {
   return <div className="Filler Board">
     <DeferredRender><div
       className="Sheet Regular"
-      dangerouslySetInnerHTML={{ __html: FormatBody(formatHTML, doc.story) }}
+      dangerouslySetInnerHTML={{ __html: FormatBody(formatHTML, doc) }}
     /></DeferredRender>
   </div>
 }

@@ -40,15 +40,15 @@ import {getHeader} from '../../document/head';
 // Head info editing box
 //-----------------------------------------------------------------------------
 
-export function updateDocName(updateDoc, value)  { updateDoc(doc => {doc.story.head.name = value}) }
-export function updateDocTitle(updateDoc, value) { updateDoc(doc => {doc.story.head.title = value})}
-export function updateDocSubtitle(updateDoc, value) { updateDoc(doc => {doc.story.head.subtitle = value})}
-export function updateDocAuthor(updateDoc, value) { updateDoc(doc => {doc.story.head.author = value})}
-export function updateDocPseudonym(updateDoc, value) { updateDoc(doc => {doc.story.head.pseudonym = value})}
+export function updateDocName(updateDoc, value)  { updateDoc(doc => {doc.head.name = value}) }
+export function updateDocTitle(updateDoc, value) { updateDoc(doc => {doc.head.title = value})}
+export function updateDocSubtitle(updateDoc, value) { updateDoc(doc => {doc.head.subtitle = value})}
+export function updateDocAuthor(updateDoc, value) { updateDoc(doc => {doc.head.author = value})}
+export function updateDocPseudonym(updateDoc, value) { updateDoc(doc => {doc.head.pseudonym = value})}
 
-export function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.story.exports.type = value})}
-export function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.story.exports.chapterelem = value})}
-export function updateDocChapterType(updateDoc, value) { updateDoc(doc => {doc.story.exports.chaptertype = value})}
+export function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
+export function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapterelem = value})}
+export function updateDocChapterType(updateDoc, value) { updateDoc(doc => {doc.exports.chaptertype = value})}
 
 export class EditHead extends React.PureComponent {
   render() {

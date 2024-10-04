@@ -55,11 +55,11 @@ async function load(file) {
   if (format === "mawe") {
     //const suffix = getSuffix(file, [".mawe", ".mawe.gz"]);
     //const basename = await fs.basename(file.name, suffix);
-    const story = await loadmawe(file);
+    const doc = await loadmawe(file);
 
     return {
       file,
-      ...story
+      ...doc
     }
   }
 
@@ -77,8 +77,8 @@ export async function saveas(doc, filename) {
   //console.log("Saving:", doc)
   // TODO: Fill in basename + suffix
   return await savemawe({
+    ...doc,
     file: { id: filename },
-    story: doc.story,
   })
 }
 

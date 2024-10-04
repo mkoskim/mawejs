@@ -26,6 +26,25 @@ import { Chart } from "../chart/chart"
 import { Export } from "../export/export"
 
 //-----------------------------------------------------------------------------
+// Chart settings
+//-----------------------------------------------------------------------------
+
+export function loadViewSettings(settings) {
+  return {
+    selected: "editor",
+    ...(settings?.attributes ?? {})
+  }
+}
+
+export function saveViewSettings(settings) {
+  return {type: "view",
+    attributes: {
+      selected: settings.selected,
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
 
 export class ViewSelectButtons extends React.PureComponent {
 
@@ -52,20 +71,18 @@ export class ViewSelectButtons extends React.PureComponent {
 
 export function ViewSwitch({doc, updateDoc}) {
 
-  const {view, setView} = useContext(SettingsContext)
-
   const [focusTo, _setFocusTo] = useState(undefined)
 
   const setFocusTo = useCallback(value => {
-    setView(produce(view => {view.selected = "editor"}))
+    updateDoc(doc => {doc.ui.view.selected = "editor"})
     _setFocusTo(value)
   }, [])
 
-  if(!doc?.story) return null
+  if(!doc) return null
 
   const props = { doc, updateDoc, focusTo, setFocusTo }
 
-  switch (view.selected) {
+  switch (doc.ui.view.selected) {
     case "editor": return <SingleEditView {...props} />
     //case "organizer": return <Organizer {...props} />
     case "export": return <Export {...props} />

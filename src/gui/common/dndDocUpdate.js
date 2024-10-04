@@ -26,15 +26,15 @@ export function onDragEndUpdateDoc(doc, updateDoc, result) {
 
   function findPart(doc, partID) {
     return (
-      doc.story.body.parts.find(part => part.id === partID) ||
-      doc.story.notes.parts.find(part => part.id === partID)
+      doc.body.parts.find(part => part.id === partID) ||
+      doc.notes.parts.find(part => part.id === partID)
     )
   }
 
   function findSect(doc, sectID) {
     switch(sectID) {
-      case "body": return doc.story.body;
-      case "notes": return doc.story.notes;
+      case "body": return doc.body;
+      case "notes": return doc.notes;
     }
   }
 
@@ -53,8 +53,8 @@ export function onDragEndUpdateDoc(doc, updateDoc, result) {
 
   function updateDoc() {
     updateDoc(doc => {
-      doc.story.body = updateSection(doc.story.body)
-      doc.story.notes = updateSection(doc.story.notes)
+      doc.body = updateSection(doc.body)
+      doc.notes = updateSection(doc.notes)
     })
   }
   */

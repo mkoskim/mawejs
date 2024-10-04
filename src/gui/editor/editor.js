@@ -59,16 +59,61 @@ import {
 } from "../common/factory";
 
 import {
-  SectionWordInfo,
   ChooseVisibleElements, ChooseWordFormat,
-  EditHeadButton, OpenFolderButton,
 } from "../common/components";
 
-import { mawe } from "../../document";
-import { produce } from "immer";
-import { SettingsContext} from "../app/settings";
 import { wcElem } from "../../document/util";
+import { elemFind } from "../../document/xmljs/load";
 
+//-----------------------------------------------------------------------------
+// Editor settings
+//-----------------------------------------------------------------------------
+
+export function loadEditorSettings(settings) {
+
+  function getBodySettings() {
+    const body = elemFind(settings, "body")
+    if(!body) return {}
+    const {words, indexed} = body.attributes
+
+    return {
+      ...(words ? {words} : {}),
+      ...(indexed ? {indexed: indexed.split(",")} : {})
+    }
+  }
+
+  return {
+    body: {
+      indexed: ["part", "scene", "synopsis"],
+      words: "numbers",
+      ...getBodySettings()
+    },
+    notes: {
+      indexed: ["part", "scene", "synopsis"],
+    },
+  }
+}
+
+export function saveEditorSettings(settings) {
+  return {
+    type: "editor",
+    attributes: {},
+    elements: [
+      {
+        type: "body",
+        attributes: {
+          words: settings.body.words,
+          indexed: settings.body.indexed.join(",")
+        },
+        elements: [
+        ]
+      },
+    ]
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Editor view
 //-----------------------------------------------------------------------------
 
 export function SingleEditView({doc, updateDoc, focusTo, setFocusTo}) {
@@ -80,7 +125,7 @@ export function SingleEditView({doc, updateDoc, focusTo, setFocusTo}) {
   /*
   return <React.Fragment>
     <HBox>
-    <Pre style={{ width: "50%" }} content={doc.story} />
+    <Pre style={{ width: "50%" }} content={doc} />
     <Pre style={{ width: "50%" }} content={mawe.fromXML(mawe.buf2tree(mawe.tree2buf(mawe.toXML(slate2doc(doc, doc2slate(doc)).story))))} />
     </HBox>
   </React.Fragment>
@@ -99,9 +144,6 @@ export function SingleEditView({doc, updateDoc, focusTo, setFocusTo}) {
   const bodyeditor = useMemo(() => getEditor(), [])
   const noteeditor = useMemo(() => getEditor(), [])
 
-  //console.log(doc.story.body)
-  //console.log(bodybuffer)
-
   //---------------------------------------------------------------------------
   // Get updates from Slate, and apply them to doc, too
   //---------------------------------------------------------------------------
@@ -109,8 +151,8 @@ export function SingleEditView({doc, updateDoc, focusTo, setFocusTo}) {
   const updateBody = useCallback(buffer => {
     if(isAstChange(bodyeditor)) {
       updateDoc(doc => {
-        doc.story.body.parts = buffer;
-        doc.story.body.words = wcElem({type: "sect", children: buffer})
+        doc.body.parts = buffer;
+        doc.body.words = wcElem({type: "sect", children: buffer})
       })
     }
   }, [bodyeditor])
@@ -118,8 +160,8 @@ export function SingleEditView({doc, updateDoc, focusTo, setFocusTo}) {
   const updateNotes = useCallback(buffer => {
     if(isAstChange(noteeditor)) {
       updateDoc(doc => {
-        doc.story.notes.parts = buffer
-        doc.story.notes.words = wcElem({type: "sect", children: buffer})
+        doc.notes.parts = buffer
+        doc.notes.words = wcElem({type: "sect", children: buffer})
       })
     }
   }, [noteeditor])
@@ -169,14 +211,13 @@ export function SingleEditView({doc, updateDoc, focusTo, setFocusTo}) {
   // Index settings: Change these to component props
   //---------------------------------------------------------------------------
 
-  const {view, setView} = useContext(SettingsContext)
+  const indexed1 = doc.ui.editor.body.indexed;
+  const setIndexed1 = useCallback(value => updateDoc(doc => {doc.ui.editor.body.indexed = value}), [updateDoc])
+  const words1 = doc.ui.editor.body.words
+  const setWords1 = useCallback(value => updateDoc(doc => {doc.ui.editor.body.words = value}), [updateDoc])
 
-  const indexed1 = view.editor.body.indexed;
-  const setIndexed1 = useCallback(value => setView(produce(draft => {draft.editor.body.indexed = value})), [setView])
-  const words1 = view.editor.body.words
-  const setWords1 = useCallback(value => setView(produce(draft => {draft.editor.body.words = value})), [setView])
-
-  const [indexed2, setIndexed2] = useState(["part", "scene", "synopsis"])
+  const indexed2 = doc.ui.editor.notes.indexed
+  const setIndexed2 = useCallback(value => updateDoc(doc => {doc.ui.editor.notes.indexed = value}), [updateDoc])
 
   //---------------------------------------------------------------------------
   // Render elements: what we want is to get menu items from subcomponents to
@@ -205,14 +246,14 @@ export function SingleEditView({doc, updateDoc, focusTo, setFocusTo}) {
       words: words1,
       setWords: setWords1,
       editor: bodyeditor,
-      buffer: doc.story.body.parts,
+      buffer: doc.body.parts,
       onChange: updateBody,
       },
     notes: {
       indexed: indexed2,
       setIndexed: setIndexed2,
       editor: noteeditor,
-      buffer: doc.story.notes.parts,
+      buffer: doc.notes.parts,
       onChange: updateNotes,
     },
     leftstyle:    {maxWidth: "400px", width: "400px"},
@@ -387,7 +428,7 @@ function LeftPanel({settings}) {
     <LeftPanelMenu settings={settings}/>
     <DocIndex
       style={rest}
-      section={doc.story.body}
+      section={doc.body}
       include={settings.body.indexed}
       wcFormat={settings.body.words}
       activeID="body"
@@ -449,7 +490,7 @@ function RightPanelContent({settings}) {
     case "noteindex":
       return <DocIndex
         style={style}
-        section={doc.story.notes}
+        section={doc.notes}
         include={settings.notes.indexed}
         wcFormat={settings.notes.words}
         activeID="notes"
@@ -457,14 +498,14 @@ function RightPanelContent({settings}) {
       />
     case "wordtable":
       return <WordTable
-        section={doc.story.body}
+        section={doc.body}
         setSearchText={setSearchText}
         searchBoxRef={searchBoxRef}
       />
     case "tagtable":
       return <TagTable
         editor={body.editor}
-        section={doc.story.body}
+        section={doc.body}
       />
     default: break;
   }
@@ -616,9 +657,6 @@ function EditorBox({style, settings, mode="Condensed"}) {
   const {searchBoxRef, searchText, setSearchText} = settings
   const {highlightText} = settings
 
-  //const {head} = doc.story
-  //const {title, author} = mawe.info(head)
-
   function activeEditor() {
     switch(activeID) {
       case "body": return settings.body.editor
@@ -633,7 +671,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
       <Filler />
       {/* <OpenFolderButton filename={doc.file?.id}/> */}
       {/* <Separator/> */}
-      {/* <SectionWordInfo section={doc.story.body}/> */}
+      {/* <SectionWordInfo section={doc.body}/> */}
     </ToolBox>
     {/* Editor board and sheet */}
     <div className="Filler Board" style={{...style}}>

@@ -79,8 +79,7 @@ function OutlinerToolbar({settings, section}) {
 function OrganizerView({doc, setFocusTo}) {
   //console.log("Organizer: Doc:", doc)
 
-  const body = doc.story.body
-  const notes = doc.story.notes
+  const {body, notes} = doc
 
   const [indexed1, setIndexed1] = useState(["synopsis"])
   const [words1, setWords1] = useState("numbers")

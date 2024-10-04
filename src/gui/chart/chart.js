@@ -8,6 +8,7 @@
 
 import React, {
   useState,
+  useCallback,
 } from "react"
 
 import {
@@ -35,23 +36,49 @@ import {DocIndex} from "../common/docIndex";
 import {elemName, filterCtrlElems, mawe} from "../../document";
 
 //-----------------------------------------------------------------------------
+// Chart settings
+//-----------------------------------------------------------------------------
+
+export function loadChartSettings(settings) {
+  // TODO: Check that fields have valid values (table keys)
+  return {
+    elements: "scenes",
+    template: "plotpoints",
+    mode: "topCCW",
+    ...(settings?.attributes ?? {})
+  }
+}
+
+export function saveChartSettings(settings) {
+  return {type: "chart",
+    attributes: {
+      elements: settings.elements,
+      template: settings.template,
+      mode: settings.mode,
+    }
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Chart view
+//-----------------------------------------------------------------------------
 
 export function Chart({doc, updateDoc}) {
-  //const section = doc.story.body
+  //const section = doc.body
 
   return <DragDropContext onDragEnd={onDragEnd}>
     <HBox style={{overflow: "auto"}}>
       <VBox style={{maxWidth: "300px", borderRight: "1px solid lightgray"}}>
         <IndexToolbar />
         <DocIndex
-          section={doc.story.body}
+          section={doc.body}
           activeID="body"
           include={["part", "scene"]}
           wcFormat={"compact"}
           unfold={true}
         />
       </VBox>
-      <ChartView doc={doc} />
+      <ChartView doc={doc} updateDoc={updateDoc}/>
     </HBox>
   </DragDropContext>
 
@@ -86,17 +113,19 @@ function IndexToolbar({ }) {
 //
 //*****************************************************************************
 
-function ChartView({doc}) {
+function ChartView({doc, updateDoc}) {
 
-  const section = doc.story.body
+  const section = doc.body
 
   //---------------------------------------------------------------------------
   // Data selection
   //---------------------------------------------------------------------------
 
-  const [selectElement, setSelectElement] = useState("scenes")
+  //const [selectElement, setSelectElement] = useState("scenes")
+  //const [selectTemplate, setSelectTemplate] = useState("plotpoints")
 
-  const [selectTemplate, setSelectTemplate] = useState("plotpoints")
+  const setElements = useCallback(value => updateDoc(doc => {doc.ui.chart.elements = value}), [updateDoc])
+  const setTemplate = useCallback(value => updateDoc(doc => {doc.ui.chart.template = value}), [updateDoc])
 
   /*
   console.log("Beat sheet length=", tmplButtons.beatsheet.data
@@ -109,12 +138,12 @@ function ChartView({doc}) {
   // Chart directions
   //---------------------------------------------------------------------------
 
-  const [mode, _setMode] = useState("topCCW")
+  //const [mode, _setMode] = useState("topCCW")
   const [selectStart, setSelectStart] = useState(90)
   const [selectRotate, setSelectRotate] = useState(1)
 
-  function setMode(mode) {
-    _setMode(mode)
+  const setMode = useCallback((mode) => {
+    updateDoc(doc => doc.ui.chart.mode = mode)
     switch (mode) {
       case "topCCW": return setStartRotate(90, 1)
       case "topCW": return setStartRotate(90, -1)
@@ -126,7 +155,7 @@ function ChartView({doc}) {
       setSelectStart(start)
       setSelectRotate(rotate)
     }
-  }
+  }, [updateDoc])
 
   //---------------------------------------------------------------------------
   // View
@@ -136,21 +165,21 @@ function ChartView({doc}) {
     elements: {
       buttons: elemButtons,
       choices: ["scenes", "parts"],
-      selected: selectElement,
-      setSelected: setSelectElement,
+      selected: doc.ui.chart.elements,
+      setSelected: setElements,
       exclusive: true,
     },
     template: {
       buttons: tmplButtons,
       choices: ["acts", "plotpoints", "beatsheet"],
-      selected: selectTemplate,
-      setSelected: setSelectTemplate,
+      selected: doc.ui.chart.template,
+      setSelected: setTemplate,
       exclusive: true,
     },
     mode: {
       buttons: modeButtons,
       choices: ["topCCW", "topCW", "bottomCCW", "bottomCW"],
-      selected: mode,
+      selected: doc.ui.chart.mode,
       setSelected: setMode,
       exclusive: true,
     }
@@ -161,9 +190,9 @@ function ChartView({doc}) {
     <StoryChart
       startAngle={selectStart + selectRotate * 1}
       endAngle={selectStart + selectRotate * (360 - 2)}
-      innerData={tmplButtons[selectTemplate].data}
-      outerData={elemButtons[selectElement].data(section)}
-      outerLabels={elemButtons[selectElement].labels(section)}
+      innerData={tmplButtons[doc.ui.chart.template].data}
+      outerData={elemButtons[doc.ui.chart.elements].data(section)}
+      outerLabels={elemButtons[doc.ui.chart.elements].labels(section)}
     />
   </VFiller>
 }

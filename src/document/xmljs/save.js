@@ -6,13 +6,16 @@
 //*****************************************************************************
 //*****************************************************************************
 
+import { saveViewSettings } from "../../gui/app/views";
+import { saveChartSettings } from "../../gui/chart/chart";
+import { saveEditorSettings } from "../../gui/editor/editor";
 import {uuid as getUUID, buf2file, elemName, filterCtrlElems} from "../util";
 
 //----------------------------------------------------------------------------
 
 export async function savemawe(doc) {
   //throw new Error("Save disabled.")
-  const buffer = toXML(doc.story)
+  const buffer = toXML(doc)
   return await buf2file(doc, buffer)
 }
 
@@ -24,31 +27,31 @@ export async function savemawe(doc) {
 //*****************************************************************************
 //*****************************************************************************
 
-export function toXML(story) {
+export function toXML(doc) {
 
   return xmlLines(
-    toElem({
+    {
       type: "story",
       attributes: {
-        uuid: story.uuid ?? getUUID(),
+        uuid: doc.uuid ?? getUUID(),
         format: "mawe",
         version: 2,
-        name: story.head?.name
+        name: doc.head?.name
       }
-    }),
+    },
     xmlComment(
       "===============================================================================",
       "",
-      `STORY: ${story.head?.name}`,
+      `STORY: ${doc.head?.name}`,
       "",
       "===============================================================================",
     ),
-    toHead(story.head),
-    toExport(story.exports),
+    toHead(doc.head),
+    toExport(doc.exports),
     xmlComment(
       "===============================================================================",
     ),
-    toBody(story.body),
+    toBody(doc.body),
     xmlComment(
       "===============================================================================",
       "",
@@ -56,7 +59,11 @@ export function toXML(story) {
       "",
       "===============================================================================",
     ),
-    toNotes(story.notes)
+    toNotes(doc.notes),
+    xmlComment(
+      "===============================================================================",
+    ),
+    toUI(doc.ui),
   )
 }
 
@@ -66,7 +73,7 @@ export function toXML(story) {
 
 function toHead(head) {
   return xmlLines(
-    toElem({type: "head"}),
+    {type: "head"},
     optional("title", head.title),
     optional("subtitle", head.subtitle),
     optional("author", head.author),
@@ -80,12 +87,8 @@ function toHead(head) {
 
   function optional(type, value, attributes) {
     if(!value || value === "") return ""
-    return xmlElem(toElem({type, attributes}), toText(value))
+    return xmlElem({type, attributes}, toText(value))
   }
-}
-
-function toExport(exports) {
-  return xmlElem(toElem({type: "export", attributes: exports}))
 }
 
 //-----------------------------------------------------------------------------
@@ -96,7 +99,7 @@ function toBody(body) {
   const {head, parts} = body;
 
   return xmlLines(
-    toElem({type: "body"}),
+    {type: "body"},
     ...parts.map(toPart),
   )
 }
@@ -105,7 +108,7 @@ function toNotes(notes) {
   const {parts} = notes;
 
   return xmlLines(
-    toElem({type: "notes"}),
+    {type: "notes"},
     ...parts.map(toPart)
   )
 }
@@ -119,14 +122,14 @@ function toPart(part) {
   const name = elemName(part)
 
   return xmlLines(
-    toElem({
+    {
       type: "part",
       attributes: {
         name: name,
         folded: folded ? true : undefined,
       },
       //elements: filterCtrlElems(part.children).map(toScene)
-    }),
+    },
     ...filterCtrlElems(part.children).map(toScene),
   )
 }
@@ -140,13 +143,13 @@ function toScene(scene) {
   const name = elemName(scene)
 
   return xmlLines(
-    toElem({
+    {
       type: "scene",
       attributes: {
         name: name,
         folded: folded ? true : undefined,
       },
-    }),
+    },
     ...filterCtrlElems(scene.children).map(toParagraph),
   )
 }
@@ -158,17 +161,13 @@ function toScene(scene) {
 function toParagraph(elem) {
   const {type, children} = elem
 
-  const root = toElem({type})
-  //const elements = children.map(toMarks)
-
-  //return toElem({type, elements})
-  return xmlElem(root, ...children?.map(toMarks) ?? [])
+  return xmlElem({type}, ...children?.map(toMarks) ?? [])
 }
 
 function isBold(elem, text) {
   const {bold} = elem
   if(bold) {
-    return xmlElem(toElem({type: "b"}), text)
+    return xmlElem({type: "b"}, text)
   }
   return text
 }
@@ -176,7 +175,7 @@ function isBold(elem, text) {
 function isItalic(elem, text) {
   const {italic} = elem
   if(italic) {
-    return xmlElem(toElem({type: "i"}), text)
+    return xmlElem({type: "i"}, text)
   }
   return text
 }
@@ -187,6 +186,27 @@ function toMarks(elem) {
   return isBold(elem, isItalic(elem, toText(text)))
 }
 
+//-----------------------------------------------------------------------------
+// Settings
+//-----------------------------------------------------------------------------
+
+function toExport(exports) {
+  return xmlElem({type: "export", attributes: exports})
+}
+
+function toUI(ui) {
+  return xmlTree(
+    {
+      type: "ui",
+      elements: [
+        saveViewSettings(ui.view),
+        saveChartSettings(ui.chart),
+        saveEditorSettings(ui.editor),
+      ]
+    },
+  )
+}
+
 //*****************************************************************************
 //*****************************************************************************
 //
@@ -195,11 +215,12 @@ function toMarks(elem) {
 //*****************************************************************************
 //*****************************************************************************
 
-function toElem({type, attributes = undefined}) {
+function toElem({type, attributes = undefined, elements = []}) {
   return {
     type: "element",
     name: type,
     attributes,
+    elements,
   }
 }
 
@@ -257,7 +278,8 @@ function xmlElemClose(elem) {
   return ""
 }
 
-function xmlElem(elem, ...content) {
+function xmlElem(root, ...content) {
+  const elem = toElem(root)
   const value = content.join("")
   if(!value) {
     return xmlElemOpen(elem, "/");
@@ -270,10 +292,29 @@ function xmlElem(elem, ...content) {
 }
 
 function xmlLines(root, ...lines) {
+  const value = lines.filter(s => s).join("\n")
+  if(!value) {
+    return xmlElem(root)
+  }
+  const elem = toElem(root)
   return [
-    xmlElemOpen(root),
-    ...lines.filter(s => s),
-    xmlElemClose(root)
+    xmlElemOpen(elem),
+    value,
+    xmlElemClose(elem)
+  ].join("\n")
+}
+
+function xmlTree(root) {
+  const value = (root.elements?.map(xmlTree) ?? []).filter(s => s).join("\n")
+
+  if(!value) {
+    return xmlElem(root)
+  }
+  const elem = toElem(root)
+  return [
+    xmlElemOpen(elem),
+    value,
+    xmlElemClose(elem)
   ].join("\n")
 }
 
