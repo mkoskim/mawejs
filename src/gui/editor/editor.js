@@ -659,15 +659,15 @@ function EditorBox({style, settings, mode="Condensed"}) {
   }[active]
 
   return <VFiller>
+    {/* Editor toolbar */}
+
     <ToolBox style={doc.ui.editor.toolbox.mid}>
-      {/* <EditHeadButton head={head} updateDoc={settings.updateDoc} expanded={true}/> */}
       <Searching editor={activeEditor} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
-      {/* <OpenFolderButton filename={doc.file?.id}/> */}
-      {/* <Separator/> */}
-      {/* <SectionWordInfo section={doc.body}/> */}
     </ToolBox>
+
     {/* Editor board and sheet */}
+
     <div className="Filler Board" style={{...style}}>
       <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
       {
