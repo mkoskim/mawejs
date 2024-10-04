@@ -26,8 +26,7 @@ import { Export } from "../export/export"
 
 export function loadViewSettings(settings) {
   return {
-    //selected: "editor",
-    selected: "chart",
+    selected: "editor",
     ...(settings?.attributes ?? {})
   }
 }
