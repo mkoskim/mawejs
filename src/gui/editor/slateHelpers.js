@@ -204,34 +204,33 @@ export function focusByID(editor, id) {
     focusByPath(editor, undefined);
   } else {
     const [node, path] = match
-    focusByPath(editor, Editor.start(editor, path))
+    //focusByPath(editor, Editor.start(editor, path))
+    focusByPath(editor, path)
   }
 }
 
 export async function focusByPath(editor, path) {
-  //await sleep(20)
+  //console.log("FocusByPath", path)
   if(!ReactEditor.isFocused(editor)) {
     ReactEditor.focus(editor)
-    await sleep(40);
+    //await sleep(20);
   }
-  if(path) Transforms.select(editor, path);
+  if(path) {
+    Transforms.select(editor, path);
+    Transforms.collapse(editor);
+    scrollToPoint(editor, {path, offset: 0})
+  }
 }
 
-async function scrollToPoint(editor, point, focus) {
-  if(focus) {
-    await focusByPath(editor, point)
-  }
-
+async function scrollToPoint(editor, point) {
   const [dom] = ReactEditor.toDOMPoint(editor, point)
-  //console.log("DOM:", dom)
-  //Editable.scrollIntoView(editor, dom.parentElement)
   /*
   dom.parentElement.scrollIntoView({
     //behaviour: "smooth",
     block: "center",
   })
   /*/
-  dom.parentElement.scrollIntoViewIfNeeded(false)
+  dom.parentElement.scrollIntoViewIfNeeded(true)
   /**/
 }
 

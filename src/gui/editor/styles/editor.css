@@ -18,3 +18,7 @@ pre {
   white-space: pre-wrap;       /* Since CSS 2.1 */
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
+
+.Hidden {
+  display: none;
+}

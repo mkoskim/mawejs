@@ -155,16 +155,20 @@ export function setFocusTo(updateDoc, sectID, elemID) {
 //*****************************************************************************
 
 function trackMarks(editor, doc, updateDoc) {
-  const marks = Editor.marks(editor)
-  const [node] = Editor.above(editor, {match: n => elemIsBlock(editor, n)})
-  const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "part")})
+  try {
+    const marks = Editor.marks(editor)
+    const [node] = Editor.above(editor, {match: n => elemIsBlock(editor, n)})
+    const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "part")})
 
-  updateDoc(doc => {
-    doc.ui.editor.track.marks.bold = marks.bold
-    doc.ui.editor.track.marks.italic = marks.italic
-    doc.ui.editor.track.marks.fold = block.folded
-    doc.ui.editor.track.block = node.type
-  })
+    updateDoc(doc => {
+      doc.ui.editor.track.marks.bold = marks.bold
+      doc.ui.editor.track.marks.italic = marks.italic
+      doc.ui.editor.track.marks.fold = block.folded
+      doc.ui.editor.track.block = node.type
+    })
+  } catch(e) {
+    console.log("Track marks error.")
+  }
 }
 
 export function SingleEditView({doc, updateDoc}) {
@@ -352,6 +356,8 @@ export function SingleEditView({doc, updateDoc}) {
   /**/
 
   //---------------------------------------------------------------------------
+
+  //console.log("Editor update")
 
   return <HBox style={{overflow: "auto"}}>
     <DragDropContext onDragEnd={onDragEnd}>
@@ -681,19 +687,13 @@ function EditorBox({style, settings, mode="Condensed"}) {
     {/* Editor board and sheet */}
 
     <div className="Filler Board" style={{...style}}>
+
       <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
-      {
-        active === "body"
-        ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
-        : null
-      }
+        <SlateEditable className={addClass("Sheet", mode, (active !== "body" && "Hidden"))} highlight={highlightText}/>
       </Slate>
+
       <Slate editor={settings.notes.editor} initialValue={settings.notes.buffer} onChange={settings.notes.onChange}>
-      {
-        active === "notes"
-        ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
-        : null
-      }
+        <SlateEditable className={addClass("Sheet", mode, (active !== "notes" && "Hidden"))} highlight={highlightText}/>
       </Slate>
     </div>
   </VFiller>
