@@ -241,8 +241,8 @@ export function SingleEditView({doc, updateDoc}) {
 
   const setSearchText = useCallback(text => {
     _setSearchText(text)
-    searchFirst(getEditorBySectID(active), text)
-  }, [getEditorBySectID, active])
+    searchFirst(getActiveEdit(), text)
+  }, [getActiveEdit])
 
   //---------------------------------------------------------------------------
   // Render elements: what we want is to get menu items from subcomponents to

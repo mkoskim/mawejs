@@ -428,19 +428,19 @@ function searchTextBackward(editor, text, path, offset) {
 // Search with scrolling and optional focusing
 
 export function searchFirst(editor, text, doFocus=false) {
-  const {path, offset} = editor.selection.focus
+  const {path, offset} = editor.selection?.focus ?? Editor.start(editor, [])
 
   return searchWithScroll(editor, text, path, offset, true, doFocus)
 }
 
 export function searchForward(editor, text, doFocus=false) {
-  const {path, offset} = editor.selection.focus
+  const {path, offset} = editor.selection?.focus ?? Editor.start(editor, [])
 
   return searchWithScroll(editor, text, path, offset+1, true, doFocus)
 }
 
 export function searchBackward(editor, text, doFocus=false) {
-  const {path, offset} = editor.selection.focus
+  const {path, offset} = editor.selection?.focus ?? Editor.start(editor, [])
 
   return searchWithScroll(editor, text, path, offset, false, doFocus)
 }
