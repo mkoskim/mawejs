@@ -3,6 +3,10 @@
 // Icons
 //-----------------------------------------------------------------------------
 
+import {FormatItalic} from '@mui/icons-material';
+import {LooksOne, LooksTwo} from '@mui/icons-material';
+import {Expand} from '@mui/icons-material';
+import {FormatBold} from '@mui/icons-material';
 import {
   LightbulbOutlined,
   Close,
@@ -76,6 +80,7 @@ import {
   RadioButtonChecked,
 
 } from '@mui/icons-material';
+import {Collapse} from '@mui/material';
 
 // Material icons
 export const Icon = {
@@ -175,6 +180,24 @@ export const Icon = {
   RadioButton: {
     Unchecked: RadioButtonUnchecked,
     Checked: RadioButtonChecked,
-  }
+  },
+
+  Style: {
+    Bold: FormatBold,
+    Italic: FormatItalic,
+
+    Part: LooksOne,
+    Scene: LooksTwo,
+
+    Synopsis: FormatAlignRightOutlined,
+    Comment: Comment,
+    Missing: Report,
+    Filler: AddBox,
+    Tags: AlternateEmail,
+
+    Folded: VisibilityOff,
+    FoldAll: Collapse,
+    UnfoldAll: Expand,
+  },
 }
 

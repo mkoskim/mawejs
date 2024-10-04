@@ -7,7 +7,7 @@
 //*****************************************************************************
 
 import React, { useMemo, useCallback } from 'react';
-import { useSlate, Editable, withReact } from 'slate-react'
+import { useSlate, Editable, withReact, ReactEditor } from 'slate-react'
 import {
   Editor,
   Node, Text,
@@ -18,7 +18,7 @@ import {
 } from 'slate'
 
 import { withHistory } from "slate-history"
-import { addClass, IsKey } from '../common/factory';
+import { addClass, IsKey, Separator } from '../common/factory';
 import { nanoid } from '../../util';
 import { wcElem, wcCompare} from '../../document/util';
 
@@ -32,6 +32,12 @@ import {
   elemIsBlock,
   toggleFold, foldAll, doFold,
 } from "./slateHelpers"
+
+import {
+  MakeToggleGroup, Button, Icon,
+  TextField, Menu, MenuItem, ListSubheader,
+} from '../common/factory';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
 export {
   text2Regexp,
@@ -165,7 +171,101 @@ export function SlateEditable({className, highlight, ...props}) {
 
 //*****************************************************************************
 //
-// Helpers
+// Tool buttons
+//
+//*****************************************************************************
+
+class CharStyleButtons extends React.PureComponent {
+
+  static buttons = {
+    "bold": {
+      tooltip: "Bold",
+      icon: <Icon.Style.Bold />
+    },
+    "italic": {
+      tooltip: "Italic",
+      icon: <Icon.Style.Italic />,
+    },
+    "fold": {
+      tooltip: "Folded",
+      icon: <Icon.Style.Folded />,
+    },
+  }
+
+  static choices = ["bold", "italic"]
+
+  render() {
+    const {marks, setSelected} = this.props
+    return <MakeToggleGroup
+      buttons={this.constructor.buttons}
+      choices={this.constructor.choices}
+      selected={marks}
+      setSelected={setSelected}
+      exclusive={false}
+    />
+  }
+}
+
+class BlockStyleSelect extends React.PureComponent {
+
+  static choices = {
+    "hpart": "Part",
+    "hscene": "Scene",
+    "synopsis": "Synopsis",
+    "comment": "Comment",
+    "missing": "Missing",
+    "filler": "Filler",
+    "tags": "Tags",
+  }
+
+  render() {
+    const {block} = this.props;
+    //console.log("Block:", block)
+
+    const choices = this.constructor.choices
+    const name = block in choices ? choices[block] : "Text"
+
+    return <PopupState variant="popover" popupId="file-menu">
+      {(popupState) => <React.Fragment>
+        <Button style={{width: 100, justifyContent: "flex-start"}} {...bindTrigger(popupState)}>{name}</Button>
+        <Menu {...bindMenu(popupState)}>
+          {Object.entries(choices).map(([k, v]) => <MenuItem value={k}>{v}</MenuItem>)}
+        </Menu>
+      </React.Fragment>
+      }
+    </PopupState>
+  }
+}
+
+export function EditButtons({editor, track}) {
+  //console.log("Track:", track)
+
+  const marks = Object.entries(track.marks).filter(([k, v]) => v).map(([k, v]) => k)
+  //console.log("Marks:", marks)
+
+  const toggleMark = useCallback(marks => {
+    const current = Object.keys(Editor.marks(editor))
+    for(const key of current) {
+      if(!marks.includes(key)) setMark(editor, key, false)
+    }
+    for(const key of marks) {
+      if(!current.includes(key)) setMark(editor, key, true)
+    }
+    ReactEditor.focus(editor)
+  }, [editor])
+
+  return <>
+    {/*<BlockStyleSelect block={track.block}/>*/}
+    {/*<Separator/>*/}
+    <CharStyleButtons marks={marks} setSelected={toggleMark}/>
+    {/*<Separator/>*/}
+    {/*<BlockStyleButtons block={track.block}/>*/}
+    </>
+}
+
+//*****************************************************************************
+//
+// Marks
 //
 //*****************************************************************************
 
@@ -174,14 +274,18 @@ function isMarkActive(editor, format) {
   return marks ? marks[format] === true : false
 }
 
-function toggleMark(editor, format) {
-  const isActive = isMarkActive(editor, format)
-  if (isActive) {
-    Editor.removeMark(editor, format)
-  } else {
+function setMark(editor, format, active) {
+  if (active) {
     Editor.addMark(editor, format, true)
+  } else {
+    Editor.removeMark(editor, format)
   }
 }
+
+function toggleMark(editor, format) {
+  setMark(editor, format, !isMarkActive(editor, format))
+}
+
 //*****************************************************************************
 //
 // Custom hotkeys

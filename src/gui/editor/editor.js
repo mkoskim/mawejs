@@ -37,6 +37,7 @@ import {
   dndElemPop, dndElemPushTo,
   searchFirst, searchForward, searchBackward,
   isAstChange,
+  EditButtons,
 } from "./slateEditor"
 
 import {DocIndex} from "../common/docIndex"
@@ -64,6 +65,7 @@ import {
 
 import { wcElem } from "../../document/util";
 import { elemFind } from "../../document/xmljs/load";
+import {elemIsBlock} from "./slateHelpers";
 
 //*****************************************************************************
 //
@@ -87,6 +89,10 @@ export function loadEditorSettings(settings) {
   return {
     active: "body",
     focusTo: {id: undefined},
+    track: {
+      marks: {},
+      block: undefined,
+    },
     body: {
       indexed: ["part", "scene", "synopsis"],
       words: "numbers",
@@ -147,6 +153,19 @@ export function setFocusTo(updateDoc, sectID, elemID) {
 //
 //*****************************************************************************
 
+function trackMarks(editor, doc, updateDoc) {
+  const marks = Editor.marks(editor)
+  const [node] = Editor.above(editor, {match: n => elemIsBlock(editor, n)})
+  const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "part")})
+
+  updateDoc(doc => {
+    doc.ui.editor.track.marks.bold = marks.bold
+    doc.ui.editor.track.marks.italic = marks.italic
+    doc.ui.editor.track.marks.fold = block.folded
+    doc.ui.editor.track.block = node.type
+  })
+}
+
 export function SingleEditView({doc, updateDoc}) {
 
   //---------------------------------------------------------------------------
@@ -180,6 +199,7 @@ export function SingleEditView({doc, updateDoc}) {
   //---------------------------------------------------------------------------
 
   const updateBody = useCallback(buffer => {
+    trackMarks(bodyeditor, doc, updateDoc)
     if(isAstChange(bodyeditor)) {
       updateDoc(doc => {
         doc.body.parts = buffer;
@@ -189,6 +209,7 @@ export function SingleEditView({doc, updateDoc}) {
   }, [bodyeditor])
 
   const updateNotes = useCallback(buffer => {
+    trackMarks(noteeditor, doc, updateDoc)
     if(isAstChange(noteeditor)) {
       updateDoc(doc => {
         doc.notes.parts = buffer
@@ -545,21 +566,6 @@ class ChooseRightPanel extends React.PureComponent {
 // Editor toolbar
 //-----------------------------------------------------------------------------
 
-  /*
-  function EditToolbar() {
-  const editor = useSlate()
-
-  // Block type under cursor
-  const [match] = Editor.nodes(editor, { match: n => Editor.isBlock(editor, n)})
-  const nodetype = match ? match[0].type : undefined
-
-  return <ToolBox style={{ background: "white" }}>
-    <Button>Block: {nodetype}</Button>
-    <Filler/>
-  </ToolBox>
-  }
-*/
-
 class Searching extends React.PureComponent {
   // Simulates pressing ESC key
   handleEscBehavior = () => {
@@ -650,19 +656,22 @@ function EditorBox({style, settings, mode="Condensed"}) {
   const {doc} = settings
   const {active} = doc.ui.editor
 
-  const {searchBoxRef, searchText, setSearchText} = settings
-  const {highlightText} = settings
-
-  const activeEditor = {
+  const editor = {
     "body": settings.body.editor,
     "notes": settings.notes.editor,
   }[active]
+
+  const {searchBoxRef, searchText, setSearchText} = settings
+  const {highlightText} = settings
 
   return <VFiller>
     {/* Editor toolbar */}
 
     <ToolBox style={doc.ui.editor.toolbox.mid}>
-      <Searching editor={activeEditor} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
+      <EditButtons editor={editor} track={doc.ui.editor.track}/>
+      <Separator/>
+      <Searching editor={editor} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
+      <Separator/>
       <Filler />
     </ToolBox>
 
