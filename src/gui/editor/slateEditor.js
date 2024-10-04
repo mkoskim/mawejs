@@ -241,9 +241,9 @@ export class FoldButtons extends React.PureComponent {
   render() {
     const {editor} = this.props
 
-    function onFoldToggle(e) { toggleFold(editor); }
-    function onFoldAll(e) { foldAll(editor, true); }
-    function onUnfoldAll(e) { foldAll(editor, false) }
+    function onFoldToggle(e) { toggleFold(editor); ReactEditor.focus(editor); }
+    function onFoldAll(e) { foldAll(editor, true); ReactEditor.focus(editor);}
+    function onUnfoldAll(e) { foldAll(editor, false); ReactEditor.focus(editor); }
 
     return <>
       <Button tooltip="Toggle fold" onClick={onFoldToggle}><Icon.Style.Folded/></Button>
