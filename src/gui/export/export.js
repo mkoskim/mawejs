@@ -52,11 +52,51 @@ import { setFocusTo } from "../app/views";
 
 const fs = require("../../system/localfs");
 
-//-----------------------------------------------------------------------------
+// ****************************************************************************
+//
+// Export settings
+//
+// ****************************************************************************
+
+const formatters = {
+  "rtf1": formatRTF,
+  "rtf2": formatRTF,
+  "tex1": formatTEX1,
+  "tex2": formatTEX2,
+  "txt": formatTXT,
+}
+
+export function loadExportSettings(settings) {
+  // TODO: Check here that values are valid
+
+  return {
+    format: "rtf1",
+    type: "short",
+    chapterelem: "part",
+    chaptertype: "separated",
+    ...(settings?.attributes ?? {})
+  }
+}
+
+export function saveExportSettings(settings) {
+  const {type, chapterelem, chaptertype} = settings
+  return {type: "export", attributes: {
+    type,
+    chapterelem,
+    chaptertype,
+  }}
+}
+
+// ****************************************************************************
+//
+// Export view
+//
+// ****************************************************************************
 
 export function Export({ doc, updateDoc }) {
 
-  const [format, setFormat] = useState("rtf1")
+  const format = doc.exports.format
+  const setFormat = useCallback(value => updateDoc(doc => { doc.exports.format = value}), [])
 
   return <VBox style={{ overflow: "auto" }}>
     {/* <ExportToolbar {...previewprops}/> */}
@@ -75,13 +115,7 @@ export function Export({ doc, updateDoc }) {
 
 function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
 
-  const formatter = {
-    "rtf1": formatRTF,
-    "rtf2": formatRTF,
-    "tex1": formatTEX1,
-    "tex2": formatTEX2,
-    "txt": formatTXT,
-  }[format]
+  const formatter = formatters[format]
 
   const { head, exports } = doc
 
