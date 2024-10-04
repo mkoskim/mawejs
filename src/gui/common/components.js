@@ -7,30 +7,19 @@
 //*****************************************************************************
 
 import React, {
-  useState, useEffect, useReducer,
-  useMemo, useCallback,
-  useDeferredValue,
-  StrictMode,
-  useContext,
 } from 'react';
 
 import {
-  FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon, Tooltip,
-  ToggleButton, ToggleButtonGroup, MakeToggleGroup,
-  TextField, Input,
-  SearchBox,
+  VBox,
+  Button, Icon,
+  MakeToggleGroup,
+  TextField,
   Label,
-  List, ListItem, ListItemText,
-  Grid,
-  Separator, Loading, addClass,
-  Menu, MenuItem,
   Accordion, AccordionSummary, AccordionDetails,
 } from "../common/factory";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
-import { produce } from 'immer';
 import { mawe } from "../../document"
 import {cmdOpenFolder} from '../app/context';
 import {Popover} from '@mui/material';

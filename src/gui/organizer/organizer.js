@@ -97,7 +97,6 @@ function OrganizerView({doc, updateDoc}) {
       total: body.words.text + body.words.missing,
       cumulative: wcCumulative(body)
     },
-    //focusTo: id => setFocusTo({sectID: "body", id}),
   }
 
   const note_settings = {
@@ -107,7 +106,6 @@ function OrganizerView({doc, updateDoc}) {
     words: {
       value: "off",
     },
-    //focusTo: id => setFocusTo({sectID: "notes", id}),
   }
 
   return <div className="Filler Organizer" style={{overflow: "auto"}}>

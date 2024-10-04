@@ -64,7 +64,6 @@ import {
 
 import { wcElem } from "../../document/util";
 import { elemFind } from "../../document/xmljs/load";
-import { getFocusTo, setFocusTo } from "../app/views";
 
 //*****************************************************************************
 //
@@ -86,6 +85,8 @@ export function loadEditorSettings(settings) {
   }
 
   return {
+    active: "body",
+    focusTo: {id: undefined},
     body: {
       indexed: ["part", "scene", "synopsis"],
       words: "numbers",
@@ -93,7 +94,20 @@ export function loadEditorSettings(settings) {
     },
     notes: {
       indexed: ["part", "scene", "synopsis"],
+      words: undefined,
     },
+    left: {
+      style: {maxWidth: "400px", width: "400px"},
+    },
+    right: {
+      style: {maxWidth: "300px", width: "300px"},
+      selected: "noteindex"
+    },
+    toolbox: {
+      left: {background: "white", borderRight: "1px solid lightgray"},
+      mid: {background: "white"},
+      right: {background: "white", borderLeft: "1px solid lightgray"},
+    }
   }
 }
 
@@ -113,6 +127,18 @@ export function saveEditorSettings(settings) {
       },
     ]
   }
+}
+
+//-----------------------------------------------------------------------------
+
+export function getFocusTo(doc) { return doc.ui.editor.focusTo.id; }
+export function setFocusTo(updateDoc, sectID, elemID) {
+  updateDoc(doc => {
+    doc.ui.view.selected  = "editor"
+    doc.ui.editor.focusTo = {id: elemID}
+    doc.ui.editor.active = sectID
+    console.log("setFocusTo:", sectID, elemID)
+  })
 }
 
 //*****************************************************************************
@@ -175,30 +201,35 @@ export function SingleEditView({doc, updateDoc}) {
   // Section selection + focusing
   //---------------------------------------------------------------------------
 
-  const focusTo = getFocusTo(doc)
-  const [active, _setActive] = useState(focusTo?.sectID ?? "body")
+  const {focusTo, active} = doc.ui.editor
 
-  //console.log("ActiveID:", active)
+  const getSectIDByElemID = useCallback(elemID => {
+    if(!elemID) return undefined
+    if(hasElem(bodyeditor, elemID)) return "body"
+    if(hasElem(noteeditor, elemID)) return "notes"
+    return undefined
+  }, [bodyeditor, noteeditor])
 
-  const setActive = useCallback((sectID, elemID) => {
-    //console.log("setActive:", sectID, elemID)
-    _setActive(sectID)
-    setFocusTo(updateDoc, {id: elemID})
-  })
-
-  const activeEdit = useCallback(() => {
-    switch(active) {
-      case "body": return bodyeditor
-      case "notes": return noteeditor
+  const getEditorBySectID = useCallback(sectID => {
+    switch(sectID) {
+      case "body": return bodyeditor;
+      case "notes": return noteeditor;
     }
-  }, [active])
+  }, [bodyeditor, noteeditor])
+
+  const getActiveEdit = useCallback(() => getEditorBySectID(active), [getEditorBySectID, active])
+
+  const setActive = useCallback((sectID, elemID) => {setFocusTo(updateDoc, sectID, elemID)}, [updateDoc])
 
   useEffect(() => {
-    const editor = activeEdit()
-    const id = focusTo?.id
+    const {id} = focusTo
+    const editor = getActiveEdit()
+
     console.log("Focus to:", id)
-    if(editor) focusByID(editor, id)
-  }, [active, focusTo])
+    if(id && editor) {
+      focusByID(editor, id)
+    }
+  }, [focusTo, getActiveEdit])
 
   //---------------------------------------------------------------------------
   // Search
@@ -210,60 +241,35 @@ export function SingleEditView({doc, updateDoc}) {
 
   const setSearchText = useCallback(text => {
     _setSearchText(text)
-    searchFirst(activeEdit(), text)
-  }, [activeEdit])
-
-  //---------------------------------------------------------------------------
-  // Index settings: Change these to component props
-  //---------------------------------------------------------------------------
-
-  const indexed1 = doc.ui.editor.body.indexed;
-  const setIndexed1 = useCallback(value => updateDoc(doc => {doc.ui.editor.body.indexed = value}), [updateDoc])
-  const words1 = doc.ui.editor.body.words
-  const setWords1 = useCallback(value => updateDoc(doc => {doc.ui.editor.body.words = value}), [updateDoc])
-
-  const indexed2 = doc.ui.editor.notes.indexed
-  const setIndexed2 = useCallback(value => updateDoc(doc => {doc.ui.editor.notes.indexed = value}), [updateDoc])
+    searchFirst(getActiveEdit(), text)
+  }, [getActiveEdit])
 
   //---------------------------------------------------------------------------
   // Render elements: what we want is to get menu items from subcomponents to
   // the toolbar.
-
-  const [selectRight, setSelectRight] = useState("noteindex")
 
   //---------------------------------------------------------------------------
 
   const settings = {
     doc,
     updateDoc,
-    selectRight,
-    setSelectRight,
     searchBoxRef,
     searchText,
     highlightText,
     setSearchText,
-    activeID: active,
     setActive,
     focusTo,
     setFocusTo,
     body: {
-      indexed: indexed1,
-      setIndexed: setIndexed1,
-      words: words1,
-      setWords: setWords1,
       editor: bodyeditor,
       buffer: doc.body.parts,
       onChange: updateBody,
       },
     notes: {
-      indexed: indexed2,
-      setIndexed: setIndexed2,
       editor: noteeditor,
       buffer: doc.notes.parts,
       onChange: updateNotes,
     },
-    leftstyle:    {maxWidth: "400px", width: "400px"},
-    rightstyle:   {maxWidth: "300px", width: "300px"},
   }
 
   //---------------------------------------------------------------------------
@@ -272,7 +278,7 @@ export function SingleEditView({doc, updateDoc}) {
 
   useEffect(() => addHotkeys([
     [IsKey.CtrlF, ev => {
-      const editor = activeEdit()
+      const editor = getActiveEdit()
       const {selection} = editor
       //console.log(selection)
 
@@ -295,11 +301,11 @@ export function SingleEditView({doc, updateDoc}) {
     [IsKey.Escape, ev => {
       if(typeof(searchText) === "string") {
         _setSearchText(undefined)
-        ReactEditor.focus(activeEdit())
+        ReactEditor.focus(getActiveEdit())
       }
     }],
-    [IsKey.CtrlG,  ev => searchForward(activeEdit(), searchText, true)],
-    [IsKey.CtrlShiftG, ev => searchBackward(activeEdit(), searchText, true)]
+    [IsKey.CtrlG,  ev => searchForward(getActiveEdit(), searchText, true)],
+    [IsKey.CtrlShiftG, ev => searchBackward(getActiveEdit(), searchText, true)]
   ]));
 
   //---------------------------------------------------------------------------
@@ -354,20 +360,6 @@ export function SingleEditView({doc, updateDoc}) {
 
     //console.log(type, source, "-->", destination)
 
-    function getSectIDByElemID(elemID) {
-      if(!elemID) return undefined
-      if(hasElem(bodyeditor, elemID)) return "body"
-      if(hasElem(noteeditor, elemID)) return "notes"
-      return undefined
-    }
-
-    function getEditor(sectID) {
-      switch(sectID) {
-        case "body": return bodyeditor;
-        case "notes": return noteeditor;
-      }
-    }
-
     function moveElem(srcEdit, srcId, dstEditID, dstEdit, dstId, dstIndex) {
       console.log("moveElem", srcId, dstId, dstIndex)
 
@@ -382,10 +374,10 @@ export function SingleEditView({doc, updateDoc}) {
 
     switch(type) {
       case "scene": {
-        const srcEditID = getSectIDByElemID(source.droppableId)
-        const dstEditID = getSectIDByElemID(destination.droppableId)
-        const srcEdit = getEditor(srcEditID)
-        const dstEdit = getEditor(dstEditID)
+        const srcEditID = getSectIDByElemID(doc, source.droppableId)
+        const dstEditID = getSectIDByElemID(doc, destination.droppableId)
+        const srcEdit = getEditorBySectID(srcEditID)
+        const dstEdit = getEditorBySectID(dstEditID)
 
         moveElem(srcEdit, draggableId, dstEditID, dstEdit, destination.droppableId, destination.index)
         break;
@@ -394,8 +386,8 @@ export function SingleEditView({doc, updateDoc}) {
       case "part": {
         const srcEditID = source.droppableId
         const dstEditID = destination.droppableId
-        const srcEdit = getEditor(srcEditID)
-        const dstEdit = getEditor(dstEditID)
+        const srcEdit = getEditorBySectID(srcEditID)
+        const dstEdit = getEditorBySectID(dstEditID)
 
         moveElem(srcEdit, draggableId, dstEditID, dstEdit, null, destination.index)
         break;
@@ -408,24 +400,12 @@ export function SingleEditView({doc, updateDoc}) {
 }
 
 //---------------------------------------------------------------------------
-// Toolbar styles
-//---------------------------------------------------------------------------
-
-const styles = {
-  toolbox: {
-    left: {background: "white", borderRight: "1px solid lightgray"},
-    mid: {background: "white"},
-    right: {background: "white", borderLeft: "1px solid lightgray"},
-  }
-}
-
-//---------------------------------------------------------------------------
 // Left panels
 //---------------------------------------------------------------------------
 
 function LeftPanel({settings}) {
   const {doc, setActive} = settings
-  const {leftstyle: style} = settings
+  const {style} = doc.ui.editor.left
 
   const {width, minWidth, maxWidth, ...rest} = style
   const widths={width, minWidth, maxWidth}
@@ -435,8 +415,8 @@ function LeftPanel({settings}) {
     <DocIndex
       style={rest}
       section={doc.body}
-      include={settings.body.indexed}
-      wcFormat={settings.body.words}
+      include={doc.ui.editor.body.indexed}
+      wcFormat={doc.ui.editor.body.words}
       activeID="body"
       setActive={setActive}
     />
@@ -450,17 +430,24 @@ const LeftIndexChoices = {
 
 function LeftPanelMenu({settings}) {
 
-  return <ToolBox style={styles.toolbox.left}>
+  const {doc, updateDoc} = settings
+
+  const indexed = doc.ui.editor.body.indexed;
+  const setIndexed = useCallback(value => updateDoc(doc => {doc.ui.editor.body.indexed = value}), [updateDoc])
+  const words = doc.ui.editor.body.words
+  const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.body.words = value}), [updateDoc])
+
+  return <ToolBox style={doc.ui.editor.toolbox.left}>
     <ChooseVisibleElements
       choices={LeftIndexChoices.visible}
-      selected={settings.body.indexed}
-      setSelected={settings.body.setIndexed}
+      selected={indexed}
+      setSelected={setIndexed}
     />
     <Separator/>
     <ChooseWordFormat
       choices={LeftIndexChoices.words}
-      selected={settings.body.words}
-      setSelected={settings.body.setWords}
+      selected={words}
+      setSelected={setWords}
     />
   </ToolBox>
 }
@@ -471,34 +458,39 @@ function LeftPanelMenu({settings}) {
 
 function RightPanel({settings}) {
   const {
-    rightstyle: style,
-    selectRight, setSelectRight
+    doc, updateDoc,
   } = settings
 
+  const {style} = doc.ui.editor.right
+  const selectRight = doc.ui.editor.right.selected
+  const setSelectRight = useCallback(value => updateDoc(doc => {doc.ui.editor.right.selected = value}), [updateDoc])
+
   return <VFiller style={style}>
-      <ToolBox style={styles.toolbox.right}>
+      <ToolBox style={doc.ui.editor.toolbox.right}>
         <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
         <Filler />
       </ToolBox>
-      <RightPanelContent settings={settings}/>
+      <RightPanelContent settings={settings} selected={selectRight}/>
     </VFiller>
 }
 
-function RightPanelContent({settings}) {
+function RightPanelContent({settings, selected}) {
   const {
-    rightstyle: style, doc,
-    selectRight, setActive,
+    doc,
+    setActive,
     setSearchText, searchBoxRef,
     body,
   } = settings
 
-  switch(selectRight) {
+  const {style} = doc.ui.editor.right
+
+  switch(selected) {
     case "noteindex":
       return <DocIndex
         style={style}
         section={doc.notes}
-        include={settings.notes.indexed}
-        wcFormat={settings.notes.words}
+        include={doc.ui.editor.notes.indexed}
+        wcFormat={doc.ui.editor.notes.words}
         activeID="notes"
         setActive={setActive}
       />
@@ -652,45 +644,41 @@ class Searching extends React.PureComponent {
   }
 }
 
-
-
-
 //-----------------------------------------------------------------------------
 
 function EditorBox({style, settings, mode="Condensed"}) {
-  const {doc, activeID} = settings
-  //const {editor, buffer, onChange} = (activeID === "body") ? settings.body : settings.notes
+  const {doc} = settings
+  const {active} = doc.ui.editor
+
   const {searchBoxRef, searchText, setSearchText} = settings
   const {highlightText} = settings
 
-  function activeEditor() {
-    switch(activeID) {
-      case "body": return settings.body.editor
-      case "notes": return settings.notes.editor
-    }
-  }
+  const activeEditor = {
+    "body": settings.body.editor,
+    "notes": settings.notes.editor,
+  }[active]
 
   return <VFiller>
-    <ToolBox style={styles.toolbox.left}>
-      {/* <EditHeadButton head={head} updateDoc={settings.updateDoc} expanded={true}/> */}
-      <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
+    {/* Editor toolbar */}
+
+    <ToolBox style={doc.ui.editor.toolbox.mid}>
+      <Searching editor={activeEditor} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
-      {/* <OpenFolderButton filename={doc.file?.id}/> */}
-      {/* <Separator/> */}
-      {/* <SectionWordInfo section={doc.body}/> */}
     </ToolBox>
+
     {/* Editor board and sheet */}
+
     <div className="Filler Board" style={{...style}}>
       <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
       {
-        activeID === "body"
+        active === "body"
         ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
         : null
       }
       </Slate>
       <Slate editor={settings.notes.editor} initialValue={settings.notes.buffer} onChange={settings.notes.onChange}>
       {
-        activeID === "notes"
+        active === "notes"
         ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
         : null
       }

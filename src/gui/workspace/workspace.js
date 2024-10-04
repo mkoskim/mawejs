@@ -11,7 +11,7 @@
 import "./workspace.css"
 
 import React from "react";
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import {action, docByID } from "../app/store"
 

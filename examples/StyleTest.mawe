@@ -41,4 +41,14 @@ NOTES
 </scene>
 </part>
 </notes>
+<!--/
+===============================================================================
+/-->
+<ui>
+<view/>
+<chart elements="scenes" template="plotpoints" mode="topCCW"/>
+<editor>
+<body words="numbers" indexed="part,scene,synopsis"/>
+</editor>
+</ui>
 </story>

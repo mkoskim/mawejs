@@ -7,25 +7,12 @@
 //*****************************************************************************
 
 import React, {
-  useState, useEffect, useReducer,
-  useMemo, useCallback,
-  useDeferredValue,
-  StrictMode,
-  useRef,
+  useCallback,
 } from 'react';
 
 import {
-  FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon, Tooltip,
-  ToggleButton, ToggleButtonGroup, MakeToggleGroup,
-  Input,
-  SearchBox,
+  VBox, HBox,
   Label,
-  List, ListItem, ListItemText,
-  Grid,
-  Separator, Loading, addClass,
-  Menu, MenuItem,
-  isHotkey,
 } from "../common/factory";
 
 import {createTagTable} from "../../document/util";

@@ -39,7 +39,11 @@ export function useSetting(key, defaultValue) {
   return [value, setValue];
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Recent file list in Local Storage
+//
+//*****************************************************************************
 
 export function recentAdd(file, recent, setRecent) {
   setRecent([
@@ -53,12 +57,3 @@ export function recentRemove(file, recent, setRecent) {
     ...recent.filter(entry => entry.id !== file.id)
   ])
 }
-
-/*
-export function getStartupCommand(loaded) {
-
-  if(loaded) return { action: "load", filename: loaded }
-
-  return { action: "set", buffer: '<story format="mawe" />' }
-}
-*/
