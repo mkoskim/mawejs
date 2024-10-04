@@ -29,7 +29,6 @@ import {
 } from "../common/factory"
 
 import {DragDropContext, Droppable, Draggable} from "@hello-pangea/dnd";
-import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
 import {DocIndex} from "../common/docIndex";
 import {elemName, filterCtrlElems, mawe} from "../../document";
 
@@ -81,7 +80,7 @@ export function Chart({doc, updateDoc}) {
   </DragDropContext>
 
   function onDragEnd(result) {
-    onDragEndUpdateDoc(doc, updateDoc, result)
+    //onDragEndUpdateDoc(doc, updateDoc, result)
   }
 }
 
