@@ -9,6 +9,7 @@
 import { saveViewSettings } from "../../gui/app/views";
 import { saveChartSettings } from "../../gui/chart/chart";
 import { saveEditorSettings } from "../../gui/editor/editor";
+import {saveExportSettings} from "../../gui/export/export";
 import {uuid as getUUID, buf2file, elemName, filterCtrlElems} from "../util";
 
 //----------------------------------------------------------------------------
@@ -191,7 +192,7 @@ function toMarks(elem) {
 //-----------------------------------------------------------------------------
 
 function toExport(exports) {
-  return xmlElem({type: "export", attributes: exports})
+  return xmlTree(saveExportSettings(exports))
 }
 
 function toUI(ui) {

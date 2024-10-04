@@ -12,6 +12,7 @@ import { xml2js } from "xml-js";
 import { loadChartSettings } from "../../gui/chart/chart";
 import { loadViewSettings } from "../../gui/app/views";
 import { loadEditorSettings } from "../../gui/editor/editor";
+import {loadExportSettings} from "../../gui/export/export";
 
 //-----------------------------------------------------------------------------
 // File structure:
@@ -67,16 +68,22 @@ export function fromXML(root) {
   // Inject name to body head
 
   const bodyElem  = elemFind(story, "body")
+  const notesElem = elemFind(story, "notes")
+
   const headElem  = elemFind(story, "head") ?? elemFind(bodyElem, "head")
   const expElem   = elemFind(story, "export") ?? elemFind(headElem, "export")
   const uiElem    = elemFind(story, "ui")
-  const notesElem = elemFind(story, "notes")
 
   const head  = parseHead(headElem)
-  const exports = parseExport(expElem)
-  const ui = parseUI(uiElem)
   const body  = parseSection(bodyElem)
   const notes = parseSection(notesElem)
+
+  const exports = loadExportSettings(expElem)
+  const ui = {
+    view   : loadViewSettings(elemFind(uiElem, "view")),
+    chart  : loadChartSettings(elemFind(uiElem, "chart")),
+    editor : loadEditorSettings(elemFind(uiElem, "editor"))
+  }
 
   return {
     // format - generated at save
@@ -251,23 +258,4 @@ function elem2Text(elem) {
 function trim(text) {
   if(typeof text === "string") return text.trim() //.replace(/\s+/gu, ' ')
   return undefined;
-}
-
-//-----------------------------------------------------------------------------
-
-function parseExport(elem) {
-  return {
-    type: "short",
-    chapterelem: "part",
-    chaptertype: "separated",
-    ...(elem?.attributes ?? {})
-  }
-}
-
-function parseUI(ui) {
-  return {
-    view   : loadViewSettings(elemFind(ui, "view")),
-    chart  : loadChartSettings(elemFind(ui, "chart")),
-    editor : loadEditorSettings(elemFind(ui, "editor"))
-  }
 }
