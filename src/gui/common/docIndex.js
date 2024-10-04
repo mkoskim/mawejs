@@ -13,7 +13,7 @@ import React, {
   useDeferredValue, useMemo, memo,
 } from "react"
 
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,

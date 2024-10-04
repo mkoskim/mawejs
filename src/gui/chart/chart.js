@@ -28,8 +28,7 @@ import {
   Select, MenuItem, InputLabel, FormControl, Separator, Icon,
 } from "../common/factory"
 
-import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
-import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
+import {DragDropContext, Droppable, Draggable} from "@hello-pangea/dnd";
 import {DocIndex} from "../common/docIndex";
 import {elemName, filterCtrlElems, mawe} from "../../document";
 
@@ -81,7 +80,7 @@ export function Chart({doc, updateDoc}) {
   </DragDropContext>
 
   function onDragEnd(result) {
-    onDragEndUpdateDoc(doc, updateDoc, result)
+    //onDragEndUpdateDoc(doc, updateDoc, result)
   }
 }
 

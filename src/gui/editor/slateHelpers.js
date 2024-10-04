@@ -119,12 +119,6 @@ export function elemsByRange(editor, anchor, focus) {
 //-----------------------------------------------------------------------------
 // Drag'n'drop po and push
 
-// Ensure that pop'd element has correct heading
-
-export function checkPopHeading(node) {
-}
-
-
 export function dndElemPop(editor, id) {
   const match = elemByID(editor, id)
   if(!match) return
@@ -204,40 +198,39 @@ export function focusByID(editor, id) {
     focusByPath(editor, undefined);
   } else {
     const [node, path] = match
-    focusByPath(editor, Editor.start(editor, path))
+    //focusByPath(editor, Editor.start(editor, path))
+    focusByPath(editor, path)
   }
 }
 
-export async function focusByPath(editor, path) {
-  //await sleep(20)
+export async function focusByPath(editor, path, collapse = true) {
+  //console.log("FocusByPath", path)
   if(!ReactEditor.isFocused(editor)) {
     ReactEditor.focus(editor)
-    await sleep(40);
+    //await sleep(20);
   }
-  if(path) Transforms.select(editor, path);
+  if(path) {
+    Transforms.select(editor, path);
+    if(collapse) Transforms.collapse(editor);
+    scrollToPoint(editor, {path, offset: 0})
+  }
 }
 
-async function scrollToPoint(editor, point, focus) {
-  if(focus) {
-    await focusByPath(editor, point)
-  }
-
+async function scrollToPoint(editor, point) {
   const [dom] = ReactEditor.toDOMPoint(editor, point)
-  //console.log("DOM:", dom)
-  //Editable.scrollIntoView(editor, dom.parentElement)
   /*
   dom.parentElement.scrollIntoView({
     //behaviour: "smooth",
     block: "center",
   })
   /*/
-  dom.parentElement.scrollIntoViewIfNeeded(false)
+  dom.parentElement.scrollIntoViewIfNeeded(true)
   /**/
 }
 
 export async function scrollToRange(editor, range, focus) {
   if(focus) {
-    await focusByPath(editor, range)
+    await focusByPath(editor, range, false)
   }
 
   scrollToPoint(editor, range.focus)

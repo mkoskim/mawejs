@@ -27,7 +27,7 @@ import {
   Editor, Node, Transforms, Range, Point,
 } from "slate";
 
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 import {
   getEditor, SlateEditable,
@@ -155,16 +155,20 @@ export function setFocusTo(updateDoc, sectID, elemID) {
 //*****************************************************************************
 
 function trackMarks(editor, doc, updateDoc) {
-  const marks = Editor.marks(editor)
-  const [node] = Editor.above(editor, {match: n => elemIsBlock(editor, n)})
-  const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "part")})
+  try {
+    const marks = Editor.marks(editor)
+    const [node] = Editor.above(editor, {match: n => elemIsBlock(editor, n)})
+    const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "part")})
 
-  updateDoc(doc => {
-    doc.ui.editor.track.marks.bold = marks.bold
-    doc.ui.editor.track.marks.italic = marks.italic
-    doc.ui.editor.track.marks.fold = block.folded
-    doc.ui.editor.track.block = node.type
-  })
+    updateDoc(doc => {
+      doc.ui.editor.track.marks.bold = marks.bold
+      doc.ui.editor.track.marks.italic = marks.italic
+      doc.ui.editor.track.marks.fold = block.folded
+      doc.ui.editor.track.block = node.type
+    })
+  } catch(e) {
+    console.log("Track marks error.")
+  }
 }
 
 export function SingleEditView({doc, updateDoc}) {
@@ -187,17 +191,11 @@ export function SingleEditView({doc, updateDoc}) {
   /**/
 
   //---------------------------------------------------------------------------
-  // slate buffers
+  // sections
   //---------------------------------------------------------------------------
-
-  //console.log("Story ID:", doc.story.uuid)
 
   const bodyeditor = useMemo(() => getEditor(), [])
   const noteeditor = useMemo(() => getEditor(), [])
-
-  //---------------------------------------------------------------------------
-  // Get updates from Slate, and apply them to doc, too
-  //---------------------------------------------------------------------------
 
   const updateBody = useCallback(buffer => {
     trackMarks(bodyeditor, doc, updateDoc)
@@ -353,6 +351,8 @@ export function SingleEditView({doc, updateDoc}) {
 
   //---------------------------------------------------------------------------
 
+  //console.log("Editor update")
+
   return <HBox style={{overflow: "auto"}}>
     <DragDropContext onDragEnd={onDragEnd}>
     <LeftPanel settings={settings}/>
@@ -383,7 +383,7 @@ export function SingleEditView({doc, updateDoc}) {
     //console.log(type, source, "-->", destination)
 
     function moveElem(srcEdit, srcId, dstEditID, dstEdit, dstId, dstIndex) {
-      console.log("moveElem", srcId, dstId, dstIndex)
+      console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
 
       dndElemPushTo(dstEdit,
         dndElemPop(srcEdit, srcId),
@@ -396,8 +396,8 @@ export function SingleEditView({doc, updateDoc}) {
 
     switch(type) {
       case "scene": {
-        const srcEditID = getSectIDByElemID(doc, source.droppableId)
-        const dstEditID = getSectIDByElemID(doc, destination.droppableId)
+        const srcEditID = getSectIDByElemID(source.droppableId)
+        const dstEditID = getSectIDByElemID(destination.droppableId)
         const srcEdit = getEditorBySectID(srcEditID)
         const dstEdit = getEditorBySectID(dstEditID)
 
@@ -416,7 +416,7 @@ export function SingleEditView({doc, updateDoc}) {
       }
       default:
         console.log("Unknown draggable type:", type, result)
-        return;
+        break;
     }
   }
 }
@@ -612,7 +612,7 @@ class Searching extends React.PureComponent {
     if (typeof(searchText) !== "string") {
       return (
         <Button
-          tooltip="Search text"
+          tooltip="Search text (Ctrl-F)"
           size="small"
         >
           <Icon.Action.Search onClick={ev => setSearchText("")}/>
@@ -640,8 +640,8 @@ class Searching extends React.PureComponent {
             }
           }}
         />
-        <Button tooltip="Search previous" onClick={this.searchPrevious}><Icon.Arrow.Up/></Button>
-        <Button tooltip="Search next" onClick={this.searchNext}><Icon.Arrow.Down/></Button>
+        <Button tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up/></Button>
+        <Button tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down/></Button>
         {/*
         <button style={iconButtonStyle} onClick={this.searchPrevious} title="Previous search result">↑</button> {}
         <button style={iconButtonStyle} onClick={this.searchNext} title="Next search result">↓</button> {}
@@ -681,19 +681,13 @@ function EditorBox({style, settings, mode="Condensed"}) {
     {/* Editor board and sheet */}
 
     <div className="Filler Board" style={{...style}}>
+
       <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
-      {
-        active === "body"
-        ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
-        : null
-      }
+        <SlateEditable className={addClass("Sheet", mode, (active !== "body" && "Hidden"))} highlight={highlightText}/>
       </Slate>
+
       <Slate editor={settings.notes.editor} initialValue={settings.notes.buffer} onChange={settings.notes.onChange}>
-      {
-        active === "notes"
-        ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
-        : null
-      }
+        <SlateEditable className={addClass("Sheet", mode, (active !== "notes" && "Hidden"))} highlight={highlightText}/>
       </Slate>
     </div>
   </VFiller>
