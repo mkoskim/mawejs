@@ -237,6 +237,22 @@ class BlockStyleSelect extends React.PureComponent {
   }
 }
 
+export class FoldButtons extends React.PureComponent {
+  render() {
+    const {editor} = this.props
+
+    function onFoldToggle(e) { toggleFold(editor); }
+    function onFoldAll(e) { foldAll(editor, true); }
+    function onUnfoldAll(e) { foldAll(editor, false) }
+
+    return <>
+      <Button tooltip="Toggle fold" onClick={onFoldToggle}><Icon.Style.Folded/></Button>
+      <Button tooltip="Fold all" onClick={onFoldAll}><Icon.Style.FoldAll/></Button>
+      <Button tooltip="Unfold all" onClick={onUnfoldAll}><Icon.Style.UnfoldAll/></Button>
+      </>
+  }
+}
+
 export function EditButtons({editor, track}) {
   //console.log("Track:", track)
 
@@ -258,8 +274,6 @@ export function EditButtons({editor, track}) {
     {/*<BlockStyleSelect block={track.block}/>*/}
     {/*<Separator/>*/}
     <CharStyleButtons marks={marks} setSelected={toggleMark}/>
-    {/*<Separator/>*/}
-    {/*<BlockStyleButtons block={track.block}/>*/}
     </>
 }
 

@@ -38,6 +38,7 @@ import {
   searchFirst, searchForward, searchBackward,
   isAstChange,
   EditButtons,
+  FoldButtons,
 } from "./slateEditor"
 
 import {DocIndex} from "../common/docIndex"
@@ -103,16 +104,16 @@ export function loadEditorSettings(settings) {
       words: undefined,
     },
     left: {
-      style: {maxWidth: "400px", width: "400px"},
+      style: {maxWidth: "400px", width: "400px", borderRight: "2px solid lightgray"},
     },
     right: {
-      style: {maxWidth: "300px", width: "300px"},
+      style: {maxWidth: "300px", width: "300px", borderLeft: "2px solid lightgray"},
       selected: "noteindex"
     },
     toolbox: {
-      left: {background: "white", borderRight: "1px solid lightgray"},
+      left: {background: "white", borderRight: "2px solid lightgray"},
       mid: {background: "white"},
-      right: {background: "white", borderLeft: "1px solid lightgray"},
+      right: {background: "white"},
     }
   }
 }
@@ -503,12 +504,9 @@ function RightPanelContent({settings, selected}) {
     body,
   } = settings
 
-  const {style} = doc.ui.editor.right
-
   switch(selected) {
     case "noteindex":
       return <DocIndex
-        style={style}
         section={doc.notes}
         include={doc.ui.editor.notes.indexed}
         wcFormat={doc.ui.editor.notes.words}
@@ -642,9 +640,12 @@ class Searching extends React.PureComponent {
             }
           }}
         />
-        <button style={iconButtonStyle} onClick={this.clearSearch} title="Clear search">✖️</button> {}
+        <Button tooltip="Search previous" onClick={this.searchPrevious}><Icon.Arrow.Up/></Button>
+        <Button tooltip="Search next" onClick={this.searchNext}><Icon.Arrow.Down/></Button>
+        {/*
         <button style={iconButtonStyle} onClick={this.searchPrevious} title="Previous search result">↑</button> {}
         <button style={iconButtonStyle} onClick={this.searchNext} title="Next search result">↓</button> {}
+        */}
        </div>
     );
   }
@@ -673,6 +674,8 @@ function EditorBox({style, settings, mode="Condensed"}) {
       <Searching editor={editor} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Separator/>
       <Filler />
+      <Separator/>
+      <FoldButtons editor={editor}/>
     </ToolBox>
 
     {/* Editor board and sheet */}

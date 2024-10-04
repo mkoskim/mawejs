@@ -5,6 +5,14 @@
 
 import {FormatItalic} from '@mui/icons-material';
 import {LooksOne, LooksTwo} from '@mui/icons-material';
+import {UnfoldMore} from '@mui/icons-material';
+import {UnfoldLessDouble} from '@mui/icons-material';
+import {AddBoxOutlined} from '@mui/icons-material';
+import {ArrowUpward} from '@mui/icons-material';
+import {ArrowDownward} from '@mui/icons-material';
+import {IndeterminateCheckBoxOutlined} from '@mui/icons-material';
+import {UnfoldMoreDouble} from '@mui/icons-material';
+import {UnfoldLess} from '@mui/icons-material';
 import {Expand} from '@mui/icons-material';
 import {FormatBold} from '@mui/icons-material';
 import {
@@ -98,8 +106,8 @@ export const Icon = {
   Arrow: {
     Left: ArrowLeft,
     Right: ArrowRight,
-    Up: ArrowDropUp,
-    Down: ArrowDropDown,
+    Up: ArrowUpward,
+    Down: ArrowDownward,
   },
 
   View: {
@@ -196,8 +204,8 @@ export const Icon = {
     Tags: AlternateEmail,
 
     Folded: VisibilityOff,
-    FoldAll: Collapse,
-    UnfoldAll: Expand,
+    FoldAll: IndeterminateCheckBoxOutlined,
+    UnfoldAll: AddBoxOutlined,
   },
 }
 
