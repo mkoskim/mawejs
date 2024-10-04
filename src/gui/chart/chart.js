@@ -28,7 +28,7 @@ import {
   Select, MenuItem, InputLabel, FormControl, Separator, Icon,
 } from "../common/factory"
 
-import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
+import {DragDropContext, Droppable, Draggable} from "@hello-pangea/dnd";
 import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
 import {DocIndex} from "../common/docIndex";
 import {elemName, filterCtrlElems, mawe} from "../../document";

@@ -15,7 +15,6 @@ import {
 } from "../common/factory";
 
 import { SingleEditView } from "../editor/editor";
-import { Organizer } from "../organizer/organizer";
 import { Chart } from "../chart/chart"
 import { Export } from "../export/export"
 
