@@ -6,13 +6,14 @@ STORY: Style test
 
 ===============================================================================
 /-->
-<body>
 <head>
-<export type="short" chapterelem="scene" chaptertype="named"/>
+<title>Styles</title>
 </head>
+<export type="short" chapterelem="scene" chaptertype="named"/>
 <!--/
 ===============================================================================
 /-->
+<body>
 <part>
 <scene name="Scene 1">
 <p>Styles: (1) <b>&lt;bold&gt;</b>, (2) <i>&lt;italic&gt;</i>, (3) <b><i>bold and italic</i></b>.</p>

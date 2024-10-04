@@ -35,10 +35,10 @@ import {
 import { elemName, getSuffix, nanoid, filterCtrlElems } from "../../document/util";
 import {
   EditHead, SectionWordInfo,
-  setDocStoryType, setDocChapterElem, setDocChapterType,
+  updateDocStoryType, updateDocChapterElem, updateDocChapterType,
 } from "../common/components";
 
-import { mawe } from "../../document"
+import { storyType } from "../../document/head"
 
 import { FormatBody } from "./formatDoc"
 
@@ -46,6 +46,7 @@ import { formatRTF } from "./formatRTF";
 import { formatHTML } from "./formatHTML"
 import { formatTXT } from "./formatTXT"
 import { formatTEX1, formatTEX2 } from "./formatTEX"
+import { setFocusTo } from "../app/views";
 
 //-----------------------------------------------------------------------------
 
@@ -53,7 +54,7 @@ const fs = require("../../system/localfs");
 
 //-----------------------------------------------------------------------------
 
-export function Export({ doc, setDoc, focusTo, setFocusTo }) {
+export function Export({ doc, updateDoc }) {
 
   const [format, setFormat] = useState("rtf1")
 
@@ -61,9 +62,9 @@ export function Export({ doc, setDoc, focusTo, setFocusTo }) {
     {/* <ExportToolbar {...previewprops}/> */}
     <HBox style={{ overflow: "auto" }}>
       {/* <ExportSettings {...previewprops}/> */}
-      <ExportIndex style={{ maxWidth: "300px", width: "300px" }} doc={doc} setFocusTo={setFocusTo}/>
+      <ExportIndex style={{ maxWidth: "300px", width: "300px" }} doc={doc} updateDoc={updateDoc}/>
       <Preview doc={doc}/>
-      <ExportSettings doc={doc} setDoc={setDoc} format={format} setFormat={setFormat}/>
+      <ExportSettings doc={doc} updateDoc={updateDoc} format={format} setFormat={setFormat}/>
     </HBox>
   </VBox>
 }
@@ -72,7 +73,7 @@ export function Export({ doc, setDoc, focusTo, setFocusTo }) {
 // Export settings
 //-----------------------------------------------------------------------------
 
-function ExportSettings({ style, doc, setDoc, format, setFormat }) {
+function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
 
   const formatter = {
     "rtf1": formatRTF,
@@ -82,9 +83,7 @@ function ExportSettings({ style, doc, setDoc, format, setFormat }) {
     "txt": formatTXT,
   }[format]
 
-  const { body } = doc.story
-  const { head } = body
-  const info = mawe.info(body.head)
+  const { head, exports } = doc
 
   return <VBox style={style} className="ExportSettings">
     <TextField select label="Format" value={format} onChange={e => setFormat(e.target.value)}>
@@ -101,18 +100,18 @@ function ExportSettings({ style, doc, setDoc, format, setFormat }) {
     <Button variant="contained" color="success" onClick={e => doExport(e)}>Export</Button>
 
     <Accordion disableGutters>
-    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type: {info.type}</AccordionSummary>
+    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type: {storyType(doc)}</AccordionSummary>
     <AccordionDetails><VBox>
-    <TextField select label="Story Class" value={head.export.type} onChange={e => setDocStoryType(setDoc, e.target.value)}>
+    <TextField select label="Story Class" value={exports.type} onChange={e => updateDocStoryType(updateDoc, e.target.value)}>
       <MenuItem value="short">Short Story</MenuItem>
       <MenuItem value="long">Long Story</MenuItem>
       </TextField>
-    <TextField select label="Chapters" value={head.export.chapterelem} onChange={e => setDocChapterElem(setDoc, e.target.value)}>
+    <TextField select label="Chapters" value={exports.chapterelem} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
       <MenuItem value="part">Part</MenuItem>
       <MenuItem value="scene">Scene</MenuItem>
       <MenuItem value="none">None</MenuItem>
       </TextField>
-    <TextField select label="Chapter style" value={head.export.chaptertype} onChange={e => setDocChapterType(setDoc, e.target.value)}>
+    <TextField select label="Chapter style" value={exports.chaptertype} onChange={e => updateDocChapterType(updateDoc, e.target.value)}>
       <MenuItem value="separated">Separated</MenuItem>
       <MenuItem value="numbered">Numbered</MenuItem>
       <MenuItem value="named">Named</MenuItem>
@@ -120,11 +119,11 @@ function ExportSettings({ style, doc, setDoc, format, setFormat }) {
     </VBox></AccordionDetails>
     </Accordion>
 
-    <EditHead head={head} setDoc={setDoc}/>
+    <EditHead head={head} updateDoc={updateDoc}/>
   </VBox>
 
   function doExport(event) {
-    const content = FormatBody(formatter, body)
+    const content = FormatBody(formatter, doc)
     //console.log(content)
     exportToFile(doc, formatter.suffix, content)
   }
@@ -146,38 +145,37 @@ async function exportToFile(doc, filesuffix, content) {
 // Export index
 //-----------------------------------------------------------------------------
 
-function ExportIndex({ style, doc, setFocusTo }) {
-  const { body } = doc.story
-  const { parts } = body
+function ExportIndex({ style, doc, updateDoc }) {
+  const { parts } = doc.body
 
   return <VFiller className="TOC" style={style}>
-    {filterCtrlElems(parts).map(part => <PartItem key={part.id} part={part} setFocusTo={setFocusTo}/>)}
+    {filterCtrlElems(parts).map(part => <PartItem key={part.id} part={part} updateDoc={updateDoc}/>)}
   </VFiller>
 }
 
-function PartItem({ part, setFocusTo }) {
+function PartItem({ part, updateDoc }) {
   const { id, children } = part
   const name = elemName(part)
   return <>
     <div
       className="Entry PartName"
       onClick={ev => window.location.href = `#${id}`}
-      onDoubleClick={ev => setFocusTo({ id })}
+      onDoubleClick={ev => setFocusTo(updateDoc, { id })}
       style={{ cursor: "pointer" }}
     >
       <span className="Name">{name}</span>
     </div>
-    {filterCtrlElems(children).map(scene => <SceneItem key={scene.id} scene={scene} setFocusTo={setFocusTo}/>)}
+    {filterCtrlElems(children).map(scene => <SceneItem key={scene.id} scene={scene} updateDoc={updateDoc}/>)}
   </>
 }
 
-function SceneItem({ scene, setFocusTo }) {
+function SceneItem({ scene, updateDoc }) {
   const { id } = scene
   const name = elemName(scene)
   return <div
     className="Entry SceneName"
     onClick={ev => window.location.href = `#${id}`}
-    onDoubleClick={ev => setFocusTo({ id })}
+    onDoubleClick={ev => setFocusTo(updateDoc, { id })}
     style={{ cursor: "pointer" }}
   >
     <span className="Name">{name}</span>
@@ -189,12 +187,10 @@ function SceneItem({ scene, setFocusTo }) {
 //-----------------------------------------------------------------------------
 
 function Preview({ doc }) {
-  const { body } = doc.story
-
   return <div className="Filler Board">
     <DeferredRender><div
       className="Sheet Regular"
-      dangerouslySetInnerHTML={{ __html: FormatBody(formatHTML, body) }}
+      dangerouslySetInnerHTML={{ __html: FormatBody(formatHTML, doc) }}
     /></DeferredRender>
   </div>
 }

@@ -7,23 +7,48 @@
 //*****************************************************************************
 
 import React, {
-  useState, useCallback, useContext,
+  useState, useCallback,
 } from "react"
-
-import {produce} from "immer"
 
 import {
   Icon, MakeToggleGroup,
 } from "../common/factory";
 
-import {
-  SettingsContext,
-} from "./settings"
-
 import { SingleEditView } from "../editor/editor";
 import { Organizer } from "../organizer/organizer";
 import { Chart } from "../chart/chart"
 import { Export } from "../export/export"
+
+//-----------------------------------------------------------------------------
+// Chart settings
+//-----------------------------------------------------------------------------
+
+export function loadViewSettings(settings) {
+  return {
+    selected: "editor",
+    focusTo: undefined,
+    ...(settings?.attributes ?? {})
+  }
+}
+
+export function saveViewSettings(settings) {
+  return {type: "view",
+    attributes: {
+      //selected: settings.selected,
+    }
+  }
+}
+
+export function getViewMode(doc) { return doc.ui.view.selected; }
+export function setViewMode(updateDoc, value) { updateDoc(doc => {doc.ui.view.selected = value})}
+
+export function getFocusTo(doc) { return doc.ui.view.focusTo; }
+export function setFocusTo(updateDoc, value) {
+  updateDoc(doc => {
+    doc.ui.view.selected = "editor"
+    doc.ui.view.focusTo = value
+  })
+}
 
 //-----------------------------------------------------------------------------
 
@@ -50,24 +75,15 @@ export class ViewSelectButtons extends React.PureComponent {
   }
 }
 
-export function ViewSwitch({doc, setDoc}) {
+export function ViewSwitch({doc, updateDoc}) {
 
-  const {view, setView} = useContext(SettingsContext)
+  if(!doc) return null
 
-  const [focusTo, _setFocusTo] = useState(undefined)
+  const props = { doc, updateDoc }
 
-  const setFocusTo = useCallback(value => {
-    setView(produce(view => {view.selected = "editor"}))
-    _setFocusTo(value)
-  }, [])
-
-  if(!doc?.story) return null
-
-  const props = { doc, setDoc, focusTo, setFocusTo }
-
-  switch (view.selected) {
+  switch (getViewMode(doc)) {
     case "editor": return <SingleEditView {...props} />
-    case "organizer": return <Organizer {...props} />
+    //case "organizer": return <Organizer {...props} />
     case "export": return <Export {...props} />
     case "chart": return <Chart {...props} />
     default: break;

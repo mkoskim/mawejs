@@ -8,8 +8,10 @@
 
 import {wcChildren} from "../../document/util";
 
-export function onDragEndUpdateDoc(doc, setDoc, result) {
+export function onDragEndUpdateDoc(doc, updateDoc, result) {
   console.log("onDragEnd:", result)
+
+  return
 
   const {type, source, destination} = result;
   //console.log(type)
@@ -24,18 +26,19 @@ export function onDragEndUpdateDoc(doc, setDoc, result) {
 
   function findPart(doc, partID) {
     return (
-      doc.story.body.parts.find(part => part.id === partID) ||
-      doc.story.notes.parts.find(part => part.id === partID)
+      doc.body.parts.find(part => part.id === partID) ||
+      doc.notes.parts.find(part => part.id === partID)
     )
   }
 
   function findSect(doc, sectID) {
     switch(sectID) {
-      case "body": return doc.story.body;
-      case "notes": return doc.story.notes;
+      case "body": return doc.body;
+      case "notes": return doc.notes;
     }
   }
 
+  /*
   function updateSection(section) {
     const parts = section.parts.map(part => ({
       ...part,
@@ -49,15 +52,12 @@ export function onDragEndUpdateDoc(doc, setDoc, result) {
   }
 
   function updateDoc() {
-    setDoc({
-      ...doc,
-      story: {
-        ...doc.story,
-        body: updateSection(doc.story.body),
-        notes: updateSection(doc.story.notes)
-      }
+    updateDoc(doc => {
+      doc.body = updateSection(doc.body)
+      doc.notes = updateSection(doc.notes)
     })
   }
+  */
 
   switch(type) {
     case "scene": {
@@ -67,7 +67,7 @@ export function onDragEndUpdateDoc(doc, setDoc, result) {
       const scene = sourcePart.children[source.index]
       sourcePart.children.splice(source.index, 1)
       destinationPart.children.splice(destination.index, 0, scene)
-      updateDoc()
+      //updateDoc()
       break;
     }
     case "part": {
@@ -77,7 +77,7 @@ export function onDragEndUpdateDoc(doc, setDoc, result) {
       const part = sourceSect.parts[source.index]
       sourceSect.parts.splice(source.index, 1)
       destinationSect.parts.splice(destination.index, 0, part)
-      updateDoc()
+      //updateDoc()
       break;
     }
     default:

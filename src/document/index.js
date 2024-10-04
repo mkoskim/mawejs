@@ -55,19 +55,11 @@ async function load(file) {
   if (format === "mawe") {
     //const suffix = getSuffix(file, [".mawe", ".mawe.gz"]);
     //const basename = await fs.basename(file.name, suffix);
-    const {buffer, tree, story} = await loadmawe(file);
+    const doc = await loadmawe(file);
 
     return {
       file,
-      story,
-      //basename,
-      //suffix,
-      //buffer,
-      //tree,
-      //story: {
-      //  ...story,
-      //name: story.name ?? basename,
-      //}
+      ...doc
     }
   }
 
@@ -75,12 +67,7 @@ async function load(file) {
 }
 
 function create(buffer) {
-  const {tree, story} = createmawe(buffer);
-  return {
-    //buffer,
-    //tree,
-    story
-  }
+  return createmawe(buffer);
 }
 
 //-----------------------------------------------------------------------------
@@ -90,8 +77,8 @@ export async function saveas(doc, filename) {
   //console.log("Saving:", doc)
   // TODO: Fill in basename + suffix
   return await savemawe({
+    ...doc,
     file: { id: filename },
-    story: doc.story,
   })
 }
 

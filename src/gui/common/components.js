@@ -40,36 +40,36 @@ import {getHeader} from '../../document/head';
 // Head info editing box
 //-----------------------------------------------------------------------------
 
-export function setDocName(setDoc, value)  { setDoc(produce(draft => {draft.story.body.head.name = value})) }
-export function setDocTitle(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.title = value}))}
-export function setDocSubtitle(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.subtitle = value}))}
-export function setDocAuthor(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.author = value}))}
-export function setDocPseudonym(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.pseudonym = value}))}
+export function updateDocName(updateDoc, value)  { updateDoc(doc => {doc.head.name = value}) }
+export function updateDocTitle(updateDoc, value) { updateDoc(doc => {doc.head.title = value})}
+export function updateDocSubtitle(updateDoc, value) { updateDoc(doc => {doc.head.subtitle = value})}
+export function updateDocAuthor(updateDoc, value) { updateDoc(doc => {doc.head.author = value})}
+export function updateDocPseudonym(updateDoc, value) { updateDoc(doc => {doc.head.pseudonym = value})}
 
-export function setDocStoryType(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.type = value}))}
-export function setDocChapterElem(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.chapterelem = value}))}
-export function setDocChapterType(setDoc, value) { setDoc(produce(draft => {draft.story.body.head.export.chaptertype = value}))}
+export function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
+export function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapterelem = value})}
+export function updateDocChapterType(updateDoc, value) { updateDoc(doc => {doc.exports.chaptertype = value})}
 
 export class EditHead extends React.PureComponent {
   render() {
-    const {head, setDoc, expanded} = this.props
+    const {head, updateDoc, expanded} = this.props
     const info = mawe.info(head)
 
     return <>
       <Accordion disableGutters defaultExpanded={expanded}>
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
       <AccordionDetails><VBox>
-      <TextField label="Name" value={head.name ?? ""} onChange={e => setDocName(setDoc, e.target.value)}/>
-      <TextField label="Title" value={head.title ?? ""} onChange={e => setDocTitle(setDoc, e.target.value)}/>
-      <TextField label="Subtitle" value={head.subtitle ?? ""} onChange={e => setDocSubtitle(setDoc, e.target.value)}/>
+      <TextField label="Name" value={head.name ?? ""} onChange={e => updateDocName(updateDoc, e.target.value)}/>
+      <TextField label="Title" value={head.title ?? ""} onChange={e => updateDocTitle(updateDoc, e.target.value)}/>
+      <TextField label="Subtitle" value={head.subtitle ?? ""} onChange={e => updateDocSubtitle(updateDoc, e.target.value)}/>
       </VBox></AccordionDetails>
       </Accordion>
 
       <Accordion disableGutters defaultExpanded={expanded}>
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
       <AccordionDetails><VBox>
-      <TextField label="Author" value={head.author ?? ""} onChange={e => setDocAuthor(setDoc, e.target.value)}/>
-      <TextField label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => setDocPseudonym(setDoc, e.target.value)}/>
+      <TextField label="Author" value={head.author ?? ""} onChange={e => updateDocAuthor(updateDoc, e.target.value)}/>
+      <TextField label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => updateDocPseudonym(updateDoc, e.target.value)}/>
       </VBox></AccordionDetails>
       </Accordion>
     </>
@@ -78,7 +78,7 @@ export class EditHead extends React.PureComponent {
 
 export class EditHeadButton extends React.PureComponent {
   render() {
-    const {text, head, setDoc, expanded} = this.props
+    const {text, head, updateDoc, expanded} = this.props
     return <PopupState variant="popover" popupId="head-edit">
     {(popupState) => <React.Fragment>
       <Button {...bindTrigger(popupState)} tooltip="Edit story info">{text}</Button>
@@ -88,7 +88,7 @@ export class EditHeadButton extends React.PureComponent {
           horizontal: 'left',
         }}
       >
-        <EditHead head={head} setDoc={setDoc} expanded={expanded}/>
+        <EditHead head={head} updateDoc={updateDoc} expanded={expanded}/>
       </Popover>
     </React.Fragment>
     }</PopupState>
@@ -260,11 +260,11 @@ export class FormatWords extends React.PureComponent {
 export class HeadInfo extends React.PureComponent {
 
   render() {
-    const {setDoc, head} = this.props
+    const {updateDoc, head} = this.props
     const header = getHeader(head)
 
     return <>
-      <EditHeadButton text={header} setDoc={setDoc} head={head} expanded={true}/>
+      <EditHeadButton text={header} updateDoc={updateDoc} head={head} expanded={true}/>
     </>
   }
 }

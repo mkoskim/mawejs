@@ -16,22 +16,20 @@ import { splitByTrailingElem } from "../../util";
 //
 //-----------------------------------------------------------------------------
 
-export function FormatBody(format, body) {
-  const { head, parts } = body
-  const story = {
-    type: head.export.type
-  }
+export function FormatBody(format, story) {
+  const { head, exports, body } = story
+
   const chapters = {
-    element: head.export.chapterelem,
-    type: head.export.chaptertype,
+    element: exports.chapterelem,
+    type: exports.chaptertype,
   }
 
-  const pgbreak = story.type === "long"
+  const pgbreak = exports.type === "long"
   var chnum = 1
 
   return format["file"](
     mawe.info(head),
-    FormatBody(parts),
+    FormatBody(body.parts),
     {
       pgbreak
     }

@@ -50,11 +50,9 @@ import {
 } from "./settings"
 
 import { ViewSelectButtons, ViewSwitch } from "./views";
-import {produce} from "immer"
 import {useImmer} from "use-immer"
 
 import { mawe } from "../../document"
-import { nanoid, sleep } from '../../util';
 
 import { appQuit, appLog } from "../../system/host"
 
@@ -77,8 +75,10 @@ export default function App(props) {
     recent, setRecent,
   }), [recent, setRecent])
 
-  const [doc, setDoc] = useState(null)
+  const [doc, updateDoc] = useImmer(null)
   const [command, setCommand] = useState()
+
+  //console.log("Doc:", doc)
 
   useEffect(() => {
     if(!command) return
@@ -103,7 +103,7 @@ export default function App(props) {
     <SnackbarProvider>
       <SettingsContext.Provider value={settings}>
         <CmdContext.Provider value={setCommand}>
-          <View key={doc?.key} doc={doc} setDoc={setDoc}/>
+          <View key={doc?.key} doc={doc} updateDoc={updateDoc}/>
         </CmdContext.Provider>
       </SettingsContext.Provider>
     </SnackbarProvider>
@@ -114,10 +114,7 @@ export default function App(props) {
   function docFromFile({filename}) {
     mawe.load(filename)
     .then(content => {
-      setDoc({
-        ...content,
-        key: nanoid(),
-      })
+      updateDoc(content)
       recentAdd(content.file, recent, setRecent)
       Inform.success(`Loaded: ${content.file.name}`);
     })
@@ -128,10 +125,7 @@ export default function App(props) {
   }
 
   function docFromBuffer({buffer}) {
-    setDoc({
-      ...mawe.create(buffer),
-      key: nanoid(),
-    })
+    updateDoc(mawe.create(buffer))
   }
 
   function docFromResource({filename}) {
@@ -149,7 +143,7 @@ export default function App(props) {
   function docSaveAs({filename}) {
     mawe.saveas(doc, filename)
     .then(file => {
-      setDoc(doc => ({ ...doc, file }))
+      updateDoc(doc => { doc.file = file })
       //recentRemove(doc.file, recent, setRecent)
       recentAdd(file, recent, setRecent)
       Inform.success(`Saved ${file.name}`)
@@ -158,7 +152,7 @@ export default function App(props) {
   }
 
   function docClose() {
-    setDoc(null)
+    updateDoc(null)
   }
 }
 
@@ -168,32 +162,22 @@ export default function App(props) {
 //
 //*****************************************************************************
 
-function View({doc, setDoc}) {
-
-  // Inject view settings to settings
-  const settings = useContext(SettingsContext)
+function View({doc, updateDoc}) {
 
   //const [view, setView] = useSetting(doc?.file?.id, getViewDefaults(null))
-  const [view, setView] = useState(() => getViewDefaults())
-
-  const settingsWithView = useMemo(() => ({
-    ...settings,
-    view, setView,
-  }), [settings, view, setView])
+  //const [view, setView] = useState(() => getViewDefaults())
 
   return (
-    <SettingsContext.Provider value={settingsWithView}>
-      <VBox className="ViewPort">
-        <WorkspaceTab doc={doc} setDoc={setDoc}/>
-        <ViewSwitch doc={doc} setDoc={setDoc}/>
-      </VBox>
-    </SettingsContext.Provider>
+    <VBox className="ViewPort">
+      <WorkspaceTab doc={doc} updateDoc={updateDoc}/>
+      <ViewSwitch doc={doc} updateDoc={updateDoc}/>
+    </VBox>
   )
 }
 
 //-----------------------------------------------------------------------------
 
-function WorkspaceTab({doc, setDoc}) {
+function WorkspaceTab({doc, updateDoc}) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
@@ -208,7 +192,7 @@ function WorkspaceTab({doc, setDoc}) {
 
   //console.log("Recent:", recent)
   if(!doc) return <WithoutDoc setCommand={setCommand} recent={recent}/>
-  return <WithDoc setCommand={setCommand} recent={recent} doc={doc} setDoc={setDoc}/>
+  return <WithDoc setCommand={setCommand} recent={recent} doc={doc} updateDoc={updateDoc}/>
 }
 
 function WithoutDoc({setCommand, recent}) {
@@ -222,13 +206,11 @@ function WithoutDoc({setCommand, recent}) {
   </ToolBox>
 }
 
-function WithDoc({setCommand, doc, setDoc, recent}) {
+function WithDoc({setCommand, doc, updateDoc, recent}) {
   const file = doc?.file
   const filename = file?.name ?? "<Unnamed>"
-  const body = doc.story.body
-  const {head} = body
-  const {view, setView} = useContext(SettingsContext)
-  const setMode = useCallback(value => setView(produce(view => {view.selected = value})), [])
+  const {head, body} = doc
+  const setSelected = useCallback(value => updateDoc(doc => {doc.ui.view.selected = value}), [])
 
   const {chars, text, missing} = {
     chars: 0,
@@ -244,9 +226,9 @@ function WithDoc({setCommand, doc, setDoc, recent}) {
   return <ToolBox>
     <FileMenu hasdoc={true} setCommand={setCommand} file={file} text={filename} recent={recent}/>
     <Separator />
-    <ViewSelectButtons selected={view.selected} setSelected={setMode}/>
+    <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected}/>
     <Separator/>
-    <HeadInfo head={head} setDoc={setDoc}/>
+    <HeadInfo head={head} updateDoc={updateDoc}/>
 
     <Filler />
     <Separator/>

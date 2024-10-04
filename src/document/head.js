@@ -10,7 +10,6 @@ export function info(head) {
   return {
     ...getTitle(head),
     ...getAuthor(head),
-    type: getType(head),
   }
 }
 
@@ -42,8 +41,8 @@ function getAuthor(head) {
   }
 }
 
-function getType(head) {
-  switch(head.export?.type) {
+export function storyType(story) {
+  switch(story.exports?.type) {
     case "short": return "Short"
     case "long": return "Long"
   }

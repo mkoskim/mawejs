@@ -59,7 +59,7 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
   const fSortAscending  = (a, b) => (a[1] > b[1]) ? 1 : (a[1] < b[1]) ? -1 : 0
   const fSortDescending = (a, b) => (a[1] < b[1]) ? 1 : (a[1] > b[1]) ? -1 : 0
 
-  //console.log(doc.story.body.words)
+  //console.log(doc.body.words)
   //const table = createWordTable(section)
   //console.log(table)
   const wt = doFilter(createWordTable(section))

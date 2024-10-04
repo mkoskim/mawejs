@@ -59,19 +59,65 @@ import {
 } from "../common/factory";
 
 import {
-  SectionWordInfo,
   ChooseVisibleElements, ChooseWordFormat,
-  EditHeadButton, OpenFolderButton,
 } from "../common/components";
 
-import { mawe } from "../../document";
-import { produce } from "immer";
-import { SettingsContext} from "../app/settings";
 import { wcElem } from "../../document/util";
+import { elemFind } from "../../document/xmljs/load";
+import { getFocusTo, setFocusTo } from "../app/views";
 
 //-----------------------------------------------------------------------------
+// Editor settings
+//-----------------------------------------------------------------------------
 
-export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
+export function loadEditorSettings(settings) {
+
+  function getBodySettings() {
+    const body = elemFind(settings, "body")
+    if(!body) return {}
+    const {words, indexed} = body.attributes
+
+    return {
+      ...(words ? {words} : {}),
+      ...(indexed ? {indexed: indexed.split(",")} : {})
+    }
+  }
+
+  return {
+    body: {
+      indexed: ["part", "scene", "synopsis"],
+      words: "numbers",
+      ...getBodySettings()
+    },
+    notes: {
+      indexed: ["part", "scene", "synopsis"],
+    },
+  }
+}
+
+export function saveEditorSettings(settings) {
+  return {
+    type: "editor",
+    attributes: {},
+    elements: [
+      {
+        type: "body",
+        attributes: {
+          words: settings.body.words,
+          indexed: settings.body.indexed.join(",")
+        },
+        elements: [
+        ]
+      },
+    ]
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Editor view
+//-----------------------------------------------------------------------------
+
+export function SingleEditView({doc, updateDoc}) {
 
   //---------------------------------------------------------------------------
   // For development purposes:
@@ -80,7 +126,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   /*
   return <React.Fragment>
     <HBox>
-    <Pre style={{ width: "50%" }} content={doc.story} />
+    <Pre style={{ width: "50%" }} content={doc} />
     <Pre style={{ width: "50%" }} content={mawe.fromXML(mawe.buf2tree(mawe.tree2buf(mawe.toXML(slate2doc(doc, doc2slate(doc)).story))))} />
     </HBox>
   </React.Fragment>
@@ -99,28 +145,25 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   const bodyeditor = useMemo(() => getEditor(), [])
   const noteeditor = useMemo(() => getEditor(), [])
 
-  //console.log(doc.story.body)
-  //console.log(bodybuffer)
-
   //---------------------------------------------------------------------------
   // Get updates from Slate, and apply them to doc, too
   //---------------------------------------------------------------------------
 
   const updateBody = useCallback(buffer => {
     if(isAstChange(bodyeditor)) {
-      setDoc(produce(draft => {
-        draft.story.body.parts = buffer;
-        draft.story.body.words = wcElem({type: "sect", children: buffer})
-      }))
+      updateDoc(doc => {
+        doc.body.parts = buffer;
+        doc.body.words = wcElem({type: "sect", children: buffer})
+      })
     }
   }, [bodyeditor])
 
   const updateNotes = useCallback(buffer => {
     if(isAstChange(noteeditor)) {
-      setDoc(produce(draft => {
-        draft.story.notes.parts = buffer
-        draft.story.notes.words = wcElem({type: "sect", children: buffer})
-      }))
+      updateDoc(doc => {
+        doc.notes.parts = buffer
+        doc.notes.words = wcElem({type: "sect", children: buffer})
+      })
     }
   }, [noteeditor])
 
@@ -128,6 +171,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   // Section selection + focusing
   //---------------------------------------------------------------------------
 
+  const focusTo = getFocusTo(doc)
   const [active, _setActive] = useState(focusTo?.sectID ?? "body")
 
   //console.log("ActiveID:", active)
@@ -135,7 +179,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   const setActive = useCallback((sectID, elemID) => {
     //console.log("setActive:", sectID, elemID)
     _setActive(sectID)
-    setFocusTo({id: elemID})
+    setFocusTo(updateDoc, {id: elemID})
   })
 
   const activeEdit = useCallback(() => {
@@ -169,14 +213,13 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
   // Index settings: Change these to component props
   //---------------------------------------------------------------------------
 
-  const {view, setView} = useContext(SettingsContext)
+  const indexed1 = doc.ui.editor.body.indexed;
+  const setIndexed1 = useCallback(value => updateDoc(doc => {doc.ui.editor.body.indexed = value}), [updateDoc])
+  const words1 = doc.ui.editor.body.words
+  const setWords1 = useCallback(value => updateDoc(doc => {doc.ui.editor.body.words = value}), [updateDoc])
 
-  const indexed1 = view.editor.body.indexed;
-  const setIndexed1 = useCallback(value => setView(produce(draft => {draft.editor.body.indexed = value})), [setView])
-  const words1 = view.editor.body.words
-  const setWords1 = useCallback(value => setView(produce(draft => {draft.editor.body.words = value})), [setView])
-
-  const [indexed2, setIndexed2] = useState(["part", "scene", "synopsis"])
+  const indexed2 = doc.ui.editor.notes.indexed
+  const setIndexed2 = useCallback(value => updateDoc(doc => {doc.ui.editor.notes.indexed = value}), [updateDoc])
 
   //---------------------------------------------------------------------------
   // Render elements: what we want is to get menu items from subcomponents to
@@ -188,7 +231,7 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
 
   const settings = {
     doc,
-    setDoc,
+    updateDoc,
     selectRight,
     setSelectRight,
     searchBoxRef,
@@ -205,14 +248,14 @@ export function SingleEditView({doc, setDoc, focusTo, setFocusTo}) {
       words: words1,
       setWords: setWords1,
       editor: bodyeditor,
-      buffer: doc.story.body.parts,
+      buffer: doc.body.parts,
       onChange: updateBody,
       },
     notes: {
       indexed: indexed2,
       setIndexed: setIndexed2,
       editor: noteeditor,
-      buffer: doc.story.notes.parts,
+      buffer: doc.notes.parts,
       onChange: updateNotes,
     },
     leftstyle:    {maxWidth: "400px", width: "400px"},
@@ -386,9 +429,8 @@ function LeftPanel({settings}) {
   return <VBox style={widths}>
     <LeftPanelMenu settings={settings}/>
     <DocIndex
-      name={mawe.info(doc.story.body.head).title}
       style={rest}
-      section={doc.story.body}
+      section={doc.body}
       include={settings.body.indexed}
       wcFormat={settings.body.words}
       activeID="body"
@@ -449,9 +491,8 @@ function RightPanelContent({settings}) {
   switch(selectRight) {
     case "noteindex":
       return <DocIndex
-        name="Notes"
         style={style}
-        section={doc.story.notes}
+        section={doc.notes}
         include={settings.notes.indexed}
         wcFormat={settings.notes.words}
         activeID="notes"
@@ -459,14 +500,14 @@ function RightPanelContent({settings}) {
       />
     case "wordtable":
       return <WordTable
-        section={doc.story.body}
+        section={doc.body}
         setSearchText={setSearchText}
         searchBoxRef={searchBoxRef}
       />
     case "tagtable":
       return <TagTable
         editor={body.editor}
-        section={doc.story.body}
+        section={doc.body}
       />
     default: break;
   }
@@ -618,9 +659,6 @@ function EditorBox({style, settings, mode="Condensed"}) {
   const {searchBoxRef, searchText, setSearchText} = settings
   const {highlightText} = settings
 
-  const {head} = doc.story.body
-  const {title, author} = mawe.info(head)
-
   function activeEditor() {
     switch(activeID) {
       case "body": return settings.body.editor
@@ -630,12 +668,12 @@ function EditorBox({style, settings, mode="Condensed"}) {
 
   return <VFiller>
     <ToolBox style={styles.toolbox.left}>
-      {/* <EditHeadButton head={head} setDoc={settings.setDoc} expanded={true}/> */}
+      {/* <EditHeadButton head={head} updateDoc={settings.updateDoc} expanded={true}/> */}
       <Searching editor={activeEditor()} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
       {/* <OpenFolderButton filename={doc.file?.id}/> */}
       {/* <Separator/> */}
-      {/* <SectionWordInfo section={doc.story.body}/> */}
+      {/* <SectionWordInfo section={doc.body}/> */}
     </ToolBox>
     {/* Editor board and sheet */}
     <div className="Filler Board" style={{...style}}>
