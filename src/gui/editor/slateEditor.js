@@ -179,11 +179,11 @@ class CharStyleButtons extends React.PureComponent {
 
   static buttons = {
     "bold": {
-      tooltip: "Bold",
+      tooltip: "Bold (Ctrl-B)",
       icon: <Icon.Style.Bold />
     },
     "italic": {
-      tooltip: "Italic",
+      tooltip: "Italic (Ctrl-I)",
       icon: <Icon.Style.Italic />,
     },
     "fold": {
@@ -246,9 +246,9 @@ export class FoldButtons extends React.PureComponent {
     function onUnfoldAll(e) { foldAll(editor, false); ReactEditor.focus(editor); }
 
     return <>
-      <Button tooltip="Toggle fold" onClick={onFoldToggle}><Icon.Style.Folded/></Button>
-      <Button tooltip="Fold all" onClick={onFoldAll}><Icon.Style.FoldAll/></Button>
-      <Button tooltip="Unfold all" onClick={onUnfoldAll}><Icon.Style.UnfoldAll/></Button>
+      <Button tooltip="Toggle fold (Alt-F)" onClick={onFoldToggle}><Icon.Style.Folded/></Button>
+      <Button tooltip="Fold all (Alt-A)" onClick={onFoldAll}><Icon.Style.FoldAll/></Button>
+      <Button tooltip="Unfold all (Alt-S)" onClick={onUnfoldAll}><Icon.Style.UnfoldAll/></Button>
       </>
   }
 }
