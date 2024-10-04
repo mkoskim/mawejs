@@ -94,7 +94,20 @@ export function loadEditorSettings(settings) {
     },
     notes: {
       indexed: ["part", "scene", "synopsis"],
+      words: undefined,
     },
+    left: {
+      style: {maxWidth: "400px", width: "400px"},
+    },
+    right: {
+      style: {maxWidth: "300px", width: "300px"},
+      selected: "noteindex"
+    },
+    toolbox: {
+      left: {background: "white", borderRight: "1px solid lightgray"},
+      mid: {background: "white"},
+      right: {background: "white", borderLeft: "1px solid lightgray"},
+    }
   }
 }
 
@@ -190,8 +203,6 @@ export function SingleEditView({doc, updateDoc}) {
 
   const {focusTo, active} = doc.ui.editor
 
-  //console.log("ActiveID:", active)
-
   const getSectIDByElemID = useCallback(elemID => {
     if(!elemID) return undefined
     if(hasElem(bodyeditor, elemID)) return "body"
@@ -234,56 +245,31 @@ export function SingleEditView({doc, updateDoc}) {
   }, [getEditorBySectID, active])
 
   //---------------------------------------------------------------------------
-  // Index settings: Change these to component props
-  //---------------------------------------------------------------------------
-
-  const indexed1 = doc.ui.editor.body.indexed;
-  const setIndexed1 = useCallback(value => updateDoc(doc => {doc.ui.editor.body.indexed = value}), [updateDoc])
-  const words1 = doc.ui.editor.body.words
-  const setWords1 = useCallback(value => updateDoc(doc => {doc.ui.editor.body.words = value}), [updateDoc])
-
-  const indexed2 = doc.ui.editor.notes.indexed
-  const setIndexed2 = useCallback(value => updateDoc(doc => {doc.ui.editor.notes.indexed = value}), [updateDoc])
-
-  //---------------------------------------------------------------------------
   // Render elements: what we want is to get menu items from subcomponents to
   // the toolbar.
-
-  const [selectRight, setSelectRight] = useState("noteindex")
 
   //---------------------------------------------------------------------------
 
   const settings = {
     doc,
     updateDoc,
-    selectRight,
-    setSelectRight,
     searchBoxRef,
     searchText,
     highlightText,
     setSearchText,
-    activeID: active,
     setActive,
     focusTo,
     setFocusTo,
     body: {
-      indexed: indexed1,
-      setIndexed: setIndexed1,
-      words: words1,
-      setWords: setWords1,
       editor: bodyeditor,
       buffer: doc.body.parts,
       onChange: updateBody,
       },
     notes: {
-      indexed: indexed2,
-      setIndexed: setIndexed2,
       editor: noteeditor,
       buffer: doc.notes.parts,
       onChange: updateNotes,
     },
-    leftstyle:    {maxWidth: "400px", width: "400px"},
-    rightstyle:   {maxWidth: "300px", width: "300px"},
   }
 
   //---------------------------------------------------------------------------
@@ -414,24 +400,12 @@ export function SingleEditView({doc, updateDoc}) {
 }
 
 //---------------------------------------------------------------------------
-// Toolbar styles
-//---------------------------------------------------------------------------
-
-const styles = {
-  toolbox: {
-    left: {background: "white", borderRight: "1px solid lightgray"},
-    mid: {background: "white"},
-    right: {background: "white", borderLeft: "1px solid lightgray"},
-  }
-}
-
-//---------------------------------------------------------------------------
 // Left panels
 //---------------------------------------------------------------------------
 
 function LeftPanel({settings}) {
   const {doc, setActive} = settings
-  const {leftstyle: style} = settings
+  const {style} = doc.ui.editor.left
 
   const {width, minWidth, maxWidth, ...rest} = style
   const widths={width, minWidth, maxWidth}
@@ -441,8 +415,8 @@ function LeftPanel({settings}) {
     <DocIndex
       style={rest}
       section={doc.body}
-      include={settings.body.indexed}
-      wcFormat={settings.body.words}
+      include={doc.ui.editor.body.indexed}
+      wcFormat={doc.ui.editor.body.words}
       activeID="body"
       setActive={setActive}
     />
@@ -456,17 +430,24 @@ const LeftIndexChoices = {
 
 function LeftPanelMenu({settings}) {
 
-  return <ToolBox style={styles.toolbox.left}>
+  const {doc, updateDoc} = settings
+
+  const indexed = doc.ui.editor.body.indexed;
+  const setIndexed = useCallback(value => updateDoc(doc => {doc.ui.editor.body.indexed = value}), [updateDoc])
+  const words = doc.ui.editor.body.words
+  const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.body.words = value}), [updateDoc])
+
+  return <ToolBox style={doc.ui.editor.toolbox.left}>
     <ChooseVisibleElements
       choices={LeftIndexChoices.visible}
-      selected={settings.body.indexed}
-      setSelected={settings.body.setIndexed}
+      selected={indexed}
+      setSelected={setIndexed}
     />
     <Separator/>
     <ChooseWordFormat
       choices={LeftIndexChoices.words}
-      selected={settings.body.words}
-      setSelected={settings.body.setWords}
+      selected={words}
+      setSelected={setWords}
     />
   </ToolBox>
 }
@@ -477,34 +458,39 @@ function LeftPanelMenu({settings}) {
 
 function RightPanel({settings}) {
   const {
-    rightstyle: style,
-    selectRight, setSelectRight
+    doc, updateDoc,
   } = settings
 
+  const {style} = doc.ui.editor.right
+  const selectRight = doc.ui.editor.right.selected
+  const setSelectRight = useCallback(value => updateDoc(doc => {doc.ui.editor.right.selected = value}), [updateDoc])
+
   return <VFiller style={style}>
-      <ToolBox style={styles.toolbox.right}>
+      <ToolBox style={doc.ui.editor.toolbox.right}>
         <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
         <Filler />
       </ToolBox>
-      <RightPanelContent settings={settings}/>
+      <RightPanelContent settings={settings} selected={selectRight}/>
     </VFiller>
 }
 
-function RightPanelContent({settings}) {
+function RightPanelContent({settings, selected}) {
   const {
-    rightstyle: style, doc,
-    selectRight, setActive,
+    doc,
+    setActive,
     setSearchText, searchBoxRef,
     body,
   } = settings
 
-  switch(selectRight) {
+  const {style} = doc.ui.editor.right
+
+  switch(selected) {
     case "noteindex":
       return <DocIndex
         style={style}
         section={doc.notes}
-        include={settings.notes.indexed}
-        wcFormat={settings.notes.words}
+        include={doc.ui.editor.notes.indexed}
+        wcFormat={doc.ui.editor.notes.words}
         activeID="notes"
         setActive={setActive}
       />
@@ -661,18 +647,19 @@ class Searching extends React.PureComponent {
 //-----------------------------------------------------------------------------
 
 function EditorBox({style, settings, mode="Condensed"}) {
-  const {doc, activeID} = settings
-  //const {editor, buffer, onChange} = (activeID === "body") ? settings.body : settings.notes
+  const {doc} = settings
+  const {active} = doc.ui.editor
+
   const {searchBoxRef, searchText, setSearchText} = settings
   const {highlightText} = settings
 
   const activeEditor = {
     "body": settings.body.editor,
     "notes": settings.notes.editor,
-  }[settings.activeID]
+  }[active]
 
   return <VFiller>
-    <ToolBox style={styles.toolbox.left}>
+    <ToolBox style={doc.ui.editor.toolbox.mid}>
       {/* <EditHeadButton head={head} updateDoc={settings.updateDoc} expanded={true}/> */}
       <Searching editor={activeEditor} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Filler />
@@ -684,14 +671,14 @@ function EditorBox({style, settings, mode="Condensed"}) {
     <div className="Filler Board" style={{...style}}>
       <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
       {
-        activeID === "body"
+        active === "body"
         ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
         : null
       }
       </Slate>
       <Slate editor={settings.notes.editor} initialValue={settings.notes.buffer} onChange={settings.notes.onChange}>
       {
-        activeID === "notes"
+        active === "notes"
         ? <SlateEditable className={addClass("Sheet", mode)} highlight={highlightText}/>
         : null
       }
