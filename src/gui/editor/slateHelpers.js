@@ -203,7 +203,7 @@ export function focusByID(editor, id) {
   }
 }
 
-export async function focusByPath(editor, path) {
+export async function focusByPath(editor, path, collapse = true) {
   //console.log("FocusByPath", path)
   if(!ReactEditor.isFocused(editor)) {
     ReactEditor.focus(editor)
@@ -211,7 +211,7 @@ export async function focusByPath(editor, path) {
   }
   if(path) {
     Transforms.select(editor, path);
-    Transforms.collapse(editor);
+    if(collapse) Transforms.collapse(editor);
     scrollToPoint(editor, {path, offset: 0})
   }
 }
@@ -230,7 +230,7 @@ async function scrollToPoint(editor, point) {
 
 export async function scrollToRange(editor, range, focus) {
   if(focus) {
-    await focusByPath(editor, range)
+    await focusByPath(editor, range, false)
   }
 
   scrollToPoint(editor, range.focus)
