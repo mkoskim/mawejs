@@ -90,10 +90,6 @@ export function loadEditorSettings(settings) {
   return {
     active: "body",
     focusTo: {id: undefined},
-    track: {
-      marks: {},
-      block: {},
-    },
     body: {
       indexed: ["part", "scene", "synopsis"],
       words: "numbers",
@@ -154,26 +150,6 @@ export function setFocusTo(updateDoc, sectID, elemID) {
 //
 //*****************************************************************************
 
-function trackMarks(editor, doc, updateDoc) {
-  try {
-    const marks = Editor.marks(editor)
-    const [node] = Editor.above(editor, {match: n => elemIsBlock(editor, n)})
-    const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "part")})
-
-    //console.log("Track:", marks, node, block)
-
-    updateDoc(doc => {
-      doc.ui.editor.track.marks.bold = marks.bold
-      doc.ui.editor.track.marks.italic = marks.italic
-      doc.ui.editor.track.node = node.type
-      doc.ui.editor.track.block.fold = block.folded
-      doc.ui.editor.track.block.id   = block.id
-    })
-  } catch(e) {
-    console.log("Track marks error.")
-  }
-}
-
 export function SingleEditView({doc, updateDoc}) {
 
   //---------------------------------------------------------------------------
@@ -194,6 +170,37 @@ export function SingleEditView({doc, updateDoc}) {
   /**/
 
   //---------------------------------------------------------------------------
+  // Cursor movement tracking
+  //---------------------------------------------------------------------------
+
+  const [track, setTrack] = useState({
+    marks: {},
+    block: {},
+    node: undefined,
+  })
+
+  const trackMarks = useCallback((editor) => {
+    try {
+      const marks = Editor.marks(editor)
+      const [node] = Editor.above(editor, {match: n => elemIsBlock(editor, n)})
+      const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "part")})
+
+      //console.log("Track:", marks, node, block)
+
+      setTrack({
+        marks,
+        node: node.type,
+        block: {
+          fold: block.folded,
+          id: block.id
+        }
+      })
+    } catch(e) {
+      console.log("Track marks error.")
+    }
+  }, [setTrack])
+
+  //---------------------------------------------------------------------------
   // sections
   //---------------------------------------------------------------------------
 
@@ -201,7 +208,7 @@ export function SingleEditView({doc, updateDoc}) {
   const noteeditor = useMemo(() => getEditor(), [])
 
   const updateBody = useCallback(buffer => {
-    trackMarks(bodyeditor, doc, updateDoc)
+    trackMarks(bodyeditor)
     if(isAstChange(bodyeditor)) {
       updateDoc(doc => {
         doc.body.parts = buffer;
@@ -211,7 +218,7 @@ export function SingleEditView({doc, updateDoc}) {
   }, [bodyeditor])
 
   const updateNotes = useCallback(buffer => {
-    trackMarks(noteeditor, doc, updateDoc)
+    trackMarks(noteeditor)
     if(isAstChange(noteeditor)) {
       updateDoc(doc => {
         doc.notes.parts = buffer
@@ -283,6 +290,7 @@ export function SingleEditView({doc, updateDoc}) {
     setActive,
     focusTo,
     setFocusTo,
+    track,
     body: {
       editor: bodyeditor,
       buffer: doc.body.parts,
@@ -429,7 +437,7 @@ export function SingleEditView({doc, updateDoc}) {
 //---------------------------------------------------------------------------
 
 function LeftPanel({settings}) {
-  const {doc, setActive} = settings
+  const {doc, setActive, track} = settings
   const {style} = doc.ui.editor.left
 
   const {width, minWidth, maxWidth, ...rest} = style
@@ -444,7 +452,7 @@ function LeftPanel({settings}) {
       wcFormat={doc.ui.editor.body.words}
       activeID="body"
       setActive={setActive}
-      current={doc.ui.editor.track.block.id}
+      current={track.block.id}
     />
   </VBox>
 }
@@ -505,7 +513,7 @@ function RightPanelContent({settings, selected}) {
     doc,
     setActive,
     setSearchText, searchBoxRef,
-    body,
+    body, track,
   } = settings
 
   switch(selected) {
@@ -516,7 +524,7 @@ function RightPanelContent({settings, selected}) {
         wcFormat={doc.ui.editor.notes.words}
         activeID="notes"
         setActive={setActive}
-        current={doc.ui.editor.track.block.id}
+        current={track.block.id}
       />
     case "wordtable":
       return <WordTable
@@ -659,7 +667,7 @@ class Searching extends React.PureComponent {
 //-----------------------------------------------------------------------------
 
 function EditorBox({style, settings, mode="Condensed"}) {
-  const {doc} = settings
+  const {doc, track} = settings
   const {active} = doc.ui.editor
 
   const editor = {
@@ -674,7 +682,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
     {/* Editor toolbar */}
 
     <ToolBox style={doc.ui.editor.toolbox.mid}>
-      <EditButtons editor={editor} track={doc.ui.editor.track}/>
+      <EditButtons editor={editor} track={track}/>
       <Separator/>
       <Searching editor={editor} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Separator/>
