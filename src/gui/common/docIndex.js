@@ -9,22 +9,15 @@
 import "./styles/TOC.css"
 
 import React, {
-  useCallback, useEffect,
-  useDeferredValue, useMemo, memo,
+  useCallback, memo, useRef,
+  useEffect,
 } from "react"
 
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 import {
-  FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon, Tooltip,
-  ToggleButton, ToggleButtonGroup,
-  Input,
-  SearchBox,
-  Label,
-  List, ListItem, ListItemText,
-  Grid,
-  Separator, Loading, addClass, DeferredRender,
+  VBox, HBox, Filler,
+  addClass
 } from "./factory";
 
 import {FormatWords} from "./components";
@@ -33,10 +26,16 @@ import {wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
-export function DocIndex({name, style, activeID, section, wcFormat, include, setActive, unfold})
+export function DocIndex({name, style, activeID, section, wcFormat, include, setActive, unfold, current})
 {
+  const refCurrent = useRef(null)
+
+  useEffect(() =>{
+    if(refCurrent.current) refCurrent.current.scrollIntoViewIfNeeded()
+  }, [refCurrent.current])
+
   //---------------------------------------------------------------------------
-  // Actiovation function
+  // Activation function
   //---------------------------------------------------------------------------
 
   const onActivate = useCallback(id => {
@@ -90,6 +89,8 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
       include={includeItems}
       onActivate={onActivate}
       unfold={unfold}
+      current={current}
+      refCurrent={refCurrent}
     />
     </VBox>
   //return useDeferredValue(index)
@@ -138,7 +139,7 @@ class PartDropZone extends React.PureComponent {
   }
 
   DropZone(provided, snapshot) {
-    const {parts, wcFormat, include, onActivate, unfold} = this.props
+    const {parts, wcFormat, include, onActivate, unfold, current, refCurrent} = this.props
     const {innerRef, droppableProps, placeholder} = provided
 
     return <div
@@ -154,6 +155,8 @@ class PartDropZone extends React.PureComponent {
       wcFormat={wcFormat}
       onActivate={onActivate}
       unfold={unfold}
+      current={current}
+      refCurrent={refCurrent}
       />)}
     {placeholder}
     </div>
@@ -174,7 +177,7 @@ class PartItem extends React.PureComponent {
   }
 
   Draggable(provided, snapshot) {
-    const {elem, include, wcFormat, onActivate, unfold} = this.props
+    const {elem, include, wcFormat, onActivate, unfold, current, refCurrent} = this.props
     const {innerRef, draggableProps, dragHandleProps} = provided
 
     return <div
@@ -190,6 +193,8 @@ class PartItem extends React.PureComponent {
         folded={!unfold && elem.folded}
         wcFormat={wcFormat}
         onActivate={onActivate}
+        current={current}
+        refCurrent={refCurrent}
         {...dragHandleProps}
       />
       {(unfold || !elem.folded) && <SceneDropZone
@@ -198,6 +203,8 @@ class PartItem extends React.PureComponent {
         include={include}
         wcFormat={wcFormat}
         onActivate={onActivate}
+        current={current}
+        refCurrent={refCurrent}
       />}
     </div>
   }
@@ -214,7 +221,7 @@ class SceneDropZone extends React.PureComponent {
   }
 
   DropZone(provided, snapshot) {
-    const {scenes, include, wcFormat, onActivate} = this.props
+    const {scenes, include, wcFormat, onActivate, current, refCurrent} = this.props
     const {innerRef, droppableProps, placeholder} = provided
     const {isDraggingOver} = snapshot
 
@@ -230,6 +237,8 @@ class SceneDropZone extends React.PureComponent {
       include={include}
       wcFormat={wcFormat}
       onActivate={onActivate}
+      current={current}
+      refCurrent={refCurrent}
       />)}
     {placeholder}
     </div>
@@ -257,7 +266,7 @@ class SceneItem extends React.PureComponent {
 
   Draggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
-    const {elem, include, wcFormat, onActivate} = this.props
+    const {elem, include, wcFormat, onActivate, current, refCurrent} = this.props
 
     const bookmarks = elem.children.filter(elem => include.includes(elem.type))
 
@@ -275,6 +284,8 @@ class SceneItem extends React.PureComponent {
       words={elem.words}
       wcFormat={wcFormat}
       onActivate={onActivate}
+      current={current}
+      refCurrent={refCurrent}
     />
     {!elem.folded && bookmarks.map(elem => <IndexItem
       key={elem.id}
@@ -282,6 +293,7 @@ class SceneItem extends React.PureComponent {
       type={elem.type}
       name={elemAsText(elem)}
       onActivate={onActivate}
+      current={current}
     />)}
     </div>
   }
@@ -291,7 +303,7 @@ class SceneItem extends React.PureComponent {
 
 class IndexItem extends React.PureComponent {
   render() {
-    const {className, id, type, name, folded, words, wcFormat, onActivate, ...rest} = this.props
+    const {className, refCurrent, id, type, name, folded, words, wcFormat, onActivate, current, ...rest} = this.props
 
     //console.log("Render IndexItem:", type, id, name)
 
@@ -306,7 +318,8 @@ class IndexItem extends React.PureComponent {
       return onActivate && onActivate(id)
     }
 
-    return <HBox className={addClass(className, typeClass, foldClass, "Entry")} onClick={onClick} {...rest}>
+    return <ScrollRef current={current} id={id} refCurrent={refCurrent}>
+      <HBox className={addClass(className, typeClass, foldClass, "Entry")} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       <Filler/>
@@ -318,8 +331,16 @@ class IndexItem extends React.PureComponent {
         wcFormat={wcFormat}
       />
       */}
-    </HBox>
+      </HBox>
+    </ScrollRef>
   }
+}
+
+function ScrollRef({current, id, refCurrent, children}) {
+  if(current === id) {
+    return <div className="Current" ref={refCurrent}>{children}</div>
+  }
+  return children
 }
 
 class ItemIcon extends React.PureComponent {

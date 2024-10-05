@@ -92,7 +92,7 @@ export function loadEditorSettings(settings) {
     focusTo: {id: undefined},
     track: {
       marks: {},
-      block: undefined,
+      block: {},
     },
     body: {
       indexed: ["part", "scene", "synopsis"],
@@ -160,11 +160,14 @@ function trackMarks(editor, doc, updateDoc) {
     const [node] = Editor.above(editor, {match: n => elemIsBlock(editor, n)})
     const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "part")})
 
+    //console.log("Track:", marks, node, block)
+
     updateDoc(doc => {
       doc.ui.editor.track.marks.bold = marks.bold
       doc.ui.editor.track.marks.italic = marks.italic
-      doc.ui.editor.track.marks.fold = block.folded
-      doc.ui.editor.track.block = node.type
+      doc.ui.editor.track.node = node.type
+      doc.ui.editor.track.block.fold = block.folded
+      doc.ui.editor.track.block.id   = block.id
     })
   } catch(e) {
     console.log("Track marks error.")
@@ -441,6 +444,7 @@ function LeftPanel({settings}) {
       wcFormat={doc.ui.editor.body.words}
       activeID="body"
       setActive={setActive}
+      current={doc.ui.editor.track.block.id}
     />
   </VBox>
 }
@@ -512,6 +516,7 @@ function RightPanelContent({settings, selected}) {
         wcFormat={doc.ui.editor.notes.words}
         activeID="notes"
         setActive={setActive}
+        current={doc.ui.editor.track.block.id}
       />
     case "wordtable":
       return <WordTable
