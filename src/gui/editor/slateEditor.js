@@ -539,7 +539,7 @@ export function getEditor() {
 
     withReact,
     // ReactEditor overrides
-    //withTextPaste,
+    withTextPaste,
 
     withProtectFolds,     // Keep low! Prevents messing with folded blocks
   ].reduce((editor, func) => func(editor), undefined)
@@ -550,6 +550,9 @@ export function getEditor() {
 //-----------------------------------------------------------------------------
 
 function withTextPaste(editor) {
+
+  //---------------------------------------------------------------------------
+
   // Slate default behaviour: Pasted elements come to insertData(data)
   // method. It tries to insertFragmentData(data), which checks if the data
   // in clipboard is copied/cutted SlateJS object. If not, it falls back
@@ -559,25 +562,50 @@ function withTextPaste(editor) {
   const { insertTextData } = editor
 
   editor.insertTextData = data => {
-    console.log("insertTextData:", data)
-    return insertTextData(data)
+    //console.log("insertTextData:", data)
+    // return insertTextData(data)
+
+    const text = data.getData('text/plain')
+    if(!text) return false;
+
+    //console.log(text)
+
+    const [first, ...lines] = text.split(/\r\n|\r|\n/)
+    //const [first, ...lines] = text.split(/\r\n|\n\n/)
+    //console.log(first, lines)
+
+    editor.insertText(first)
+    editor.insertNodes(lines.map(line => ({
+      type: line ? "p" : "br",
+      id: nanoid(),
+      children: [{text: line}]
+    })))
+    return true
   }
 
   //---------------------------------------------------------------------------
+
+  /*
+  // Overridden for testing purposes:
   const { insertFragmentData } = editor
 
   editor.insertFragmentData = data => {
-    console.log("insertFragmentData:", data)
-    return insertFragmentData(data)
+    //console.log("insertFragmentData:", data)
+    //return insertFragmentData(data)
+    return false
   }
+  /**/
 
+  /*
   //---------------------------------------------------------------------------
+
   const { insertData } = editor
 
   editor.insertData = data => {
     console.log("insertData:", data)
     return insertData(data)
   }
+  /**/
 
   return editor;
 }
