@@ -111,7 +111,7 @@ export function SlateEditable({className, highlight, ...props}) {
     renderLeaf={renderLeaf}
     decorate={highlighter}
     onKeyDown={useCallback(e => onKeyDown(editor, e), [editor])}
-    onPaste={useCallback(e => onPaste(editor, e), [editor])}
+    //onPaste={useCallback(e => onPaste(editor, e), [editor])}
     {...props}
   />
 }
@@ -306,7 +306,7 @@ export class FoldButtons extends React.PureComponent {
     function onUnfoldAll(e) { foldAll(editor, false); ReactEditor.focus(editor); }
 
     return <>
-      <ToggleButton selected={folded} tooltip="Toggle fold (Alt-F)" onClick={onFoldToggle}><Icon.Style.Folded/></ToggleButton>
+      <IconButton selected={folded} tooltip="Toggle fold (Alt-F)" onClick={onFoldToggle}><Icon.Style.Folded/></IconButton>
       <IconButton tooltip="Fold all (Alt-A)" onClick={onFoldAll}><Icon.Style.FoldAll/></IconButton>
       <IconButton tooltip="Unfold all (Alt-S)" onClick={onUnfoldAll}><Icon.Style.UnfoldAll/></IconButton>
       </>
@@ -529,15 +529,57 @@ export function getEditor() {
 
   return [
     createEditor,
+    // Base editor
     withHistory,
     withIDs,              // Autogenerate IDs
     withWordCount,
     withBreaks,
     withFixNesting,
     withMarkup,
-    withProtectFolds,     // Keep low! Prevents messing with folded blocks
+
     withReact,
+    // ReactEditor overrides
+    //withTextPaste,
+
+    withProtectFolds,     // Keep low! Prevents messing with folded blocks
   ].reduce((editor, func) => func(editor), undefined)
+}
+
+//-----------------------------------------------------------------------------
+// Pasting text to editor
+//-----------------------------------------------------------------------------
+
+function withTextPaste(editor) {
+  // Slate default behaviour: Pasted elements come to insertData(data)
+  // method. It tries to insertFragmentData(data), which checks if the data
+  // in clipboard is copied/cutted SlateJS object. If not, it falls back
+  // to insertTextData(data).
+
+  //---------------------------------------------------------------------------
+  const { insertTextData } = editor
+
+  editor.insertTextData = data => {
+    console.log("insertTextData:", data)
+    return insertTextData(data)
+  }
+
+  //---------------------------------------------------------------------------
+  const { insertFragmentData } = editor
+
+  editor.insertFragmentData = data => {
+    console.log("insertFragmentData:", data)
+    return insertFragmentData(data)
+  }
+
+  //---------------------------------------------------------------------------
+  const { insertData } = editor
+
+  editor.insertData = data => {
+    console.log("insertData:", data)
+    return insertData(data)
+  }
+
+  return editor;
 }
 
 //-----------------------------------------------------------------------------

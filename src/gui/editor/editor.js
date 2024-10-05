@@ -620,8 +620,9 @@ class Searching extends React.PureComponent {
         <IconButton
           tooltip="Search text (Ctrl-F)"
           size="small"
+          onClick={ev => setSearchText("")}
         >
-          <Icon.Action.Search onClick={ev => setSearchText("")}/>
+          <Icon.Action.Search/>
         </IconButton>
       );
     }
