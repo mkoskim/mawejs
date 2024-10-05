@@ -17,23 +17,27 @@ export const theme = createTheme({
         root: {
           textTransform: 'none',
           lineHeight: 1.0,
-          fontSize: "12pt",
-          minWidth: "32px",
+          //minWidth: "32px",
           minHeight: "32px",
-          padding: "4px 4px",
+          padding: "4px",
+          "&:hover": {
+            background: "lightgrey",
+          },
         },
       },
     },
     MuiButton: {
       defaultProps: {
-        size: 'small',
+        //size: 'small',
       },
       styleOverrides: {
         root: {
           textTransform: 'none',
           lineHeight: 1.0,
           fontSize: "12pt",
-          minWidth: "32px",
+          padding: "4px",
+          //minWidth: "32px",
+          borderRadius: 0,
           //minHeight: "32px",
           //padding: "4px 4px",
         },
@@ -41,33 +45,41 @@ export const theme = createTheme({
     },
     MuiToggleButton: {
       defaultProps: {
-        size: 'small',
+        //size: 'small',
       },
       styleOverrides: {
         root: {
           textTransform: 'none',
           lineHeight: 1.0,
-          fontSize: "12pt",
-          minWidth: "32px",
+          //minWidth: "32px",
+          padding: "4px",
+          borderRadius: 0,
+          border: 0,
           //minHeight: "32px",
           //padding: "4px 4px",
+          "&:hover": {
+            background: "lightgrey",
+          },
+          '&.Mui-selected': {
+            background: "lightblue",
+          },
         },
       },
     },
     MuiIconButton: {
       defaultProps: {
-        size: 'small',
+        //size: 'small',
       },
-      /*
       styleOverrides: {
         root: {
           textTransform: 'none',
-          //fontSize: "12pt",
-          padding: "4px 4px",
-          //margin: 0,
+          padding: "4px",
+          borderRadius: 0,
+          "&:hover": {
+            background: "lightgrey",
+          },
         },
       },
-      */
     },
     MuiTextField: {
       defaultProps: {

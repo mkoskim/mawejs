@@ -19,15 +19,17 @@ import { styled } from '@mui/material/styles';
 import { theme } from "./theme";
 
 import {
-  Button as MuiButton, ButtonGroup,
-  ToggleButton, ToggleButtonGroup,
+  Button as MuiButton,
+  ToggleButton as MuiToggleButton,
+  IconButton as MuiIconButton,
+  ToggleButtonGroup,  ButtonGroup,
   Breadcrumbs,
   Chip, Link,
   TextField, InputAdornment, OutlinedInput,
   Tooltip as MuiTooltip, tooltipClasses,
   Divider, CircularProgress as Spinner,
-  List, ListItem, ListItemText, ListSubheader,
-  Grid,
+  Typography,
+  List, ListItem, ListItemText, ListSubheader, ListItemIcon,
   Menu, MenuItem, MenuList,
   Select, InputLabel, FormControl,
   Accordion, AccordionSummary, AccordionDetails,
@@ -42,11 +44,9 @@ export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export { theme }
 export {
   Spinner,
-  Grid,
   Chip, Link,
   TextField,
-  List, ListItem, ListItemText, ListSubheader,
-  ToggleButton, ToggleButtonGroup,
+  List, ListItem, ListItemText, ListSubheader, ListItemIcon, Typography,
   Menu, MenuItem, MenuList,
   Accordion, AccordionSummary, AccordionDetails,
 }
@@ -176,13 +176,13 @@ export class MakeToggleGroup extends React.PureComponent {
 
     if(!choices) return null;
 
-    return <BorderlessToggleButtonGroup
+    return <ToggleButtonGroup
       exclusive={exclusive}
       value={selected}
       onChange={(e, value) => (exclusive ? value : true) && setSelected(value)}
     >
       {choices.map(choice => makeButton(choice))}
-    </BorderlessToggleButtonGroup>
+    </ToggleButtonGroup>
 
     function makeButton(choice) {
       if(!(choice in buttons)) return <ToggleButton key={choice} value={choice}>
@@ -200,33 +200,6 @@ export class MakeToggleGroup extends React.PureComponent {
     }
   }
 }
-
-const BorderlessToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-  '& .MuiToggleButtonGroup-grouped': {
-    //margin: 0,
-    //marginRight: theme.spacing(0.5),
-    //padding: "5pt",
-    padding: "4px",
-    border: 0,
-    borderRadius: 0,
-    "&:hover": {
-      background: "lightgrey",
-    },
-    '&.Mui-selected': {
-      background: "lightblue",
-    },
-    '&.Mui-disabled': {
-      //border: 0,
-    },
-    '&:first-of-type': {
-      //borderRadius: theme.shape.borderRadius,
-      //marginLeft: theme.spacing(0.5),
-    },
-    '&:not(:first-of-type)': {
-      //borderRadius: theme.shape.borderRadius,
-    },
-  },
-}));
 
 //-----------------------------------------------------------------------------
 
@@ -264,7 +237,7 @@ export function ButtonGroup(props) {
 */
 
 /*
-export {Button, IconButton}
+export {Button, IconButton, ToggleButton}
 /*/
 export class Button extends React.PureComponent {
 
@@ -274,6 +247,28 @@ export class Button extends React.PureComponent {
       return <Tooltip title={tooltip}><MuiButton {...props}/></Tooltip>
     }
     return <MuiButton {...props}/>
+  }
+}
+
+export class IconButton extends React.PureComponent {
+
+  render() {
+    const {tooltip, ...props} = this.props
+    if(tooltip) {
+      return <Tooltip title={tooltip}><MuiIconButton {...props}/></Tooltip>
+    }
+    return <MuiIconButton {...props}/>
+  }
+}
+
+export class ToggleButton extends React.PureComponent {
+
+  render() {
+    const {tooltip, ...props} = this.props
+    if(tooltip) {
+      return <Tooltip title={tooltip}><MuiToggleButton {...props}/></Tooltip>
+    }
+    return <MuiToggleButton {...props}/>
   }
 }
 /**/

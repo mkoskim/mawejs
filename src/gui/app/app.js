@@ -21,13 +21,14 @@ import { styled } from '@mui/material/styles';
 import {
   theme,
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon, Tooltip,
+  ToolBox, Button, Icon, Tooltip, IconButton,
   IsKey, addHotkeys,
   Label,
   Separator, Loading, addClass,
   Menu, MenuItem, MenuList, ListSubheader,
   Inform,
   ListItemText,
+  Typography,
 } from "../common/factory";
 
 import { OpenFolderButton, HeadInfo, WordInfo, CharInfo } from "../common/components";
@@ -56,7 +57,6 @@ import {useImmer} from "use-immer"
 import { mawe } from "../../document"
 
 import { appQuit, appLog } from "../../system/host"
-import { Typography } from "@mui/material";
 
 const fs = require("../../system/localfs")
 
@@ -254,7 +254,7 @@ class FileMenu extends React.PureComponent {
 
     return <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
-        <Button {...bindTrigger(popupState)}>{text ?? <Icon.Menu />}</Button>
+        <Button tooltip="File menu" {...bindTrigger(popupState)}>{text ?? <Icon.Menu />}</Button>
         <Menu {...bindMenu(popupState)}>
           <MenuItem onClick={e => { cmdNewFile({setCommand}); popupState.close(e); }}>
             <ListItemText>New</ListItemText>
@@ -308,23 +308,23 @@ class RecentItems extends React.PureComponent {
 class HelpButton extends React.PureComponent {
   render() {
     const {setCommand} = this.props
-    return <Button tooltip="Help" onClick={e => cmdOpenHelp(setCommand)}>
+    return <IconButton tooltip="Help" onClick={e => cmdOpenHelp(setCommand)}>
       <Icon.Help />
-      </Button>
+      </IconButton>
   }
 }
 
 class SettingsButton extends React.PureComponent {
   render() {
-    return <Button tooltip="Settings"><Icon.Settings /></Button>
+    return <IconButton tooltip="Settings"><Icon.Settings /></IconButton>
   }
 }
 
 class CloseButton extends React.PureComponent {
   render() {
     const {setCommand} = this.props
-    return <Button tooltip="Close" onClick={e => cmdCloseFile({setCommand})}>
+    return <IconButton tooltip="Close" onClick={e => cmdCloseFile({setCommand})}>
       <Icon.Close />
-      </Button>
+      </IconButton>
   }
 }

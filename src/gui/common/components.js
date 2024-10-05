@@ -11,7 +11,7 @@ import React, {
 
 import {
   VBox,
-  Button, Icon,
+  Button, Icon, IconButton,
   MakeToggleGroup,
   TextField,
   Label,
@@ -92,9 +92,9 @@ export class OpenFolderButton extends React.PureComponent {
   render() {
     const {filename} = this.props
     //console.log("OpenFolderButton:", filename)
-    return <Button tooltip="Open Folder" onClick={e => cmdOpenFolder(filename)}>
+    return <IconButton tooltip="Open Folder" onClick={e => cmdOpenFolder(filename)}>
       <Icon.Action.Folder />
-      </Button>
+      </IconButton>
   }
 }
 

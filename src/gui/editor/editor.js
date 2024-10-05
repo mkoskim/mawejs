@@ -47,7 +47,7 @@ import {TagTable} from "./tagTable"
 
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon, Tooltip,
+  ToolBox, Button, Icon, IconButton, Tooltip,
   ToggleButton, ToggleButtonGroup, MakeToggleGroup,
   Input,
   SearchBox,
@@ -187,16 +187,9 @@ export function SingleEditView({doc, updateDoc}) {
 
       //console.log("Track:", marks, node, block)
 
-      setTrack({
-        marks,
-        node: node.type,
-        block: {
-          fold: block.folded,
-          id: block.id
-        }
-      })
+      setTrack({block, node, marks,})
     } catch(e) {
-      console.log("Track marks error.")
+      //console.log("Track marks error.")
     }
   }, [setTrack])
 
@@ -624,12 +617,12 @@ class Searching extends React.PureComponent {
     // Render a search icon button if no search text is defined.
     if (typeof(searchText) !== "string") {
       return (
-        <Button
+        <IconButton
           tooltip="Search text (Ctrl-F)"
           size="small"
         >
           <Icon.Action.Search onClick={ev => setSearchText("")}/>
-        </Button>
+        </IconButton>
       );
     }
 
@@ -653,8 +646,8 @@ class Searching extends React.PureComponent {
             }
           }}
         />
-        <Button tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up/></Button>
-        <Button tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down/></Button>
+        <IconButton tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up/></IconButton>
+        <IconButton tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down/></IconButton>
         {/*
         <button style={iconButtonStyle} onClick={this.searchPrevious} title="Previous search result">↑</button> {}
         <button style={iconButtonStyle} onClick={this.searchNext} title="Next search result">↓</button> {}
@@ -688,7 +681,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
       <Separator/>
       <Filler />
       <Separator/>
-      <FoldButtons editor={editor}/>
+      <FoldButtons editor={editor} track={track}/>
     </ToolBox>
 
     {/* Editor board and sheet */}
