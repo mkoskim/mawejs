@@ -27,6 +27,7 @@ import {
   Separator, Loading, addClass,
   Menu, MenuItem, MenuList, ListSubheader,
   Inform,
+  ListItemText,
 } from "../common/factory";
 
 import { OpenFolderButton, HeadInfo, WordInfo, CharInfo } from "../common/components";
@@ -55,6 +56,7 @@ import {useImmer} from "use-immer"
 import { mawe } from "../../document"
 
 import { appQuit, appLog } from "../../system/host"
+import { Typography } from "@mui/material";
 
 const fs = require("../../system/localfs")
 
@@ -254,19 +256,36 @@ class FileMenu extends React.PureComponent {
       {(popupState) => <React.Fragment>
         <Button {...bindTrigger(popupState)}>{text ?? <Icon.Menu />}</Button>
         <Menu {...bindMenu(popupState)}>
-          <MenuItem onClick={e => { cmdNewFile({setCommand}); popupState.close(e); }}>New</MenuItem>
-          <MenuItem onClick={e => { cmdOpenFile({setCommand, file}); popupState.close(e); }}>Open...</MenuItem>
+          <MenuItem onClick={e => { cmdNewFile({setCommand}); popupState.close(e); }}>
+            <ListItemText>New</ListItemText>
+            <Typography sx={{ color: 'text.secondary' }}>Ctrl-N</Typography>
+            </MenuItem>
+          <MenuItem onClick={e => { cmdOpenFile({setCommand, file}); popupState.close(e); }}>
+            <ListItemText>Open</ListItemText>
+            <Typography sx={{ color: 'text.secondary' }}>Ctrl-O</Typography>
+            </MenuItem>
           <RecentItems recent={recent} setCommand={setCommand} popupState={popupState}/>
           <Separator/>
-          <MenuItem disabled={!file} onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>Save</MenuItem>
-          <MenuItem disabled={!hasdoc} onClick={e => { cmdSaveFileAs({setCommand, file}); popupState.close(e); }}>Save As...</MenuItem>
-          <MenuItem disabled={!hasdoc} onClick={e => { cmdCloseFile({setCommand, file}); popupState.close(e); }}>Close</MenuItem>
+          <MenuItem disabled={!file} onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>
+            <ListItemText>Save</ListItemText>
+            <Typography sx={{ color: 'text.secondary' }}>Ctrl-S</Typography>
+            </MenuItem>
+          <MenuItem disabled={!hasdoc} onClick={e => { cmdSaveFileAs({setCommand, file}); popupState.close(e); }}>
+            <ListItemText>Save as...</ListItemText>
+            </MenuItem>
+          <MenuItem disabled={!hasdoc} onClick={e => { cmdCloseFile({setCommand, file}); popupState.close(e); }}>
+            <ListItemText>Close</ListItemText>
+            <Typography sx={{ color: 'text.secondary' }}>Ctrl-W</Typography>
+            </MenuItem>
           {/*
           <MenuItem onClick={popupState.close}>Revert</MenuItem>
           <MenuItem onClick={e => { popupState.close(e); }}>Open Folder</MenuItem>
           */}
           <Separator/>
-          <MenuItem onClick={e => { appQuit(); popupState.close(e); }}>Exit</MenuItem>
+          <MenuItem onClick={e => { appQuit(); popupState.close(e); }}>
+            <ListItemText>Quit</ListItemText>
+            <Typography sx={{ color: 'text.secondary' }}>Ctrl-Q</Typography>
+            </MenuItem>
         </Menu>
       </React.Fragment>
       }

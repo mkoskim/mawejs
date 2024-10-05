@@ -18,7 +18,7 @@ import {
 } from 'slate'
 
 import { withHistory } from "slate-history"
-import { addClass, IsKey, Separator } from '../common/factory';
+import { addClass, IsKey, ListItemText, Separator } from '../common/factory';
 import { nanoid } from '../../util';
 import { wcElem, wcCompare} from '../../document/util';
 
@@ -38,6 +38,7 @@ import {
   TextField, Menu, MenuItem, ListSubheader,
 } from '../common/factory';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import { ListItemIcon, Typography } from "@mui/material";
 
 export {
   text2Regexp,
@@ -209,27 +210,38 @@ class CharStyleButtons extends React.PureComponent {
 class BlockStyleSelect extends React.PureComponent {
 
   static choices = {
-    "hpart": "Part",
-    "hscene": "Scene",
-    "synopsis": "Synopsis",
-    "comment": "Comment",
-    "missing": "Missing",
-    "filler": "Filler",
-    "tags": "Tags",
+    "p":        {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
+    "hpart":    {name: "Part",     markup: "**", shortcut: "Ctrl-Alt-1"},
+    "hscene":   {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-2"},
+    "synopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
+    "comment":  {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
+    "missing":  {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
+    "filler":   {name: "Filler",   markup: "++", shortcut: "Ctrl-Alt-F"},
+    "tags":     {name: "Tags",     markup: "@",  shortcut: ""},
   }
 
+  static order = ["p", "hpart", "hscene", "synopsis", "comment", "missing", "filler", "tags"]
+
   render() {
-    const {block} = this.props;
-    //console.log("Block:", block)
+    const {type, setSelected} = this.props;
+    //console.log("Block type:", type)
 
     const choices = this.constructor.choices
-    const name = block in choices ? choices[block] : "Text"
+    const order   = this.constructor.order
+    const name = type in choices ? choices[type].name : "Text"
 
     return <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
         <Button style={{width: 100, justifyContent: "flex-start"}} {...bindTrigger(popupState)}>{name}</Button>
         <Menu {...bindMenu(popupState)}>
-          {Object.entries(choices).map(([k, v]) => <MenuItem value={k}>{v}</MenuItem>)}
+          {order.map(k => [k, choices[k]]).map(([k, v]) => (
+            <MenuItem key={k} value={k} onClick={e => {setSelected(k); popupState.close(e)}}>
+              <ListItemIcon>{v.markup}</ListItemIcon>
+              <ListItemText sx={{width: 100}}>{v.name}</ListItemText>
+              <Typography sx={{ color: 'text.secondary' }}>{v.shortcut}</Typography>
+              </MenuItem>
+            )
+          )}
         </Menu>
       </React.Fragment>
       }
@@ -270,9 +282,14 @@ export function EditButtons({editor, track}) {
     ReactEditor.focus(editor)
   }, [editor])
 
+  const applyStyle = useCallback(type => {
+    Transforms.setNodes(editor, {type})
+    ReactEditor.focus(editor)
+  })
+
   return <>
-    {/*<BlockStyleSelect block={track.block}/>*/}
-    {/*<Separator/>*/}
+    {<BlockStyleSelect type={track.node} setSelected={applyStyle}/>}
+    {<Separator/>}
     <CharStyleButtons marks={marks} setSelected={toggleMark}/>
     </>
 }
