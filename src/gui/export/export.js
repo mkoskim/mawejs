@@ -42,7 +42,7 @@ import { FormatBody } from "./formatDoc"
 
 import { formatRTF } from "./formatRTF";
 import { formatHTML } from "./formatHTML"
-import { formatTXT } from "./formatTXT"
+import { formatMD, formatTXT } from "./formatTXT"
 import { formatTEX1, formatTEX2 } from "./formatTEX"
 import { setFocusTo } from "../editor/editor";
 
@@ -61,6 +61,7 @@ const formatters = {
   "rtf2": formatRTF,
   "tex1": formatTEX1,
   "tex2": formatTEX2,
+  "md": formatMD,
   "txt": formatTXT,
 }
 
@@ -126,7 +127,8 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
       <MenuItem value="tex2">LaTeX, A5 booklet</MenuItem>
       <ListSubheader>Other</ListSubheader>
-      <MenuItem value="txt">ASCII Text</MenuItem>
+      <MenuItem value="md">MD (Mark Down)</MenuItem>
+      {/* <MenuItem value="txt">Text (wrapped)</MenuItem> */}
       </TextField>
 
     <Button variant="contained" color="success" onClick={e => doExport(e)}>Export</Button>

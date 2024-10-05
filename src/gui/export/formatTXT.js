@@ -4,7 +4,7 @@
 //
 // ****************************************************************************
 
-import {elemAsText, elemName} from "../../document"
+import {elemName} from "../../document"
 
 export const formatTXT = {
   // Info
@@ -53,6 +53,61 @@ ${content}
 
   "b": (text) => `*${text}*`,
   "i": (text) => `_${text}_`,
+  "text": (text) => text,
+}
+
+//-----------------------------------------------------------------------------
+
+export const formatMD = {
+  // Info
+  "suffix": ".md",
+
+  // File
+  "file": (head, content, options) => {
+    //const author = head.nickname || head.author
+    const {author, title, subtitle} = head
+    //const headinfo = author ? `${author}: ${title}` : title
+    return `\
+${author ?? ""}
+
+# ${title.toUpperCase() ?? ""}
+
+${subtitle ? "\n## " + subtitle + "\n" : ""}
+
+${content}
+`
+  },
+
+  //---------------------------------------------------------------------------
+  // Joining elements
+
+  "body": (parts, options) => {
+    const {separator, pgbreak} = options
+    return parts.join(getSeparator(separator, pgbreak))
+  },
+
+  "part": (part, scenes, options) => {
+    const {type, separator, pgbreak, chnum} = options
+    const head = getHeading(part, type, pgbreak, chnum)
+    return (head ? ("## " + head) : "") + scenes.join(getSeparator(separator, pgbreak))
+  },
+
+  "scene": (scene, splits, options) => {
+    const {type, separator, pgbreak, chnum} = options
+    const head = getHeading(scene, type, pgbreak, chnum)
+    return (head ? ("## " + head) : "") + splits.join(getSeparator(separator, pgbreak))
+  },
+
+  "split": (paragraphs) => paragraphs.join("\n\n"),
+
+  // Paragraph styles
+  //"synopsis": (p) => undefined,
+  //"comment": (sp) => undefined,
+  "missing": (p,text) => `!! ${text}`,
+  "p": (p, text) => `${text}`,
+
+  "b": (text) => `[b]${text}[/b]`,
+  "i": (text) => `[i]${text}[/i]`,
   "text": (text) => text,
 }
 
