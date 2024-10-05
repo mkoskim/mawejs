@@ -84,8 +84,8 @@
 /* ---------------------------------------------------------------------------- */
 
 .TOC div.Scene {
-  padding-left: 0.5cm !important;
   /*
+  padding-left: 0.5cm !important;
   padding-left: 0.25cm;
   border: 2px solid lightgray;
   border-radius: 3px;
@@ -103,6 +103,7 @@
 }
 
 .TOC .SceneName {
+  padding-left: 0.5cm !important;
   /*
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
@@ -135,6 +136,10 @@
   padding-bottom: 2pt;
   padding-left: 16px;
   */
+}
+
+.TOC .Current {
+  background-color: rgb(250, 210, 170);
 }
 
 .TOC .Entry.Folded {
