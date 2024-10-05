@@ -216,11 +216,11 @@ class BlockStyleSelect extends React.PureComponent {
     "synopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
     "comment":  {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
     "missing":  {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
-    "filler":   {name: "Filler",   markup: "++", shortcut: "Ctrl-Alt-F"},
+    "fill":     {name: "Filler",   markup: "++", shortcut: "Ctrl-Alt-F"},
     "tags":     {name: "Tags",     markup: "@",  shortcut: ""},
   }
 
-  static order = ["p", "hpart", "hscene", "synopsis", "comment", "missing", "filler", "tags"]
+  static order = ["p", "hpart", "hscene", "synopsis", "comment", "missing", "fill", "tags"]
 
   render() {
     const {type, setSelected} = this.props;
