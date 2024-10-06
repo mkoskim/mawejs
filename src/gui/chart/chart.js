@@ -506,11 +506,13 @@ function StoryChart({startAngle, endAngle, innerData, outerData, outerLabels}) {
         data={innerData}
         dataKey="size"
         {...innerRing}
+        isAnimationActive={false}
       />
       <Pie
         data={outerData}
         dataKey="size"
         {...outerRing}
+        isAnimationActive={false}
       />
       <Pie
         data={outerLabels}
@@ -518,6 +520,7 @@ function StoryChart({startAngle, endAngle, innerData, outerData, outerLabels}) {
         {...outerRing}
         fill="none"
         stroke="grey"
+        isAnimationActive={false}
       />
     </PieChart>
   </ResponsiveContainer>

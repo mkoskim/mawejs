@@ -31,6 +31,7 @@ import {
   MakeToggleGroup,
   Select, MenuItem, InputLabel, FormControl, Separator, Icon,
 } from "../common/factory"
+import { createDateStamp } from "../../document/xmljs/track"
 
 //*****************************************************************************
 //
@@ -40,9 +41,13 @@ import {
 
 export function Stats({doc, updateDoc}) {
 
+  const today = createDateStamp()
+
   const history = doc.history
     .filter(e => e.type === "words")
+    .filter(e => e.date !== today)
     .sort((a, b) => a.date - b.date)
+    .concat([{date: today, ...doc.body.words}])
 
   return <HistoryChart history={history}/>
   /*
@@ -64,8 +69,8 @@ function HistoryChart({history}) {
       <XAxis dataKey="date"/>
       {/*<YAxis />*/}
       <Tooltip />
-      <Bar dataKey="text" stackId="total" fill="green"/>
-      <Bar dataKey="missing" stackId="total" fill="red"/>
+      <Bar dataKey="text" stackId="total" fill="green" isAnimationActive={false}/>
+      <Bar dataKey="missing" stackId="total" fill="red" isAnimationActive={false}/>
     </BarChart>
   </ResponsiveContainer>
 
