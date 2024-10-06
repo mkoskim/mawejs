@@ -65,12 +65,15 @@ export function toXML(doc) {
       "===============================================================================",
     ),
     toUI(doc.ui),
+    toHistory(doc),
   )
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
 // Head
-//-----------------------------------------------------------------------------
+//
+//*****************************************************************************
 
 function toHead(head) {
   return xmlLines(
@@ -92,9 +95,16 @@ function toHead(head) {
   }
 }
 
-//-----------------------------------------------------------------------------
-// Body & notes
-//-----------------------------------------------------------------------------
+function toExport(exports) {
+  return xmlTree(saveExportSettings(exports))
+}
+
+//*****************************************************************************
+//
+// Sections
+//
+//*****************************************************************************
+
 
 function toBody(body) {
   const {head, parts} = body;
@@ -187,13 +197,11 @@ function toMarks(elem) {
   return isBold(elem, isItalic(elem, toText(text)))
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
 // Settings
-//-----------------------------------------------------------------------------
-
-function toExport(exports) {
-  return xmlTree(saveExportSettings(exports))
-}
+//
+//*****************************************************************************
 
 function toUI(ui) {
   return xmlTree(
@@ -209,11 +217,47 @@ function toUI(ui) {
 }
 
 //*****************************************************************************
+//
+// History entries
+//
+//*****************************************************************************
+
+function toHistory(doc) {
+  return xmlTree(
+    {
+      type: "history",
+      elements: [
+        toWordEntry({date: Date.now(), ...doc.body.words}),
+        ...doc.history.map(toHistoryEntry)
+      ].filter(e => e)
+    }
+  )
+}
+
+function toHistoryEntry(entry) {
+  switch(entry.type) {
+    case "words": return toWordEntry(entry)
+  }
+  return undefined
+}
+
+function toWordEntry(words) {
+  console.log(words)
+  return {
+    type: "words",
+    attributes: {
+      date: words.date,
+      text: words.text,
+      missing: words.missing,
+      chars: words.chars
+    }
+  }
+}
+
 //*****************************************************************************
 //
-// Creating XML buffer
+// Creating XML elements
 //
-//*****************************************************************************
 //*****************************************************************************
 
 function toElem({type, attributes = undefined, elements = []}) {
@@ -317,6 +361,7 @@ function xmlTree(root) {
   if(!value) {
     return xmlElem(root)
   }
+
   const elem = toElem(root)
   return [
     xmlElemOpen(elem),

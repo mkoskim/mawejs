@@ -17,9 +17,9 @@ import {loadExportSettings} from "../../gui/export/export";
 //-----------------------------------------------------------------------------
 // File structure:
 //
-// <story format="mawe" uuid="xxx">
+// <story format="mawe" version="x" uuid="xxx">
 //    <head> ... </head>
-//    <body name="v2.2">
+//    <body name="xxx">
 //      <part> ... </part>
 //      <part> ... </part>
 //      ...
@@ -85,6 +85,8 @@ export function fromXML(root) {
     editor : loadEditorSettings(elemFind(uiElem, "editor"))
   }
 
+  const history = parseHistory(elemFind(story, "history"))
+
   return {
     // format - generated at save
     // format version - generated at save
@@ -97,27 +99,15 @@ export function fromXML(root) {
     ui,
     body,
     notes,
+    history,
   }
 }
 
-//---------------------------------------------------------------------------
-
-function parseSection(section) {
-  function getParts() {
-    const parts = elemFindall(section, "part")
-    if(!parts.length) return [{type: "part", id: nanoid()}]
-    return parts
-  }
-  const parts = getParts().map(parsePart)
-  const words = wcChildren(parts)
-  return {
-    type: "sect",
-    parts,
-    words,
-  }
-}
-
-//---------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Parsing head
+//
+//*****************************************************************************
 
 function optional(elem, name, parse) {
   const field = elemFind(elem, name)
@@ -137,6 +127,27 @@ function parseHead(head) {
     deadline: optional(head, "deadline", elem2Text),
     covertext: optional(head, "covertext", elem2Text),
     version: optional(head, "version", elem2Text),
+  }
+}
+
+//*****************************************************************************
+//
+// Parsing sections
+//
+//*****************************************************************************
+
+function parseSection(section) {
+  function getParts() {
+    const parts = elemFindall(section, "part")
+    if(!parts.length) return [{type: "part", id: nanoid()}]
+    return parts
+  }
+  const parts = getParts().map(parsePart)
+  const words = wcChildren(parts)
+  return {
+    type: "sect",
+    parts,
+    words,
   }
 }
 
@@ -237,7 +248,36 @@ function parseMarks(elem, marks) {
   return elem.elements?.map(e => parseMarks(e, addMark(elem, marks))).flat() ?? [{text: ""}]
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Parse history data
+//
+//*****************************************************************************
+
+function parseHistory(history) {
+  //console.log("History:", history)
+  if(!history?.elements) return []
+  return history.elements.map(parseHistoryEntry).filter(e => e)
+}
+
+function parseHistoryEntry(elem) {
+  if(elem.type === "element") switch(elem.name) {
+    case "words": return parseWordEntry(elem)
+  }
+}
+
+function parseWordEntry(elem) {
+  return {
+    type: "words",
+    ...elem.attributes,
+  }
+}
+
+//*****************************************************************************
+//
+// Helpers
+//
+//*****************************************************************************
 
 export function elemFind(parent, name) {
   if(!parent?.elements) return undefined;
