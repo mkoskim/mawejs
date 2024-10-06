@@ -43,9 +43,9 @@ The other new thing are **tags**. Type "@" at the beginning of the line, and you
 enter a comma-separated list of tags. There is also a tag view in the right panel.
 Clicking a tag will make scenes containing that tag visible, and fold all the others.
 
-# What MaweJS is?
+## What MaweJS is?
 
-In short, MaweJS is externally unstructured editor, and internally structured editor.
+In short, MaweJS is externally unstructured editor (like Notepad, Word or Googledocs), and internally structured editor (like yWriter, Scrivener and Manuscript).
 
 # Writing with MaweJS
 
