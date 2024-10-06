@@ -269,7 +269,7 @@ function parseHistoryEntry(elem) {
 function parseWordEntry(elem) {
   return {
     type: "words",
-    date: parseInt(elem.attributes.date),
+    date: elem.attributes.date,
     text: parseInt(elem.attributes.text),
     missing: parseInt(elem.attributes.missing),
     chars: parseInt(elem.attributes.chars),
