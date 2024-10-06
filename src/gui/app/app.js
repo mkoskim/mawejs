@@ -31,7 +31,7 @@ import {
   Typography,
 } from "../common/factory";
 
-import { OpenFolderButton, HeadInfo, WordInfo, CharInfo } from "../common/components";
+import { OpenFolderButton, HeadInfo, WordInfo, CharInfo, WordsToday } from "../common/components";
 
 import { SnackbarProvider } from "notistack";
 
@@ -249,6 +249,8 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
     <HeadInfo head={head} updateDoc={updateDoc}/>
 
     <Filler />
+    <Separator/>
+    <WordsToday text={text} last={doc.head.last}/>
     <Separator/>
     <WordInfo text={text} missing={missing}/>
     <Separator/>

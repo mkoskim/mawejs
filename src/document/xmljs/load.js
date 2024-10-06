@@ -8,6 +8,7 @@
 
 import {uuid as getUUID, nanoid, file2buf, wcElem, wcChildren} from "../util";
 import { xml2js } from "xml-js";
+import strftime from "strftime"
 
 import { loadChartSettings } from "../../gui/chart/chart";
 import { loadViewSettings } from "../../gui/app/views";
@@ -74,7 +75,9 @@ export function fromXML(root) {
   const expElem   = elemFind(story, "export") ?? elemFind(headElem, "export")
   const uiElem    = elemFind(story, "ui")
 
-  const head  = parseHead(headElem)
+  const history = parseHistory(elemFind(story, "history"))
+
+  const head  = parseHead(headElem, history)
   const body  = parseSection(bodyElem)
   const notes = parseSection(notesElem)
 
@@ -84,8 +87,6 @@ export function fromXML(root) {
     chart  : loadChartSettings(elemFind(uiElem, "chart")),
     editor : loadEditorSettings(elemFind(uiElem, "editor"))
   }
-
-  const history = parseHistory(elemFind(story, "history"))
 
   return {
     // format - generated at save
@@ -114,7 +115,11 @@ function optional(elem, name, parse) {
   return field ? parse(field) : undefined
 }
 
-function parseHead(head) {
+function parseHead(head, history) {
+  const date = strftime("%Y%m%d")
+  const [last] = history.filter(e => e.type === "words" && e.date !== date).sort().reverse()
+  console.log("Last time:", last)
+
   return {
     title: optional(head, "title", elem2Text),
     subtitle: optional(head, "subtitle", elem2Text),
@@ -122,11 +127,18 @@ function parseHead(head) {
     author: optional(head, "author", elem2Text),
     pseudonym: optional(head, "pseudonym", elem2Text) ?? optional(head, "nickname", elem2Text),
 
-    translated: optional(head, "translated", elem2Text),
-    status: optional(head, "status", elem2Text),
-    deadline: optional(head, "deadline", elem2Text),
-    covertext: optional(head, "covertext", elem2Text),
-    version: optional(head, "version", elem2Text),
+    //translated: optional(head, "translated", elem2Text),
+    //status: optional(head, "status", elem2Text),
+    //deadline: optional(head, "deadline", elem2Text),
+    //covertext: optional(head, "covertext", elem2Text),
+    //version: optional(head, "version", elem2Text),
+
+    last: last ? {
+      date: last.date,
+      text: parseInt(last.text),
+      missing: parseInt(last.missing),
+      chars: parseInt(last.chars),
+      } : undefined
   }
 }
 

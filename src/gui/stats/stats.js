@@ -62,7 +62,7 @@ function HistoryChart({history}) {
     <BarChart data={history}>
       {/* <CartesianGrid strokeDasharray="3 3" /> */}
       <XAxis dataKey="date"/>
-      <YAxis />
+      {/*<YAxis />*/}
       <Tooltip />
       <Bar dataKey="text" stackId="total" fill="green"/>
       <Bar dataKey="missing" stackId="total" fill="red"/>

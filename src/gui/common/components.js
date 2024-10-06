@@ -258,14 +258,24 @@ export class HeadInfo extends React.PureComponent {
   }
 }
 
+export class WordsToday extends React.PureComponent {
+  render() {
+    const {text, last} = this.props;
+    if(!last) return null;
+
+    const delta = text - last.text
+    return <Label>Today: {delta >= 0 ? "+" : ""}{delta}</Label>
+  }
+}
+
 export class WordInfo extends React.PureComponent {
   render() {
     const {text, missing} = this.props;
 
-    if(missing) {
-      return <Label>Words: {text + missing} ({text} / {missing})</Label>
-    }
-    return <Label>Words: {text}</Label>
+    const total  = `Words: ${text + missing}`
+    const detail = missing ? ` (${text} / ${missing})` : ""
+
+    return <Label>{total}{detail}</Label>
   }
 }
 
