@@ -570,16 +570,26 @@ function withTextPaste(editor) {
 
     //console.log(text)
 
+    /*
     const [first, ...lines] = text.split(/\r\n|\r|\n/)
-    //const [first, ...lines] = text.split(/\r\n|\n\n/)
-    //console.log(first, lines)
+    /*/
+    const [first, ...lines] = text
+      .replace("\r", "")
+      .replace("\n\n", "\n")
+      .split(/\n/)
+      .map(line => line.trim())
+      ;
+    /**/
+    console.log(first, lines)
 
+    /*
     editor.insertText(first)
     editor.insertNodes(lines.map(line => ({
       type: line ? "p" : "br",
       id: nanoid(),
       children: [{text: line}]
     })))
+    */
     return true
   }
 
