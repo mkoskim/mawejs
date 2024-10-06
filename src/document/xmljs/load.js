@@ -8,12 +8,12 @@
 
 import {uuid as getUUID, nanoid, file2buf, wcElem, wcChildren} from "../util";
 import { xml2js } from "xml-js";
-import strftime from "strftime"
 
 import { loadChartSettings } from "../../gui/chart/chart";
 import { loadViewSettings } from "../../gui/app/views";
 import { loadEditorSettings } from "../../gui/editor/editor";
 import {loadExportSettings} from "../../gui/export/export";
+import { createDateStamp } from "./track";
 
 //-----------------------------------------------------------------------------
 // File structure:
@@ -71,15 +71,16 @@ export function fromXML(root) {
   const bodyElem  = elemFind(story, "body")
   const notesElem = elemFind(story, "notes")
 
+  const body  = parseSection(bodyElem)
+  const notes = parseSection(notesElem)
+
   const headElem  = elemFind(story, "head") ?? elemFind(bodyElem, "head")
   const expElem   = elemFind(story, "export") ?? elemFind(headElem, "export")
   const uiElem    = elemFind(story, "ui")
 
-  const history = parseHistory(elemFind(story, "history"))
+  const history = parseHistory(elemFind(story, "history"), body)
 
   const head  = parseHead(headElem, history)
-  const body  = parseSection(bodyElem)
-  const notes = parseSection(notesElem)
 
   const exports = loadExportSettings(expElem)
   const ui = {
@@ -116,7 +117,8 @@ function optional(elem, name, parse) {
 }
 
 function parseHead(head, history) {
-  const date = strftime("%Y%m%d")
+  //const date = strftime("%Y-%m-%d")
+  const date = createDateStamp()
   const [last] = history.filter(e => e.type === "words" && e.date !== date).sort().reverse()
   console.log("Last time:", last)
 
@@ -133,12 +135,7 @@ function parseHead(head, history) {
     //covertext: optional(head, "covertext", elem2Text),
     //version: optional(head, "version", elem2Text),
 
-    last: last ? {
-      date: last.date,
-      text: parseInt(last.text),
-      missing: parseInt(last.missing),
-      chars: parseInt(last.chars),
-      } : undefined
+    last
   }
 }
 
@@ -266,9 +263,17 @@ function parseMarks(elem, marks) {
 //
 //*****************************************************************************
 
-function parseHistory(history) {
+function parseHistory(history, body) {
   //console.log("History:", history)
-  if(!history?.elements) return []
+  if(!history?.elements) {
+    var yesterday = new Date()
+    yesterday.setDate(yesterday.getDate()-1)
+    return [{
+      type: "words",
+      date: createDateStamp(yesterday),
+      ...body.words
+    }]
+  }
   return history.elements.map(parseHistoryEntry).filter(e => e)
 }
 
@@ -279,12 +284,13 @@ function parseHistoryEntry(elem) {
 }
 
 function parseWordEntry(elem) {
+  const {date, text, missing, chars} = elem.attributes
   return {
     type: "words",
-    date: elem.attributes.date,
-    text: parseInt(elem.attributes.text),
-    missing: parseInt(elem.attributes.missing),
-    chars: parseInt(elem.attributes.chars),
+    date,
+    text: parseInt(text),
+    missing: parseInt(missing),
+    chars: parseInt(chars),
   }
 }
 

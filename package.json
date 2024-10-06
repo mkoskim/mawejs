@@ -47,7 +47,6 @@
     "slate-history": "^0.109.0",
     "slate-react": "^0.110.1",
     "stream": "^0.0.3",
-    "strftime": "^0.10.3",
     "use-immer": "^0.10.0",
     "uuid": "^10.0.0",
     "xml-js": "^1.6.11"

@@ -57,8 +57,7 @@ import {useImmer} from "use-immer"
 import { mawe } from "../../document"
 
 import { appQuit, appLog } from "../../system/host"
-
-import strftime from "strftime"
+import { createDateStamp } from "../../document/xmljs/track";
 
 const fs = require("../../system/localfs")
 
@@ -139,12 +138,12 @@ export default function App(props) {
   }
 
   function insertHistory(doc) {
-    const date = strftime("%Y-%m-%d")
+    const date = createDateStamp()
     const history = [
       ...doc.history.filter(e => e.type === "words" && e.date !== date),
       {type: "words", date, ...doc.body.words},
     ]
-    console.log("History:", history)
+    //console.log("History:", history)
     updateDoc(doc => {doc.history = history})
     return {
       ...doc,
