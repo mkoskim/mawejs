@@ -242,6 +242,7 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
 
   return <ToolBox>
     <FileMenu hasdoc={true} setCommand={setCommand} file={file} text={filename} recent={recent}/>
+    <OpenFolderButton filename={file?.id}/>
     <Separator />
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected}/>
     <Separator/>
@@ -254,8 +255,6 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
     <WordInfo text={text} missing={missing}/>
     <Separator/>
     <CharInfo chars={chars}/>
-    <Separator/>
-    <OpenFolderButton filename={file?.id}/>
     {/* <CloseButton setCommand={setCommand}/> */}
     <Separator />
     <HelpButton setCommand={setCommand}/>
