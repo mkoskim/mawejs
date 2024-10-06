@@ -6,11 +6,12 @@ STORY: TestDoc1
 
 ===============================================================================
 /-->
-<body>
 <head/>
+<export type="short" chapterelem="part" chaptertype="separated"/>
 <!--/
 ===============================================================================
 /-->
+<body>
 <part name="AA">
 <scene name="A">
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interdum et malesuada fames ac ante ipsum primis in faucibus.</p>
@@ -61,9 +62,14 @@ NOTES
 </notes>
 <!--/
 ===============================================================================
-
-VERSIONS
-
-===============================================================================
 /-->
+<ui>
+<view/>
+<chart elements="scenes" template="plotpoints" mode="topCCW"/>
+<editor>
+<body words="numbers" indexed="part,scene,synopsis"/>
+</editor>
+</ui>
+<history>
+</history>
 </story>

@@ -31,7 +31,7 @@ import {
   Typography,
 } from "../common/factory";
 
-import { OpenFolderButton, HeadInfo, WordInfo, CharInfo } from "../common/components";
+import { OpenFolderButton, HeadInfo, WordInfo, CharInfo, WordsToday } from "../common/components";
 
 import { SnackbarProvider } from "notistack";
 
@@ -57,6 +57,7 @@ import {useImmer} from "use-immer"
 import { mawe } from "../../document"
 
 import { appQuit, appLog } from "../../system/host"
+import { createDateStamp } from "../../document/xmljs/track";
 
 const fs = require("../../system/localfs")
 
@@ -136,14 +137,28 @@ export default function App(props) {
     .catch(err => Inform.error(err))
   }
 
+  function insertHistory(doc) {
+    const date = createDateStamp()
+    const history = [
+      ...doc.history.filter(e => e.type === "words" && e.date !== date),
+      {type: "words", date, ...doc.body.words},
+    ]
+    //console.log("History:", history)
+    updateDoc(doc => {doc.history = history})
+    return {
+      ...doc,
+      history
+    }
+  }
+
   function docSave() {
-    mawe.save(doc)
+    mawe.save(insertHistory(doc))
     .then(file => Inform.success(`Saved ${file.name}`))
     .catch(err => Inform.error(err))
   }
 
   function docSaveAs({filename}) {
-    mawe.saveas(doc, filename)
+    mawe.saveas(insertHistory(doc), filename)
     .then(file => {
       updateDoc(doc => { doc.file = file })
       //recentRemove(doc.file, recent, setRecent)
@@ -227,6 +242,7 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
 
   return <ToolBox>
     <FileMenu hasdoc={true} setCommand={setCommand} file={file} text={filename} recent={recent}/>
+    <OpenFolderButton filename={file?.id}/>
     <Separator />
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected}/>
     <Separator/>
@@ -234,11 +250,11 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
 
     <Filler />
     <Separator/>
+    <WordsToday text={text} last={doc.head.last}/>
+    <Separator/>
     <WordInfo text={text} missing={missing}/>
     <Separator/>
     <CharInfo chars={chars}/>
-    <Separator/>
-    <OpenFolderButton filename={file?.id}/>
     {/* <CloseButton setCommand={setCommand}/> */}
     <Separator />
     <HelpButton setCommand={setCommand}/>

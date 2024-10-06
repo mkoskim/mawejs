@@ -506,11 +506,13 @@ function StoryChart({startAngle, endAngle, innerData, outerData, outerLabels}) {
         data={innerData}
         dataKey="size"
         {...innerRing}
+        isAnimationActive={false}
       />
       <Pie
         data={outerData}
         dataKey="size"
         {...outerRing}
+        isAnimationActive={false}
       />
       <Pie
         data={outerLabels}
@@ -518,40 +520,9 @@ function StoryChart({startAngle, endAngle, innerData, outerData, outerLabels}) {
         {...outerRing}
         fill="none"
         stroke="grey"
+        isAnimationActive={false}
       />
     </PieChart>
   </ResponsiveContainer>
   /**/
 }
-
-//*****************************************************************************
-//
-// Story bar chart
-//
-//*****************************************************************************
-
-/*
-function DrawBarChart({section}) {
-  const parts = section.parts.map((part, index) => ({
-    name: part.name,
-    size: part.words.text,
-  }))
-
-  const scenes = section.parts.map((part, index) => {
-    return part.children.map(scene => ({
-      name: scene.name,
-      size: scene.words.text,
-    }))
-  }).flat()
-
-  return <ResponsiveContainer width="90%" height="80%">
-    <BarChart data={scenes}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="name" />
-      <YAxis />
-      <Tooltip />
-      <Bar dataKey="size" />
-    </BarChart>
-  </ResponsiveContainer>
-}
-*/

@@ -16,6 +16,7 @@ import {
 
 import { SingleEditView } from "../editor/editor";
 import { Chart } from "../chart/chart"
+import { Stats } from "../stats/stats"
 import { Export } from "../export/export"
 
 //*****************************************************************************
@@ -61,12 +62,13 @@ export class ViewSelectButtons extends React.PureComponent {
     />
   }
 
-  choices = ["editor", "chart", "export"]
+  choices = ["editor", "chart", "stats", "export"]
 
   viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
     "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
     "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
+    "stats": { tooltip: "Statistics", icon: <Icon.View.Stats /> },
     "export": { tooltip: "Export", icon: <Icon.View.Export /> },
   }
 }
@@ -80,8 +82,9 @@ export function ViewSwitch({doc, updateDoc}) {
   switch (getViewMode(doc)) {
     case "editor": return <SingleEditView {...props} />
     //case "organizer": return <Organizer {...props} />
-    case "export": return <Export {...props} />
+    case "stats": return <Stats {...props} />
     case "chart": return <Chart {...props} />
+    case "export": return <Export {...props} />
     default: break;
   }
   return null;

@@ -13,13 +13,14 @@ import { loadChartSettings } from "../../gui/chart/chart";
 import { loadViewSettings } from "../../gui/app/views";
 import { loadEditorSettings } from "../../gui/editor/editor";
 import {loadExportSettings} from "../../gui/export/export";
+import { createDateStamp } from "./track";
 
 //-----------------------------------------------------------------------------
 // File structure:
 //
-// <story format="mawe" uuid="xxx">
+// <story format="mawe" version="x" uuid="xxx">
 //    <head> ... </head>
-//    <body name="v2.2">
+//    <body name="xxx">
 //      <part> ... </part>
 //      <part> ... </part>
 //      ...
@@ -70,13 +71,16 @@ export function fromXML(root) {
   const bodyElem  = elemFind(story, "body")
   const notesElem = elemFind(story, "notes")
 
+  const body  = parseSection(bodyElem)
+  const notes = parseSection(notesElem)
+
   const headElem  = elemFind(story, "head") ?? elemFind(bodyElem, "head")
   const expElem   = elemFind(story, "export") ?? elemFind(headElem, "export")
   const uiElem    = elemFind(story, "ui")
 
-  const head  = parseHead(headElem)
-  const body  = parseSection(bodyElem)
-  const notes = parseSection(notesElem)
+  const history = parseHistory(elemFind(story, "history"), body)
+
+  const head  = parseHead(headElem, history)
 
   const exports = loadExportSettings(expElem)
   const ui = {
@@ -97,10 +101,49 @@ export function fromXML(root) {
     ui,
     body,
     notes,
+    history,
   }
 }
 
-//---------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Parsing head
+//
+//*****************************************************************************
+
+function optional(elem, name, parse) {
+  const field = elemFind(elem, name)
+  return field ? parse(field) : undefined
+}
+
+function parseHead(head, history) {
+  //const date = strftime("%Y-%m-%d")
+  const date = createDateStamp()
+  const [last] = history.filter(e => e.type === "words" && e.date !== date).sort().reverse()
+  console.log("Last time:", last)
+
+  return {
+    title: optional(head, "title", elem2Text),
+    subtitle: optional(head, "subtitle", elem2Text),
+
+    author: optional(head, "author", elem2Text),
+    pseudonym: optional(head, "pseudonym", elem2Text) ?? optional(head, "nickname", elem2Text),
+
+    //translated: optional(head, "translated", elem2Text),
+    //status: optional(head, "status", elem2Text),
+    //deadline: optional(head, "deadline", elem2Text),
+    //covertext: optional(head, "covertext", elem2Text),
+    //version: optional(head, "version", elem2Text),
+
+    last
+  }
+}
+
+//*****************************************************************************
+//
+// Parsing sections
+//
+//*****************************************************************************
 
 function parseSection(section) {
   function getParts() {
@@ -114,29 +157,6 @@ function parseSection(section) {
     type: "sect",
     parts,
     words,
-  }
-}
-
-//---------------------------------------------------------------------------
-
-function optional(elem, name, parse) {
-  const field = elemFind(elem, name)
-  return field ? parse(field) : undefined
-}
-
-function parseHead(head) {
-  return {
-    title: optional(head, "title", elem2Text),
-    subtitle: optional(head, "subtitle", elem2Text),
-
-    author: optional(head, "author", elem2Text),
-    pseudonym: optional(head, "pseudonym", elem2Text) ?? optional(head, "nickname", elem2Text),
-
-    translated: optional(head, "translated", elem2Text),
-    status: optional(head, "status", elem2Text),
-    deadline: optional(head, "deadline", elem2Text),
-    covertext: optional(head, "covertext", elem2Text),
-    version: optional(head, "version", elem2Text),
   }
 }
 
@@ -237,7 +257,48 @@ function parseMarks(elem, marks) {
   return elem.elements?.map(e => parseMarks(e, addMark(elem, marks))).flat() ?? [{text: ""}]
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Parse history data
+//
+//*****************************************************************************
+
+function parseHistory(history, body) {
+  //console.log("History:", history)
+  if(!history?.elements) {
+    var yesterday = new Date()
+    yesterday.setDate(yesterday.getDate()-1)
+    return [{
+      type: "words",
+      date: createDateStamp(yesterday),
+      ...body.words
+    }]
+  }
+  return history.elements.map(parseHistoryEntry).filter(e => e)
+}
+
+function parseHistoryEntry(elem) {
+  if(elem.type === "element") switch(elem.name) {
+    case "words": return parseWordEntry(elem)
+  }
+}
+
+function parseWordEntry(elem) {
+  const {date, text, missing, chars} = elem.attributes
+  return {
+    type: "words",
+    date,
+    text: parseInt(text),
+    missing: parseInt(missing),
+    chars: parseInt(chars),
+  }
+}
+
+//*****************************************************************************
+//
+// Helpers
+//
+//*****************************************************************************
 
 export function elemFind(parent, name) {
   if(!parent?.elements) return undefined;
