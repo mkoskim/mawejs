@@ -139,7 +139,7 @@ export default function App(props) {
   }
 
   function insertHistory(doc) {
-    const date = strftime("%Y%m%d")
+    const date = strftime("%Y-%m-%d")
     const history = [
       ...doc.history.filter(e => e.type === "words" && e.date !== date),
       {type: "words", date, ...doc.body.words},

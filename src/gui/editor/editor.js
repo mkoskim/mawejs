@@ -682,7 +682,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
       <Separator/>
       <Filler />
       <Separator/>
-      <FoldButtons editor={editor} track={track}/>
+      <FoldButtons editor={editor} folded={track.block?.folded}/>
     </ToolBox>
 
     {/* Editor board and sheet */}

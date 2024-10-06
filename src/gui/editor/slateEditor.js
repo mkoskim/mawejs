@@ -219,6 +219,8 @@ onPaste={useCallback(
 //
 //*****************************************************************************
 
+//-----------------------------------------------------------------------------
+
 class CharStyleButtons extends React.PureComponent {
 
   static buttons = {
@@ -230,17 +232,18 @@ class CharStyleButtons extends React.PureComponent {
       tooltip: "Italic (Ctrl-I)",
       icon: <Icon.Style.Italic />,
     },
-    "fold": {
-      tooltip: "Folded",
-      icon: <Icon.Style.Folded />,
-    },
   }
 
   static choices = ["bold", "italic"]
 
   render() {
-    const {marks, setSelected} = this.props
-    const active = Object.entries(marks).filter(([k, v]) => v).map(([k, v]) => k)
+    const {bold, italic, setSelected} = this.props
+
+    const active = [
+      bold ? "bold" : "",
+      italic ? "italic" : ""
+    ].filter(s => s)
+    //const active = Object.entries(marks).filter(([k, v]) => v).map(([k, v]) => k)
 
     return <MakeToggleGroup
       buttons={this.constructor.buttons}
@@ -251,6 +254,8 @@ class CharStyleButtons extends React.PureComponent {
     />
   }
 }
+
+//-----------------------------------------------------------------------------
 
 class BlockStyleSelect extends React.PureComponent {
 
@@ -268,8 +273,8 @@ class BlockStyleSelect extends React.PureComponent {
   static order = ["p", "hpart", "hscene", "synopsis", "comment", "missing", "fill", "tags"]
 
   render() {
-    const {node, setSelected} = this.props;
-    const type = node?.type ?? undefined
+    const {type, setSelected} = this.props;
+    //const type = node?.type ?? undefined
 
     //console.log("Block type:", type)
 
@@ -296,10 +301,11 @@ class BlockStyleSelect extends React.PureComponent {
   }
 }
 
+//-----------------------------------------------------------------------------
+
 export class FoldButtons extends React.PureComponent {
   render() {
-    const {editor, track} = this.props
-    const folded = track.block?.folded ?? undefined
+    const {editor, folded} = this.props
 
     function onFoldToggle(e) { toggleFold(editor); ReactEditor.focus(editor); }
     function onFoldAll(e) { foldAll(editor, true); ReactEditor.focus(editor);}
@@ -313,10 +319,21 @@ export class FoldButtons extends React.PureComponent {
   }
 }
 
+//-----------------------------------------------------------------------------
+
 export function EditButtons({editor, track}) {
   //console.log("Track:", track)
 
-  const toggleMark = useCallback(marks => {
+  const type = track.node?.type
+  const bold = track.marks?.bold
+  const italic = track.marks?.italic
+
+  const applyStyle = useCallback(type => {
+    Transforms.setNodes(editor, {type})
+    ReactEditor.focus(editor)
+  }, [editor])
+
+  const applyMarks = useCallback(marks => {
     const current = Object.keys(Editor.marks(editor))
     for(const key of current) {
       if(!marks.includes(key)) setMark(editor, key, false)
@@ -327,16 +344,11 @@ export function EditButtons({editor, track}) {
     ReactEditor.focus(editor)
   }, [editor])
 
-  const applyStyle = useCallback(type => {
-    Transforms.setNodes(editor, {type})
-    ReactEditor.focus(editor)
-  })
-
   return <>
-    {<BlockStyleSelect node={track.node} setSelected={applyStyle}/>}
-    {<Separator/>}
-    <CharStyleButtons marks={track.marks} setSelected={toggleMark}/>
-    </>
+    <BlockStyleSelect type={type} setSelected={applyStyle}/>
+    <Separator/>
+    <CharStyleButtons bold={bold} italic={italic} setSelected={applyMarks}/>
+  </>
 }
 
 //*****************************************************************************

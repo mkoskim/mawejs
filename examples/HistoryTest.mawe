@@ -56,11 +56,11 @@ NOTES
 </editor>
 </ui>
 <history>
-<words date="20241001" text="100" missing="100" chars="1360"/>
-<words date="20241002" text="200" missing="0" chars="1360"/>
-<words date="20241003" text="300" missing="100" chars="2720"/>
-<words date="20241004" text="500" missing="100" chars="4080"/>
-<words date="20241005" text="500" missing="200" chars="4760"/>
-<words date="20241006" text="600" missing="200" chars="5440"/>
+<words date="2024-10-01" text="100" missing="100" chars="1360"/>
+<words date="2024-10-02" text="200" missing="0" chars="1360"/>
+<words date="2024-10-03" text="300" missing="100" chars="2720"/>
+<words date="2024-10-04" text="500" missing="100" chars="4080"/>
+<words date="2024-10-05" text="500" missing="200" chars="4760"/>
+<words date="2024-10-06" text="600" missing="200" chars="5440"/>
 </history>
 </story>
