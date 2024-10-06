@@ -3,7 +3,7 @@
 // Icons
 //-----------------------------------------------------------------------------
 
-import {FormatItalic} from '@mui/icons-material';
+import {FormatItalic, ShowChart} from '@mui/icons-material';
 import {LooksOne, LooksTwo} from '@mui/icons-material';
 import {UnfoldMore} from '@mui/icons-material';
 import {UnfoldLessDouble} from '@mui/icons-material';
@@ -117,6 +117,7 @@ export const Icon = {
     Organize: GridViewOutlined,
     Export: PrintOutlined,
     Chart: DonutLarge,
+    Stats: ShowChart,
     Tags: AlternateEmail,
   },
 
