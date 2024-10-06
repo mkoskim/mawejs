@@ -136,14 +136,27 @@ export default function App(props) {
     .catch(err => Inform.error(err))
   }
 
+  function insertHistory(doc) {
+    const history = [
+      {type: "words", date: Date.now(), ...doc.body.words},
+      ...doc.history
+    ]
+    console.log("History:", history)
+    updateDoc(doc => {doc.history = history})
+    return {
+      ...doc,
+      history
+    }
+  }
+
   function docSave() {
-    mawe.save(doc)
+    mawe.save(insertHistory(doc))
     .then(file => Inform.success(`Saved ${file.name}`))
     .catch(err => Inform.error(err))
   }
 
   function docSaveAs({filename}) {
-    mawe.saveas(doc, filename)
+    mawe.saveas(insertHistory(doc), filename)
     .then(file => {
       updateDoc(doc => { doc.file = file })
       //recentRemove(doc.file, recent, setRecent)

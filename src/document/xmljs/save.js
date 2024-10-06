@@ -226,10 +226,7 @@ function toHistory(doc) {
   return xmlTree(
     {
       type: "history",
-      elements: [
-        toWordEntry({date: Date.now(), ...doc.body.words}),
-        ...doc.history.map(toHistoryEntry)
-      ].filter(e => e)
+      elements: doc.history.map(toHistoryEntry).filter(e => e)
     }
   )
 }
@@ -242,7 +239,7 @@ function toHistoryEntry(entry) {
 }
 
 function toWordEntry(words) {
-  console.log(words)
+  //console.log(words)
   return {
     type: "words",
     attributes: {
