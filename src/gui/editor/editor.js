@@ -254,6 +254,11 @@ export function SingleEditView({doc, updateDoc}) {
     }
   }, [focusTo, getActiveEdit])
 
+  // Initially focus editor
+  useEffect(() => {
+    ReactEditor.focus(getActiveEdit())
+  })
+
   //---------------------------------------------------------------------------
   // Search
   //---------------------------------------------------------------------------
