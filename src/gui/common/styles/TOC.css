@@ -123,6 +123,10 @@
   content: counter(scene) ". ";
 }
 
+.TOC .BookmarkName {
+  padding-left: 0.5cm !important;
+}
+
 /* ---------------------------------------------------------------------------- */
 
 .TOC .Entry {

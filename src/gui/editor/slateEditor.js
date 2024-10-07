@@ -544,16 +544,17 @@ export function getEditor() {
     // Base editor
     withHistory,
     withIDs,              // Autogenerate IDs
-    withWordCount,
-    withBreaks,
-    withFixNesting,
-    withMarkup,
+    withWordCount,        // Autogenerate word counts
+    withBreaks,           // empty <p> -> <br>
+    withFixNesting,       // Keep correct nesting: part -> scene -> paragraph
+    withMarkup,           // Markups (##, **, //, etc)
 
     withReact,
-    // ReactEditor overrides
-    withTextPaste,
 
-    withProtectFolds,     // Keep low! Prevents messing with folded blocks
+    // ReactEditor overrides
+    withTextPaste,        // Improved text paste
+
+    withProtectFolds,     // Hooks changes. Prevents messing with folded blocks
   ].reduce((editor, func) => func(editor), undefined)
 }
 
