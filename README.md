@@ -42,15 +42,23 @@ When you create a new file, you can just start writing your story, just like ope
 
 ## Apply tools when you need them
 
-**Scene splitting:** The most powerful feature in MaweJS is, that it is internally a structured editor just like Manuskript, yWriter or Scrivener. When your text mass grows, you can start splitting your text to scenes, and gather scenes together to groups. Splitting text to scenes and groups works just like applying headers in editors like Word or LibreOffice:
+**Cutting text to pieces:** The most powerful feature in MaweJS is, that it is internally a structured editor just like Manuskript, yWriter or Scrivener. When your text mass grows, you can start splitting your text to scenes, and gather scenes together to groups. Splitting text to scenes and groups works just like applying headers in editors like Word or LibreOffice:
 
 ![image](https://github.com/user-attachments/assets/ff634076-0e99-4b0b-ae95-a6892e591805)
 
-**Moving around:** Splitting your text to scenes allows you to move them around with drag-and-drop. Putting them in the same group allows you to move bunch of related scenes at once. There are two "sections": your draft and notes.
+**Moving stuff around:** Splitting your text to scenes allows you to move them around with drag-and-drop. Putting them in the same group allows you to move bunch of related scenes at once. There are two "sections": your draft and notes.
+
+I am pretty sure that if you don't want to use anything else, you will love drag'n'droppable story index! It can really make your life much easier.
 
 **Folding:** Furthermore, a very powerful tool for writing is **folding**, you can hide parts of your text when working with other parts (the story in the screenshot is Frankenstein):
 
 ![image](https://github.com/user-attachments/assets/01398352-c686-4a94-b937-616eda253154)
+
+Folding makes the editor to resemble a bit more conventional structured editor, where you have one scene visible for editing at time. In this case, you can choose which scenes are visible when you write your story.
+
+**Commenting:** You can make comments for you, that will not get exported to manuscript. So, you can keep your comments within the story as long as you like.
+
+**Missing text:** You can write descriptions of story pieces still missing. So, you don't have to complete a scene at once, but you can leave there a mark, and come back to those issues later.
 
 **Story structure:** You can view your a pie diagram of the story, and compare it to selected template:
 
@@ -58,17 +66,18 @@ When you create a new file, you can just start writing your story, just like ope
 
 There is currently K. M. Weiland's story structure templates and Blake Snyder's Beat Sheet, but we may add more later. It wouldn't be bad, that you could have a collection of different templates for various purposes (thrillers, romances, etc).
 
-**Other tools:** There are number of different block types - comment, synopsis, missing text - for various purposes. With missing text and fillers you can mark incomplete places, and see those in the index. You can leave yourself comments, if you feel that you need to remember something, if you ever touch that piece again.
+**Fillers:** When you start working with story structure, you may find filler elements handy. With fillers, you enter a number telling how many missing words it reports. This way you can pad your story before it is complete.
 
-Live screenshot while editing one of my stories (written in Finnish):
+**Live screenshot** while editing one of my stories (written in Finnish):
 
 ![image](https://user-images.githubusercontent.com/10298548/218349525-c385016b-f2f3-4605-9601-5fd095345646.png)
 
-If you like to see the result, the story in the editor is available online:
+At topmost, there is the selection of view. Below that is a toolbar to change settings in the editor. The main editing view contains three parts: (1) index of the draft, (2) editor display, and (3) index of notes.
+
+If you like to see the result, the story in the screenshot is available online:
 
 https://jumalhamara.wordpress.com/gjerta-avaruudessa/
 
-At topmost, there is the selection of view. Below that is a toolbar to change settings in the editor. The main editing view contains three parts: (1) index of the draft, (2) editor display, and (3) index of notes.
 
 # Development
 
