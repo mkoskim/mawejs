@@ -45,5 +45,53 @@ export function ImportView({doc, updateDoc, buffer, setBuffer}) {
 
   console.log("File:", file, "Ext:", ext)
 
-  return null;
+  const imported = importTXT(content)
+
+  return <HBox style={{ overflow: "auto" }}>
+    <ImportIndex style={{ maxWidth: "300px", width: "300px" }}/>
+    <Preview imported={imported}/>
+    <ImportSettings doc={doc} updateDoc={updateDoc}/>
+  </HBox>
+}
+
+//-----------------------------------------------------------------------------
+
+function importTXT(content) {
+  const paragraphs = content
+    .replaceAll("\r", "")
+    //.split(/\n+/)
+    .split(/\n/)
+    .map(line => line.trim())
+    .map(line => ({type: "p", text: line}))
+  ;
+  return paragraphs
+}
+
+//-----------------------------------------------------------------------------
+
+function ImportSettings() {
+  return null
+}
+
+//-----------------------------------------------------------------------------
+
+function ImportIndex() {
+  return null
+}
+
+//-----------------------------------------------------------------------------
+
+function Preview({imported}) {
+
+  return <div className="Filler Board">
+    <DeferredRender>
+      <div className="Sheet Regular">
+        {imported.map(elem => <p>
+          {elem.text}
+          <span style={{marginLeft: "2pt", color: "grey"}}>&para;</span>
+          </p>
+      )}
+      </div>
+    </DeferredRender>
+  </div>
 }

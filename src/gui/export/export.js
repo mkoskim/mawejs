@@ -97,15 +97,11 @@ export function Export({ doc, updateDoc }) {
   const format = doc.exports.format
   const setFormat = useCallback(value => updateDoc(doc => { doc.exports.format = value}), [])
 
-  return <VBox style={{ overflow: "auto" }}>
-    {/* <ExportToolbar {...previewprops}/> */}
-    <HBox style={{ overflow: "auto" }}>
-      {/* <ExportSettings {...previewprops}/> */}
-      <ExportIndex style={{ maxWidth: "300px", width: "300px" }} doc={doc} updateDoc={updateDoc}/>
-      <Preview doc={doc}/>
-      <ExportSettings doc={doc} updateDoc={updateDoc} format={format} setFormat={setFormat}/>
-    </HBox>
-  </VBox>
+  return <HBox style={{ overflow: "auto" }}>
+    <ExportIndex style={{ maxWidth: "300px", width: "300px" }} doc={doc} updateDoc={updateDoc}/>
+    <Preview doc={doc}/>
+    <ExportSettings doc={doc} updateDoc={updateDoc} format={format} setFormat={setFormat}/>
+  </HBox>
 }
 
 //-----------------------------------------------------------------------------
