@@ -74,6 +74,11 @@ export async function cmdOpenFile({ setCommand, file }) {
 
 //-----------------------------------------------------------------------------
 
+export function cmdImportClipboard({setCommand}) {
+  console.log("Import clipboard")
+  setCommand({action: "clipboard"})
+}
+
 export function cmdImportFile({setCommand, file, ext}) {
   console.log("Import file:", file.name)
   setCommand({action: "import", file, ext})

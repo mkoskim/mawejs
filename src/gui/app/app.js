@@ -42,7 +42,8 @@ import {
   cmdLoadFile,
   cmdNewFile, cmdOpenFile, cmdOpenFolder, cmdOpenHelp,
   cmdOpenImportFile, cmdImportFile,
-  cmdSaveFile, cmdSaveFileAs
+  cmdSaveFile, cmdSaveFileAs,
+  cmdImportClipboard
 } from "./context"
 
 import {
@@ -93,6 +94,7 @@ export default function App(props) {
     switch(action) {
       case "load": { docFromFile(command); break; }
       case "import": { importFromFile(command); break; }
+      case "clipboard": { importFromClipboard(command); break; }
       case "save": { docSave(command); break; }
       case "set": { docFromBuffer(command); break; }
       case "resource": { docFromResource(command); break; }
@@ -107,7 +109,7 @@ export default function App(props) {
   //---------------------------------------------------------------------------
 
   useEffect(() => {
-    /*
+    //*
     //console.log("Recent:", recent)
     if(recent?.length) cmdLoadFile({setCommand, filename: recent[0].id})
     /*/
@@ -156,6 +158,17 @@ export default function App(props) {
     })
     .catch(err => {
       Inform.error(err);
+    })
+  }
+
+  function importFromClipboard() {
+    navigator.clipboard.readText()
+    .then(content => {
+      setBuffer({file: undefined, ext: ".txt", content})
+      //Inform.success(`Loaded: ${file.name}`);
+    })
+    .catch(err => {
+      //Inform.error(err);
     })
   }
 
@@ -240,17 +253,10 @@ function WorkspaceTab({doc, updateDoc, buffer, setBuffer}) {
   ]));
 
   //console.log("Recent:", recent)
-  if(buffer) return <WithBuffer setCommand={setCommand} recent={recent} buffer={buffer} setBuffer={setBuffer}/>
+  //if(buffer) return <WithBuffer setCommand={setCommand} recent={recent} buffer={buffer} setBuffer={setBuffer}/>
+  if(buffer) return null
   if(!doc) return <WithoutDoc setCommand={setCommand} recent={recent}/>
   return <WithDoc setCommand={setCommand} recent={recent} doc={doc} updateDoc={updateDoc}/>
-}
-
-function WithBuffer({buffer, setBuffer}) {
-  return <ToolBox>
-    <Label>Import: {buffer.file.name}</Label>
-    <IconButton onClick={e => setBuffer(undefined)}><Icon.Close/></IconButton>
-    <Separator/>
-  </ToolBox>
 }
 
 function WithoutDoc({setCommand, recent}) {
@@ -325,6 +331,9 @@ class FileMenu extends React.PureComponent {
           <Separator/>
           <MenuItem onClick={e => { cmdOpenImportFile({setCommand, file}); popupState.close(e); }}>
             <ListItemText>Import file...</ListItemText>
+            </MenuItem>
+          <MenuItem onClick={e => { cmdImportClipboard({setCommand}); popupState.close(e); }}>
+            <ListItemText>Import clipboard</ListItemText>
             </MenuItem>
           <Separator/>
           <MenuItem disabled={!file} onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>

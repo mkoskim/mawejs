@@ -36,11 +36,18 @@ import { createDateStamp } from "../util";
 //const convert = require('xml-js');
 
 export async function loadmawe(file) {
-  return createmawe(await file2buf(file))
+  return maweFromBuffer(await file2buf(file))
 }
 
 export function createmawe(buffer) {
-  const tree = buf2tree(buffer)
+  return maweFromBuffer(buffer)
+}
+
+export function maweFromBuffer(buffer) {
+  return maweFromTree(buf2tree(buffer))
+}
+
+export function maweFromTree(tree) {
   const story = fromXML(tree)
   //console.log("Story:", story)
   return {

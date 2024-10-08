@@ -38,6 +38,7 @@ import {
   Menu, MenuItem, ListItemIcon, Typography,
 } from '../common/factory';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import { text2lines } from '../import/import';
 
 export {
   text2Regexp,
@@ -582,11 +583,7 @@ function withTextPaste(editor) {
 
     //console.log(text)
 
-    const [first, ...lines] = text
-      .replaceAll("\r", "")
-      .split(/\n+/)
-      .map(line => line.trim())
-    ;
+    const [first, ...lines] = text2lines(text);
 
     //*
     editor.insertText(first)
