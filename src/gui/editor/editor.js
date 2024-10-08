@@ -257,7 +257,7 @@ export function SingleEditView({doc, updateDoc}) {
   // Initially focus editor
   useEffect(() => {
     ReactEditor.focus(getActiveEdit())
-  })
+  }, [])
 
   //---------------------------------------------------------------------------
   // Search
@@ -605,19 +605,6 @@ class Searching extends React.PureComponent {
 
   render() {
     const { editor, searchText, setSearchText, searchBoxRef } = this.props;
-
-    // Define inline styles for icon-like buttons
-    const iconButtonStyle = {
-      background: 'none',
-      border: 'none',
-      cursor: 'pointer',
-      padding: '0',
-      margin: '0 5px',
-      fontSize: '16px',
-      color: '#333',
-      outline: 'none',
-    };
-
 
     // Render a search icon button if no search text is defined.
     if (typeof(searchText) !== "string") {
