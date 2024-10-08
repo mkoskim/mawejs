@@ -13,7 +13,7 @@ import { loadChartSettings } from "../../gui/chart/chart";
 import { loadViewSettings } from "../../gui/app/views";
 import { loadEditorSettings } from "../../gui/editor/editor";
 import {loadExportSettings} from "../../gui/export/export";
-import { createDateStamp } from "./track";
+import { createDateStamp } from "../util";
 
 //-----------------------------------------------------------------------------
 // File structure:

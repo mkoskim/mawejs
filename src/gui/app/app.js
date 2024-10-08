@@ -57,7 +57,7 @@ import {useImmer} from "use-immer"
 import { mawe } from "../../document"
 
 import { appQuit, appLog } from "../../system/host"
-import { createDateStamp } from "../../document/xmljs/track";
+import { createDateStamp } from "../../document/util";
 
 const fs = require("../../system/localfs")
 

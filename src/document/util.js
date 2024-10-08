@@ -67,6 +67,15 @@ export async function buf2file(doc, buffer) {
 }
 
 //-----------------------------------------------------------------------------
+// History entry date stamps
+//-----------------------------------------------------------------------------
+
+export function createDateStamp(date) {
+  if(!date) date = new Date()
+  return date.toISOString().split("T")[0]
+}
+
+//-----------------------------------------------------------------------------
 
 export function filterCtrlElems(blocks) {
   const ctrltypes = ["hpart", "hscene"]

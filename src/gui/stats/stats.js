@@ -31,7 +31,7 @@ import {
   MakeToggleGroup,
   Select, MenuItem, InputLabel, FormControl, Separator, Icon,
 } from "../common/factory"
-import { createDateStamp } from "../../document/xmljs/track"
+import { createDateStamp } from "../../document/util"
 
 //*****************************************************************************
 //
@@ -43,6 +43,7 @@ export function Stats({doc, updateDoc}) {
 
   const today = createDateStamp()
 
+  // Filter word count entries, and use current count for today
   const history = doc.history
     .filter(e => e.type === "words")
     .filter(e => e.date !== today)
