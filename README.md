@@ -38,21 +38,21 @@ You can now **tag** text pieces. Type "@" at the beginning of the line, and you 
 
 When you create a new file, you can just start writing your story, just like opening Notepad or Word. There is absolutely no any kind of setups to do, just start writing.
 
-![image](https://github.com/user-attachments/assets/ac6a0420-1665-4328-82c8-682f669f2d1a)
+![image](https://github.com/user-attachments/assets/c52dea46-c157-498d-9d0c-1b5ef8c88201)
 
 ## Apply tools when you need them
 
 **Cutting text to pieces:** The most powerful feature in MaweJS is, that it is internally a structured editor just like Manuskript, yWriter or Scrivener. When your text mass grows, you can start splitting your text to scenes, and gather scenes together to groups. Splitting text to scenes and groups works just like applying headers in editors like Word or LibreOffice:
 
-![image](https://github.com/user-attachments/assets/ff634076-0e99-4b0b-ae95-a6892e591805)
+![image](https://github.com/user-attachments/assets/3cb93599-c2bf-44b4-8d1d-b8da2eea5173)
 
 **Moving stuff around:** Splitting your text to scenes allows you to move them around with drag-and-drop. Putting them in the same group allows you to move bunch of related scenes at once. There are two "sections": your draft and notes.
 
 I am pretty sure that if you don't want to use anything else, you will love drag'n'droppable story index! It can really make your life much easier.
 
-**Folding:** Furthermore, a very powerful tool for writing is **folding**, you can hide parts of your text when working with other parts (the story in the screenshot is Frankenstein):
+**Folding:** Furthermore, a very powerful tool for writing is **folding**, you can hide parts of your text when working with other parts:
 
-![image](https://github.com/user-attachments/assets/01398352-c686-4a94-b937-616eda253154)
+![image](https://github.com/user-attachments/assets/dfba61bf-36d3-44be-be49-05976b48f9dd)
 
 Folding makes the editor to resemble a bit more conventional structured editor, where you have one scene visible for editing at time. In this case, you can choose which scenes are visible when you write your story.
 
