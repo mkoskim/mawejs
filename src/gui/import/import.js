@@ -11,7 +11,7 @@ import "../common/styles/sheet.css"
 
 import React, {
   useMemo, useCallback,
-  useDeferredValue,
+  useState,
 } from 'react';
 
 import {
@@ -38,42 +38,63 @@ import {
   updateDocStoryType, updateDocChapterElem, updateDocChapterType,
 } from "../common/components";
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Import view
+//
+//*****************************************************************************
 
 export function ImportView({doc, updateDoc, buffer, setBuffer}) {
   const {file, ext, content} = buffer
 
   console.log("File:", file, "Ext:", ext)
 
-  const imported = importTXT(content)
+  switch(ext) {
+    case ".txt": return <ImportTXT doc={doc} updateDoc={updateDoc} content={content} setBuffer={setBuffer}/>
+  }
+  return null
+}
+
+//*****************************************************************************
+//
+// Text import
+//
+//*****************************************************************************
+
+function ImportTXT({content, setBuffer, doc, updateDoc}) {
+
+  const [linebreak, setLinebreak] = useState("\n\n")
+
+  const imported = importTXT(content, linebreak)
 
   return <HBox style={{ overflow: "auto" }}>
-    <ImportIndex style={{ maxWidth: "300px", width: "300px" }}/>
+    <VBox>
+      <Label>Text import</Label>
+    </VBox>
     <Preview imported={imported}/>
-    <ImportSettings doc={doc} updateDoc={updateDoc}/>
-  </HBox>
+    <ImportIndex style={{ maxWidth: "300px", width: "300px" }}/>
+    </HBox>
 }
 
 //-----------------------------------------------------------------------------
 
-function importTXT(content) {
+function importTXT(content, linebreak) {
   const paragraphs = content
     .replaceAll("\r", "")
     //.split(/\n+/)
-    .split(/\n/)
+    .split(linebreak)
+    .map(line => line.replaceAll("\n", " "))
     .map(line => line.trim())
     .map(line => ({type: "p", text: line}))
   ;
   return paragraphs
 }
 
-//-----------------------------------------------------------------------------
-
-function ImportSettings() {
-  return null
-}
-
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Import preview
+//
+//*****************************************************************************
 
 function ImportIndex() {
   return null
@@ -86,7 +107,7 @@ function Preview({imported}) {
   return <div className="Filler Board">
     <DeferredRender>
       <div className="Sheet Regular">
-        {imported.map(elem => <p>
+        {imported && imported.map(elem => <p>
           {elem.text}
           <span style={{marginLeft: "2pt", color: "grey"}}>&para;</span>
           </p>
