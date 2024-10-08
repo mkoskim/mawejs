@@ -85,6 +85,7 @@ export default function App(props) {
   const [buffer, setBuffer] = useState()
 
   //console.log("Doc:", doc)
+  console.log("Command:", command)
 
   useEffect(() => {
     if(!command) return
@@ -101,10 +102,29 @@ export default function App(props) {
     }
   }, [command])
 
+  //---------------------------------------------------------------------------
+  // Startup command
+  //---------------------------------------------------------------------------
+
   useEffect(() => {
+    /*
     //console.log("Recent:", recent)
     if(recent?.length) cmdLoadFile({setCommand, filename: recent[0].id})
+    /*/
+    setCommand({
+      action: "import",
+      file: {
+        id: "./examples/Frankenstein.txt",
+        name: "Frankenstein.txt",
+      },
+      ext: ".txt",
+    })
+    /**/
   }, [])
+
+  //---------------------------------------------------------------------------
+  // Render
+  //---------------------------------------------------------------------------
 
   return <ThemeProvider theme={theme}>
     <SnackbarProvider>
