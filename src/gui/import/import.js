@@ -41,9 +41,9 @@ import {
 //-----------------------------------------------------------------------------
 
 export function ImportView({doc, updateDoc, buffer, setBuffer}) {
-  const {file, content} = buffer
+  const {file, ext, content} = buffer
 
-  console.log("File:", file)
+  console.log("File:", file, "Ext:", ext)
 
   return null;
 }

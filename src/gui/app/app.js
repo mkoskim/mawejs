@@ -131,10 +131,10 @@ export default function App(props) {
     })
   }
 
-  function importFromFile({file}) {
+  function importFromFile({file, ext}) {
     fs.read(file.id)
     .then(content => {
-      setBuffer({file, content})
+      setBuffer({file, ext, content})
       Inform.success(`Loaded: ${file.name}`);
     })
     .catch(err => {

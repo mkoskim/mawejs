@@ -74,9 +74,9 @@ export async function cmdOpenFile({ setCommand, file }) {
 
 //-----------------------------------------------------------------------------
 
-export function cmdImportFile({setCommand, file}) {
+export function cmdImportFile({setCommand, file, ext}) {
   console.log("Import file:", file.name)
-  setCommand({action: "import", file})
+  setCommand({action: "import", file, ext})
 }
 
 export async function cmdOpenImportFile({setCommand, file}) {
@@ -88,7 +88,9 @@ export async function cmdOpenImportFile({setCommand, file}) {
   })
   if (!canceled) {
     const [filename] = filePaths
-    cmdImportFile({setCommand, file: await fs.fstat(filename)})
+    const file = await fs.fstat(filename)
+    const ext  = await fs.extname(file.id)
+    cmdImportFile({setCommand, file, ext})
   }
 }
 
