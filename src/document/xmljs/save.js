@@ -82,11 +82,11 @@ function toHead(head) {
     optional("subtitle", head.subtitle),
     optional("author", head.author),
     optional("pseudonym", head.pseudonym),
-    optional("translated", head.translated),
-    optional("status", head.status),
-    optional("deadline", head.deadline),
-    optional("covertext", head.covertext),
-    optional("version", head.version),
+    //optional("translated", head.translated),
+    //optional("status", head.status),
+    //optional("deadline", head.deadline),
+    //optional("covertext", head.covertext),
+    //optional("version", head.version),
   )
 
   function optional(type, value, attributes) {

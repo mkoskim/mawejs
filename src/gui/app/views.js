@@ -67,7 +67,7 @@ export class ViewSelectButtons extends React.PureComponent {
   viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
     "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
-    "chart": { tooltip: "Charts", icon: <Icon.View.Chart /> },
+    "chart": { tooltip: "Story Arc", icon: <Icon.View.Chart /> },
     "stats": { tooltip: "Statistics", icon: <Icon.View.Stats /> },
     "export": { tooltip: "Export", icon: <Icon.View.Export /> },
   }

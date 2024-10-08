@@ -13,7 +13,7 @@ import { loadChartSettings } from "../../gui/chart/chart";
 import { loadViewSettings } from "../../gui/app/views";
 import { loadEditorSettings } from "../../gui/editor/editor";
 import {loadExportSettings} from "../../gui/export/export";
-import { createDateStamp } from "./track";
+import { createDateStamp } from "../util";
 
 //-----------------------------------------------------------------------------
 // File structure:
@@ -119,7 +119,7 @@ function optional(elem, name, parse) {
 function parseHead(head, history) {
   //const date = strftime("%Y-%m-%d")
   const date = createDateStamp()
-  const [last] = history.filter(e => e.type === "words" && e.date !== date).sort().reverse()
+  const [last] = history.filter(e => e.type === "words" && e.date !== date).sort().slice(-1)
   console.log("Last time:", last)
 
   return {

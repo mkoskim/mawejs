@@ -711,7 +711,7 @@ function withMarkup(editor) {
       match: n => Editor.isBlock(editor, n),
     })
 
-    if(node.type in blockstyles) {
+    if(node && node.type in blockstyles) {
       const style = blockstyles[node.type]
 
       // If we hit enter at empty line, and block type is RESETEMPTY, reset type
