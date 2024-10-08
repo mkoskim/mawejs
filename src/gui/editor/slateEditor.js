@@ -544,16 +544,17 @@ export function getEditor() {
     // Base editor
     withHistory,
     withIDs,              // Autogenerate IDs
-    withWordCount,
-    withBreaks,
-    withFixNesting,
-    withMarkup,
+    withWordCount,        // Autogenerate word counts
+    withBreaks,           // empty <p> -> <br>
+    withFixNesting,       // Keep correct nesting: part -> scene -> paragraph
+    withMarkup,           // Markups (##, **, //, etc)
 
     withReact,
-    // ReactEditor overrides
-    withTextPaste,
 
-    withProtectFolds,     // Keep low! Prevents messing with folded blocks
+    // ReactEditor overrides
+    withTextPaste,        // Improved text paste
+
+    withProtectFolds,     // Hooks changes. Prevents messing with folded blocks
   ].reduce((editor, func) => func(editor), undefined)
 }
 
@@ -564,13 +565,12 @@ export function getEditor() {
 function withTextPaste(editor) {
 
   //---------------------------------------------------------------------------
-
   // Slate default behaviour: Pasted elements come to insertData(data)
   // method. It tries to insertFragmentData(data), which checks if the data
   // in clipboard is copied/cutted SlateJS object. If not, it falls back
   // to insertTextData(data).
-
   //---------------------------------------------------------------------------
+
   const { insertTextData } = editor
 
   editor.insertTextData = data => {
@@ -628,58 +628,47 @@ function withTextPaste(editor) {
 
 //-----------------------------------------------------------------------------
 // Markup shortcuts
+//
+// Style table:
+//
+//    next    Next style (empty: keep style)
+//    reset   Pressing ENTER on empty line resets the style to paragraph
+//    bk      BACKSPACE at the start of line resets the style to paragraph
+//
 //-----------------------------------------------------------------------------
 
+const blockstyles = {
+  "hpart":    { next: "p",              bk: true, },
+  "hscene":   { next: "p",              bk: true, },
+  "synopsis": { next: "p", reset: true, bk: true, },
+  'comment':  {            reset: true, bk: true, },
+  'missing':  { next: "p", reset: true, bk: true, },
+  'fill':     { next: "p", reset: true, bk: true, },
+  'tags':     { next: "p", reset: true, bk: true, },
+}
+
+// TODO: Generate this table
+
+const MARKUP = {
+  "** ": "hpart",
+  "## ": "hscene",
+  '>> ': "synopsis",
+  '// ': 'comment',
+  '!! ': 'missing',
+  '++ ': 'fill',
+  '@ ' : 'tags'
+  //'-- ':
+  //'<<':
+  //'((':
+  //'))':
+  //'==':
+  //'??':
+  //'%%':
+  //'/*':
+  //'::':
+}
+
 function withMarkup(editor) {
-
-  //---------------------------------------------------------------------------
-  // Markup shortcuts to create styles
-
-  const SHORTCUTS = {
-    '** ': {type: "hpart"},
-    '## ': {type: "hscene"},
-    '>> ': {type: "synopsis"},
-    '// ': {type: 'comment'},
-    '!! ': {type: 'missing'},
-    '++ ': {type: 'fill'},
-    '@ ': {type: 'tags'},
-    //'-- ': ,
-    //'<<':
-    //'((':
-    //'))':
-    //'==':
-    //'??':
-    //'%%':
-    //'/*':
-    //'::':
-  }
-
-  const STYLEAFTER = {
-    "hpart": "p",
-    "hscene": "p",
-    "synopsis": "p",
-    "missing": "p",
-    "fill": "p",
-    "tags": "p",
-  }
-
-  const RESETEMPTY = [
-    "synopsis",
-    "comment",
-    "missing",
-    "fill",
-    "tags",
-  ]
-
-  const UNFORMAT_ON_BKSPACE = [
-    "missing",
-    "fill",
-    "comment",
-    "synopsis",
-    "tags",
-    "hpart",
-    "hscene",
-  ]
 
   const { insertText } = editor
 
@@ -689,20 +678,18 @@ function withMarkup(editor) {
     if(!selection) return insertText(text)
     if(!Range.isCollapsed(selection)) return insertText(text)
 
-    const { anchor } = selection
     const [node, path] = Editor.above(editor, {
       match: n => Editor.isBlock(editor, n),
     })
 
-    //const path = node ? node[1] : []
     const start = Editor.start(editor, path)
-    const range = { anchor, focus: start }
+    const range = { anchor: selection.anchor, focus: start }
     const key = Editor.string(editor, range) + text
 
-    if(key in SHORTCUTS) {
+    if(key in MARKUP) {
       Transforms.select(editor, range)
       Transforms.delete(editor)
-      Transforms.setNodes(editor, SHORTCUTS[key])
+      Transforms.setNodes(editor, {type: MARKUP[key]})
       return
     }
 
@@ -724,23 +711,26 @@ function withMarkup(editor) {
       match: n => Editor.isBlock(editor, n),
     })
 
-    // If we hit enter at empty line, and block type is RESETEMPTY, reset type
-    if(RESETEMPTY.includes(node.type) && Node.string(node) == "") {
-      Transforms.setNodes(editor, {type: "p"});
-      return
+    if(node.type in blockstyles) {
+      const style = blockstyles[node.type]
+
+      // If we hit enter at empty line, and block type is RESETEMPTY, reset type
+      if(style.reset && Node.string(node) == "") {
+        Transforms.setNodes(editor, {type: "p"});
+        return
+      }
+
+      // If we hit enter at line, which has STYLEAFTER, split line and apply style
+      if(style.next) {
+        Editor.withoutNormalizing(editor, () => {
+          Transforms.splitNodes(editor, {always: true})
+          Transforms.setNodes(editor, {type: style.next, id: nanoid()})
+        })
+        return
+      }
     }
 
-    // If we hit enter at line, which has STYLEAFTER, split line and apply style
-    if(node.type in STYLEAFTER) {
-      const newtype = STYLEAFTER[node.type]
-      Editor.withoutNormalizing(editor, () => {
-        Transforms.splitNodes(editor, {always: true})
-        Transforms.setNodes(editor, {type: newtype, id: nanoid()})
-      })
-      return
-    }
-
-    insertBreak()
+    return insertBreak()
   }
 
   //---------------------------------------------------------------------------
@@ -764,13 +754,15 @@ function withMarkup(editor) {
 
     if(!elemIsBlock(editor, node)) return deleteBackward(...args)
 
-    // Beginning of line?
-    if(!Point.equals(selection.anchor, Editor.start(editor, path))) return deleteBackward(...args)
+    if(node.type in blockstyles) {
+      // Beginning of line?
+      if(!Point.equals(selection.anchor, Editor.start(editor, path))) return deleteBackward(...args)
 
-    if(UNFORMAT_ON_BKSPACE.includes(node.type)) {
+      if(blockstyles[node.type].bk) {
         // Remove formatting
         Transforms.setNodes(editor, {type: 'p'})
         return
+      }
     }
 
     return deleteBackward(...args)

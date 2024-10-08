@@ -310,7 +310,7 @@ class IndexItem extends React.PureComponent {
     const typeClass = (type === "part") ? "PartName" :
       (type === "scene") ? "SceneName" :
       (type === "section") ? "SectionName" :
-      ""
+      "BookmarkName"
 
     const foldClass = (folded) ? "Folded" : ""
 
