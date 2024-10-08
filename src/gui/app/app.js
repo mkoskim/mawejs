@@ -330,10 +330,10 @@ class FileMenu extends React.PureComponent {
           <RecentItems recent={recent} setCommand={setCommand} popupState={popupState}/>
           <Separator/>
           <MenuItem onClick={e => { cmdOpenImportFile({setCommand, file}); popupState.close(e); }}>
-            <ListItemText>Import file...</ListItemText>
+            <ListItemText>Import File...</ListItemText>
             </MenuItem>
           <MenuItem onClick={e => { cmdImportClipboard({setCommand}); popupState.close(e); }}>
-            <ListItemText>Import clipboard</ListItemText>
+            <ListItemText>Import From Clipboard</ListItemText>
             </MenuItem>
           <Separator/>
           <MenuItem disabled={!file} onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>
