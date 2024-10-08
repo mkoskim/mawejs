@@ -16,7 +16,6 @@ import React, {
 } from "react"
 
 import { ThemeProvider } from '@mui/material/styles';
-import { styled } from '@mui/material/styles';
 
 import {
   theme,
@@ -42,7 +41,9 @@ import {
   cmdCloseFile,
   cmdLoadFile,
   cmdNewFile, cmdOpenFile, cmdOpenFolder, cmdOpenHelp,
-  cmdSaveFile, cmdSaveFileAs
+  cmdOpenImportFile, cmdImportFile,
+  cmdSaveFile, cmdSaveFileAs,
+  cmdImportClipboard
 } from "./context"
 
 import {
@@ -81,13 +82,19 @@ export default function App(props) {
   const [doc, updateDoc] = useImmer(null)
   const [command, setCommand] = useState()
 
+  // File to import
+  const [buffer, setBuffer] = useState()
+
   //console.log("Doc:", doc)
+  console.log("Command:", command)
 
   useEffect(() => {
     if(!command) return
     const {action} = command
     switch(action) {
       case "load": { docFromFile(command); break; }
+      case "import": { importFromFile(command); break; }
+      case "clipboard": { importFromClipboard(command); break; }
       case "save": { docSave(command); break; }
       case "set": { docFromBuffer(command); break; }
       case "resource": { docFromResource(command); break; }
@@ -97,16 +104,32 @@ export default function App(props) {
     }
   }, [command])
 
+  //---------------------------------------------------------------------------
+  // Startup command
+  //---------------------------------------------------------------------------
+
   useEffect(() => {
+    //*
     //console.log("Recent:", recent)
     if(recent?.length) cmdLoadFile({setCommand, filename: recent[0].id})
+    /*/
+    setCommand({
+      action: "import",
+      file: {id: "./examples/Frankenstein.txt", name: "Frankenstein.txt" },
+      ext: ".txt",
+    })
+    /**/
   }, [])
+
+  //---------------------------------------------------------------------------
+  // Render
+  //---------------------------------------------------------------------------
 
   return <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <SettingsContext.Provider value={settings}>
         <CmdContext.Provider value={setCommand}>
-          <View key={doc?.key} doc={doc} updateDoc={updateDoc}/>
+          <View key={doc?.key} doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
         </CmdContext.Provider>
       </SettingsContext.Provider>
     </SnackbarProvider>
@@ -124,6 +147,28 @@ export default function App(props) {
     .catch(err => {
       recentRemove({id: filename}, recent, setRecent)
       Inform.error(err)
+    })
+  }
+
+  function importFromFile({file, ext}) {
+    fs.read(file.id)
+    .then(content => {
+      setBuffer({file, ext, content})
+      Inform.success(`Loaded: ${file.name}`);
+    })
+    .catch(err => {
+      Inform.error(err);
+    })
+  }
+
+  function importFromClipboard() {
+    navigator.clipboard.readText()
+    .then(content => {
+      setBuffer({file: undefined, ext: ".txt", content})
+      //Inform.success(`Loaded: ${file.name}`);
+    })
+    .catch(err => {
+      //Inform.error(err);
     })
   }
 
@@ -179,22 +224,22 @@ export default function App(props) {
 //
 //*****************************************************************************
 
-function View({doc, updateDoc}) {
+function View({doc, updateDoc, buffer, setBuffer}) {
 
   //const [view, setView] = useSetting(doc?.file?.id, getViewDefaults(null))
   //const [view, setView] = useState(() => getViewDefaults())
 
   return (
     <VBox className="ViewPort">
-      <WorkspaceTab doc={doc} updateDoc={updateDoc}/>
-      <ViewSwitch doc={doc} updateDoc={updateDoc}/>
+      <WorkspaceTab doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
+      <ViewSwitch doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
     </VBox>
   )
 }
 
 //-----------------------------------------------------------------------------
 
-function WorkspaceTab({doc, updateDoc}) {
+function WorkspaceTab({doc, updateDoc, buffer, setBuffer}) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
@@ -208,6 +253,8 @@ function WorkspaceTab({doc, updateDoc}) {
   ]));
 
   //console.log("Recent:", recent)
+  //if(buffer) return <WithBuffer setCommand={setCommand} recent={recent} buffer={buffer} setBuffer={setBuffer}/>
+  if(buffer) return null
   if(!doc) return <WithoutDoc setCommand={setCommand} recent={recent}/>
   return <WithDoc setCommand={setCommand} recent={recent} doc={doc} updateDoc={updateDoc}/>
 }
@@ -281,6 +328,13 @@ class FileMenu extends React.PureComponent {
             <Typography sx={{ color: 'text.secondary' }}>Ctrl-O</Typography>
             </MenuItem>
           <RecentItems recent={recent} setCommand={setCommand} popupState={popupState}/>
+          <Separator/>
+          <MenuItem onClick={e => { cmdOpenImportFile({setCommand, file}); popupState.close(e); }}>
+            <ListItemText>Import file...</ListItemText>
+            </MenuItem>
+          <MenuItem onClick={e => { cmdImportClipboard({setCommand}); popupState.close(e); }}>
+            <ListItemText>Import clipboard</ListItemText>
+            </MenuItem>
           <Separator/>
           <MenuItem disabled={!file} onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>
             <ListItemText>Save</ListItemText>
