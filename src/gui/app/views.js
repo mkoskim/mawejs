@@ -18,6 +18,7 @@ import { SingleEditView } from "../editor/editor";
 import { Chart } from "../chart/chart"
 import { Stats } from "../stats/stats"
 import { Export } from "../export/export"
+import {ImportView} from "../import/import";
 
 //*****************************************************************************
 //
@@ -73,7 +74,11 @@ export class ViewSelectButtons extends React.PureComponent {
   }
 }
 
-export function ViewSwitch({doc, updateDoc}) {
+export function ViewSwitch({doc, updateDoc, buffer, setBuffer}) {
+
+  if(buffer) {
+    return <ImportView doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
+  }
 
   if(!doc) return null
 

@@ -21,10 +21,19 @@ export const CmdContext = createContext(null)
 
 const fs = require("../../system/localfs")
 
+//-----------------------------------------------------------------------------
+
 const filters = [
   { name: 'Mawe Files', extensions: ['moe', 'mawe', 'mawe.gz'] },
   { name: 'All Files', extensions: ['*'] }
 ]
+
+const importFilters = [
+  { name: 'Text files', extensions: ['txt', 'md'] },
+  { name: 'All Files', extensions: ['*'] }
+]
+
+//-----------------------------------------------------------------------------
 
 export async function cmdOpenFolder(file) {
   const dirname = file ? await fs.dirname(file) : "."
@@ -43,6 +52,8 @@ export async function cmdNewFile({ setCommand }) {
   })
 }
 
+//-----------------------------------------------------------------------------
+
 export function cmdLoadFile({setCommand, filename}) {
   console.log("Load file:", filename)
   setCommand({action: "load", filename})
@@ -60,6 +71,28 @@ export async function cmdOpenFile({ setCommand, file }) {
     cmdLoadFile({setCommand, filename})
   }
 }
+
+//-----------------------------------------------------------------------------
+
+export function cmdImportFile({setCommand, file}) {
+  console.log("Import file:", file.name)
+  setCommand({action: "import", file})
+}
+
+export async function cmdOpenImportFile({setCommand, file}) {
+  const { canceled, filePaths } = await fileOpenDialog({
+    title: "Import File",
+    filters: importFilters,
+    defaultPath: file?.id ?? ".",
+    properties: ["OpenFile"],
+  })
+  if (!canceled) {
+    const [filename] = filePaths
+    cmdImportFile({setCommand, file: await fs.fstat(filename)})
+  }
+}
+
+//-----------------------------------------------------------------------------
 
 export async function cmdSaveFile({ setCommand, file }) {
   if (file) {
