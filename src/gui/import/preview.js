@@ -15,25 +15,27 @@ export class Preview extends React.PureComponent {
 
     if(!imported) return null
 
-    return <>
-      <ImportIndex style={{ maxWidth: "300px", width: "300px" }} imported={imported}/>
+    return <DeferredRender>
       <div className="Filler Board">
         <div className="Sheet Regular">
-          <DeferredRender>{imported.map(PreviewPart)}</DeferredRender>
+          {imported.map(PreviewPart)}
           </div>
       </div>
-    </>
+      <ImportIndex style={{ maxWidth: "300px", width: "300px" }} imported={imported}/>
+    </DeferredRender>
   }
 }
 
 function PreviewPart(part) {
-  return <div key={part.id}>
+  return <div class="part">
+    <h5 key={part.id}>{part.attributes.name}</h5>
     {part.elements.map(PreviewScene)}
   </div>
 }
 
 function PreviewScene(scene) {
-  return <div key={scene.id}>
+  return <div class="scene">
+    <h6 key={scene.id}>{scene.attributes.name}</h6>
     {scene.elements.map(PreviewParagraph)}
   </div>
 }
@@ -46,5 +48,18 @@ function PreviewParagraph(p) {
 }
 
 function ImportIndex({imported}) {
-  return null
+  return <div className="TOC" style={{maxWidth: "300px"}}>
+    {imported.map(partIndex)}
+  </div>
+
+  function partIndex(part) {
+    return <>
+      <div className="Entry PartName" key={part.id}><p className="Name">{part.attributes.name}</p></div>
+      {part.elements.map(sceneIndex)}
+    </>
+  }
+
+  function sceneIndex(scene) {
+    return <div className="Entry SceneName" key={scene.id}><p className="Name">{scene.attributes.name}</p></div>
+  }
 }

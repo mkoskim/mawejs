@@ -10,32 +10,23 @@ import "./styles/import.css"
 import "../common/styles/sheet.css"
 
 import React, {
-  useMemo, useCallback,
   useState,
 } from 'react';
 
 import {
-  FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon, Tooltip, IconButton,
-  ToggleButton, ToggleButtonGroup,
-  Radio,
-  Input,
+  VBox, HBox,
+  ToolBox, Button,
   Label,
-  List, ListItem, ListItemText, ListSubheader,
-  Grid,
-  Separator, Loading, addClass,
-  TextField, SelectFrom,
+  Separator,
   Menu, MenuItem,
-  Accordion, AccordionSummary, AccordionDetails,
-  DeferredRender,
-  Inform,
 } from "../common/factory";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
-import { elemName, getSuffix, nanoid, filterCtrlElems } from "../../document/util";
-import { Preview } from "./preview";
 import { maweFromTree } from "../../document/xmljs/load";
+
+import { Preview } from "./preview";
+import { ImportText } from "./importText";
 
 //*****************************************************************************
 //
@@ -45,7 +36,7 @@ import { maweFromTree } from "../../document/xmljs/load";
 
 function ext2format(ext) {
   switch(ext) {
-    case ".rtf": return "rtf"
+    //case ".rtf": return "rtf"
   }
   return "text"
 }
@@ -68,6 +59,8 @@ export function ImportView({updateDoc, buffer, setBuffer}) {
     </HBox>
   </VBox>
 }
+
+//-----------------------------------------------------------------------------
 
 function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) {
 
@@ -106,16 +99,7 @@ function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) 
   </ToolBox>
 }
 
-class SelectFormat extends React.PureComponent {
-  render() {
-    const {format, content, setImported} = this.props
-
-    switch(format) {
-      case "text": return <ImportTXT content={content} setImported={setImported}/>
-    }
-    return null
-  }
-}
+//-----------------------------------------------------------------------------
 
 class SelectFormatButton extends React.PureComponent {
 
@@ -162,70 +146,15 @@ class SelectFormatButton extends React.PureComponent {
   }
 }
 
-//*****************************************************************************
-//
-// Text import
-//
-//*****************************************************************************
-
-class ImportTXT extends React.PureComponent {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      linebreak: "double"
-    };
-  }
-
-  setLinebreak(linebreak) {
-    this.setState({linebreak})
-  }
-
-  getLinebreak() {
-    switch(this.state.linebreak) {
-      case "single": return "\n"
-      default:
-      case "double": return "\n\n"
-    }
-  }
-
-  render() {
-    const {content, setImported} = this.props
-
-    setImported(importTXT(content, this.getLinebreak()))
-
-    return <>
-      <Label>Text import</Label>
-      <TextField select label="Line break" value={this.state.linebreak} onChange={e => this.setLinebreak(e.target.value)}>
-        <MenuItem value="double">Double</MenuItem>
-        <MenuItem value="single">Single</MenuItem>
-      </TextField>
-    </>
-  }
-}
-
 //-----------------------------------------------------------------------------
 
-export function text2lines(content, linebreak = "\n\n") {
-  return content
-    .replaceAll("\r", "")
-    .split(linebreak)
-    .map(line => line.replaceAll(/\s+/g, " ").trim())
-}
+class SelectFormat extends React.PureComponent {
+  render() {
+    const {format, content, setImported} = this.props
 
-function importTXT(content, linebreak) {
-
-  const elements = text2lines(content, linebreak)
-    .map(line => ({
-      type: "element", name: "p", id: nanoid(),
-      elements: [{type: "text", text: line}]
-    }))
-  ;
-  return [{
-    type: "element", name: "part", id: nanoid(),
-    elements: [{
-      type: "element", name: "scene", id: nanoid(),
-      elements
-    }]
-  }]
+    switch(format) {
+      case "text": return <ImportText content={content} setImported={setImported}/>
+    }
+    return null
+  }
 }

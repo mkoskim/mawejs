@@ -86,7 +86,7 @@ export default function App(props) {
   const [buffer, setBuffer] = useState()
 
   //console.log("Doc:", doc)
-  console.log("Command:", command)
+  //console.log("Command:", command)
 
   useEffect(() => {
     if(!command) return

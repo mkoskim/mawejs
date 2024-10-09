@@ -38,7 +38,7 @@ import {
   Menu, MenuItem, ListItemIcon, Typography,
 } from '../common/factory';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
-import { text2lines } from '../import/import';
+import { text2lines } from '../import/util';
 
 export {
   text2Regexp,
