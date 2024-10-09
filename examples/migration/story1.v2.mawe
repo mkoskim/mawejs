@@ -1,6 +1,7 @@
 <story name="Story v2/1" format="mawe" version="2">
 
 <!-- This file has head inside body element -->
+<!-- It has chart setting, with elements=parts -->
 
 <body>
 <head>
@@ -9,6 +10,11 @@
 <part name="Chapter">
 <scene name="Scene">
 <p>If loaded correctly, story title is "Story".</p>
+<p>Check also, that Story Arc view shows chapters.</p>
 <br/>
 </scene>
 </part>
+</body>
+<ui>
+<chart elements="parts"/>
+</ui>
