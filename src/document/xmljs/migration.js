@@ -19,6 +19,7 @@ import { elemFind, elemFindall, elem2Text } from "./tree";
 //       2      Multi-part support.
 //
 //       3      Body/notes part --> chapter
+//              ui.chart --> ui.arc
 //
 //-----------------------------------------------------------------------------
 
