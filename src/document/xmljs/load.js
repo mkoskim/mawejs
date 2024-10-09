@@ -168,7 +168,7 @@ function parseSection(section) {
 }
 
 function parseChapter(chapter, index) {
-  const {name, folded} = chapter.attributes ?? {};
+  const {name, folded, unnumbered} = chapter.attributes ?? {};
   const header = (!index && !name) ? [] : [{
     type: "hchapter",
     id: nanoid(),
@@ -187,7 +187,8 @@ function parseChapter(chapter, index) {
     type: "chapter",
     id: nanoid(),
     //name,
-    folded: (folded === "true") ? true : undefined,
+    folded: folded ? true : undefined,
+    unnumbered: unnumbered ? true: undefined,
     children: [
       ...header,
       ...children,

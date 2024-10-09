@@ -129,7 +129,7 @@ function toNotes(notes) {
 //-----------------------------------------------------------------------------
 
 function toChapter(chapter) {
-  const {folded} = chapter;
+  const {folded, unnumbered} = chapter;
   const name = elemName(chapter)
 
   return xmlLines(
@@ -138,6 +138,7 @@ function toChapter(chapter) {
       attributes: {
         name: name,
         folded: folded ? true : undefined,
+        unnumbered: unnumbered ? true : undefined,
       },
     },
     ...filterCtrlElems(chapter.children).map(toScene),

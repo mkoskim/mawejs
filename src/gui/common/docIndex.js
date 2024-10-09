@@ -181,7 +181,7 @@ class ChapterItem extends React.PureComponent {
     const {innerRef, draggableProps, dragHandleProps} = provided
 
     return <div
-      className="Chapter"
+      className={addClass("Chapter", elem.unnumbered ? "" : "Numbered")}
       ref={innerRef}
       {...draggableProps}
       >

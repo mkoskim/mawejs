@@ -53,7 +53,7 @@
   */
 }
 
-.TOC .ChapterName .Name::before {
+.TOC .Numbered .ChapterName .Name::before {
   counter-increment: chapter;
   content: counter(chapter) ". ";
 /*
@@ -117,7 +117,7 @@
 */
 }
 
-.TOC .SceneName .Name::before {
+.TOC .Numbered .SceneName .Name::before {
   /* width: 1cm; */
   counter-increment: scene;
   content: counter(scene) ". ";

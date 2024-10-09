@@ -107,7 +107,7 @@
   margin-bottom: 0.5cm;
 }
 
-.Sheet div.scene {
+.Sheet .Numbered div.scene {
   counter-increment: scene;
   margin-bottom: 0.5cm;
 }
@@ -250,7 +250,7 @@
   */
 }
 
-.Sheet h6::before {
+.Sheet .Numbered h6::before {
   margin-right: 8pt;
   content: counter(scene) ".";
 }

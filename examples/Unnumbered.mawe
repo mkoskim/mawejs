@@ -1,0 +1,71 @@
+<story uuid="4881b810-89e9-4b9e-aa14-c178309f7c1a" format="mawe" version="3" name="Unnumbered">
+<!--/
+===============================================================================
+
+STORY: Unnumbered
+
+===============================================================================
+/-->
+<head/>
+<export type="short" chapterelem="chapter" chaptertype="separated"/>
+<!--/
+===============================================================================
+/-->
+<body>
+<chapter name="Prologue" unnumbered="true">
+<scene name="Scene">
+<p>Test unnumbered chapters.</p>
+</scene>
+<scene name="Scene"/>
+</chapter>
+<chapter name="Chapter 1">
+<scene name="Scene 1">
+<p>This is numbered.</p>
+</scene>
+<scene name="Scene 2"/>
+</chapter>
+<chapter name="Act II" unnumbered="true">
+<scene name="Scene">
+<p>Act II</p>
+</scene>
+</chapter>
+<chapter name="Chapter 2">
+<scene name="Scene 3"/>
+<scene name="Scene 4"/>
+</chapter>
+<chapter name="Epilogue" unnumbered="true">
+<scene name="Epilogue">
+<p>Epilogue</p>
+<br/>
+</scene>
+</chapter>
+</body>
+<!--/
+===============================================================================
+
+NOTES
+
+===============================================================================
+/-->
+<notes>
+<chapter>
+<scene>
+<br/>
+</scene>
+</chapter>
+</notes>
+<!--/
+===============================================================================
+/-->
+<ui>
+<view/>
+<arc elements="scenes" template="plotpoints" mode="topCCW"/>
+<editor>
+<body words="numbers" indexed="chapter,scene,synopsis"/>
+</editor>
+</ui>
+<history>
+<words date="2024-10-08" text="0" missing="0" chars="0"/>
+<words date="2024-10-09" text="9" missing="0" chars="56"/>
+</history>
+</story>

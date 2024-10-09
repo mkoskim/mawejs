@@ -131,14 +131,14 @@ const debug = {
 
 function renderElement({element, attributes, ...props}) {
 
-  const {type, folded} = element
+  const {type, folded, unnumbered} = element
 
   const foldClass = folded ? "folded" : ""
+  const numClass = unnumbered ? "" : "Numbered"
 
   switch (type) {
     case "chapter":
-      return <div className={addClass("chapter", foldClass, debug?.blocks)} {...attributes} {...props}/>
-
+      return <div className={addClass("chapter", numClass, foldClass, debug?.blocks)} {...attributes} {...props}/>
     case "scene":
       return <div className={addClass("scene", foldClass, debug?.blocks)} {...attributes} {...props}/>
 
@@ -262,7 +262,7 @@ class BlockStyleSelect extends React.PureComponent {
 
   static choices = {
     "p":        {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
-    "hchapter": {name: "Chapter",  markup: "**", shortcut: "Ctrl-Alt-1"},
+    "hchapter": {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-1"},
     "hscene":   {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-2"},
     "synopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
     "comment":  {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
@@ -635,7 +635,7 @@ function withTextPaste(editor) {
 //-----------------------------------------------------------------------------
 
 const blockstyles = {
-  "hchapter":    { next: "p",              bk: true, },
+  "hchapter": { next: "p",              bk: true, },
   "hscene":   { next: "p",              bk: true, },
   "synopsis": { next: "p", reset: true, bk: true, },
   'comment':  {            reset: true, bk: true, },
@@ -647,13 +647,14 @@ const blockstyles = {
 // TODO: Generate this table
 
 const MARKUP = {
-  "** ": "hchapter",
-  "## ": "hscene",
-  '>> ': "synopsis",
-  '// ': 'comment',
-  '!! ': 'missing',
-  '++ ': 'fill',
-  '@ ' : 'tags'
+  "# " : {type: "hchapter"},
+  "#! ": {type: "hchapter", unnumbered: true},
+  "## ": {type: "hscene"},
+  '>> ': {type: "synopsis"},
+  '// ': {type: 'comment'},
+  '!! ': {type: 'missing'},
+  '++ ': {type: 'fill'},
+  '@ ' : {type: 'tags'},
   //'-- ':
   //'<<':
   //'((':
@@ -663,6 +664,12 @@ const MARKUP = {
   //'%%':
   //'/*':
   //'::':
+}
+
+function setUnnumbering(editor, path, unnumbered) {
+  const [parent, ppath] = Editor.parent(editor, path, { match: n => Editor.isBlock(editor, n) && n.type === "chapter" })
+  console.log("Parent:", parent)
+  Transforms.setNodes(editor, {unnumbered}, {at: ppath})
 }
 
 function withMarkup(editor) {
@@ -686,7 +693,9 @@ function withMarkup(editor) {
     if(key in MARKUP) {
       Transforms.select(editor, range)
       Transforms.delete(editor)
-      Transforms.setNodes(editor, {type: MARKUP[key]})
+      const {type, unnumbered} = MARKUP[key]
+      Transforms.setNodes(editor, {type})
+      if(type === "hchapter") setUnnumbering(editor, path, unnumbered)
       return
     }
 
