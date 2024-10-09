@@ -10,7 +10,7 @@ import "./styles/import.css"
 import "../common/styles/sheet.css"
 
 import React, {
-  useState,
+  useState, useEffect,
 } from 'react';
 
 import {
@@ -19,6 +19,7 @@ import {
   Label,
   Separator,
   Menu, MenuItem,
+  Inform,
 } from "../common/factory";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
@@ -28,26 +29,64 @@ import { maweFromTree } from "../../document/xmljs/load";
 import { Preview } from "./preview";
 import { ImportText } from "./importText";
 
+//const anytext = require("any-text")
+const mammoth = require("mammoth")
+const fs = require("../../system/localfs")
+
 //*****************************************************************************
 //
 // Import view
 //
 //*****************************************************************************
 
-function ext2format(ext) {
-  switch(ext) {
-    //case ".rtf": return "rtf"
+const formats = {
+  "text": {name: "Text",},
+}
+
+function getContent(file, ext) {
+  if(!file) {
+    return {
+      loader: navigator.clipboard.readText(),
+      format: "text"
+    }
   }
-  return "text"
+  switch(ext) {
+    //case ".rtf":
+    case ".docx": return {
+      loader: fs.read(file.id, null)
+        .then(buffer => mammoth.extractRawText({arrayBuffer: buffer}))
+        .then(result => result.value),
+      format: "text"
+    }
+  }
+  return {
+    loader: fs.read(file.id),
+    format: "text"
+  }
 }
 
 export function ImportView({updateDoc, buffer, setBuffer}) {
-  const {file, ext, content} = buffer
+  const {file, ext} = buffer
 
-  console.log("File:", file, "Ext:", ext)
+  //console.log("File:", file, "Ext:", ext)
 
-  const [format, setFormat] = useState(ext2format(ext))
+  const [content, setContent] = useState()
+  const [format, setFormat] = useState()
   const [imported, setImported] = useState()
+
+  useEffect(() => {
+    const {loader, format} = getContent(file, ext)
+    loader
+    .then(content => {
+      setContent(content)
+      setFormat(format)
+      if(file) Inform.success(`Loaded: ${file.name}`);
+    })
+    .catch(err => {
+      Inform.error(err);
+      setBuffer()
+    })
+  }, [buffer, setContent, setFormat, setBuffer])
 
   return <VBox style={{ overflow: "auto" }}>
     <ImportBar format={format} setFormat={setFormat} imported={imported} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
@@ -65,8 +104,6 @@ export function ImportView({updateDoc, buffer, setBuffer}) {
 function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) {
 
   function Import(e) {
-    setBuffer(undefined)
-
     const story = maweFromTree({
       elements: [{
         type: "element", name: "story",
@@ -81,6 +118,7 @@ function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) 
         ]
     }]})
     updateDoc(story)
+    setBuffer(undefined)
   }
 
   function Cancel(e) {
@@ -90,7 +128,8 @@ function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) 
   return <ToolBox>
     <Label>Import: {buffer.file?.name ?? "Clipboard"}</Label>
     <Separator/>
-    <SelectFormatButton value={format} setFormat={setFormat}/>
+    <Label>{formats[format]?.name ?? format}</Label>
+    {/*<SelectFormatButton value={format} setFormat={setFormat}/>*/}
     <Separator/>
     <Button variant="contained" color="error" onClick={Cancel}>Cancel</Button>
     <Separator/>
@@ -102,10 +141,6 @@ function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) 
 //-----------------------------------------------------------------------------
 
 class SelectFormatButton extends React.PureComponent {
-
-  static choices = {
-    "text": {name: "Text",},
-  }
 
   static order = ["text"]
 

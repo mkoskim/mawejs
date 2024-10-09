@@ -151,7 +151,10 @@ export default function App(props) {
   }
 
   function importFromFile({file, ext}) {
+    setBuffer({file, ext})
+    /*
     fs.read(file.id)
+    fileToText(file)
     .then(content => {
       setBuffer({file, ext, content})
       Inform.success(`Loaded: ${file.name}`);
@@ -159,9 +162,12 @@ export default function App(props) {
     .catch(err => {
       Inform.error(err);
     })
+    */
   }
 
   function importFromClipboard() {
+    setBuffer({file: undefined, ext: undefined})
+    /*
     navigator.clipboard.readText()
     .then(content => {
       setBuffer({file: undefined, ext: ".txt", content})
@@ -170,6 +176,7 @@ export default function App(props) {
     .catch(err => {
       //Inform.error(err);
     })
+    */
   }
 
   function docFromBuffer({buffer}) {

@@ -8,6 +8,7 @@ import "../common/styles/TOC.css"
 import "../common/styles/sheet.css"
 
 import React, {
+  useEffect
 } from 'react';
 
 import {
@@ -48,8 +49,7 @@ export class ImportText extends React.PureComponent {
   render() {
     const {content, setImported} = this.props
 
-    console.log("Settings:", this.state)
-    setImported(importText(content, this.state))
+    //console.log("Settings:", this.state)
 
     return <>
       <Label>Text import</Label>
@@ -59,8 +59,15 @@ export class ImportText extends React.PureComponent {
       </TextField>
       <TextField label="Part prefix" value={this.state.partprefix} onChange={e => this.setPartPrefix(e.target.value)}/>
       <TextField label="Scene prefix" value={this.state.sceneprefix} onChange={e => this.setScenePrefix(e.target.value)}/>
+      <UpdateImported content={content} setImported={setImported} settings={this.state}/>
     </>
   }
+}
+
+function UpdateImported({content, setImported, settings}) {
+  useEffect(() => {
+    setImported(importText(content, settings))
+  }, [content, setImported, settings])
 }
 
 //-----------------------------------------------------------------------------
@@ -74,6 +81,8 @@ function getLinebreak(linebreak) {
 }
 
 function importText(content, settings) {
+
+  if(!content) return undefined
 
   const linebreak = getLinebreak(settings.linebreak)
   const {partprefix, sceneprefix} = settings
@@ -93,7 +102,7 @@ function importText(content, settings) {
 
   const elements = parts.map(makePart)
 
-  console.log("Elements:", elements)
+  //console.log("Elements:", elements)
 
   return elements
 

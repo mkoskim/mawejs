@@ -27,22 +27,23 @@ export class Preview extends React.PureComponent {
 }
 
 function PreviewPart(part) {
-  return <div class="part">
-    <h5 key={part.id}>{part.attributes.name}</h5>
+  return <div className="part" key={part.id}>
+    <h5>{part.attributes.name}</h5>
     {part.elements.map(PreviewScene)}
   </div>
 }
 
 function PreviewScene(scene) {
-  return <div class="scene">
-    <h6 key={scene.id}>{scene.attributes.name}</h6>
+  return <div className="scene" key={scene.id}>
+    <h6>{scene.attributes.name}</h6>
     {scene.elements.map(PreviewParagraph)}
   </div>
 }
 
 function PreviewParagraph(p) {
+  const text = p.elements.map(n => n.text).join(" ")
   return <p key={p.id}>
-    {p.elements.map(n => n.text).join(" ")}
+    {text}
     <span style={{marginLeft: "2pt", color: "grey"}}>&para;</span>
   </p>
 }
@@ -53,13 +54,13 @@ function ImportIndex({imported}) {
   </div>
 
   function partIndex(part) {
-    return <>
-      <div className="Entry PartName" key={part.id}><p className="Name">{part.attributes.name}</p></div>
+    return <div key={part.id} className="Part">
+      <div className="Entry PartName"><p className="Name">{part.attributes.name}</p></div>
       {part.elements.map(sceneIndex)}
-    </>
+    </div>
   }
 
   function sceneIndex(scene) {
-    return <div className="Entry SceneName" key={scene.id}><p className="Name">{scene.attributes.name}</p></div>
+    return <div key={scene.id} className="Entry SceneName"><p className="Name">{scene.attributes.name}</p></div>
   }
 }
