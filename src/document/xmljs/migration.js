@@ -151,38 +151,66 @@ function v2_to_v3(story) {
 //
 //*****************************************************************************
 
+function v3_fix_chart(uiElem) {
+
+  if(!uiElem) return {type: "element", name: "ui", attributes: {}, elements: []}
+
+  const chartElem = elemFind(uiElem, "chart")
+
+  if(!chartElem) return uiElem;
+
+  const {attributes} = chartElem
+  const {elements} = attributes
+
+  return {
+    ...uiElem,
+    elements: [
+      ...uiElem.elements.filter(elem => elem.name !== "chart"),
+      {
+        ...chartElem,
+        name: "arc",
+        attributes: {
+          ...attributes,
+          elements: elements === "parts" ? "chapters" : elements
+        }
+      }
+    ]
+  }
+}
+
+function v3_fix_exports(exportElem) {
+
+  if(!exportElem) return {type: "element", name: "export", attributes: {}, elements: []}
+
+  const {attributes} = exportElem
+  const {chapterelem} = attributes
+
+  return {
+    ...exportElem,
+    attributes: {
+      ...attributes,
+      chapterelem: chapterelem === "part" ? "chapter" : chapterelem
+    }
+  }
+}
+
 function v3_fix(story) {
 
   const {version} = story.attributes ?? {}
 
   if(version !== "3") return story
 
-  const uiElem    = elemFind(story, "ui")
-  const chartElem = elemFind(uiElem, "chart")
-
-  if(!chartElem) return story;
-
-  const {attributes} = chartElem
-  const {elements} = attributes
+  const uiElem = elemFind(story, "ui")
+  const exportElem = elemFind(story, "export")
 
   return {
     ...story,
     elements: [
-      ...story.elements.filter(elem => elem.name !== "ui"),
-      {
-        ...uiElem,
-        elements: [
-          ...uiElem.elements.filter(elem => elem.name !== "chart"),
-          {
-            ...chartElem,
-            name: "arc",
-            attributes: {
-              ...attributes,
-              elements: elements === "parts" ? "chapters" : elements
-            }
-          }
-        ]
-      }
+      ...story.elements
+        .filter(elem => elem.name !== "ui")
+        .filter(elem => elem.name !== "export"),
+      v3_fix_chart(uiElem),
+      v3_fix_exports(exportElem),
     ]
   }
 }
