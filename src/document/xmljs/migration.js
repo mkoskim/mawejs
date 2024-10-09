@@ -137,7 +137,7 @@ function v2_to_v3(story) {
 
   return {
     ...story,
-    elements: story.elements
+    elements: (story.elements ?? [])
       .filter(elem => elem.name !== "body")
       .filter(elem => elem.name !== "notes")
       .concat([body, notes]),
