@@ -89,7 +89,7 @@ export function ImportView({updateDoc, buffer, setBuffer}) {
     })
   }, [buffer, setContent, setFormat, setBuffer])
 
-  return <VBox style={{ overflow: "auto" }}>
+  return <VBox style={{ overflow: "auto", padding: "4pt"}}>
     <ImportBar format={format} setFormat={setFormat} imported={imported} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
     <HBox style={{ overflow: "auto" }}>
       <Preview imported={imported}/>
