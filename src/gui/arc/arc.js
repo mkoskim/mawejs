@@ -70,7 +70,7 @@ export function Chart({doc, updateDoc}) {
         <DocIndex
           section={doc.body}
           activeID="body"
-          include={["part", "scene"]}
+          include={["chapter", "scene"]}
           wcFormat={"compact"}
           unfold={true}
         />
@@ -152,7 +152,7 @@ function ChartView({doc, updateDoc}) {
   const settings = {
     elements: {
       buttons: elemButtons,
-      choices: ["scenes", "parts"],
+      choices: ["scenes", "chapters"],
       selected: doc.ui.chart.elements,
       setSelected: setElements,
       exclusive: true,
@@ -240,24 +240,24 @@ function elemData(elem) {
   ]
 }
 
-function partLabels(section) {
-  return section.parts.map(part => elemLabel(part))
+function chapterLabels(section) {
+  return section.chapters.map(chapter => elemLabel(chapter))
 }
 
-function partData(section) {
-  return section.parts.map(part => elemData(part)).flat()
+function chapterData(section) {
+  return section.chapters.map(chapter => elemData(chapter)).flat()
 }
 
 
 function sceneLabels(section) {
-  return section.parts.map(part => (
-    filterCtrlElems(part.children).map(scene => elemLabel(scene))
+  return section.chapters.map(chapter => (
+    filterCtrlElems(chapter.children).map(scene => elemLabel(scene))
   )).flat()
 }
 
 function sceneData(section) {
-  return section.parts.map(part => (
-    filterCtrlElems(part.children).map(scene => elemData(scene)).flat()
+  return section.chapters.map(chapter => (
+    filterCtrlElems(chapter.children).map(scene => elemData(scene)).flat()
   )).flat()
 }
 
@@ -271,10 +271,10 @@ const elemButtons = {
     labels: (section) => sceneLabels(section),
     data: (section) => sceneData(section),
   },
-  parts: {
-    icon: "Parts",
-    labels: (section) => partLabels(section),
-    data: (section) => partData(section),
+  chapters: {
+    icon: "Chapters",
+    labels: (section) => chapterLabels(section),
+    data: (section) => chapterData(section),
   },
 }
 

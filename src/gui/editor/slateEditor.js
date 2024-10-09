@@ -54,8 +54,8 @@ export {
 // Short description of buffer format:
 //
 // children = [
-//  part: [
-//    hpart (part header/name)
+//  chapter: [
+//    hchapter (chapter header/name)
 //    scene: [
 //      hscene (scene header/name)
 //      paragraph
@@ -65,8 +65,8 @@ export {
 //    scene
 //    scene
 //  ]
-//  part
-//  part
+//  chapter
+//  chapter
 //]
 //
 //-----------------------------------------------------------------------------
@@ -126,7 +126,7 @@ export function SlateEditable({className, highlight, ...props}) {
 // Turn some debug features on/off - off by default
 
 const debug = {
-  //blocks: "withBorders",  // Borders around part & scene div's to make them visible
+  //blocks: "withBorders",  // Borders around chapter & scene div's to make them visible
 }
 
 function renderElement({element, attributes, ...props}) {
@@ -136,13 +136,13 @@ function renderElement({element, attributes, ...props}) {
   const foldClass = folded ? "folded" : ""
 
   switch (type) {
-    case "part":
-      return <div className={addClass("part", foldClass, debug?.blocks)} {...attributes} {...props}/>
+    case "chapter":
+      return <div className={addClass("chapter", foldClass, debug?.blocks)} {...attributes} {...props}/>
 
     case "scene":
       return <div className={addClass("scene", foldClass, debug?.blocks)} {...attributes} {...props}/>
 
-    case "hpart": return <h5 {...attributes} {...props}/>
+    case "hchapter": return <h5 {...attributes} {...props}/>
     case "hscene": return <h6 {...attributes} {...props}/>
 
     case "comment":
@@ -262,7 +262,7 @@ class BlockStyleSelect extends React.PureComponent {
 
   static choices = {
     "p":        {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
-    "hpart":    {name: "Part",     markup: "**", shortcut: "Ctrl-Alt-1"},
+    "hchapter": {name: "Chapter",  markup: "**", shortcut: "Ctrl-Alt-1"},
     "hscene":   {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-2"},
     "synopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
     "comment":  {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
@@ -271,7 +271,7 @@ class BlockStyleSelect extends React.PureComponent {
     "tags":     {name: "Tags",     markup: "@",  shortcut: ""},
   }
 
-  static order = ["p", "hpart", "hscene", "synopsis", "comment", "missing", "fill", "tags"]
+  static order = ["p", "hchapter", "hscene", "synopsis", "comment", "missing", "fill", "tags"]
 
   render() {
     const {type, setSelected} = this.props;
@@ -475,7 +475,7 @@ function onKeyDown(editor, event) {
 
   if(IsKey.CtrlAlt1(event)) {
     event.preventDefault()
-    Transforms.setNodes(editor, {type: "hpart"})
+    Transforms.setNodes(editor, {type: "hchapter"})
     return ;
   }
 
@@ -547,7 +547,7 @@ export function getEditor() {
     withIDs,              // Autogenerate IDs
     withWordCount,        // Autogenerate word counts
     withBreaks,           // empty <p> -> <br>
-    withFixNesting,       // Keep correct nesting: part -> scene -> paragraph
+    withFixNesting,       // Keep correct nesting: chapter -> scene -> paragraph
     withMarkup,           // Markups (##, **, //, etc)
 
     withReact,
@@ -635,7 +635,7 @@ function withTextPaste(editor) {
 //-----------------------------------------------------------------------------
 
 const blockstyles = {
-  "hpart":    { next: "p",              bk: true, },
+  "hchapter":    { next: "p",              bk: true, },
   "hscene":   { next: "p",              bk: true, },
   "synopsis": { next: "p", reset: true, bk: true, },
   'comment':  {            reset: true, bk: true, },
@@ -647,7 +647,7 @@ const blockstyles = {
 // TODO: Generate this table
 
 const MARKUP = {
-  "** ": "hpart",
+  "** ": "hchapter",
   "## ": "hscene",
   '>> ': "synopsis",
   '// ': 'comment',
@@ -940,12 +940,12 @@ function withProtectFolds(editor) {
 //    1. Text node where the letter was inserted
 //    2. Paragraph block containing the text node
 //    3. Scene block containing the paragraph
-//    4. Part block containing the scene
-//    5. Editor containing the part
+//    4. Chapter block containing the scene
+//    5. Editor containing the chapter
 //
 // What we strive for, is that:
 //
-//    1. Every part starts with part header
+//    1. Every chapter starts with chapter header
 //    2. Every scene starts with scene header
 //
 // How we do that? As headers are the elements explicitly placed by user,
@@ -957,10 +957,10 @@ function withProtectFolds(editor) {
 //
 //    1. If you remove header, merge the block to previous one
 //    2. If you place header in middle of scene, split the group from
-//       that point (either to new scene or new part)
+//       that point (either to new scene or new chapter)
 //
-// There are two places where header is forced: (1) first part, and (2) first
-// scene in the part. I try to get rid of that restriction, it would help
+// There are two places where header is forced: (1) first chapter, and (2) first
+// scene in the chapter. I try to get rid of that restriction, it would help
 // greatly!
 //
 //-----------------------------------------------------------------------------
@@ -979,9 +979,9 @@ function withFixNesting(editor) {
 
     switch(node.type) {
       // Paragraph styles come first
-      case "hpart":
-        if(!checkParent(node, path, "part")) return
-        if(!checkIsFirst(node, path, "part")) return
+      case "hchapter":
+        if(!checkParent(node, path, "chapter")) return
+        if(!checkIsFirst(node, path, "chapter")) return
         break;
       case "hscene":
         if(!checkParent(node, path, "scene")) return
@@ -992,17 +992,17 @@ function withFixNesting(editor) {
         break;
 
       // Block styles come next
-      case "part": {
+      case "chapter": {
         if(path.length > 1) {
           Transforms.liftNodes(editor, {at: path})
           return;
         }
-        if(!checkBlockHeader(node, path, "hpart")) return
+        if(!checkBlockHeader(node, path, "hchapter")) return
         break;
       }
       case "scene": {
         if(path.length < 2) {
-          Transforms.wrapNodes(editor, {type: "part"}, {at: path})
+          Transforms.wrapNodes(editor, {type: "chapter"}, {at: path})
           return;
         } else if(path.length > 2) {
           Transforms.liftNodes(editor, {at: path})
@@ -1023,7 +1023,7 @@ function withFixNesting(editor) {
 
   //---------------------------------------------------------------------------
   // Check, that paragraphs are parented to scenes, and scenes are parented to
-  // parts: if not, put it into a scene wrapping and let further processing
+  // chapters: if not, put it into a scene wrapping and let further processing
   // merge it.
   //---------------------------------------------------------------------------
 

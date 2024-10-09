@@ -31,12 +31,12 @@
   background: white;
   border-right: 1pt solid lightgray;
   */
-  counter-reset: part scene;
+  counter-reset: chapter scene;
 }
 
 /* ---------------------------------------------------------------------------- */
 
-.TOC div.Part, .TOC div.Scene {
+.TOC div.Chapter, .TOC div.Scene {
   background: #F5F7F9;
 }
 
@@ -46,22 +46,22 @@
 
 /* ---------------------------------------------------------------------------- */
 
-.TOC .PartName {
+.TOC .ChapterName {
   /*
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
   */
 }
 
-.TOC .PartName .Name::before {
-  counter-increment: part;
-  content: counter(part) ". ";
+.TOC .ChapterName .Name::before {
+  counter-increment: chapter;
+  content: counter(chapter) ". ";
 /*
-  content: counter(part, upper-roman) "\00a0-\00a0";
+  content: counter(chapter, upper-roman) "\00a0-\00a0";
 */
 }
 
-.TOC .PartName {
+.TOC .ChapterName {
   font-weight: bold;
 }
 

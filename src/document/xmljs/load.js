@@ -15,19 +15,22 @@ import { loadEditorSettings } from "../../gui/editor/editor";
 import {loadExportSettings} from "../../gui/export/export";
 import { createDateStamp } from "../util";
 
+import { migrate } from "./migration";
+import { elemFind, elemFindall, elem2Text } from "./tree";
+
 //-----------------------------------------------------------------------------
 // File structure:
 //
 // <story format="mawe" version="x" uuid="xxx">
 //    <head> ... </head>
 //    <body name="xxx">
-//      <part> ... </part>
-//      <part> ... </part>
+//      <chapter> ... </chapter>
+//      <chapter> ... </chapter>
 //      ...
 //    </body>
 //    <notes>
-//      <part> ... </part>
-//      <part> ... </part>
+//      <chapter> ... </chapter>
+//      <chapter> ... </chapter>
 //      ...
 //    </notes>
 //
@@ -64,14 +67,11 @@ export function buf2tree(buffer) {
 }
 
 export function fromXML(root) {
-  const story = root.elements[0]
+  const story = migrate(root)
 
-  if (story.name !== "story") throw Error("File has no story.");
+  console.log("Migrated:", story)
 
-  const {uuid, name, format, version = 1} = story.attributes ?? {};
-
-  if (format !== "mawe") throw Error("Story is not mawe story.");
-  if (version > 2) throw Error(`File version ${version} is too new.`)
+  const {uuid, name} = story.attributes ?? {};
 
   // Inject name to body head
 
@@ -81,8 +81,8 @@ export function fromXML(root) {
   const body  = parseSection(bodyElem)
   const notes = parseSection(notesElem)
 
-  const headElem  = elemFind(story, "head") ?? elemFind(bodyElem, "head")
-  const expElem   = elemFind(story, "export") ?? elemFind(headElem, "export")
+  const headElem  = elemFind(story, "head")
+  const expElem   = elemFind(story, "export")
   const uiElem    = elemFind(story, "ui")
 
   const history = parseHistory(elemFind(story, "history"), body)
@@ -153,24 +153,24 @@ function parseHead(head, history) {
 //*****************************************************************************
 
 function parseSection(section) {
-  function getParts() {
-    const parts = elemFindall(section, "part")
-    if(!parts.length) return [{type: "part", id: nanoid()}]
-    return parts
+  function getChapters() {
+    const chapters = elemFindall(section, "chapter")
+    if(!chapters.length) return [{type: "chapter", id: nanoid()}]
+    return chapters
   }
-  const parts = getParts().map(parsePart)
-  const words = wcChildren(parts)
+  const chapters = getChapters().map(parseChapter)
+  const words = wcChildren(chapters)
   return {
     type: "sect",
-    parts,
+    chapters,
     words,
   }
 }
 
-function parsePart(part, index) {
-  const {name, folded} = part.attributes ?? {};
+function parseChapter(chapter, index) {
+  const {name, folded} = chapter.attributes ?? {};
   const header = (!index && !name) ? [] : [{
-    type: "hpart",
+    type: "hchapter",
     id: nanoid(),
     children: [{text: name ?? ""}],
     words: {}
@@ -180,11 +180,11 @@ function parsePart(part, index) {
     id: nanoid(),
     children: []
   }]
-  const children = (part.elements ?? empty).map(parseScene)
+  const children = (chapter.elements ?? empty).map(parseScene)
   const words = wcChildren(children)
 
   return {
-    type: "part",
+    type: "chapter",
     id: nanoid(),
     //name,
     folded: (folded === "true") ? true : undefined,
@@ -299,31 +299,4 @@ function parseWordEntry(elem) {
     missing: parseInt(missing),
     chars: parseInt(chars),
   }
-}
-
-//*****************************************************************************
-//
-// Helpers
-//
-//*****************************************************************************
-
-export function elemFind(parent, name) {
-  if(!parent?.elements) return undefined;
-  return parent.elements.find(e => e.type === "element" && e.name === name)
-}
-
-export function elemFindall(parent, name) {
-  if(!parent?.elements) return []
-  return parent.elements.filter(e => e.type === "element" && e.name === name)
-}
-
-function elem2Text(elem) {
-  if (elem.type === "text") return trim(elem.text);
-  if (elem.elements) return trim(elem.elements.map(e => elem2Text(e)).join(" "))
-  return "";
-}
-
-function trim(text) {
-  if(typeof text === "string") return text.trim() //.replace(/\s+/gu, ' ')
-  return undefined;
 }

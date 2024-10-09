@@ -82,9 +82,9 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   //---------------------------------------------------------------------------
 
   return <VBox style={style} className="TOC">
-    <PartDropZone
+    <ChapterDropZone
       activeID={activeID}
-      parts={section?.parts}
+      chapters={section?.chapters}
       wcFormat={wcFormatFunction}
       include={includeItems}
       onActivate={onActivate}
@@ -124,22 +124,22 @@ const IndexHead = memo(({name, section, wcFormat}) => {
 
 //-----------------------------------------------------------------------------
 
-class PartDropZone extends React.PureComponent {
+class ChapterDropZone extends React.PureComponent {
 
   render() {
-    const {parts, activeID} = this.props
+    const {chapters, activeID} = this.props
 
-    if(!parts) return null
+    if(!chapters) return null
 
     //console.log("Index update:", activeID)
 
-    return <Droppable droppableId={activeID} type="part">
+    return <Droppable droppableId={activeID} type="chapter">
       {this.DropZone.bind(this)}
     </Droppable>
   }
 
   DropZone(provided, snapshot) {
-    const {parts, wcFormat, include, onActivate, unfold, current, refCurrent} = this.props
+    const {chapters, wcFormat, include, onActivate, unfold, current, refCurrent} = this.props
     const {innerRef, droppableProps, placeholder} = provided
 
     return <div
@@ -147,7 +147,7 @@ class PartDropZone extends React.PureComponent {
       ref={innerRef}
       {...droppableProps}
     >
-    {parts.map((elem, index) => <PartItem
+    {chapters.map((elem, index) => <ChapterItem
       key={elem.id}
       index={index}
       elem={elem}
@@ -163,14 +163,14 @@ class PartDropZone extends React.PureComponent {
   }
 }
 
-class PartItem extends React.PureComponent {
+class ChapterItem extends React.PureComponent {
 
   render() {
     const {elem, index} = this.props
     return <Draggable
       draggableId={elem.id}
       index={index}
-      type="part"
+      type="chapter"
       >
       {this.Draggable.bind(this)}
     </Draggable>
@@ -181,7 +181,7 @@ class PartItem extends React.PureComponent {
     const {innerRef, draggableProps, dragHandleProps} = provided
 
     return <div
-      className="Part"
+      className="Chapter"
       ref={innerRef}
       {...draggableProps}
       >
@@ -307,7 +307,7 @@ class IndexItem extends React.PureComponent {
 
     //console.log("Render IndexItem:", type, id, name)
 
-    const typeClass = (type === "part") ? "PartName" :
+    const typeClass = (type === "chapter") ? "ChapterName" :
       (type === "scene") ? "SceneName" :
       (type === "section") ? "SectionName" :
       "BookmarkName"

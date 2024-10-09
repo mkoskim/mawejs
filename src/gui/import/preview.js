@@ -23,17 +23,17 @@ export class Preview extends React.PureComponent {
         style={{borderRight: "1px solid lightgray", borderLeft: "1px solid lightgray"}}
         >
         <div className="Sheet Regular">
-          <DeferredRender>{imported.map(PreviewPart)}</DeferredRender>
+          <DeferredRender>{imported.map(PreviewChapter)}</DeferredRender>
           </div>
       </div>
     </>
   }
 }
 
-function PreviewPart(part) {
-  return <div className="part" key={part.id}>
-    <h5>{part.attributes.name}</h5>
-    {part.elements.map(PreviewScene)}
+function PreviewChapter(chapter) {
+  return <div className="chapter" key={chapter.id}>
+    <h5>{chapter.attributes.name}</h5>
+    {chapter.elements.map(PreviewScene)}
   </div>
 }
 
@@ -54,13 +54,13 @@ function PreviewParagraph(p) {
 
 function ImportIndex({imported}) {
   return <div className="TOC" style={{maxWidth: "300px"}}>
-    <DeferredRender>{imported.map(partIndex)}</DeferredRender>
+    <DeferredRender>{imported.map(chapterIndex)}</DeferredRender>
   </div>
 
-  function partIndex(part) {
-    return <div key={part.id} className="Part">
-      <div className="Entry PartName"><p className="Name">{part.attributes.name}</p></div>
-      {part.elements.map(sceneIndex)}
+  function chapterIndex(chapter) {
+    return <div key={chapter.id} className="Chapter">
+      <div className="Entry ChapterName"><p className="Name">{chapter.attributes.name}</p></div>
+      {chapter.elements.map(sceneIndex)}
     </div>
   }
 

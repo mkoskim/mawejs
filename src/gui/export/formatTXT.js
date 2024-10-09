@@ -28,14 +28,14 @@ ${content}
   //---------------------------------------------------------------------------
   // Joining elements
 
-  "body": (parts, options) => {
+  "body": (chapters, options) => {
     const {separator, pgbreak} = options
-    return parts.join(getSeparator(separator, pgbreak))
+    return chapters.join(getSeparator(separator, pgbreak))
   },
 
-  "part": (part, scenes, options) => {
+  "chapter": (chapter, scenes, options) => {
     const {type, separator, pgbreak, chnum} = options
-    return getHeading(part, type, pgbreak, chnum) + scenes.join(getSeparator(separator, pgbreak))
+    return getHeading(chapter, type, pgbreak, chnum) + scenes.join(getSeparator(separator, pgbreak))
   },
 
   "scene": (scene, splits, options) => {
@@ -81,14 +81,14 @@ ${content}
   //---------------------------------------------------------------------------
   // Joining elements
 
-  "body": (parts, options) => {
+  "body": (chapters, options) => {
     const {separator, pgbreak} = options
-    return parts.join(getSeparator(separator, pgbreak))
+    return chapters.join(getSeparator(separator, pgbreak))
   },
 
-  "part": (part, scenes, options) => {
+  "chapter": (chapter, scenes, options) => {
     const {type, separator, pgbreak, chnum} = options
-    const head = getHeading(part, type, pgbreak, chnum)
+    const head = getHeading(chapter, type, pgbreak, chnum)
     return (head ? ("## " + head) : "") + scenes.join(getSeparator(separator, pgbreak))
   },
 

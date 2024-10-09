@@ -71,7 +71,7 @@ export function loadExportSettings(settings) {
   return {
     format: "rtf1",
     type: "short",
-    chapterelem: "part",
+    chapterelem: "chapter",
     chaptertype: "separated",
     ...(settings?.attributes ?? {})
   }
@@ -137,7 +137,7 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       <MenuItem value="long">Long Story</MenuItem>
       </TextField>
     <TextField select label="Chapters" value={exports.chapterelem} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
-      <MenuItem value="part">Part</MenuItem>
+      <MenuItem value="chapter">Chapter</MenuItem>
       <MenuItem value="scene">Scene</MenuItem>
       <MenuItem value="none">None</MenuItem>
       </TextField>
@@ -176,19 +176,19 @@ async function exportToFile(doc, filesuffix, content) {
 //-----------------------------------------------------------------------------
 
 function ExportIndex({ style, doc, updateDoc }) {
-  const { parts } = doc.body
+  const { chapters } = doc.body
 
   return <VFiller className="TOC" style={style}>
-    {filterCtrlElems(parts).map(part => <PartItem key={part.id} part={part} doc={doc} updateDoc={updateDoc}/>)}
+    {filterCtrlElems(chapters).map(chapter => <ChapterItem key={chapter.id} chapter={chapter} doc={doc} updateDoc={updateDoc}/>)}
   </VFiller>
 }
 
-function PartItem({ part, doc, updateDoc }) {
-  const { id, children } = part
-  const name = elemName(part)
+function ChapterItem({ chapter, doc, updateDoc }) {
+  const { id, children } = chapter
+  const name = elemName(chapter)
   return <>
     <div
-      className="Entry PartName"
+      className="Entry ChapterName"
       onClick={ev => window.location.href = `#${id}`}
       onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
       style={{ cursor: "pointer" }}

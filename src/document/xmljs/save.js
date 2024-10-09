@@ -36,7 +36,7 @@ export function toXML(doc) {
       attributes: {
         uuid: doc.uuid ?? getUUID(),
         format: "mawe",
-        version: 2,
+        version: "3",
         name: doc.head?.name
       }
     },
@@ -107,41 +107,40 @@ function toExport(exports) {
 
 
 function toBody(body) {
-  const {head, parts} = body;
+  const {chapters} = body;
 
   return xmlLines(
     {type: "body"},
-    ...parts.map(toPart),
+    ...chapters.map(toChapter),
   )
 }
 
 function toNotes(notes) {
-  const {parts} = notes;
+  const {chapters} = notes;
 
   return xmlLines(
     {type: "notes"},
-    ...parts.map(toPart)
+    ...chapters.map(toChapter)
   )
 }
 
 //-----------------------------------------------------------------------------
-// Parts
+// Chapters
 //-----------------------------------------------------------------------------
 
-function toPart(part) {
-  const {folded} = part;
-  const name = elemName(part)
+function toChapter(chapter) {
+  const {folded} = chapter;
+  const name = elemName(chapter)
 
   return xmlLines(
     {
-      type: "part",
+      type: "chapter",
       attributes: {
         name: name,
         folded: folded ? true : undefined,
       },
-      //elements: filterCtrlElems(part.children).map(toScene)
     },
-    ...filterCtrlElems(part.children).map(toScene),
+    ...filterCtrlElems(chapter.children).map(toScene),
   )
 }
 
