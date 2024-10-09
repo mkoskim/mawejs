@@ -15,7 +15,7 @@ import {
 } from "../common/factory";
 
 import { SingleEditView } from "../editor/editor";
-import { Chart } from "../chart/chart"
+import { Chart } from "../arc/arc"
 import { Stats } from "../stats/stats"
 import { Export } from "../export/export"
 import {ImportView} from "../import/import";
