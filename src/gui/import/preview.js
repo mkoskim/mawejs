@@ -16,12 +16,16 @@ export class Preview extends React.PureComponent {
     if(!imported) return null
 
     return <DeferredRender>
-      <div className="Filler Board">
+      <ImportIndex
+        style={{minWidth: "200px", maxWidth: "300px", width: "300px"}}
+        imported={imported}/>
+      <div className="Filler Board"
+        style={{borderRight: "1px solid lightgray", borderLeft: "1px solid lightgray"}}
+        >
         <div className="Sheet Regular">
           {imported.map(PreviewPart)}
           </div>
       </div>
-      <ImportIndex style={{ maxWidth: "300px", width: "300px" }} imported={imported}/>
     </DeferredRender>
   }
 }

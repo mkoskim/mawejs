@@ -76,10 +76,6 @@ export class ViewSelectButtons extends React.PureComponent {
 
 export function ViewSwitch({doc, updateDoc, buffer, setBuffer}) {
 
-  if(buffer) {
-    return <ImportView doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
-  }
-
   if(!doc) return null
 
   const props = { doc, updateDoc }

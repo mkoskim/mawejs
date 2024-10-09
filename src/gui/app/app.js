@@ -59,6 +59,8 @@ import { mawe } from "../../document"
 
 import { appQuit, appLog } from "../../system/host"
 import { createDateStamp } from "../../document/util";
+import { Dialog } from "@mui/material";
+import {ImportView} from "../import/import";
 
 const fs = require("../../system/localfs")
 
@@ -219,8 +221,19 @@ function View({doc, updateDoc, buffer, setBuffer}) {
     <VBox className="ViewPort">
       <WorkspaceTab doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
       <ViewSwitch doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
+      <RenderDialogs doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
     </VBox>
   )
+}
+
+//-----------------------------------------------------------------------------
+
+function RenderDialogs({doc, updateDoc, buffer, setBuffer}) {
+  if(buffer) {
+    return <Dialog open={true} fullWidth={true} maxWidth="xl">
+      <ImportView doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
+    </Dialog>
+  }
 }
 
 //-----------------------------------------------------------------------------

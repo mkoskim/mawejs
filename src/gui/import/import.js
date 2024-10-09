@@ -20,6 +20,7 @@ import {
   Separator,
   Menu, MenuItem,
   Inform,
+  Filler,
 } from "../common/factory";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
@@ -91,10 +92,10 @@ export function ImportView({updateDoc, buffer, setBuffer}) {
   return <VBox style={{ overflow: "auto" }}>
     <ImportBar format={format} setFormat={setFormat} imported={imported} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
     <HBox style={{ overflow: "auto" }}>
+      <Preview imported={imported}/>
       <VBox className="ImportSettings">
         <SelectFormat format={format} content={content} setImported={setImported}/>
       </VBox>
-      <Preview imported={imported}/>
     </HBox>
   </VBox>
 }
@@ -131,9 +132,11 @@ function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) 
     <Label>{formats[format]?.name ?? format}</Label>
     {/*<SelectFormatButton value={format} setFormat={setFormat}/>*/}
     <Separator/>
-    <Button variant="contained" color="error" onClick={Cancel}>Cancel</Button>
+    <Filler/>
     <Separator/>
     <Button variant="contained" color="success" onClick={Import}>Import</Button>
+    <Separator/>
+    <Button variant="contained" color="error" onClick={Cancel}>Cancel</Button>
     <Separator/>
   </ToolBox>
 }
