@@ -219,8 +219,8 @@ function View({doc, updateDoc, buffer, setBuffer}) {
 
   return (
     <VBox className="ViewPort">
-      <WorkspaceTab doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
-      <ViewSwitch doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
+      <WorkspaceTab doc={doc} updateDoc={updateDoc}/>
+      <ViewSwitch doc={doc} updateDoc={updateDoc}/>
       <RenderDialogs doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
     </VBox>
   )
@@ -238,7 +238,7 @@ function RenderDialogs({doc, updateDoc, buffer, setBuffer}) {
 
 //-----------------------------------------------------------------------------
 
-function WorkspaceTab({doc, updateDoc, buffer, setBuffer}) {
+function WorkspaceTab({doc, updateDoc}) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
@@ -252,8 +252,6 @@ function WorkspaceTab({doc, updateDoc, buffer, setBuffer}) {
   ]));
 
   //console.log("Recent:", recent)
-  //if(buffer) return <WithBuffer setCommand={setCommand} recent={recent} buffer={buffer} setBuffer={setBuffer}/>
-  if(buffer) return null
   if(!doc) return <WithoutDoc setCommand={setCommand} recent={recent}/>
   return <WithDoc setCommand={setCommand} recent={recent} doc={doc} updateDoc={updateDoc}/>
 }
