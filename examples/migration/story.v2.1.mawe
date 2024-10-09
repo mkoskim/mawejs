@@ -1,0 +1,14 @@
+<story name="Story v2/1" format="mawe" version="2">
+
+<!-- This file has head inside body element -->
+
+<body>
+<head>
+<title>Story</title>
+</head>
+<part name="Chapter">
+<scene name="Scene">
+<p>If loaded correctly, story title is "Story".</p>
+<br/>
+</scene>
+</part>

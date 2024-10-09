@@ -208,7 +208,7 @@ function toUI(ui) {
       type: "ui",
       elements: [
         saveViewSettings(ui.view),
-        saveChartSettings(ui.chart),
+        saveChartSettings(ui.arc),
         saveEditorSettings(ui.editor),
       ]
     },

@@ -1,4 +1,4 @@
-<story uuid="14b6273d-0843-4b3c-b957-8d23d9d94acb" format="mawe" version="2">
+<story uuid="14b6273d-0843-4b3c-b957-8d23d9d94acb" format="mawe" version="3">
 <!--/
 ===============================================================================
 
@@ -16,7 +16,7 @@ STORY: undefined
 ===============================================================================
 /-->
 <body>
-<part name="PREFACE">
+<chapter name="PREFACE">
 <scene name="Preface">
 <p>The Project Gutenberg eBook of Frankenstein; Or, The Modern Prometheus</p>
 <p>This ebook is for the use of anyone anywhere in the United States and most other parts of the world at no cost and with almost no restrictions whatsoever. You may copy it, give it away or re-use it under the terms of the Project Gutenberg License included with this ebook or online at www.gutenberg.org. If you are not located in the United States, you will have to check the laws of the country where you are located before using this eBook.</p>
@@ -84,8 +84,8 @@ STORY: undefined
 <p>THE MODERN PROMETHEUS.</p>
 <br/>
 </scene>
-</part>
-<part name="STORY">
+</chapter>
+<chapter name="STORY">
 <scene name="LETTER I.">
 <p>To Mrs. Saville, England.</p>
 <br/>
@@ -1001,8 +1001,8 @@ STORY: undefined
 <p>He sprung from the cabin-window, as he said this, upon the ice-raft which lay close to the vessel. He was soon borne away by the waves, and lost in darkness and distance.</p>
 <br/>
 </scene>
-</part>
-<part name="THE END.">
+</chapter>
+<chapter name="THE END.">
 <scene>
 <p>[1]Coleridge's "Ancient Mariner."</p>
 <br/>
@@ -1072,7 +1072,7 @@ STORY: undefined
 <p>This website includes information about Project Gutenberg™, including how to make donations to the Project Gutenberg Literary Archive Foundation, how to help produce our new eBooks, and how to subscribe to our email newsletter to hear about new eBooks.</p>
 <br/>
 </scene>
-</part>
+</chapter>
 </body>
 <!--/
 ===============================================================================
@@ -1082,11 +1082,11 @@ NOTES
 ===============================================================================
 /-->
 <notes>
-<part>
+<chapter>
 <scene>
 <br/>
 </scene>
-</part>
+</chapter>
 </notes>
 <!--/
 ===============================================================================
@@ -1098,4 +1098,8 @@ NOTES
 <body words="numbers" indexed="part,scene,synopsis"/>
 </editor>
 </ui>
+<history>
+<words date="2024-10-08" text="81475" missing="0" chars="454099"/>
+<words date="2024-10-09" text="81475" missing="0" chars="454099"/>
+</history>
 </story>

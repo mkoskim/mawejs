@@ -92,7 +92,7 @@ export function fromXML(root) {
   const exports = loadExportSettings(expElem)
   const ui = {
     view   : loadViewSettings(elemFind(uiElem, "view")),
-    chart  : loadChartSettings(elemFind(uiElem, "chart")),
+    arc    : loadChartSettings(elemFind(uiElem, "arc")),
     editor : loadEditorSettings(elemFind(uiElem, "editor"))
   }
 

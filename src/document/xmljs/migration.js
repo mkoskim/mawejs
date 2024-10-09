@@ -11,12 +11,14 @@ import { elemFind, elemFindall, elem2Text } from "./tree";
 //-----------------------------------------------------------------------------
 // File format version is set to top-level <story> element. It defaults to 1
 //
-// version      description
+// Version      Description
 //
 //       1      File format used by Python/GTK mawe. It is single-part
-//              format, as Python mawe can't edit multiple parts.
+//               format, as Python mawe can't edit multiple parts.
 //
-//       2      Current version. Multi-part support.
+//       2      Multi-part support.
+//
+//       3      Body/notes part --> chapter
 //
 //-----------------------------------------------------------------------------
 
@@ -31,19 +33,24 @@ export function migrate(root) {
 
   if (story.name !== "story") throw Error("File has no story.");
   if (format !== "mawe") throw Error("Story is not mawe story.");
-  if (!supported.includes(version)) throw Error(`File version ${version} is too new.`)
+  if (!supported.includes(version)) throw Error(`File version ${version} not supported.`)
 
   return [
     v1_to_v2,
     v2_fixes,
     v2_to_v3,
+    v3_fix,
   ].reduce((story, func) => func(story), story)
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// v1 --> v2
+//
 // These are very old single chapter stories. Need to find one, and write
 // migration.
-//-----------------------------------------------------------------------------
+//
+//*****************************************************************************
 
 function v1_to_v2(story) {
   const {version = "1"} = story.attributes ?? {}
@@ -62,9 +69,13 @@ function v1_to_v2(story) {
   }
 }
 
-//-----------------------------------------------------------------------------
-// Take head out of body, take exports out of head
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// v2 fixing
+//
+// - Take head out of body, take exports out of head
+//
+//*****************************************************************************
 
 function v2_fixes(story) {
 
@@ -95,7 +106,13 @@ function v2_fixes(story) {
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// v2 --> v3
+//
+// - Body/notes part --> chapter
+//
+//*****************************************************************************
 
 function v2_to_v3(story) {
 
@@ -104,38 +121,67 @@ function v2_to_v3(story) {
   if(version !== "2") return story
   console.log("Migrate v2 -> v3")
 
+  const bodyElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}
+  const notesElem = elemFind(story, "notes") ?? {type: "element", name: "notes", elements: []}
+
   const body = {
-    type: "element", name: "body",
-    elements: elemFind(story, "body").elements.map(elem => ({
-      ...elem,
-      name: "chapter"
-    }))
+    ...bodyElem,
+    elements: bodyElem.elements.map(elem => ({...elem, name: "chapter"}))
   }
 
   const notes = {
-    type: "element", name: "notes",
-    elements: elemFind(story, "notes").elements.map(elem => ({
-      ...elem,
-      name: "chapter"
-    }))
+    ...notesElem,
+    elements: notesElem.elements.map(elem => ({...elem, name: "chapter"}))
   }
 
-  const elements = story.elements
-    .filter(elem => elem.name !== "body")
-    .filter(elem => elem.name !== "notes")
-    .concat([body, notes])
-
-  //console.log("Elements", story.elements, elements)
-
-  const migrated = {
+  return {
     ...story,
-    elements,
-    attributes: {
-      ...story.attributes,
-      version: "3",
-    }
+    elements: story.elements
+      .filter(elem => elem.name !== "body")
+      .filter(elem => elem.name !== "notes")
+      .concat([body, notes]),
+    attributes: {...story.attributes, version: "3"}
   }
+}
 
-  //console.log("V3:", migrated)
-  return migrated
+//*****************************************************************************
+//
+// v3 fix: ui.chart -> ui.arc
+//
+//*****************************************************************************
+
+function v3_fix(story) {
+
+  const {version} = story.attributes ?? {}
+
+  if(version !== "3") return story
+
+  const uiElem    = elemFind(story, "ui")
+  const chartElem = elemFind(uiElem, "chart")
+
+  if(!chartElem) return story;
+
+  const {attributes} = chartElem
+  const {elements} = attributes
+
+  return {
+    ...story,
+    elements: [
+      ...story.elements.filter(elem => elem.name !== "ui"),
+      {
+        ...uiElem,
+        elements: [
+          ...uiElem.elements.filter(elem => elem.name !== "chart"),
+          {
+            ...chartElem,
+            name: "arc",
+            attributes: {
+              ...attributes,
+              elements: elements === "parts" ? "chapters" : elements
+            }
+          }
+        ]
+      }
+    ]
+  }
 }
