@@ -47,7 +47,7 @@ export function loadChartSettings(settings) {
 }
 
 export function saveChartSettings(settings) {
-  return {type: "chart",
+  return {type: "arc",
     attributes: {
       elements: settings.elements,
       template: settings.template,
@@ -57,10 +57,10 @@ export function saveChartSettings(settings) {
 }
 
 //-----------------------------------------------------------------------------
-// Chart view
+// Story Arc view
 //-----------------------------------------------------------------------------
 
-export function Chart({doc, updateDoc}) {
+export function StoryArc({doc, updateDoc}) {
   //const section = doc.body
 
   return <DragDropContext onDragEnd={onDragEnd}>
@@ -70,7 +70,7 @@ export function Chart({doc, updateDoc}) {
         <DocIndex
           section={doc.body}
           activeID="body"
-          include={["part", "scene"]}
+          include={["chapter", "scene"]}
           wcFormat={"compact"}
           unfold={true}
         />
@@ -128,9 +128,9 @@ function ChartView({doc, updateDoc}) {
   // Data selection
   //---------------------------------------------------------------------------
 
-  const setElements = useCallback(value => updateDoc(doc => {doc.ui.chart.elements = value}), [updateDoc])
-  const setTemplate = useCallback(value => updateDoc(doc => {doc.ui.chart.template = value}), [updateDoc])
-  const setMode     = useCallback((mode) => {updateDoc(doc => {doc.ui.chart.mode = mode})}, [updateDoc])
+  const setElements = useCallback(value => updateDoc(doc => {doc.ui.arc.elements = value}), [updateDoc])
+  const setTemplate = useCallback(value => updateDoc(doc => {doc.ui.arc.template = value}), [updateDoc])
+  const setMode     = useCallback((mode) => {updateDoc(doc => {doc.ui.arc.mode = mode})}, [updateDoc])
 
   /*
   console.log("Beat sheet length=", tmplButtons.beatsheet.data
@@ -143,7 +143,7 @@ function ChartView({doc, updateDoc}) {
   // Chart directions
   //---------------------------------------------------------------------------
 
-  const {start: selectStart, rotate: selectRotate} = mode2rotate(doc.ui.chart.mode)
+  const {start: selectStart, rotate: selectRotate} = mode2rotate(doc.ui.arc.mode)
 
   //---------------------------------------------------------------------------
   // View
@@ -152,22 +152,22 @@ function ChartView({doc, updateDoc}) {
   const settings = {
     elements: {
       buttons: elemButtons,
-      choices: ["scenes", "parts"],
-      selected: doc.ui.chart.elements,
+      choices: ["scenes", "chapters"],
+      selected: doc.ui.arc.elements,
       setSelected: setElements,
       exclusive: true,
     },
     template: {
       buttons: tmplButtons,
       choices: ["acts", "plotpoints", "beatsheet"],
-      selected: doc.ui.chart.template,
+      selected: doc.ui.arc.template,
       setSelected: setTemplate,
       exclusive: true,
     },
     mode: {
       buttons: modeButtons,
       choices: ["topCCW", "topCW", "bottomCCW", "bottomCW"],
-      selected: doc.ui.chart.mode,
+      selected: doc.ui.arc.mode,
       setSelected: setMode,
       exclusive: true,
     }
@@ -178,9 +178,9 @@ function ChartView({doc, updateDoc}) {
     <StoryChart
       startAngle={selectStart + selectRotate * 1}
       endAngle={selectStart + selectRotate * (360 - 2)}
-      innerData={tmplButtons[doc.ui.chart.template].data}
-      outerData={elemButtons[doc.ui.chart.elements].data(section)}
-      outerLabels={elemButtons[doc.ui.chart.elements].labels(section)}
+      innerData={tmplButtons[doc.ui.arc.template].data}
+      outerData={elemButtons[doc.ui.arc.elements].data(section)}
+      outerLabels={elemButtons[doc.ui.arc.elements].labels(section)}
     />
   </VFiller>
 }
@@ -240,24 +240,24 @@ function elemData(elem) {
   ]
 }
 
-function partLabels(section) {
-  return section.parts.map(part => elemLabel(part))
+function chapterLabels(section) {
+  return section.chapters.map(chapter => elemLabel(chapter))
 }
 
-function partData(section) {
-  return section.parts.map(part => elemData(part)).flat()
+function chapterData(section) {
+  return section.chapters.map(chapter => elemData(chapter)).flat()
 }
 
 
 function sceneLabels(section) {
-  return section.parts.map(part => (
-    filterCtrlElems(part.children).map(scene => elemLabel(scene))
+  return section.chapters.map(chapter => (
+    filterCtrlElems(chapter.children).map(scene => elemLabel(scene))
   )).flat()
 }
 
 function sceneData(section) {
-  return section.parts.map(part => (
-    filterCtrlElems(part.children).map(scene => elemData(scene)).flat()
+  return section.chapters.map(chapter => (
+    filterCtrlElems(chapter.children).map(scene => elemData(scene)).flat()
   )).flat()
 }
 
@@ -271,10 +271,10 @@ const elemButtons = {
     labels: (section) => sceneLabels(section),
     data: (section) => sceneData(section),
   },
-  parts: {
-    icon: "Parts",
-    labels: (section) => partLabels(section),
-    data: (section) => partData(section),
+  chapters: {
+    icon: "Chapters",
+    labels: (section) => chapterLabels(section),
+    data: (section) => chapterData(section),
   },
 }
 

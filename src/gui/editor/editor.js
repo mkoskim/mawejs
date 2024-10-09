@@ -52,12 +52,7 @@ import {
   Input,
   SearchBox,
   IsKey, addHotkeys,
-  Label,
-  List, ListItem, ListItemText,
-  Grid,
   Separator, Loading, addClass,
-  Menu, MenuItem,
-  DeferredRender,
 } from "../common/factory";
 
 import {
@@ -65,7 +60,7 @@ import {
 } from "../common/components";
 
 import { wcElem } from "../../document/util";
-import { elemFind } from "../../document/xmljs/load";
+import { elemFind } from "../../document/xmljs/tree";
 import {elemIsBlock} from "./slateHelpers";
 
 //*****************************************************************************
@@ -91,12 +86,12 @@ export function loadEditorSettings(settings) {
     active: "body",
     focusTo: {id: undefined},
     body: {
-      indexed: ["part", "scene", "synopsis"],
+      indexed: ["chapter", "scene", "synopsis"],
       words: "numbers",
       ...getBodySettings()
     },
     notes: {
-      indexed: ["part", "scene", "synopsis"],
+      indexed: ["chapter", "scene", "synopsis"],
       words: undefined,
     },
     left: {
@@ -183,7 +178,7 @@ export function SingleEditView({doc, updateDoc}) {
     try {
       const marks = Editor.marks(editor)
       const [node] = Editor.above(editor, {match: n => elemIsBlock(editor, n)})
-      const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "part")})
+      const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "chapter")})
 
       //console.log("Track:", marks, node, block)
 
@@ -204,7 +199,7 @@ export function SingleEditView({doc, updateDoc}) {
     trackMarks(bodyeditor)
     if(isAstChange(bodyeditor)) {
       updateDoc(doc => {
-        doc.body.parts = buffer;
+        doc.body.chapters = buffer;
         doc.body.words = wcElem({type: "sect", children: buffer})
       })
     }
@@ -214,7 +209,7 @@ export function SingleEditView({doc, updateDoc}) {
     trackMarks(noteeditor)
     if(isAstChange(noteeditor)) {
       updateDoc(doc => {
-        doc.notes.parts = buffer
+        doc.notes.chapters = buffer
         doc.notes.words = wcElem({type: "sect", children: buffer})
       })
     }
@@ -291,12 +286,12 @@ export function SingleEditView({doc, updateDoc}) {
     track,
     body: {
       editor: bodyeditor,
-      buffer: doc.body.parts,
+      buffer: doc.body.chapters,
       onChange: updateBody,
       },
     notes: {
       editor: noteeditor,
-      buffer: doc.notes.parts,
+      buffer: doc.notes.chapters,
       onChange: updateNotes,
     },
   }
@@ -414,7 +409,7 @@ export function SingleEditView({doc, updateDoc}) {
         break;
       }
 
-      case "part": {
+      case "chapter": {
         const srcEditID = source.droppableId
         const dstEditID = destination.droppableId
         const srcEdit = getEditorBySectID(srcEditID)

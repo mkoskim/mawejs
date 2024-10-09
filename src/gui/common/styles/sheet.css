@@ -42,7 +42,7 @@
   font-size: 12pt;
   line-height: 180%;
   font-family: 'Times New Roman', Times, serif;
-  counter-reset: part scene;
+  counter-reset: chapter scene;
 
   background: white;
 
@@ -98,12 +98,12 @@
 }
 
 /* ----------------------------------------------------------------------------
-// Scene & part divs
+// Scene & chapter divs
 // ----------------------------------------------------------------------------
 */
 
-.Sheet div.part {
-  counter-increment: part;
+.Sheet div.chapter {
+  counter-increment: chapter;
   margin-bottom: 0.5cm;
 }
 
@@ -112,9 +112,9 @@
   margin-bottom: 0.5cm;
 }
 
-/* For debugging purposes: make part & scene div's visible */
+/* For debugging purposes: make chapter & scene div's visible */
 
-.Sheet div.part.withBorders {
+.Sheet div.chapter.withBorders {
   border: 1pt dashed gray;
   padding: 4pt;
   margin-bottom: 4pt;
@@ -171,7 +171,7 @@
 
 .Sheet div.folded p,
 .Sheet div.folded div.emptyline,
-.Sheet .part.folded div.scene {
+.Sheet .chapter.folded div.scene {
   display: none
 }
 
@@ -221,11 +221,11 @@
 }
 
 /* ----------------------------------------------------------------------------
-// Part & scene headings
+// Chapter & scene headings
 // ----------------------------------------------------------------------------
 */
 
-/* Part */ .Sheet h5 {
+/* Chapter */ .Sheet h5 {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 11pt;
   font-weight: bold;

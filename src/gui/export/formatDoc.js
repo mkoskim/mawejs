@@ -29,14 +29,14 @@ export function FormatBody(format, story) {
 
   return format["file"](
     mawe.info(head),
-    FormatBody(body.parts),
+    FormatBody(body.chapters),
     {
       pgbreak
     }
   )
 
-  function FormatBody(parts) {
-    const content = parts.map(FormatPart).filter(p => p)
+  function FormatBody(chapters) {
+    const content = chapters.map(FormatChapter).filter(p => p)
 
     const options = {
       separator: (chapters.type === "separated") && "* * *",
@@ -46,21 +46,21 @@ export function FormatBody(format, story) {
     return format["body"](content, options)
   }
 
-  function FormatPart(part) {
-    const scenes = part.children.map(FormatScene).filter(s => s)
+  function FormatChapter(chapter) {
+    const scenes = chapter.children.map(FormatScene).filter(s => s)
 
     if (!scenes.length) return null
 
     const options = {
-      type: (chapters.element === "part") && chapters.type,
+      type: (chapters.element === "chapter") && chapters.type,
       separator: (chapters.element === "scene" && chapters.type === "separated") && "* * *",
       pgbreak,
       chnum
     }
 
-    if(chapters.element === "part") chnum = chnum + 1
+    if(chapters.element === "chapter") chnum = chnum + 1
 
-    return format["part"](part, scenes, options);
+    return format["chapter"](chapter, scenes, options);
   }
 
   function FormatScene(scene) {

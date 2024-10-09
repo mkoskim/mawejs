@@ -129,7 +129,7 @@ export function dndElemPop(editor, id) {
 
   Transforms.removeNodes(editor, {at: path, hanging: true})
 
-  const htype = (node.type === "part") ? "hpart" : "hscene"
+  const htype = (node.type === "chapter") ? "hchapter" : "hscene"
 
   // Has the pop'd element a header? If not, make one
   if(!node.children.length || node.children[0].type !== htype) return {
@@ -156,8 +156,8 @@ export function dndElemPushTo(editor, block, id, index) {
 
   function getChildIndex(container) {
     const {type, children} = container
-    if(type === "part") {
-      if(children.length && children[0].type === "hpart") {
+    if(type === "chapter") {
+      if(children.length && children[0].type === "hchapter") {
         return index+1
       }
     }
@@ -169,7 +169,7 @@ export function dndElemPushTo(editor, block, id, index) {
 
   if(container.children.length > childindex) {
     const node = container.children[childindex]
-    const htype = (node.type === "part") ? "hpart" : "hscene"
+    const htype = (node.type === "chapter") ? "hchapter" : "hscene"
 
     if(!node.children.length || node.children[0].type !== htype) {
       Transforms.insertNodes(editor,
@@ -244,10 +244,10 @@ export async function scrollToRange(editor, range, focus) {
 
 export function foldAll(editor, folded) {
 
-  function getParts() {
+  function getChapters() {
     return Editor.nodes(editor, {
       at: [],
-      match: n => Element.isElement(n) && n.type === "part"
+      match: n => Element.isElement(n) && n.type === "chapter"
     })
   }
 
@@ -258,7 +258,7 @@ export function foldAll(editor, folded) {
     })
   }
 
-  const matches = folded ? getParts() : getFolded()
+  const matches = folded ? getChapters() : getFolded()
 
   Editor.withoutNormalizing(editor, () => {
     for(const [node, path] of matches) {
@@ -282,8 +282,8 @@ export function toggleFold(editor) {
   //const [node, path] = Editor.node(editor, anchor)
   //console.log("Toggle fold", path, node)
 
-  //const foldable = ["part", "scene", "synopsis", "comment", "missing"]
-  const foldable = ["part", "scene"]
+  //const foldable = ["chapter", "scene", "synopsis", "comment", "missing"]
+  const foldable = ["chapter", "scene"]
 
   const [node, path] = Editor.above(editor, {
     at: anchor,
@@ -314,12 +314,12 @@ export function foldByTags(editor, tags) {
   const tagset = new Set(tags)
   var folders = []
 
-  // Go through parts
-  for(const part of Node.children(editor, []))
+  // Go through chapters
+  for(const chapter of Node.children(editor, []))
   {
-    const [node, path] = part
+    const [node, path] = chapter
 
-    var parttags = new Set()
+    var chaptertags = new Set()
 
     // Go through scenes
     for(const scene of Node.children(editor, path)) {
@@ -341,13 +341,13 @@ export function foldByTags(editor, tags) {
       folders.push({node, path, folded: !hastags})
       //console.log("Scene:", path, node.type, hastags, scenetags);
 
-      parttags = parttags.union(scenetags)
+      chaptertags = chaptertags.union(scenetags)
     }
 
-    const hastags = tagset.intersection(parttags).size > 0
+    const hastags = tagset.intersection(chaptertags).size > 0
     folders.push({node, path, folded: !hastags})
 
-    //console.log("Part:", path, node.type, hastags, parttags);
+    //console.log("Chapter:", path, node.type, hastags, chaptertags);
   }
 
   Editor.withoutNormalizing(editor, () => {

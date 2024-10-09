@@ -1,4 +1,4 @@
-<story uuid="6931033c-088a-4829-926b-27b7aba4b3ed" format="mawe" version="2" name="TestDoc1">
+<story uuid="6931033c-088a-4829-926b-27b7aba4b3ed" format="mawe" version="3" name="TestDoc1">
 <!--/
 ===============================================================================
 
@@ -12,38 +12,38 @@ STORY: TestDoc1
 ===============================================================================
 /-->
 <body>
-<part name="AA">
+<chapter name="AA">
 <scene name="A">
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interdum et malesuada fames ac ante ipsum primis in faucibus.</p>
 </scene>
 <scene name="B">
 <p>Nullam placerat sed erat eget aliquam. Etiam urna dui, congue eget turpis id, tempor pellentesque nisl.</p>
 </scene>
-</part>
-<part name="BB">
+</chapter>
+<chapter name="BB">
 <scene name="C">
 <p>Vestibulum posuere urna vel neque gravida, non laoreet enim consequat. Nulla euismod purus aliquam nibh convallis, non semper nisl egestas.</p>
 </scene>
 <scene name="D">
 <p>Vivamus pulvinar dui ex, molestie consequat lorem pellentesque in. Aenean porta lectus lectus, non euismod massa lobortis vel.</p>
 </scene>
-</part>
-<part name="CC">
+</chapter>
+<chapter name="CC">
 <scene name="E">
 <p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Suspendisse sit amet tortor a lacus sollicitudin viverra.</p>
 </scene>
 <scene name="F">
 <p>Nullam condimentum arcu eget orci efficitur, eget tincidunt nunc tempus. Cras commodo urna sit amet ex ornare, non dignissim lacus suscipit.</p>
 </scene>
-</part>
-<part name="DD">
+</chapter>
+<chapter name="DD">
 <scene name="G">
 <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Curabitur ultricies eleifend risus sed consequat.</p>
 </scene>
 <scene name="H">
 <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Curabitur ultricies eleifend risus sed consequat.</p>
 </scene>
-</part>
+</chapter>
 </body>
 <!--/
 ===============================================================================
@@ -53,12 +53,12 @@ NOTES
 ===============================================================================
 /-->
 <notes>
-<part name="Part 1">
+<chapter name="Part 1">
 <scene name="Scene A">
 <p>Nullam condimentum arcu eget orci efficitur, eget tincidunt nunc tempus.</p>
 <p>Cras commodo urna sit amet ex ornare, non dignissim lacus suscipit.</p>
 </scene>
-</part>
+</chapter>
 </notes>
 <!--/
 ===============================================================================
@@ -71,5 +71,7 @@ NOTES
 </editor>
 </ui>
 <history>
+<words date="2024-10-08" text="149" missing="0" chars="1019"/>
+<words date="2024-10-09" text="149" missing="0" chars="1019"/>
 </history>
 </story>

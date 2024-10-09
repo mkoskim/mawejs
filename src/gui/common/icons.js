@@ -195,7 +195,7 @@ export const Icon = {
     Bold: FormatBold,
     Italic: FormatItalic,
 
-    Part: LooksOne,
+    Chapter: LooksOne,
     Scene: LooksTwo,
 
     Synopsis: FormatAlignRightOutlined,

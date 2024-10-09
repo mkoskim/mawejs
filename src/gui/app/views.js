@@ -15,7 +15,7 @@ import {
 } from "../common/factory";
 
 import { SingleEditView } from "../editor/editor";
-import { Chart } from "../arc/arc"
+import { StoryArc } from "../arc/arc"
 import { Stats } from "../stats/stats"
 import { Export } from "../export/export"
 import {ImportView} from "../import/import";
@@ -84,7 +84,7 @@ export function ViewSwitch({doc, updateDoc}) {
     case "editor": return <SingleEditView {...props} />
     //case "organizer": return <Organizer {...props} />
     case "stats": return <Stats {...props} />
-    case "chart": return <Chart {...props} />
+    case "chart": return <StoryArc {...props} />
     case "export": return <Export {...props} />
     default: break;
   }

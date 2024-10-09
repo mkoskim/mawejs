@@ -78,7 +78,7 @@ export function createDateStamp(date) {
 //-----------------------------------------------------------------------------
 
 export function filterCtrlElems(blocks) {
-  const ctrltypes = ["hpart", "hscene"]
+  const ctrltypes = ["hchapter", "hscene"]
   return blocks.filter(block => !ctrltypes.includes(block.type))
 }
 
@@ -92,8 +92,8 @@ export function elemAsText(elem) {
 }
 
 export function elemName(elem) {
-  if(elem.type === "part") {
-    if(elem.children.length && elem.children[0].type === "hpart") {
+  if(elem.type === "chapter") {
+    if(elem.children.length && elem.children[0].type === "hchapter") {
       return elemAsText(elem.children[0]);
     }
     return undefined
@@ -119,7 +119,7 @@ export function elemTags(elem) {
 
 //-----------------------------------------------------------------------------
 // Split words only: This includes only words in paragraphs, not words in
-// comments, synopses, part & section headers and so on.
+// comments, synopses, chapter & section headers and so on.
 //-----------------------------------------------------------------------------
 
 export function text2words(text) {
@@ -134,8 +134,8 @@ export function wordcount(text) {
 export function createWordTable(section) {
   const wt = new Map()
 
-  for(const part of section.parts) {
-    for(const scene of part.children) {
+  for(const chapter of section.chapters) {
+    for(const scene of chapter.children) {
       for(const p of scene.children) {
         if(p.type !== "p") continue
         for(const word of text2words(elemAsText(p))) {
@@ -158,8 +158,8 @@ export function createWordTable(section) {
 export function createTagTable(section) {
   const tags = new Set()
 
-  for(const part of section.parts) {
-    for(const scene of part.children) {
+  for(const chapter of section.chapters) {
+    for(const scene of chapter.children) {
       for(const p of scene.children) {
         const keys = elemTags(p)
         for(const key of keys) {
@@ -206,7 +206,7 @@ export function wcElem(elem) {
 
   switch(elem.type) {
     case "sect":
-    case "part":
+    case "chapter":
     case "scene":
       return wcChildren(elem.children)
 
@@ -236,9 +236,9 @@ export function wcCompare(a, b) {
 export function wcCumulative(section) {
   const flat = new Array()
 
-  for(const part of section.parts) {
-    flat.push(part)
-    for(const scene of part.children) {
+  for(const chapter of section.chapters) {
+    flat.push(chapter)
+    for(const scene of chapter.children) {
       flat.push(scene)
     }
   }

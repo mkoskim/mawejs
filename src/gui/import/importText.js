@@ -29,7 +29,7 @@ export class ImportText extends React.PureComponent {
     super(props);
     this.state = {
       linebreak: "double",
-      partprefix: "# ",
+      chapterprefix: "# ",
       sceneprefix: "## ",
     };
   }
@@ -38,8 +38,8 @@ export class ImportText extends React.PureComponent {
     this.setState({linebreak})
   }
 
-  setPartPrefix(partprefix) {
-    this.setState({partprefix})
+  setChapterPrefix(chapterprefix) {
+    this.setState({chapterprefix})
   }
 
   setScenePrefix(sceneprefix) {
@@ -57,7 +57,7 @@ export class ImportText extends React.PureComponent {
         <MenuItem value="double">Double</MenuItem>
         <MenuItem value="single">Single</MenuItem>
       </TextField>
-      <TextField label="Part prefix" value={this.state.partprefix} onChange={e => this.setPartPrefix(e.target.value)}/>
+      <TextField label="Chapter prefix" value={this.state.chapterprefix} onChange={e => this.setChapterPrefix(e.target.value)}/>
       <TextField label="Scene prefix" value={this.state.sceneprefix} onChange={e => this.setScenePrefix(e.target.value)}/>
       <UpdateImported content={content} setImported={setImported} settings={this.state}/>
     </>
@@ -85,11 +85,11 @@ function importText(content, settings) {
   if(!content) return undefined
 
   const linebreak = getLinebreak(settings.linebreak)
-  const {partprefix, sceneprefix} = settings
+  const {chapterprefix, sceneprefix} = settings
 
-  function isPartBreak(line) {
-    if(!partprefix) return false
-    return line.startsWith(partprefix)
+  function isChapterBreak(line) {
+    if(!chapterprefix) return false
+    return line.startsWith(chapterprefix)
   }
 
   function isSceneBreak(line) {
@@ -98,9 +98,9 @@ function importText(content, settings) {
   }
 
   const lines = text2lines(content, linebreak)
-  const parts = splitByLeadingElem(lines, isPartBreak)
+  const chapters = splitByLeadingElem(lines, isChapterBreak)
 
-  const elements = parts.map(makePart)
+  const elements = chapters.map(makeChapter)
 
   //console.log("Elements:", elements)
 
@@ -108,19 +108,19 @@ function importText(content, settings) {
 
   //---------------------------------------------------------------------------
 
-  function makePart(lines) {
+  function makeChapter(lines) {
     const {first, rest} = getContent(lines)
     //console.log(first, rest)
     const scenes = splitByLeadingElem(rest, isSceneBreak).filter(e => e.length)
     return {
-      type: "element", name: "part", id: nanoid(),
+      type: "element", name: "chapter", id: nanoid(),
       attributes: { name: first },
       elements: scenes.map(makeScene)
     }
 
     function getContent(lines) {
       const [first, ...rest] = lines
-      if(isPartBreak(first)) return {first, rest}
+      if(isChapterBreak(first)) return {first, rest}
       return {rest: [first].concat(rest)}
     }
   }

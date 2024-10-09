@@ -110,7 +110,7 @@ function OrganizerView({doc, updateDoc}) {
 
   return <div className="Filler Organizer" style={{overflow: "auto"}}>
     <OutlinerToolbar settings={body_settings} section={body}/>
-    <Droppable droppableId="body" direction="horizontal" type="part">
+    <Droppable droppableId="body" direction="horizontal" type="chapter">
     {(provided, snapshot) => {
         const {innerRef, droppableProps, placeholder} = provided
 
@@ -120,7 +120,7 @@ function OrganizerView({doc, updateDoc}) {
           className="HBox Section"
           {...droppableProps}
           >
-          {body.parts.map((part, index) => <PartView key={part.id} index={index} settings={body_settings} part={part}/>)}
+          {body.chapters.map((chapter, index) => <ChapterView key={chapter.id} index={index} settings={body_settings} chapter={chapter}/>)}
           {placeholder}
         </div>
       }
@@ -129,7 +129,7 @@ function OrganizerView({doc, updateDoc}) {
 
     <hr/>
 
-    <Droppable droppableId="notes" direction="horizontal" type="part">
+    <Droppable droppableId="notes" direction="horizontal" type="chapter">
     {(provided, snapshot) => {
         const {innerRef, droppableProps, placeholder} = provided
 
@@ -138,7 +138,7 @@ function OrganizerView({doc, updateDoc}) {
           className="HBox Section"
           {...droppableProps}
           >
-          {notes.parts.map((part, index) => <PartView key={part.id} index={index} settings={note_settings} part={part}/>)}
+          {notes.chapters.map((chapter, index) => <ChapterView key={chapter.id} index={index} settings={note_settings} chapter={chapter}/>)}
           {placeholder}
           </div>
       }
@@ -150,34 +150,34 @@ function OrganizerView({doc, updateDoc}) {
 }
 
 //-----------------------------------------------------------------------------
-// TODO: Empty parts can be removed
-// TODO: Parts can be merged?
-// TODO: Add part
+// TODO: Empty chapters can be removed
+// TODO: Chapters can be merged?
+// TODO: Add chapter
 // TODO: Add scene
-// TODO: Double click -> editor + focus at scene/part
+// TODO: Double click -> editor + focus at scene/chapter
 
-function PartView({settings, part, index}) {
+function ChapterView({settings, chapter, index}) {
   return <Draggable
-    draggableId={part.id}
+    draggableId={chapter.id}
     index={index}
-    type="part"
+    type="chapter"
     >
-      {partDraggable}
+      {chapterDraggable}
     </Draggable>
 
-  function partDraggable(provided, snapshot) {
+  function chapterDraggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
-    const {words} = part;
-    const name = elemName(part)
+    const {words} = chapter;
+    const name = elemName(chapter)
 
     return <div
       ref={innerRef}
       {...draggableProps}
-      className="VBox Part"
+      className="VBox Chapter"
       >
       <HBox
         className="Name"
-        //onDoubleClick={ev => settings.focusTo(part.id)}
+        //onDoubleClick={ev => settings.focusTo(chapter.id)}
         {...dragHandleProps}
       >
         {name && name !== "" ? name : "<Unnamed>"}
@@ -188,13 +188,13 @@ function PartView({settings, part, index}) {
             words={words?.text}
             missing={words?.missing}
             total={settings.words.total}
-            cumulative={settings.words.cumulative[part.id]}
+            cumulative={settings.words.cumulative[chapter.id]}
           />
           : null
         }
       </HBox>
       <Droppable
-        droppableId={part.id}
+        droppableId={chapter.id}
         //direction="horizontal"
         type="scene"
         >
@@ -214,7 +214,7 @@ function PartView({settings, part, index}) {
       ref={innerRef}
       {...droppableProps}
       >
-      {filterCtrlElems(part.children).map((scene, index) => <SceneView key={scene.id} index={index} settings={settings} scene={scene}/>)}
+      {filterCtrlElems(chapter.children).map((scene, index) => <SceneView key={scene.id} index={index} settings={settings} scene={scene}/>)}
       {placeholder}
     </div>
   }
