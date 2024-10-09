@@ -29,7 +29,7 @@ const filters = [
 ]
 
 const importFilters = [
-  { name: 'Text files', extensions: ['txt', 'md'] },
+  { name: 'Known Files', extensions: ['txt', 'md', "docx"] },
   { name: 'All Files', extensions: ['*'] }
 ]
 

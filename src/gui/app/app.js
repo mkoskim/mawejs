@@ -59,6 +59,8 @@ import { mawe } from "../../document"
 
 import { appQuit, appLog } from "../../system/host"
 import { createDateStamp } from "../../document/util";
+import { Dialog } from "@mui/material";
+import {ImportView} from "../import/import";
 
 const fs = require("../../system/localfs")
 
@@ -86,7 +88,7 @@ export default function App(props) {
   const [buffer, setBuffer] = useState()
 
   //console.log("Doc:", doc)
-  console.log("Command:", command)
+  //console.log("Command:", command)
 
   useEffect(() => {
     if(!command) return
@@ -115,8 +117,8 @@ export default function App(props) {
     /*/
     setCommand({
       action: "import",
-      file: {id: "./examples/Frankenstein.txt", name: "Frankenstein.txt" },
-      ext: ".txt",
+      //file: {id: "./examples/Frankenstein.txt", name: "Frankenstein.txt" }, ext: ".txt",
+      file: {id: "./examples/Frankenstein.md", name: "Frankenstein.md" }, ext: ".md",
     })
     /**/
   }, [])
@@ -151,25 +153,11 @@ export default function App(props) {
   }
 
   function importFromFile({file, ext}) {
-    fs.read(file.id)
-    .then(content => {
-      setBuffer({file, ext, content})
-      Inform.success(`Loaded: ${file.name}`);
-    })
-    .catch(err => {
-      Inform.error(err);
-    })
+    setBuffer({file, ext})
   }
 
   function importFromClipboard() {
-    navigator.clipboard.readText()
-    .then(content => {
-      setBuffer({file: undefined, ext: ".txt", content})
-      //Inform.success(`Loaded: ${file.name}`);
-    })
-    .catch(err => {
-      //Inform.error(err);
-    })
+    setBuffer({file: undefined, ext: undefined})
   }
 
   function docFromBuffer({buffer}) {
@@ -231,15 +219,26 @@ function View({doc, updateDoc, buffer, setBuffer}) {
 
   return (
     <VBox className="ViewPort">
-      <WorkspaceTab doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
-      <ViewSwitch doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
+      <WorkspaceTab doc={doc} updateDoc={updateDoc}/>
+      <ViewSwitch doc={doc} updateDoc={updateDoc}/>
+      <RenderDialogs doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
     </VBox>
   )
 }
 
 //-----------------------------------------------------------------------------
 
-function WorkspaceTab({doc, updateDoc, buffer, setBuffer}) {
+function RenderDialogs({doc, updateDoc, buffer, setBuffer}) {
+  if(buffer) {
+    return <Dialog open={true} fullWidth={true} maxWidth="xl">
+      <ImportView doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
+    </Dialog>
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+function WorkspaceTab({doc, updateDoc}) {
   //console.log("Workspace: id=", id)
   //console.log("Workspace: doc=", doc)
 
@@ -253,8 +252,6 @@ function WorkspaceTab({doc, updateDoc, buffer, setBuffer}) {
   ]));
 
   //console.log("Recent:", recent)
-  //if(buffer) return <WithBuffer setCommand={setCommand} recent={recent} buffer={buffer} setBuffer={setBuffer}/>
-  if(buffer) return null
   if(!doc) return <WithoutDoc setCommand={setCommand} recent={recent}/>
   return <WithDoc setCommand={setCommand} recent={recent} doc={doc} updateDoc={updateDoc}/>
 }
@@ -330,10 +327,10 @@ class FileMenu extends React.PureComponent {
           <RecentItems recent={recent} setCommand={setCommand} popupState={popupState}/>
           <Separator/>
           <MenuItem onClick={e => { cmdOpenImportFile({setCommand, file}); popupState.close(e); }}>
-            <ListItemText>Import file...</ListItemText>
+            <ListItemText>Import File...</ListItemText>
             </MenuItem>
           <MenuItem onClick={e => { cmdImportClipboard({setCommand}); popupState.close(e); }}>
-            <ListItemText>Import clipboard</ListItemText>
+            <ListItemText>Import From Clipboard</ListItemText>
             </MenuItem>
           <Separator/>
           <MenuItem disabled={!file} onClick={e => { cmdSaveFile({setCommand, file}); popupState.close(e); }}>

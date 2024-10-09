@@ -10,32 +10,29 @@ import "./styles/import.css"
 import "../common/styles/sheet.css"
 
 import React, {
-  useMemo, useCallback,
-  useState,
+  useState, useEffect,
 } from 'react';
 
 import {
-  FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon, Tooltip, IconButton,
-  ToggleButton, ToggleButtonGroup,
-  Radio,
-  Input,
+  VBox, HBox,
+  ToolBox, Button,
   Label,
-  List, ListItem, ListItemText, ListSubheader,
-  Grid,
-  Separator, Loading, addClass,
-  TextField, SelectFrom,
+  Separator,
   Menu, MenuItem,
-  Accordion, AccordionSummary, AccordionDetails,
-  DeferredRender,
   Inform,
+  Filler,
 } from "../common/factory";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
-import { elemName, getSuffix, nanoid, filterCtrlElems } from "../../document/util";
-import { Preview } from "./preview";
 import { maweFromTree } from "../../document/xmljs/load";
+
+import { Preview } from "./preview";
+import { ImportText } from "./importText";
+
+//const anytext = require("any-text")
+const mammoth = require("mammoth")
+const fs = require("../../system/localfs")
 
 //*****************************************************************************
 //
@@ -43,37 +40,71 @@ import { maweFromTree } from "../../document/xmljs/load";
 //
 //*****************************************************************************
 
-function ext2format(ext) {
-  switch(ext) {
-    case ".rtf": return "rtf"
+const formats = {
+  "text": {name: "Text",},
+}
+
+function getContent(file, ext) {
+  if(!file) {
+    return {
+      loader: navigator.clipboard.readText(),
+      format: "text"
+    }
   }
-  return "text"
+  switch(ext) {
+    //case ".rtf":
+    case ".docx": return {
+      loader: fs.read(file.id, null)
+        .then(buffer => mammoth.extractRawText({arrayBuffer: buffer}))
+        .then(result => result.value),
+      format: "text"
+    }
+  }
+  return {
+    loader: fs.read(file.id),
+    format: "text"
+  }
 }
 
 export function ImportView({updateDoc, buffer, setBuffer}) {
-  const {file, ext, content} = buffer
+  const {file, ext} = buffer
 
-  console.log("File:", file, "Ext:", ext)
+  //console.log("File:", file, "Ext:", ext)
 
-  const [format, setFormat] = useState(ext2format(ext))
+  const [content, setContent] = useState()
+  const [format, setFormat] = useState()
   const [imported, setImported] = useState()
 
-  return <VBox style={{ overflow: "auto" }}>
+  useEffect(() => {
+    const {loader, format} = getContent(file, ext)
+    loader
+    .then(content => {
+      setContent(content)
+      setFormat(format)
+      if(file) Inform.success(`Loaded: ${file.name}`);
+    })
+    .catch(err => {
+      Inform.error(err);
+      setBuffer()
+    })
+  }, [buffer, setContent, setFormat, setBuffer])
+
+  return <VBox style={{ overflow: "auto", padding: "4pt"}}>
     <ImportBar format={format} setFormat={setFormat} imported={imported} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
     <HBox style={{ overflow: "auto" }}>
+      <Preview imported={imported}/>
       <VBox className="ImportSettings">
         <SelectFormat format={format} content={content} setImported={setImported}/>
       </VBox>
-      <Preview imported={imported}/>
     </HBox>
   </VBox>
 }
 
+//-----------------------------------------------------------------------------
+
 function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) {
 
   function Import(e) {
-    setBuffer(undefined)
-
     const story = maweFromTree({
       elements: [{
         type: "element", name: "story",
@@ -88,6 +119,7 @@ function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) 
         ]
     }]})
     updateDoc(story)
+    setBuffer(undefined)
   }
 
   function Cancel(e) {
@@ -97,31 +129,21 @@ function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) 
   return <ToolBox>
     <Label>Import: {buffer.file?.name ?? "Clipboard"}</Label>
     <Separator/>
-    <SelectFormatButton value={format} setFormat={setFormat}/>
+    <Label>{formats[format]?.name ?? format}</Label>
+    {/*<SelectFormatButton value={format} setFormat={setFormat}/>*/}
     <Separator/>
-    <Button variant="contained" color="error" onClick={Cancel}>Cancel</Button>
+    <Filler/>
     <Separator/>
     <Button variant="contained" color="success" onClick={Import}>Import</Button>
+    <Separator/>
+    <Button variant="contained" color="error" onClick={Cancel}>Cancel</Button>
     <Separator/>
   </ToolBox>
 }
 
-class SelectFormat extends React.PureComponent {
-  render() {
-    const {format, content, setImported} = this.props
-
-    switch(format) {
-      case "text": return <ImportTXT content={content} setImported={setImported}/>
-    }
-    return null
-  }
-}
+//-----------------------------------------------------------------------------
 
 class SelectFormatButton extends React.PureComponent {
-
-  static choices = {
-    "text": {name: "Text",},
-  }
 
   static order = ["text"]
 
@@ -162,70 +184,15 @@ class SelectFormatButton extends React.PureComponent {
   }
 }
 
-//*****************************************************************************
-//
-// Text import
-//
-//*****************************************************************************
-
-class ImportTXT extends React.PureComponent {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      linebreak: "double"
-    };
-  }
-
-  setLinebreak(linebreak) {
-    this.setState({linebreak})
-  }
-
-  getLinebreak() {
-    switch(this.state.linebreak) {
-      case "single": return "\n"
-      default:
-      case "double": return "\n\n"
-    }
-  }
-
-  render() {
-    const {content, setImported} = this.props
-
-    setImported(importTXT(content, this.getLinebreak()))
-
-    return <>
-      <Label>Text import</Label>
-      <TextField select label="Line break" value={this.state.linebreak} onChange={e => this.setLinebreak(e.target.value)}>
-        <MenuItem value="double">Double</MenuItem>
-        <MenuItem value="single">Single</MenuItem>
-      </TextField>
-    </>
-  }
-}
-
 //-----------------------------------------------------------------------------
 
-export function text2lines(content, linebreak = "\n\n") {
-  return content
-    .replaceAll("\r", "")
-    .split(linebreak)
-    .map(line => line.replaceAll(/\s+/g, " ").trim())
-}
+class SelectFormat extends React.PureComponent {
+  render() {
+    const {format, content, setImported} = this.props
 
-function importTXT(content, linebreak) {
-
-  const elements = text2lines(content, linebreak)
-    .map(line => ({
-      type: "element", name: "p", id: nanoid(),
-      elements: [{type: "text", text: line}]
-    }))
-  ;
-  return [{
-    type: "element", name: "part", id: nanoid(),
-    elements: [{
-      type: "element", name: "scene", id: nanoid(),
-      elements
-    }]
-  }]
+    switch(format) {
+      case "text": return <ImportText content={content} setImported={setImported}/>
+    }
+    return null
+  }
 }
