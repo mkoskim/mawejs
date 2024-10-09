@@ -9,7 +9,7 @@
 import {uuid as getUUID, nanoid, file2buf, wcElem, wcChildren} from "../util";
 import { xml2js } from "xml-js";
 
-import { loadChartSettings } from "../../gui/chart/chart";
+import { loadChartSettings } from "../../gui/arc/arc";
 import { loadViewSettings } from "../../gui/app/views";
 import { loadEditorSettings } from "../../gui/editor/editor";
 import {loadExportSettings} from "../../gui/export/export";
