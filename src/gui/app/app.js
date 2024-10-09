@@ -115,8 +115,8 @@ export default function App(props) {
     /*/
     setCommand({
       action: "import",
-      file: {id: "./examples/Frankenstein.txt", name: "Frankenstein.txt" },
-      ext: ".txt",
+      //file: {id: "./examples/Frankenstein.txt", name: "Frankenstein.txt" }, ext: ".txt",
+      file: {id: "./examples/Frankenstein.md", name: "Frankenstein.md" }, ext: ".md",
     })
     /**/
   }, [])
