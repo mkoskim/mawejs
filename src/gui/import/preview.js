@@ -15,7 +15,7 @@ export class Preview extends React.PureComponent {
 
     if(!imported) return null
 
-    return <DeferredRender>
+    return <>
       <ImportIndex
         style={{minWidth: "200px", maxWidth: "300px", width: "300px"}}
         imported={imported}/>
@@ -23,10 +23,10 @@ export class Preview extends React.PureComponent {
         style={{borderRight: "1px solid lightgray", borderLeft: "1px solid lightgray"}}
         >
         <div className="Sheet Regular">
-          {imported.map(PreviewPart)}
+          <DeferredRender>{imported.map(PreviewPart)}</DeferredRender>
           </div>
       </div>
-    </DeferredRender>
+    </>
   }
 }
 
@@ -54,7 +54,7 @@ function PreviewParagraph(p) {
 
 function ImportIndex({imported}) {
   return <div className="TOC" style={{maxWidth: "300px"}}>
-    {imported.map(partIndex)}
+    <DeferredRender>{imported.map(partIndex)}</DeferredRender>
   </div>
 
   function partIndex(part) {
