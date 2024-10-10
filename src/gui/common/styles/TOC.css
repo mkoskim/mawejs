@@ -47,22 +47,19 @@
 /* ---------------------------------------------------------------------------- */
 
 .TOC .ChapterName {
+  font-weight: bold;
   /*
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
   */
 }
 
-.TOC .Numbered .ChapterName .Name::before {
+.TOC .ChapterName.Numbered .Name::before {
   counter-increment: chapter;
   content: counter(chapter) ". ";
 /*
   content: counter(chapter, upper-roman) "\00a0-\00a0";
 */
-}
-
-.TOC .ChapterName {
-  font-weight: bold;
 }
 
 .TOC div.SceneDropZone {
@@ -117,10 +114,12 @@
 */
 }
 
-.TOC .Numbered .SceneName .Name::before {
+.TOC .SceneName.Numbered .Name::before {
   /* width: 1cm; */
   counter-increment: scene;
+/*
   content: counter(scene) ". ";
+*/
 }
 
 .TOC .BookmarkName {

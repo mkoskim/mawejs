@@ -172,6 +172,7 @@ function parseChapter(chapter, index) {
   const header = (!index && !name) ? [] : [{
     type: "hchapter",
     id: nanoid(),
+    unnumbered: unnumbered ? true : undefined,
     children: [{text: name ?? ""}],
     words: {}
   }]
@@ -188,7 +189,6 @@ function parseChapter(chapter, index) {
     id: nanoid(),
     //name,
     folded: folded ? true : undefined,
-    unnumbered: unnumbered ? true: undefined,
     children: [
       ...header,
       ...children,

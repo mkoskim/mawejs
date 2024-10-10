@@ -103,12 +103,10 @@
 */
 
 .Sheet div.chapter {
-  counter-increment: chapter;
   margin-bottom: 0.5cm;
 }
 
-.Sheet .Numbered div.scene {
-  counter-increment: scene;
+.Sheet div.scene {
   margin-bottom: 0.5cm;
 }
 
@@ -141,12 +139,6 @@
   background: rgb(247, 247, 247);
   animation: splash 0.1s linear;
   */
-}
-
-@keyframes splash {
-  0% {
-    background-color: lightgrey;
-  }
 }
 
 .Sheet div.folded::after {
@@ -227,7 +219,7 @@
 
 /* Chapter */ .Sheet h5 {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 11pt;
+  font-size: inherit;
   font-weight: bold;
   color: #888;
 /*
@@ -237,6 +229,12 @@
   margin-top: 0.5cm;
   margin-bottom: 0.5cm;
 */
+}
+
+.Sheet h5.Numbered::before {
+  margin-right: 8pt;
+  counter-increment: chapter;
+  content: counter(chapter) ".";
 }
 
 /* Scene*/ .Sheet h6 {
@@ -250,9 +248,12 @@
   */
 }
 
-.Sheet .Numbered h6::before {
+.Sheet h6.Numbered::before {
+  counter-increment: scene;
+/*
   margin-right: 8pt;
   content: counter(scene) ".";
+*/
 }
 
 /*

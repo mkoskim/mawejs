@@ -138,12 +138,12 @@ function renderElement({element, attributes, ...props}) {
 
   switch (type) {
     case "chapter":
-      return <div className={addClass("chapter", numClass, foldClass, debug?.blocks)} {...attributes} {...props}/>
+      return <div className={addClass("chapter", foldClass, debug?.blocks)} {...attributes} {...props}/>
     case "scene":
       return <div className={addClass("scene", foldClass, debug?.blocks)} {...attributes} {...props}/>
 
-    case "hchapter": return <h5 {...attributes} {...props}/>
-    case "hscene": return <h6 {...attributes} {...props}/>
+    case "hchapter": return <h5 className={numClass} {...attributes} {...props}/>
+    case "hscene": return <h6 className="Numbered" {...attributes} {...props}/>
 
     case "comment":
     case "missing":
@@ -475,6 +475,15 @@ function onKeyDown(editor, event) {
 
   if(IsKey.CtrlAlt1(event)) {
     event.preventDefault()
+    const [node, path] = Editor.above(editor, {
+      match: n => Editor.isBlock(editor, n),
+    })
+    //console.log(node)
+    if(node.type === "hchapter") {
+      const {unnumbered} = node
+      Transforms.setNodes(editor, {unnumbered: !unnumbered})
+      return;
+    }
     Transforms.setNodes(editor, {type: "hchapter"})
     return ;
   }
@@ -647,7 +656,7 @@ const blockstyles = {
 // TODO: Generate this table
 
 const MARKUP = {
-  "# " : {type: "hchapter"},
+  "# " : {type: "hchapter", unnumbered: undefined},
   "#! ": {type: "hchapter", unnumbered: true},
   "## ": {type: "hscene"},
   '>> ': {type: "synopsis"},
@@ -664,12 +673,6 @@ const MARKUP = {
   //'%%':
   //'/*':
   //'::':
-}
-
-function setUnnumbering(editor, path, unnumbered) {
-  const [parent, ppath] = Editor.parent(editor, path, { match: n => Editor.isBlock(editor, n) && n.type === "chapter" })
-  console.log("Parent:", parent)
-  Transforms.setNodes(editor, {unnumbered}, {at: ppath})
 }
 
 function withMarkup(editor) {
@@ -693,9 +696,9 @@ function withMarkup(editor) {
     if(key in MARKUP) {
       Transforms.select(editor, range)
       Transforms.delete(editor)
-      const {type, unnumbered} = MARKUP[key]
-      Transforms.setNodes(editor, {type})
-      if(type === "hchapter") setUnnumbering(editor, path, unnumbered)
+      //const {type, unnumbered} = MARKUP[key]
+      Transforms.setNodes(editor, MARKUP[key])
+      //if(type === "hchapter") setUnnumbering(editor, path, unnumbered)
       return
     }
 
