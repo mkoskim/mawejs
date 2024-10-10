@@ -29,21 +29,28 @@ ${content}
   // Joining elements
 
   "body": (chapters, options) => {
-    const {separator, pgbreak} = options
-    return chapters.join(getSeparator(separator, pgbreak))
+    return chapters.join(getSeparator(options.separator))
   },
 
-  "chapter": (chapter, scenes, options) => {
-    const {type, separator, pgbreak, chnum} = options
-    return getHeading(chapter, type, pgbreak, chnum) + scenes.join(getSeparator(separator, pgbreak))
+  "chapter": (head, scenes, options) => {
+    return head + scenes.join(getSeparator(options.separator))
   },
 
-  "scene": (scene, splits, options) => {
-    const {type, separator, pgbreak, chnum} = options
-    return getHeading(scene, type, pgbreak, chnum) + splits.join(getSeparator(separator, pgbreak))
+  "scene": (head, splits) => {
+    return head + splits.join("\n\n")
   },
 
   "split": (paragraphs) => paragraphs.join("\n    "),
+
+  "hchapter": (id, number, name, options) => {
+    if(options.skip) return ""
+
+    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
+    const title = options.name ? [escape(name)] : []
+    const head = [ ...numbering, ...title].join(". ")
+
+    return `${head}\n\n`
+  },
 
   // Paragraph styles
   //"synopsis": (p) => undefined,
@@ -82,23 +89,32 @@ ${content}
   // Joining elements
 
   "body": (chapters, options) => {
-    const {separator, pgbreak} = options
-    return chapters.join(getSeparator(separator, pgbreak))
+    return chapters.join(getSeparator(options.separator))
   },
 
-  "chapter": (chapter, scenes, options) => {
-    const {type, separator, pgbreak, chnum} = options
-    const head = getHeading(chapter, type, pgbreak, chnum)
-    return (head ? ("## " + head) : "") + scenes.join(getSeparator(separator, pgbreak))
+  "chapter": (head, scenes, options) => {
+    return head + scenes.join(getSeparator(options.separator))
   },
 
-  "scene": (scene, splits, options) => {
-    const {type, separator, pgbreak, chnum} = options
-    const head = getHeading(scene, type, pgbreak, chnum)
-    return (head ? ("## " + head) : "") + splits.join(getSeparator(separator, pgbreak))
+  "scene": (head, splits) => {
+    return head + splits.join("\n\n")
   },
 
   "split": (paragraphs) => paragraphs.join("\n\n"),
+
+  //---------------------------------------------------------------------------
+  // Headings
+  //---------------------------------------------------------------------------
+
+  "hchapter": (id, number, name, options) => {
+    if(options.skip) return ""
+
+    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
+    const title = options.name ? [escape(name)] : []
+    const head = [ ...numbering, ...title].join(". ")
+
+    return `## ${head}\n\n`
+  },
 
   // Paragraph styles
   //"synopsis": (p) => undefined,
@@ -113,22 +129,8 @@ ${content}
 
 //-----------------------------------------------------------------------------
 
-function getHeading(elem, type, pgbreak, chnum) {
-  //const size = pgbreak ? "\\Large" : "\\large"
-  //const sb = pgbreak ? "\\newpage" : "\n\n"
-  //const sa = "\n\n\\par\\null\n\n"
-
-  switch(type) {
-    case "numbered": return `${chnum}.\n\n`
-    case "named": return `${chnum}. ${escape(elemName(elem))}\n\n`
-    default: break;
-  }
-  return ""
-}
-
-function getSeparator(separator, pgbreak) {
+function getSeparator(separator) {
   if(separator) {
-    //if(pgbreak) return "\\page"
     return `\n\n${center(separator)}\n\n`
   }
   return "\n\n"

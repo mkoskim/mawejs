@@ -35,10 +35,6 @@ export function updateDocSubtitle(updateDoc, value) { updateDoc(doc => {doc.head
 export function updateDocAuthor(updateDoc, value) { updateDoc(doc => {doc.head.author = value})}
 export function updateDocPseudonym(updateDoc, value) { updateDoc(doc => {doc.head.pseudonym = value})}
 
-export function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
-export function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapterelem = value})}
-export function updateDocChapterType(updateDoc, value) { updateDoc(doc => {doc.exports.chaptertype = value})}
-
 export class EditHead extends React.PureComponent {
   render() {
     const {head, updateDoc, expanded} = this.props

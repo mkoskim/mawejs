@@ -1021,7 +1021,7 @@ NOTES
 /-->
 <ui>
 <view/>
-<arc elements="scenes" template="plotpoints" mode="topCCW"/>
+<arc elements="chapters" template="beatsheet" mode="topCCW"/>
 <editor>
 <body words="numbers" indexed="chapter,scene,synopsis"/>
 </editor>

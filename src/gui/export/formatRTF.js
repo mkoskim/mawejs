@@ -88,21 +88,34 @@ ${content}
   // Joining elements
 
   "body": (chapters, options) => {
-    const {separator, pgbreak} = options
-    return chapters.join(getSeparator(separator, pgbreak))
+    return chapters.join(getSeparator(options.separator))
   },
 
-  "chapter": (chapter, scenes, options) => {
-    const {type, separator, pgbreak, chnum} = options
-    return getHeading(chapter, type, pgbreak, chnum) + scenes.join(getSeparator(separator, pgbreak))
+  "chapter": (head, scenes, options) => {
+    const {separator} = options
+    return head + scenes.join(getSeparator(separator))
   },
 
-  "scene": (scene, splits, options) => {
-    const {type, separator, pgbreak, chnum} = options
-    return getHeading(scene, type, pgbreak, chnum) + splits.join(getSeparator(separator, pgbreak))
+  "scene": (head, splits) => {
+    return head + splits.join("\n")
   },
 
   "split": (paragraphs) => "{\\sb480" + paragraphs.join("{\\fi567"),
+
+  //---------------------------------------------------------------------------
+  // Headings
+  //---------------------------------------------------------------------------
+
+  "hchapter": (id, number, name, options) => {
+    if(options.skip) return ""
+
+    const pgbreak = options.pgbreak ? "\\pagebb" : "\\sb480"
+    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
+    const title = options.name ? [escape(name)] : []
+    const head = [ ...numbering, ...title].join(". ")
+
+    return `{${pgbreak}\\b\\fs28 ${head}\\par}\n`
+  },
 
   //---------------------------------------------------------------------------
 
@@ -121,16 +134,6 @@ ${content}
 }
 
 //-----------------------------------------------------------------------------
-
-function getHeading(elem, type, pgbreak, chnum) {
-  const brk = pgbreak ? "\\pagebb" : "\\sb480"
-  switch(type) {
-    case "numbered": return `{${brk}\\b\\fs28 ${chnum}.\\par}\n`
-    case "named": return `{${brk}\\b\\fs28 ${chnum}. ${escape(elemName(elem))}\\par}\n`
-    default: break;
-  }
-  return ""
-}
 
 function getSeparator(separator, pgbreak) {
   if(separator) {
