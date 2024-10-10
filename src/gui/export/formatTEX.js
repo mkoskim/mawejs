@@ -32,6 +32,7 @@ const commonHeading = `\
 `
 
 function renewCommands(options, sides) {
+  const pgbreak = options.long
   const newpage = sides === "oneside" ? "\\newpage" : "\\cleartooddpage"
 
   return `\
@@ -52,7 +53,7 @@ function renewCommands(options, sides) {
       {\\large \\@subtitle \\par}
     }
   }
-  ${options.pgbreak ? newpage : "\\vskip 48pt"}
+  ${pgbreak ? newpage : "\\vskip 48pt"}
 }
 
 \\newcommand\\innertitle{{\\center{\\Large\\@title\\vskip 48pt}}}
@@ -63,7 +64,7 @@ function renewCommands(options, sides) {
 }
 
 \\renewcommand\\chapter[2]{
-  ${options.pgbreak ? newpage : "\\vskip 36pt"}
+  ${pgbreak ? newpage : "\\vskip 36pt"}
   \\begin{center}
     \\if@titlepage
       \\ifthenelse{\\equal{#1}{}}{}{\\RNum{#1}\\vskip 12pt}
@@ -73,7 +74,7 @@ function renewCommands(options, sides) {
       \\ifthenelse{\\equal{#2}{}}{}{\\textbf{#2}}
     \\fi
   \\end{center}
-  ${options.pgbreak ? "\\vskip 48pt" : "\\vskip 18pt"}
+  ${pgbreak ? "\\vskip 48pt" : "\\vskip 18pt"}
 }
 
 \\newcommand\\separator[1]{
@@ -129,10 +130,10 @@ ${renewCommands(options, sides)}
 
 const formatTEX = {
   // Info
-  "suffix": ".tex",
+  suffix: ".tex",
 
   // File
-  "file": (head, content, options) => {
+  file: (head, content, options) => {
     const sides = "oneside"
     const titlepage = options.long ? "titlepage" : "notitlepage"
     const frontmatter = options.long ? "\\frontmatter\\pagestyle{empty}" : "\\pagestyle{plain}"
@@ -164,48 +165,32 @@ ${backmatter}
   //---------------------------------------------------------------------------
   // Joining elements
 
-  "body": (chapters, options) => {
+  body: (chapters, options) => {
     return chapters.join(getSeparator(options.separator))
   },
 
-  "chapter": (head, scenes, options) => {
+  chapter: (head, scenes, options) => {
     return head + scenes.join(getSeparator(options.separator))
   },
 
-  "scene": (head, splits) => {
+  scene: (head, splits) => {
     return head + splits.join("\n\n")
   },
 
-  "split": (paragraphs) => "\\noindent " + paragraphs.join("\n\n"),
+  split: (paragraphs) => "\\noindent " + paragraphs.join("\n\n"),
 
   //---------------------------------------------------------------------------
   // Headings
   //---------------------------------------------------------------------------
 
-  "hchapter": (id, number, name, options) => {
+  hchapter: (id, number, name, options) => {
     if(options.skip) return ""
 
-    //const pgbreak = options.pgbreak ? "<hr/>\n" : ""
     const chnum = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
     const title = options.name ? [escape(name)] : []
-    //const head = [ ...numbering, ...title].join(". ")
 
     return `\n\n\\chapter{${chnum}}{${title}}\n\n`
-    //return `${pgbreak}<h2 id="${id}">${head}</h2>`
   },
-
-  /*
-    const size = pgbreak ? "\\Large" : "\\large"
-    const sb = pgbreak ? "\\cleartooddpage" : "\n\n"
-    const sa = "\n\n\\par\\null\n\n"
-
-    switch (type) {
-      case "numbered": return `${sb}{\\noindent${size} ${chnum}.}${sa}`
-      case "named": return `${sb}{\\noindent${size} ${chnum}. ${escape(elem.name)}}${sa}`
-      default: break;
-    }
-    return ""
-  */
 
   //---------------------------------------------------------------------------
 
@@ -236,13 +221,14 @@ export const formatTEX2 = {
   ...formatTEX,
 
   // File
-  "file": (head, content, options) => {
+  file: (head, content, options) => {
     const sides = "twoside"
     //const titlepage = options.pgbreak ? "titlepage" : "notitlepage"
     //const frontmatter = options.pgbreak ? "\\frontmatter\\pagestyle{empty}" : ""
     //const mainmatter  = options.pgbreak ? "\\mainmatter\\pagestyle{plain}" : ""
     //const backmatter  = options.pgbreak ? "\\backmatter\\pagestyle{empty}" : ""
 
+    const pgbreak = options.long
     const titlepage = "titlepage"
     const frontmatter = "\\frontmatter\\pagestyle{empty}"
     const mainmatter  = "\\mainmatter\\pagestyle{plain}"
@@ -261,7 +247,7 @@ ${frontmatter}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${mainmatter}
-${options.pgbreak ? "" : "\\innertitle"}
+${pgbreak ? "" : "\\innertitle"}
 ${content}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

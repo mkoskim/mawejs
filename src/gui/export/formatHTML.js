@@ -4,17 +4,16 @@
 //
 // ****************************************************************************
 
-import {elemAsText, elemName} from "../../document"
 import {getHeader} from "../../document/head"
 
 // ****************************************************************************
 
 export const formatHTML = {
   // Info
-  "suffix": ".html",
+  suffix: ".html",
 
   // File
-  "file": (head, content, options) => {
+  file: (head, content, options) => {
     const {author, title, subtitle} = head
     const headinfo = getHeader(head)
     return `\
@@ -32,25 +31,25 @@ ${content}
   // Blocks
   //---------------------------------------------------------------------------
 
-  "body": (chapters, options) => {
+  body: (chapters, options) => {
     return chapters.join(getSeparator(options.separator))
   },
 
-  "chapter": (head, scenes, options) => {
+  chapter: (head, scenes, options) => {
     return head + scenes.join(getSeparator(options.separator))
   },
 
-  "scene": (head, splits) => {
+  scene: (head, splits) => {
     return head + splits.join("<br/>\n")
   },
 
-  "split": (paragraphs) => paragraphs.join("\n"),
+  split: (paragraphs) => paragraphs.join("\n"),
 
   //---------------------------------------------------------------------------
   // Headings
   //---------------------------------------------------------------------------
 
-  "hchapter": (id, number, name, options) => {
+  hchapter: (id, number, name, options) => {
     if(options.skip) return `<div id=${id}></div>`
 
     const pgbreak = options.pgbreak ? "<hr/>\n" : ""
@@ -60,6 +59,8 @@ ${content}
 
     return `${pgbreak}<h2 id="${id}">${head}</h2>`
   },
+
+  hscene: undefined,
 
   //---------------------------------------------------------------------------
   // Paragraphs
@@ -91,11 +92,11 @@ function escape(text) {
     .replaceAll('&', "&amp;")
     .replaceAll('<', "&lt;")
     .replaceAll('>', "&gt;")
-    .replaceAll('"', "&quot;")
 
     // If you have copy-pasted text, you may have these
-    .replaceAll('“', "&quot;")
-    .replaceAll('”', "&quot;")
+    .replaceAll('“', '"')
+    .replaceAll('”', '"')
+    //.replaceAll('"', "&quot;")
     .replaceAll('…', "...")
   )
 }

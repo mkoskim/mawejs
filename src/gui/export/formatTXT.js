@@ -4,14 +4,12 @@
 //
 // ****************************************************************************
 
-import {elemName} from "../../document"
-
 export const formatTXT = {
   // Info
-  "suffix": ".txt",
+  suffix: ".txt",
 
   // File
-  "file": (head, content, options) => {
+  file: (head, content, options) => {
     //const author = head.nickname || head.author
     const {author, title, subtitle} = head
     //const headinfo = author ? `${author}: ${title}` : title
@@ -28,21 +26,21 @@ ${content}
   //---------------------------------------------------------------------------
   // Joining elements
 
-  "body": (chapters, options) => {
+  body: (chapters, options) => {
     return chapters.join(getSeparator(options.separator))
   },
 
-  "chapter": (head, scenes, options) => {
+  chapter: (head, scenes, options) => {
     return head + scenes.join(getSeparator(options.separator))
   },
 
-  "scene": (head, splits) => {
+  scene: (head, splits) => {
     return head + splits.join("\n\n")
   },
 
-  "split": (paragraphs) => paragraphs.join("\n    "),
+  split: (paragraphs) => paragraphs.join("\n    "),
 
-  "hchapter": (id, number, name, options) => {
+  hchapter: (id, number, name, options) => {
     if(options.skip) return ""
 
     const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
@@ -51,6 +49,8 @@ ${content}
 
     return `${head}\n\n`
   },
+
+  hscene: undefined,
 
   // Paragraph styles
   //"synopsis": (p) => undefined,
@@ -67,10 +67,10 @@ ${content}
 
 export const formatMD = {
   // Info
-  "suffix": ".md",
+  suffix: ".md",
 
   // File
-  "file": (head, content, options) => {
+  file: (head, content, options) => {
     //const author = head.nickname || head.author
     const {author, title, subtitle} = head
     //const headinfo = author ? `${author}: ${title}` : title
@@ -88,25 +88,25 @@ ${content}
   //---------------------------------------------------------------------------
   // Joining elements
 
-  "body": (chapters, options) => {
+  body: (chapters, options) => {
     return chapters.join(getSeparator(options.separator))
   },
 
-  "chapter": (head, scenes, options) => {
+  chapter: (head, scenes, options) => {
     return head + scenes.join(getSeparator(options.separator))
   },
 
-  "scene": (head, splits) => {
+  scene: (head, splits) => {
     return head + splits.join("\n\n")
   },
 
-  "split": (paragraphs) => paragraphs.join("\n\n"),
+  split: (paragraphs) => paragraphs.join("\n\n"),
 
   //---------------------------------------------------------------------------
   // Headings
   //---------------------------------------------------------------------------
 
-  "hchapter": (id, number, name, options) => {
+  hchapter: (id, number, name, options) => {
     if(options.skip) return ""
 
     const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
@@ -115,6 +115,8 @@ ${content}
 
     return `## ${head}\n\n`
   },
+
+  hscene: undefined,
 
   // Paragraph styles
   //"synopsis": (p) => undefined,

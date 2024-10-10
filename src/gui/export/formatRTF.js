@@ -42,10 +42,10 @@ ${paperA4}
 
 export const formatRTF = {
   // Info
-  "suffix": ".rtf",
+  suffix: ".rtf",
 
   // File
-  "file": (head, content, options) => {
+  file: (head, content, options) => {
     const pgbreak = options.pgbreak ? "\\page" : ""
 
     const {author, title, subtitle} = head
@@ -87,26 +87,26 @@ ${content}
   //---------------------------------------------------------------------------
   // Joining elements
 
-  "body": (chapters, options) => {
+  body: (chapters, options) => {
     return chapters.join(getSeparator(options.separator))
   },
 
-  "chapter": (head, scenes, options) => {
+  chapter: (head, scenes, options) => {
     const {separator} = options
     return head + scenes.join(getSeparator(separator))
   },
 
-  "scene": (head, splits) => {
+  scene: (head, splits) => {
     return head + splits.join("\n")
   },
 
-  "split": (paragraphs) => "{\\sb480" + paragraphs.join("{\\fi567"),
+  split: (paragraphs) => "{\\sb480" + paragraphs.join("{\\fi567"),
 
   //---------------------------------------------------------------------------
   // Headings
   //---------------------------------------------------------------------------
 
-  "hchapter": (id, number, name, options) => {
+  hchapter: (id, number, name, options) => {
     if(options.skip) return ""
 
     const pgbreak = options.pgbreak ? "\\pagebb" : "\\sb480"
@@ -116,6 +116,8 @@ ${content}
 
     return `{${pgbreak}\\b\\fs28 ${head}\\par}\n`
   },
+
+  hscene: undefined,
 
   //---------------------------------------------------------------------------
 
@@ -128,7 +130,6 @@ ${content}
   "b": (text) => `{\\b ${text}}`,
   "i": (text) => `{\\i ${text}}`,
   "text": (text) => escape(text),
-
 
   //---------------------------------------------------------------------------
 }

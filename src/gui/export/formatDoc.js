@@ -72,7 +72,7 @@ export function FormatBody(format, story) {
   const pgbreak = exports.type === "long"
   */
 
-  return format["file"](
+  return format.file(
     mawe.info(head),
     FormatBody(body.chapters),
     options
@@ -81,11 +81,11 @@ export function FormatBody(format, story) {
   function FormatBody(chapters) {
     const content = chapters.map(FormatChapter).filter(p => p)
 
-    return format["body"](content, options.chapter)
+    return format.body(content, options.chapter)
   }
 
   function FormatChapter(chapter) {
-    return format["chapter"](
+    return format.chapter(
       FormatChapterHead(chapter),
       chapter.children.filter(e => e.type === "scene").map(FormatScene).filter(s => s),
       options.scene
@@ -99,10 +99,10 @@ export function FormatBody(format, story) {
     const {unnumbered} = head
 
     if(unnumbered) {
-      return format["hchapter"](id, undefined, elemAsText(head), options.chapter.unnumbered)
+      return format.hchapter(id, undefined, elemAsText(head), options.chapter.unnumbered)
     } else {
       chapternum = chapternum + 1
-      return format["hchapter"](id, chapternum, elemAsText(head), options.chapter.numbered)
+      return format.hchapter(id, chapternum, elemAsText(head), options.chapter.numbered)
     }
   }
 
@@ -118,14 +118,14 @@ export function FormatBody(format, story) {
 
     //if(chapters.element === "scene") scenenum = scenenum + 1
 
-    return format["scene"]("", splits)
+    return format.scene("", splits)
   }
 
   function FormatSplit(split) {
     const paragraphs = split.map(FormatParagraph).filter(p => p?.length)
     //console.log(split, "->", content)
     if (!paragraphs.length) return null
-    return format["split"](paragraphs)
+    return format.split(paragraphs)
   }
 
   function FormatParagraph(p) {
@@ -136,9 +136,9 @@ export function FormatBody(format, story) {
   }
 
   function FormatMarks(split) {
-    var text = format["text"](split.text)
-    if(split.bold) text = format["b"](text)
-    if(split.italic) text = format["i"](text)
+    var text = format.text(split.text)
+    if(split.bold) text = format.b(text)
+    if(split.italic) text = format.i(text)
     return text
   }
 }
