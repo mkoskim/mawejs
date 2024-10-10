@@ -14,15 +14,15 @@ import { splitByTrailingElem } from "../../util";
 
 function getChapterOptions(chapters, pgbreak) {
   switch(chapters) {
-    case "number": return {
+    case "numbered": return {
       numbered:   { pgbreak, number: true},
       unnumbered: { pgbreak, name: true }
     }
-    case "name": return {
+    case "named": return {
       numbered:   { pgbreak, name: true},
       unnumbered: { pgbreak, name: true }
     }
-    case "number&name": return {
+    case "numbered&named": return {
       numbered:   { pgbreak, number: true, name: true},
       unnumbered: { pgbreak, name: true }
     }

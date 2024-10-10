@@ -204,13 +204,13 @@ function v3_fix_exports(exportElem) {
   if(!exportElem) return {type: "element", name: "export", attributes: {}, elements: []}
 
   const {attributes} = exportElem
-  const {chapterelem} = attributes
+  const {type, chapterelem, chaptertype} = attributes
 
   return {
     ...exportElem,
     attributes: {
-      ...attributes,
-      chapterelem: chapterelem === "part" ? "chapter" : chapterelem
+      type,
+      chapters: chaptertype,
     }
   }
 }

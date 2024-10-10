@@ -66,18 +66,18 @@ export function loadExportSettings(settings) {
   return {
     format: "rtf1",
     type: "short",
-    chapters: "number",
+    chapters: "numbered",
     scenes: "none",
     ...(settings?.attributes ?? {})
   }
 }
 
 export function saveExportSettings(settings) {
-  const {type, chapterelem, chaptertype} = settings
+  const {type, chapters, scenes} = settings
   return {type: "export", attributes: {
     type,
-    chapterelem,
-    chaptertype,
+    chapters,
+    scenes,
   }}
 }
 
@@ -111,7 +111,7 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
 
   const formatter = formatters[format]
 
-  const { head, exports } = doc
+  const { exports } = doc
 
   return <VBox style={style} className="ExportSettings">
     <TextField select label="Format" value={format} onChange={e => setFormat(e.target.value)}>
@@ -137,9 +137,9 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       </TextField>
 
     <TextField select label="Chapters" value={exports.chapters} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
-      <MenuItem value="number">Numbered</MenuItem>
-      <MenuItem value="name">Named</MenuItem>
-      <MenuItem value="number&name">Numbered & Named</MenuItem>
+      <MenuItem value="numbered">Numbered</MenuItem>
+      <MenuItem value="named">Named</MenuItem>
+      <MenuItem value="numbered&named">Numbered & Named</MenuItem>
       <MenuItem value="separated">Separated</MenuItem>
       <MenuItem value="none">None</MenuItem>
       </TextField>
