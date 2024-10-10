@@ -16,5 +16,5 @@
 </scene>
 </part>
 </body>
-<export chapterelem="part"/>
+<export type="long" chapterelem="part" chaptertype="numbered" scenes="separated"/>
 <ui><chart elements="parts"/></ui>

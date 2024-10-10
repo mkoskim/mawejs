@@ -29,30 +29,41 @@ ${content}
   },
 
   //---------------------------------------------------------------------------
-  // Body
-
+  // Blocks
   //---------------------------------------------------------------------------
-  // Joining elements
 
   "body": (chapters, options) => {
-    const {separator, pgbreak} = options
-    return chapters.join(getSeparator(separator, pgbreak))
+    return chapters.join(getSeparator(options.separator))
   },
 
-  "chapter": (chapter, scenes, options) => {
-    const {type, separator, pgbreak, chnum} = options
-    return getHeading(chapter, type, pgbreak, chnum) + scenes.join(getSeparator(separator, pgbreak))
+  "chapter": (head, scenes, options) => {
+    return head + scenes.join(getSeparator(options.separator))
   },
 
-  "scene": (scene, splits, options) => {
-    const {type, separator, pgbreak, chnum} = options
-    return getHeading(scene, type, pgbreak, chnum) + splits.join(getSeparator(separator, pgbreak))
+  "scene": (head, splits) => {
+    return head + splits.join("<br/>\n")
   },
 
   "split": (paragraphs) => paragraphs.join("\n"),
 
   //---------------------------------------------------------------------------
-  // Paragraph splits
+  // Headings
+  //---------------------------------------------------------------------------
+
+  "hchapter": (id, number, name, options) => {
+    if(options.skip) return `<div id=${id}></div>`
+
+    const pgbreak = options.pgbreak ? "<hr/>\n" : ""
+    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
+    const title = options.name ? [escape(name)] : []
+    const head = [ ...numbering, ...title].join(". ")
+
+    return `${pgbreak}<h2 id="${id}">${head}</h2>`
+  },
+
+  //---------------------------------------------------------------------------
+  // Paragraphs
+  //---------------------------------------------------------------------------
 
   // "synopsis": (p) => null,
   // "comment": (p) => null,
@@ -68,22 +79,11 @@ ${content}
 
 // ****************************************************************************
 
-function getHeading(elem, type, pgbreak, chnum) {
-  const brk = pgbreak ? "<hr/>" : ""
-  switch(type) {
-    case "numbered": return `${brk}<h3 id="${elem.id}">${chnum}.</h3>`
-    case "named": return `${brk}<h3 id="${elem.id}">${chnum}. ${elemName(elem)}</h3>`
-    default: break;
+function getSeparator(options) {
+  if(options) {
+    return `<br/><center>${options}</center><br/>\n`
   }
-  return `<a id="${elem.id}"/>`
-}
-
-function getSeparator(separator, pgbreak) {
-  if(separator) {
-    //if(pgbreak) return "<hr/>"
-    return `<br/><center>${separator}</center><br/>\n`
-  }
-  return"<br/>\n"
+  return "<br\n>"
 }
 
 function escape(text) {

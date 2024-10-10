@@ -5,62 +5,105 @@
 //*****************************************************************************
 
 import { mawe, elemAsText } from "../../document"
+import { elemHeading } from "../../document/util";
 import { splitByTrailingElem } from "../../util";
 
-//-----------------------------------------------------------------------------
-// Format configuration:
-//
-// const format = {
-//    ["file"]
-// }
-//
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+// Settings
+//*****************************************************************************
+
+function getChapterOptions(chapters, pgbreak) {
+  switch(chapters) {
+    case "numbered": return {
+      numbered:   { pgbreak, number: true},
+      unnumbered: { pgbreak, name: true }
+    }
+    case "named": return {
+      numbered:   { pgbreak, name: true},
+      unnumbered: { pgbreak, name: true }
+    }
+    case "numbered&named": return {
+      numbered:   { pgbreak, number: true, name: true},
+      unnumbered: { pgbreak, name: true }
+    }
+    case "separated": return {
+      separator: "* * *",
+      numbered:   { skip: true },
+      unnumbered: { skip: true }
+    }
+  }
+  return {
+    numbered: {skip: true},
+    unnumbered: {skip: true},
+  }
+}
+
+function getSceneOptions(scenes) {
+  switch(scenes) {
+    case "separated": return {
+      separator: "* * *"
+    }
+  }
+  return {}
+}
+
+//*****************************************************************************
+// Formatting
+//*****************************************************************************
 
 export function FormatBody(format, story) {
-  const { head, exports, body } = story
+  const { exports, head, body } = story
+  const pgbreak = exports.type === "long"
 
+  const options = {
+    long: exports.type === "long",
+    chapter: getChapterOptions(exports.chapters, pgbreak),
+    scene: getSceneOptions(exports.scenes)
+  }
+
+  var chapternum = 0
+  var scenenum = 0
+
+  /*
   const chapters = {
     element: exports.chapterelem,
     type: exports.chaptertype,
   }
-
   const pgbreak = exports.type === "long"
-  var chnum = 1
+  */
 
   return format["file"](
     mawe.info(head),
     FormatBody(body.chapters),
-    {
-      pgbreak
-    }
+    options
   )
 
   function FormatBody(chapters) {
     const content = chapters.map(FormatChapter).filter(p => p)
 
-    const options = {
-      separator: (chapters.type === "separated") && "* * *",
-      pgbreak,
-    }
-
-    return format["body"](content, options)
+    return format["body"](content, options.chapter)
   }
 
   function FormatChapter(chapter) {
-    const scenes = chapter.children.map(FormatScene).filter(s => s)
+    return format["chapter"](
+      FormatChapterHead(chapter),
+      chapter.children.filter(e => e.type === "scene").map(FormatScene).filter(s => s),
+      options.scene
+    )
+  }
 
-    if (!scenes.length) return null
+  function FormatChapterHead(chapter) {
 
-    const options = {
-      type: (chapters.element === "chapter") && chapters.type,
-      separator: (chapters.element === "scene" && chapters.type === "separated") && "* * *",
-      pgbreak,
-      chnum
+    const {id} = chapter
+    const head = elemHeading(chapter)
+    const {unnumbered} = head
+
+    if(unnumbered) {
+      return format["hchapter"](id, undefined, elemAsText(head), options.chapter.unnumbered)
+    } else {
+      chapternum = chapternum + 1
+      return format["hchapter"](id, chapternum, elemAsText(head), options.chapter.numbered)
     }
-
-    if(chapters.element === "chapter") chnum = chnum + 1
-
-    return format["chapter"](chapter, scenes, options);
   }
 
   function FormatScene(scene) {
@@ -73,15 +116,9 @@ export function FormatBody(format, story) {
 
     if (!splits.length) return null
 
-    const options = {
-      type: (chapters.element === "scene") && chapters.type,
-      pgbreak,
-      chnum
-    }
+    //if(chapters.element === "scene") scenenum = scenenum + 1
 
-    if(chapters.element === "scene") chnum = chnum + 1
-
-    return format["scene"](scene, splits, options)
+    return format["scene"]("", splits)
   }
 
   function FormatSplit(split) {

@@ -15,25 +15,20 @@ import React, {
 import {
   FlexBox, VBox, HBox, Filler, VFiller, HFiller,
   ToolBox, Button, Icon, Tooltip,
-  ToggleButton, ToggleButtonGroup,
-  Radio,
-  Input,
-  SearchBox,
-  Label,
   List, ListItem, ListItemText, ListSubheader,
   Grid,
-  Separator, Loading, addClass,
-  TextField, SelectFrom,
+  Separator, addClass,
+  TextField,
   MenuItem,
   Accordion, AccordionSummary, AccordionDetails,
   DeferredRender,
   Inform,
+  Label,
 } from "../common/factory";
 
 import { elemName, getSuffix, nanoid, filterCtrlElems } from "../../document/util";
 import {
   EditHead, SectionWordInfo,
-  updateDocStoryType, updateDocChapterElem, updateDocChapterType,
 } from "../common/components";
 
 import { storyType } from "../../document/head"
@@ -71,18 +66,18 @@ export function loadExportSettings(settings) {
   return {
     format: "rtf1",
     type: "short",
-    chapterelem: "chapter",
-    chaptertype: "separated",
+    chapters: "numbered",
+    scenes: "none",
     ...(settings?.attributes ?? {})
   }
 }
 
 export function saveExportSettings(settings) {
-  const {type, chapterelem, chaptertype} = settings
+  const {type, chapters, scenes} = settings
   return {type: "export", attributes: {
     type,
-    chapterelem,
-    chaptertype,
+    chapters,
+    scenes,
   }}
 }
 
@@ -100,7 +95,7 @@ export function Export({ doc, updateDoc }) {
   return <HBox style={{ overflow: "auto" }}>
     <ExportIndex style={{ maxWidth: "300px", width: "300px" }} doc={doc} updateDoc={updateDoc}/>
     <Preview doc={doc}/>
-    <ExportSettings doc={doc} updateDoc={updateDoc} format={format} setFormat={setFormat}/>
+    <ExportSettings style={{minWidth: "300px"}} doc={doc} updateDoc={updateDoc} format={format} setFormat={setFormat}/>
   </HBox>
 }
 
@@ -108,17 +103,21 @@ export function Export({ doc, updateDoc }) {
 // Export settings
 //-----------------------------------------------------------------------------
 
+function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
+function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapters = value})}
+function updateDocSceneElem(updateDoc, value) { updateDoc(doc => {doc.exports.scenes = value})}
+
 function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
 
   const formatter = formatters[format]
 
-  const { head, exports } = doc
+  const { exports } = doc
 
   return <VBox style={style} className="ExportSettings">
     <TextField select label="Format" value={format} onChange={e => setFormat(e.target.value)}>
       <ListSubheader>RTF</ListSubheader>
       <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
-      <MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>
+      {/*<MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>*/}
       <ListSubheader>LaTeX</ListSubheader>
       <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
       <MenuItem value="tex2">LaTeX, A5 booklet</MenuItem>
@@ -127,29 +126,28 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       {/* <MenuItem value="txt">Text (wrapped)</MenuItem> */}
       </TextField>
 
+    <Separator/>
     <Button variant="contained" color="success" onClick={e => doExport(e)}>Export</Button>
 
-    <Accordion disableGutters>
-    <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Story type: {storyType(doc)}</AccordionSummary>
-    <AccordionDetails><VBox>
+    <Separator/>
+
     <TextField select label="Story Class" value={exports.type} onChange={e => updateDocStoryType(updateDoc, e.target.value)}>
       <MenuItem value="short">Short Story</MenuItem>
       <MenuItem value="long">Long Story</MenuItem>
       </TextField>
-    <TextField select label="Chapters" value={exports.chapterelem} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
-      <MenuItem value="chapter">Chapter</MenuItem>
-      <MenuItem value="scene">Scene</MenuItem>
-      <MenuItem value="none">None</MenuItem>
-      </TextField>
-    <TextField select label="Chapter style" value={exports.chaptertype} onChange={e => updateDocChapterType(updateDoc, e.target.value)}>
-      <MenuItem value="separated">Separated</MenuItem>
+
+    <TextField select label="Chapters" value={exports.chapters} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
       <MenuItem value="numbered">Numbered</MenuItem>
       <MenuItem value="named">Named</MenuItem>
+      <MenuItem value="numbered&named">Numbered & Named</MenuItem>
+      <MenuItem value="separated">Separated</MenuItem>
+      <MenuItem value="none">None</MenuItem>
       </TextField>
-    </VBox></AccordionDetails>
-    </Accordion>
 
-    <EditHead head={head} updateDoc={updateDoc}/>
+    <TextField select label="Scenes" value={exports.scenes} onChange={e => updateDocSceneElem(updateDoc, e.target.value)}>
+      <MenuItem value="none">None</MenuItem>
+      <MenuItem value="separated">Separated</MenuItem>
+      </TextField>
   </VBox>
 
   function doExport(event) {

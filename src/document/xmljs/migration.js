@@ -40,7 +40,7 @@ export function migrate(root) {
     v1_to_v2,
     v2_fixes,
     v2_to_v3,
-    v3_fix,
+    v3_fixes,
   ].reduce((story, func) => func(story), story)
 }
 
@@ -151,6 +151,27 @@ function v2_to_v3(story) {
 //
 //*****************************************************************************
 
+function v3_fixes(story) {
+
+  const {version} = story.attributes ?? {}
+
+  if(version !== "3") return story
+
+  const uiElem = elemFind(story, "ui")
+  const exportElem = elemFind(story, "export")
+
+  return {
+    ...story,
+    elements: [
+      ...story.elements
+        .filter(elem => elem.name !== "ui")
+        .filter(elem => elem.name !== "export"),
+      v3_fix_chart(uiElem),
+      v3_fix_exports(exportElem),
+    ]
+  }
+}
+
 function v3_fix_chart(uiElem) {
 
   if(!uiElem) return {type: "element", name: "ui", attributes: {}, elements: []}
@@ -183,34 +204,13 @@ function v3_fix_exports(exportElem) {
   if(!exportElem) return {type: "element", name: "export", attributes: {}, elements: []}
 
   const {attributes} = exportElem
-  const {chapterelem} = attributes
+  const {chaptertype, chapters, ...rest} = attributes
 
   return {
     ...exportElem,
     attributes: {
-      ...attributes,
-      chapterelem: chapterelem === "part" ? "chapter" : chapterelem
+      ...rest,
+      chapters: chapters ?? chaptertype,
     }
-  }
-}
-
-function v3_fix(story) {
-
-  const {version} = story.attributes ?? {}
-
-  if(version !== "3") return story
-
-  const uiElem = elemFind(story, "ui")
-  const exportElem = elemFind(story, "export")
-
-  return {
-    ...story,
-    elements: [
-      ...story.elements
-        .filter(elem => elem.name !== "ui")
-        .filter(elem => elem.name !== "export"),
-      v3_fix_chart(uiElem),
-      v3_fix_exports(exportElem),
-    ]
   }
 }

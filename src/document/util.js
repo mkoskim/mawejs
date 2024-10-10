@@ -91,20 +91,27 @@ export function elemAsText(elem) {
   )
 }
 
-export function elemName(elem) {
+export function elemHeading(elem) {
   if(elem.type === "chapter") {
     if(elem.children.length && elem.children[0].type === "hchapter") {
-      return elemAsText(elem.children[0]);
+      return elem.children[0];
     }
     return undefined
   }
   if(elem.type === "scene") {
     if(elem.children.length && elem.children[0].type === "hscene") {
-      return elemAsText(elem.children[0]);
+      return elem.children[0];
     }
     return undefined
   }
-  return undefined
+}
+
+export function elemName(elem) {
+  return elemAsText(elemHeading(elem))
+}
+
+export function elemUnnumbered(elem) {
+  return elemHeading(elem)?.unnumbered
 }
 
 //-----------------------------------------------------------------------------

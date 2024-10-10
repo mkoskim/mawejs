@@ -134,10 +134,10 @@ const formatTEX = {
   // File
   "file": (head, content, options) => {
     const sides = "oneside"
-    const titlepage = options.pgbreak ? "titlepage" : "notitlepage"
-    const frontmatter = options.pgbreak ? "\\frontmatter\\pagestyle{empty}" : "\\pagestyle{plain}"
-    const mainmatter  = options.pgbreak ? "\\mainmatter\\pagestyle{plain}" : ""
-    const backmatter  = options.pgbreak ? "\\backmatter\\pagestyle{empty}" : ""
+    const titlepage = options.long ? "titlepage" : "notitlepage"
+    const frontmatter = options.long ? "\\frontmatter\\pagestyle{empty}" : "\\pagestyle{plain}"
+    const mainmatter  = options.long ? "\\mainmatter\\pagestyle{plain}" : ""
+    const backmatter  = options.long ? "\\backmatter\\pagestyle{empty}" : ""
     // const mainmatter = options.pgbreak ? "\\mainmatter" : ""
 
     return `\
@@ -165,21 +165,47 @@ ${backmatter}
   // Joining elements
 
   "body": (chapters, options) => {
-    const { separator, pgbreak } = options
-    return chapters.join(getSeparator(separator, pgbreak))
+    return chapters.join(getSeparator(options.separator))
   },
 
-  "chapter": (chapter, scenes, options) => {
-    const { type, separator, pgbreak, chnum } = options
-    return getHeading(chapter, type, pgbreak, chnum) + scenes.join(getSeparator(separator, pgbreak))
+  "chapter": (head, scenes, options) => {
+    return head + scenes.join(getSeparator(options.separator))
   },
 
-  "scene": (scene, splits, options) => {
-    const { type, separator, pgbreak, chnum } = options
-    return getHeading(scene, type, pgbreak, chnum) + splits.join(getSeparator(separator, pgbreak))
+  "scene": (head, splits) => {
+    return head + splits.join("\n\n")
   },
 
   "split": (paragraphs) => "\\noindent " + paragraphs.join("\n\n"),
+
+  //---------------------------------------------------------------------------
+  // Headings
+  //---------------------------------------------------------------------------
+
+  "hchapter": (id, number, name, options) => {
+    if(options.skip) return ""
+
+    //const pgbreak = options.pgbreak ? "<hr/>\n" : ""
+    const chnum = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
+    const title = options.name ? [escape(name)] : []
+    //const head = [ ...numbering, ...title].join(". ")
+
+    return `\n\n\\chapter{${chnum}}{${title}}\n\n`
+    //return `${pgbreak}<h2 id="${id}">${head}</h2>`
+  },
+
+  /*
+    const size = pgbreak ? "\\Large" : "\\large"
+    const sb = pgbreak ? "\\cleartooddpage" : "\n\n"
+    const sa = "\n\n\\par\\null\n\n"
+
+    switch (type) {
+      case "numbered": return `${sb}{\\noindent${size} ${chnum}.}${sa}`
+      case "named": return `${sb}{\\noindent${size} ${chnum}. ${escape(elem.name)}}${sa}`
+      default: break;
+    }
+    return ""
+  */
 
   //---------------------------------------------------------------------------
 
@@ -252,27 +278,6 @@ ${backmatter}
 }
 
 //-----------------------------------------------------------------------------
-
-function getHeading(elem, type, pgbreak, chnum) {
-  switch(type) {
-    case "numbered": return `\n\n\\chapter{${chnum}}{}\n\n`
-    case "named": return `\n\n\\chapter{${chnum}}{${escape(elemName(elem))}}\n\n`
-    default: break;
-  }
-  return ""
-/*
-  const size = pgbreak ? "\\Large" : "\\large"
-  const sb = pgbreak ? "\\cleartooddpage" : "\n\n"
-  const sa = "\n\n\\par\\null\n\n"
-
-  switch (type) {
-    case "numbered": return `${sb}{\\noindent${size} ${chnum}.}${sa}`
-    case "named": return `${sb}{\\noindent${size} ${chnum}. ${escape(elem.name)}}${sa}`
-    default: break;
-  }
-  return ""
-*/
-}
 
 function getSeparator(separator, pgbreak) {
   if (separator) {

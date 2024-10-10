@@ -10,7 +10,7 @@ import { saveViewSettings } from "../../gui/app/views";
 import { saveChartSettings } from "../../gui/arc/arc";
 import { saveEditorSettings } from "../../gui/editor/editor";
 import {saveExportSettings} from "../../gui/export/export";
-import {uuid as getUUID, buf2file, elemName, filterCtrlElems} from "../util";
+import {uuid as getUUID, buf2file, elemName, filterCtrlElems, elemUnnumbered} from "../util";
 
 //----------------------------------------------------------------------------
 
@@ -131,6 +131,7 @@ function toNotes(notes) {
 function toChapter(chapter) {
   const {folded} = chapter;
   const name = elemName(chapter)
+  const unnumbered = elemUnnumbered(chapter)
 
   return xmlLines(
     {
@@ -138,6 +139,7 @@ function toChapter(chapter) {
       attributes: {
         name: name,
         folded: folded ? true : undefined,
+        unnumbered: unnumbered ? true : undefined,
       },
     },
     ...filterCtrlElems(chapter.children).map(toScene),

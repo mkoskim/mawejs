@@ -22,7 +22,7 @@ import {
 
 import {FormatWords} from "./components";
 import {elemAsText, elemName, filterCtrlElems} from "../../document";
-import {wcCumulative} from "../../document/util";
+import {elemUnnumbered, wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
@@ -179,9 +179,9 @@ class ChapterItem extends React.PureComponent {
   Draggable(provided, snapshot) {
     const {elem, include, wcFormat, onActivate, unfold, current, refCurrent} = this.props
     const {innerRef, draggableProps, dragHandleProps} = provided
+    const unnumbered=elemUnnumbered(elem)
 
     return <div
-      className="Chapter"
       ref={innerRef}
       {...draggableProps}
       >
@@ -191,6 +191,7 @@ class ChapterItem extends React.PureComponent {
         name={elemName(elem)}
         words={elem.words}
         folded={!unfold && elem.folded}
+        unnumbered={elemUnnumbered(elem)}
         wcFormat={wcFormat}
         onActivate={onActivate}
         current={current}
@@ -303,7 +304,7 @@ class SceneItem extends React.PureComponent {
 
 class IndexItem extends React.PureComponent {
   render() {
-    const {className, refCurrent, id, type, name, folded, words, wcFormat, onActivate, current, ...rest} = this.props
+    const {className, refCurrent, id, type, name, folded, unnumbered, words, wcFormat, onActivate, current, ...rest} = this.props
 
     //console.log("Render IndexItem:", type, id, name)
 
@@ -312,6 +313,8 @@ class IndexItem extends React.PureComponent {
       (type === "section") ? "SectionName" :
       "BookmarkName"
 
+    const numClass = (type === "chapter" || type === "scene") ? (unnumbered ? "" : "Numbered") : ""
+
     const foldClass = (folded) ? "Folded" : ""
 
     function onClick(ev) {
@@ -319,7 +322,7 @@ class IndexItem extends React.PureComponent {
     }
 
     return <ScrollRef current={current} id={id} refCurrent={refCurrent}>
-      <HBox className={addClass(className, typeClass, foldClass, "Entry")} onClick={onClick} {...rest}>
+      <HBox className={addClass(className, typeClass, numClass, foldClass, "Entry")} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       <Filler/>
