@@ -41,7 +41,7 @@ STORY: Unnumbered
 <br/>
 </scene>
 </chapter>
-<chapter name="Epilogue">
+<chapter name="Epilogue" unnumbered="true">
 <scene name="Epilogue">
 <p>Epilogue</p>
 <br/>
