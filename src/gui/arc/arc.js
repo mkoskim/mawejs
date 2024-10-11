@@ -151,14 +151,14 @@ function ChartView({doc, updateDoc}) {
   const settings = {
     elements: {
       buttons: elemButtons,
-      choices: ["scenes", "chapters"],
+      choices: ["chapters", "scenes"],
       selected: doc.ui.arc.elements,
       setSelected: setElements,
       exclusive: true,
     },
     template: {
       buttons: tmplButtons,
-      choices: ["plotpoints", "beatsheet", "herosjourney", "heroacts", "fiveact", "7", "11"],
+      choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts", "fiveact", "7", "11"],
       selected: doc.ui.arc.template,
       setSelected: setTemplate,
       exclusive: true,
