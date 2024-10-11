@@ -37,7 +37,7 @@ export function loadChartSettings(settings) {
   // TODO: Check that fields have valid values (table keys)
   return {
     elements: "scenes",
-    template: "plotpoints",
+    template: "beatsheet",
     mode: "topCCW",
     ...(settings?.attributes ?? {})
   }
@@ -158,7 +158,7 @@ function ChartView({doc, updateDoc}) {
     },
     template: {
       buttons: tmplButtons,
-      choices: ["plotpoints", "beatsheet", "fiveact", "thirteen"],
+      choices: ["plotpoints", "beatsheet", "fiveact", "nine", "thirteen"],
       selected: doc.ui.arc.template,
       setSelected: setTemplate,
       exclusive: true,
@@ -283,6 +283,7 @@ const elemButtons = {
 
 const tmplButtons = {
   plotpoints: {
+    tooltip: "K.M. Weiland's Plot Points",
     icon: "Plot Points",
     data: [
       {size: 12.5, fill: "lightgreen", name: "Hook"}, {name: "Inciting Event"},
@@ -297,6 +298,7 @@ const tmplButtons = {
     ]
   },
   beatsheet: {
+    tooltip: "Snyder's Beatsheet",
     icon: "Beat Sheet",
     data: [
       {size: 1, name: null, fill: "lightgreen"}, // Opening Image
@@ -326,26 +328,42 @@ const tmplButtons = {
     ]
   },
 
-  thirteen: {
-    icon: "Thirteen",
+  nine: {
+    icon: "Nine",
     data: [
-      {size: 2, name: "OI", fill: "lightgreen"},
-      {size: 10, name: "1", fill: "lightgreen"},
-      {size: 10, name: "2", fill: "yellow"},
-      {size: 10, name: "3", fill: "red"},
-      {size: 10, name: "4", fill: "orange"},
-      {size: 10, name: "5", fill: "red"},
-      {size: 10, name: "6", fill: "lightgreen"},
-      {size: 10, name: "7", fill: "yellow"},
-      {size: 10, name: "8", fill: "red"},
-      {size: 10, name: "9", fill: "orange"},
-      {size: 10, name: "10", fill: "red"},
-      {size: 10, name: "11", fill: "red"},
-      {size: 2, name: "CI", fill: "lightgreen"},
+      {size: 2,  name: "1", fill: "lightgreen"},
+      {size: 18, name: "2", fill: "lightgreen"},
+      {size: 10, name: "3 - To Act 2", fill: "orange"},
+      {size: 20, name: "4", fill: "yellow"},
+      {size: 10, name: "5 - Midpoint", fill: "red"},
+      {size: 20, name: "6", fill: "orange"},
+      {size: 10, name: "7 - To Act 3", fill: "red"},
+      {size: 18, name: "8", fill: "orchid"},
+      {size: 2,  name: "9", fill: "orchid"},
       //{size: 10, name: "12", fill: "red"},
       //{size: 10, name: "13", fill: "red"},
     ]
+  },
 
+  thirteen: {
+    icon: "Thirteen",
+    data: [
+      {size: 2,  name: "1", fill: "lightgreen"},
+      {size: 8,  name: "2", fill: "lightgreen"},
+      {size: 10, name: "3", fill: "yellow"},
+      {size: 10, name: "4 - To Act 2", fill: "orange"},
+      {size: 10, name: "5", fill: "yellow"},
+      {size: 10, name: "6", fill: "orange"},
+      {size: 10, name: "7 - Midpoint", fill: "red"},
+      {size: 10, name: "8", fill: "yellow"},
+      {size: 10, name: "9", fill: "orange"},
+      {size: 10, name: "10 - To Act 3", fill: "red"},
+      {size: 10, name: "11", fill: "plum"},
+      {size: 8,  name: "12", fill: "orchid"},
+      {size: 2,  name: "13", fill: "orchid"},
+      //{size: 10, name: "12", fill: "red"},
+      //{size: 10, name: "13", fill: "red"},
+    ]
   }
 
   /*
