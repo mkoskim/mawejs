@@ -158,7 +158,8 @@ function ChartView({doc, updateDoc}) {
     },
     template: {
       buttons: tmplButtons,
-      choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts", "fiveact", "7", "11"],
+      //choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts", "fiveact", "7", "11"],
+      choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts"],
       selected: doc.ui.arc.template,
       setSelected: setTemplate,
       exclusive: true,
