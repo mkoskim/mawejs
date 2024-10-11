@@ -251,8 +251,9 @@
 
 .Sheet h6.Numbered::before {
   counter-increment: scene;
-/*
   margin-right: 8pt;
+  content: "##";
+/*
   content: counter(scene) ".";
 */
 }
