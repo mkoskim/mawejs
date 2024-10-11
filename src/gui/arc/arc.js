@@ -12,12 +12,7 @@ import React, {
 
 import {
   ResponsiveContainer,
-  CartesianGrid, Tooltip,
-  XAxis, YAxis,
-  BarChart, Bar,
-  LineChart, Line,
   PieChart, Pie,
-  Cell,
 } from "recharts"
 
 import {
@@ -25,16 +20,18 @@ import {
   ToolBox,
   Button, Label,
   MakeToggleGroup,
-  Select, MenuItem, InputLabel, FormControl, Separator, Icon,
+  Separator, Icon,
 } from "../common/factory"
 
 import {DragDropContext, Droppable, Draggable} from "@hello-pangea/dnd";
 import {DocIndex} from "../common/docIndex";
 import {elemName, filterCtrlElems, mawe} from "../../document";
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
 // Chart settings
-//-----------------------------------------------------------------------------
+//
+//*****************************************************************************
 
 export function loadChartSettings(settings) {
   // TODO: Check that fields have valid values (table keys)
@@ -56,9 +53,11 @@ export function saveChartSettings(settings) {
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
 // Story Arc view
-//-----------------------------------------------------------------------------
+//
+//*****************************************************************************
 
 export function StoryArc({doc, updateDoc}) {
   //const section = doc.body
@@ -159,7 +158,7 @@ function ChartView({doc, updateDoc}) {
     },
     template: {
       buttons: tmplButtons,
-      choices: ["acts", "plotpoints", "beatsheet"],
+      choices: ["plotpoints", "beatsheet", "fiveact", "thirteen"],
       selected: doc.ui.arc.template,
       setSelected: setTemplate,
       exclusive: true,
@@ -283,16 +282,6 @@ const elemButtons = {
 //-----------------------------------------------------------------------------
 
 const tmplButtons = {
-  acts: {
-    icon: "Acts",
-    data: [
-      {size: 25, name: "Act I", fill: "lightgreen"},
-      {size: 25, name: "Act II/1", fill: "yellow"},
-      {name: "Midpoint"},
-      {size: 25, name: "Act II/2", fill: "orange"},
-      {size: 25, name: "Act III", fill: "red"},
-    ]
-  },
   plotpoints: {
     icon: "Plot Points",
     data: [
@@ -326,6 +315,39 @@ const tmplButtons = {
       {size: 1, name: null, fill: "orange"}, // Closing Image
     ]
   },
+  fiveact: {
+    icon: "Five Act",
+    data: [
+      {size: 20, name: "Exposition", fill: "lightgreen"},
+      {size: 20, name: "Rising Movement", fill: "yellow"},
+      {size: 20, name: "Climax", fill: "red"},
+      {size: 20, name: "Falling Action", fill: "orange"},
+      {size: 20, name: "Catastrophe/Resolution", fill: "red"},
+    ]
+  },
+
+  thirteen: {
+    icon: "Thirteen",
+    data: [
+      {size: 2, name: "OI", fill: "lightgreen"},
+      {size: 10, name: "1", fill: "lightgreen"},
+      {size: 10, name: "2", fill: "yellow"},
+      {size: 10, name: "3", fill: "red"},
+      {size: 10, name: "4", fill: "orange"},
+      {size: 10, name: "5", fill: "red"},
+      {size: 10, name: "6", fill: "lightgreen"},
+      {size: 10, name: "7", fill: "yellow"},
+      {size: 10, name: "8", fill: "red"},
+      {size: 10, name: "9", fill: "orange"},
+      {size: 10, name: "10", fill: "red"},
+      {size: 10, name: "11", fill: "red"},
+      {size: 2, name: "CI", fill: "lightgreen"},
+      //{size: 10, name: "12", fill: "red"},
+      //{size: 10, name: "13", fill: "red"},
+    ]
+
+  }
+
   /*
   vogler: {
     icon: "Vogler",
