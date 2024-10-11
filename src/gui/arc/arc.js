@@ -62,71 +62,6 @@ export function saveChartSettings(settings) {
 export function StoryArc({doc, updateDoc}) {
   //const section = doc.body
 
-  return <DragDropContext onDragEnd={onDragEnd}>
-    <HBox style={{overflow: "auto"}}>
-      <VBox style={{maxWidth: "300px", borderRight: "1px solid lightgray"}}>
-        <IndexToolbar />
-        <DocIndex
-          section={doc.body}
-          activeID="body"
-          include={["chapter", "scene"]}
-          wcFormat={"compact"}
-          unfold={true}
-        />
-      </VBox>
-      <ChartView doc={doc} updateDoc={updateDoc}/>
-    </HBox>
-  </DragDropContext>
-
-  function onDragEnd(result) {
-    //onDragEndUpdateDoc(doc, updateDoc, result)
-  }
-}
-
-//-----------------------------------------------------------------------------
-// Const styles
-//-----------------------------------------------------------------------------
-
-const styles = {
-  toolbar: {
-    background: "white",
-  }
-}
-
-//-----------------------------------------------------------------------------
-// Index toolbar
-//-----------------------------------------------------------------------------
-
-function IndexToolbar({ }) {
-  return <ToolBox style={styles.toolbar}>
-    <Button>Test</Button>
-  </ToolBox>
-}
-
-//*****************************************************************************
-//
-// Story pie chart
-//
-//*****************************************************************************
-
-function mode2rotate(mode) {
-  switch (mode) {
-    case "topCCW":    return { start:  90, rotate:  1}
-    case "topCW":     return { start:  90, rotate: -1}
-    case "bottomCCW": return { start: 270, rotate:  1}
-    case "bottomCW":  return { start: 270, rotate: -1}
-  }
-  return { start: 0, rotate: 1 }
-}
-
-function ChartView({doc, updateDoc}) {
-
-  const section = doc.body
-
-  //---------------------------------------------------------------------------
-  // Data selection
-  //---------------------------------------------------------------------------
-
   const setElements = useCallback(value => updateDoc(doc => {doc.ui.arc.elements = value}), [updateDoc])
   const setTemplate = useCallback(value => updateDoc(doc => {doc.ui.arc.template = value}), [updateDoc])
   const setMode     = useCallback((mode) => {updateDoc(doc => {doc.ui.arc.mode = mode})}, [updateDoc])
@@ -137,12 +72,6 @@ function ChartView({doc, updateDoc}) {
     .reduce((a, b) => a + b, 0)
   )
   */
-
-  //---------------------------------------------------------------------------
-  // Chart directions
-  //---------------------------------------------------------------------------
-
-  const {start: selectStart, rotate: selectRotate} = mode2rotate(doc.ui.arc.mode)
 
   //---------------------------------------------------------------------------
   // View
@@ -173,6 +102,85 @@ function ChartView({doc, updateDoc}) {
     }
   }
 
+  function selectInclude() {
+    switch(doc.ui.arc.elements) {
+      case "chapters": return ["chapter"]
+    }
+    return ["chapter", "scene"]
+  }
+
+  return <DragDropContext onDragEnd={onDragEnd}>
+    <HBox style={{overflow: "auto"}}>
+      <VBox style={{maxWidth: "300px", borderRight: "1px solid lightgray"}}>
+        <IndexToolbar settings={settings}/>
+        <DocIndex
+          section={doc.body}
+          activeID="body"
+          include={selectInclude()}
+          wcFormat={"compact"}
+          unfold={true}
+        />
+      </VBox>
+      <ChartView settings={settings} doc={doc} updateDoc={updateDoc}/>
+    </HBox>
+  </DragDropContext>
+
+  function onDragEnd(result) {
+    //onDragEndUpdateDoc(doc, updateDoc, result)
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Const styles
+//-----------------------------------------------------------------------------
+
+const styles = {
+  toolbar: {
+    background: "white",
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Index toolbar
+//-----------------------------------------------------------------------------
+
+function IndexToolbar({settings}) {
+  return <ToolBox style={styles.toolbar}>
+    <MakeToggleGroup {...settings.elements}/>
+    <Separator />
+  </ToolBox>
+}
+
+//*****************************************************************************
+//
+// Story pie chart
+//
+//*****************************************************************************
+
+function mode2rotate(mode) {
+  switch (mode) {
+    case "topCCW":    return { start:  90, rotate:  1}
+    case "topCW":     return { start:  90, rotate: -1}
+    case "bottomCCW": return { start: 270, rotate:  1}
+    case "bottomCW":  return { start: 270, rotate: -1}
+  }
+  return { start: 0, rotate: 1 }
+}
+
+function ChartView({settings, doc, updateDoc}) {
+
+  const section = doc.body
+
+  //---------------------------------------------------------------------------
+  // Chart directions
+  //---------------------------------------------------------------------------
+
+  const {start: selectStart, rotate: selectRotate} = mode2rotate(doc.ui.arc.mode)
+
+  //---------------------------------------------------------------------------
+  // Data selection
+  //---------------------------------------------------------------------------
+
   return <VFiller style={{overflow: "auto"}}>
     <ChartToolbar settings={settings} />
     <StoryChart
@@ -197,8 +205,6 @@ function ChartToolbar({settings}) {
     <SectionWordInfo section={section}/>
     <Separator/>
     */}
-    <MakeToggleGroup {...settings.elements}/>
-    <Separator />
     <MakeToggleGroup {...settings.template}/>
     <Separator />
     <MakeToggleGroup {...settings.mode}/>
