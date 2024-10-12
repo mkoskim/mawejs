@@ -318,40 +318,53 @@ export function foldByTags(editor, tags) {
   const tagset = new Set(tags)
   var folders = []
 
-  // Go through chapters
-  for(const chapter of Node.children(editor, []))
-  {
-    const [node, path] = chapter
+  // Go through acts, chapters and scenes
+  for(const act of Node.children(editor, [])) {
+    const [node, path] = act
 
-    var chaptertags = new Set()
+    var acttags = new Set()
 
-    // Go through scenes
-    for(const scene of Node.children(editor, path)) {
-      const [node, path] = scene
-      if(node.type !== "scene") continue
+    for(const chapter of Node.children(editor, path))
+    {
+      const [node, path] = chapter
 
-      const scenetags = new Set()
+      if(node.type !== "chapter") continue
 
-      // Go through blocks and get tags
-      for(const elem of Node.children(editor, path)) {
-        const [node, path] = elem
+      var chaptertags = new Set()
 
-        for(const key of elemTags(node)) {
-          scenetags.add(key)
+      // Go through scenes
+      for(const scene of Node.children(editor, path)) {
+        const [node, path] = scene
+        if(node.type !== "scene") continue
+
+        const scenetags = new Set()
+
+        // Go through blocks and get tags
+        for(const elem of Node.children(editor, path)) {
+          const [node, path] = elem
+
+          for(const key of elemTags(node)) {
+            scenetags.add(key)
+          }
         }
+
+        const hastags = tagset.intersection(scenetags).size > 0
+        folders.push({node, path, folded: !hastags})
+        //console.log("Scene:", path, node.type, hastags, scenetags);
+
+        chaptertags = chaptertags.union(scenetags)
       }
 
-      const hastags = tagset.intersection(scenetags).size > 0
+      const hastags = tagset.intersection(chaptertags).size > 0
       folders.push({node, path, folded: !hastags})
-      //console.log("Scene:", path, node.type, hastags, scenetags);
 
-      chaptertags = chaptertags.union(scenetags)
+      acttags = acttags.union(chaptertags)
+
+      //console.log("Chapter:", path, node.type, hastags, chaptertags);
     }
 
-    const hastags = tagset.intersection(chaptertags).size > 0
+    const hastags = tagset.intersection(acttags).size > 0
     folders.push({node, path, folded: !hastags})
-
-    //console.log("Chapter:", path, node.type, hastags, chaptertags);
   }
 
   Editor.withoutNormalizing(editor, () => {

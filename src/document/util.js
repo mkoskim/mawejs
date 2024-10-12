@@ -166,12 +166,15 @@ export function createWordTable(section) {
 export function createTagTable(section) {
   const tags = new Set()
 
-  for(const chapter of section.chapters) {
-    for(const scene of chapter.children) {
-      for(const p of scene.children) {
-        const keys = elemTags(p)
-        for(const key of keys) {
-          tags.add(key);
+  for(const act of section.acts) {
+    for(const chapter of filterCtrlElems(act.children)) {
+      for(const scene of filterCtrlElems(chapter.children)) {
+        console.log(scene)
+        for(const p of scene.children) {
+          const keys = elemTags(p)
+          for(const key of keys) {
+            tags.add(key);
+          }
         }
       }
     }
