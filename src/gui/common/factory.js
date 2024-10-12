@@ -190,13 +190,7 @@ export class MakeToggleGroup extends React.PureComponent {
       </ToggleButton>
 
       const {tooltip, icon} = buttons[choice]
-      if(tooltip) return <ToggleButton key={choice} value={choice}>
-        <Tooltip title={tooltip}>
-          {icon}
-        </Tooltip>
-      </ToggleButton>
-
-      return <ToggleButton key={choice} value={choice}>{icon}</ToggleButton>
+      return <ToggleButton key={choice} value={choice} tooltip={tooltip}>{icon}</ToggleButton>
     }
   }
 }

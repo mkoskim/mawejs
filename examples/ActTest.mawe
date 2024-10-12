@@ -59,7 +59,7 @@ NOTES
 /-->
 <ui>
 <view/>
-<arc elements="scenes" template="beatsheet" mode="topCCW"/>
+<arc elements="scene" template="beatsheet" mode="topCCW"/>
 <editor>
 <body words="numbers" indexed="chapter,scene,synopsis"/>
 </editor>
