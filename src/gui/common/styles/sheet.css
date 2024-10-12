@@ -150,8 +150,8 @@
   */
 }
 
-.Sheet div.folded::after {
-  margin-left: 6pt;
+.Sheet div.folded::before {
+  margin-right: 6pt;
   content: "•••";
   font-size: 10pt;
   color: grey;
@@ -163,17 +163,17 @@
   */
 }
 
+.Sheet div.folded p,
+.Sheet div.folded div.emptyline,
+.Sheet .act.folded div.chapter,
+.Sheet .chapter.folded div.scene {
+  display: none
+}
+
+.Sheet div.folded h4,
 .Sheet div.folded h5,
 .Sheet div.folded h6 {
   display: inline;
-  /*
-  */
-}
-
-.Sheet div.folded p,
-.Sheet div.folded div.emptyline,
-.Sheet .chapter.folded div.scene {
-  display: none
 }
 
 .Sheet p.folded {
@@ -229,7 +229,7 @@
 .Sheet h4.Numbered::before {
   margin-right: 4pt;
   counter-increment: act;
-  content: "Act " counter(act, upper-roman);
+  content: "<Act " counter(act, upper-roman) "> ";
 }
 
 /* Chapter */ .Sheet h5 {

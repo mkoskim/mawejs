@@ -995,9 +995,9 @@ function withFixNesting(editor) {
   const { normalizeNode } = editor;
 
   const blockTypes = {
-    "act":     {header: "hact",     level: 1, contains: "chapter", },
-    "chapter": {header: "hchapter", level: 2, contains: "scene",   wrap: "act"},
-    "scene":   {header: "hscene",   level: 3,                      wrap: "chapter"},
+    "act":     {header: "hact",     level: 1,                  contains: "chapter", },
+    "chapter": {header: "hchapter", level: 2, wrap: "act" ,    contains: "scene"},
+    "scene":   {header: "hscene",   level: 3, wrap: "chapter", },
   }
 
   const blockHeaders = {
@@ -1013,11 +1013,11 @@ function withFixNesting(editor) {
 
     if(Text.isText(node)) return normalizeNode(entry)
     if(Editor.isEditor(node)) {
-      if(!checkBlockHeaders(node, path, "act", "hact")) return
+      if(!mergeHeadlessChilds(node, path, "act", "hact")) return
       return normalizeNode(entry)
     }
 
-    console.log("Fix nesting:", node, path)
+    //console.log("Fix nesting:", node, path)
 
     // Block types
     if(node.type in blockTypes) {
@@ -1043,25 +1043,9 @@ function withFixNesting(editor) {
       if(blockType.contains)
       {
         const childType = blockTypes[blockType.contains]
-        if(!checkBlockHeaders(node, path, blockType.contains, childType.header)) return;
+        if(!mergeHeadlessChilds(node, path, blockType.contains, childType.header)) return;
       }
 
-      // Try merge with previous
-      //if(!checkBlockHeader(node, path, blockType.header)) return
-
-      /*
-      // Try merge with next
-      const match = Editor.next(editor, {at: path})
-      if(match) {
-        const [next, npath] = match
-        if(next.type === node.type) {
-          if(!checkBlockHeader(next, npath, blockType.header)) {
-            console.log("Merged:", node, next)
-            return
-          }
-        }
-      }
-      */
       return normalizeNode(entry)
     }
 
@@ -1129,10 +1113,10 @@ function withFixNesting(editor) {
   }
 
   //---------------------------------------------------------------------------
-  // Ensure, that blocks have correct header element
+  // Merge childs without header
   //---------------------------------------------------------------------------
 
-  function checkBlockHeaders(block, path, type, header) {
+  function mergeHeadlessChilds(block, path, type, header) {
 
     for(const child of Node.children(editor, path)) {
       const [node, path] = child

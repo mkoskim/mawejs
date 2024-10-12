@@ -15,7 +15,6 @@ import {
 } from 'slate'
 import { ReactEditor } from 'slate-react'
 
-import { sleep } from '../../util';
 import { nanoid } from 'nanoid';
 import { appBeep } from '../../system/host';
 import {elemTags} from '../../document/util';
@@ -120,6 +119,9 @@ export function elemsByRange(editor, anchor, focus) {
 // Drag'n'drop po and push
 
 export function dndElemPop(editor, id) {
+
+  throw new Error("DnD disabled!")
+
   const match = elemByID(editor, id)
   if(!match) return
 
@@ -144,6 +146,8 @@ export function dndElemPop(editor, id) {
 
 export function dndElemPushTo(editor, block, id, index) {
   //console.log("Push", id, index)
+
+  throw new Error("DnD disabled!")
 
   if(!block) return
 
@@ -283,7 +287,7 @@ export function toggleFold(editor) {
   //console.log("Toggle fold", path, node)
 
   //const foldable = ["chapter", "scene", "synopsis", "comment", "missing"]
-  const foldable = ["chapter", "scene"]
+  const foldable = ["act", "chapter", "scene"]
 
   const [node, path] = Editor.above(editor, {
     at: anchor,
