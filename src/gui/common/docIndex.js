@@ -180,7 +180,7 @@ class ChapterItem extends React.PureComponent {
     const {elem, include, wcFormat, onActivate, unfold, current, refCurrent} = this.props
     const {innerRef, draggableProps, dragHandleProps} = provided
 
-    const renderDZ = (include.includes("scene")) && (unfold || !elem.folded)
+    const hasDropzone = (include.includes("scene")) && (unfold || !elem.folded)
 
     return <div
       ref={innerRef}
@@ -199,7 +199,7 @@ class ChapterItem extends React.PureComponent {
         refCurrent={refCurrent}
         {...dragHandleProps}
       />
-      {renderDZ && <SceneDropZone
+      {hasDropzone && <SceneDropZone
         id={elem.id}
         scenes={elem.children}
         include={include}
@@ -215,7 +215,7 @@ class ChapterItem extends React.PureComponent {
 class SceneDropZone extends React.PureComponent {
 
   render() {
-    const {id, include} = this.props
+    const {id} = this.props
 
     return <Droppable droppableId={id} type="scene">
       {this.DropZone.bind(this)}
