@@ -12,12 +12,7 @@ import React, {
 
 import {
   ResponsiveContainer,
-  CartesianGrid, Tooltip,
-  XAxis, YAxis,
-  BarChart, Bar,
-  LineChart, Line,
   PieChart, Pie,
-  Cell,
 } from "recharts"
 
 import {
@@ -25,22 +20,24 @@ import {
   ToolBox,
   Button, Label,
   MakeToggleGroup,
-  Select, MenuItem, InputLabel, FormControl, Separator, Icon,
+  Separator, Icon,
 } from "../common/factory"
 
 import {DragDropContext, Droppable, Draggable} from "@hello-pangea/dnd";
 import {DocIndex} from "../common/docIndex";
 import {elemName, filterCtrlElems, mawe} from "../../document";
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
 // Chart settings
-//-----------------------------------------------------------------------------
+//
+//*****************************************************************************
 
 export function loadChartSettings(settings) {
   // TODO: Check that fields have valid values (table keys)
   return {
     elements: "scenes",
-    template: "plotpoints",
+    template: "beatsheet",
     mode: "topCCW",
     ...(settings?.attributes ?? {})
   }
@@ -56,26 +53,75 @@ export function saveChartSettings(settings) {
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
 // Story Arc view
-//-----------------------------------------------------------------------------
+//
+//*****************************************************************************
 
 export function StoryArc({doc, updateDoc}) {
   //const section = doc.body
 
+  const setElements = useCallback(value => updateDoc(doc => {doc.ui.arc.elements = value}), [updateDoc])
+  const setTemplate = useCallback(value => updateDoc(doc => {doc.ui.arc.template = value}), [updateDoc])
+  const setMode     = useCallback((mode) => {updateDoc(doc => {doc.ui.arc.mode = mode})}, [updateDoc])
+
+  /*
+  console.log("Beat sheet length=", tmplButtons.beatsheet.data
+    .map(data => data.size)
+    .reduce((a, b) => a + b, 0)
+  )
+  */
+
+  //---------------------------------------------------------------------------
+  // View
+  //---------------------------------------------------------------------------
+
+  const settings = {
+    elements: {
+      buttons: elemButtons,
+      choices: ["chapters", "scenes"],
+      selected: doc.ui.arc.elements,
+      setSelected: setElements,
+      exclusive: true,
+    },
+    template: {
+      buttons: tmplButtons,
+      //choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts", "fiveact", "7", "11"],
+      choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts"],
+      selected: doc.ui.arc.template,
+      setSelected: setTemplate,
+      exclusive: true,
+    },
+    mode: {
+      buttons: modeButtons,
+      choices: ["topCCW", "topCW", "bottomCCW", "bottomCW"],
+      selected: doc.ui.arc.mode,
+      setSelected: setMode,
+      exclusive: true,
+    }
+  }
+
+  function selectInclude() {
+    switch(doc.ui.arc.elements) {
+      case "chapters": return ["chapter"]
+    }
+    return ["chapter", "scene"]
+  }
+
   return <DragDropContext onDragEnd={onDragEnd}>
     <HBox style={{overflow: "auto"}}>
       <VBox style={{maxWidth: "300px", borderRight: "1px solid lightgray"}}>
-        <IndexToolbar />
+        <IndexToolbar settings={settings}/>
         <DocIndex
           section={doc.body}
           activeID="body"
-          include={["chapter", "scene"]}
+          include={selectInclude()}
           wcFormat={"compact"}
           unfold={true}
         />
       </VBox>
-      <ChartView doc={doc} updateDoc={updateDoc}/>
+      <ChartView settings={settings} doc={doc} updateDoc={updateDoc}/>
     </HBox>
   </DragDropContext>
 
@@ -98,9 +144,10 @@ const styles = {
 // Index toolbar
 //-----------------------------------------------------------------------------
 
-function IndexToolbar({ }) {
+function IndexToolbar({settings}) {
   return <ToolBox style={styles.toolbar}>
-    <Button>Test</Button>
+    <MakeToggleGroup {...settings.elements}/>
+    <Separator />
   </ToolBox>
 }
 
@@ -120,24 +167,9 @@ function mode2rotate(mode) {
   return { start: 0, rotate: 1 }
 }
 
-function ChartView({doc, updateDoc}) {
+function ChartView({settings, doc, updateDoc}) {
 
   const section = doc.body
-
-  //---------------------------------------------------------------------------
-  // Data selection
-  //---------------------------------------------------------------------------
-
-  const setElements = useCallback(value => updateDoc(doc => {doc.ui.arc.elements = value}), [updateDoc])
-  const setTemplate = useCallback(value => updateDoc(doc => {doc.ui.arc.template = value}), [updateDoc])
-  const setMode     = useCallback((mode) => {updateDoc(doc => {doc.ui.arc.mode = mode})}, [updateDoc])
-
-  /*
-  console.log("Beat sheet length=", tmplButtons.beatsheet.data
-    .map(data => data.size)
-    .reduce((a, b) => a + b, 0)
-  )
-  */
 
   //---------------------------------------------------------------------------
   // Chart directions
@@ -146,32 +178,8 @@ function ChartView({doc, updateDoc}) {
   const {start: selectStart, rotate: selectRotate} = mode2rotate(doc.ui.arc.mode)
 
   //---------------------------------------------------------------------------
-  // View
+  // Data selection
   //---------------------------------------------------------------------------
-
-  const settings = {
-    elements: {
-      buttons: elemButtons,
-      choices: ["scenes", "chapters"],
-      selected: doc.ui.arc.elements,
-      setSelected: setElements,
-      exclusive: true,
-    },
-    template: {
-      buttons: tmplButtons,
-      choices: ["acts", "plotpoints", "beatsheet"],
-      selected: doc.ui.arc.template,
-      setSelected: setTemplate,
-      exclusive: true,
-    },
-    mode: {
-      buttons: modeButtons,
-      choices: ["topCCW", "topCW", "bottomCCW", "bottomCW"],
-      selected: doc.ui.arc.mode,
-      setSelected: setMode,
-      exclusive: true,
-    }
-  }
 
   return <VFiller style={{overflow: "auto"}}>
     <ChartToolbar settings={settings} />
@@ -197,8 +205,6 @@ function ChartToolbar({settings}) {
     <SectionWordInfo section={section}/>
     <Separator/>
     */}
-    <MakeToggleGroup {...settings.elements}/>
-    <Separator />
     <MakeToggleGroup {...settings.template}/>
     <Separator />
     <MakeToggleGroup {...settings.mode}/>
@@ -283,17 +289,8 @@ const elemButtons = {
 //-----------------------------------------------------------------------------
 
 const tmplButtons = {
-  acts: {
-    icon: "Acts",
-    data: [
-      {size: 25, name: "Act I", fill: "lightgreen"},
-      {size: 25, name: "Act II/1", fill: "yellow"},
-      {name: "Midpoint"},
-      {size: 25, name: "Act II/2", fill: "orange"},
-      {size: 25, name: "Act III", fill: "red"},
-    ]
-  },
   plotpoints: {
+    tooltip: "K.M. Weiland's Plot Points",
     icon: "Plot Points",
     data: [
       {size: 12.5, fill: "lightgreen", name: "Hook"}, {name: "Inciting Event"},
@@ -307,7 +304,9 @@ const tmplButtons = {
       {size: 2.5, fill: "orange", name: "Resolution"}
     ]
   },
+
   beatsheet: {
+    tooltip: "Snyder's Beatsheet",
     icon: "Beat Sheet",
     data: [
       {size: 1, name: null, fill: "lightgreen"}, // Opening Image
@@ -326,6 +325,88 @@ const tmplButtons = {
       {size: 1, name: null, fill: "orange"}, // Closing Image
     ]
   },
+
+  herosjourney: {
+    //tooltip: "Hero's Journey",
+    icon: "Hero's Journey",
+    data: [
+      {size: 20, name: "Ordinary World", fill: "lightgreen"},
+      {size: 10, name: "Call to Adventure", fill: "lightyellow"},
+      {size:  0, name: "Refusal to Call"},
+      {size: 20, name: null, fill: "yellow"},
+      {size:  5, name: "Accept the Call", fill: "lightyellow"},
+      {size: 10, name: "Crossing the Treshold", fill: "lightyellow"},
+      {size: 25, name: "Road of Trials", fill: "yellow"},
+      {size: 25, name: "Approach", fill: "orange"},
+      {size: 10, name: "Death & Rebirth", fill: "red"},
+      {size: 50, name: "Reward", fill: "orange"},
+      {size: 10, name: "The Road Back", fill: "yellow"},
+      {size: 35, name: "Resurrection", fill: "red"},
+      {size:  0, name: "Return", fill: "magenta"},
+      {size: 20, name: null, fill: "magenta"},
+    ]
+  },
+
+  heroacts: {
+    icon: "Three Act",
+    data: [
+      {size: 25, name: "I: Separation", fill: "lightgreen"},
+      {size: 25, name: "II/A: Descent", fill: "yellow"},
+      {size: 25, name: "II/B: Initiation", fill: "orange"},
+      {size: 25, name: "III: Return", fill: "red"},
+    ]
+  },
+
+  fiveact: {
+    icon: <span style={{color: "orchid"}}>Five Act</span>,
+    tooltip: "Experimental",
+    data: [
+      {size: 20, name: "Exposition", fill: "lightgreen"},
+      {size: 20, name: "Rising Movement", fill: "yellow"},
+      {size: 20, name: "Climax", fill: "red"},
+      {size: 20, name: "Falling Action", fill: "orange"},
+      {size: 20, name: "Catastrophe/Resolution", fill: "red"},
+    ]
+  },
+
+  "7": {
+    icon: <span style={{color: "orchid"}}>7</span>,
+    tooltip: "Experimental",
+    data: [
+      {size: 2,  name: null, fill: "lightgreen"},
+      {size: 18, name: "1", fill: "lightgreen"},
+      {size: 10, name: "2 - To Act 2", fill: "orange"},
+      {size: 20, name: "3", fill: "yellow"},
+      {size: 10, name: "4 - Midpoint", fill: "red"},
+      {size: 20, name: "5", fill: "orange"},
+      {size: 10, name: "6 - To Act 3", fill: "red"},
+      {size: 18, name: "7", fill: "orchid"},
+      {size: 2,  name: null, fill: "orchid"},
+    ]
+  },
+
+  "11": {
+    icon: <span style={{color: "orchid"}}>11</span>,
+    tooltip: "Experimental",
+    data: [
+      {size: 2,  name: null, fill: "lightgreen"},
+      {size: 8,  name: "1", fill: "lightgreen"},
+      {size: 10, name: "2", fill: "yellow"},
+      {size: 10, name: "3 - To Act 2", fill: "orange"},
+      {size: 10, name: "4", fill: "yellow"},
+      {size: 10, name: "5", fill: "orange"},
+      {size: 10, name: "6 - Midpoint", fill: "red"},
+      {size: 10, name: "7", fill: "orange"},
+      {size: 10, name: "8", fill: "orange"},
+      {size: 10, name: "9 - To Act 3", fill: "red"},
+      {size: 10, name: "10", fill: "plum"},
+      {size: 8,  name: "11", fill: "orchid"},
+      {size: 2,  name: null, fill: "orchid"},
+      //{size: 10, name: "12", fill: "red"},
+      //{size: 10, name: "13", fill: "red"},
+    ]
+  }
+
   /*
   vogler: {
     icon: "Vogler",
