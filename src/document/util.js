@@ -78,7 +78,7 @@ export function createDateStamp(date) {
 //-----------------------------------------------------------------------------
 
 export function filterCtrlElems(blocks) {
-  const ctrltypes = ["hchapter", "hscene"]
+  const ctrltypes = ["hact", "hchapter", "hscene"]
   return blocks.filter(block => !ctrltypes.includes(block.type))
 }
 
@@ -92,18 +92,19 @@ export function elemAsText(elem) {
 }
 
 export function elemHeading(elem) {
-  if(elem.type === "chapter") {
-    if(elem.children.length && elem.children[0].type === "hchapter") {
-      return elem.children[0];
+
+  const [first] = elem.children ?? []
+  if(first) {
+    if(
+      (elem.type === "act" && first.type === "hact") ||
+      (elem.type === "chapter" && first.type === "hchapter") ||
+      (elem.type === "scene" && first.type === "hscene")
+    ) {
+      return first
     }
-    return undefined
   }
-  if(elem.type === "scene") {
-    if(elem.children.length && elem.children[0].type === "hscene") {
-      return elem.children[0];
-    }
-    return undefined
-  }
+
+  return undefined
 }
 
 export function elemName(elem) {
@@ -213,6 +214,7 @@ export function wcElem(elem) {
 
   switch(elem.type) {
     case "sect":
+    case "act":
     case "chapter":
     case "scene":
       return wcChildren(elem.children)

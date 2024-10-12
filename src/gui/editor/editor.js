@@ -151,6 +151,8 @@ export function SingleEditView({doc, updateDoc}) {
   // For development purposes:
   //---------------------------------------------------------------------------
 
+  console.log("Doc:", doc)
+
   /*
   return <React.Fragment>
     <HBox>
@@ -199,7 +201,7 @@ export function SingleEditView({doc, updateDoc}) {
     trackMarks(bodyeditor)
     if(isAstChange(bodyeditor)) {
       updateDoc(doc => {
-        doc.body.chapters = buffer;
+        doc.body.acts = buffer;
         doc.body.words = wcElem({type: "sect", children: buffer})
       })
     }
@@ -209,7 +211,7 @@ export function SingleEditView({doc, updateDoc}) {
     trackMarks(noteeditor)
     if(isAstChange(noteeditor)) {
       updateDoc(doc => {
-        doc.notes.chapters = buffer
+        doc.notes.acts = buffer
         doc.notes.words = wcElem({type: "sect", children: buffer})
       })
     }
@@ -286,12 +288,12 @@ export function SingleEditView({doc, updateDoc}) {
     track,
     body: {
       editor: bodyeditor,
-      buffer: doc.body.chapters,
+      buffer: doc.body.acts,
       onChange: updateBody,
       },
     notes: {
       editor: noteeditor,
-      buffer: doc.notes.chapters,
+      buffer: doc.notes.acts,
       onChange: updateNotes,
     },
   }
@@ -373,6 +375,9 @@ export function SingleEditView({doc, updateDoc}) {
   //---------------------------------------------------------------------------
 
   function onDragEnd(result) {
+
+    console.log("DnD disabled")
+    return
 
     console.log("onDragEnd:", result)
 

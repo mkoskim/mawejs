@@ -82,45 +82,56 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   //---------------------------------------------------------------------------
 
   return <VBox style={style} className="TOC">
-    <ChapterDropZone
+    {section.acts.map((elem, index) => <ActItem
+      key={elem.id}
+      index={index}
+      elem={elem}
       activeID={activeID}
-      chapters={section?.chapters}
       wcFormat={wcFormatFunction}
       include={includeItems}
       onActivate={onActivate}
       unfold={unfold}
       current={current}
       refCurrent={refCurrent}
-    />
+      />
+    )}
     </VBox>
   //return useDeferredValue(index)
 }
 
 //-----------------------------------------------------------------------------
 
-const IndexHead = memo(({name, section, wcFormat}) => {
-  const wcFormatFunction = useCallback(
-    (!wcFormat || wcFormat === "off")
-    ? undefined
-    : (id, words) => <FormatWords
-      format={"numbers"}
-      words={words.text}
-      missing={words.missing}
-      //cumulative={cumulative && id in cumulative && cumulative[id]}
-      //total={total}
-    />, [wcFormat]
-  )
+class ActItem extends React.PureComponent {
 
-  return <IndexItem
-    //id={elem.id}
-    type={"section"}
-    name={name}
-    words={section.words}
-    wcFormat={wcFormatFunction}
-    //onActivate={onActivate}
-    //{...dragHandleProps}
-  />
-})
+  render() {
+    const {elem, wcFormat, activeID, include, onActivate, unfold, current, refCurrent} = this.props
+
+    return <div>
+      <IndexItem
+        id={elem.id}
+        type={elem.type}
+        name={elemName(elem)}
+        words={elem.words}
+        folded={!unfold && elem.folded}
+        unnumbered={elemUnnumbered(elem)}
+        wcFormat={wcFormat}
+        onActivate={onActivate}
+        current={current}
+        refCurrent={refCurrent}
+      />
+      <ChapterDropZone
+        activeID={activeID}
+        chapters={elem.children}
+        wcFormat={wcFormat}
+        include={include}
+        onActivate={onActivate}
+        unfold={unfold}
+        current={current}
+        refCurrent={refCurrent}
+      />
+    </div>
+  }
+}
 
 //-----------------------------------------------------------------------------
 
@@ -147,7 +158,7 @@ class ChapterDropZone extends React.PureComponent {
       ref={innerRef}
       {...droppableProps}
     >
-    {chapters.map((elem, index) => <ChapterItem
+    {filterCtrlElems(chapters).map((elem, index) => <ChapterItem
       key={elem.id}
       index={index}
       elem={elem}
@@ -304,17 +315,31 @@ class SceneItem extends React.PureComponent {
 //-----------------------------------------------------------------------------
 
 class IndexItem extends React.PureComponent {
+
+  static typeClasses = {
+    "section": "SectionName",
+    "act": "ActName",
+    "chapter": "ChapterName",
+    "scene": "SceneName",
+
+    "missing": "BookmarkName",
+    "comment": "BookmarkName",
+    "synopsis": "BookmarkName",
+    "fill": "BookmarkName",
+    "tags": "BookmarkName",
+  }
+
+  static numbered = ["act", "chapter"]
+
   render() {
     const {className, refCurrent, id, type, name, folded, unnumbered, words, wcFormat, onActivate, current, ...rest} = this.props
 
     //console.log("Render IndexItem:", type, id, name)
+    const typeClasses = this.constructor.typeClasses
 
-    const typeClass = (type === "chapter") ? "ChapterName" :
-      (type === "scene") ? "SceneName" :
-      (type === "section") ? "SectionName" :
-      "BookmarkName"
+    const typeClass = type in typeClasses ? typeClasses[type] : ""
 
-    const numClass = (type === "chapter" || type === "scene") ? (unnumbered ? "" : "Numbered") : ""
+    const numClass = (!unnumbered && (this.constructor.numbered.includes(type))) ? "Numbered" : ""
 
     const foldClass = (folded) ? "Folded" : ""
 
@@ -328,13 +353,6 @@ class IndexItem extends React.PureComponent {
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       <Filler/>
       {wcFormat && wcFormat(id, words)}
-      {/*
-      <ItemWords
-        id={id}
-        words={words}
-        wcFormat={wcFormat}
-      />
-      */}
       </HBox>
     </ScrollRef>
   }

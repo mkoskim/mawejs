@@ -1,0 +1,71 @@
+<story uuid="6ae502d7-6562-41e3-b51e-b5151ca9dd48" format="mawe" version="4" name="Act Test">
+<!--/
+===============================================================================
+
+STORY: Act Test
+
+===============================================================================
+/-->
+<head/>
+<export type="short" chapters="numbered" scenes="none"/>
+<!--/
+===============================================================================
+/-->
+<body>
+<act>
+<chapter name="Testing Acts">
+<scene name="Scene">
+<p>Testing, testing...</p>
+</scene>
+<scene name="Scene">
+<p>Testing, testing...</p>
+</scene>
+</chapter>
+<chapter name="Chapter">
+<scene name="">
+<p>Testing, testing...</p>
+</scene>
+</chapter>
+</act>
+<act>
+<chapter name="Chapter">
+<scene name="">
+<p>Testing, testing...</p>
+</scene>
+</chapter>
+<chapter name="Chapter">
+<scene name="">
+<br/>
+</scene>
+</chapter>
+</act>
+</body>
+<!--/
+===============================================================================
+
+NOTES
+
+===============================================================================
+/-->
+<notes>
+<chapter name="">
+<scene name="">
+<br/>
+</scene>
+</chapter>
+</notes>
+<!--/
+===============================================================================
+/-->
+<ui>
+<view/>
+<arc elements="scenes" template="beatsheet" mode="topCCW"/>
+<editor>
+<body words="numbers" indexed="chapter,scene,synopsis"/>
+</editor>
+</ui>
+<history>
+<words date="2024-10-11" text="0" missing="0" chars="0"/>
+<words date="2024-10-12" text="0" missing="0" chars="0"/>
+</history>
+</story>

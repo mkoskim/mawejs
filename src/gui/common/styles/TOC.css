@@ -31,7 +31,7 @@
   background: white;
   border-right: 1pt solid lightgray;
   */
-  counter-reset: chapter scene;
+  counter-reset: act chapter scene;
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -42,6 +42,28 @@
 
 .TOC div.Scene:hover {
   background-color: #DEF;
+}
+
+/* ---------------------------------------------------------------------------- */
+
+.TOC .ActName {
+  font-weight: bold;
+  /*
+  padding-top: 4pt !important;
+  padding-bottom: 4pt !important;
+  */
+}
+
+.TOC .ActName .Name {
+  text-transform: uppercase;
+}
+
+.TOC .ActName.Numbered .Name::before {
+  counter-increment: act;
+  content: "ACT " counter(act, upper-roman) ": ";
+/*
+  content: counter(chapter) ". ";
+*/
 }
 
 /* ---------------------------------------------------------------------------- */

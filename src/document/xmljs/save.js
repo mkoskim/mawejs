@@ -30,6 +30,8 @@ export async function savemawe(doc) {
 
 export function toXML(doc) {
 
+  throw new Error("Saving disabled!")
+
   return xmlLines(
     {
       type: "story",

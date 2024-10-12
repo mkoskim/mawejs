@@ -23,7 +23,7 @@ import { elemFind, elemFindall, elem2Text } from "./tree";
 //
 //-----------------------------------------------------------------------------
 
-const supported = ["1", "2", "3"]
+const supported = ["1", "2", "3", "4"]
 
 export function migrate(root) {
 
@@ -41,6 +41,7 @@ export function migrate(root) {
     v2_fixes,
     v2_to_v3,
     v3_fixes,
+    v3_to_v4,
   ].reduce((story, func) => func(story), story)
 }
 
@@ -63,10 +64,7 @@ function v1_to_v2(story) {
 
   return {
     ...story,
-    attributes: {
-      ...story.attributes,
-      version: "2",
-    }
+    attributes: {...story.attributes, version: "2" }
   }
 }
 
@@ -137,11 +135,11 @@ function v2_to_v3(story) {
 
   return {
     ...story,
+    attributes: {...story.attributes, version: "3"},
     elements: (story.elements ?? [])
       .filter(elem => elem.name !== "body")
       .filter(elem => elem.name !== "notes")
       .concat([body, notes]),
-    attributes: {...story.attributes, version: "3"}
   }
 }
 
@@ -214,3 +212,45 @@ function v3_fix_exports(exportElem) {
     }
   }
 }
+
+//*****************************************************************************
+//
+// v3 --> v4
+//
+// - Body/notes --> act
+//
+//*****************************************************************************
+
+function v3_to_v4(story) {
+
+  const {version} = story.attributes ?? {}
+
+  if(version !== "3") return story
+
+  const bodyElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}
+  const notesElem = elemFind(story, "notes") ?? {type: "element", name: "notes", elements: []}
+
+  return {
+    ...story,
+    attributes: {...story.attributes, version: "4"},
+    elements: [
+      ...story.elements
+        .filter(elem => elem.name !== "body")
+        .filter(elem => elem.name !== "notes"),
+      wrap(bodyElem),
+      wrap(notesElem)
+    ]
+  }
+
+  function wrap(elem) {
+    const {elements} = elem
+    return {
+      ...elem,
+      elements: [{
+        type: "element", name: "act",
+        elements
+      }]
+    }
+  }
+}
+

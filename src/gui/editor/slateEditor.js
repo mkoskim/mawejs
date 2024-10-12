@@ -126,7 +126,7 @@ export function SlateEditable({className, highlight, ...props}) {
 // Turn some debug features on/off - off by default
 
 const debug = {
-  //blocks: "withBorders",  // Borders around chapter & scene div's to make them visible
+  blocks: "withBorders",  // Borders around chapter & scene div's to make them visible
 }
 
 function renderElement({element, attributes, ...props}) {
@@ -137,11 +137,14 @@ function renderElement({element, attributes, ...props}) {
   const numClass = unnumbered ? "" : "Numbered"
 
   switch (type) {
+    case "act":
+      return <div className={addClass("act", foldClass, debug?.blocks)} {...attributes} {...props}/>
     case "chapter":
       return <div className={addClass("chapter", foldClass, debug?.blocks)} {...attributes} {...props}/>
     case "scene":
       return <div className={addClass("scene", foldClass, debug?.blocks)} {...attributes} {...props}/>
 
+    case "hact": return <h4 className={numClass} {...attributes} {...props}/>
     case "hchapter": return <h5 className={numClass} {...attributes} {...props}/>
     case "hscene": return <h6 className="Numbered" {...attributes} {...props}/>
 
@@ -216,6 +219,29 @@ onPaste={useCallback(
 
 //*****************************************************************************
 //
+// Marks
+//
+//*****************************************************************************
+
+function isMarkActive(editor, format) {
+  const marks = Editor.marks(editor)
+  return marks ? marks[format] === true : false
+}
+
+function setMark(editor, format, active) {
+  if (active) {
+    Editor.addMark(editor, format, true)
+  } else {
+    Editor.removeMark(editor, format)
+  }
+}
+
+function toggleMark(editor, format) {
+  setMark(editor, format, !isMarkActive(editor, format))
+}
+
+//*****************************************************************************
+//
 // Tool buttons
 //
 //*****************************************************************************
@@ -258,20 +284,23 @@ class CharStyleButtons extends React.PureComponent {
 
 //-----------------------------------------------------------------------------
 
-class BlockStyleSelect extends React.PureComponent {
+const nodeStyles = {
+  "p":        {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
+  "hact":     {name: "Act",      markup: "**", shortcut: "Ctrl-Alt-1"},
+  "hchapter": {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2"},
+  "hscene":   {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3"},
+  "synopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
+  "comment":  {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
+  "missing":  {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
+  "fill":     {name: "Filler",   markup: "++", shortcut: "Ctrl-Alt-F"},
+  "tags":     {name: "Tags",     markup: "@",  shortcut: ""},
+}
 
-  static choices = {
-    "p":        {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
-    "hchapter": {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-1"},
-    "hscene":   {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-2"},
-    "synopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
-    "comment":  {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
-    "missing":  {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
-    "fill":     {name: "Filler",   markup: "++", shortcut: "Ctrl-Alt-F"},
-    "tags":     {name: "Tags",     markup: "@",  shortcut: ""},
-  }
+//-----------------------------------------------------------------------------
 
-  static order = ["p", "hchapter", "hscene", "synopsis", "comment", "missing", "fill", "tags"]
+class NodeStyleSelect extends React.PureComponent {
+
+  static order = ["p", "hact", "hchapter", "hscene", "synopsis", "comment", "missing", "fill", "tags"]
 
   render() {
     const {type, setSelected} = this.props;
@@ -279,7 +308,7 @@ class BlockStyleSelect extends React.PureComponent {
 
     //console.log("Block type:", type)
 
-    const choices = this.constructor.choices
+    const choices = nodeStyles
     const order   = this.constructor.order
     const name = type in choices ? choices[type].name : "Text"
 
@@ -346,33 +375,10 @@ export function EditButtons({editor, track}) {
   }, [editor])
 
   return <>
-    <BlockStyleSelect type={type} setSelected={applyStyle}/>
+    <NodeStyleSelect type={type} setSelected={applyStyle}/>
     <Separator/>
     <CharStyleButtons bold={bold} italic={italic} setSelected={applyMarks}/>
   </>
-}
-
-//*****************************************************************************
-//
-// Marks
-//
-//*****************************************************************************
-
-function isMarkActive(editor, format) {
-  const marks = Editor.marks(editor)
-  return marks ? marks[format] === true : false
-}
-
-function setMark(editor, format, active) {
-  if (active) {
-    Editor.addMark(editor, format, true)
-  } else {
-    Editor.removeMark(editor, format)
-  }
-}
-
-function toggleMark(editor, format) {
-  setMark(editor, format, !isMarkActive(editor, format))
 }
 
 //*****************************************************************************
@@ -464,7 +470,7 @@ function onKeyDown(editor, event) {
   }
 
   //---------------------------------------------------------------------------
-  // Block styles
+  // Node styles
   //---------------------------------------------------------------------------
 
   if(IsKey.CtrlAlt0(event)) {
@@ -474,6 +480,12 @@ function onKeyDown(editor, event) {
   }
 
   if(IsKey.CtrlAlt1(event)) {
+    event.preventDefault()
+    Transforms.setNodes(editor, {type: "hact"})
+    return ;
+  }
+
+  if(IsKey.CtrlAlt2(event)) {
     event.preventDefault()
     const [node, path] = Editor.above(editor, {
       match: n => Editor.isBlock(editor, n),
@@ -488,7 +500,7 @@ function onKeyDown(editor, event) {
     return ;
   }
 
-  if(IsKey.CtrlAlt2(event)) {
+  if(IsKey.CtrlAlt3(event)) {
     event.preventDefault()
     Transforms.setNodes(editor, {type: "hscene"})
     return ;
@@ -644,6 +656,7 @@ function withTextPaste(editor) {
 //-----------------------------------------------------------------------------
 
 const blockstyles = {
+  "hact":     { next: "p",              bk: true, },
   "hchapter": { next: "p",              bk: true, },
   "hscene":   { next: "p",              bk: true, },
   "synopsis": { next: "p", reset: true, bk: true, },
@@ -656,6 +669,7 @@ const blockstyles = {
 // TODO: Generate this table
 
 const MARKUP = {
+  "** ": {type: "hact"},
   "# " : {type: "hchapter", unnumbered: undefined},
   "#! ": {type: "hchapter", unnumbered: true},
   "## ": {type: "hscene"},
@@ -696,9 +710,7 @@ function withMarkup(editor) {
     if(key in MARKUP) {
       Transforms.select(editor, range)
       Transforms.delete(editor)
-      //const {type, unnumbered} = MARKUP[key]
       Transforms.setNodes(editor, MARKUP[key])
-      //if(type === "hchapter") setUnnumbering(editor, path, unnumbered)
       return
     }
 
@@ -910,18 +922,18 @@ function withProtectFolds(editor) {
 
   editor.deleteBackward = (options) => {
     unfoldSelection()
-    deleteBackward(options)
+    return deleteBackward(options)
   }
 
   editor.deleteForward = (options) => {
     unfoldSelection()
-    deleteForward(options)
+    return deleteForward(options)
   }
 
   editor.insertText = (text, options) => {
     unfoldSelection()
     //console.log("insertText", text, options)
-    insertText(text, options)
+    return insertText(text, options)
   }
 
   /*
@@ -977,9 +989,22 @@ function withProtectFolds(editor) {
 //
 //-----------------------------------------------------------------------------
 
+
 function withFixNesting(editor) {
 
   const { normalizeNode } = editor;
+
+  const blockTypes = {
+    "act":     {header: "hact",     level: 1, contains: "chapter", },
+    "chapter": {header: "hchapter", level: 2, contains: "scene",   wrap: "act"},
+    "scene":   {header: "hscene",   level: 3,                      wrap: "chapter"},
+  }
+
+  const blockHeaders = {
+    "hact": "act",
+    "hchapter": "chapter",
+    "hscene": "scene",
+  }
 
   editor.normalizeNode = entry => {
     const [node, path] = entry
@@ -987,47 +1012,80 @@ function withFixNesting(editor) {
     //console.log("Fix:", path, node)
 
     if(Text.isText(node)) return normalizeNode(entry)
-    if(Editor.isEditor(node)) return normalizeNode(entry)
-
-    switch(node.type) {
-      // Paragraph styles come first
-      case "hchapter":
-        if(!checkParent(node, path, "chapter")) return
-        if(!checkIsFirst(node, path, "chapter")) return
-        break;
-      case "hscene":
-        if(!checkParent(node, path, "scene")) return
-        if(!checkIsFirst(node, path, "scene")) return;
-        break;
-      default:
-        if(!checkParent(node, path, "scene")) return
-        break;
-
-      // Block styles come next
-      case "chapter": {
-        if(path.length > 1) {
-          Transforms.liftNodes(editor, {at: path})
-          return;
-        }
-        if(!checkBlockHeader(node, path, "hchapter")) return
-        break;
-      }
-      case "scene": {
-        if(path.length < 2) {
-          Transforms.wrapNodes(editor, {type: "chapter"}, {at: path})
-          return;
-        } else if(path.length > 2) {
-          Transforms.liftNodes(editor, {at: path})
-          return
-        }
-        if(!checkBlockHeader(node, path, "hscene")) return
-        const match = Editor.next(editor, {at: path})
-        if(!match) break;
-        if(!checkBlockHeader(match[0], match[1], "hscene")) return
-        break
-      }
+    if(Editor.isEditor(node)) {
+      if(!checkBlockHeaders(node, path, "act", "hact")) return
+      return normalizeNode(entry)
     }
-    //return
+
+    console.log("Fix nesting:", node, path)
+
+    // Block types
+    if(node.type in blockTypes) {
+      //console.log("Fix nesting: Block:", node.type)
+
+      const blockType = blockTypes[node.type]
+
+      if(!node.children.length) {
+        Transforms.removeNodes(editor, {at: path})
+        return;
+      }
+
+      if(path.length > blockType.level) {
+        Transforms.liftNodes(editor, {at: path})
+        return;
+      }
+      if(path.length < blockType.level) {
+        Transforms.wrapNodes(editor, {type: blockType.wrap}, {at: path})
+        return;
+      }
+
+
+      if(blockType.contains)
+      {
+        const childType = blockTypes[blockType.contains]
+        if(!checkBlockHeaders(node, path, blockType.contains, childType.header)) return;
+      }
+
+      // Try merge with previous
+      //if(!checkBlockHeader(node, path, blockType.header)) return
+
+      /*
+      // Try merge with next
+      const match = Editor.next(editor, {at: path})
+      if(match) {
+        const [next, npath] = match
+        if(next.type === node.type) {
+          if(!checkBlockHeader(next, npath, blockType.header)) {
+            console.log("Merged:", node, next)
+            return
+          }
+        }
+      }
+      */
+      return normalizeNode(entry)
+    }
+
+    /*
+          if(!checkBlockHeader(node, path, "hscene")) return
+          const match = Editor.next(editor, {at: path})
+          if(!match) break;
+          if(!checkBlockHeader(match[0], match[1], "hscene")) return
+          break
+        }
+    */
+
+    // Block headers
+    if(node.type in blockHeaders) {
+      const blockType = blockHeaders[node.type]
+
+      if(!checkParent(node, path, blockType)) return
+      if(!checkIsFirst(node, path, blockType)) return
+
+      return normalizeNode(entry)
+    }
+
+    // Paragraphs styles
+    if(!checkParent(node, path, "scene")) return
     return normalizeNode(entry)
   }
 
@@ -1047,6 +1105,7 @@ function withFixNesting(editor) {
 
     //console.log("FixNesting: Wrapping", path, node, type)
     Transforms.wrapNodes(editor, {type}, {at: path})
+    //console.log("Node:", node.type, "Parent:", parent.type, "->", type)
     return false
   }
 
@@ -1073,27 +1132,29 @@ function withFixNesting(editor) {
   // Ensure, that blocks have correct header element
   //---------------------------------------------------------------------------
 
-  function checkBlockHeader(block, path, type) {
+  function checkBlockHeaders(block, path, type, header) {
 
-    if(!block.children.length) {
-      Transforms.removeNodes(editor, {at: path})
-      return false;
-    }
+    for(const child of Node.children(editor, path)) {
+      const [node, path] = child
+      if(node.type !== type) continue
 
-    const hdrtype = block.children[0].type
+      // Does the block have correct header type?
+      const childhdr = node.children[0].type
+      if(childhdr === header) continue
 
-    // Does the block have correct header type?
-    if(hdrtype === type) return true
+      const prev = Editor.previous(editor, {at: path})
 
-    const prev = Editor.previous(editor, {at: path})
+      //console.log("Headless:", block, "Previous:", prev)
 
-    // Can we merge headingless block?
-    if(prev && prev[0].type === block.type) {
-      doFold(editor, prev[0], prev[1], false)
-      doFold(editor, block, path, false)
-      Transforms.mergeNodes(editor, {at: path})
+      // Can we merge headingless block?
+      if(prev && prev[0].type === type) {
+        //console.log("Merging")
+        doFold(editor, prev[0], prev[1], false)
+        doFold(editor, block, path, false)
+        Transforms.mergeNodes(editor, {at: path})
 
-      return false
+        return false
+      }
     }
 
     // Otherwise the block is fine as it is

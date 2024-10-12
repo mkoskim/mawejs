@@ -153,17 +153,45 @@ function parseHead(head, history) {
 //*****************************************************************************
 
 function parseSection(section) {
-  function getChapters() {
-    const chapters = elemFindall(section, "chapter")
-    if(!chapters.length) return [{type: "chapter", id: nanoid()}]
-    return chapters
+  function getActs() {
+    const acts = elemFindall(section, "act")
+    if(!acts.length) return [{type: "act", id: nanoid()}]
+    return acts
   }
-  const chapters = getChapters().map(parseChapter)
-  const words = wcChildren(chapters)
+  const acts = getActs().map(parseAct)
+  const words = wcChildren(acts)
   return {
     type: "sect",
-    chapters,
+    acts,
     words,
+  }
+}
+
+function parseAct(act, index) {
+  const {name, folded, unnumbered} = act.attributes ?? {};
+  const header = (!index && !name) ? [] : [{
+    type: "hact",
+    id: nanoid(),
+    unnumbered: unnumbered ? true : undefined,
+    children: [{text: name ?? ""}],
+    words: {}
+  }]
+  const empty = [{
+    type: "chapter",
+    id: nanoid(),
+    children: []
+  }]
+  const children = (act.elements ?? empty).map(parseChapter)
+  const words = wcChildren(children)
+
+  return {
+    type: "act", id: nanoid(),
+    folded: folded ? true : undefined,
+    children: [
+      ...header,
+      ...children,
+    ],
+    words
   }
 }
 
@@ -185,9 +213,7 @@ function parseChapter(chapter, index) {
   const words = wcChildren(children)
 
   return {
-    type: "chapter",
-    id: nanoid(),
-    //name,
+    type: "chapter", id: nanoid(),
     folded: folded ? true : undefined,
     children: [
       ...header,
