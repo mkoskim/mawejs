@@ -142,16 +142,17 @@ export function wordcount(text) {
 export function createWordTable(section) {
   const wt = new Map()
 
-  for(const chapter of section.chapters) {
-    for(const scene of chapter.children) {
-      for(const p of scene.children) {
-        if(p.type !== "p") continue
-        for(const word of text2words(elemAsText(p))) {
-          const lowcase = word.toLowerCase()
-          const count = wt.has(lowcase) ? wt.get(lowcase) : 0
-          wt.set(lowcase, count + 1)
+  for(const act of section.acts) {
+    for(const chapter of filterCtrlElems(act.children)) {
+      for(const scene of filterCtrlElems(chapter.children)) {
+        for(const p of scene.children) {
+          if(p.type !== "p") continue
+          for(const word of text2words(elemAsText(p))) {
+            const lowcase = word.toLowerCase()
+            const count = wt.has(lowcase) ? wt.get(lowcase) : 0
+            wt.set(lowcase, count + 1)
+          }
         }
-
       }
     }
   }
@@ -169,7 +170,6 @@ export function createTagTable(section) {
   for(const act of section.acts) {
     for(const chapter of filterCtrlElems(act.children)) {
       for(const scene of filterCtrlElems(chapter.children)) {
-        console.log(scene)
         for(const p of scene.children) {
           const keys = elemTags(p)
           for(const key of keys) {
