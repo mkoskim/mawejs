@@ -118,7 +118,8 @@ export default function App(props) {
     setCommand({
       action: "import",
       //file: {id: "./examples/Frankenstein.txt", name: "Frankenstein.txt" }, ext: ".txt",
-      file: {id: "./examples/Frankenstein.md", name: "Frankenstein.md" }, ext: ".md",
+      //file: {id: "./examples/Frankenstein.md", name: "Frankenstein.md" }, ext: ".md",
+      file: {id: "./local/Maankutsuja/Maankutsuja2.docx", name: "Maankutsuja2.docx" }, ext: ".docx",
     })
     /**/
   }, [])

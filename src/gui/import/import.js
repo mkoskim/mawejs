@@ -108,9 +108,7 @@ function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) 
     const story = maweFromTree({
       elements: [{
         type: "element", name: "story",
-        attributes: {
-          format: "mawe"
-        },
+        attributes: {format: "mawe", version: "4"},
         elements: [
           {
             type: "element", name: "body",

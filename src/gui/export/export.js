@@ -139,13 +139,11 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       <MenuItem value="long">Long Story</MenuItem>
       </TextField>
 
-    <Separator/>
     <TextField select label="Acts" value={exports.acts} onChange={e => updateDocActElem(updateDoc, e.target.value)}>
       <MenuItem value="none">None</MenuItem>
       <MenuItem value="named">Named</MenuItem>
       </TextField>
 
-    <Separator/>
     <TextField select label="Chapters" value={exports.chapters} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
       <MenuItem value="numbered">Numbered</MenuItem>
       <MenuItem value="named">Named</MenuItem>
@@ -154,7 +152,6 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       <MenuItem value="none">None</MenuItem>
       </TextField>
 
-    <Separator/>
     <TextField select label="Scenes" value={exports.scenes} onChange={e => updateDocSceneElem(updateDoc, e.target.value)}>
       <MenuItem value="none">None</MenuItem>
       <MenuItem value="separated">Separated</MenuItem>
