@@ -28,6 +28,7 @@ import {
   Inform,
   ListItemText,
   Typography,
+  DeferredRender,
 } from "../common/factory";
 
 import { OpenFolderButton, HeadInfo, WordInfo, CharInfo, WordsToday } from "../common/components";
@@ -291,16 +292,16 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
     <Separator />
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected}/>
     <Separator/>
+    {/* No need for real time rendering */}
+    <DeferredRender>
     <HeadInfo head={head} updateDoc={updateDoc}/>
     <Separator />
     <Filler />
 
     <Separator/>
-    <WordsToday text={text} last={doc.head.last}/>
+    <WordInfo text={text} missing={missing} chars={chars} last={doc.head.last}/>
     <Separator/>
-    <WordInfo text={text} missing={missing}/>
-    <Separator/>
-    <CharInfo chars={chars}/>
+    </DeferredRender>
     {/* <CloseButton setCommand={setCommand}/> */}
 
     <Separator />

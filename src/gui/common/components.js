@@ -16,6 +16,7 @@ import {
   TextField,
   Label,
   Accordion, AccordionSummary, AccordionDetails,
+  Separator,
 } from "../common/factory";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
@@ -254,31 +255,38 @@ export class HeadInfo extends React.PureComponent {
   }
 }
 
-export class WordsToday extends React.PureComponent {
+export class WordInfo extends React.PureComponent {
+  render() {
+    const {text, missing, last, chars} = this.props;
+
+    const detail = missing ? `-${missing}` : ""
+
+    return <>
+      Words:&nbsp;<span style={{color: "green"}}>{text}</span>
+      <Separator/>
+      <WordsToday text={text} last={last}/>
+      <Separator/>
+      Target: {text + missing}&nbsp;<span style={{color: "firebrick"}}>{detail}</span>
+      <Separator/>
+      <CharInfo chars={chars}/>
+    </>
+  }
+}
+
+class CharInfo extends React.PureComponent {
+  render() {
+    const {chars} = this.props;
+
+    return <Label>Chars: {chars}</Label>
+  }
+}
+
+class WordsToday extends React.PureComponent {
   render() {
     const {text, last} = this.props;
     if(!last) return null;
 
     const delta = text - last.text
     return <Label>Today: {delta >= 0 ? "+" : ""}{delta}</Label>
-  }
-}
-
-export class WordInfo extends React.PureComponent {
-  render() {
-    const {text, missing} = this.props;
-
-    const total  = `Words: ${text + missing}`
-    const detail = missing ? ` (${text} / ${missing})` : ""
-
-    return <Label>{total}{detail}</Label>
-  }
-}
-
-export class CharInfo extends React.PureComponent {
-  render() {
-    const {chars} = this.props;
-
-    return <Label>Chars: {chars}</Label>
   }
 }
