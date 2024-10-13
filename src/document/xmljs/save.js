@@ -30,15 +30,13 @@ export async function savemawe(doc) {
 
 export function toXML(doc) {
 
-  throw new Error("Saving disabled!")
-
   return xmlLines(
     {
       type: "story",
       attributes: {
         uuid: doc.uuid ?? getUUID(),
         format: "mawe",
-        version: "3",
+        version: "4",
         name: doc.head?.name
       }
     },
@@ -109,20 +107,42 @@ function toExport(exports) {
 
 
 function toBody(body) {
-  const {chapters} = body;
+  const {acts} = body;
 
   return xmlLines(
     {type: "body"},
-    ...chapters.map(toChapter),
+    ...acts.map(toAct),
   )
 }
 
 function toNotes(notes) {
-  const {chapters} = notes;
+  const {acts} = notes;
 
   return xmlLines(
     {type: "notes"},
-    ...chapters.map(toChapter)
+    ...acts.map(toAct)
+  )
+}
+
+//-----------------------------------------------------------------------------
+// Acts
+//-----------------------------------------------------------------------------
+
+function toAct(act) {
+  const {folded} = act;
+  const name = elemName(act)
+  const numbered = elemNumbered(act)
+
+  return xmlLines(
+    {
+      type: "act",
+      attributes: {
+        name: name,
+        folded: folded ? true : undefined,
+        numbered: numbered ? true : undefined,
+      },
+    },
+    ...filterCtrlElems(act.children).map(toChapter),
   )
 }
 

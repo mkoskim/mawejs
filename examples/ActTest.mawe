@@ -12,8 +12,8 @@ STORY: Act Test
 ===============================================================================
 /-->
 <body>
-<act>
-<chapter name="Testing Acts">
+<act name="">
+<chapter name="Testing Acts" numbered="true">
 <scene name="Scene">
 <p>Testing, testing...</p>
 </scene>
@@ -21,19 +21,19 @@ STORY: Act Test
 <p>Testing, testing...</p>
 </scene>
 </chapter>
-<chapter name="Chapter">
+<chapter name="Chapter" numbered="true">
 <scene name="">
 <p>Testing, testing...</p>
 </scene>
 </chapter>
 </act>
-<act>
-<chapter name="Chapter">
+<act name="" numbered="true">
+<chapter name="Chapter" numbered="true">
 <scene name="">
 <p>Testing, testing...</p>
 </scene>
 </chapter>
-<chapter name="Chapter">
+<chapter name="Chapter" numbered="true">
 <scene name="">
 <br/>
 </scene>
@@ -48,11 +48,13 @@ NOTES
 ===============================================================================
 /-->
 <notes>
+<act name="">
 <chapter name="">
 <scene name="">
-<br/>
+<p/>
 </scene>
 </chapter>
+</act>
 </notes>
 <!--/
 ===============================================================================
@@ -67,5 +69,6 @@ NOTES
 <history>
 <words date="2024-10-11" text="0" missing="0" chars="0"/>
 <words date="2024-10-12" text="0" missing="0" chars="0"/>
+<words date="2024-10-13" text="8" missing="0" chars="76"/>
 </history>
 </story>
