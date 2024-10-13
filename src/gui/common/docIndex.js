@@ -120,7 +120,7 @@ class ActItem extends React.PureComponent {
         refCurrent={refCurrent}
       />
       <ChapterDropZone
-        activeID={activeID}
+        id={elem.id}
         chapters={elem.children}
         wcFormat={wcFormat}
         include={include}
@@ -138,13 +138,13 @@ class ActItem extends React.PureComponent {
 class ChapterDropZone extends React.PureComponent {
 
   render() {
-    const {chapters, activeID} = this.props
+    const {chapters, id} = this.props
 
     if(!chapters) return null
 
     //console.log("Index update:", activeID)
 
-    return <Droppable droppableId={activeID} type="chapter">
+    return <Droppable droppableId={id} type="chapter">
       {this.DropZone.bind(this)}
     </Droppable>
   }
