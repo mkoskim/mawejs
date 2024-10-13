@@ -809,6 +809,13 @@ function withIDs(editor) {
 
   const { normalizeNode } = editor;
 
+  const indexable = new Set([
+    "act", "chapter", "scene",
+    "synopsis", "comment",
+    "missing", "fill",
+    "tags"
+  ])
+
   editor.normalizeNode = (entry)=> {
     const [node, path] = entry
 
@@ -819,7 +826,10 @@ function withIDs(editor) {
 
     const blocks = Editor.nodes(editor, {
       at: [],
-      match: (node, path) => !Editor.isEditor(node) && Element.isElement(node),
+      match: (node, path) => (
+        Element.isElement(node)
+        && indexable.has(node.type)
+      ),
     })
 
     //console.log(Array.from(blocks))
