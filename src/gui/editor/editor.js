@@ -76,11 +76,12 @@ export function loadEditorSettings(settings) {
     if(!body) return {}
     const {words, indexed} = body.attributes
 
-    const fixed = (indexed ?? ["chapter", "scene"])
+    const fixed = (indexed ?? ["scene"])
       .split(",")
       .filter(s => s !== "part")
       .filter(s => s !== "chapter")
-      .concat(["chapter"])
+      .filter(s => s !== "act")
+      .concat(["act", "chapter"])
 
     return {
       ...(words ? {words} : {}),
@@ -92,12 +93,12 @@ export function loadEditorSettings(settings) {
     active: "body",
     focusTo: {id: undefined},
     body: {
-      indexed: ["chapter", "scene", "synopsis"],
+      indexed: ["act", "chapter", "scene", "synopsis"],
       words: "numbers",
       ...getBodySettings()
     },
     notes: {
-      indexed: ["chapter", "scene", "synopsis"],
+      indexed: ["act", "chapter", "scene", "synopsis"],
       words: undefined,
     },
     left: {
@@ -178,21 +179,24 @@ export function SingleEditView({doc, updateDoc}) {
 
   const [track, setTrack] = useState({
     marks: {},
-    block: {},
     node: undefined,
+    parents: [],
   })
 
   const trackMarks = useCallback((editor) => {
     try {
       const marks = Editor.marks(editor)
-      const [node] = Editor.above(editor, {match: n => elemIsBlock(editor, n)})
-      const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "chapter")})
+      const parents = Array
+        .from(Editor.levels(editor))
+        .map(([n, p]) => n)
+        .filter(e => elemIsBlock(editor, e));
+      const node = parents[parents.length - 1]
+      //console.log("Levels:", levels)
 
-      //console.log("Track:", marks, node, block)
-
-      setTrack({block, node, marks,})
+      //console.log("Track:", marks, node, parents)
+      setTrack({marks, node, parents})
     } catch(e) {
-      //console.log("Track marks error.")
+      //console.log("Track error:", e)
     }
   }, [setTrack])
 
@@ -448,7 +452,7 @@ function LeftPanel({settings}) {
       wcFormat={doc.ui.editor.body.words}
       activeID="body"
       setActive={setActive}
-      current={track.block.id}
+      parents={track.parents}
     />
   </VBox>
 }
@@ -520,7 +524,7 @@ function RightPanelContent({settings, selected}) {
         wcFormat={doc.ui.editor.notes.words}
         activeID="notes"
         setActive={setActive}
-        current={track.block.id}
+        parents={track.parents}
       />
     case "wordtable":
       return <WordTable

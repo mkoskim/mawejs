@@ -26,13 +26,26 @@ import {elemNumbered, wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
-export function DocIndex({name, style, activeID, section, wcFormat, include, setActive, unfold, current})
+function getCurrent(parents, include) {
+  if(!parents) return
+  const visible = parents.filter(e => include.includes(e.type))
+  return visible[visible.length-1]
+}
+
+export function DocIndex({name, style, activeID, section, wcFormat, include, setActive, unfold, parents})
 {
   const refCurrent = useRef(null)
 
   useEffect(() =>{
     if(refCurrent.current) refCurrent.current.scrollIntoViewIfNeeded()
   }, [refCurrent.current])
+
+  //---------------------------------------------------------------------------
+  // Blocks -> current
+  //---------------------------------------------------------------------------
+
+  const current = getCurrent(parents, include)
+  //console.log(current)
 
   //---------------------------------------------------------------------------
   // Activation function
@@ -97,7 +110,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
       include={includeItems}
       onActivate={onActivate}
       unfold={unfold}
-      current={current}
+      current={current?.id}
       refCurrent={refCurrent}
       skipActName={skipActName}
       />
@@ -364,7 +377,8 @@ class IndexItem extends React.PureComponent {
     return <ScrollRef current={current} id={id} refCurrent={refCurrent}>
       <HBox className={addClass(className, typeClass, numClass, foldClass, "Entry")} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
-      <ItemLabel name={name ? name : "<Unnamed>"}/>
+      {/*<ItemLabel name={name ? name : "<Unnamed>"}/>*/}
+      <ItemLabel name={id}/>
       <Filler/>
       {wcFormat && wcFormat(id, words)}
       </HBox>
@@ -374,6 +388,7 @@ class IndexItem extends React.PureComponent {
 
 function ScrollRef({current, id, refCurrent, children}) {
   if(current === id) {
+    //console.log("Match:", current, id)
     return <div className="Current" ref={refCurrent}>{children}</div>
   }
   return children

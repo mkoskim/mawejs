@@ -45,7 +45,7 @@ export function searchPattern(text, opts = "gi") {
 //-----------------------------------------------------------------------------
 
 export function elemIsBlock(editor, elem) {
-  return elem && !Editor.isEditor(elem) && Editor.isBlock(editor, elem);
+  return elem && !Editor.isEditor(elem) && Element.isElement(elem);
 }
 
 function elemIsType(editor, elem, type) {
