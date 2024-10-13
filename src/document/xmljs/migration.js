@@ -227,6 +227,8 @@ function v3_to_v4(story) {
 
   if(version !== "3") return story
 
+  console.log("Migrate v3 -> v4")
+
   // Fix unnumbered --> numbered
   const bodyElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}
   const notesElem = elemFind(story, "notes") ?? {type: "element", name: "notes", elements: []}
