@@ -299,11 +299,8 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
     <Filler />
 
     <Separator/>
-    <WordsToday text={text} last={doc.head.last}/>
+    <WordInfo text={text} missing={missing} chars={chars} last={doc.head.last}/>
     <Separator/>
-    <WordInfo text={text} missing={missing}/>
-    <Separator/>
-    <CharInfo chars={chars}/>
     </DeferredRender>
     {/* <CloseButton setCommand={setCommand}/> */}
 
