@@ -15,6 +15,7 @@ import {
   Range, Point,
   createEditor,
   Element,
+  Path,
 } from 'slate'
 
 import { withHistory } from "slate-history"
@@ -809,51 +810,82 @@ function withIDs(editor) {
 
   const { normalizeNode } = editor;
 
-  const indexable = new Set([
-    "act", "chapter", "scene",
-    "synopsis", "comment",
-    "missing", "fill",
-    "tags"
-  ])
+  //---------------------------------------------------------------------------
+  // Create lookup table for Node IDs:
+  // {
+  //    id: path,
+  //    ...
+  // }
+  //
+  //---------------------------------------------------------------------------
+
+  editor.idlookup = undefined
 
   editor.normalizeNode = (entry)=> {
     const [node, path] = entry
 
-    // When argument is whole editor (all blocks)
-    if(path.length > 0) return normalizeNode(entry);
+    //-------------------------------------------------------------------------
+    // If lookup table is undefined, rebuild it
+    //-------------------------------------------------------------------------
 
-    //console.log("Path/Node:", path, node)
-
-    const blocks = Editor.nodes(editor, {
-      at: [],
-      match: (node, path) => (
-        Element.isElement(node)
-        && indexable.has(node.type)
-      ),
-    })
-
-    //console.log(Array.from(blocks))
-
-    const ids = new Set()
-
-    for(const block of blocks) {
-      const [node, path] = block
-
-      if(!node.id || ids.has(node.id)) {
-        console.log("ID clash fixed:", node.id, path)
-        const id = nanoid()
-        Transforms.setNodes(editor, {id}, {at: path})
-        ids.add(id)
-      }
-      else {
-        ids.add(node.id)
-      }
+    if(Editor.isEditor(node)) {
+      //console.log(node.idLookup)
+      if(!editor.idlookup) Editor.withoutNormalizing(editor, () => {
+        editor.idlookup = buildLookup(editor)
+      })
+      return normalizeNode(entry)
     }
+
+    if(!Element.isElement(node)) return normalizeNode(entry)
+    if(!editor.idlookup) return normalizeNode(entry)
+    //console.log(node)
+
+    //-------------------------------------------------------------------------
+    // Check that node id belongs to it in the table. If not, request rebuild.
+    //-------------------------------------------------------------------------
+
+    const {id} = node
+
+    if(!(id in editor.idlookup) || Path.compare(path, editor.idlookup[node.id]) !== 0) {
+      editor.idlookup = undefined
+    }
+    //console.log("Path/Node:", path, node)
 
     return normalizeNode(entry)
   }
 
   return editor
+
+  //-------------------------------------------------------------------------
+  // Building ID table and fixing conflicting IDs
+  //-------------------------------------------------------------------------
+
+  function buildLookup(editor) {
+    console.log("Fix IDs")
+    const blocks = Editor.nodes(editor, {
+      at: [],
+      match: (node, path) => Element.isElement(node),
+    })
+
+    //console.log(Array.from(blocks))
+
+    const lookup = {}
+
+    for(const block of blocks) {
+      const [node, path] = block
+
+      if(!node.id || node.id in lookup) {
+        console.log("ID clash fixed:", node.id, path)
+        const id = nanoid()
+        Transforms.setNodes(editor, {id}, {at: path})
+        lookup[id] = path
+      }
+      else {
+        lookup[node.id] = path
+      }
+    }
+    return lookup
+  }
 }
 
 //*****************************************************************************
