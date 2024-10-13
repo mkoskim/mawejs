@@ -183,11 +183,24 @@ ${backmatter}
   // Headings
   //---------------------------------------------------------------------------
 
+  hact: (id, number, name, options) => {
+    if(options.skip) return ""
+
+    const chnum = options.number ? escape(`${options.prefix ?? ""}${number}`) : ""
+    const title = options.name ? escape(name) : ""
+
+    if(!chnum && !title) return ""
+
+    return `\n\n\\part{${title}}\n\n`
+  },
+
   hchapter: (id, number, name, options) => {
     if(options.skip) return ""
 
-    const chnum = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
-    const title = options.name ? [escape(name)] : []
+    const chnum = options.number ? escape(`${options.prefix ?? ""}${number}`) : ""
+    const title = options.name ? escape(name) : ""
+
+    if(!chnum && !title) return ""
 
     return `\n\n\\chapter{${chnum}}{${title}}\n\n`
   },

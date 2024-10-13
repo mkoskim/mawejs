@@ -168,11 +168,11 @@ function parseSection(section) {
 }
 
 function parseAct(act, index) {
-  const {name, folded, unnumbered} = act.attributes ?? {};
+  const {name, folded, numbered, unnumbered} = act.attributes ?? {};
   const header = (!index && !name) ? [] : [{
     type: "hact",
     id: nanoid(),
-    unnumbered: unnumbered ? true : undefined,
+    numbered: numbered ? numbered : (unnumbered ? undefined : true),
     children: [{text: name ?? ""}],
     words: {}
   }]
@@ -196,11 +196,11 @@ function parseAct(act, index) {
 }
 
 function parseChapter(chapter, index) {
-  const {name, folded, unnumbered} = chapter.attributes ?? {};
+  const {name, folded, numbered, unnumbered} = chapter.attributes ?? {};
   const header = (!index && !name) ? [] : [{
     type: "hchapter",
     id: nanoid(),
-    unnumbered: unnumbered ? true : undefined,
+    numbered: numbered ? numbered : (unnumbered ? undefined : true),
     children: [{text: name ?? ""}],
     words: {}
   }]

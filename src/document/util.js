@@ -111,8 +111,8 @@ export function elemName(elem) {
   return elemAsText(elemHeading(elem))
 }
 
-export function elemUnnumbered(elem) {
-  return elemHeading(elem)?.unnumbered
+export function elemNumbered(elem) {
+  return elemHeading(elem)?.numbered
 }
 
 //-----------------------------------------------------------------------------

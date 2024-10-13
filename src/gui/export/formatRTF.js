@@ -106,6 +106,19 @@ ${content}
   // Headings
   //---------------------------------------------------------------------------
 
+  hact: (id, number, name, options) => {
+    if(options.skip) return ""
+
+    const pgbreak = options.pgbreak ? "\\pagebb" : "\\sb480"
+    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
+    const title = options.name ? [escape(name)] : []
+    const head = [ ...numbering, ...title].join(". ")
+
+    if(!head) return ""
+
+    return `{${pgbreak}\\b\\fs28 ${head}\\par}\n`
+  },
+
   hchapter: (id, number, name, options) => {
     if(options.skip) return ""
 
@@ -113,6 +126,8 @@ ${content}
     const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
     const title = options.name ? [escape(name)] : []
     const head = [ ...numbering, ...title].join(". ")
+
+    if(!head) return ""
 
     return `{${pgbreak}\\b\\fs28 ${head}\\par}\n`
   },

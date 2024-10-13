@@ -22,7 +22,7 @@ import {
 
 import {FormatWords} from "./components";
 import {elemAsText, elemName, filterCtrlElems} from "../../document";
-import {elemUnnumbered, wcCumulative} from "../../document/util";
+import {elemNumbered, wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
@@ -113,7 +113,7 @@ class ActItem extends React.PureComponent {
         name={elemName(elem)}
         words={elem.words}
         folded={!unfold && elem.folded}
-        unnumbered={elemUnnumbered(elem)}
+        numbered={elemNumbered(elem)}
         wcFormat={wcFormat}
         onActivate={onActivate}
         current={current}
@@ -203,7 +203,7 @@ class ChapterItem extends React.PureComponent {
         name={elemName(elem)}
         words={elem.words}
         folded={!unfold && elem.folded}
-        unnumbered={elemUnnumbered(elem)}
+        numbered={elemNumbered(elem)}
         wcFormat={wcFormat}
         onActivate={onActivate}
         current={current}
@@ -332,14 +332,14 @@ class IndexItem extends React.PureComponent {
   static numbered = ["act", "chapter"]
 
   render() {
-    const {className, refCurrent, id, type, name, folded, unnumbered, words, wcFormat, onActivate, current, ...rest} = this.props
+    const {className, refCurrent, id, type, name, folded, numbered, words, wcFormat, onActivate, current, ...rest} = this.props
 
     //console.log("Render IndexItem:", type, id, name)
     const typeClasses = this.constructor.typeClasses
 
     const typeClass = type in typeClasses ? typeClasses[type] : ""
 
-    const numClass = (!unnumbered && (this.constructor.numbered.includes(type))) ? "Numbered" : ""
+    const numClass = (numbered && (this.constructor.numbered.includes(type))) ? "Numbered" : ""
 
     const foldClass = (folded) ? "Folded" : ""
 

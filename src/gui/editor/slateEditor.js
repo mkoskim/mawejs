@@ -131,10 +131,10 @@ const debug = {
 
 function renderElement({element, attributes, ...props}) {
 
-  const {type, folded, unnumbered} = element
+  const {type, folded, numbered} = element
 
   const foldClass = folded ? "folded" : ""
-  const numClass = unnumbered ? "" : "Numbered"
+  const numClass = numbered ? "Numbered" : ""
 
   switch (type) {
     case "act":
@@ -146,7 +146,7 @@ function renderElement({element, attributes, ...props}) {
 
     case "hact": return <h4 className={numClass} {...attributes} {...props}/>
     case "hchapter": return <h5 className={numClass} {...attributes} {...props}/>
-    case "hscene": return <h6 className="Numbered" {...attributes} {...props}/>
+    case "hscene": return <h6 {...attributes} {...props}/>
 
     case "comment":
     case "missing":
@@ -492,8 +492,8 @@ function onKeyDown(editor, event) {
     })
     //console.log(node)
     if(node.type === "hchapter") {
-      const {unnumbered} = node
-      Transforms.setNodes(editor, {unnumbered: !unnumbered})
+      const {numbered} = node
+      Transforms.setNodes(editor, {numbered: !numbered})
       return;
     }
     Transforms.setNodes(editor, {type: "hchapter"})
@@ -669,9 +669,9 @@ const blockstyles = {
 // TODO: Generate this table
 
 const MARKUP = {
-  "** ": {type: "hact"},
-  "# " : {type: "hchapter", unnumbered: undefined},
-  "#! ": {type: "hchapter", unnumbered: true},
+  "** ": {type: "hact", numbered: true},
+  "# " : {type: "hchapter", numbered: true},
+  "#! ": {type: "hchapter", numbered: undefined},
   "## ": {type: "hscene"},
   '>> ': {type: "synopsis"},
   '// ': {type: 'comment'},
