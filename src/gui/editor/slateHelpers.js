@@ -17,7 +17,7 @@ import { ReactEditor } from 'slate-react'
 
 import { nanoid } from 'nanoid';
 import { appBeep } from '../../system/host';
-import {elemTags} from '../../document/util';
+import {elemHeading, elemTags} from '../../document/util';
 
 //-----------------------------------------------------------------------------
 // Search pattern
@@ -120,8 +120,6 @@ export function elemsByRange(editor, anchor, focus) {
 
 export function dndElemPop(editor, id) {
 
-  throw new Error("DnD disabled!")
-
   const match = elemByID(editor, id)
   if(!match) return
 
@@ -145,9 +143,7 @@ export function dndElemPop(editor, id) {
 }
 
 export function dndElemPushTo(editor, block, id, index) {
-  //console.log("Push", id, index)
-
-  throw new Error("DnD disabled!")
+  //console.log("Push", block, id, index)
 
   if(!block) return
 
@@ -156,30 +152,42 @@ export function dndElemPushTo(editor, block, id, index) {
     return elemByID(editor, id)
   }
 
-  const [container, cpath] = getContainer()
+  const [container, pcontainer] = getContainer()
+
+  //console.log("Container:", container)
+
+  //---------------------------------------------------------------------------
+  // Check if container has head element. If so, add +1 to index
+  //---------------------------------------------------------------------------
 
   function getChildIndex(container) {
-    const {type, children} = container
-    if(type === "chapter") {
-      if(children.length && children[0].type === "hchapter") {
-        return index+1
-      }
-    }
+    if(elemHeading(container)) return index+1
     return index
   }
 
   const childindex = getChildIndex(container)
-  const childpath = [...cpath, childindex]
+  const childpath = [...pcontainer, childindex]
+
+  //---------------------------------------------------------------------------
+  // Check that elem at drop point has header (prevent merge)
+  //---------------------------------------------------------------------------
+
+  const blockTypes = {
+    "act":     {header: "hact",     level: 1,                  contains: "chapter", },
+    "chapter": {header: "hchapter", level: 2, wrap: "act" ,    contains: "scene"},
+    "scene":   {header: "hscene",   level: 3, wrap: "chapter", },
+  }
 
   if(container.children.length > childindex) {
     const node = container.children[childindex]
-    const htype = (node.type === "chapter") ? "hchapter" : "hscene"
+    const htype = blockTypes[node.type].header
 
     if(!node.children.length || node.children[0].type !== htype) {
       Transforms.insertNodes(editor,
         {
           type: htype,
           id: nanoid(),
+          numbered: true,
           children: [{text: ""}]
         },
         {at: [...childpath, 0]}
@@ -190,6 +198,7 @@ export function dndElemPushTo(editor, block, id, index) {
   //console.log("Index at:", [...ppath, index])
   //console.log("Insert at:", childpath)
   Transforms.insertNodes(editor, block, {at: childpath})
+
 }
 
 //-----------------------------------------------------------------------------

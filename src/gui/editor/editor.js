@@ -376,10 +376,10 @@ export function SingleEditView({doc, updateDoc}) {
 
   function onDragEnd(result) {
 
-    console.log("DnD disabled")
-    return
-
     console.log("onDragEnd:", result)
+
+    //console.log("DnD disabled")
+    //return
 
     const {type, draggableId, source, destination} = result;
 
@@ -404,6 +404,7 @@ export function SingleEditView({doc, updateDoc}) {
     }
 
     switch(type) {
+      case "chapter":
       case "scene": {
         const srcEditID = getSectIDByElemID(source.droppableId)
         const dstEditID = getSectIDByElemID(destination.droppableId)
@@ -414,15 +415,6 @@ export function SingleEditView({doc, updateDoc}) {
         break;
       }
 
-      case "chapter": {
-        const srcEditID = source.droppableId
-        const dstEditID = destination.droppableId
-        const srcEdit = getEditorBySectID(srcEditID)
-        const dstEdit = getEditorBySectID(dstEditID)
-
-        moveElem(srcEdit, draggableId, dstEditID, dstEdit, null, destination.index)
-        break;
-      }
       default:
         console.log("Unknown draggable type:", type, result)
         break;
