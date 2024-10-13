@@ -377,8 +377,8 @@ class IndexItem extends React.PureComponent {
     return <ScrollRef current={current} id={id} refCurrent={refCurrent}>
       <HBox className={addClass(className, typeClass, numClass, foldClass, "Entry")} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
-      {/*<ItemLabel name={name ? name : "<Unnamed>"}/>*/}
-      <ItemLabel name={id}/>
+      <ItemLabel name={name ? name : "<Unnamed>"}/>
+      {/*<ItemLabel name={id}/>*/}
       <Filler/>
       {wcFormat && wcFormat(id, words)}
       </HBox>
