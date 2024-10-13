@@ -66,6 +66,22 @@
 */
 }
 
+.TOC div.ChapterDropZone {
+  min-height: 16pt;
+}
+
+.TOC div.ChapterDropZone.DragOver {
+  margin-left: -4px;
+  margin-right: -4px;
+  border: 1px dashed grey;
+  padding: 3px;
+  /*
+  border-radius: 4px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  */
+}
+
 /* ---------------------------------------------------------------------------- */
 
 .TOC .ChapterName {
@@ -92,9 +108,9 @@
   margin-left: -4px;
   margin-right: -4px;
   border: 1px dashed grey;
-  border-radius: 4px;
   padding: 3px;
   /*
+  border-radius: 4px;
   padding-top: 6px;
   padding-bottom: 6px;
   */

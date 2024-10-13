@@ -72,6 +72,12 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   //console.log(wcFormatFunction)
 
   //---------------------------------------------------------------------------
+  // Single unnamed act -> don't show
+  //---------------------------------------------------------------------------
+
+  const skipActName = (section.acts.length === 1 && !elemName(section.acts[0]))
+
+  //---------------------------------------------------------------------------
   // Included items
   //---------------------------------------------------------------------------
 
@@ -93,6 +99,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
       unfold={unfold}
       current={current}
       refCurrent={refCurrent}
+      skipActName={skipActName}
       />
     )}
     </VBox>
@@ -104,13 +111,13 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
 class ActItem extends React.PureComponent {
 
   render() {
-    const {elem, wcFormat, activeID, include, onActivate, unfold, current, refCurrent} = this.props
+    const {skipActName, elem, wcFormat, activeID, include, onActivate, unfold, current, refCurrent} = this.props
 
     const hasDropzone = (include.includes("chapter")) && (unfold || !elem.folded)
     //const hasDropzone = (unfold || !elem.folded)
 
     return <div>
-      <IndexItem
+      {!skipActName && <IndexItem
         id={elem.id}
         type={elem.type}
         name={elemName(elem)}
@@ -121,7 +128,7 @@ class ActItem extends React.PureComponent {
         onActivate={onActivate}
         current={current}
         refCurrent={refCurrent}
-      />
+      />}
       {hasDropzone && <ChapterDropZone
         id={elem.id}
         folded={!unfold && elem.folded}
@@ -156,9 +163,10 @@ class ChapterDropZone extends React.PureComponent {
   DropZone(provided, snapshot) {
     const {chapters, wcFormat, include, onActivate, unfold, current, refCurrent} = this.props
     const {innerRef, droppableProps, placeholder} = provided
+    const {isDraggingOver} = snapshot
 
     return <div
-      className="VBox"
+      className={addClass("VBox ChapterDropZone", isDraggingOver && "DragOver")}
       ref={innerRef}
       {...droppableProps}
     >
