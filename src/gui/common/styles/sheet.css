@@ -42,7 +42,7 @@
   font-size: 12pt;
   line-height: 180%;
   font-family: 'Times New Roman', Times, serif;
-  counter-reset: chapter scene;
+  counter-reset: act chapter scene;
 
   background: white;
 
@@ -110,7 +110,16 @@
   margin-bottom: 0.5cm;
 }
 
-/* For debugging purposes: make chapter & scene div's visible */
+/* ----------------------------------------------------------------------------
+// For debugging purposes: make chapter & scene div's visible
+// ----------------------------------------------------------------------------
+*/
+
+.Sheet div.act.withBorders {
+  border: 1pt solid lightblue;
+  padding: 4pt;
+  margin-bottom: 4pt;
+}
 
 .Sheet div.chapter.withBorders {
   border: 1pt dashed gray;
@@ -141,8 +150,8 @@
   */
 }
 
-.Sheet div.folded::after {
-  margin-left: 6pt;
+.Sheet div.folded::before {
+  margin-right: 6pt;
   content: "•••";
   font-size: 10pt;
   color: grey;
@@ -154,17 +163,17 @@
   */
 }
 
+.Sheet div.folded p,
+.Sheet div.folded div.emptyline,
+.Sheet .act.folded div.chapter,
+.Sheet .chapter.folded div.scene {
+  display: none
+}
+
+.Sheet div.folded h4,
 .Sheet div.folded h5,
 .Sheet div.folded h6 {
   display: inline;
-  /*
-  */
-}
-
-.Sheet div.folded p,
-.Sheet div.folded div.emptyline,
-.Sheet .chapter.folded div.scene {
-  display: none
 }
 
 .Sheet p.folded {
@@ -199,14 +208,6 @@
   text-align: center;
 }
 
-/* Chapter */ .Sheet h3 {
-  font-size: 12pt;
-/*
-  font-weight: bold;
-*/
-  margin-bottom: 0.5cm;
-}
-
 /* Page break */ .Sheet hr {
   border: 0;
   border-top: 1px dashed LightSteelBlue;
@@ -216,6 +217,20 @@
 // Chapter & scene headings
 // ----------------------------------------------------------------------------
 */
+
+/* Act */ .Sheet h4 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: inherit;
+  color: #888;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.Sheet h4.Numbered::before {
+  margin-right: 4pt;
+  counter-increment: act;
+  content: "Act " counter(act, upper-roman) ":";
+}
 
 /* Chapter */ .Sheet h5 {
   font-family: Arial, Helvetica, sans-serif;
@@ -233,7 +248,7 @@
 }
 
 .Sheet h5.Numbered::before {
-  margin-right: 8pt;
+  margin-right: 4pt;
   counter-increment: chapter;
   content: counter(chapter) ".";
 }
@@ -249,7 +264,7 @@
   */
 }
 
-.Sheet h6.Numbered::before {
+.Sheet h6::before {
   counter-increment: scene;
   margin-right: 8pt;
   content: "##";

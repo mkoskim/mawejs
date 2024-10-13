@@ -56,6 +56,13 @@ function renewCommands(options, sides) {
   ${pgbreak ? newpage : "\\vskip 48pt"}
 }
 
+\\renewcommand\\part[1] {
+  \\if@titlepage${newpage}\\fi
+  \\null\\vskip 2cm
+  \\begin{center}{\\Huge #1}\\end{center}
+}
+
+
 \\newcommand\\innertitle{{\\center{\\Large\\@title\\vskip 48pt}}}
 
 \\newcommand{\\RNum}[1]{\\uppercase\\expandafter{\\romannumeral #1\\relax}}
@@ -183,11 +190,24 @@ ${backmatter}
   // Headings
   //---------------------------------------------------------------------------
 
+  hact: (id, number, name, options) => {
+    if(options.skip) return ""
+
+    const chnum = options.number ? escape(`${options.prefix ?? ""}${number}`) : ""
+    const title = options.name ? escape(name) : ""
+
+    if(!chnum && !title) return ""
+
+    return `\n\n\\part{${title}}\n\n`
+  },
+
   hchapter: (id, number, name, options) => {
     if(options.skip) return ""
 
-    const chnum = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
-    const title = options.name ? [escape(name)] : []
+    const chnum = options.number ? escape(`${options.prefix ?? ""}${number}`) : ""
+    const title = options.name ? escape(name) : ""
+
+    if(!chnum && !title) return ""
 
     return `\n\n\\chapter{${chnum}}{${title}}\n\n`
   },

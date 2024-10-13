@@ -153,41 +153,73 @@ function parseHead(head, history) {
 //*****************************************************************************
 
 function parseSection(section) {
-  function getChapters() {
-    const chapters = elemFindall(section, "chapter")
-    if(!chapters.length) return [{type: "chapter", id: nanoid()}]
-    return chapters
+  function getActs() {
+    const acts = elemFindall(section, "act")
+    if(!acts.length) return [{type: "element", name: "act"}]
+    return acts
   }
-  const chapters = getChapters().map(parseChapter)
-  const words = wcChildren(chapters)
+  const acts = getActs().map(parseAct)
+  const words = wcChildren(acts)
   return {
     type: "sect",
-    chapters,
+    acts,
     words,
   }
 }
 
-function parseChapter(chapter, index) {
-  const {name, folded, unnumbered} = chapter.attributes ?? {};
+function parseAct(act, index) {
+  if(act.type !== "element" || act.name !== "act") {
+    console.log("Invalid act:", act)
+    throw new Error("Invalid act", act)
+  }
+  const {name, folded, numbered} = act.attributes ?? {};
   const header = (!index && !name) ? [] : [{
-    type: "hchapter",
+    type: "hact",
     id: nanoid(),
-    unnumbered: unnumbered ? true : undefined,
+    numbered,
     children: [{text: name ?? ""}],
     words: {}
   }]
-  const empty = [{
-    type: "scene",
+  const empty = [{type: "element", name: "chapter"}]
+  const elements = act.elements?.length ? act.elements : empty
+
+  const children = elements.map(parseChapter)
+  const words = wcChildren(children)
+
+  return {
+    type: "act",
     id: nanoid(),
-    children: []
+    folded: folded ? true : undefined,
+    children: [
+      ...header,
+      ...children,
+    ],
+    words
+  }
+}
+
+function parseChapter(chapter, index) {
+  if(chapter.type !== "element" || chapter.name !== "chapter") {
+    console.log("Invalid chapter:", chapter)
+    throw new Error("Invalid chapter:", chapter)
+  }
+  const {name, folded, numbered} = chapter.attributes ?? {};
+  const header = (!index && !name) ? [] : [{
+    type: "hchapter",
+    id: nanoid(),
+    numbered: numbered,
+    children: [{text: name ?? ""}],
+    words: {}
   }]
-  const children = (chapter.elements ?? empty).map(parseScene)
+  const empty = [{type: "element", name: "scene"}]
+  const elements = chapter.elements?.length ? chapter.elements : empty
+
+  const children = elements.map(parseScene)
   const words = wcChildren(children)
 
   return {
     type: "chapter",
     id: nanoid(),
-    //name,
     folded: folded ? true : undefined,
     children: [
       ...header,
@@ -198,6 +230,10 @@ function parseChapter(chapter, index) {
 }
 
 function parseScene(scene, index) {
+  if(scene.type !== "element" || scene.name !== "scene") {
+    console.log("Invalid scene:", scene)
+    throw new Error("Invalid scene", scene)
+  }
   const {name, folded} = scene.attributes ?? {};
   const header = (!index && !name) ? [] : [{
     type: "hscene",
@@ -205,12 +241,10 @@ function parseScene(scene, index) {
     children: [{text: name ?? ""}],
     words: {}
   }]
-  const empty = [{
-    type: "p",
-    id: nanoid(),
-    children: [{text: ""}]
-  }]
-  const children = (scene.elements ?? empty).map(parseParagraph).map(elem => ({...elem, words: wcElem(elem)}))
+  const empty = [{type: "element", name: "p", children: []}]
+  const elements = scene.elements?.length ? scene.elements : empty
+
+  const children = elements.map(parseParagraph).map(elem => ({...elem, words: wcElem(elem)}))
   const words = wcChildren(children)
 
   return {
@@ -229,11 +263,22 @@ function parseScene(scene, index) {
 //---------------------------------------------------------------------------
 
 function parseParagraph(elem, index) {
+  if(elem.type !== "element") {
+    console.log("Invalid paragraph:", elem)
+    throw new Error("Invalid paragraph", elem)
+  }
   //console.log(elem)
 
-  const {name, type} = elem
+  const {name} = elem
 
-  const children = elem.elements?.map(e => parseMarks(e, {})).flat() ?? [{text: ""}]
+  const empty = [{
+    type: "element",
+    name: "p",
+    children: [{type: "text", text: ""}]
+  }]
+  const elements = elem.elements?.length ? elem.elements : empty
+
+  const children = elements.map(e => parseMarks(e, {})).flat()
 
   const text = children.map(child => child.text).join("")
 
@@ -241,7 +286,7 @@ function parseParagraph(elem, index) {
   //console.log(text)
 
   return {
-    type: (type === "element" && name === "p" && !text) ? "br" : (name ?? type),
+    type: (name === "p" && !text) ? "br" : name,
     id: nanoid(),
     children
   }

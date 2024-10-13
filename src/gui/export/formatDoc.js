@@ -12,6 +12,25 @@ import { splitByTrailingElem } from "../../util";
 // Settings
 //*****************************************************************************
 
+function getActOptions(acts, pgbreak) {
+  switch(acts) {
+    case "named": return {
+      numbered:   { pgbreak, name: true},
+      unnumbered: { pgbreak, name: true }
+    }
+    case "separated": return {
+      separator: "* * *",
+      numbered:   { skip: true },
+      unnumbered: { skip: true }
+    }
+  }
+  return {
+    numbered: {skip: true},
+    unnumbered: {skip: true},
+  }
+}
+
+
 function getChapterOptions(chapters, pgbreak) {
   switch(chapters) {
     case "numbered": return {
@@ -57,31 +76,33 @@ export function FormatBody(format, story) {
 
   const options = {
     long: exports.type === "long",
+    act: getActOptions(exports.acts, pgbreak),
     chapter: getChapterOptions(exports.chapters, pgbreak),
     scene: getSceneOptions(exports.scenes)
   }
 
+  var actnum = 0
   var chapternum = 0
   var scenenum = 0
 
-  /*
-  const chapters = {
-    element: exports.chapterelem,
-    type: exports.chaptertype,
-  }
-  const pgbreak = exports.type === "long"
-  */
-
   return format.file(
     mawe.info(head),
-    FormatBody(body.chapters),
+    FormatBody(body.acts),
     options
   )
 
-  function FormatBody(chapters) {
-    const content = chapters.map(FormatChapter).filter(p => p)
+  function FormatBody(acts) {
+    const content = acts.map(FormatAct).filter(p => p)
 
-    return format.body(content, options.chapter)
+    return format.body(content, options.act)
+  }
+
+  function FormatAct(act) {
+    return format.chapter(
+      FormatActHead(act),
+      act.children.filter(e => e.type === "chapter").map(FormatChapter).filter(s => s),
+      options.chapter
+    )
   }
 
   function FormatChapter(chapter) {
@@ -92,17 +113,33 @@ export function FormatBody(format, story) {
     )
   }
 
+  function FormatActHead(act) {
+
+    const {id} = act
+    const head = elemHeading(act)
+
+    const numbered = head?.numbered
+
+    if(numbered) {
+      actnum = actnum + 1
+      return format.hact(id, actnum, elemAsText(head), options.act.numbered)
+    } else {
+      return format.hact(id, undefined, elemAsText(head), options.act.unnumbered)
+    }
+  }
+
   function FormatChapterHead(chapter) {
 
     const {id} = chapter
     const head = elemHeading(chapter)
-    const {unnumbered} = head
 
-    if(unnumbered) {
-      return format.hchapter(id, undefined, elemAsText(head), options.chapter.unnumbered)
-    } else {
+    const numbered = head?.numbered
+
+    if(numbered) {
       chapternum = chapternum + 1
       return format.hchapter(id, chapternum, elemAsText(head), options.chapter.numbered)
+    } else {
+      return format.hchapter(id, undefined, elemAsText(head), options.chapter.unnumbered)
     }
   }
 

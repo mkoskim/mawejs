@@ -66,6 +66,7 @@ export function loadExportSettings(settings) {
   return {
     format: "rtf1",
     type: "short",
+    acts: "none",
     chapters: "numbered",
     scenes: "none",
     ...(settings?.attributes ?? {})
@@ -73,9 +74,10 @@ export function loadExportSettings(settings) {
 }
 
 export function saveExportSettings(settings) {
-  const {type, chapters, scenes} = settings
+  const {type, acts, chapters, scenes} = settings
   return {type: "export", attributes: {
     type,
+    acts,
     chapters,
     scenes,
   }}
@@ -104,6 +106,7 @@ export function Export({ doc, updateDoc }) {
 //-----------------------------------------------------------------------------
 
 function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
+function updateDocActElem(updateDoc, value) { updateDoc(doc => {doc.exports.acts = value})}
 function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapters = value})}
 function updateDocSceneElem(updateDoc, value) { updateDoc(doc => {doc.exports.scenes = value})}
 
@@ -136,6 +139,12 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       <MenuItem value="long">Long Story</MenuItem>
       </TextField>
 
+    <TextField select label="Acts" value={exports.acts} onChange={e => updateDocActElem(updateDoc, e.target.value)}>
+      <MenuItem value="named">Named</MenuItem>
+      <MenuItem value="separated">Separated</MenuItem>
+      <MenuItem value="none">None</MenuItem>
+      </TextField>
+
     <TextField select label="Chapters" value={exports.chapters} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
       <MenuItem value="numbered">Numbered</MenuItem>
       <MenuItem value="named">Named</MenuItem>
@@ -145,8 +154,8 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       </TextField>
 
     <TextField select label="Scenes" value={exports.scenes} onChange={e => updateDocSceneElem(updateDoc, e.target.value)}>
-      <MenuItem value="none">None</MenuItem>
       <MenuItem value="separated">Separated</MenuItem>
+      <MenuItem value="none">None</MenuItem>
       </TextField>
   </VBox>
 
@@ -170,15 +179,31 @@ async function exportToFile(doc, filesuffix, content) {
 }
 
 //-----------------------------------------------------------------------------
-// Export index
+// Export index / TODO: Generate from exported data
 //-----------------------------------------------------------------------------
 
 function ExportIndex({ style, doc, updateDoc }) {
-  const { chapters } = doc.body
+  const { acts } = doc.body
 
   return <VFiller className="TOC" style={style}>
-    {filterCtrlElems(chapters).map(chapter => <ChapterItem key={chapter.id} chapter={chapter} doc={doc} updateDoc={updateDoc}/>)}
+    {filterCtrlElems(acts).map(act => <ActItem key={act.id} act={act} doc={doc} updateDoc={updateDoc}/>)}
   </VFiller>
+}
+
+function ActItem({act, doc, updateDoc}) {
+  const { id, children } = act
+  const name = elemName(act)
+  return <>
+    <div
+      className="Entry ActName"
+      onClick={ev => window.location.href = `#${id}`}
+      onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
+      style={{ cursor: "pointer" }}
+    >
+      <span className="Name">ACT: {name}</span>
+    </div>
+    {filterCtrlElems(children).map(chapter => <ChapterItem key={chapter.id} chapter={chapter} doc={doc} updateDoc={updateDoc}/>)}
+  </>
 }
 
 function ChapterItem({ chapter, doc, updateDoc }) {

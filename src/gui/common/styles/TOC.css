@@ -31,7 +31,7 @@
   background: white;
   border-right: 1pt solid lightgray;
   */
-  counter-reset: chapter scene;
+  counter-reset: act chapter scene;
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -46,9 +46,47 @@
 
 /* ---------------------------------------------------------------------------- */
 
-.TOC .ChapterName {
+.TOC .ActName {
   font-weight: bold;
   /*
+  padding-top: 4pt !important;
+  padding-bottom: 4pt !important;
+  */
+}
+
+.TOC .ActName .Name {
+  text-transform: uppercase;
+}
+
+.TOC .ActName.Numbered .Name::before {
+  counter-increment: act;
+  content: "ACT " counter(act, upper-roman) ": ";
+/*
+  content: counter(chapter) ". ";
+*/
+}
+
+.TOC div.ChapterDropZone {
+  min-height: 16pt;
+}
+
+.TOC div.ChapterDropZone.DragOver {
+  margin-left: -4px;
+  margin-right: -4px;
+  border: 1px dashed grey;
+  padding: 3px;
+  /*
+  border-radius: 4px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  */
+}
+
+/* ---------------------------------------------------------------------------- */
+
+.TOC .ChapterName {
+  /*
+  font-weight: bold;
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
   */
@@ -70,9 +108,9 @@
   margin-left: -4px;
   margin-right: -4px;
   border: 1px dashed grey;
-  border-radius: 4px;
   padding: 3px;
   /*
+  border-radius: 4px;
   padding-top: 6px;
   padding-bottom: 6px;
   */
@@ -100,7 +138,7 @@
 }
 
 .TOC .SceneName {
-  padding-left: 0.5cm !important;
+  padding-left: 1.00cm !important;
   /*
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;

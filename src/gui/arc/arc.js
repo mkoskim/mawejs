@@ -36,7 +36,7 @@ import {elemName, filterCtrlElems, mawe} from "../../document";
 export function loadChartSettings(settings) {
   // TODO: Check that fields have valid values (table keys)
   return {
-    elements: "scenes",
+    elements: "scene",
     template: "beatsheet",
     mode: "topCCW",
     ...(settings?.attributes ?? {})
@@ -80,7 +80,7 @@ export function StoryArc({doc, updateDoc}) {
   const settings = {
     elements: {
       buttons: elemButtons,
-      choices: ["chapters", "scenes"],
+      choices: ["act", "chapter", "scene"],
       selected: doc.ui.arc.elements,
       setSelected: setElements,
       exclusive: true,
@@ -102,9 +102,10 @@ export function StoryArc({doc, updateDoc}) {
     }
   }
 
-  function selectInclude() {
+  function indexElements() {
     switch(doc.ui.arc.elements) {
-      case "chapters": return ["chapter"]
+      case "act": return []
+      case "chapter": return ["chapter"]
     }
     return ["chapter", "scene"]
   }
@@ -116,7 +117,7 @@ export function StoryArc({doc, updateDoc}) {
         <DocIndex
           section={doc.body}
           activeID="body"
-          include={selectInclude()}
+          include={indexElements()}
           wcFormat={"compact"}
           unfold={true}
         />
@@ -172,13 +173,19 @@ function ChartView({settings, doc, updateDoc}) {
   const section = doc.body
 
   //---------------------------------------------------------------------------
+  // Data selection
+  //---------------------------------------------------------------------------
+
+  const data = flatSection(section).filter(e => e.type === doc.ui.arc.elements)
+
+  //---------------------------------------------------------------------------
   // Chart directions
   //---------------------------------------------------------------------------
 
   const {start: selectStart, rotate: selectRotate} = mode2rotate(doc.ui.arc.mode)
 
   //---------------------------------------------------------------------------
-  // Data selection
+  // Chart
   //---------------------------------------------------------------------------
 
   return <VFiller style={{overflow: "auto"}}>
@@ -187,8 +194,8 @@ function ChartView({settings, doc, updateDoc}) {
       startAngle={selectStart + selectRotate * 1}
       endAngle={selectStart + selectRotate * (360 - 2)}
       innerData={tmplButtons[doc.ui.arc.template].data}
-      outerData={elemButtons[doc.ui.arc.elements].data(section)}
-      outerLabels={elemButtons[doc.ui.arc.elements].labels(section)}
+      outerData={data.map(e => e.data).flat()}
+      outerLabels={data.map(e => e.label)}
     />
   </VFiller>
 }
@@ -219,6 +226,12 @@ function ChartToolbar({settings}) {
 // Data generation for pie chart
 //-----------------------------------------------------------------------------
 
+const elemButtons = {
+  act: {icon: "Acts"},
+  chapter: {icon: "Chapters"},
+  scene: {icon: "Scenes"},
+}
+
 function elemLabel(elem) {
   const {words} = elem
   const name = elemName(elem)
@@ -246,42 +259,43 @@ function elemData(elem) {
   ]
 }
 
-function chapterLabels(section) {
-  return section.chapters.map(chapter => elemLabel(chapter))
-}
-
-function chapterData(section) {
-  return section.chapters.map(chapter => elemData(chapter)).flat()
-}
-
-
-function sceneLabels(section) {
-  return section.chapters.map(chapter => (
-    filterCtrlElems(chapter.children).map(scene => elemLabel(scene))
-  )).flat()
-}
-
-function sceneData(section) {
-  return section.chapters.map(chapter => (
-    filterCtrlElems(chapter.children).map(scene => elemData(scene)).flat()
-  )).flat()
-}
-
 //-----------------------------------------------------------------------------
 // Story data
 //-----------------------------------------------------------------------------
 
-const elemButtons = {
-  scenes: {
-    icon: "Scenes",
-    labels: (section) => sceneLabels(section),
-    data: (section) => sceneData(section),
-  },
-  chapters: {
-    icon: "Chapters",
-    labels: (section) => chapterLabels(section),
-    data: (section) => chapterData(section),
-  },
+function flatSection(section) {
+
+  return section.acts.map(flatAct).flat()
+
+  function flatAct(act) {
+    return [
+      {
+        type: "act",
+        label: elemLabel(act),
+        data: elemData(act)
+      },
+      ...filterCtrlElems(act.children).map(flatChapter).flat()
+    ]
+  }
+
+  function flatChapter(chapter) {
+    return [
+      {
+        type: "chapter",
+        label: elemLabel(chapter),
+        data: elemData(chapter)
+      },
+      ...filterCtrlElems(chapter.children).map(flatScene)
+    ]
+  }
+
+  function flatScene(scene) {
+    return {
+      type: "scene",
+      label: elemLabel(scene),
+      data: elemData(scene)
+    }
+  }
 }
 
 //-----------------------------------------------------------------------------

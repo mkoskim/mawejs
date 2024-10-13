@@ -118,7 +118,8 @@ export default function App(props) {
     setCommand({
       action: "import",
       //file: {id: "./examples/Frankenstein.txt", name: "Frankenstein.txt" }, ext: ".txt",
-      file: {id: "./examples/Frankenstein.md", name: "Frankenstein.md" }, ext: ".md",
+      //file: {id: "./examples/Frankenstein.md", name: "Frankenstein.md" }, ext: ".md",
+      file: {id: "./local/Maankutsuja/Maankutsuja2.docx", name: "Maankutsuja2.docx" }, ext: ".docx",
     })
     /**/
   }, [])
@@ -291,8 +292,9 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected}/>
     <Separator/>
     <HeadInfo head={head} updateDoc={updateDoc}/>
-
+    <Separator />
     <Filler />
+
     <Separator/>
     <WordsToday text={text} last={doc.head.last}/>
     <Separator/>
@@ -300,6 +302,7 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
     <Separator/>
     <CharInfo chars={chars}/>
     {/* <CloseButton setCommand={setCommand}/> */}
+
     <Separator />
     <HelpButton setCommand={setCommand}/>
     <SettingsButton />

@@ -22,17 +22,30 @@ import {
 
 import {FormatWords} from "./components";
 import {elemAsText, elemName, filterCtrlElems} from "../../document";
-import {elemUnnumbered, wcCumulative} from "../../document/util";
+import {elemNumbered, wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
-export function DocIndex({name, style, activeID, section, wcFormat, include, setActive, unfold, current})
+function getCurrent(parents, include) {
+  if(!parents) return
+  const visible = parents.filter(e => include.includes(e.type))
+  return visible[visible.length-1]
+}
+
+export function DocIndex({name, style, activeID, section, wcFormat, include, setActive, unfold, parents})
 {
   const refCurrent = useRef(null)
 
   useEffect(() =>{
     if(refCurrent.current) refCurrent.current.scrollIntoViewIfNeeded()
   }, [refCurrent.current])
+
+  //---------------------------------------------------------------------------
+  // Blocks -> current
+  //---------------------------------------------------------------------------
+
+  const current = getCurrent(parents, include)
+  //console.log(current)
 
   //---------------------------------------------------------------------------
   // Activation function
@@ -72,6 +85,12 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   //console.log(wcFormatFunction)
 
   //---------------------------------------------------------------------------
+  // Single unnamed act -> don't show
+  //---------------------------------------------------------------------------
+
+  const skipActName = (section.acts.length === 1 && !elemName(section.acts[0]))
+
+  //---------------------------------------------------------------------------
   // Included items
   //---------------------------------------------------------------------------
 
@@ -82,58 +101,74 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   //---------------------------------------------------------------------------
 
   return <VBox style={style} className="TOC">
-    <ChapterDropZone
+    {section.acts.map((elem, index) => <ActItem
+      key={elem.id}
+      index={index}
+      elem={elem}
       activeID={activeID}
-      chapters={section?.chapters}
       wcFormat={wcFormatFunction}
       include={includeItems}
       onActivate={onActivate}
       unfold={unfold}
-      current={current}
+      current={current?.id}
       refCurrent={refCurrent}
-    />
+      skipActName={skipActName}
+      />
+    )}
     </VBox>
   //return useDeferredValue(index)
 }
 
 //-----------------------------------------------------------------------------
 
-const IndexHead = memo(({name, section, wcFormat}) => {
-  const wcFormatFunction = useCallback(
-    (!wcFormat || wcFormat === "off")
-    ? undefined
-    : (id, words) => <FormatWords
-      format={"numbers"}
-      words={words.text}
-      missing={words.missing}
-      //cumulative={cumulative && id in cumulative && cumulative[id]}
-      //total={total}
-    />, [wcFormat]
-  )
+class ActItem extends React.PureComponent {
 
-  return <IndexItem
-    //id={elem.id}
-    type={"section"}
-    name={name}
-    words={section.words}
-    wcFormat={wcFormatFunction}
-    //onActivate={onActivate}
-    //{...dragHandleProps}
-  />
-})
+  render() {
+    const {skipActName, elem, wcFormat, activeID, include, onActivate, unfold, current, refCurrent} = this.props
+
+    const hasDropzone = (include.includes("chapter")) && (unfold || !elem.folded)
+    //const hasDropzone = (unfold || !elem.folded)
+
+    return <div>
+      {!skipActName && <IndexItem
+        id={elem.id}
+        type={elem.type}
+        name={elemName(elem)}
+        words={elem.words}
+        folded={!unfold && elem.folded}
+        numbered={elemNumbered(elem)}
+        wcFormat={wcFormat}
+        onActivate={onActivate}
+        current={current}
+        refCurrent={refCurrent}
+      />}
+      {hasDropzone && <ChapterDropZone
+        id={elem.id}
+        folded={!unfold && elem.folded}
+        chapters={elem.children}
+        wcFormat={wcFormat}
+        include={include}
+        onActivate={onActivate}
+        unfold={unfold}
+        current={current}
+        refCurrent={refCurrent}
+      />}
+    </div>
+  }
+}
 
 //-----------------------------------------------------------------------------
 
 class ChapterDropZone extends React.PureComponent {
 
   render() {
-    const {chapters, activeID} = this.props
+    const {chapters, id} = this.props
 
     if(!chapters) return null
 
     //console.log("Index update:", activeID)
 
-    return <Droppable droppableId={activeID} type="chapter">
+    return <Droppable droppableId={id} type="chapter">
       {this.DropZone.bind(this)}
     </Droppable>
   }
@@ -141,13 +176,14 @@ class ChapterDropZone extends React.PureComponent {
   DropZone(provided, snapshot) {
     const {chapters, wcFormat, include, onActivate, unfold, current, refCurrent} = this.props
     const {innerRef, droppableProps, placeholder} = provided
+    const {isDraggingOver} = snapshot
 
     return <div
-      className="VBox"
+      className={addClass("VBox ChapterDropZone", isDraggingOver && "DragOver")}
       ref={innerRef}
       {...droppableProps}
     >
-    {chapters.map((elem, index) => <ChapterItem
+    {filterCtrlElems(chapters).map((elem, index) => <ChapterItem
       key={elem.id}
       index={index}
       elem={elem}
@@ -182,6 +218,8 @@ class ChapterItem extends React.PureComponent {
 
     const hasDropzone = (include.includes("scene")) && (unfold || !elem.folded)
 
+    //console.log(include)
+
     return <div
       ref={innerRef}
       {...draggableProps}
@@ -192,7 +230,7 @@ class ChapterItem extends React.PureComponent {
         name={elemName(elem)}
         words={elem.words}
         folded={!unfold && elem.folded}
-        unnumbered={elemUnnumbered(elem)}
+        numbered={elemNumbered(elem)}
         wcFormat={wcFormat}
         onActivate={onActivate}
         current={current}
@@ -304,17 +342,31 @@ class SceneItem extends React.PureComponent {
 //-----------------------------------------------------------------------------
 
 class IndexItem extends React.PureComponent {
+
+  static typeClasses = {
+    "section": "SectionName",
+    "act": "ActName",
+    "chapter": "ChapterName",
+    "scene": "SceneName",
+
+    "missing": "BookmarkName",
+    "comment": "BookmarkName",
+    "synopsis": "BookmarkName",
+    "fill": "BookmarkName",
+    "tags": "BookmarkName",
+  }
+
+  static numbered = ["act", "chapter"]
+
   render() {
-    const {className, refCurrent, id, type, name, folded, unnumbered, words, wcFormat, onActivate, current, ...rest} = this.props
+    const {className, refCurrent, id, type, name, folded, numbered, words, wcFormat, onActivate, current, ...rest} = this.props
 
     //console.log("Render IndexItem:", type, id, name)
+    const typeClasses = this.constructor.typeClasses
 
-    const typeClass = (type === "chapter") ? "ChapterName" :
-      (type === "scene") ? "SceneName" :
-      (type === "section") ? "SectionName" :
-      "BookmarkName"
+    const typeClass = type in typeClasses ? typeClasses[type] : ""
 
-    const numClass = (type === "chapter" || type === "scene") ? (unnumbered ? "" : "Numbered") : ""
+    const numClass = (numbered && (this.constructor.numbered.includes(type))) ? "Numbered" : ""
 
     const foldClass = (folded) ? "Folded" : ""
 
@@ -326,15 +378,9 @@ class IndexItem extends React.PureComponent {
       <HBox className={addClass(className, typeClass, numClass, foldClass, "Entry")} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
+      {/*<ItemLabel name={id}/>*/}
       <Filler/>
       {wcFormat && wcFormat(id, words)}
-      {/*
-      <ItemWords
-        id={id}
-        words={words}
-        wcFormat={wcFormat}
-      />
-      */}
       </HBox>
     </ScrollRef>
   }
@@ -342,6 +388,7 @@ class IndexItem extends React.PureComponent {
 
 function ScrollRef({current, id, refCurrent, children}) {
   if(current === id) {
+    //console.log("Match:", current, id)
     return <div className="Current" ref={refCurrent}>{children}</div>
   }
   return children

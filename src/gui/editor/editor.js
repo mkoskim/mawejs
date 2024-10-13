@@ -76,9 +76,16 @@ export function loadEditorSettings(settings) {
     if(!body) return {}
     const {words, indexed} = body.attributes
 
+    const fixed = (indexed ?? ["scene"])
+      .split(",")
+      .filter(s => s !== "part")
+      .filter(s => s !== "chapter")
+      .filter(s => s !== "act")
+      .concat(["act", "chapter"])
+
     return {
       ...(words ? {words} : {}),
-      ...(indexed ? {indexed: indexed.split(",")} : {})
+      ...(indexed ? {indexed: fixed} : {})
     }
   }
 
@@ -86,12 +93,12 @@ export function loadEditorSettings(settings) {
     active: "body",
     focusTo: {id: undefined},
     body: {
-      indexed: ["chapter", "scene", "synopsis"],
+      indexed: ["act", "chapter", "scene", "synopsis"],
       words: "numbers",
       ...getBodySettings()
     },
     notes: {
-      indexed: ["chapter", "scene", "synopsis"],
+      indexed: ["act", "chapter", "scene", "synopsis"],
       words: undefined,
     },
     left: {
@@ -151,6 +158,8 @@ export function SingleEditView({doc, updateDoc}) {
   // For development purposes:
   //---------------------------------------------------------------------------
 
+  //console.log("Doc:", doc)
+
   /*
   return <React.Fragment>
     <HBox>
@@ -170,21 +179,24 @@ export function SingleEditView({doc, updateDoc}) {
 
   const [track, setTrack] = useState({
     marks: {},
-    block: {},
     node: undefined,
+    parents: [],
   })
 
   const trackMarks = useCallback((editor) => {
     try {
       const marks = Editor.marks(editor)
-      const [node] = Editor.above(editor, {match: n => elemIsBlock(editor, n)})
-      const [block] = Editor.above(editor, {match: n => elemIsBlock(editor, n) && (n.type === "scene" || n.type === "chapter")})
+      const parents = Array
+        .from(Editor.levels(editor))
+        .map(([n, p]) => n)
+        .filter(e => elemIsBlock(editor, e));
+      const node = parents[parents.length - 1]
+      //console.log("Levels:", levels)
 
-      //console.log("Track:", marks, node, block)
-
-      setTrack({block, node, marks,})
+      //console.log("Track:", marks, node, parents)
+      setTrack({marks, node, parents})
     } catch(e) {
-      //console.log("Track marks error.")
+      //console.log("Track error:", e)
     }
   }, [setTrack])
 
@@ -199,7 +211,7 @@ export function SingleEditView({doc, updateDoc}) {
     trackMarks(bodyeditor)
     if(isAstChange(bodyeditor)) {
       updateDoc(doc => {
-        doc.body.chapters = buffer;
+        doc.body.acts = buffer;
         doc.body.words = wcElem({type: "sect", children: buffer})
       })
     }
@@ -209,7 +221,7 @@ export function SingleEditView({doc, updateDoc}) {
     trackMarks(noteeditor)
     if(isAstChange(noteeditor)) {
       updateDoc(doc => {
-        doc.notes.chapters = buffer
+        doc.notes.acts = buffer
         doc.notes.words = wcElem({type: "sect", children: buffer})
       })
     }
@@ -286,12 +298,12 @@ export function SingleEditView({doc, updateDoc}) {
     track,
     body: {
       editor: bodyeditor,
-      buffer: doc.body.chapters,
+      buffer: doc.body.acts,
       onChange: updateBody,
       },
     notes: {
       editor: noteeditor,
-      buffer: doc.notes.chapters,
+      buffer: doc.notes.acts,
       onChange: updateNotes,
     },
   }
@@ -376,6 +388,9 @@ export function SingleEditView({doc, updateDoc}) {
 
     console.log("onDragEnd:", result)
 
+    //console.log("DnD disabled")
+    //return
+
     const {type, draggableId, source, destination} = result;
 
     if(!destination) return;
@@ -399,6 +414,7 @@ export function SingleEditView({doc, updateDoc}) {
     }
 
     switch(type) {
+      case "chapter":
       case "scene": {
         const srcEditID = getSectIDByElemID(source.droppableId)
         const dstEditID = getSectIDByElemID(destination.droppableId)
@@ -409,15 +425,6 @@ export function SingleEditView({doc, updateDoc}) {
         break;
       }
 
-      case "chapter": {
-        const srcEditID = source.droppableId
-        const dstEditID = destination.droppableId
-        const srcEdit = getEditorBySectID(srcEditID)
-        const dstEdit = getEditorBySectID(dstEditID)
-
-        moveElem(srcEdit, draggableId, dstEditID, dstEdit, null, destination.index)
-        break;
-      }
       default:
         console.log("Unknown draggable type:", type, result)
         break;
@@ -445,7 +452,7 @@ function LeftPanel({settings}) {
       wcFormat={doc.ui.editor.body.words}
       activeID="body"
       setActive={setActive}
-      current={track.block.id}
+      parents={track.parents}
     />
   </VBox>
 }
@@ -517,7 +524,7 @@ function RightPanelContent({settings, selected}) {
         wcFormat={doc.ui.editor.notes.words}
         activeID="notes"
         setActive={setActive}
-        current={track.block.id}
+        parents={track.parents}
       />
     case "wordtable":
       return <WordTable

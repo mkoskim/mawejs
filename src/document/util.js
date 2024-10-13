@@ -78,7 +78,7 @@ export function createDateStamp(date) {
 //-----------------------------------------------------------------------------
 
 export function filterCtrlElems(blocks) {
-  const ctrltypes = ["hchapter", "hscene"]
+  const ctrltypes = ["hact", "hchapter", "hscene"]
   return blocks.filter(block => !ctrltypes.includes(block.type))
 }
 
@@ -92,26 +92,27 @@ export function elemAsText(elem) {
 }
 
 export function elemHeading(elem) {
-  if(elem.type === "chapter") {
-    if(elem.children.length && elem.children[0].type === "hchapter") {
-      return elem.children[0];
+
+  const [first] = elem.children ?? []
+  if(first) {
+    if(
+      (elem.type === "act" && first.type === "hact") ||
+      (elem.type === "chapter" && first.type === "hchapter") ||
+      (elem.type === "scene" && first.type === "hscene")
+    ) {
+      return first
     }
-    return undefined
   }
-  if(elem.type === "scene") {
-    if(elem.children.length && elem.children[0].type === "hscene") {
-      return elem.children[0];
-    }
-    return undefined
-  }
+
+  return undefined
 }
 
 export function elemName(elem) {
   return elemAsText(elemHeading(elem))
 }
 
-export function elemUnnumbered(elem) {
-  return elemHeading(elem)?.unnumbered
+export function elemNumbered(elem) {
+  return elemHeading(elem)?.numbered
 }
 
 //-----------------------------------------------------------------------------
@@ -141,16 +142,17 @@ export function wordcount(text) {
 export function createWordTable(section) {
   const wt = new Map()
 
-  for(const chapter of section.chapters) {
-    for(const scene of chapter.children) {
-      for(const p of scene.children) {
-        if(p.type !== "p") continue
-        for(const word of text2words(elemAsText(p))) {
-          const lowcase = word.toLowerCase()
-          const count = wt.has(lowcase) ? wt.get(lowcase) : 0
-          wt.set(lowcase, count + 1)
+  for(const act of section.acts) {
+    for(const chapter of filterCtrlElems(act.children)) {
+      for(const scene of filterCtrlElems(chapter.children)) {
+        for(const p of scene.children) {
+          if(p.type !== "p") continue
+          for(const word of text2words(elemAsText(p))) {
+            const lowcase = word.toLowerCase()
+            const count = wt.has(lowcase) ? wt.get(lowcase) : 0
+            wt.set(lowcase, count + 1)
+          }
         }
-
       }
     }
   }
@@ -165,12 +167,14 @@ export function createWordTable(section) {
 export function createTagTable(section) {
   const tags = new Set()
 
-  for(const chapter of section.chapters) {
-    for(const scene of chapter.children) {
-      for(const p of scene.children) {
-        const keys = elemTags(p)
-        for(const key of keys) {
-          tags.add(key);
+  for(const act of section.acts) {
+    for(const chapter of filterCtrlElems(act.children)) {
+      for(const scene of filterCtrlElems(chapter.children)) {
+        for(const p of scene.children) {
+          const keys = elemTags(p)
+          for(const key of keys) {
+            tags.add(key);
+          }
         }
       }
     }
@@ -213,6 +217,7 @@ export function wcElem(elem) {
 
   switch(elem.type) {
     case "sect":
+    case "act":
     case "chapter":
     case "scene":
       return wcChildren(elem.children)

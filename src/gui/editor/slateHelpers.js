@@ -15,10 +15,9 @@ import {
 } from 'slate'
 import { ReactEditor } from 'slate-react'
 
-import { sleep } from '../../util';
 import { nanoid } from 'nanoid';
 import { appBeep } from '../../system/host';
-import {elemTags} from '../../document/util';
+import {elemHeading, elemTags} from '../../document/util';
 
 //-----------------------------------------------------------------------------
 // Search pattern
@@ -46,7 +45,7 @@ export function searchPattern(text, opts = "gi") {
 //-----------------------------------------------------------------------------
 
 export function elemIsBlock(editor, elem) {
-  return elem && !Editor.isEditor(elem) && Editor.isBlock(editor, elem);
+  return elem && !Editor.isEditor(elem) && Element.isElement(elem);
 }
 
 function elemIsType(editor, elem, type) {
@@ -120,6 +119,7 @@ export function elemsByRange(editor, anchor, focus) {
 // Drag'n'drop po and push
 
 export function dndElemPop(editor, id) {
+
   const match = elemByID(editor, id)
   if(!match) return
 
@@ -143,7 +143,7 @@ export function dndElemPop(editor, id) {
 }
 
 export function dndElemPushTo(editor, block, id, index) {
-  //console.log("Push", id, index)
+  //console.log("Push", block, id, index)
 
   if(!block) return
 
@@ -152,30 +152,42 @@ export function dndElemPushTo(editor, block, id, index) {
     return elemByID(editor, id)
   }
 
-  const [container, cpath] = getContainer()
+  const [container, pcontainer] = getContainer()
+
+  //console.log("Container:", container)
+
+  //---------------------------------------------------------------------------
+  // Check if container has head element. If so, add +1 to index
+  //---------------------------------------------------------------------------
 
   function getChildIndex(container) {
-    const {type, children} = container
-    if(type === "chapter") {
-      if(children.length && children[0].type === "hchapter") {
-        return index+1
-      }
-    }
+    if(elemHeading(container)) return index+1
     return index
   }
 
   const childindex = getChildIndex(container)
-  const childpath = [...cpath, childindex]
+  const childpath = [...pcontainer, childindex]
+
+  //---------------------------------------------------------------------------
+  // Check that elem at drop point has header (prevent merge)
+  //---------------------------------------------------------------------------
+
+  const blockTypes = {
+    "act":     {header: "hact",     level: 1,                  contains: "chapter", },
+    "chapter": {header: "hchapter", level: 2, wrap: "act" ,    contains: "scene"},
+    "scene":   {header: "hscene",   level: 3, wrap: "chapter", },
+  }
 
   if(container.children.length > childindex) {
     const node = container.children[childindex]
-    const htype = (node.type === "chapter") ? "hchapter" : "hscene"
+    const htype = blockTypes[node.type].header
 
     if(!node.children.length || node.children[0].type !== htype) {
       Transforms.insertNodes(editor,
         {
           type: htype,
           id: nanoid(),
+          numbered: true,
           children: [{text: ""}]
         },
         {at: [...childpath, 0]}
@@ -186,6 +198,7 @@ export function dndElemPushTo(editor, block, id, index) {
   //console.log("Index at:", [...ppath, index])
   //console.log("Insert at:", childpath)
   Transforms.insertNodes(editor, block, {at: childpath})
+
 }
 
 //-----------------------------------------------------------------------------
@@ -283,7 +296,7 @@ export function toggleFold(editor) {
   //console.log("Toggle fold", path, node)
 
   //const foldable = ["chapter", "scene", "synopsis", "comment", "missing"]
-  const foldable = ["chapter", "scene"]
+  const foldable = ["act", "chapter", "scene"]
 
   const [node, path] = Editor.above(editor, {
     at: anchor,
@@ -314,40 +327,53 @@ export function foldByTags(editor, tags) {
   const tagset = new Set(tags)
   var folders = []
 
-  // Go through chapters
-  for(const chapter of Node.children(editor, []))
-  {
-    const [node, path] = chapter
+  // Go through acts, chapters and scenes
+  for(const act of Node.children(editor, [])) {
+    const [node, path] = act
 
-    var chaptertags = new Set()
+    var acttags = new Set()
 
-    // Go through scenes
-    for(const scene of Node.children(editor, path)) {
-      const [node, path] = scene
-      if(node.type !== "scene") continue
+    for(const chapter of Node.children(editor, path))
+    {
+      const [node, path] = chapter
 
-      const scenetags = new Set()
+      if(node.type !== "chapter") continue
 
-      // Go through blocks and get tags
-      for(const elem of Node.children(editor, path)) {
-        const [node, path] = elem
+      var chaptertags = new Set()
 
-        for(const key of elemTags(node)) {
-          scenetags.add(key)
+      // Go through scenes
+      for(const scene of Node.children(editor, path)) {
+        const [node, path] = scene
+        if(node.type !== "scene") continue
+
+        const scenetags = new Set()
+
+        // Go through blocks and get tags
+        for(const elem of Node.children(editor, path)) {
+          const [node, path] = elem
+
+          for(const key of elemTags(node)) {
+            scenetags.add(key)
+          }
         }
+
+        const hastags = tagset.intersection(scenetags).size > 0
+        folders.push({node, path, folded: !hastags})
+        //console.log("Scene:", path, node.type, hastags, scenetags);
+
+        chaptertags = chaptertags.union(scenetags)
       }
 
-      const hastags = tagset.intersection(scenetags).size > 0
+      const hastags = tagset.intersection(chaptertags).size > 0
       folders.push({node, path, folded: !hastags})
-      //console.log("Scene:", path, node.type, hastags, scenetags);
 
-      chaptertags = chaptertags.union(scenetags)
+      acttags = acttags.union(chaptertags)
+
+      //console.log("Chapter:", path, node.type, hastags, chaptertags);
     }
 
-    const hastags = tagset.intersection(chaptertags).size > 0
+    const hastags = tagset.intersection(acttags).size > 0
     folders.push({node, path, folded: !hastags})
-
-    //console.log("Chapter:", path, node.type, hastags, chaptertags);
   }
 
   Editor.withoutNormalizing(editor, () => {

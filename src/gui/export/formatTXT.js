@@ -40,12 +40,26 @@ ${content}
 
   split: (paragraphs) => paragraphs.join("\n    "),
 
+  hact: (id, number, name, options) => {
+    if(options.skip) return ""
+
+    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
+    const title = options.name ? [escape(name)] : []
+    const head = [ ...numbering, ...title].join(". ")
+
+    if(!head) return ""
+
+    return `${head}\n\n`
+  },
+
   hchapter: (id, number, name, options) => {
     if(options.skip) return ""
 
     const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
     const title = options.name ? [escape(name)] : []
     const head = [ ...numbering, ...title].join(". ")
+
+    if(!head) return ""
 
     return `${head}\n\n`
   },
@@ -106,12 +120,26 @@ ${content}
   // Headings
   //---------------------------------------------------------------------------
 
+  hact: (id, number, name, options) => {
+    if(options.skip) return ""
+
+    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
+    const title = options.name ? [escape(name)] : []
+    const head = [ ...numbering, ...title].join(". ")
+
+    if(!head) return ""
+
+    return `# ${head}\n\n`
+  },
+
   hchapter: (id, number, name, options) => {
     if(options.skip) return ""
 
     const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
     const title = options.name ? [escape(name)] : []
     const head = [ ...numbering, ...title].join(". ")
+
+    if(!head) return ""
 
     return `## ${head}\n\n`
   },
@@ -124,8 +152,8 @@ ${content}
   "missing": (p,text) => `!! ${text}`,
   "p": (p, text) => `${text}`,
 
-  "b": (text) => `[b]${text}[/b]`,
-  "i": (text) => `[i]${text}[/i]`,
+  "b": (text) => `**${text}**`,
+  "i": (text) => `_${text}_`,
   "text": (text) => text,
 }
 

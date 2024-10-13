@@ -10,7 +10,7 @@ import { saveViewSettings } from "../../gui/app/views";
 import { saveChartSettings } from "../../gui/arc/arc";
 import { saveEditorSettings } from "../../gui/editor/editor";
 import {saveExportSettings} from "../../gui/export/export";
-import {uuid as getUUID, buf2file, elemName, filterCtrlElems, elemUnnumbered} from "../util";
+import {uuid as getUUID, buf2file, elemName, filterCtrlElems, elemNumbered} from "../util";
 
 //----------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ export function toXML(doc) {
       attributes: {
         uuid: doc.uuid ?? getUUID(),
         format: "mawe",
-        version: "3",
+        version: "4",
         name: doc.head?.name
       }
     },
@@ -107,20 +107,42 @@ function toExport(exports) {
 
 
 function toBody(body) {
-  const {chapters} = body;
+  const {acts} = body;
 
   return xmlLines(
     {type: "body"},
-    ...chapters.map(toChapter),
+    ...acts.map(toAct),
   )
 }
 
 function toNotes(notes) {
-  const {chapters} = notes;
+  const {acts} = notes;
 
   return xmlLines(
     {type: "notes"},
-    ...chapters.map(toChapter)
+    ...acts.map(toAct)
+  )
+}
+
+//-----------------------------------------------------------------------------
+// Acts
+//-----------------------------------------------------------------------------
+
+function toAct(act) {
+  const {folded} = act;
+  const name = elemName(act)
+  const numbered = elemNumbered(act)
+
+  return xmlLines(
+    {
+      type: "act",
+      attributes: {
+        name: name,
+        folded: folded ? true : undefined,
+        numbered: numbered ? true : undefined,
+      },
+    },
+    ...filterCtrlElems(act.children).map(toChapter),
   )
 }
 
@@ -131,7 +153,7 @@ function toNotes(notes) {
 function toChapter(chapter) {
   const {folded} = chapter;
   const name = elemName(chapter)
-  const unnumbered = elemUnnumbered(chapter)
+  const numbered = elemNumbered(chapter)
 
   return xmlLines(
     {
@@ -139,7 +161,7 @@ function toChapter(chapter) {
       attributes: {
         name: name,
         folded: folded ? true : undefined,
-        unnumbered: unnumbered ? true : undefined,
+        numbered: numbered ? true : undefined,
       },
     },
     ...filterCtrlElems(chapter.children).map(toScene),

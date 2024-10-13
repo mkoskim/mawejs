@@ -49,6 +49,19 @@ ${content}
   // Headings
   //---------------------------------------------------------------------------
 
+  hact: (id, number, name, options) => {
+    if(options.skip) return `<div id=${id}></div>`
+
+    const pgbreak = options.pgbreak ? "<hr/>\n" : ""
+    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
+    const title = options.name ? [escape(name)] : []
+    const head = [ ...numbering, ...title].join(". ")
+
+    if(!head) return ""
+
+    return `${pgbreak}<h1 id="${id}">${head}</h1>`
+  },
+
   hchapter: (id, number, name, options) => {
     if(options.skip) return `<div id=${id}></div>`
 
@@ -56,6 +69,8 @@ ${content}
     const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
     const title = options.name ? [escape(name)] : []
     const head = [ ...numbering, ...title].join(". ")
+
+    if(!head) return ""
 
     return `${pgbreak}<h2 id="${id}">${head}</h2>`
   },
