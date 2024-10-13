@@ -292,8 +292,9 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected}/>
     <Separator/>
     <HeadInfo head={head} updateDoc={updateDoc}/>
-
+    <Separator />
     <Filler />
+
     <Separator/>
     <WordsToday text={text} last={doc.head.last}/>
     <Separator/>
@@ -301,6 +302,7 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
     <Separator/>
     <CharInfo chars={chars}/>
     {/* <CloseButton setCommand={setCommand}/> */}
+
     <Separator />
     <HelpButton setCommand={setCommand}/>
     <SettingsButton />
