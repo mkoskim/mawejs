@@ -31,7 +31,7 @@ import {
   DeferredRender,
 } from "../common/factory";
 
-import { OpenFolderButton, HeadInfo, WordInfo, CharInfo, WordsToday } from "../common/components";
+import { OpenFolderButton, HeadInfo, WordInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords } from "../common/components";
 
 import { SnackbarProvider } from "notistack";
 
@@ -293,15 +293,23 @@ function WithDoc({setCommand, doc, updateDoc, recent}) {
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected}/>
     <Separator/>
     {/* No need for real time rendering */}
-    <DeferredRender>
+
     <HeadInfo head={head} updateDoc={updateDoc}/>
+
     <Separator />
     <Filler />
+    <Separator/>
 
+    <ActualWords text={text}/>
     <Separator/>
-    <WordInfo text={text} missing={missing} chars={chars} last={doc.head.last}/>
+    <WordsToday text={text} last={doc.head.last}/>
     <Separator/>
-    </DeferredRender>
+    <TargetWords text={text} missing={missing}/>
+    &nbsp;
+    <MissingWords missing={missing}/>
+    <Separator/>
+    <CharInfo chars={chars}/>
+
     {/* <CloseButton setCommand={setCommand}/> */}
 
     <Separator />
