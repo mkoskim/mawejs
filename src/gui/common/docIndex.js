@@ -106,6 +106,9 @@ class ActItem extends React.PureComponent {
   render() {
     const {elem, wcFormat, activeID, include, onActivate, unfold, current, refCurrent} = this.props
 
+    const hasDropzone = (include.includes("chapter")) && (unfold || !elem.folded)
+    //const hasDropzone = (unfold || !elem.folded)
+
     return <div>
       <IndexItem
         id={elem.id}
@@ -119,8 +122,9 @@ class ActItem extends React.PureComponent {
         current={current}
         refCurrent={refCurrent}
       />
-      <ChapterDropZone
+      {hasDropzone && <ChapterDropZone
         id={elem.id}
+        folded={!unfold && elem.folded}
         chapters={elem.children}
         wcFormat={wcFormat}
         include={include}
@@ -128,7 +132,7 @@ class ActItem extends React.PureComponent {
         unfold={unfold}
         current={current}
         refCurrent={refCurrent}
-      />
+      />}
     </div>
   }
 }
@@ -192,6 +196,8 @@ class ChapterItem extends React.PureComponent {
     const {innerRef, draggableProps, dragHandleProps} = provided
 
     const hasDropzone = (include.includes("scene")) && (unfold || !elem.folded)
+
+    //console.log(include)
 
     return <div
       ref={innerRef}

@@ -104,8 +104,8 @@ export function StoryArc({doc, updateDoc}) {
 
   function indexElements() {
     switch(doc.ui.arc.elements) {
-      case "acts":
-      case "chapters": return ["chapter"]
+      case "act": return []
+      case "chapter": return ["chapter"]
     }
     return ["chapter", "scene"]
   }

@@ -229,7 +229,7 @@
 .Sheet h4.Numbered::before {
   margin-right: 4pt;
   counter-increment: act;
-  content: "<Act " counter(act, upper-roman) "> ";
+  content: "Act " counter(act, upper-roman) ":";
 }
 
 /* Chapter */ .Sheet h5 {

@@ -126,7 +126,7 @@ export function SlateEditable({className, highlight, ...props}) {
 // Turn some debug features on/off - off by default
 
 const debug = {
-  blocks: "withBorders",  // Borders around chapter & scene div's to make them visible
+  //blocks: "withBorders",  // Borders around chapter & scene div's to make them visible
 }
 
 function renderElement({element, attributes, ...props}) {
@@ -387,6 +387,19 @@ export function EditButtons({editor, track}) {
 //
 //*****************************************************************************
 
+function toggleNumbering(editor, type) {
+  const [node, path] = Editor.above(editor, {
+    match: n => Editor.isBlock(editor, n),
+  })
+
+  if(node.type === type) {
+    const {numbered} = node
+    Transforms.setNodes(editor, {numbered: !numbered})
+    return true;
+  }
+  return false
+}
+
 function onKeyDown(editor, event) {
 
   //---------------------------------------------------------------------------
@@ -481,22 +494,16 @@ function onKeyDown(editor, event) {
 
   if(IsKey.CtrlAlt1(event)) {
     event.preventDefault()
-    Transforms.setNodes(editor, {type: "hact"})
+    //if(toggleNumbering(editor, "hact")) return
+    Transforms.setNodes(editor, {type: "hact", numbered: undefined})
     return ;
   }
 
   if(IsKey.CtrlAlt2(event)) {
     event.preventDefault()
-    const [node, path] = Editor.above(editor, {
-      match: n => Editor.isBlock(editor, n),
-    })
     //console.log(node)
-    if(node.type === "hchapter") {
-      const {numbered} = node
-      Transforms.setNodes(editor, {numbered: !numbered})
-      return;
-    }
-    Transforms.setNodes(editor, {type: "hchapter"})
+    if(toggleNumbering(editor, "hchapter")) return
+    Transforms.setNodes(editor, {type: "hchapter", numbered: true})
     return ;
   }
 

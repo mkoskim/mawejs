@@ -76,9 +76,15 @@ export function loadEditorSettings(settings) {
     if(!body) return {}
     const {words, indexed} = body.attributes
 
+    const fixed = (indexed ?? ["chapter", "scene"])
+      .split(",")
+      .filter(s => s !== "part")
+      .filter(s => s !== "chapter")
+      .concat(["chapter"])
+
     return {
       ...(words ? {words} : {}),
-      ...(indexed ? {indexed: indexed.split(",")} : {})
+      ...(indexed ? {indexed: fixed} : {})
     }
   }
 
