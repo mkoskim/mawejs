@@ -125,9 +125,9 @@ ${renewCommands(options, sides)}
 % Doc Info
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\\author{${author ?? ""}}
-\\title{${title ?? ""}}
-\\subtitle{${subtitle ?? ""}}
+\\author{${escape(author) ?? ""}}
+\\title{${escape(title) ?? ""}}
+\\subtitle{${escape(subtitle) ?? ""}}
 `
 }
 

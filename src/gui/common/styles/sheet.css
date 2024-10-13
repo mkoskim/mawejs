@@ -150,8 +150,8 @@
   */
 }
 
-.Sheet div.folded::before {
-  margin-right: 6pt;
+.Sheet div.folded::after {
+  margin-left: 6pt;
   content: "•••";
   font-size: 10pt;
   color: grey;
