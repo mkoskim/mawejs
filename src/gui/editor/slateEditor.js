@@ -573,7 +573,8 @@ export function getEditor() {
     // Base editor
     withHistory,
     withIDs,              // Autogenerate IDs
-    withWordCount,        // Autogenerate word counts
+    //withWordCount,      // Autogenerate word counts
+    withNodeData,         // Maintain word counts & IDs
     withBreaks,           // empty <p> -> <br>
     withFixNesting,       // Keep correct nesting: chapter -> scene -> paragraph
     withMarkup,           // Markups (##, **, //, etc)
@@ -797,87 +798,6 @@ function withMarkup(editor) {
   }
 
   return editor
-}
-
-//*****************************************************************************
-//
-// Ensure that indexable blocks have unique ID
-//
-//*****************************************************************************
-
-function withIDs(editor) {
-
-  const { normalizeNode } = editor;
-
-  const indexable = new Set([
-    "act", "chapter", "scene",
-    "synopsis", "comment",
-    "missing", "fill",
-    "tags"
-  ])
-
-  editor.normalizeNode = (entry)=> {
-    const [node, path] = entry
-
-    // When argument is whole editor (all blocks)
-    if(path.length > 0) return normalizeNode(entry);
-
-    //console.log("Path/Node:", path, node)
-
-    const blocks = Editor.nodes(editor, {
-      at: [],
-      match: (node, path) => (
-        Element.isElement(node)
-        && indexable.has(node.type)
-      ),
-    })
-
-    //console.log(Array.from(blocks))
-
-    const ids = new Set()
-
-    for(const block of blocks) {
-      const [node, path] = block
-
-      if(!node.id || ids.has(node.id)) {
-        console.log("ID clash fixed:", node.id, path)
-        const id = nanoid()
-        Transforms.setNodes(editor, {id}, {at: path})
-        ids.add(id)
-      }
-      else {
-        ids.add(node.id)
-      }
-    }
-
-    return normalizeNode(entry)
-  }
-
-  return editor
-}
-
-//*****************************************************************************
-//
-// With Word Count
-//
-//*****************************************************************************
-
-function withWordCount(editor) {
-  const { normalizeNode } = editor;
-
-  editor.normalizeNode = (entry)=> {
-    const [node, path] = entry
-
-    const words = wcElem(node)
-    if(!wcCompare(words, node.words)) {
-      Transforms.setNodes(editor, {words}, {at: path})
-      return;
-    }
-
-    return normalizeNode(entry);
-  }
-
-  return editor;
 }
 
 //*****************************************************************************
@@ -1161,4 +1081,132 @@ function withFixNesting(editor) {
     // Otherwise the block is fine as it is
     return true
   }
+}
+
+//*****************************************************************************
+//
+// Store data to node: word counts and IDs
+//
+//*****************************************************************************
+
+function withNodeData(editor) {
+  const { normalizeNode } = editor;
+
+  editor.normalizeNode = (entry)=> {
+    const [node, path] = entry
+
+    if(Editor.isEditor(node)) return
+    if(!Element.isElement(node)) return
+
+    const update = {
+      ...countWords(editor, node, path),
+      ...checkIDs(editor, node, path),
+    }
+    if(Object.keys(update).length) {
+      console.log("Updating:", path, update)
+      Transforms.setNodes(editor, update, {at: path})
+      return;
+    }
+
+    return normalizeNode(entry);
+  }
+
+  return editor;
+}
+
+//-----------------------------------------------------------------------------
+
+function countWords(editor, node, path) {
+  const words = wcElem(node)
+  return wcCompare(words, node.words) ? {} : {words}
+}
+
+//-----------------------------------------------------------------------------
+
+function checkIDs(editor, node, path) {
+  switch(node.type) {
+    case "sect":
+    case "act":
+    case "chapter":
+      return {}
+      //return idCombine()
+    case "scene":
+      sceneIDs(editor, node, path)
+      return {}
+  }
+  // Default
+  return {}
+}
+
+function setNodeID(editor, node, path) {
+  const id = nanoid()
+  Transforms.setNodes(editor, {id}, {at: path})
+  return id
+}
+
+function sceneIDs(editor, node, path) {
+
+  const ids = new Set([node.id ?? setNodeID(editor, node, path)])
+
+  for(const [index, child] of node.children.entries()) {
+    console.log(index, child)
+    //ids.add(child.id)
+
+    if(!child.id || ids.has(child.id)) {
+      //console.log("ID clash:", child.id, index)
+      const id = setNodeID(editor, child, path.concat([index]))
+      ids.add(id)
+    }
+    else {
+      ids.add(child.id)
+    }
+  }
+
+  console.log("Node:", ids)
+  return {}
+}
+
+//-----------------------------------------------------------------------------
+// Old implementation to check that new one works
+//-----------------------------------------------------------------------------
+
+function withIDs(editor) {
+
+  const { normalizeNode } = editor;
+
+  editor.normalizeNode = (entry)=> {
+    const [node, path] = entry
+
+    // When argument is whole editor (all blocks)
+    if(path.length > 0) return normalizeNode(entry);
+
+    //console.log("Path/Node:", path, node)
+
+    const blocks = Editor.nodes(editor, {
+      at: [],
+      match: (node, path) => Element.isElement(node),
+    })
+
+    //console.log(Array.from(blocks))
+
+    const ids = new Set()
+
+    for(const block of blocks) {
+      const [node, path] = block
+
+      if(!node.id || ids.has(node.id)) {
+        console.log("WithIDs: ID clash fixed:", node.id, path)
+        const id = nanoid()
+        Transforms.setNodes(editor, {id}, {at: path})
+        ids.add(id)
+      }
+      else {
+        ids.add(node.id)
+      }
+    }
+
+    return normalizeNode(entry)
+  }
+
+  return editor
 }
