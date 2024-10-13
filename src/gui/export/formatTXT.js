@@ -152,8 +152,8 @@ ${content}
   "missing": (p,text) => `!! ${text}`,
   "p": (p, text) => `${text}`,
 
-  "b": (text) => `[b]${text}[/b]`,
-  "i": (text) => `[i]${text}[/i]`,
+  "b": (text) => `**${text}**`,
+  "i": (text) => `_${text}_`,
   "text": (text) => text,
 }
 

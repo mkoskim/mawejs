@@ -60,7 +60,7 @@ ${fonts}
 ${colors}
 {\\info
 {\\title ${escape(title)}}
-{\\author ${escape(author)}}
+${author ? `{\\author ${escape(author)}}` : ""}
 }
 \\deflang${langcode}
 ${singleA4}
@@ -74,7 +74,7 @@ ${escape(headinfo)}\\tab ${pgnum} / ${pgtot}
 \\lang${langcode}
 \\sl440
 
-{\\sa220\\qc ${escape(author)}\\par}
+${author ? `{\\sa220\\qc ${escape(author)}\\par}` : ""}
 {\\sa440\\qc\\b\\fs34 ${escape(title)}\\par}
 ${subtitle ? "{\\sa440\\qc\\b\\fs28" + escape(subtitle) + "\\par}" : ""}
 
@@ -109,14 +109,14 @@ ${content}
   hact: (id, number, name, options) => {
     if(options.skip) return ""
 
-    const pgbreak = options.pgbreak ? "\\pagebb" : "\\sb480"
+    const pgbreak = options.pgbreak ? "\\pagebb" : ""
     const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
     const title = options.name ? [escape(name)] : []
     const head = [ ...numbering, ...title].join(". ")
 
     if(!head) return ""
 
-    return `{${pgbreak}\\b\\fs28 ${head}\\par}\n`
+    return `{${pgbreak}\\sb1000\\qc\\b\\fs32 ${head}\\par}\n`
   },
 
   hchapter: (id, number, name, options) => {

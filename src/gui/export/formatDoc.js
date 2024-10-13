@@ -18,6 +18,11 @@ function getActOptions(acts, pgbreak) {
       numbered:   { pgbreak, name: true},
       unnumbered: { pgbreak, name: true }
     }
+    case "separated": return {
+      separator: "* * *",
+      numbered:   { skip: true },
+      unnumbered: { skip: true }
+    }
   }
   return {
     numbered: {skip: true},

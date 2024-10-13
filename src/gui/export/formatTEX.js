@@ -56,6 +56,13 @@ function renewCommands(options, sides) {
   ${pgbreak ? newpage : "\\vskip 48pt"}
 }
 
+\\renewcommand\\part[1] {
+  \\if@titlepage${newpage}\\fi
+  \\null\\vskip 2cm
+  \\begin{center}{\\Huge #1}\\end{center}
+}
+
+
 \\newcommand\\innertitle{{\\center{\\Large\\@title\\vskip 48pt}}}
 
 \\newcommand{\\RNum}[1]{\\uppercase\\expandafter{\\romannumeral #1\\relax}}
