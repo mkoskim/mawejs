@@ -14,16 +14,8 @@ import { splitByTrailingElem } from "../../util";
 
 function getActOptions(acts, pgbreak) {
   switch(acts) {
-    case "numbered": return {
-      numbered:   { pgbreak, number: true},
-      unnumbered: { pgbreak, name: true }
-    }
     case "named": return {
       numbered:   { pgbreak, name: true},
-      unnumbered: { pgbreak, name: true }
-    }
-    case "numbered&named": return {
-      numbered:   { pgbreak, number: true, name: true},
       unnumbered: { pgbreak, name: true }
     }
   }

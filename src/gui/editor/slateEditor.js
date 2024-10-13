@@ -676,7 +676,7 @@ const blockstyles = {
 // TODO: Generate this table
 
 const MARKUP = {
-  "** ": {type: "hact", numbered: true},
+  "** ": {type: "hact", numbered: undefined},
   "# " : {type: "hchapter", numbered: true},
   "#! ": {type: "hchapter", numbered: undefined},
   "## ": {type: "hscene"},

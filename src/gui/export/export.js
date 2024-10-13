@@ -66,7 +66,7 @@ export function loadExportSettings(settings) {
   return {
     format: "rtf1",
     type: "short",
-    acts: "numbered",
+    acts: "none",
     chapters: "numbered",
     scenes: "none",
     ...(settings?.attributes ?? {})
@@ -74,9 +74,10 @@ export function loadExportSettings(settings) {
 }
 
 export function saveExportSettings(settings) {
-  const {type, chapters, scenes} = settings
+  const {type, acts, chapters, scenes} = settings
   return {type: "export", attributes: {
     type,
+    acts,
     chapters,
     scenes,
   }}
@@ -140,10 +141,8 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
 
     <Separator/>
     <TextField select label="Acts" value={exports.acts} onChange={e => updateDocActElem(updateDoc, e.target.value)}>
-      <MenuItem value="numbered">Numbered</MenuItem>
-      <MenuItem value="named">Named</MenuItem>
-      <MenuItem value="numbered&named">Numbered & Named</MenuItem>
       <MenuItem value="none">None</MenuItem>
+      <MenuItem value="named">Named</MenuItem>
       </TextField>
 
     <Separator/>
