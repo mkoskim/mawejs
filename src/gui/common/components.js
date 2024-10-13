@@ -255,38 +255,62 @@ export class HeadInfo extends React.PureComponent {
   }
 }
 
+/*
 export class WordInfo extends React.PureComponent {
   render() {
     const {text, missing, last, chars} = this.props;
 
-    const detail = missing ? `-${missing}` : ""
-
     return <>
-      Words:&nbsp;<span style={{color: "green"}}>{text}</span>
+      <ActualWords text={text}/>
       <Separator/>
       <WordsToday text={text} last={last}/>
       <Separator/>
-      Target: {text + missing}&nbsp;<span style={{color: "firebrick"}}>{detail}</span>
+      <TargetWords text={text} missing={missing}/>
+      <MissingWords missing={missing}/>
       <Separator/>
       <CharInfo chars={chars}/>
     </>
   }
 }
+*/
 
-class CharInfo extends React.PureComponent {
+export class ActualWords extends React.PureComponent {
   render() {
-    const {chars} = this.props;
-
-    return <Label>Chars: {chars}</Label>
+    const {text} = this.props
+    return <>Words:&nbsp;<span style={{color: "green"}}>{text}</span></>
   }
 }
 
-class WordsToday extends React.PureComponent {
+export class TargetWords extends React.PureComponent {
+  render() {
+    const {text, missing} = this.props
+    return <>Target: {text + missing}</>
+  }
+}
+
+export class MissingWords extends React.PureComponent {
+  render() {
+    const {missing} = this.props
+    const detail = missing ? `-${missing}` : ""
+
+    return <span style={{color: "firebrick"}}>{detail}</span>
+  }
+}
+
+export class CharInfo extends React.PureComponent {
+  render() {
+    const {chars} = this.props;
+
+    return <>Chars: {chars}</>
+  }
+}
+
+export class WordsToday extends React.PureComponent {
   render() {
     const {text, last} = this.props;
     if(!last) return null;
 
     const delta = text - last.text
-    return <Label>Today: {delta >= 0 ? "+" : ""}{delta}</Label>
+    return <>Today: {delta >= 0 ? "+" : ""}{delta}</>
   }
 }
