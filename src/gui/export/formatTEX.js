@@ -4,10 +4,6 @@
 //
 // ****************************************************************************
 
-import { elemAsText, elemName } from "../../document"
-
-//-----------------------------------------------------------------------------
-
 function paperSize(sides) {
   if(sides === "twoside") {
     return "\\usepackage[a5paper, nohead, top=0.5in, inner=1.25in, outer=0.5in]{geometry}"
