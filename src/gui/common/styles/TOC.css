@@ -47,6 +47,7 @@
 /* ---------------------------------------------------------------------------- */
 
 .TOC .ActName {
+  border-top: 1px dashed gray;
   font-weight: bold;
   /*
   padding-top: 4pt !important;
@@ -162,6 +163,12 @@
 
 .TOC .BookmarkName {
   padding-left: 0.5cm !important;
+}
+
+.TOC .WordCount {
+  margin-left: 6pt;
+  min-width: 2cm;
+  text-align: right;
 }
 
 /* ---------------------------------------------------------------------------- */

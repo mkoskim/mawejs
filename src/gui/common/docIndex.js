@@ -380,7 +380,7 @@ class IndexItem extends React.PureComponent {
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       {/*<ItemLabel name={id}/>*/}
       <Filler/>
-      {wcFormat && wcFormat(id, words)}
+      <span className="WordCount">{wcFormat && wcFormat(id, words)}</span>
       </HBox>
     </ScrollRef>
   }
