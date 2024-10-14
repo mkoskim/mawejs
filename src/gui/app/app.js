@@ -71,19 +71,11 @@ const fs = require("../../system/localfs")
 //
 //*****************************************************************************
 
-function compareDocs(a, b) {
-  return (
-    a?.head === b?.head
-    && a?.body === b?.body
-    && a?.notes === b?.notes
-    && a?.exports === b?.exports
-  )
-}
-
 export default function App(props) {
-  useEffect(() => addHotkeys([
-    [IsKey.CtrlQ,  (e) => appQuit()],
-  ]));
+
+  //---------------------------------------------------------------------------
+  // External settings
+  //---------------------------------------------------------------------------
 
   const [recent, setRecent] = useSetting("recent", [])
 
@@ -91,11 +83,36 @@ export default function App(props) {
     recent, setRecent,
   }), [recent, setRecent])
 
+  //---------------------------------------------------------------------------
+  // Loaded story
+  //---------------------------------------------------------------------------
+
   const [doc, updateDoc] = useImmer(null)
+
+  //---------------------------------------------------------------------------
+  // Simple dirty logic. Use shallow compare to elements stored to disk (but
+  // not ui element)
+  //---------------------------------------------------------------------------
+
   const [saved, setSaved] = useState(null)
+
+  const dirty = !(
+    doc?.body === saved?.body
+    && doc?.notes === saved?.notes
+    && doc?.head === saved?.head
+    && doc?.exports === saved?.exports
+  )
+
+  //---------------------------------------------------------------------------
+  // Data we are trying to import (open in a dialog)
+  //---------------------------------------------------------------------------
+
   const [importing, setImporting] = useState()
 
-  const dirty = !compareDocs(doc, saved)
+  //---------------------------------------------------------------------------
+  // Simple command structure for deeper level components to ask Application
+  // to perform operations
+  //---------------------------------------------------------------------------
 
   const [command, setCommand] = useState()
   //console.log("Doc:", doc)
@@ -147,6 +164,14 @@ export default function App(props) {
       document.title = "MaweJS"
     }
   }, [doc?.head, dirty])
+
+  //---------------------------------------------------------------------------
+  // Add application hotkeys common to all views
+  //---------------------------------------------------------------------------
+
+  useEffect(() => addHotkeys([
+    [IsKey.CtrlQ, (e) => appQuit()],
+  ]));
 
   //---------------------------------------------------------------------------
   // Render

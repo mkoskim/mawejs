@@ -89,7 +89,7 @@ export function ImportView({updateDoc, buffer, setBuffer}) {
     })
   }, [buffer, setContent, setFormat, setBuffer])
 
-  return <VBox style={{ overflow: "auto", padding: "4pt"}}>
+  return <VBox style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
     <ImportBar format={format} setFormat={setFormat} imported={imported} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
     <HBox style={{ overflow: "auto" }}>
       <Preview imported={imported}/>
@@ -127,7 +127,7 @@ function ImportBar({format, setFormat, imported, updateDoc, buffer, setBuffer}) 
   return <ToolBox>
     <Label>Import: {buffer.file?.name ?? "Clipboard"}</Label>
     <Separator/>
-    <Label>{formats[format]?.name ?? format}</Label>
+    <Label>Format: {formats[format]?.name ?? format}</Label>
     {/*<SelectFormatButton value={format} setFormat={setFormat}/>*/}
     <Separator/>
     <Filler/>

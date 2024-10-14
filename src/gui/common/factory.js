@@ -116,14 +116,14 @@ export class FlexBox extends React.PureComponent {
 export class VBox extends React.PureComponent {
   render() {
     const {className, ...props} = this.props
-    return <div className={addClass(className, "VBox")} {...props} />
+    return <div className={addClass("VBox", className)} {...props} />
   }
 }
 
 export class HBox extends React.PureComponent {
   render() {
     const {className, ...props} = this.props
-    return <div className={addClass(className, "HBox")} {...props}/>
+    return <div className={addClass("HBox", className)} {...props}/>
   }
 }
 
