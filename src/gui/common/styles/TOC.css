@@ -197,7 +197,7 @@
 }
 
 .TOC .Entry:hover {
-  background-color: lightgrey;
+  background-color: lightgrey !important;
 }
 
 .TOC .Entry .Name {
