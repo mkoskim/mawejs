@@ -85,8 +85,8 @@
 /* ---------------------------------------------------------------------------- */
 
 .TOC .ChapterName {
-  /*
   font-weight: bold;
+  /*
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
   */
@@ -138,7 +138,7 @@
 }
 
 .TOC .SceneName {
-  padding-left: 1.00cm !important;
+  padding-left: 0.5cm !important;
   /*
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
