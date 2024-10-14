@@ -24,6 +24,8 @@ Check out discussions page for status:
 
 https://github.com/mkoskim/mawejs/discussions/88
 
+**Oct 13, 2024:** Added "acts", "chapter containers" as top-most elements.
+
 **Oct 10, 2024:** I added mechanism to create **unnumbered chapters**: creating, loading, saving and exporting those. You can use these for various purposes, when you want a chapter element, but don't want it to mess with chapter numbering.
 
 **Oct 9, 2024:** I worked a bit with file imports. When importing, MaweJS now has dialog to **import preview**, where you can see what's going to be imported. You can set some options, like newlines (single or double), and patterns to separate parts and scenes. I added "mammoth" library to read **.docx** files and convert them to text for importing. Furthermore, there is now new **Import From Clipboard**. You can copy text from various sources, and choosing this option opens the clipboard content in import preview.
