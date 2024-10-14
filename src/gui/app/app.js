@@ -157,7 +157,6 @@ export default function App(props) {
   //---------------------------------------------------------------------------
 
   useEffect(() => {
-    console.log("Set title")
     if(doc?.head) {
       document.title = (dirty ? "* ": "") + mawe.info(doc.head).title + " - MaweJS"
     } else {

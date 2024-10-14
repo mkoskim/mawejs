@@ -344,16 +344,16 @@ class SceneItem extends React.PureComponent {
 class IndexItem extends React.PureComponent {
 
   static typeClasses = {
-    "section": "SectionName",
-    "act": "ActName",
-    "chapter": "ChapterName",
-    "scene": "SceneName",
+    "section": "Section",
+    "act": "Act",
+    "chapter": "Chapter",
+    "scene": "Scene",
 
-    "missing": "BookmarkName",
-    "comment": "BookmarkName",
-    "synopsis": "BookmarkName",
-    "fill": "BookmarkName",
-    "tags": "BookmarkName",
+    "missing": "Bookmark",
+    "comment": "Bookmark",
+    "synopsis": "Bookmark",
+    "fill": "Bookmark",
+    "tags": "Bookmark",
   }
 
   static numbered = ["act", "chapter"]
@@ -375,7 +375,7 @@ class IndexItem extends React.PureComponent {
     }
 
     return <ScrollRef current={current} id={id} refCurrent={refCurrent}>
-      <HBox className={addClass(className, typeClass, numClass, foldClass, "Entry")} onClick={onClick} {...rest}>
+      <HBox className={addClass(className, "Entry", typeClass, numClass, foldClass)} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       {/*<ItemLabel name={id}/>*/}
