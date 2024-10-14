@@ -31,9 +31,11 @@
 
 /* ---------------------------------------------------------------------------- */
 
+/*
 .TOC div.Chapter, .TOC div.Scene {
   background: #F5F7F9;
 }
+*/
 
 .TOC div.Scene:hover {
   background-color: #DEF;
