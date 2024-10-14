@@ -1,4 +1,4 @@
-<story uuid="e45c2204-9d70-498d-a898-f377b6b5d184" format="mawe" version="3" name="">
+<story uuid="e45c2204-9d70-498d-a898-f377b6b5d184" format="mawe" version="4" name="">
 <!--/
 ===============================================================================
 
@@ -11,12 +11,13 @@ STORY:
 <subtitle>The Modern Prometheus</subtitle>
 <author>Mary Shelley</author>
 </head>
-<export type="short" chapterelem="chapter" chaptertype="separated"/>
+<export type="long" acts="none" chapters="named" scenes="none"/>
 <!--/
 ===============================================================================
 /-->
 <body>
-<chapter name="PREFACE" unnumbered="true">
+<act name="">
+<chapter name="PREFACE">
 <scene name="">
 <p>The Project Gutenberg eBook of Frankenstein; Or, The Modern Prometheus This ebook is for the use of anyone anywhere in the United States and most other parts of the world at no cost and with almost no restrictions whatsoever. You may copy it, give it away or re-use it under the terms of the Project Gutenberg License included with this ebook or online at www.gutenberg.org. If you are not located in the United States, you will have to check the laws of the country where you are located before using this eBook.</p>
 <p>Title: Frankenstein; Or, The Modern Prometheus</p>
@@ -32,13 +33,13 @@ STORY:
 <br/>
 </scene>
 </chapter>
-<chapter name="CONTENTS" unnumbered="true">
+<chapter name="CONTENTS">
 <scene name="">
 <p>Letter 1 Letter 2 Letter 3 Letter 4 Chapter 1 Chapter 2 Chapter 3 Chapter 4 Chapter 5 Chapter 6 Chapter 7 Chapter 8 Chapter 9 Chapter 10 Chapter 11 Chapter 12 Chapter 13 Chapter 14 Chapter 15 Chapter 16 Chapter 17 Chapter 18 Chapter 19 Chapter 20 Chapter 21 Chapter 22 Chapter 23 Chapter 24</p>
 <br/>
 </scene>
 </chapter>
-<chapter name="Letter 1" unnumbered="true">
+<chapter name="Letter 1">
 <scene name="">
 <p>_To Mrs. Saville, England._</p>
 <p>St. Petersburgh, Dec. 11th, 17—.</p>
@@ -56,7 +57,7 @@ STORY:
 <br/>
 </scene>
 </chapter>
-<chapter name="Letter 2" unnumbered="true">
+<chapter name="Letter 2">
 <scene name="">
 <p>_To Mrs. Saville, England._</p>
 <p>Archangel, 28th March, 17—.</p>
@@ -71,7 +72,7 @@ STORY:
 <br/>
 </scene>
 </chapter>
-<chapter name="Letter 3" unnumbered="true">
+<chapter name="Letter 3">
 <scene name="">
 <p>_To Mrs. Saville, England._</p>
 <p>July 7th, 17—.</p>
@@ -85,7 +86,7 @@ STORY:
 <br/>
 </scene>
 </chapter>
-<chapter name="Letter 4" unnumbered="true">
+<chapter name="Letter 4">
 <scene name="">
 <p>_To Mrs. Saville, England._</p>
 <p>August 5th, 17—.</p>
@@ -948,7 +949,7 @@ STORY:
 <br/>
 </scene>
 </chapter>
-<chapter name="APPENDIX" unnumbered="true">
+<chapter name="APPENDIX">
 <scene name="">
 <p>*** END OF THE PROJECT GUTENBERG EBOOK FRANKENSTEIN; OR, THE MODERN PROMETHEUS ***</p>
 <br/>
@@ -1001,6 +1002,7 @@ STORY:
 <br/>
 </scene>
 </chapter>
+</act>
 </body>
 <!--/
 ===============================================================================
@@ -1010,11 +1012,13 @@ NOTES
 ===============================================================================
 /-->
 <notes>
+<act name="">
 <chapter name="">
 <scene name="">
-<p/>
+<br/>
 </scene>
 </chapter>
+</act>
 </notes>
 <!--/
 ===============================================================================
@@ -1023,11 +1027,12 @@ NOTES
 <view/>
 <arc elements="chapters" template="beatsheet" mode="topCCW"/>
 <editor>
-<body words="numbers" indexed="chapter,scene,synopsis"/>
+<body words="numbers" indexed="scene,synopsis,act,chapter"/>
 </editor>
 </ui>
 <history>
 <words date="2024-10-09" text="78481" missing="0" chars="436341"/>
 <words date="2024-10-10" text="78472" missing="0" chars="436301"/>
+<words date="2024-10-14" text="78472" missing="0" chars="436301"/>
 </history>
 </story>

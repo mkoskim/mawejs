@@ -214,16 +214,19 @@
 }
 
 /* ----------------------------------------------------------------------------
-// Chapter & scene headings
+// Act, chapter and scene headings
 // ----------------------------------------------------------------------------
 */
 
 /* Act */ .Sheet h4 {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: inherit;
   color: #888;
   text-transform: uppercase;
   text-align: center;
+  margin-bottom: 12pt;
+/*
+  font-size: 14pt;
+*/
 }
 
 .Sheet h4.Numbered::before {

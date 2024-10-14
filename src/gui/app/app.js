@@ -72,9 +72,10 @@ const fs = require("../../system/localfs")
 //*****************************************************************************
 
 export default function App(props) {
-  useEffect(() => addHotkeys([
-    [IsKey.CtrlQ,  (e) => appQuit()],
-  ]));
+
+  //---------------------------------------------------------------------------
+  // External settings
+  //---------------------------------------------------------------------------
 
   const [recent, setRecent] = useSetting("recent", [])
 
@@ -82,12 +83,38 @@ export default function App(props) {
     recent, setRecent,
   }), [recent, setRecent])
 
+  //---------------------------------------------------------------------------
+  // Loaded story
+  //---------------------------------------------------------------------------
+
   const [doc, updateDoc] = useImmer(null)
+
+  //---------------------------------------------------------------------------
+  // Simple dirty logic. Use shallow compare to elements stored to disk (but
+  // not ui element)
+  //---------------------------------------------------------------------------
+
+  const [saved, setSaved] = useState(null)
+
+  const dirty = !(
+    doc?.body === saved?.body
+    && doc?.notes === saved?.notes
+    && doc?.head === saved?.head
+    && doc?.exports === saved?.exports
+  )
+
+  //---------------------------------------------------------------------------
+  // Data we are trying to import (open in a dialog)
+  //---------------------------------------------------------------------------
+
+  const [importing, setImporting] = useState()
+
+  //---------------------------------------------------------------------------
+  // Simple command structure for deeper level components to ask Application
+  // to perform operations
+  //---------------------------------------------------------------------------
+
   const [command, setCommand] = useState()
-
-  // File to import
-  const [buffer, setBuffer] = useState()
-
   //console.log("Doc:", doc)
   //console.log("Command:", command)
 
@@ -132,11 +159,19 @@ export default function App(props) {
   useEffect(() => {
     console.log("Set title")
     if(doc?.head) {
-      document.title = mawe.info(doc.head).title + " - MaweJS"
+      document.title = (dirty ? "* ": "") + mawe.info(doc.head).title + " - MaweJS"
     } else {
       document.title = "MaweJS"
     }
-  }, [doc?.head])
+  }, [doc?.head, dirty])
+
+  //---------------------------------------------------------------------------
+  // Add application hotkeys common to all views
+  //---------------------------------------------------------------------------
+
+  useEffect(() => addHotkeys([
+    [IsKey.CtrlQ, (e) => appQuit()],
+  ]));
 
   //---------------------------------------------------------------------------
   // Render
@@ -146,7 +181,7 @@ export default function App(props) {
     <SnackbarProvider>
       <SettingsContext.Provider value={settings}>
         <CmdContext.Provider value={setCommand}>
-          <View key={doc?.key} doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer}/>
+          <View key={doc?.key} doc={doc} updateDoc={updateDoc} buffer={importing} setBuffer={setImporting}/>
         </CmdContext.Provider>
       </SettingsContext.Provider>
     </SnackbarProvider>
@@ -158,6 +193,7 @@ export default function App(props) {
     mawe.load(filename)
     .then(content => {
       updateDoc(content)
+      setSaved(content)
       recentAdd(content.file, recent, setRecent)
       Inform.success(`Loaded: ${content.file.name}`);
     })
@@ -168,15 +204,17 @@ export default function App(props) {
   }
 
   function importFromFile({file, ext}) {
-    setBuffer({file, ext})
+    setImporting({file, ext})
   }
 
   function importFromClipboard() {
-    setBuffer({file: undefined, ext: undefined})
+    setImporting({file: undefined, ext: undefined})
   }
 
   function docFromBuffer({buffer}) {
-    updateDoc(mawe.create(buffer))
+    const content = mawe.create(buffer)
+    setSaved(content)
+    updateDoc(content)
   }
 
   function docFromResource({filename}) {
@@ -201,13 +239,17 @@ export default function App(props) {
 
   function docSave() {
     mawe.save(insertHistory(doc))
-    .then(file => Inform.success(`Saved ${file.name}`))
+    .then(file => {
+      setSaved(doc)
+      Inform.success(`Saved ${file.name}`)
+    })
     .catch(err => Inform.error(err))
   }
 
   function docSaveAs({filename}) {
     mawe.saveas(insertHistory(doc), filename)
     .then(file => {
+      setSaved(doc)
       updateDoc(doc => { doc.file = file })
       //recentRemove(doc.file, recent, setRecent)
       recentAdd(file, recent, setRecent)
