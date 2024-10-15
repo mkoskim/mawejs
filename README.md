@@ -18,6 +18,25 @@ Sadly, neither Notepad nor Scrivener fully support plantsers. That's why I neede
 
 In short, MaweJS is externally unstructured editor (like Notepad, Word or Googledocs), and internally structured editor (like yWriter, Scrivener and Manuscript).
 
+## Known Issues
+
+In newer Ubuntus you may encounter errors due to changed permissions. First, if you want to try AppImage, you may need to run it without sandboxing:
+
+```
+$ mawejs-0.7.0.Linux.amd.AppImage --no-sandbox
+```
+
+Second, if you run the sources, you may need to set SUID bit on:
+
+```
+mawejs$ npm i
+mawejs$ sudo chown root node_modules/electron/dist/chrome-sandbox
+mawejs$ sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
+mawejs$ npm run dev
+```
+
+You need to do this every time ElectronJS is updated.
+
 ## Status
 
 Check out discussions page for status:
