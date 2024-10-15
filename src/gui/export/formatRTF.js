@@ -179,5 +179,8 @@ function escape(text) {
     .replaceAll('“', "\\'94")
     .replaceAll('”', "\\'94")
     .replaceAll('…', "...")
+    .replaceAll("–", "-")
+    .replaceAll("’", "'")
+    .replaceAll("‘", "'")
   )
 }
