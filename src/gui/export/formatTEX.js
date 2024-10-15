@@ -177,7 +177,8 @@ ${backmatter}
   },
 
   scene: (head, splits) => {
-    return head + splits.join("\n\n")
+    const brk = getSeparator()
+    return head + splits.join(brk)
   },
 
   split: (paragraphs) => "\\noindent " + paragraphs.join("\n\n"),
@@ -302,11 +303,6 @@ function escape(text) {
     .replaceAll('~', "{\\textasciitilde}")
     .replaceAll('^', "{\\textasciicircum}")
     .replaceAll('"', "''")
-
-    // If you have copy-pasted text, you may have these
-    .replaceAll('“', "''")
-    .replaceAll('”', "''")
-    .replaceAll('…', "...")
   )
 }
 

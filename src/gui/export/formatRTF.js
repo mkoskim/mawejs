@@ -160,27 +160,20 @@ function getSeparator(separator, pgbreak) {
 }
 
 function escape(text) {
-  return (text && text
-    .replaceAll('\\', "\\\\")
-    .replaceAll('{', "\\{")
-    .replaceAll('}', "\\}")
+  if(!text) return text
 
-    .replaceAll('~', "\\~")
-    .replaceAll('"', "\\'94")
+  return text.split("").map(charEscape).join("")
 
-    .replaceAll("å", "\\'e5")
-    .replaceAll("Å", "\\'c5")
-    .replaceAll("ä", "\\'e4")
-    .replaceAll("Ä", "\\'c4")
-    .replaceAll("ö", "\\'f6")
-    .replaceAll("Ö", "\\'d6")
-
-    // If you have copy-pasted text, you may have these
-    .replaceAll('“', "\\'94")
-    .replaceAll('”', "\\'94")
-    .replaceAll('…', "...")
-    .replaceAll("–", "-")
-    .replaceAll("’", "'")
-    .replaceAll("‘", "'")
-  )
+  function charEscape(c) {
+    const code = c.charCodeAt(0)
+    if(code > 127) return `\\u${code}?`
+    switch(c) {
+      case '\\': return "\\\\"
+      case '{': return "\\{"
+      case '}': return "\\}"
+      case '~': return "\\~"
+      case '"': return "\\'94"
+    }
+    return c
+  }
 }

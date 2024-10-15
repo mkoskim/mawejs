@@ -107,11 +107,5 @@ function escape(text) {
     .replaceAll('&', "&amp;")
     .replaceAll('<', "&lt;")
     .replaceAll('>', "&gt;")
-
-    // If you have copy-pasted text, you may have these
-    .replaceAll('“', '"')
-    .replaceAll('”', '"')
-    //.replaceAll('"', "&quot;")
-    .replaceAll('…', "...")
   )
 }
