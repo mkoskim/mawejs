@@ -664,14 +664,14 @@ function withTextPaste(editor) {
 //-----------------------------------------------------------------------------
 
 const blockstyles = {
-  "hact":     { next: "p",              bk: true, },
-  "hchapter": { next: "p",              bk: true, },
-  "hscene":   { next: "p",              bk: true, },
-  "synopsis": { next: "p", reset: true, bk: true, },
-  'comment':  {            reset: true, bk: true, },
-  'missing':  { next: "p", reset: true, bk: true, },
-  'fill':     { next: "p", reset: true, bk: true, },
-  'tags':     { next: "p", reset: true, bk: true, },
+  "hact":     { eol: "p", bk: true, },
+  "hchapter": { eol: "p", bk: true, },
+  "hscene":   { eol: "p", bk: true, },
+  "synopsis": { eol: "p", bk: true, },
+  'comment':  {           bk: true, },
+  'missing':  { eol: "p", bk: true, },
+  'fill':     { eol: "p", bk: true, },
+  'tags':     { eol: "p", bk: true, },
 }
 
 // TODO: Generate this table
@@ -726,7 +726,7 @@ function withMarkup(editor) {
   }
 
   //---------------------------------------------------------------------------
-  // Default styles followed by a style
+  // Pressing ENTER at EOL
 
   const { insertBreak } = editor
 
@@ -741,21 +741,20 @@ function withMarkup(editor) {
     })
 
     if(node && node.type in blockstyles) {
-      const style = blockstyles[node.type]
+      const end = Editor.end(editor, path)
+      const {focus} = selection
 
-      // If we hit enter at empty line, and block type is RESETEMPTY, reset type
-      if(style.reset && Node.string(node) == "") {
-        Transforms.setNodes(editor, {type: "p"});
-        return
-      }
+      if(Point.equals(focus, end)) {
+        const {eol} = blockstyles[node.type]
 
-      // If we hit enter at line, which has STYLEAFTER, split line and apply style
-      if(style.next) {
-        Editor.withoutNormalizing(editor, () => {
-          Transforms.splitNodes(editor, {always: true})
-          Transforms.setNodes(editor, {type: style.next, id: nanoid()})
-        })
-        return
+        // If we hit enter at line, which has STYLEAFTER, split line and apply style
+        if(eol) {
+          Editor.withoutNormalizing(editor, () => {
+            Transforms.splitNodes(editor, {always: true})
+            Transforms.setNodes(editor, {type: eol, id: nanoid()})
+          })
+          return
+        }
       }
     }
 
