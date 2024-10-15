@@ -248,10 +248,13 @@ export function wcCompare(a, b) {
 export function wcCumulative(section) {
   const flat = new Array()
 
-  for(const chapter of section.chapters) {
-    flat.push(chapter)
-    for(const scene of chapter.children) {
-      flat.push(scene)
+  for(const act of section.acts) {
+    flat.push(act)
+    for(const chapter of act.children) {
+      flat.push(chapter)
+      for(const scene of chapter.children) {
+        flat.push(scene)
+      }
     }
   }
 

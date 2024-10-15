@@ -30,7 +30,6 @@ function getActOptions(acts, pgbreak) {
   }
 }
 
-
 function getChapterOptions(chapters, pgbreak) {
   switch(chapters) {
     case "numbered": return {
@@ -81,12 +80,18 @@ export function FormatBody(format, story) {
     scene: getSceneOptions(exports.scenes)
   }
 
+  const {author, title, subtitle} = mawe.info(head)
+
   var actnum = 0
   var chapternum = 0
   var scenenum = 0
 
   return format.file(
-    mawe.info(head),
+    {
+      author: escape(author),
+      title: escape(title),
+      subtitle: escape(subtitle),
+    },
     FormatBody(body.acts),
     options
   )
@@ -117,14 +122,14 @@ export function FormatBody(format, story) {
 
     const {id} = act
     const head = elemHeading(act)
-
+    const text = escape(elemAsText(head))
     const numbered = head?.numbered
 
     if(numbered) {
       actnum = actnum + 1
-      return format.hact(id, actnum, elemAsText(head), options.act.numbered)
+      return format.hact(id, actnum, text, options.act.numbered)
     } else {
-      return format.hact(id, undefined, elemAsText(head), options.act.unnumbered)
+      return format.hact(id, undefined, text, options.act.unnumbered)
     }
   }
 
@@ -132,14 +137,14 @@ export function FormatBody(format, story) {
 
     const {id} = chapter
     const head = elemHeading(chapter)
-
+    const text = escape(elemAsText(head))
     const numbered = head?.numbered
 
     if(numbered) {
       chapternum = chapternum + 1
-      return format.hchapter(id, chapternum, elemAsText(head), options.chapter.numbered)
+      return format.hchapter(id, chapternum, text, options.chapter.numbered)
     } else {
-      return format.hchapter(id, undefined, elemAsText(head), options.chapter.unnumbered)
+      return format.hchapter(id, undefined, text, options.chapter.unnumbered)
     }
   }
 
@@ -173,9 +178,25 @@ export function FormatBody(format, story) {
   }
 
   function FormatMarks(split) {
-    var text = format.text(split.text)
+    var text = format.text(escape(split.text))
     if(split.bold) text = format.b(text)
     if(split.italic) text = format.i(text)
     return text
   }
+}
+
+//-----------------------------------------------------------------------------
+// Common escape for certain characters
+//-----------------------------------------------------------------------------
+
+function escape(text) {
+  return (text && text
+    // If you have copy-pasted text, you may have these
+    .replaceAll('“', '"')
+    .replaceAll('”', '"')
+    .replaceAll('…', "...")
+    .replaceAll("–", "-")
+    .replaceAll("’", "'")
+    .replaceAll("‘", "'")
+  )
 }

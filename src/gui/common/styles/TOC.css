@@ -4,11 +4,6 @@
 
 @import "colors.css";
 
-.SectionName {
-  padding: 6px;
-  border-bottom: 1px solid lightgray;
-}
-
 .TOC {
   overflow: auto;
   /*
@@ -36,9 +31,11 @@
 
 /* ---------------------------------------------------------------------------- */
 
+/*
 .TOC div.Chapter, .TOC div.Scene {
   background: #F5F7F9;
 }
+*/
 
 .TOC div.Scene:hover {
   background-color: #DEF;
@@ -46,7 +43,13 @@
 
 /* ---------------------------------------------------------------------------- */
 
-.TOC .ActName {
+.TOC .Entry.Section {
+  padding: 6px;
+  border-bottom: 1px solid lightgray;
+}
+
+.TOC .Entry.Act {
+  border-top: 1px dashed gray;
   font-weight: bold;
   /*
   padding-top: 4pt !important;
@@ -54,11 +57,11 @@
   */
 }
 
-.TOC .ActName .Name {
+.TOC .Entry.Act .Name {
   text-transform: uppercase;
 }
 
-.TOC .ActName.Numbered .Name::before {
+.TOC .Entry.Act.Numbered .Name::before {
   counter-increment: act;
   content: "ACT " counter(act, upper-roman) ": ";
 /*
@@ -84,7 +87,7 @@
 
 /* ---------------------------------------------------------------------------- */
 
-.TOC .ChapterName {
+.TOC .Entry.Chapter {
   font-weight: bold;
   /*
   padding-top: 4pt !important;
@@ -92,7 +95,7 @@
   */
 }
 
-.TOC .ChapterName.Numbered .Name::before {
+.TOC .Entry.Chapter.Numbered .Name::before {
   counter-increment: chapter;
   content: counter(chapter) ". ";
 /*
@@ -137,7 +140,7 @@
   */
 }
 
-.TOC .SceneName {
+.TOC .Entry.Scene {
   padding-left: 0.5cm !important;
   /*
   padding-top: 4pt !important;
@@ -152,7 +155,7 @@
 */
 }
 
-.TOC .SceneName.Numbered .Name::before {
+.TOC .Entry.Scene.Numbered .Name::before {
   /* width: 1cm; */
   counter-increment: scene;
 /*
@@ -160,8 +163,14 @@
 */
 }
 
-.TOC .BookmarkName {
+.TOC .Entry.Bookmark {
   padding-left: 0.5cm !important;
+}
+
+.TOC .WordCount {
+  margin-left: 6pt;
+  min-width: 1.5cm;
+  text-align: right;
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -188,7 +197,7 @@
 }
 
 .TOC .Entry:hover {
-  background-color: lightgrey;
+  background-color: lightgrey !important;
 }
 
 .TOC .Entry .Name {
