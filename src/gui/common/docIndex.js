@@ -11,6 +11,7 @@ import "./styles/TOC.css"
 import React, {
   useCallback, memo, useRef,
   useEffect,
+  useDeferredValue,
 } from "react"
 
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -64,11 +65,12 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   // Word counts
   //---------------------------------------------------------------------------
 
-  const cumulative = (["percent", "cumulative"].includes(wcFormat))
+  const cumulative = useDeferredValue((["percent", "cumulative"].includes(wcFormat))
     ? wcCumulative(section)
     : undefined
+  )
 
-    const total = (["percent"].includes(wcFormat))
+  const total = (["percent"].includes(wcFormat))
     ? (section.words?.text + section.words?.missing)
     : undefined
 
