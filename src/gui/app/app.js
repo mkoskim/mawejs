@@ -90,17 +90,17 @@ export default function App(props) {
   const [doc, updateDoc] = useImmer(null)
 
   //---------------------------------------------------------------------------
-  // Simple dirty logic. Use shallow compare to elements stored to disk (but
-  // not ui element)
+  // Simple dirty logic. We use shallow compare to see, what elements have
+  // been touched. Exclude ui & exports elements, even that they are stored
+  // within the file.
   //---------------------------------------------------------------------------
 
   const [saved, setSaved] = useState(null)
 
   const dirty = !(
-    doc?.body === saved?.body
+    doc?.head === saved?.head
+    && doc?.body === saved?.body
     && doc?.notes === saved?.notes
-    && doc?.head === saved?.head
-    && doc?.exports === saved?.exports
   )
 
   //---------------------------------------------------------------------------
