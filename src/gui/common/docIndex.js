@@ -81,7 +81,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
     ? undefined
     : (id, words) => <FormatWords
       format={wcFormat}
-      words={words.text}
+      text={words.text}
       missing={words.missing}
       cumulative={cumulative && id in cumulative && cumulative[id]}
       total={total}
@@ -385,8 +385,7 @@ class IndexItem extends React.PureComponent {
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       {/*<ItemLabel name={id}/>*/}
-      <Filler/>
-      <span className="WordCount">{wcFormat && wcFormat(id, words)}</span>
+      {wcFormat && <><Filler/><span className="WordCount">{wcFormat(id, words)}</span></>}
       </HBox>
     </ScrollRef>
   }
