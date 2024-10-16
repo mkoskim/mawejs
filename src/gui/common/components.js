@@ -186,15 +186,30 @@ export class ChooseWordFormat extends React.PureComponent {
 
 export class FormatWords extends React.PureComponent {
 
+  render() {
+    const {format, text, missing, cumulative, total} = this.props
+    const target = text + missing
+
+    if(text !== undefined) switch(format) {
+      case "numbers": return this.number(target, text, missing)
+      case "compact": return this.compact(target, text, missing)
+      case "percent": return this.percent(cumulative, total, text, missing)
+      case "cumulative": return this.cumulative(cumulative, total, text, missing)
+      default: break;
+    }
+    return null;
+  }
+
   static styles = {
     missing:  {color: "red"},
     halfway:  {color: "orange"},
     almost:   {color: "orange"},
-    complete: {color: "#59F"},
+    complete: {}, //"#59F"},
   }
 
-  getStyle(target, text, missing) {
+  getStyle(text, missing) {
     const styles = this.constructor.styles;
+    const target = text + missing
 
     if(!missing) return styles.complete
     if(text/target > 0.9) return styles.almost
@@ -204,12 +219,12 @@ export class FormatWords extends React.PureComponent {
 
   number(target, text, missing) {
     if(!target) return "-";
-    const style = this.getStyle(target, text, missing)
+    const style = this.getStyle(text, missing)
 
     return <>
       {missing
         ? <><span style={style}>-{missing}</span>&nbsp;/&nbsp;</>
-        : <Icon.Starred sx={{...style, fontSize: 14}}/>
+        : <Icon.Starred sx={{...style, color: "#59F", marginRight: "4pt", fontSize: 14}}/>
       }
       <span>{target}</span>
       {/*<span style={{...style, display: "inline-block", width: "1cm"}}>{Number(100.0 * text / target).toFixed(0)}%</span>*/}
@@ -218,33 +233,19 @@ export class FormatWords extends React.PureComponent {
 
   compact(target, text, missing) {
     if(!target) return "-";
-    const style = this.getStyle(target, text, missing)
+    const style = this.getStyle(text, missing)
 
     return <span style={style}>{target}</span>
   }
 
-  percent(cumulative, missing, total) {
-    if(!total) return <span>0.0</span>
-    return this.compact(Number(100.0 * cumulative / total).toFixed(1), missing)
-  }
-
-  cumulative(cumulative, missing, total) {
+  cumulative(cumulative, total, text, missing) {
     //return this.percent(cumulative, missing, total)
-    return this.compact(cumulative, missing)
+    return this.compact(cumulative, text, missing)
   }
 
-  render() {
-    const {format, text, missing, cumulative, total} = this.props
-    const target = text + missing
-
-    if(text !== undefined) switch(format) {
-      case "numbers": return this.number(target, text, missing)
-      case "compact": return this.compact(target, text, missing)
-      case "percent": return this.percent(cumulative, missing, total)
-      case "cumulative": return this.cumulative(cumulative, missing, total)
-      default: break;
-    }
-    return null;
+  percent(cumulative, total, text, missing) {
+    if(!total) return <span>0.0</span>
+    return this.compact(Number(100.0 * cumulative / total).toFixed(1), text, missing)
   }
 }
 
