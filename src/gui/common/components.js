@@ -202,8 +202,8 @@ export class FormatWords extends React.PureComponent {
 
   static styles = {
     missing:  {color: "red"},
-    halfway:  {color: "orange"},
-    almost:   {color: "orange"},
+    halfway:  {color: "red"},
+    almost:   {color: "darkorange"},
     complete: {}, //"#59F"},
   }
 
@@ -212,8 +212,8 @@ export class FormatWords extends React.PureComponent {
     const target = text + missing
 
     if(!missing) return styles.complete
-    if(text/target > 0.9) return styles.almost
-    if(text/target > 0.7) return styles.halfway
+    if(text/target > 0.85) return styles.almost
+    //if(text/target > 0.7) return styles.halfway
     return styles.missing
   }
 
