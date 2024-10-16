@@ -11,6 +11,7 @@ import "./styles/TOC.css"
 import React, {
   useCallback, memo, useRef,
   useEffect,
+  useDeferredValue,
 } from "react"
 
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
@@ -26,9 +27,13 @@ import {elemNumbered, wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
+const blockTypes = ["act", "chapter", "scene"]
+
 function getCurrent(parents, include) {
   if(!parents) return
-  const visible = parents.filter(e => include.includes(e.type))
+  const visible = parents
+    .filter(e => blockTypes.includes(e.type))
+    .filter(e => include.includes(e.type))
   return visible[visible.length-1]
 }
 
@@ -60,11 +65,12 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   // Word counts
   //---------------------------------------------------------------------------
 
-  const cumulative = (["percent", "cumulative"].includes(wcFormat))
+  const cumulative = useDeferredValue((["percent", "cumulative"].includes(wcFormat))
     ? wcCumulative(section)
     : undefined
+  )
 
-    const total = (["percent"].includes(wcFormat))
+  const total = (["percent"].includes(wcFormat))
     ? (section.words?.text + section.words?.missing)
     : undefined
 
@@ -75,7 +81,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
     ? undefined
     : (id, words) => <FormatWords
       format={wcFormat}
-      words={words.text}
+      text={words.text}
       missing={words.missing}
       cumulative={cumulative && id in cumulative && cumulative[id]}
       total={total}
@@ -379,8 +385,7 @@ class IndexItem extends React.PureComponent {
       <ItemIcon type={type}/>
       <ItemLabel name={name ? name : "<Unnamed>"}/>
       {/*<ItemLabel name={id}/>*/}
-      <Filler/>
-      <span className="WordCount">{wcFormat && wcFormat(id, words)}</span>
+      {wcFormat && <><Filler/><span className="WordCount">{wcFormat(id, words)}</span></>}
       </HBox>
     </ScrollRef>
   }

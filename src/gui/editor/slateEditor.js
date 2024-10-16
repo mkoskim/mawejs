@@ -664,14 +664,14 @@ function withTextPaste(editor) {
 //-----------------------------------------------------------------------------
 
 const blockstyles = {
-  "hact":     { next: "p",              bk: true, },
-  "hchapter": { next: "p",              bk: true, },
-  "hscene":   { next: "p",              bk: true, },
-  "synopsis": { next: "p", reset: true, bk: true, },
-  'comment':  {            reset: true, bk: true, },
-  'missing':  { next: "p", reset: true, bk: true, },
-  'fill':     { next: "p", reset: true, bk: true, },
-  'tags':     { next: "p", reset: true, bk: true, },
+  "hact":     { eol: "p", bk: "p", },
+  "hchapter": { eol: "p", bk: "p", },
+  "hscene":   { eol: "p", bk: "p", },
+  "synopsis": { eol: "p", bk: "p", reset: "p" },
+  'comment':  {           bk: "p", reset: "p" },
+  'missing':  {           bk: "p", reset: "p" },
+  'fill':     { eol: "p", bk: "p", reset: "p" },
+  'tags':     { eol: "p", bk: "p", reset: "p" },
 }
 
 // TODO: Generate this table
@@ -726,7 +726,7 @@ function withMarkup(editor) {
   }
 
   //---------------------------------------------------------------------------
-  // Default styles followed by a style
+  // Pressing ENTER at EOL
 
   const { insertBreak } = editor
 
@@ -740,20 +740,24 @@ function withMarkup(editor) {
       match: n => Editor.isBlock(editor, n),
     })
 
+    const style = blockstyles[node.type]
+
     if(node && node.type in blockstyles) {
-      const style = blockstyles[node.type]
+      const end = Editor.end(editor, path)
+      const {focus} = selection
+      const {reset, eol} = style
 
       // If we hit enter at empty line, and block type is RESETEMPTY, reset type
-      if(style.reset && Node.string(node) == "") {
-        Transforms.setNodes(editor, {type: "p"});
+      if(reset && Node.string(node) == "") {
+        Transforms.setNodes(editor, {type: reset});
         return
       }
 
-      // If we hit enter at line, which has STYLEAFTER, split line and apply style
-      if(style.next) {
+      if(eol && Point.equals(focus, end)) {
+        // If we hit enter at line, which has STYLEAFTER, split line and apply style
         Editor.withoutNormalizing(editor, () => {
           Transforms.splitNodes(editor, {always: true})
-          Transforms.setNodes(editor, {type: style.next, id: nanoid()})
+          Transforms.setNodes(editor, {type: eol, id: nanoid()})
         })
         return
       }
@@ -787,9 +791,10 @@ function withMarkup(editor) {
       // Beginning of line?
       if(!Point.equals(selection.anchor, Editor.start(editor, path))) return deleteBackward(...args)
 
-      if(blockstyles[node.type].bk) {
+      const {bk} = blockstyles[node.type]
+      if(bk) {
         // Remove formatting
-        Transforms.setNodes(editor, {type: 'p'})
+        Transforms.setNodes(editor, {type: bk})
         return
       }
     }
