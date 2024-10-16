@@ -26,9 +26,13 @@ import {elemNumbered, wcCumulative} from "../../document/util";
 
 //-----------------------------------------------------------------------------
 
+const blockTypes = ["act", "chapter", "scene"]
+
 function getCurrent(parents, include) {
   if(!parents) return
-  const visible = parents.filter(e => include.includes(e.type))
+  const visible = parents
+    .filter(e => blockTypes.includes(e.type))
+    .filter(e => include.includes(e.type))
   return visible[visible.length-1]
 }
 
