@@ -193,7 +193,7 @@ function ChartView({settings, doc, updateDoc}) {
     <StoryChart
       startAngle={selectStart + selectRotate * 1}
       endAngle={selectStart + selectRotate * (360 - 2)}
-      innerData={tmplButtons[doc.ui.arc.template].data}
+      innerData={tmplButtons[doc.ui.arc.template]?.data}
       outerData={data.map(e => e.data).flat()}
       outerLabels={data.map(e => e.label)}
     />
