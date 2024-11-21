@@ -75,14 +75,20 @@ export function isAstChange(editor) {
 
 //-----------------------------------------------------------------------------
 
-export function elemByID(editor, id, anchor, focus) {
+export function elemByID(editor, id) {
   if(!id) return undefined
 
+  /*
+  if(editor.idlookup) {
+    const path = editor.idlookup[id]
+    const node = Editor.node(editor, path)
+    if(node?.id === id) return [node, path]
+  }
+  */
+
   const match = Editor.nodes(editor, {
-    at: {
-      anchor: anchor ?? Editor.start(editor, []),
-      focus: focus ?? Editor.end(editor, [])
-    },
+    //at: { anchor: Editor.start(editor, []), focus: Editor.end(editor, [])},
+    at: [],
     match: (n, p) => Editor.isBlock(editor, n) && n.id === id
   }).next()
 
