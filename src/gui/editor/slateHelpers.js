@@ -118,7 +118,20 @@ export function elemsByRange(editor, anchor, focus) {
 //-----------------------------------------------------------------------------
 // Drag'n'drop po and push
 
-export function dndElemPop(editor, id) {
+export function dndDrop(srcEdit, srcId, dstEdit, dstId, dstIndex) {
+  console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
+
+  const node = dndElemPop(srcEdit, srcId)
+  dndElemPushTo(dstEdit, node, dstId, dstIndex)
+}
+
+const blockTypes = {
+  "act":     {header: "hact",     level: 1,                  contains: "chapter", },
+  "chapter": {header: "hchapter", level: 2, wrap: "act" ,    contains: "scene"},
+  "scene":   {header: "hscene",   level: 3, wrap: "chapter", },
+}
+
+function dndElemPop(editor, id) {
 
   const match = elemByID(editor, id)
   if(!match) return
@@ -129,7 +142,7 @@ export function dndElemPop(editor, id) {
 
   Transforms.removeNodes(editor, {at: path, hanging: true})
 
-  const htype = (node.type === "chapter") ? "hchapter" : "hscene"
+  const htype = blockTypes[node.type].header
 
   // Has the pop'd element a header? If not, make one
   if(!node.children.length || node.children[0].type !== htype) return {
@@ -139,10 +152,11 @@ export function dndElemPop(editor, id) {
       ...node.children
     ]
   }
+
   return node
 }
 
-export function dndElemPushTo(editor, block, id, index) {
+function dndElemPushTo(editor, block, id, index) {
   //console.log("Push", block, id, index)
 
   if(!block) return
@@ -171,12 +185,6 @@ export function dndElemPushTo(editor, block, id, index) {
   //---------------------------------------------------------------------------
   // Check that elem at drop point has header (prevent merge)
   //---------------------------------------------------------------------------
-
-  const blockTypes = {
-    "act":     {header: "hact",     level: 1,                  contains: "chapter", },
-    "chapter": {header: "hchapter", level: 2, wrap: "act" ,    contains: "scene"},
-    "scene":   {header: "hscene",   level: 3, wrap: "chapter", },
-  }
 
   if(container.children.length > childindex) {
     const node = container.children[childindex]

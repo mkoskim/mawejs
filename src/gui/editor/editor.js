@@ -15,7 +15,6 @@ import React, {
   useState, useEffect, useReducer,
   memo, useMemo, useCallback,
   useDeferredValue,
-  StrictMode,
   useRef, useContext,
 } from 'react';
 
@@ -31,10 +30,8 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 import {
   getEditor, SlateEditable,
-  section2edit, updateSection,
   hasElem,
   focusByPath, focusByID,
-  dndElemPop, dndElemPushTo,
   searchFirst, searchForward, searchBackward,
   isAstChange,
   EditButtons,
@@ -61,7 +58,7 @@ import {
 
 import { wcElem } from "../../document/util";
 import { elemFind } from "../../document/xmljs/tree";
-import {elemIsBlock} from "./slateHelpers";
+import {dndDrop, elemIsBlock} from "./slateHelpers";
 
 //*****************************************************************************
 //
@@ -401,17 +398,6 @@ export function SingleEditView({doc, updateDoc}) {
 
     //console.log(type, source, "-->", destination)
 
-    function moveElem(srcEdit, srcId, dstEditID, dstEdit, dstId, dstIndex) {
-      console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
-
-      dndElemPushTo(dstEdit,
-        dndElemPop(srcEdit, srcId),
-        dstId,
-        dstIndex
-      )
-
-      setActive(dstEditID, draggableId)
-    }
 
     switch(type) {
       case "chapter":
@@ -421,7 +407,8 @@ export function SingleEditView({doc, updateDoc}) {
         const srcEdit = getEditorBySectID(srcEditID)
         const dstEdit = getEditorBySectID(dstEditID)
 
-        moveElem(srcEdit, draggableId, dstEditID, dstEdit, destination.droppableId, destination.index)
+        dndDrop(srcEdit, draggableId, dstEdit, destination.droppableId, destination.index)
+        setActive(dstEditID, draggableId)
         break;
       }
 
