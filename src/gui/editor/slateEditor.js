@@ -29,7 +29,6 @@ import {
   searchFirst, searchForward, searchBackward,
   focusByID, focusByPath,
   hasElem,
-  dndElemPushTo, dndElemPop,
   elemIsBlock,
   toggleFold, foldAll, doFold,
 } from "./slateHelpers"
@@ -47,7 +46,6 @@ export {
   searchFirst, searchForward, searchBackward,
   focusByID, focusByPath,
   hasElem,
-  dndElemPushTo, dndElemPop,
 }
 
 //-----------------------------------------------------------------------------
