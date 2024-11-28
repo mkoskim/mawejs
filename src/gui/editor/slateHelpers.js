@@ -75,14 +75,20 @@ export function isAstChange(editor) {
 
 //-----------------------------------------------------------------------------
 
-export function elemByID(editor, id, anchor, focus) {
+export function elemByID(editor, id) {
   if(!id) return undefined
 
+  /*
+  if(editor.idlookup) {
+    const path = editor.idlookup[id]
+    const node = Editor.node(editor, path)
+    if(node?.id === id) return [node, path]
+  }
+  */
+
   const match = Editor.nodes(editor, {
-    at: {
-      anchor: anchor ?? Editor.start(editor, []),
-      focus: focus ?? Editor.end(editor, [])
-    },
+    //at: { anchor: Editor.start(editor, []), focus: Editor.end(editor, [])},
+    at: [],
     match: (n, p) => Editor.isBlock(editor, n) && n.id === id
   }).next()
 
@@ -118,7 +124,20 @@ export function elemsByRange(editor, anchor, focus) {
 //-----------------------------------------------------------------------------
 // Drag'n'drop po and push
 
-export function dndElemPop(editor, id) {
+export function dndDrop(srcEdit, srcId, dstEdit, dstId, dstIndex) {
+  console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
+
+  const node = dndElemPop(srcEdit, srcId)
+  dndElemPushTo(dstEdit, node, dstId, dstIndex)
+}
+
+const blockTypes = {
+  "act":     {header: "hact",     level: 1,                  contains: "chapter", },
+  "chapter": {header: "hchapter", level: 2, wrap: "act" ,    contains: "scene"},
+  "scene":   {header: "hscene",   level: 3, wrap: "chapter", },
+}
+
+function dndElemPop(editor, id) {
 
   const match = elemByID(editor, id)
   if(!match) return
@@ -129,7 +148,7 @@ export function dndElemPop(editor, id) {
 
   Transforms.removeNodes(editor, {at: path, hanging: true})
 
-  const htype = (node.type === "chapter") ? "hchapter" : "hscene"
+  const htype = blockTypes[node.type].header
 
   // Has the pop'd element a header? If not, make one
   if(!node.children.length || node.children[0].type !== htype) return {
@@ -139,10 +158,11 @@ export function dndElemPop(editor, id) {
       ...node.children
     ]
   }
+
   return node
 }
 
-export function dndElemPushTo(editor, block, id, index) {
+function dndElemPushTo(editor, block, id, index) {
   //console.log("Push", block, id, index)
 
   if(!block) return
@@ -171,12 +191,6 @@ export function dndElemPushTo(editor, block, id, index) {
   //---------------------------------------------------------------------------
   // Check that elem at drop point has header (prevent merge)
   //---------------------------------------------------------------------------
-
-  const blockTypes = {
-    "act":     {header: "hact",     level: 1,                  contains: "chapter", },
-    "chapter": {header: "hchapter", level: 2, wrap: "act" ,    contains: "scene"},
-    "scene":   {header: "hscene",   level: 3, wrap: "chapter", },
-  }
 
   if(container.children.length > childindex) {
     const node = container.children[childindex]
@@ -312,11 +326,25 @@ export function toggleFold(editor) {
 
 //-----------------------------------------------------------------------------
 
-export function doFold(editor, node, path, folded) {
+export function doFold(editor, node, path, fold) {
 
-  if((node.folded ?? false) === folded) return;
+  if((node.folded ?? false) === (fold ?? false)) return;
 
-  Transforms.setNodes(editor, {folded}, {at: path})
+  if(fold) {
+    const head = elemHeading(node)
+    if(!head) {
+      Transforms.insertNodes(editor,
+        {
+          type: blockTypes[node.type].header,
+          id: nanoid(),
+          children: [{text: ""}]
+        },
+        {at: path.concat([0])}
+      )
+    }
+  }
+
+  Transforms.setNodes(editor, {folded: fold}, {at: path})
 }
 
 //-----------------------------------------------------------------------------

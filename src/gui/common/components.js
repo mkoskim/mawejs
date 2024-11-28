@@ -190,7 +190,7 @@ export class FormatWords extends React.PureComponent {
     const {format, text, missing, cumulative, total} = this.props
     const target = text + missing
 
-    if(text !== undefined) switch(format) {
+    switch(format) {
       case "numbers": return this.number(target, text, missing)
       case "compact": return this.compact(target, text, missing)
       case "percent": return this.percent(cumulative, total, text, missing)

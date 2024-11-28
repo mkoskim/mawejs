@@ -29,7 +29,6 @@ import {
   searchFirst, searchForward, searchBackward,
   focusByID, focusByPath,
   hasElem,
-  dndElemPushTo, dndElemPop,
   elemIsBlock,
   toggleFold, foldAll, doFold,
 } from "./slateHelpers"
@@ -47,7 +46,6 @@ export {
   searchFirst, searchForward, searchBackward,
   focusByID, focusByPath,
   hasElem,
-  dndElemPushTo, dndElemPop,
 }
 
 //-----------------------------------------------------------------------------
@@ -615,12 +613,14 @@ function withTextPaste(editor) {
     const [first, ...lines] = text2lines(text);
 
     //*
-    editor.insertText(first)
-    editor.insertNodes(lines.map(line => ({
-      type: line ? "p" : "br",
-      id: nanoid(),
-      children: [{text: line}]
-    })))
+    Editor.withoutNormalizing(editor, () => {
+      editor.insertText(first)
+      editor.insertNodes(lines.map(line => ({
+        type: line ? "p" : "br",
+        id: nanoid(),
+        children: [{text: line}]
+      })))
+    })
     /**/
     return true
   }
