@@ -139,6 +139,7 @@
 */
 
 .Sheet div.folded {
+  position: relative;
   margin: 0;
   /*
   margin-left: -4pt;
@@ -150,16 +151,18 @@
   */
 }
 
-.Sheet div.folded::after {
-  margin-left: 6pt;
-  content: "•••";
-  font-size: 10pt;
+.Sheet div.folded::before {
+  position: absolute;
+  left: -0.75cm;
   color: grey;
+  content: "[+]";
+  /*
+  content: "•••";
   border: 1px solid lightgray;
+  font-size: 10pt;
   border-radius: 4px;
   padding-right: 4pt;
   padding-left: 4pt;
-  /*
   */
 }
 

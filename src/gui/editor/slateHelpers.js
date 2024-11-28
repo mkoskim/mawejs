@@ -326,11 +326,25 @@ export function toggleFold(editor) {
 
 //-----------------------------------------------------------------------------
 
-export function doFold(editor, node, path, folded) {
+export function doFold(editor, node, path, fold) {
 
-  if((node.folded ?? false) === folded) return;
+  if((node.folded ?? false) === (fold ?? false)) return;
 
-  Transforms.setNodes(editor, {folded}, {at: path})
+  if(fold) {
+    const head = elemHeading(node)
+    if(!head) {
+      Transforms.insertNodes(editor,
+        {
+          type: blockTypes[node.type].header,
+          id: nanoid(),
+          children: [{text: ""}]
+        },
+        {at: path.concat([0])}
+      )
+    }
+  }
+
+  Transforms.setNodes(editor, {folded: fold}, {at: path})
 }
 
 //-----------------------------------------------------------------------------
