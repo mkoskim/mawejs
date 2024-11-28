@@ -81,8 +81,8 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
     ? undefined
     : (id, words) => <FormatWords
       format={wcFormat}
-      text={words.text}
-      missing={words.missing}
+      text={words?.text}
+      missing={words?.missing}
       cumulative={cumulative && id in cumulative && cumulative[id]}
       total={total}
     />,
@@ -338,6 +338,7 @@ class SceneItem extends React.PureComponent {
       id={elem.id}
       type={elem.type}
       name={elemAsText(elem)}
+      wcFormat={wcFormat}
       onActivate={onActivate}
       current={current}
     />)}
