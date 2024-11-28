@@ -39,18 +39,18 @@ function getCurrent(parents, include) {
 
 export function DocIndex({name, style, activeID, section, wcFormat, include, setActive, unfold, parents})
 {
-  const refCurrent = useRef(null)
-
-  useEffect(() =>{
-    if(refCurrent.current) refCurrent.current.scrollIntoViewIfNeeded()
-  }, [refCurrent.current])
-
   //---------------------------------------------------------------------------
   // Blocks -> current
   //---------------------------------------------------------------------------
 
   const current = getCurrent(parents, include)
   //console.log(current)
+
+  const refCurrent = useRef(null)
+
+  useEffect(() => {
+    if(refCurrent.current) refCurrent.current.scrollIntoViewIfNeeded()
+  }, [current])
 
   //---------------------------------------------------------------------------
   // Activation function

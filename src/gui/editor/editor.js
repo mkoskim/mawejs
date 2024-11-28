@@ -244,9 +244,13 @@ export function SingleEditView({doc, updateDoc}) {
     }
   }, [bodyeditor, noteeditor])
 
-  const getActiveEdit = useCallback(() => getEditorBySectID(active), [getEditorBySectID, active])
+  const getActiveEdit = useCallback(() => {
+    return getEditorBySectID(active)
+  }, [getEditorBySectID, active])
 
-  const setActive = useCallback((sectID, elemID) => {setFocusTo(updateDoc, sectID, elemID)}, [updateDoc])
+  const setActive = useCallback((sectID, elemID) => {
+    setFocusTo(updateDoc, sectID, elemID)
+  }, [updateDoc])
 
   useEffect(() => {
     const {id} = focusTo

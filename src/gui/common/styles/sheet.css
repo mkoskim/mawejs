@@ -98,16 +98,26 @@
 }
 
 /* ----------------------------------------------------------------------------
-// Scene & chapter divs
+// Act, chapter and scene divs
 // ----------------------------------------------------------------------------
 */
 
-.Sheet div.chapter {
+.Sheet div.act {
+  /*
   margin-bottom: 0.5cm;
+  */
+}
+
+.Sheet div.chapter {
+  /*
+  margin-bottom: 0.5cm;
+  */
 }
 
 .Sheet div.scene {
   margin-bottom: 0.5cm;
+/*
+  */
 }
 
 /* ----------------------------------------------------------------------------
@@ -140,7 +150,7 @@
 
 .Sheet div.folded {
   position: relative;
-  margin: 0;
+  margin: 0 !important;
   /*
   margin-left: -4pt;
   padding-left: 4pt;
