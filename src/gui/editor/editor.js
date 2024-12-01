@@ -79,7 +79,8 @@ export function loadEditorSettings(settings) {
       .filter(s => s !== "chapter")
       .filter(s => s !== "act")
       .filter(s => s !== "synopsis")
-      .concat(["act", "chapter", "bookmark"])
+      .filter(s => s !== "fill")
+      .concat(["act", "chapter"])
 
     return {
       ...(words ? {words} : {}),
@@ -450,7 +451,7 @@ function LeftPanel({settings}) {
 }
 
 const LeftIndexChoices = {
-  visible: ["scene", "bookmark", "missing", "fill", "comment", "tags"],
+  visible: ["scene", "bookmark", "missing", "comment", "tags"],
   words: ["off", "numbers", "compact", "cumulative", "percent"]
 }
 
@@ -469,6 +470,8 @@ function LeftPanelMenu({settings}) {
       selected={indexed}
       setSelected={setIndexed}
     />
+    <Separator/>
+    <Filler/>
     <Separator/>
     <ChooseWordFormat
       choices={LeftIndexChoices.words}

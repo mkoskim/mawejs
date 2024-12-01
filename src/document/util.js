@@ -80,7 +80,7 @@ export function createDateStamp(date) {
 
 //*
 export function filterCtrlElems(blocks) {
-  const ctrltypes = ["hact", "hchapter", "hscene", "hsynopsis"]
+  const ctrltypes = ["hact", "hchapter", "hscene", "hsynopsis", "hnotes"]
   return blocks.filter(block => !ctrltypes.includes(block.type))
 }
 /**/
@@ -104,14 +104,15 @@ export function elemHeading(elem) {
   return undefined
 }
 
-export function elemCtrl(elem) {
+export function elemHeadAttrs(elem) {
   const {type, name, numbered, target} = elemHeading(elem) ?? {type: nodeTypes[elem.type].header}
-  return {
+  const ctrl = {
     ...nodeTypes[type].ctrl ?? {},
     name,
     numbered,
     target,
   }
+  return ctrl;
 }
 
 export function makeHeader(type, id, name, numbered, target) {
@@ -282,8 +283,8 @@ export function wcElem(elem) {
       return wcChildren(elem.children, elem.target)
 
     case "scene":
-      if(elem.synopsis) return undefined
-      return wcChildren(elem.children, elem.target)
+      if(elem.content === "scene") return wcChildren(elem.children, elem.target)
+      return undefined
 
     case "p":
     case "missing":

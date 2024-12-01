@@ -21,7 +21,7 @@ import {
 import { withHistory } from "slate-history"
 import { addClass, IsKey, ListItemText, Separator } from '../common/factory';
 import { nanoid } from '../../util';
-import { wcElem, wcCompare, elemHeading, elemCtrl, elemHeadParse} from '../../document/util';
+import { wcElem, wcCompare, elemHeading, elemHeadParse, elemHeadAttrs} from '../../document/util';
 
 import {
   nodeTypes,
@@ -65,19 +65,14 @@ export {
 //      hact (act hader/name)
 //      chapter: [
 //        hchapter (chapter header/name)
-//        synopsis: [
-//          hsynopsis (synopsis header/name)
-//          paragraph
-//          paragraph
-//        ]
 //        scene: [
-//          hscene (scene header/name)
+//          hscene / hsynopsis / hnotes
 //          paragraph
 //          paragraph
 //          ...
 //        ]
-//        scene / synopsis
-//        scene / synopsis
+//        scene
+//        scene
 //      ]
 //      chapter
 //      chapter
@@ -148,7 +143,7 @@ const debug = {
 
 function renderElement({element, attributes, ...props}) {
 
-  const {type, folded, numbered, synopsis} = element
+  const {type, folded, numbered, content} = element
 
   const foldClass = folded ? "folded" : ""
   const numClass = numbered ? "Numbered" : ""
@@ -163,8 +158,7 @@ function renderElement({element, attributes, ...props}) {
     case "chapter":
       return <div className={addClass("chapter", foldClass, debug?.blocks)} {...attributes} {...props}/>
     case "scene": {
-      const name = synopsis ? "synopsis" : "scene"
-      return <div className={addClass(name, foldClass, debug?.blocks)} {...attributes} {...props}/>
+      return <div className={addClass(content, foldClass, debug?.blocks)} {...attributes} {...props}/>
     }
 
     //-------------------------------------------------------------------------
@@ -174,6 +168,7 @@ function renderElement({element, attributes, ...props}) {
     case "hact": return <h4 {...attributes} {...props}/>
     case "hchapter": return <h5 className={numClass} {...attributes} {...props}/>
     case "hsynopsis":
+    case "hnotes":
     case "hscene": return <h6 {...attributes} {...props}/>
 
     //-------------------------------------------------------------------------
@@ -320,7 +315,7 @@ class CharStyleButtons extends React.PureComponent {
 
 class ParagraphStyleSelect extends React.PureComponent {
 
-  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "comment", "missing", "tags"]
+  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "hnotes", "comment", "missing", "tags"]
 
   render() {
     const {type, setSelected} = this.props;
@@ -1044,7 +1039,7 @@ function withFixNesting(editor) {
       }
 
       if(!mergeHeadlessChilds(node, path)) return;
-      copyHeadAttrs(node, path)
+      copyHeadAttributes(node, path)
       return normalizeNode(entry)
     }
 
@@ -1052,7 +1047,7 @@ function withFixNesting(editor) {
 
     // Block headers
     if(nodeIsBreak(node)) {
-      parseHeading(node, path)
+      updateHeadAttributes(node, path)
       if(!checkIsFirst(node, path, nodeType.parent)) return
     }
 
@@ -1123,7 +1118,7 @@ function withFixNesting(editor) {
   // Parse head numbering
   //---------------------------------------------------------------------------
 
-  function parseHeading(node, path) {
+  function updateHeadAttributes(node, path) {
     const {name, numbered, target} = elemHeadParse(node)
     //console.log("Attrs:", node, {numbered, target})
     return modifyAttributes(node, path, {name, numbered, target})
@@ -1133,8 +1128,10 @@ function withFixNesting(editor) {
   // Check parent control
   //---------------------------------------------------------------------------
 
-  function copyHeadAttrs(node, path) {
-    return modifyAttributes(node, path, elemCtrl(node))
+  function copyHeadAttributes(node, path) {
+    const attrs = elemHeadAttrs(node)
+    //console.log("Copy attrs:", node.type, "Attrs:", attrs)
+    return modifyAttributes(node, path, attrs)
   }
 
   //---------------------------------------------------------------------------

@@ -4,8 +4,7 @@
 //
 //*****************************************************************************
 
-import { mawe, elemAsText } from "../../document"
-import { elemHeading } from "../../document/util";
+import { mawe } from "../../document"
 import { splitByTrailingElem } from "../../util";
 
 //*****************************************************************************
@@ -143,7 +142,7 @@ export function FormatBody(format, story) {
   }
 
   function FormatScene(scene) {
-    if(scene.synopsis) return null
+    if(scene.content !== "scene") return null
 
     const splits = splitByTrailingElem(scene.children, p => p.type === "br")
       .map(s => s.filter(p => p.type !== "br"))

@@ -237,16 +237,21 @@ function parseChapter(chapter, index) {
 }
 
 function parseScene(scene, index) {
-  if(scene.type !== "element" || (scene.name !== "scene" && scene.name !== "synopsis")) {
+  if(scene.type !== "element" || scene.name !== "scene") {
     console.log("Invalid scene:", scene)
     throw new Error("Invalid scene", scene)
   }
 
-  const synopsis = scene.name === "synopsis"
+  const {name, folded, content = "scene"} = scene.attributes ?? {};
 
-  const {name, folded} = scene.attributes ?? {};
-  const header = (!index && !synopsis && !name) ? [] : [makeHeader(
-    synopsis ? "hsynopsis" : "hscene",
+  const htype = {
+    "scene": "hscene",
+    "synopsis": "hsynopsis",
+    "notes": "hnotes",
+  }[content]
+
+  const header = (!index && !name && content == "scene") ? [] : [makeHeader(
+    htype,
     nanoid(),
     name,
     true,
@@ -257,13 +262,13 @@ function parseScene(scene, index) {
   const elements = scene.elements?.length ? scene.elements : empty
 
   const children = elements.map(parseParagraph).filter(e => e).map(elem => ({...elem, words: wcElem(elem)}))
-  const words = synopsis ? undefined : wcChildren(children)
+  const words = (content === "scene") ? wcChildren(children) : undefined
 
   return {
     type: "scene",
     id: nanoid(),
+    content,
     name,
-    synopsis,
     folded: folded === "true",
     children: [
       ...header,

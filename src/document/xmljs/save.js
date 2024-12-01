@@ -135,7 +135,7 @@ function toAct(act) {
     {
       type: "act",
       attributes: {
-        name,
+        name: name ? name : undefined,
         folded: folded ? true : undefined,
         //numbered: numbered ? true : undefined,
         target: target ? target : undefined,
@@ -156,7 +156,7 @@ function toChapter(chapter) {
     {
       type: "chapter",
       attributes: {
-        name,
+        name: name ? name : undefined,
         folded: folded ? true : undefined,
         numbered: numbered ? true : undefined,
         target: target ? target : undefined,
@@ -171,15 +171,14 @@ function toChapter(chapter) {
 //-----------------------------------------------------------------------------
 
 function toScene(scene) {
-  const {name, synopsis, folded, target} = scene
-
-  const type = synopsis ? "synopsis" : "scene"
+  const {name, content, folded, target} = scene
 
   return xmlLines(
     {
-      type,
+      type: "scene",
       attributes: {
-        name,
+        name: name ? name : undefined,
+        content: content !== "scene" ? content : undefined,
         folded: folded ? true : undefined,
         //target: target ? target : undefined,
       },

@@ -285,7 +285,7 @@ function flatSection(section) {
         label: elemLabel(chapter),
         data: elemData(chapter)
       },
-      ...filterCtrlElems(chapter.children).map(flatScene)
+      ...filterCtrlElems(chapter.children).filter(s => s.content === "scene").map(flatScene)
     ]
   }
 

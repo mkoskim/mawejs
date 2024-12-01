@@ -96,12 +96,6 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   const skipActName = (section.acts.length === 1 && !elemName(section.acts[0]))
 
   //---------------------------------------------------------------------------
-  // Included items
-  //---------------------------------------------------------------------------
-
-  const includeItems = (include.includes("missing") && !include.includes("fill")) ? [...include, "fill"] : include;
-
-  //---------------------------------------------------------------------------
   // Index
   //---------------------------------------------------------------------------
 
@@ -112,7 +106,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
       elem={elem}
       activeID={activeID}
       wcFormat={wcFormatFunction}
-      include={includeItems}
+      include={include}
       onActivate={onActivate}
       unfold={unfold}
       current={current?.id}
@@ -323,7 +317,7 @@ class SceneItem extends React.PureComponent {
     >
     <IndexItem
       id={elem.id}
-      type={elem.synopsis ? "synopsis" : elem.type}
+      type={elem.content}
       name={elemName(elem)}
       folded={elem.folded}
       words={elem.words}
@@ -355,6 +349,7 @@ class IndexItem extends React.PureComponent {
     "chapter": "Chapter",
     "scene": "Scene",
     "synopsis": "Scene",
+    "notes": "Scene",
 
     "bookmark": "Bookmark",
     "missing": "Bookmark",
@@ -401,8 +396,10 @@ function ScrollRef({current, id, refCurrent, children}) {
 }
 
 function ItemName(type, name) {
-  if(type === "synopsis") {
-    return "Synopsis" + (name ? `: ${name}` : "")
+  switch(type) {
+    case "synopsis": return "Synopsis" + (name ? `: ${name}` : "")
+    case "notes":    return "Notes" + (name ? `: ${name}` : "")
+    default: break;
   }
   return name ? name : "<Unnamed>"
 }

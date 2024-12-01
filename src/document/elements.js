@@ -23,8 +23,9 @@ export const nodeTypes = {
 
   "hact":      {parent: "act", breaks: true, },
   "hchapter":  {parent: "chapter", breaks: true, },
-  "hscene":    {parent: "scene", breaks: true, ctrl: {synopsis: undefined}},
-  "hsynopsis": {parent: "scene", breaks: true, ctrl: {synopsis: true}},
+  "hscene":    {parent: "scene", breaks: true, ctrl: {content: "scene"}},
+  "hsynopsis": {parent: "scene", breaks: true, ctrl: {content: "synopsis"}},
+  "hnotes":    {parent: "scene", breaks: true, ctrl: {content: "notes"}},
 
   //---------------------------------------------------------------------------
   // Paragraphs
@@ -73,10 +74,11 @@ export const paragraphTypes = {
   "hchapter":  {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2"},
   "hscene":    {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3"},
   "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
-  "bookmark":  {name: "Bookmark" },
-  "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
+  "hnotes":    {name: "Notes",    markup: "//"},
+  "bookmark":  {name: "Bookmark", markup: "=>", },
+  "comment":   {name: "Comment",  markup: "%%", },
   "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
-  "tags":      {name: "Tags",     markup: "@@",  shortcut: ""},
+  "tags":      {name: "Tags",     markup: "@@"},
 }
 
 //-----------------------------------------------------------------------------
@@ -96,6 +98,7 @@ export const blockstyles = {
   "hchapter":  { eol: "p", bk: "p", },
   "hscene":    { eol: "p", bk: "p", },
   "hsynopsis": { eol: "p", bk: "hscene", },
+  "hnotes":  { eol: "p", bk: "hscene", },
 
   'comment':   {           bk: "p", reset: "p" },
   'missing':   {           bk: "p", reset: "p" },
@@ -110,16 +113,17 @@ export const MARKUP = {
   "# " : {type: "hchapter"},
   "## ": {type: "hscene"},
   '>> ': {type: "hsynopsis"},
-  '// ': {type: 'comment'},
+  '// ': {type: 'hnotes'},
+  '=> ': {type: "bookmark"},
   '!! ': {type: 'missing'},
-  '@@ ' : {type: 'tags'},
+  '%% ': {type: 'comment'},
+  '@@ ': {type: 'tags'},
   //'-- ':
   //'<<':
   //'((':
   //'))':
   //'==':
   //'??':
-  //'%%':
   //'/*':
   //'::':
 }

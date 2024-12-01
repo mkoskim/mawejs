@@ -128,6 +128,14 @@
   margin-bottom: 0.5cm;
 }
 
+.Sheet div.notes {
+  padding: 4pt;
+  background: var(--notes-bg);
+  color: var(--notes-fg);
+  border: var(--notes-border);
+  margin-bottom: 0.5cm;
+}
+
 /* ----------------------------------------------------------------------------
 // For debugging purposes: make chapter & scene div's visible
 // ----------------------------------------------------------------------------
@@ -145,7 +153,9 @@
   margin-bottom: 4pt;
 }
 
-.Sheet div.scene.withBorders, div.synopsis.withBorders {
+.Sheet div.scene.withBorders,
+.Sheet div.comment.withBorders,
+.Sheet div.synopsis.withBorders {
   border: 1pt dotted lightgray;
   padding: 4pt;
   margin-bottom: 4pt;
@@ -188,6 +198,7 @@
 .Sheet div.folded div.emptyline,
 .Sheet .act.folded div.chapter,
 .Sheet .chapter.folded div.scene,
+.Sheet .chapter.folded div.notes,
 .Sheet .chapter.folded div.synopsis {
     display: none
 }
@@ -312,6 +323,13 @@
 */
 }
 
+.Sheet div.notes h6::before {
+  content: "Notes: ";
+/*
+  margin-right: 8pt;
+*/
+}
+
 
 /*
 .Sheet div.emptyline::before {
@@ -333,50 +351,56 @@
 }
 
 /* ---------------------------------------------------------------------------- */
-
-.Sheet .target {
-  color: var(--target-fg);
-}
-
-/* ---------------------------------------------------------------------------- */
+/* Missing */
 
 .Sheet .missing {
   color: var(--missing-fg);
 }
 
 .Sheet .missing::before {
-  content: "!!";
-  margin-right: 4pt;
+  content: "!! ";
+  /*margin-right: 4pt;*/
 }
+
+/* ---------------------------------------------------------------------------- */
+/* Tags */
 
 .Sheet .tags {
   color: var(--tags-fg);
 }
 
 .Sheet .tags::before {
-  content: "@";
-  margin-right: 4pt;
+  content: "@@ ";
+  /*margin-right: 4pt;*/
 }
 
+/* ---------------------------------------------------------------------------- */
+/* Comment */
+
 .Sheet .comment {
-  background: var(--comment-bg);
   color: var(--comment-fg);
+  background: var(--comment-bg);
 }
 
 .Sheet .comment::before {
-  content: "//";
-  margin-right: 4pt;
+  content: "%% ";
+  /*margin-right: 4pt;*/
 }
+
+/* ---------------------------------------------------------------------------- */
+/* Bookmark */
 
 .Sheet .bookmark {
   /* color: rgb(46, 49, 7); */
   color: var(--bookmark-fg);
+  /*
   background: var(--bookmark-bg);
+  */
 }
 
 .Sheet .bookmark::before {
-  content: "??";
-  margin-right: 4pt;
+  content: "=> ";
+  /*margin-right: 4pt;*/
 }
 
 /* ----------------------------------------------------------------------------
