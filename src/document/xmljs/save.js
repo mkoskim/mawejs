@@ -10,7 +10,7 @@ import { saveViewSettings } from "../../gui/app/views";
 import { saveChartSettings } from "../../gui/arc/arc";
 import { saveEditorSettings } from "../../gui/editor/editor";
 import {saveExportSettings} from "../../gui/export/export";
-import {uuid as getUUID, buf2file, elemName, filterCtrlElems, elemNumbered} from "../util";
+import {uuid as getUUID, buf2file, elemName, filterCtrlElems, elemNumbered, elemHeadParse} from "../util";
 
 //----------------------------------------------------------------------------
 
@@ -129,9 +129,8 @@ function toNotes(notes) {
 //-----------------------------------------------------------------------------
 
 function toAct(act) {
-  const {folded} = act;
+  const {folded, numbered, target} = act;
   const name = elemName(act)
-  const numbered = elemNumbered(act)
 
   return xmlLines(
     {
@@ -140,6 +139,7 @@ function toAct(act) {
         name: name,
         folded: folded ? true : undefined,
         numbered: numbered ? true : undefined,
+        target: target ? target : undefined,
       },
     },
     ...filterCtrlElems(act.children).map(toChapter),
@@ -151,9 +151,8 @@ function toAct(act) {
 //-----------------------------------------------------------------------------
 
 function toChapter(chapter) {
-  const {folded} = chapter;
+  const {folded, numbered, target} = chapter;
   const name = elemName(chapter)
-  const numbered = elemNumbered(chapter)
 
   return xmlLines(
     {
@@ -162,6 +161,7 @@ function toChapter(chapter) {
         name: name,
         folded: folded ? true : undefined,
         numbered: numbered ? true : undefined,
+        target: target ? target : undefined,
       },
     },
     ...filterCtrlElems(chapter.children).map(toScene),

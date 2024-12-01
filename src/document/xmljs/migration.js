@@ -314,11 +314,13 @@ function v4_to_v5(story) {
   function fixScene(elem) {
     return {
       ...elem,
-      elements: elem.elements.map(fixParagraph)
+      elements: elem.elements.map(fixParagraph).filter(e => e)
     }
   }
 
   function fixParagraph(elem) {
+    if(elem.name === "fill") return
+
     if(elem.name === "synopsis") {
       return {
         ...elem,

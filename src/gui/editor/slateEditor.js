@@ -21,7 +21,7 @@ import {
 import { withHistory } from "slate-history"
 import { addClass, IsKey, ListItemText, Separator } from '../common/factory';
 import { nanoid } from '../../util';
-import { wcElem, wcCompare, elemHeading, elemCtrl} from '../../document/util';
+import { wcElem, wcCompare, elemHeading, elemCtrl, elemHeadParse} from '../../document/util';
 
 import {
   nodeTypes,
@@ -183,7 +183,6 @@ function renderElement({element, attributes, ...props}) {
     case "bookmark":
     case "comment":
     case "missing":
-    case "fill":
     case "tags":
       return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
 
@@ -318,7 +317,7 @@ class CharStyleButtons extends React.PureComponent {
 
 class ParagraphStyleSelect extends React.PureComponent {
 
-  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "comment", "missing", "fill", "tags"]
+  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "comment", "missing", "tags"]
 
   render() {
     const {type, setSelected} = this.props;
@@ -404,19 +403,6 @@ export function EditButtons({editor, track}) {
 // Custom hotkeys
 //
 //*****************************************************************************
-
-function toggleNumbering(editor, type) {
-  const [node, path] = Editor.above(editor, {
-    match: n => Editor.isBlock(editor, n),
-  })
-
-  if(node.type === type) {
-    const {numbered} = node
-    Transforms.setNodes(editor, {numbered: !numbered})
-    return true;
-  }
-  return false
-}
 
 function onKeyDown(editor, event) {
 
@@ -512,16 +498,13 @@ function onKeyDown(editor, event) {
 
   if(IsKey.CtrlAlt1(event)) {
     event.preventDefault()
-    //if(toggleNumbering(editor, "hact")) return
-    Transforms.setNodes(editor, {type: "hact", numbered: undefined})
+    Transforms.setNodes(editor, {type: "hact"})
     return ;
   }
 
   if(IsKey.CtrlAlt2(event)) {
     event.preventDefault()
-    //console.log(node)
-    if(toggleNumbering(editor, "hchapter")) return
-    Transforms.setNodes(editor, {type: "hchapter", numbered: true})
+    Transforms.setNodes(editor, {type: "hchapter"})
     return ;
   }
 
@@ -1058,7 +1041,7 @@ function withFixNesting(editor) {
       }
 
       if(!mergeHeadlessChilds(node, path)) return;
-      if(!doHeaderCtrl(node, path)) return;
+      copyHeadAttrs(node, path)
       return normalizeNode(entry)
     }
 
@@ -1066,6 +1049,7 @@ function withFixNesting(editor) {
 
     // Block headers
     if(nodeIsBreak(node)) {
+      parseHeading(node, path)
       if(!checkIsFirst(node, path, nodeType.parent)) return
     }
 
@@ -1112,18 +1096,17 @@ function withFixNesting(editor) {
   }
 
   //---------------------------------------------------------------------------
-  // Check parent control
+  // Node attribute modifying
   //---------------------------------------------------------------------------
 
-  function doHeaderCtrl(node, path) {
-    const ctrl = elemCtrl(node)
-
+  function modifyAttributes(node, path, attr) {
     var modify = {}
 
-    for(const [key, value] of Object.entries(ctrl)) {
+    for(const [key, value] of Object.entries(attr)) {
       if(node[key] !== value) modify[key] = value
-      //if(parent[key] === value) Transforms.setNodes(editor, {key: value}, {at: ppath})
     }
+
+    //console.log("Attrs:", node, modify)
 
     if(Object.keys(modify).length) {
       Transforms.setNodes(editor, modify, {at: path})
@@ -1131,6 +1114,24 @@ function withFixNesting(editor) {
     }
 
     return true
+  }
+
+  //---------------------------------------------------------------------------
+  // Parse head numbering
+  //---------------------------------------------------------------------------
+
+  function parseHeading(node, path) {
+    const {numbered, target} = elemHeadParse(node)
+    //console.log("Attrs:", node, {numbered, target})
+    return modifyAttributes(node, path, {numbered, target})
+  }
+
+  //---------------------------------------------------------------------------
+  // Check parent control
+  //---------------------------------------------------------------------------
+
+  function copyHeadAttrs(node, path) {
+    return modifyAttributes(node, path, elemCtrl(node))
   }
 
   //---------------------------------------------------------------------------

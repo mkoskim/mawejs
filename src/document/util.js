@@ -107,15 +107,55 @@ export function elemHeading(elem) {
 export function elemCtrl(elem) {
   const head = elemHeading(elem)
   const headtype = head?.type ?? nodeTypes[elem.type].header
-  return nodeTypes[headtype].ctrl ?? {}
+  return {
+    ...nodeTypes[headtype].ctrl ?? {},
+    numbered: head?.numbered,
+    target: head?.target,
+  }
+}
+
+export function makeHeader(type, id, name, numbered, target) {
+  return {
+    type,
+    id,
+    numbered,
+    target,
+    children: [
+      {text: name ?? ""},
+      {text: numbered ? "" : "*"},
+      {text: target ? ` #${target}` : ""}
+    ],
+  }
+}
+
+export function textToInt(text) {
+  if(!text) return undefined
+  const number = parseInt(text.trim())
+  return isNaN(number) ? undefined : number
+}
+
+export function elemHeadParse(head) {
+  if(!head) return {}
+  const all = elemAsText(head)
+  const [text, targetStr] = all.split("#")
+  const target = textToInt(targetStr)
+  const [name, numbered] = text.trim().endsWith("*") ? [text.slice(0, -1), false] : [text, true]
+  return {
+    numbered,
+    target,
+    name: name.trim(),
+  }
 }
 
 export function elemName(elem) {
-  return elemAsText(elemHeading(elem))
+  const head = elemHeading(elem)
+  return elemHeadParse(head).name
 }
 
 export function elemNumbered(elem) {
-  return elemHeading(elem)?.numbered
+  //const head = elemHeading(elem)
+  //return elemHeadParse(head).numbered
+  return elem.numbered
 }
 
 //-----------------------------------------------------------------------------
@@ -200,20 +240,32 @@ function wcParagraph(elem) {
     //case "p": return { chars, text: wc, map: words2map(words) }
     case "p": return { chars, text: wc }
     case "missing": return { chars, missing: wc }
+    /*
     case "fill":
-      const fill = Math.max(0, parseInt(text))
+    const fill = Math.max(0, parseInt(text))
       //console.log("Fill:", fill)
       return { missing: (isNaN(fill) ? 0 : fill) }
+    */
   }
   return undefined
 }
 
-export function wcChildren(children) {
-  return children.filter(elem => elem.words).reduce((words, elem) => ({
+export function wcChildren(children, target) {
+  const words = children.filter(elem => elem.words).reduce((words, elem) => ({
     chars: words.chars + (elem.words.chars ?? 0),
     text: words.text + (elem.words.text ?? 0),
     missing: words.missing + (elem.words.missing ?? 0),
   }), {chars: 0, text: 0, missing: 0})
+
+  if(target) {
+    const diff = Math.max(0, target - words.text)
+    return {
+      chars: words.chars,
+      text: words.text,
+      missing: Math.max(diff, words.missing)
+    }
+  }
+  return words
 }
 
 export function wcElem(elem) {
@@ -222,7 +274,7 @@ export function wcElem(elem) {
     case "sect":
     case "act":
     case "chapter":
-      return wcChildren(elem.children)
+      return wcChildren(elem.children, elem.target)
 
     case "scene":
       if(elem.synopsis) return undefined

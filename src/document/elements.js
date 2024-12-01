@@ -33,7 +33,6 @@ export const nodeTypes = {
   "bookmark":  {parent: "scene", },
   "comment":   {parent: "scene", },
   "missing":   {parent: "scene", },
-  "fill":      {parent: "scene", },
   "tags":      {parent: "scene", },
   "p":         {parent: "scene", },
   "br":        {parent: "scene", },
@@ -76,7 +75,6 @@ export const paragraphTypes = {
   "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
   "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
   "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
-  "fill":      {name: "Filler",   markup: "++", shortcut: "Ctrl-Alt-F"},
   "tags":      {name: "Tags",     markup: "@",  shortcut: ""},
   "bookmark":  {name: "Bookmark" },
 }
@@ -86,9 +84,9 @@ export const paragraphTypes = {
 //
 // Style table:
 //
-//    next    Next style (empty: keep style)
-//    reset   Pressing ENTER on empty line resets the style to paragraph
+//    eol     Pressing ENTER at end-of-line continues this style
 //    bk      BACKSPACE at the start of line resets the style to paragraph
+//    reset   Pressing ENTER on empty line resets the style to paragraph
 //
 //-----------------------------------------------------------------------------
 
@@ -101,7 +99,6 @@ export const blockstyles = {
 
   'comment':   {           bk: "p", reset: "p" },
   'missing':   {           bk: "p", reset: "p" },
-  'fill':      { eol: "p", bk: "p", reset: "p" },
   'tags':      { eol: "p", bk: "p", reset: "p" },
   'bookmark':  { eol: "p", bk: "p", reset: "p" },
 }
@@ -109,14 +106,12 @@ export const blockstyles = {
 // TODO: Generate this table
 
 export const MARKUP = {
-  "** ": {type: "hact", numbered: undefined},
-  "# " : {type: "hchapter", numbered: true},
-  "#! ": {type: "hchapter", numbered: undefined},
+  "** ": {type: "hact"},
+  "# " : {type: "hchapter"},
   "## ": {type: "hscene"},
   '>> ': {type: "hsynopsis"},
   '// ': {type: 'comment'},
   '!! ': {type: 'missing'},
-  '++ ': {type: 'fill'},
   '@ ' : {type: 'tags'},
   //'-- ':
   //'<<':
