@@ -172,9 +172,10 @@ function parseAct(act, index) {
     console.log("Invalid act:", act)
     throw new Error("Invalid act", act)
   }
-  const {name, folded, target: targetStr} = act.attributes ?? {};
+  const {name, folded: foldedStr, target: targetStr} = act.attributes ?? {};
   const target = textToInt(targetStr)
-  const header = (!index && !name && !target) ? [] : [makeHeader(
+  const folded = foldedStr === "true"
+  const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
     "hact",
     nanoid(),
     name,
@@ -192,7 +193,7 @@ function parseAct(act, index) {
     id: nanoid(),
     name,
     target,
-    folded: folded ? true : undefined,
+    folded,
     children: [
       ...header,
       ...children,
@@ -206,9 +207,10 @@ function parseChapter(chapter, index) {
     console.log("Invalid chapter:", chapter)
     throw new Error("Invalid chapter:", chapter)
   }
-  const {name, folded, numbered, target: targetStr} = chapter.attributes ?? {};
+  const {name, folded: foldedStr, numbered, target: targetStr} = chapter.attributes ?? {};
   const target = textToInt(targetStr)
-  const header = (!index && !name && !target) ? [] : [makeHeader(
+  const folded = foldedStr === "true"
+  const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
     "hchapter",
     nanoid(),
     name,
@@ -227,7 +229,7 @@ function parseChapter(chapter, index) {
     name,
     numbered,
     target,
-    folded: folded ? true : undefined,
+    folded,
     children: [
       ...header,
       ...children,
@@ -242,7 +244,8 @@ function parseScene(scene, index) {
     throw new Error("Invalid scene", scene)
   }
 
-  const {name, folded, content = "scene"} = scene.attributes ?? {};
+  const {name, folded: foldedStr, content = "scene"} = scene.attributes ?? {};
+  const folded = foldedStr === "true"
 
   const htype = {
     "scene": "hscene",
@@ -250,7 +253,7 @@ function parseScene(scene, index) {
     "notes": "hnotes",
   }[content]
 
-  const header = (!index && !name && content == "scene") ? [] : [makeHeader(
+  const header = (!index && !name && !folded && content == "scene") ? [] : [makeHeader(
     htype,
     nanoid(),
     name,
@@ -269,7 +272,7 @@ function parseScene(scene, index) {
     id: nanoid(),
     content,
     name,
-    folded: folded === "true",
+    folded,
     children: [
       ...header,
       ...children,
