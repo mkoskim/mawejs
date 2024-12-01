@@ -31,8 +31,9 @@ import { nodeIsContainer } from "../../document/elements";
 function getCurrent(parents, include) {
   if(!parents) return
   const visible = parents
-    .filter(e => nodeIsContainer(e.type))
+    .filter(e => nodeIsContainer(e))
     .filter(e => include.includes(e.type))
+  //console.log("Parents", parents, "Visible:", visible)
   return visible[visible.length-1]
 }
 
