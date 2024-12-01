@@ -6,8 +6,8 @@
 */
 
 :root {
-  --synopsis-fg: rgb(80, 80, 11);
-  --synopsis-bg:#fdfdd6;
+  --bookmark-fg: rgb(80, 80, 11);
+  --bookmark-bg:#fdfdd6;
 
   --missing-fg: rgb(190, 3, 3);
   --missing-bg: #f8e7e7;

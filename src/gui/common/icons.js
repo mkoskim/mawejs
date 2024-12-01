@@ -3,18 +3,6 @@
 // Icons
 //-----------------------------------------------------------------------------
 
-import {BarChartOutlined, FormatItalic, ShowChart} from '@mui/icons-material';
-import {LooksOne, LooksTwo} from '@mui/icons-material';
-import {UnfoldMore} from '@mui/icons-material';
-import {UnfoldLessDouble} from '@mui/icons-material';
-import {AddBoxOutlined} from '@mui/icons-material';
-import {ArrowUpward} from '@mui/icons-material';
-import {ArrowDownward} from '@mui/icons-material';
-import {IndeterminateCheckBoxOutlined} from '@mui/icons-material';
-import {UnfoldMoreDouble} from '@mui/icons-material';
-import {UnfoldLess} from '@mui/icons-material';
-import {Expand} from '@mui/icons-material';
-import {FormatBold} from '@mui/icons-material';
 import {
   LightbulbOutlined,
   Close,
@@ -24,12 +12,23 @@ import {
   HelpOutline,
   Menu,
 
-  ExpandMore,
+  BarChartOutlined, BookmarksOutlined, ShowChart,
+  LooksOne, LooksTwo,
+  UnfoldMore, UnfoldMoreDouble,
+  UnfoldLess, UnfoldLessDouble,
+  AddBoxOutlined,
 
+  ArrowUpward, ArrowDownward,
   ArrowLeft,
   ArrowRight,
   ArrowDropUp,
   ArrowDropDown,
+
+  IndeterminateCheckBoxOutlined,
+  Expand, ExpandMore,
+  Collapse,
+
+  FormatBold, FormatItalic,
 
   FormatAlignLeft,
   FormatListNumberedRtl,
@@ -37,6 +36,8 @@ import {
   GridViewOutlined,
   PrintOutlined,
   DonutLarge,
+  FormatAlignJustifyOutlined,
+  FormatAlignRightOutlined,
 
   Label, LabelOutlined, AlternateEmail,
 
@@ -68,8 +69,6 @@ import {
   BrokenImageOutlined,
   CheckBox,
 
-  FormatAlignJustifyOutlined,
-  FormatAlignRightOutlined,
   Comment,
   Report,
   AddBox,
@@ -86,9 +85,11 @@ import {
 
   RadioButtonUnchecked,
   RadioButtonChecked,
+  CommentOutlined,
+  ReportOutlined,
+  AlternateEmailOutlined,
 
 } from '@mui/icons-material';
-import {Collapse} from '@mui/material';
 
 // Material icons
 export const Icon = {
@@ -166,22 +167,6 @@ export const Icon = {
     Selected: CheckBox,
   },
 
-  BlockType: {
-    Scene: FormatAlignJustifyOutlined,
-    Synopsis: FormatAlignRightOutlined,
-    Comment: Comment,
-    Missing: Report,
-    Filler: AddBox,
-    Tags: AlternateEmail,
-  },
-  StatType: {
-    Off: VisibilityOff,
-    Words: Numbers,
-    Compact: Compress,
-    Percent: Percent,
-    Cumulative: SignalCellularAlt,
-  },
-
   MoreHoriz: MoreHoriz,
   PaperClipHoriz: Attachment,
   PaperClipVert: AttachFile,
@@ -191,6 +176,22 @@ export const Icon = {
     Checked: RadioButtonChecked,
   },
 
+  BlockType: {
+    Scene: FormatAlignJustifyOutlined,
+    Bookmark: BookmarksOutlined,
+    Comment: CommentOutlined,
+    Missing: ReportOutlined,
+    Filler: AddBoxOutlined,
+    Tags: AlternateEmailOutlined,
+  },
+  StatType: {
+    Off: VisibilityOff,
+    Words: Numbers,
+    Compact: Compress,
+    Percent: Percent,
+    Cumulative: SignalCellularAlt,
+  },
+
   Style: {
     Bold: FormatBold,
     Italic: FormatItalic,
@@ -198,11 +199,11 @@ export const Icon = {
     Chapter: LooksOne,
     Scene: LooksTwo,
 
-    Synopsis: FormatAlignRightOutlined,
-    Comment: Comment,
-    Missing: Report,
-    Filler: AddBox,
-    Tags: AlternateEmail,
+    Bookmark: BookmarksOutlined,
+    Comment: CommentOutlined,
+    Missing: ReportOutlined,
+    Filler: AddBoxOutlined,
+    Tags: AlternateEmailOutlined,
 
     Folded: VisibilityOff,
     FoldAll: IndeterminateCheckBoxOutlined,

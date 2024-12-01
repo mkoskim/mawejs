@@ -143,15 +143,15 @@ function dndElemPop(editor, id) {
 
   Transforms.removeNodes(editor, {at: path, hanging: true})
 
-  const htype = nodeTypes[node.type].header
-
-  // Has the pop'd element a header? If not, make one
-  if(!node.children.length || node.children[0].type !== htype) return {
-    ...node,
-    children: [
-      {type: htype, id: nanoid(), children: [{text: ""}]},
-      ...node.children
-    ]
+  if(!elemHeading(node)) {
+    const htype = nodeTypes[node.type].header
+    return {
+      ...node,
+      children: [
+        {type: htype, id: nanoid(), children: [{text: ""}]},
+        ...node.children
+      ]
+    }
   }
 
   return node
@@ -189,14 +189,13 @@ function dndElemPushTo(editor, block, id, index) {
 
   if(container.children.length > childindex) {
     const node = container.children[childindex]
-    const htype = nodeTypes[node.type].header
 
-    if(!node.children.length || node.children[0].type !== htype) {
+    if(!elemHeading(node)) {
+      const htype = nodeTypes[node.type].header
       Transforms.insertNodes(editor,
         {
           type: htype,
           id: nanoid(),
-          numbered: true,
           children: [{text: ""}]
         },
         {at: [...childpath, 0]}

@@ -106,9 +106,9 @@ export class ChooseVisibleElements extends React.PureComponent {
       tooltip: "Show scenes",
       icon: <Icon.BlockType.Scene/>
     },
-    "synopsis": {
-      tooltip: "Show synopses",
-      icon: <Icon.BlockType.Synopsis />
+    "bookmark": {
+      tooltip: "Show bookmarks",
+      icon: <Icon.BlockType.Bookmark />
     },
     "missing": {
       tooltip: "Show missing",

@@ -24,15 +24,14 @@ import {
 import {FormatWords} from "./components";
 import {elemAsText, elemName, filterCtrlElems} from "../../document";
 import {elemNumbered, wcCumulative} from "../../document/util";
+import { nodeIsContainer } from "../../document/elements";
 
 //-----------------------------------------------------------------------------
-
-const blockTypes = ["act", "chapter", "scene"]
 
 function getCurrent(parents, include) {
   if(!parents) return
   const visible = parents
-    .filter(e => blockTypes.includes(e.type))
+    .filter(e => nodeIsContainer(e.type))
     .filter(e => include.includes(e.type))
   return visible[visible.length-1]
 }
@@ -355,10 +354,11 @@ class IndexItem extends React.PureComponent {
     "act": "Act",
     "chapter": "Chapter",
     "scene": "Scene",
+    "synopsis": "Scene",
 
+    "bookmark": "Bookmark",
     "missing": "Bookmark",
     "comment": "Bookmark",
-    "synopsis": "Bookmark",
     "fill": "Bookmark",
     "tags": "Bookmark",
   }
@@ -407,7 +407,7 @@ class ItemIcon extends React.PureComponent {
       case "missing":
       case "fill":
       case "comment":
-      case "synopsis":
+      case "bookmark":
       case "tags":
         return <span className={addClass("Box", type)} />
     }

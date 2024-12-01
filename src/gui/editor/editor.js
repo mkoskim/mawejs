@@ -78,7 +78,8 @@ export function loadEditorSettings(settings) {
       .filter(s => s !== "part")
       .filter(s => s !== "chapter")
       .filter(s => s !== "act")
-      .concat(["act", "chapter"])
+      .filter(s => s !== "synopsis")
+      .concat(["act", "chapter", "bookmark"])
 
     return {
       ...(words ? {words} : {}),
@@ -90,12 +91,12 @@ export function loadEditorSettings(settings) {
     active: "body",
     focusTo: {id: undefined},
     body: {
-      indexed: ["act", "chapter", "scene", "synopsis"],
+      indexed: ["act", "chapter", "scene", "bookmark"],
       words: "numbers",
       ...getBodySettings()
     },
     notes: {
-      indexed: ["act", "chapter", "scene", "synopsis"],
+      indexed: ["act", "chapter", "scene", "bookmark"],
       words: undefined,
     },
     left: {
@@ -449,7 +450,7 @@ function LeftPanel({settings}) {
 }
 
 const LeftIndexChoices = {
-  visible: ["scene", "synopsis", "missing", "fill", "comment", "tags"],
+  visible: ["scene", "bookmark", "missing", "fill", "comment", "tags"],
   words: ["off", "numbers", "compact", "cumulative", "percent"]
 }
 

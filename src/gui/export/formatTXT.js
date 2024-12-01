@@ -67,7 +67,7 @@ ${content}
   hscene: undefined,
 
   // Paragraph styles
-  //"synopsis": (p) => undefined,
+  //"bookmark": (p) => undefined,
   //"comment": (sp) => undefined,
   "missing": (p,text) => `!! ${linify(text)}`,
   "p": (p, text) => `${linify(text)}`,
@@ -147,7 +147,7 @@ ${content}
   hscene: undefined,
 
   // Paragraph styles
-  //"synopsis": (p) => undefined,
+  //"bookmark": (p) => undefined,
   //"comment": (sp) => undefined,
   "missing": (p,text) => `!! ${text}`,
   "p": (p, text) => `${text}`,

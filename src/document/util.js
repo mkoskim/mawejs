@@ -78,10 +78,12 @@ export function createDateStamp(date) {
 
 //-----------------------------------------------------------------------------
 
+//*
 export function filterCtrlElems(blocks) {
-  const ctrltypes = ["hact", "hchapter", "hscene"]
+  const ctrltypes = ["hact", "hchapter", "hscene", "hsynopsis"]
   return blocks.filter(block => !ctrltypes.includes(block.type))
 }
+/**/
 
 export function elemAsText(elem) {
   if(!elem?.children) return ""

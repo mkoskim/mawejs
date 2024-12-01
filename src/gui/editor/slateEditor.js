@@ -65,14 +65,19 @@ export {
 //      hact (act hader/name)
 //      chapter: [
 //        hchapter (chapter header/name)
+//        synopsis: [
+//          hsynopsis (synopsis header/name)
+//          paragraph
+//          paragraph
+//        ]
 //        scene: [
 //          hscene (scene header/name)
 //          paragraph
 //          paragraph
 //          ...
 //        ]
-//        scene
-//        scene
+//        scene / synopsis
+//        scene / synopsis
 //      ]
 //      chapter
 //      chapter
@@ -166,15 +171,16 @@ function renderElement({element, attributes, ...props}) {
 
     case "hact": return <h4 className={numClass} {...attributes} {...props}/>
     case "hchapter": return <h5 className={numClass} {...attributes} {...props}/>
-    case "hscene": return <h6 {...attributes} {...props}/>
+    case "hscene": return <h6 className="HdrScene" {...attributes} {...props}/>
+    case "hsynopsis": return <h6 className= "HdrSynopsis" {...attributes} {...props}/>
 
     //-------------------------------------------------------------------------
     // Paragraphs
     //-------------------------------------------------------------------------
 
+    case "bookmark":
     case "comment":
     case "missing":
-    case "synopsis":
     case "fill":
     case "tags":
       return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
@@ -310,7 +316,7 @@ class CharStyleButtons extends React.PureComponent {
 
 class ParagraphStyleSelect extends React.PureComponent {
 
-  static order = ["p", "hact", "hchapter", "hscene", "synopsis", "comment", "missing", "fill", "tags"]
+  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "comment", "missing", "fill", "tags"]
 
   render() {
     const {type, setSelected} = this.props;
@@ -537,7 +543,7 @@ function onKeyDown(editor, event) {
 
   if(IsKey.CtrlAltS(event)) {
     event.preventDefault()
-    Transforms.setNodes(editor, {type: "synopsis"})
+    Transforms.setNodes(editor, {type: "hsynopsis"})
     return ;
   }
 

@@ -212,7 +212,7 @@ ${backmatter}
   //---------------------------------------------------------------------------
 
   // Paragraph styles
-  //"synopsis": (p) => undefined,
+  //"bookmark": (p) => undefined,
   //"comment": (p) => undefined,
   "missing": (p, text) => `{\\color{red}${linify(text)}}`,
   "p": (p, text) => `${linify(text)}`,
