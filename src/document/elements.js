@@ -73,10 +73,10 @@ export const paragraphTypes = {
   "hchapter":  {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2"},
   "hscene":    {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3"},
   "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
+  "bookmark":  {name: "Bookmark" },
   "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
   "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
-  "tags":      {name: "Tags",     markup: "@",  shortcut: ""},
-  "bookmark":  {name: "Bookmark" },
+  "tags":      {name: "Tags",     markup: "@@",  shortcut: ""},
 }
 
 //-----------------------------------------------------------------------------
@@ -112,7 +112,7 @@ export const MARKUP = {
   '>> ': {type: "hsynopsis"},
   '// ': {type: 'comment'},
   '!! ': {type: 'missing'},
-  '@ ' : {type: 'tags'},
+  '@@ ' : {type: 'tags'},
   //'-- ':
   //'<<':
   //'((':

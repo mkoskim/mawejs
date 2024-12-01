@@ -61,13 +61,12 @@
   text-transform: uppercase;
 }
 
+/*
 .TOC .Entry.Act.Numbered .Name::before {
   counter-increment: act;
   content: "ACT " counter(act, upper-roman) ": ";
-/*
-  content: counter(chapter) ". ";
-*/
 }
+*/
 
 .TOC div.ChapterDropZone {
   min-height: 16pt;

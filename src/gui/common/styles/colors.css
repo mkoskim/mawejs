@@ -16,7 +16,7 @@
   --missing-fg: rgb(190, 3, 3);
   --missing-bg: #f8e7e7;
 
-  --fill-fg: rgb(190, 3, 170);
+  --target-fg: rgb(190, 3, 170);
   /*--fill-bg: #f8e7e7;*/
 
   --tags-fg: rgb(80, 80, 250);

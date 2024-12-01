@@ -129,16 +129,15 @@ function toNotes(notes) {
 //-----------------------------------------------------------------------------
 
 function toAct(act) {
-  const {folded, numbered, target} = act;
-  const name = elemName(act)
+  const {name, folded, numbered, target} = act;
 
   return xmlLines(
     {
       type: "act",
       attributes: {
-        name: name,
+        name,
         folded: folded ? true : undefined,
-        numbered: numbered ? true : undefined,
+        //numbered: numbered ? true : undefined,
         target: target ? target : undefined,
       },
     },
@@ -151,14 +150,13 @@ function toAct(act) {
 //-----------------------------------------------------------------------------
 
 function toChapter(chapter) {
-  const {folded, numbered, target} = chapter;
-  const name = elemName(chapter)
+  const {name, folded, numbered, target} = chapter;
 
   return xmlLines(
     {
       type: "chapter",
       attributes: {
-        name: name,
+        name,
         folded: folded ? true : undefined,
         numbered: numbered ? true : undefined,
         target: target ? target : undefined,
@@ -173,8 +171,7 @@ function toChapter(chapter) {
 //-----------------------------------------------------------------------------
 
 function toScene(scene) {
-  const {folded, synopsis} = scene
-  const name = elemName(scene)
+  const {name, synopsis, folded, target} = scene
 
   const type = synopsis ? "synopsis" : "scene"
 
@@ -182,8 +179,9 @@ function toScene(scene) {
     {
       type,
       attributes: {
-        name: name,
+        name,
         folded: folded ? true : undefined,
+        //target: target ? target : undefined,
       },
     },
     ...filterCtrlElems(scene.children).map(toParagraph),

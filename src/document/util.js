@@ -105,12 +105,12 @@ export function elemHeading(elem) {
 }
 
 export function elemCtrl(elem) {
-  const head = elemHeading(elem)
-  const headtype = head?.type ?? nodeTypes[elem.type].header
+  const {type, name, numbered, target} = elemHeading(elem) ?? {type: nodeTypes[elem.type].header}
   return {
-    ...nodeTypes[headtype].ctrl ?? {},
-    numbered: head?.numbered,
-    target: head?.target,
+    ...nodeTypes[type].ctrl ?? {},
+    name,
+    numbered,
+    target,
   }
 }
 
@@ -118,12 +118,13 @@ export function makeHeader(type, id, name, numbered, target) {
   return {
     type,
     id,
+    name,
     numbered,
     target,
     children: [
       {text: name ?? ""},
-      {text: numbered ? "" : "*"},
-      {text: target ? ` #${target}` : ""}
+      ...numbered ? [] : [{text: "*"}],
+      ...target ? [{text: ` ::${target}`}] : [],
     ],
   }
 }
@@ -137,19 +138,21 @@ export function textToInt(text) {
 export function elemHeadParse(head) {
   if(!head) return {}
   const all = elemAsText(head)
-  const [text, targetStr] = all.split("#")
+  const [textStr, targetStr] = all.split("::")
+  const text = textStr.trim()
   const target = textToInt(targetStr)
-  const [name, numbered] = text.trim().endsWith("*") ? [text.slice(0, -1), false] : [text, true]
+  const [name, numbered] = text.endsWith("*") ? [text.slice(0, -1), false] : [text, true]
   return {
+    name: name.trim(),
     numbered,
     target,
-    name: name.trim(),
   }
 }
 
 export function elemName(elem) {
-  const head = elemHeading(elem)
-  return elemHeadParse(head).name
+  return elem.name
+  //const head = elemHeading(elem)
+  //return elemHeadParse(head).name
 }
 
 export function elemNumbered(elem) {
@@ -257,12 +260,14 @@ export function wcChildren(children, target) {
     missing: words.missing + (elem.words.missing ?? 0),
   }), {chars: 0, text: 0, missing: 0})
 
-  if(target) {
-    const diff = Math.max(0, target - words.text)
+  const total = words.text + words.missing
+
+  if(target && target > total) {
+    const diff = target - words.text
     return {
       chars: words.chars,
       text: words.text,
-      missing: Math.max(diff, words.missing)
+      missing: diff
     }
   }
   return words
@@ -278,7 +283,7 @@ export function wcElem(elem) {
 
     case "scene":
       if(elem.synopsis) return undefined
-      return wcChildren(elem.children)
+      return wcChildren(elem.children, elem.target)
 
     case "p":
     case "missing":

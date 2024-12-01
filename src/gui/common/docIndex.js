@@ -402,7 +402,7 @@ function ScrollRef({current, id, refCurrent, children}) {
 
 function ItemName(type, name) {
   if(type === "synopsis") {
-    return "Synopsis: " + name
+    return "Synopsis" + (name ? `: ${name}` : "")
   }
   return name ? name : "<Unnamed>"
 }

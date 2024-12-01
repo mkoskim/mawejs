@@ -253,11 +253,13 @@
 */
 }
 
+/*
 .Sheet h4.Numbered::before {
   margin-right: 4pt;
   counter-increment: act;
   content: "Act " counter(act, upper-roman) ":";
 }
+*/
 
 /* Chapter */ .Sheet h5 {
   font-family: Arial, Helvetica, sans-serif;
@@ -304,7 +306,7 @@
 }
 
 .Sheet div.synopsis h6::before {
-  content: ">> Synopsis: ";
+  content: "Synopsis: ";
 /*
   margin-right: 8pt;
 */
@@ -332,21 +334,18 @@
 
 /* ---------------------------------------------------------------------------- */
 
+.Sheet .target {
+  color: var(--target-fg);
+}
+
+/* ---------------------------------------------------------------------------- */
+
 .Sheet .missing {
   color: var(--missing-fg);
 }
 
 .Sheet .missing::before {
   content: "!!";
-  margin-right: 4pt;
-}
-
-.Sheet .fill {
-  color: var(--fill-fg);
-}
-
-.Sheet .fill::before {
-  content: "++ Fill:";
   margin-right: 4pt;
 }
 

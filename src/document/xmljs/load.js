@@ -172,13 +172,13 @@ function parseAct(act, index) {
     console.log("Invalid act:", act)
     throw new Error("Invalid act", act)
   }
-  const {name, folded, numbered, target: targetStr} = act.attributes ?? {};
+  const {name, folded, target: targetStr} = act.attributes ?? {};
   const target = textToInt(targetStr)
   const header = (!index && !name && !target) ? [] : [makeHeader(
     "hact",
     nanoid(),
     name,
-    numbered,
+    true,
     target,
   )]
   const empty = [{type: "element", name: "chapter"}]
@@ -190,6 +190,7 @@ function parseAct(act, index) {
   return {
     type: "act",
     id: nanoid(),
+    name,
     target,
     folded: folded ? true : undefined,
     children: [
@@ -223,6 +224,8 @@ function parseChapter(chapter, index) {
   return {
     type: "chapter",
     id: nanoid(),
+    name,
+    numbered,
     target,
     folded: folded ? true : undefined,
     children: [
@@ -242,24 +245,26 @@ function parseScene(scene, index) {
   const synopsis = scene.name === "synopsis"
 
   const {name, folded} = scene.attributes ?? {};
-  const header = (!index && !name && !synopsis) ? [] : [{
-    type: synopsis ? "hsynopsis" : "hscene",
-    id: nanoid(),
-    children: [{text: name ?? ""}],
-    words: {}
-  }]
+  const header = (!index && !synopsis && !name) ? [] : [makeHeader(
+    synopsis ? "hsynopsis" : "hscene",
+    nanoid(),
+    name,
+    true,
+    undefined,
+  )]
+
   const empty = [{type: "element", name: "p", children: []}]
   const elements = scene.elements?.length ? scene.elements : empty
 
   const children = elements.map(parseParagraph).filter(e => e).map(elem => ({...elem, words: wcElem(elem)}))
-  const words = wcChildren(children)
+  const words = synopsis ? undefined : wcChildren(children)
 
   return {
     type: "scene",
     id: nanoid(),
-    //name,
-    folded: folded === "true",
+    name,
     synopsis,
+    folded: folded === "true",
     children: [
       ...header,
       ...children,

@@ -171,7 +171,7 @@ function renderElement({element, attributes, ...props}) {
     // Container breaks
     //-------------------------------------------------------------------------
 
-    case "hact": return <h4 className={numClass} {...attributes} {...props}/>
+    case "hact": return <h4 {...attributes} {...props}/>
     case "hchapter": return <h5 className={numClass} {...attributes} {...props}/>
     case "hsynopsis":
     case "hscene": return <h6 {...attributes} {...props}/>
@@ -203,10 +203,13 @@ function renderLeaf({ leaf, attributes, children}) {
   if(leaf.italic) {
     children = <em>{children}</em>
   }
-  if(leaf.highlight) {
-    children = <span className="highlight">{children}</span>
-  }
-  return <span {...attributes}>{children}</span>
+
+  const className = [
+    leaf.highlight ? "highlight" : undefined,
+    leaf.target ? "target" : undefined,
+  ].filter(e => e).join(" ")
+
+  return <span className={className} {...attributes}>{children}</span>
 }
 
 //*****************************************************************************
@@ -1121,9 +1124,9 @@ function withFixNesting(editor) {
   //---------------------------------------------------------------------------
 
   function parseHeading(node, path) {
-    const {numbered, target} = elemHeadParse(node)
+    const {name, numbered, target} = elemHeadParse(node)
     //console.log("Attrs:", node, {numbered, target})
-    return modifyAttributes(node, path, {numbered, target})
+    return modifyAttributes(node, path, {name, numbered, target})
   }
 
   //---------------------------------------------------------------------------
