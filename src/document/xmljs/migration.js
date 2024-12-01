@@ -23,7 +23,7 @@ import { elemFind, elemFindall, elem2Text } from "./tree";
 //
 //-----------------------------------------------------------------------------
 
-const supported = ["1", "2", "3", "4", "4.1"]
+const supported = ["1", "2", "3", "4", "5"]
 
 export function migrate(root) {
 
@@ -42,7 +42,7 @@ export function migrate(root) {
     v2_to_v3,
     v3_fixes,
     v3_to_v4,
-    v4_to_v4_1,
+    v4_to_v5,
   ].reduce((story, func) => func(story), story)
 }
 
@@ -266,13 +266,13 @@ function v3_to_v4(story) {
 //
 //*****************************************************************************
 
-function v4_to_v4_1(story) {
+function v4_to_v5(story) {
 
   const {version} = story.attributes ?? {}
 
   if(version !== "4") return story
 
-  console.log("Migrate v4 -> v4.1")
+  console.log("Migrate v4 -> v5")
 
   // Fix unnumbered --> numbered
   const bodyElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}

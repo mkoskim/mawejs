@@ -30,15 +30,13 @@ export async function savemawe(doc) {
 
 export function toXML(doc) {
 
-  throw new Error("Saving disabled!")
-
   return xmlLines(
     {
       type: "story",
       attributes: {
         uuid: doc.uuid ?? getUUID(),
         format: "mawe",
-        version: "4",
+        version: "5",
         name: doc.head?.name
       }
     },
@@ -175,12 +173,14 @@ function toChapter(chapter) {
 //-----------------------------------------------------------------------------
 
 function toScene(scene) {
-  const {folded} = scene
+  const {folded, synopsis} = scene
   const name = elemName(scene)
+
+  const type = synopsis ? "synopsis" : "scene"
 
   return xmlLines(
     {
-      type: "scene",
+      type,
       attributes: {
         name: name,
         folded: folded ? true : undefined,
