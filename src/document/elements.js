@@ -23,7 +23,7 @@ export const nodeTypes = {
 
   "hact":      {parent: "act", breaks: true, },
   "hchapter":  {parent: "chapter", breaks: true, },
-  "hscene":    {parent: "scene", breaks: true, ctrl: {synopsis: false}},
+  "hscene":    {parent: "scene", breaks: true, ctrl: {synopsis: undefined}},
   "hsynopsis": {parent: "scene", breaks: true, ctrl: {synopsis: true}},
 
   //---------------------------------------------------------------------------

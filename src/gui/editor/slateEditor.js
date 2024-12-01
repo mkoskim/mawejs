@@ -21,7 +21,7 @@ import {
 import { withHistory } from "slate-history"
 import { addClass, IsKey, ListItemText, Separator } from '../common/factory';
 import { nanoid } from '../../util';
-import { wcElem, wcCompare, elemHeading} from '../../document/util';
+import { wcElem, wcCompare, elemHeading, elemCtrl} from '../../document/util';
 
 import {
   nodeTypes,
@@ -1058,6 +1058,7 @@ function withFixNesting(editor) {
       }
 
       if(!mergeHeadlessChilds(node, path)) return;
+      if(!doHeaderCtrl(node, path)) return;
       return normalizeNode(entry)
     }
 
@@ -1066,7 +1067,6 @@ function withFixNesting(editor) {
     // Block headers
     if(nodeIsBreak(node)) {
       if(!checkIsFirst(node, path, nodeType.parent)) return
-      if(!checkParentCtrl(node, path, nodeType.ctrl)) return
     }
 
     return normalizeNode(entry)
@@ -1115,22 +1115,22 @@ function withFixNesting(editor) {
   // Check parent control
   //---------------------------------------------------------------------------
 
-  function checkParentCtrl(node, path, ctrl) {
-    if(!ctrl) return true
-
-    const [parent, ppath] = Editor.parent(editor, path)
+  function doHeaderCtrl(node, path) {
+    const ctrl = elemCtrl(node)
 
     var modify = {}
 
     for(const [key, value] of Object.entries(ctrl)) {
-      if(parent[key] !== value) modify[key] = value
+      if(node[key] !== value) modify[key] = value
       //if(parent[key] === value) Transforms.setNodes(editor, {key: value}, {at: ppath})
     }
 
-    if(!Object.keys(modify).length) return true
+    if(Object.keys(modify).length) {
+      Transforms.setNodes(editor, modify, {at: path})
+      return false
+    }
 
-    Transforms.setNodes(editor, modify, {at: ppath})
-    return false
+    return true
   }
 
   //---------------------------------------------------------------------------

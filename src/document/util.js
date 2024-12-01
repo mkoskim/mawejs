@@ -104,6 +104,12 @@ export function elemHeading(elem) {
   return undefined
 }
 
+export function elemCtrl(elem) {
+  const head = elemHeading(elem)
+  const headtype = head?.type ?? nodeTypes[elem.type].header
+  return nodeTypes[headtype].ctrl ?? {}
+}
+
 export function elemName(elem) {
   return elemAsText(elemHeading(elem))
 }
