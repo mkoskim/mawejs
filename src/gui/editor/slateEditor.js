@@ -52,23 +52,112 @@ export {
 //
 // Short description of buffer format:
 //
-// children = [
-//  chapter: [
-//    hchapter (chapter header/name)
-//    scene: [
-//      hscene (scene header/name)
-//      paragraph
-//      paragraph
-//      ...
+//  children = [
+//    act: [
+//      hact (act hader/name)
+//      chapter: [
+//        hchapter (chapter header/name)
+//        scene: [
+//          hscene (scene header/name)
+//          paragraph
+//          paragraph
+//          ...
+//        ]
+//        scene
+//        scene
+//      ]
+//      chapter
+//      chapter
 //    ]
-//    scene
-//    scene
+//    act
+//    act
 //  ]
-//  chapter
-//  chapter
-//]
 //
 //-----------------------------------------------------------------------------
+
+//*****************************************************************************
+//
+// Styles
+//
+//*****************************************************************************
+
+//-----------------------------------------------------------------------------
+// Planning: containers, container breaks/headers, paragraphs, marks
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+
+const nodeStyles = {
+  "p":        {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
+  "hact":     {name: "Act",      markup: "**", shortcut: "Ctrl-Alt-1"},
+  "hchapter": {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2"},
+  "hscene":   {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3"},
+  "synopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
+  "comment":  {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
+  "missing":  {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
+  "fill":     {name: "Filler",   markup: "++", shortcut: "Ctrl-Alt-F"},
+  "tags":     {name: "Tags",     markup: "@",  shortcut: ""},
+}
+
+//-----------------------------------------------------------------------------
+// Markup shortcuts
+//
+// Style table:
+//
+//    next    Next style (empty: keep style)
+//    reset   Pressing ENTER on empty line resets the style to paragraph
+//    bk      BACKSPACE at the start of line resets the style to paragraph
+//
+//-----------------------------------------------------------------------------
+
+const blockstyles = {
+  "hact":     { eol: "p", bk: "p", },
+  "hchapter": { eol: "p", bk: "p", },
+  "hscene":   { eol: "p", bk: "p", },
+  "synopsis": { eol: "p", bk: "p", reset: "p" },
+  'comment':  {           bk: "p", reset: "p" },
+  'missing':  {           bk: "p", reset: "p" },
+  'fill':     { eol: "p", bk: "p", reset: "p" },
+  'tags':     { eol: "p", bk: "p", reset: "p" },
+}
+
+// TODO: Generate this table
+
+const MARKUP = {
+  "** ": {type: "hact", numbered: undefined},
+  "# " : {type: "hchapter", numbered: true},
+  "#! ": {type: "hchapter", numbered: undefined},
+  "## ": {type: "hscene"},
+  ":: ": {type: "hscene"},
+  '>> ': {type: "synopsis"},
+  '// ': {type: 'comment'},
+  '!! ': {type: 'missing'},
+  '++ ': {type: 'fill'},
+  '@ ' : {type: 'tags'},
+  //'-- ':
+  //'<<':
+  //'((':
+  //'))':
+  //'==':
+  //'??':
+  //'%%':
+  //'/*':
+  //'::':
+}
+
+/*
+const blockTypes = {
+  "act":     {header: "hact",     level: 1,                  contains: "chapter", },
+  "chapter": {header: "hchapter", level: 2, wrap: "act" ,    contains: "scene"},
+  "scene":   {header: "hscene",   level: 3, wrap: "chapter", },
+}
+
+const blockHeaders = {
+  "hact": "act",
+  "hchapter": "chapter",
+  "hscene": "scene",
+}
+*/
 
 //*****************************************************************************
 //
@@ -136,6 +225,9 @@ function renderElement({element, attributes, ...props}) {
   const numClass = numbered ? "Numbered" : ""
 
   switch (type) {
+
+    // Containers
+
     case "act":
       return <div className={addClass("act", foldClass, debug?.blocks)} {...attributes} {...props}/>
     case "chapter":
@@ -143,9 +235,13 @@ function renderElement({element, attributes, ...props}) {
     case "scene":
       return <div className={addClass("scene", foldClass, debug?.blocks)} {...attributes} {...props}/>
 
+    // Container breaks
+
     case "hact": return <h4 className={numClass} {...attributes} {...props}/>
     case "hchapter": return <h5 className={numClass} {...attributes} {...props}/>
     case "hscene": return <h6 {...attributes} {...props}/>
+
+    // Paragraphs
 
     case "comment":
     case "missing":
@@ -279,20 +375,6 @@ class CharStyleButtons extends React.PureComponent {
       exclusive={false}
     />
   }
-}
-
-//-----------------------------------------------------------------------------
-
-const nodeStyles = {
-  "p":        {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
-  "hact":     {name: "Act",      markup: "**", shortcut: "Ctrl-Alt-1"},
-  "hchapter": {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2"},
-  "hscene":   {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3"},
-  "synopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
-  "comment":  {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
-  "missing":  {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
-  "fill":     {name: "Filler",   markup: "++", shortcut: "Ctrl-Alt-F"},
-  "tags":     {name: "Tags",     markup: "@",  shortcut: ""},
 }
 
 //-----------------------------------------------------------------------------
@@ -650,51 +732,6 @@ function withTextPaste(editor) {
   /**/
 
   return editor;
-}
-
-//-----------------------------------------------------------------------------
-// Markup shortcuts
-//
-// Style table:
-//
-//    next    Next style (empty: keep style)
-//    reset   Pressing ENTER on empty line resets the style to paragraph
-//    bk      BACKSPACE at the start of line resets the style to paragraph
-//
-//-----------------------------------------------------------------------------
-
-const blockstyles = {
-  "hact":     { eol: "p", bk: "p", },
-  "hchapter": { eol: "p", bk: "p", },
-  "hscene":   { eol: "p", bk: "p", },
-  "synopsis": { eol: "p", bk: "p", reset: "p" },
-  'comment':  {           bk: "p", reset: "p" },
-  'missing':  {           bk: "p", reset: "p" },
-  'fill':     { eol: "p", bk: "p", reset: "p" },
-  'tags':     { eol: "p", bk: "p", reset: "p" },
-}
-
-// TODO: Generate this table
-
-const MARKUP = {
-  "** ": {type: "hact", numbered: undefined},
-  "# " : {type: "hchapter", numbered: true},
-  "#! ": {type: "hchapter", numbered: undefined},
-  "## ": {type: "hscene"},
-  '>> ': {type: "synopsis"},
-  '// ': {type: 'comment'},
-  '!! ': {type: 'missing'},
-  '++ ': {type: 'fill'},
-  '@ ' : {type: 'tags'},
-  //'-- ':
-  //'<<':
-  //'((':
-  //'))':
-  //'==':
-  //'??':
-  //'%%':
-  //'/*':
-  //'::':
 }
 
 function withMarkup(editor) {
@@ -1102,15 +1139,6 @@ function withFixNesting(editor) {
 
       return normalizeNode(entry)
     }
-
-    /*
-          if(!checkBlockHeader(node, path, "hscene")) return
-          const match = Editor.next(editor, {at: path})
-          if(!match) break;
-          if(!checkBlockHeader(match[0], match[1], "hscene")) return
-          break
-        }
-    */
 
     // Block headers
     if(node.type in blockHeaders) {
