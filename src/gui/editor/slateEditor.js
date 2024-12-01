@@ -148,7 +148,7 @@ const debug = {
 
 function renderElement({element, attributes, ...props}) {
 
-  const {type, folded, numbered} = element
+  const {type, folded, numbered, synopsis} = element
 
   const foldClass = folded ? "folded" : ""
   const numClass = numbered ? "Numbered" : ""
@@ -162,8 +162,10 @@ function renderElement({element, attributes, ...props}) {
       return <div className={addClass("act", foldClass, debug?.blocks)} {...attributes} {...props}/>
     case "chapter":
       return <div className={addClass("chapter", foldClass, debug?.blocks)} {...attributes} {...props}/>
-    case "scene":
-      return <div className={addClass("scene", foldClass, debug?.blocks)} {...attributes} {...props}/>
+    case "scene": {
+      const name = synopsis ? "synopsis" : "scene"
+      return <div className={addClass(name, foldClass, debug?.blocks)} {...attributes} {...props}/>
+    }
 
     //-------------------------------------------------------------------------
     // Container breaks
@@ -171,8 +173,8 @@ function renderElement({element, attributes, ...props}) {
 
     case "hact": return <h4 className={numClass} {...attributes} {...props}/>
     case "hchapter": return <h5 className={numClass} {...attributes} {...props}/>
-    case "hscene": return <h6 className="HdrScene" {...attributes} {...props}/>
-    case "hsynopsis": return <h6 className= "HdrSynopsis" {...attributes} {...props}/>
+    case "hsynopsis":
+    case "hscene": return <h6 {...attributes} {...props}/>
 
     //-------------------------------------------------------------------------
     // Paragraphs
@@ -1064,6 +1066,7 @@ function withFixNesting(editor) {
     // Block headers
     if(nodeIsBreak(node)) {
       if(!checkIsFirst(node, path, nodeType.parent)) return
+      if(!checkParentCtrl(node, path, nodeType.ctrl)) return
     }
 
     return normalizeNode(entry)
@@ -1105,6 +1108,28 @@ function withFixNesting(editor) {
       Transforms.wrapNodes(editor, {type}, {at: path})
       Transforms.liftNodes(editor, {at: path})
     })
+    return false
+  }
+
+  //---------------------------------------------------------------------------
+  // Check parent control
+  //---------------------------------------------------------------------------
+
+  function checkParentCtrl(node, path, ctrl) {
+    if(!ctrl) return true
+
+    const [parent, ppath] = Editor.parent(editor, path)
+
+    var modify = {}
+
+    for(const [key, value] of Object.entries(ctrl)) {
+      if(parent[key] !== value) modify[key] = value
+      //if(parent[key] === value) Transforms.setNodes(editor, {key: value}, {at: ppath})
+    }
+
+    if(!Object.keys(modify).length) return true
+
+    Transforms.setNodes(editor, modify, {at: ppath})
     return false
   }
 

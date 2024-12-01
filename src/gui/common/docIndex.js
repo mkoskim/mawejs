@@ -323,7 +323,7 @@ class SceneItem extends React.PureComponent {
     >
     <IndexItem
       id={elem.id}
-      type={elem.type}
+      type={elem.synopsis ? "synopsis" : elem.type}
       name={elemName(elem)}
       folded={elem.folded}
       words={elem.words}
@@ -384,7 +384,7 @@ class IndexItem extends React.PureComponent {
     return <ScrollRef current={current} id={id} refCurrent={refCurrent}>
       <HBox className={addClass(className, "Entry", typeClass, numClass, foldClass)} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
-      <ItemLabel name={name ? name : "<Unnamed>"}/>
+      <ItemLabel name={ItemName(type, name)}/>
       {/*<ItemLabel name={id}/>*/}
       {wcFormat && <><Filler/><span className="WordCount">{wcFormat(id, words)}</span></>}
       </HBox>
@@ -400,14 +400,21 @@ function ScrollRef({current, id, refCurrent, children}) {
   return children
 }
 
+function ItemName(type, name) {
+  if(type === "synopsis") {
+    return "Synopsis: " + name
+  }
+  return name ? name : "<Unnamed>"
+}
+
 class ItemIcon extends React.PureComponent {
   render() {
     const {type} = this.props
     switch (type) {
+      case "bookmark":
       case "missing":
       case "fill":
       case "comment":
-      case "bookmark":
       case "tags":
         return <span className={addClass("Box", type)} />
     }

@@ -120,6 +120,14 @@
   */
 }
 
+.Sheet div.synopsis {
+  padding: 4pt;
+  background: var(--synopsis-bg);
+  color: var(--synopsis-fg);
+  border: var(--synopsis-border);
+  margin-bottom: 0.5cm;
+}
+
 /* ----------------------------------------------------------------------------
 // For debugging purposes: make chapter & scene div's visible
 // ----------------------------------------------------------------------------
@@ -137,7 +145,7 @@
   margin-bottom: 4pt;
 }
 
-.Sheet div.scene.withBorders {
+.Sheet div.scene.withBorders, div.synopsis.withBorders {
   border: 1pt dotted lightgray;
   padding: 4pt;
   margin-bottom: 4pt;
@@ -179,8 +187,9 @@
 .Sheet div.folded p,
 .Sheet div.folded div.emptyline,
 .Sheet .act.folded div.chapter,
-.Sheet .chapter.folded div.scene {
-  display: none
+.Sheet .chapter.folded div.scene
+.Sheet .chapter.folded div.synopsis {
+    display: none
 }
 
 .Sheet div.folded h4,
@@ -271,7 +280,7 @@
   content: counter(chapter) ".";
 }
 
-/* Scene*/ .Sheet h6 {
+/* Scene / Synopsis */ .Sheet h6 {
   font-size: inherit;
   color: #888;
   /*
@@ -285,7 +294,7 @@
   */
 }
 
-.Sheet h6.HdrScene::before {
+.Sheet div.scene h6::before {
   counter-increment: scene;
   margin-right: 8pt;
   content: "##";
@@ -294,12 +303,10 @@
 */
 }
 
-.Sheet h6.HdrSynopsis::before {
-  margin-right: 8pt;
-  content: ">>";
+.Sheet div.synopsis h6::before {
+  content: ">> Synopsis: ";
 /*
-  counter-increment: scene;
-  content: counter(scene) ".";
+  margin-right: 8pt;
 */
 }
 

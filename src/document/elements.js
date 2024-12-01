@@ -9,14 +9,26 @@
 //-----------------------------------------------------------------------------
 
 export const nodeTypes = {
+  //---------------------------------------------------------------------------
+  // Containers
+  //---------------------------------------------------------------------------
+
   "act":       {parent: undefined, level: 1, header: "hact", },
   "chapter":   {parent: "act",     level: 2, header: "hchapter", },
   "scene":     {parent: "chapter", level: 3, header: "hscene"},
 
+  //---------------------------------------------------------------------------
+  // Container breaks
+  //---------------------------------------------------------------------------
+
   "hact":      {parent: "act", breaks: true, },
   "hchapter":  {parent: "chapter", breaks: true, },
-  "hscene":    {parent: "scene", breaks: true, },
-  "hsynopsis": {parent: "scene", breaks: true, },
+  "hscene":    {parent: "scene", breaks: true, ctrl: {synopsis: false}},
+  "hsynopsis": {parent: "scene", breaks: true, ctrl: {synopsis: true}},
+
+  //---------------------------------------------------------------------------
+  // Paragraphs
+  //---------------------------------------------------------------------------
 
   "bookmark":  {parent: "scene", },
   "comment":   {parent: "scene", },

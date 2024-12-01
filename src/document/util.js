@@ -216,7 +216,10 @@ export function wcElem(elem) {
     case "sect":
     case "act":
     case "chapter":
+      return wcChildren(elem.children)
+
     case "scene":
+      if(elem.synopsis) return undefined
       return wcChildren(elem.children)
 
     case "p":
@@ -225,7 +228,7 @@ export function wcElem(elem) {
       return wcParagraph(elem)
 
     default:
-    //case "synopsis":
+    //case "bookmark":
     //case "tag":
     //case "comment":
     //case "br":

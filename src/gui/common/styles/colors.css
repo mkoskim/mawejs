@@ -6,6 +6,10 @@
 */
 
 :root {
+  --synopsis-fg: rgb(0, 0, 0);
+  --synopsis-bg:#fefee6;
+  --synopsis-border: 1pt solid rgb(220, 220, 180);
+
   --bookmark-fg: rgb(80, 80, 11);
   --bookmark-bg:#fdfdd6;
 
