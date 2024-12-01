@@ -187,7 +187,7 @@
 .Sheet div.folded p,
 .Sheet div.folded div.emptyline,
 .Sheet .act.folded div.chapter,
-.Sheet .chapter.folded div.scene
+.Sheet .chapter.folded div.scene,
 .Sheet .chapter.folded div.synopsis {
     display: none
 }

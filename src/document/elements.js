@@ -97,7 +97,7 @@ export const blockstyles = {
   "hact":      { eol: "p", bk: "p", },
   "hchapter":  { eol: "p", bk: "p", },
   "hscene":    { eol: "p", bk: "p", },
-  "hsynopsis": { eol: "p", bk: "p", },
+  "hsynopsis": { eol: "p", bk: "hscene", },
 
   'comment':   {           bk: "p", reset: "p" },
   'missing':   {           bk: "p", reset: "p" },
