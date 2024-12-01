@@ -21,7 +21,15 @@ import {
 import { withHistory } from "slate-history"
 import { addClass, IsKey, ListItemText, Separator } from '../common/factory';
 import { nanoid } from '../../util';
-import { wcElem, wcCompare} from '../../document/util';
+import { wcElem, wcCompare, elemHeading} from '../../document/util';
+
+import {
+  nodeTypes,
+  paragraphTypes, blockstyles, MARKUP,
+  nodeIsContainer,
+  nodeIsBreak,
+  nodeBreaks,
+} from '../../document/elements';
 
 import {
   text2Regexp, searchOffsets, searchPattern,
@@ -74,90 +82,6 @@ export {
 //  ]
 //
 //-----------------------------------------------------------------------------
-
-//*****************************************************************************
-//
-// Styles
-//
-//*****************************************************************************
-
-//-----------------------------------------------------------------------------
-// Planning: containers, container breaks/headers, paragraphs, marks
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-
-const nodeStyles = {
-  "p":        {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
-  "hact":     {name: "Act",      markup: "**", shortcut: "Ctrl-Alt-1"},
-  "hchapter": {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2"},
-  "hscene":   {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3"},
-  "synopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
-  "comment":  {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
-  "missing":  {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
-  "fill":     {name: "Filler",   markup: "++", shortcut: "Ctrl-Alt-F"},
-  "tags":     {name: "Tags",     markup: "@",  shortcut: ""},
-}
-
-//-----------------------------------------------------------------------------
-// Markup shortcuts
-//
-// Style table:
-//
-//    next    Next style (empty: keep style)
-//    reset   Pressing ENTER on empty line resets the style to paragraph
-//    bk      BACKSPACE at the start of line resets the style to paragraph
-//
-//-----------------------------------------------------------------------------
-
-const blockstyles = {
-  "hact":     { eol: "p", bk: "p", },
-  "hchapter": { eol: "p", bk: "p", },
-  "hscene":   { eol: "p", bk: "p", },
-  "synopsis": { eol: "p", bk: "p", reset: "p" },
-  'comment':  {           bk: "p", reset: "p" },
-  'missing':  {           bk: "p", reset: "p" },
-  'fill':     { eol: "p", bk: "p", reset: "p" },
-  'tags':     { eol: "p", bk: "p", reset: "p" },
-}
-
-// TODO: Generate this table
-
-const MARKUP = {
-  "** ": {type: "hact", numbered: undefined},
-  "# " : {type: "hchapter", numbered: true},
-  "#! ": {type: "hchapter", numbered: undefined},
-  "## ": {type: "hscene"},
-  ":: ": {type: "hscene"},
-  '>> ': {type: "synopsis"},
-  '// ': {type: 'comment'},
-  '!! ': {type: 'missing'},
-  '++ ': {type: 'fill'},
-  '@ ' : {type: 'tags'},
-  //'-- ':
-  //'<<':
-  //'((':
-  //'))':
-  //'==':
-  //'??':
-  //'%%':
-  //'/*':
-  //'::':
-}
-
-/*
-const blockTypes = {
-  "act":     {header: "hact",     level: 1,                  contains: "chapter", },
-  "chapter": {header: "hchapter", level: 2, wrap: "act" ,    contains: "scene"},
-  "scene":   {header: "hscene",   level: 3, wrap: "chapter", },
-}
-
-const blockHeaders = {
-  "hact": "act",
-  "hchapter": "chapter",
-  "hscene": "scene",
-}
-*/
 
 //*****************************************************************************
 //
@@ -225,8 +149,9 @@ function renderElement({element, attributes, ...props}) {
   const numClass = numbered ? "Numbered" : ""
 
   switch (type) {
-
+    //-------------------------------------------------------------------------
     // Containers
+    //-------------------------------------------------------------------------
 
     case "act":
       return <div className={addClass("act", foldClass, debug?.blocks)} {...attributes} {...props}/>
@@ -235,13 +160,17 @@ function renderElement({element, attributes, ...props}) {
     case "scene":
       return <div className={addClass("scene", foldClass, debug?.blocks)} {...attributes} {...props}/>
 
+    //-------------------------------------------------------------------------
     // Container breaks
+    //-------------------------------------------------------------------------
 
     case "hact": return <h4 className={numClass} {...attributes} {...props}/>
     case "hchapter": return <h5 className={numClass} {...attributes} {...props}/>
     case "hscene": return <h6 {...attributes} {...props}/>
 
+    //-------------------------------------------------------------------------
     // Paragraphs
+    //-------------------------------------------------------------------------
 
     case "comment":
     case "missing":
@@ -379,7 +308,7 @@ class CharStyleButtons extends React.PureComponent {
 
 //-----------------------------------------------------------------------------
 
-class NodeStyleSelect extends React.PureComponent {
+class ParagraphStyleSelect extends React.PureComponent {
 
   static order = ["p", "hact", "hchapter", "hscene", "synopsis", "comment", "missing", "fill", "tags"]
 
@@ -389,7 +318,7 @@ class NodeStyleSelect extends React.PureComponent {
 
     //console.log("Block type:", type)
 
-    const choices = nodeStyles
+    const choices = paragraphTypes
     const order   = this.constructor.order
     const name = type in choices ? choices[type].name : "Text"
 
@@ -456,7 +385,7 @@ export function EditButtons({editor, track}) {
   }, [editor])
 
   return <>
-    <NodeStyleSelect type={type} setSelected={applyStyle}/>
+    <ParagraphStyleSelect type={type} setSelected={applyStyle}/>
     <Separator/>
     <CharStyleButtons bold={bold} italic={italic} setSelected={applyMarks}/>
   </>
@@ -655,7 +584,7 @@ export function getEditor() {
     withHistory,
     withIDs,              // Autogenerate IDs
     withWordCount,        // Autogenerate word counts
-    withBreaks,           // empty <p> -> <br>
+    withBR,           // empty <p> -> <br>
     withFixNesting,       // Keep correct nesting: chapter -> scene -> paragraph
     withMarkup,           // Markups (##, **, //, etc)
 
@@ -960,7 +889,7 @@ function withWordCount(editor) {
 //
 //*****************************************************************************
 
-function withBreaks(editor) {
+function withBR(editor) {
   const { normalizeNode } = editor;
 
   editor.normalizeNode = (entry)=> {
@@ -1085,18 +1014,6 @@ function withFixNesting(editor) {
 
   const { normalizeNode } = editor;
 
-  const blockTypes = {
-    "act":     {header: "hact",     level: 1,                  contains: "chapter", },
-    "chapter": {header: "hchapter", level: 2, wrap: "act" ,    contains: "scene"},
-    "scene":   {header: "hscene",   level: 3, wrap: "chapter", },
-  }
-
-  const blockHeaders = {
-    "hact": "act",
-    "hchapter": "chapter",
-    "hscene": "scene",
-  }
-
   editor.normalizeNode = entry => {
     const [node, path] = entry
 
@@ -1104,54 +1021,45 @@ function withFixNesting(editor) {
 
     if(Text.isText(node)) return normalizeNode(entry)
     if(Editor.isEditor(node)) {
-      if(!mergeHeadlessChilds(node, path, "act", "hact")) return
+      if(!mergeHeadlessChilds(node, path)) return
       return normalizeNode(entry)
     }
 
     //console.log("Fix nesting:", node, path)
 
-    // Block types
-    if(node.type in blockTypes) {
-      //console.log("Fix nesting: Block:", node.type)
+    const nodeType = nodeTypes[node.type]
 
-      const blockType = blockTypes[node.type]
+    // Container types
+
+    if(nodeIsContainer(node)) {
+      //console.log("Fix nesting: Block:", node.type)
 
       if(!node.children.length) {
         Transforms.removeNodes(editor, {at: path})
         return;
       }
 
-      if(path.length > blockType.level) {
+      if(path.length > nodeType.level) {
         Transforms.liftNodes(editor, {at: path})
         return;
       }
-      if(path.length < blockType.level) {
-        Transforms.wrapNodes(editor, {type: blockType.wrap}, {at: path})
+
+      if(path.length < nodeType.level) {
+        Transforms.wrapNodes(editor, {type: nodeType.parent}, {at: path})
         return;
       }
 
-
-      if(blockType.contains)
-      {
-        const childType = blockTypes[blockType.contains]
-        if(!mergeHeadlessChilds(node, path, blockType.contains, childType.header)) return;
-      }
-
+      if(!mergeHeadlessChilds(node, path)) return;
       return normalizeNode(entry)
     }
+
+    if(!checkParent(node, path, nodeType.parent)) return
 
     // Block headers
-    if(node.type in blockHeaders) {
-      const blockType = blockHeaders[node.type]
-
-      if(!checkParent(node, path, blockType)) return
-      if(!checkIsFirst(node, path, blockType)) return
-
-      return normalizeNode(entry)
+    if(nodeIsBreak(node)) {
+      if(!checkIsFirst(node, path, nodeType.parent)) return
     }
 
-    // Paragraphs styles
-    if(!checkParent(node, path, "scene")) return
     return normalizeNode(entry)
   }
 
@@ -1198,22 +1106,20 @@ function withFixNesting(editor) {
   // Merge childs without header
   //---------------------------------------------------------------------------
 
-  function mergeHeadlessChilds(block, path, type, header) {
+  function mergeHeadlessChilds(block, path) {
 
     for(const child of Node.children(editor, path)) {
       const [node, path] = child
-      if(node.type !== type) continue
 
-      // Does the block have correct header type?
-      const childhdr = node.children[0].type
-      if(childhdr === header) continue
+      if(!nodeIsContainer(node)) continue
+      if(nodeBreaks(elemHeading(node)) === node.type) continue
 
       const prev = Editor.previous(editor, {at: path})
 
       //console.log("Headless:", block, "Previous:", prev)
 
       // Can we merge headingless block?
-      if(prev && prev[0].type === type) {
+      if(prev && prev[0].type === node.type) {
         //console.log("Merging")
         doFold(editor, prev[0], prev[1], false)
         doFold(editor, block, path, false)

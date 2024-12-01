@@ -8,6 +8,7 @@
 
 import {isGzip, gzip, gunzip} from "../util/compress"
 import {uuid, nanoid} from "../util"
+import { nodeBreaks, nodeTypes } from "./elements";
 
 export {uuid, nanoid}
 
@@ -93,15 +94,9 @@ export function elemAsText(elem) {
 
 export function elemHeading(elem) {
 
-  const [first] = elem.children ?? []
-  if(first) {
-    if(
-      (elem.type === "act" && first.type === "hact") ||
-      (elem.type === "chapter" && first.type === "hchapter") ||
-      (elem.type === "scene" && first.type === "hscene")
-    ) {
-      return first
-    }
+  if(elem.children.length) {
+    const [first] = elem.children
+    if(nodeBreaks(first) === elem.type) return first
   }
 
   return undefined
