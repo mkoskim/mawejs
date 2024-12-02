@@ -154,7 +154,7 @@
 }
 
 .Sheet div.scene.withBorders,
-.Sheet div.comment.withBorders,
+.Sheet div.notes.withBorders,
 .Sheet div.synopsis.withBorders {
   border: 1pt dotted lightgray;
   padding: 4pt;
