@@ -4,6 +4,8 @@
 //
 //*****************************************************************************
 
+import {IsKey} from "../gui/common/hotkeys"
+
 //-----------------------------------------------------------------------------
 // Planning: containers, container breaks/headers, paragraphs, marks
 //-----------------------------------------------------------------------------
@@ -74,12 +76,28 @@ export const paragraphTypes = {
   "hchapter":  {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2"},
   "hscene":    {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3"},
   "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
-  "hnotes":    {name: "Notes",    markup: "%%"},
-  "bookmark":  {name: "Bookmark", markup: "=>", },
-  "comment":   {name: "Comment",  markup: "//", },
+  "hnotes":    {name: "Notes",    markup: "%%", shortcut: "Ctrl-Alt-N"},
+  "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl-Alt-B"},
+  "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
   "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
   "tags":      {name: "Tags",     markup: "@@"},
 }
+
+//-----------------------------------------------------------------------------
+// Paragraph shortcuts
+//-----------------------------------------------------------------------------
+
+export const paragraphShortcuts = [
+  {shortcut: IsKey.CtrlAlt0, node: {type: "p"}},
+  {shortcut: IsKey.CtrlAlt1, node: {type: "hact"}},
+  {shortcut: IsKey.CtrlAlt2, node: {type: "hchapter"}},
+  {shortcut: IsKey.CtrlAlt3, node: {type: "hscene"}},
+  {shortcut: IsKey.CtrlAltS, node: {type: "hsynopsis"}},
+  {shortcut: IsKey.CtrlAltN, node: {type: "hnotes"}},
+  {shortcut: IsKey.CtrlAltB, node: {type: "bookmark"}},
+  {shortcut: IsKey.CtrlAltC, node: {type: "comment"}},
+  {shortcut: IsKey.CtrlAltM, node: {type: "missing"}},
+]
 
 //-----------------------------------------------------------------------------
 // Markup shortcuts

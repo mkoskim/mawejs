@@ -44,9 +44,11 @@ export const IsKey = {
   CtrlAlt8: isHotkey("Mod+Alt+8"),
   CtrlAlt9: isHotkey("Mod+Alt+9"),
 
+  CtrlAltB: isHotkey("Mod+Alt+B"),
   CtrlAltC: isHotkey("Mod+Alt+C"),
   CtrlAltF: isHotkey("Mod+Alt+F"),
   CtrlAltM: isHotkey("Mod+Alt+M"),
+  CtrlAltN: isHotkey("Mod+Alt+N"),
   CtrlAltS: isHotkey("Mod+Alt+S"),
   //CtrlAltT: isHotkey("Mod+Alt+T"), // Opens terminal
 

@@ -29,6 +29,7 @@ import {
   nodeIsContainer,
   nodeIsBreak,
   nodeBreaks,
+  paragraphShortcuts,
 } from '../../document/elements';
 
 import {
@@ -315,7 +316,7 @@ class CharStyleButtons extends React.PureComponent {
 
 class ParagraphStyleSelect extends React.PureComponent {
 
-  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "hnotes", "comment", "missing", "tags"]
+  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "hnotes", "bookmark", "comment", "missing", "tags"]
 
   render() {
     const {type, setSelected} = this.props;
@@ -488,52 +489,12 @@ function onKeyDown(editor, event) {
   // Node styles
   //---------------------------------------------------------------------------
 
-  if(IsKey.CtrlAlt0(event)) {
-    event.preventDefault()
-    Transforms.setNodes(editor, {type: "p"})
-    return ;
-  }
-
-  if(IsKey.CtrlAlt1(event)) {
-    event.preventDefault()
-    Transforms.setNodes(editor, {type: "hact"})
-    return ;
-  }
-
-  if(IsKey.CtrlAlt2(event)) {
-    event.preventDefault()
-    Transforms.setNodes(editor, {type: "hchapter"})
-    return ;
-  }
-
-  if(IsKey.CtrlAlt3(event)) {
-    event.preventDefault()
-    Transforms.setNodes(editor, {type: "hscene"})
-    return ;
-  }
-
-  if(IsKey.CtrlAltC(event)) {
-    event.preventDefault()
-    Transforms.setNodes(editor, {type: "comment"})
-    return ;
-  }
-
-  if(IsKey.CtrlAltM(event)) {
-    event.preventDefault()
-    Transforms.setNodes(editor, {type: "missing"})
-    return ;
-  }
-
-  if(IsKey.CtrlAltS(event)) {
-    event.preventDefault()
-    Transforms.setNodes(editor, {type: "hsynopsis"})
-    return ;
-  }
-
-  if(IsKey.CtrlAltF(event)) {
-    event.preventDefault()
-    Transforms.setNodes(editor, {type: "fill"})
-    return ;
+  for(const {shortcut, node} of paragraphShortcuts) {
+    if(shortcut(event)) {
+      event.preventDefault();
+      Transforms.setNodes(editor, node)
+      return
+    }
   }
 
   //---------------------------------------------------------------------------

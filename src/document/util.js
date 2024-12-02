@@ -327,7 +327,7 @@ export function wcCumulative(section) {
   var summed = 0
 
   for(const elem of flat) {
-    if(elem.type === "scene") summed += elem.words?.text + elem.words?.missing
+    if(elem.type === "scene") summed += (elem.words?.text ?? 0) + (elem.words?.missing ?? 0)
     cumulative[elem.id] = summed
   }
 
