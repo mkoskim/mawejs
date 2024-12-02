@@ -117,7 +117,7 @@ export const Icon = {
     Edit: ArticleOutlined,
     Organize: GridViewOutlined,
     Export: PrintOutlined,
-    Chart: DonutLarge,
+    Arc: DonutLarge,
     Stats: BarChartOutlined,
     Tags: AlternateEmail,
   },

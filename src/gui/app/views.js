@@ -62,12 +62,12 @@ export class ViewSelectButtons extends React.PureComponent {
     />
   }
 
-  choices = ["editor", "chart", "stats", "export"]
+  choices = ["editor", "arc", "stats", "export"]
 
   viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
     "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
-    "chart": { tooltip: "Story Arc", icon: <Icon.View.Chart /> },
+    "arc": { tooltip: "Story Arc", icon: <Icon.View.Arc /> },
     "stats": { tooltip: "Statistics", icon: <Icon.View.Stats /> },
     "export": { tooltip: "Export", icon: <Icon.View.Export /> },
   }
@@ -83,7 +83,7 @@ export function ViewSwitch({doc, updateDoc}) {
     case "editor": return <SingleEditView {...props} />
     //case "organizer": return <Organizer {...props} />
     case "stats": return <Stats {...props} />
-    case "chart": return <StoryArc {...props} />
+    case "arc": return <StoryArc {...props} />
     case "export": return <Export {...props} />
     default: break;
   }

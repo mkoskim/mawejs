@@ -176,7 +176,8 @@ function ChartView({settings, doc, updateDoc}) {
   // Data selection
   //---------------------------------------------------------------------------
 
-  const data = flatSection(section).filter(e => e.type === doc.ui.arc.elements)
+  //const data = flatSection(section).filter(e => e.type === doc.ui.arc.elements)
+  const data = createData(section, doc.ui.arc.elements)
 
   //---------------------------------------------------------------------------
   // Chart directions
@@ -232,6 +233,72 @@ const elemButtons = {
   scene: {icon: "Scenes"},
 }
 
+//-----------------------------------------------------------------------------
+// Story data
+//-----------------------------------------------------------------------------
+
+function createData(section, elements) {
+
+  const flat = section.acts.map(flatAct).flat().filter(s => s.size)
+  //console.log("Data:", flat)
+  return flat;
+
+  function flatAct(act) {
+    if(elements === "act") {
+      return {
+        size: elemSize(act),
+        label: elemLabel(act),
+        data: elemData(act)
+      }
+    }
+    return [
+      ...filterCtrlElems(act.children).map(flatChapter).flat(),
+      pad(act.words.padding)
+    ]
+  }
+
+  function flatChapter(chapter) {
+    if(elements === "chapter") {
+      return {
+        size: elemSize(chapter),
+        label: elemLabel(chapter),
+        data: elemData(chapter)
+      }
+    }
+
+    return [
+      ...filterCtrlElems(chapter.children).filter(s => s.content === "scene").map(flatScene),
+      pad(chapter.words.padding)
+    ]
+  }
+
+  function flatScene(scene) {
+    return {
+      size: elemSize(scene),
+      label: elemLabel(scene),
+      data: elemData(scene)
+    }
+  }
+
+  function pad(padding) {
+    return {
+      size: padding,
+      label: { name: null, size: padding },
+      data: elemData({
+        words: {
+          missing: padding,
+          padding
+        }
+      })
+    }
+  }
+}
+
+function elemSize(elem) {
+  const {words} = elem
+  return words.text + words.missing
+}
+
 function elemLabel(elem) {
   const {words} = elem
   const name = elemName(elem)
@@ -252,50 +319,17 @@ function elemData(elem) {
     },
     {
       name: null,
-      size: words.missing,
-      fill: "plum",
-      stroke: "plum",
-    }
+      size: (words.missing ?? 0) - (words.padding ?? 0),
+      fill: "violet",
+      stroke: "violet",
+    },
+    {
+      name: null,
+      size: words.padding,
+      fill: "thistle",
+      stroke: "thistle",
+    },
   ]
-}
-
-//-----------------------------------------------------------------------------
-// Story data
-//-----------------------------------------------------------------------------
-
-function flatSection(section) {
-
-  return section.acts.map(flatAct).flat()
-
-  function flatAct(act) {
-    return [
-      {
-        type: "act",
-        label: elemLabel(act),
-        data: elemData(act)
-      },
-      ...filterCtrlElems(act.children).map(flatChapter).flat()
-    ]
-  }
-
-  function flatChapter(chapter) {
-    return [
-      {
-        type: "chapter",
-        label: elemLabel(chapter),
-        data: elemData(chapter)
-      },
-      ...filterCtrlElems(chapter.children).filter(s => s.content === "scene").map(flatScene)
-    ]
-  }
-
-  function flatScene(scene) {
-    return {
-      type: "scene",
-      label: elemLabel(scene),
-      data: elemData(scene)
-    }
-  }
 }
 
 //-----------------------------------------------------------------------------
