@@ -171,7 +171,7 @@ function escape(text) {
       case '\\': return "\\\\"
       case '{': return "\\{"
       case '}': return "\\}"
-      case '~': return "\\~"
+      //case '~': return "\\~"
       case '"': return "\\'94"
     }
     return c

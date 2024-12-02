@@ -192,6 +192,7 @@ export function createWordTable(section) {
   for(const act of section.acts) {
     for(const chapter of filterCtrlElems(act.children)) {
       for(const scene of filterCtrlElems(chapter.children)) {
+        if(scene.content !== "scene") continue
         for(const p of scene.children) {
           if(p.type !== "p") continue
           for(const word of text2words(elemAsText(p))) {
