@@ -29,7 +29,8 @@ import {
   nodeIsContainer,
   nodeIsBreak,
   nodeBreaks,
-  paragraphShortcuts,
+  nodeShortcuts,
+  markShortcuts,
 } from '../../document/elements';
 
 import {
@@ -406,19 +407,23 @@ export function EditButtons({editor, track}) {
 function onKeyDown(editor, event) {
 
   //---------------------------------------------------------------------------
-  // Styles
+  // Node & character styles
   //---------------------------------------------------------------------------
 
-  if (IsKey.CtrlB(event)) {
-    event.preventDefault()
-    toggleMark(editor, "bold")
-    return
+  for(const {shortcut, node} of nodeShortcuts) {
+    if(shortcut(event)) {
+      event.preventDefault();
+      Transforms.setNodes(editor, node)
+      return
+    }
   }
 
-  if (IsKey.CtrlI(event)) {
-    event.preventDefault()
-    toggleMark(editor, "italic")
-    return
+  for(const {shortcut, mark} of markShortcuts) {
+    if(shortcut(event)) {
+      event.preventDefault();
+      toggleMark(editor, mark)
+      return
+    }
   }
 
   //---------------------------------------------------------------------------
@@ -483,18 +488,6 @@ function onKeyDown(editor, event) {
       Transforms.collapse(editor)
     }
     return
-  }
-
-  //---------------------------------------------------------------------------
-  // Node styles
-  //---------------------------------------------------------------------------
-
-  for(const {shortcut, node} of paragraphShortcuts) {
-    if(shortcut(event)) {
-      event.preventDefault();
-      Transforms.setNodes(editor, node)
-      return
-    }
   }
 
   //---------------------------------------------------------------------------

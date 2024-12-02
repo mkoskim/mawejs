@@ -87,7 +87,7 @@ export const paragraphTypes = {
 // Paragraph shortcuts
 //-----------------------------------------------------------------------------
 
-export const paragraphShortcuts = [
+export const nodeShortcuts = [
   {shortcut: IsKey.CtrlAlt0, node: {type: "p"}},
   {shortcut: IsKey.CtrlAlt1, node: {type: "hact"}},
   {shortcut: IsKey.CtrlAlt2, node: {type: "hchapter"}},
@@ -97,6 +97,11 @@ export const paragraphShortcuts = [
   {shortcut: IsKey.CtrlAltB, node: {type: "bookmark"}},
   {shortcut: IsKey.CtrlAltC, node: {type: "comment"}},
   {shortcut: IsKey.CtrlAltM, node: {type: "missing"}},
+]
+
+export const markShortcuts = [
+  {shortcut: IsKey.CtrlB, mark: "bold"},
+  {shortcut: IsKey.CtrlI, mark: "italic"},
 ]
 
 //-----------------------------------------------------------------------------
