@@ -25,7 +25,7 @@ import { wcElem, wcCompare, elemHeading, elemHeadParse, elemHeadAttrs} from '../
 
 import {
   nodeTypes,
-  paragraphTypes, blockstyles, MARKUP,
+  paragraphTypes, MARKUP,
   nodeIsContainer,
   nodeIsBreak,
   nodeBreaks,
@@ -649,12 +649,10 @@ function withMarkup(editor) {
       match: n => Editor.isBlock(editor, n),
     })
 
-    const style = blockstyles[node.type]
-
-    if(node && node.type in blockstyles) {
+    if(node && node.type in paragraphTypes) {
       const end = Editor.end(editor, path)
       const {focus} = selection
-      const {reset, eol} = style
+      const {reset, eol} = paragraphTypes[node.type]
 
       // If we hit enter at empty line, and block type is RESETEMPTY, reset type
       if(reset && Node.string(node) == "") {
@@ -696,11 +694,11 @@ function withMarkup(editor) {
 
     if(!elemIsBlock(editor, node)) return deleteBackward(...args)
 
-    if(node.type in blockstyles) {
+    if(node.type in paragraphTypes) {
       // Beginning of line?
       if(!Point.equals(selection.anchor, Editor.start(editor, path))) return deleteBackward(...args)
 
-      const {bk} = blockstyles[node.type]
+      const {bk} = paragraphTypes[node.type]
       if(bk) {
         // Remove formatting
         Transforms.setNodes(editor, {type: bk})

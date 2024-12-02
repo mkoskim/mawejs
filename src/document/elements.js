@@ -7,7 +7,7 @@
 import {IsKey} from "../gui/common/hotkeys"
 
 //-----------------------------------------------------------------------------
-// Planning: containers, container breaks/headers, paragraphs, marks
+// Node types
 //-----------------------------------------------------------------------------
 
 export const nodeTypes = {
@@ -23,11 +23,11 @@ export const nodeTypes = {
   // Container breaks
   //---------------------------------------------------------------------------
 
-  "hact":      {parent: "act", breaks: true, },
+  "hact":      {parent: "act",     breaks: true, },
   "hchapter":  {parent: "chapter", breaks: true, },
-  "hscene":    {parent: "scene", breaks: true, ctrl: {content: "scene"}},
-  "hsynopsis": {parent: "scene", breaks: true, ctrl: {content: "synopsis"}},
-  "hnotes":    {parent: "scene", breaks: true, ctrl: {content: "notes"}},
+  "hscene":    {parent: "scene",   breaks: true, ctrl: {content: "scene"}},
+  "hsynopsis": {parent: "scene",   breaks: true, ctrl: {content: "synopsis"}},
+  "hnotes":    {parent: "scene",   breaks: true, ctrl: {content: "notes"}},
 
   //---------------------------------------------------------------------------
   // Paragraphs
@@ -68,23 +68,29 @@ export function nodeBreaks(node) {
 
 //-----------------------------------------------------------------------------
 // Paragraph types
+//
+//    eol     Pressing ENTER at end-of-line continues this style
+//    bk      BACKSPACE at the start of line resets the style to paragraph
+//    reset   Pressing ENTER on empty line resets the style to paragraph
+//
 //-----------------------------------------------------------------------------
 
 export const paragraphTypes = {
+  "hact":      {name: "Act",      markup: "**", shortcut: "Ctrl-Alt-1", eol: "p", bk: "p",},
+  "hchapter":  {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2", eol: "p", bk: "p",},
+  "hscene":    {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3", eol: "p", bk: "p",},
+  "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S", eol: "p", bk: "hscene",},
+  "hnotes":    {name: "Notes",    markup: "%%", shortcut: "Ctrl-Alt-N", eol: "p", bk: "hscene",},
+
+  "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl-Alt-B", eol: "p", bk: "p", reset: "p" },
+  "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C",           bk: "p", reset: "p" },
+  "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M",           bk: "p", reset: "p" },
+  "tags":      {name: "Tags",     markup: "@@",                         eol: "p", bk: "p", reset: "p" },
   "p":         {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
-  "hact":      {name: "Act",      markup: "**", shortcut: "Ctrl-Alt-1"},
-  "hchapter":  {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2"},
-  "hscene":    {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3"},
-  "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
-  "hnotes":    {name: "Notes",    markup: "%%", shortcut: "Ctrl-Alt-N"},
-  "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl-Alt-B"},
-  "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C"},
-  "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
-  "tags":      {name: "Tags",     markup: "@@"},
 }
 
 //-----------------------------------------------------------------------------
-// Paragraph shortcuts
+// Paragraph shortcuts & markups
 //-----------------------------------------------------------------------------
 
 export const nodeShortcuts = [
@@ -103,33 +109,6 @@ export const markShortcuts = [
   {shortcut: IsKey.CtrlB, mark: "bold"},
   {shortcut: IsKey.CtrlI, mark: "italic"},
 ]
-
-//-----------------------------------------------------------------------------
-// Markup shortcuts
-//
-// Style table:
-//
-//    eol     Pressing ENTER at end-of-line continues this style
-//    bk      BACKSPACE at the start of line resets the style to paragraph
-//    reset   Pressing ENTER on empty line resets the style to paragraph
-//
-//-----------------------------------------------------------------------------
-
-export const blockstyles = {
-
-  "hact":      { eol: "p", bk: "p", },
-  "hchapter":  { eol: "p", bk: "p", },
-  "hscene":    { eol: "p", bk: "p", },
-  "hsynopsis": { eol: "p", bk: "hscene", },
-  "hnotes":    { eol: "p", bk: "hscene", },
-
-  'comment':   {           bk: "p", reset: "p" },
-  'missing':   {           bk: "p", reset: "p" },
-  'tags':      { eol: "p", bk: "p", reset: "p" },
-  'bookmark':  { eol: "p", bk: "p", reset: "p" },
-}
-
-// TODO: Generate this table
 
 export const MARKUP = {
   "** ": {type: "hact"},
