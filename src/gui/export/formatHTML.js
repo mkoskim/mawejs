@@ -81,7 +81,7 @@ ${content}
   // Paragraphs
   //---------------------------------------------------------------------------
 
-  // "synopsis": (p) => null,
+  // "bookmark": (p) => null,
   // "comment": (p) => null,
   "missing": (p, text) => `<p id="${p.id}" style="color: rgb(180, 20, 20);">${text}</p>`,
   "p": (p, text) => `<p id="${p.id}">${text}</p>`,

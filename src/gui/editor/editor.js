@@ -78,6 +78,8 @@ export function loadEditorSettings(settings) {
       .filter(s => s !== "part")
       .filter(s => s !== "chapter")
       .filter(s => s !== "act")
+      .filter(s => s !== "synopsis")
+      .filter(s => s !== "fill")
       .concat(["act", "chapter"])
 
     return {
@@ -90,12 +92,12 @@ export function loadEditorSettings(settings) {
     active: "body",
     focusTo: {id: undefined},
     body: {
-      indexed: ["act", "chapter", "scene", "synopsis"],
+      indexed: ["act", "chapter", "scene", "bookmark"],
       words: "numbers",
       ...getBodySettings()
     },
     notes: {
-      indexed: ["act", "chapter", "scene", "synopsis"],
+      indexed: ["act", "chapter", "scene", "bookmark"],
       words: undefined,
     },
     left: {
@@ -449,7 +451,7 @@ function LeftPanel({settings}) {
 }
 
 const LeftIndexChoices = {
-  visible: ["scene", "synopsis", "missing", "fill", "comment", "tags"],
+  visible: ["scene", "bookmark", "missing", "comment", "tags"],
   words: ["off", "numbers", "compact", "cumulative", "percent"]
 }
 
@@ -468,6 +470,8 @@ function LeftPanelMenu({settings}) {
       selected={indexed}
       setSelected={setIndexed}
     />
+    <Separator/>
+    <Filler/>
     <Separator/>
     <ChooseWordFormat
       choices={LeftIndexChoices.words}

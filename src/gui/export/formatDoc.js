@@ -4,8 +4,7 @@
 //
 //*****************************************************************************
 
-import { mawe, elemAsText } from "../../document"
-import { elemHeading } from "../../document/util";
+import { mawe } from "../../document"
 import { splitByTrailingElem } from "../../util";
 
 //*****************************************************************************
@@ -73,7 +72,10 @@ export function FormatBody(format, story) {
   const { exports, head, body } = story
   const pgbreak = exports.type === "long"
 
+  console.log("Content:", exports.content)
+
   const options = {
+    content: exports.content,
     long: exports.type === "long",
     act: getActOptions(exports.acts, pgbreak),
     chapter: getChapterOptions(exports.chapters, pgbreak),
@@ -120,35 +122,42 @@ export function FormatBody(format, story) {
 
   function FormatActHead(act) {
 
-    const {id} = act
-    const head = elemHeading(act)
-    const text = escape(elemAsText(head))
-    const numbered = head?.numbered
+    const {id, name, numbered} = act
 
     if(numbered) {
       actnum = actnum + 1
-      return format.hact(id, actnum, text, options.act.numbered)
+      return format.hact(id, actnum, name, options.act.numbered)
     } else {
-      return format.hact(id, undefined, text, options.act.unnumbered)
+      return format.hact(id, undefined, name, options.act.unnumbered)
     }
   }
 
   function FormatChapterHead(chapter) {
 
-    const {id} = chapter
-    const head = elemHeading(chapter)
-    const text = escape(elemAsText(head))
-    const numbered = head?.numbered
+    const {id, name, numbered} = chapter
 
     if(numbered) {
       chapternum = chapternum + 1
-      return format.hchapter(id, chapternum, text, options.chapter.numbered)
+      return format.hchapter(id, chapternum, name, options.chapter.numbered)
     } else {
-      return format.hchapter(id, undefined, text, options.chapter.unnumbered)
+      return format.hchapter(id, undefined, name, options.chapter.unnumbered)
     }
   }
 
   function FormatScene(scene) {
+    switch(options.content) {
+
+      case "synopsis":
+        if(scene.content !== "synopsis") return null
+        break;
+
+      case "draft":
+      default:
+        if(scene.content !== "scene") return null
+        break;
+    }
+    //console.log("Scene", scene)
+
     const splits = splitByTrailingElem(scene.children, p => p.type === "br")
       .map(s => s.filter(p => p.type !== "br"))
       .filter(s => s.length)

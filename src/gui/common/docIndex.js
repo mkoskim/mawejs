@@ -24,16 +24,16 @@ import {
 import {FormatWords} from "./components";
 import {elemAsText, elemName, filterCtrlElems} from "../../document";
 import {elemNumbered, wcCumulative} from "../../document/util";
+import { nodeIsContainer } from "../../document/elements";
 
 //-----------------------------------------------------------------------------
-
-const blockTypes = ["act", "chapter", "scene"]
 
 function getCurrent(parents, include) {
   if(!parents) return
   const visible = parents
-    .filter(e => blockTypes.includes(e.type))
+    .filter(e => nodeIsContainer(e))
     .filter(e => include.includes(e.type))
+  //console.log("Parents", parents, "Visible:", visible)
   return visible[visible.length-1]
 }
 
@@ -97,12 +97,6 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
   const skipActName = (section.acts.length === 1 && !elemName(section.acts[0]))
 
   //---------------------------------------------------------------------------
-  // Included items
-  //---------------------------------------------------------------------------
-
-  const includeItems = (include.includes("missing") && !include.includes("fill")) ? [...include, "fill"] : include;
-
-  //---------------------------------------------------------------------------
   // Index
   //---------------------------------------------------------------------------
 
@@ -113,7 +107,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
       elem={elem}
       activeID={activeID}
       wcFormat={wcFormatFunction}
-      include={includeItems}
+      include={include}
       onActivate={onActivate}
       unfold={unfold}
       current={current?.id}
@@ -324,7 +318,7 @@ class SceneItem extends React.PureComponent {
     >
     <IndexItem
       id={elem.id}
-      type={elem.type}
+      type={elem.content}
       name={elemName(elem)}
       folded={elem.folded}
       words={elem.words}
@@ -355,10 +349,12 @@ class IndexItem extends React.PureComponent {
     "act": "Act",
     "chapter": "Chapter",
     "scene": "Scene",
+    "synopsis": "Scene",
+    "notes": "Scene",
 
+    "bookmark": "Bookmark",
     "missing": "Bookmark",
     "comment": "Bookmark",
-    "synopsis": "Bookmark",
     "fill": "Bookmark",
     "tags": "Bookmark",
   }
@@ -384,7 +380,7 @@ class IndexItem extends React.PureComponent {
     return <ScrollRef current={current} id={id} refCurrent={refCurrent}>
       <HBox className={addClass(className, "Entry", typeClass, numClass, foldClass)} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
-      <ItemLabel name={name ? name : "<Unnamed>"}/>
+      <ItemLabel name={ItemName(type, name)}/>
       {/*<ItemLabel name={id}/>*/}
       {wcFormat && <><Filler/><span className="WordCount">{wcFormat(id, words)}</span></>}
       </HBox>
@@ -400,14 +396,23 @@ function ScrollRef({current, id, refCurrent, children}) {
   return children
 }
 
+function ItemName(type, name) {
+  switch(type) {
+    case "synopsis": return "Synopsis" + (name ? `: ${name}` : "")
+    case "notes":    return "Notes" + (name ? `: ${name}` : "")
+    default: break;
+  }
+  return name ? name : "<Unnamed>"
+}
+
 class ItemIcon extends React.PureComponent {
   render() {
     const {type} = this.props
     switch (type) {
+      case "bookmark":
       case "missing":
       case "fill":
       case "comment":
-      case "synopsis":
       case "tags":
         return <span className={addClass("Box", type)} />
     }

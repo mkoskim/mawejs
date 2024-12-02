@@ -61,13 +61,12 @@
   text-transform: uppercase;
 }
 
+/*
 .TOC .Entry.Act.Numbered .Name::before {
   counter-increment: act;
   content: "ACT " counter(act, upper-roman) ": ";
-/*
-  content: counter(chapter) ". ";
-*/
 }
+*/
 
 .TOC div.ChapterDropZone {
   min-height: 16pt;
@@ -155,14 +154,6 @@
 */
 }
 
-.TOC .Entry.Scene.Numbered .Name::before {
-  /* width: 1cm; */
-  counter-increment: scene;
-/*
-  content: counter(scene) ". ";
-*/
-}
-
 .TOC .Entry.Bookmark {
   padding-left: 0.5cm !important;
 }
@@ -221,7 +212,7 @@
 }
 
 /*
-.TOC .Entry .Box.synopsis,
+.TOC .Entry .Box.bookmark,
 .TOC .Entry .Box.comment,
 .TOC .Entry .Box.missing {
   margin-left: 0.5cm;
@@ -231,12 +222,11 @@
 /**/
 .TOC .Entry .Box.comment { background: rgb(71, 207, 71); }
 .TOC .Entry .Box.missing { background: rgb(232, 14, 14); }
-.TOC .Entry .Box.fill { background: rgb(252, 84, 252); }
-.TOC .Entry .Box.synopsis { background: rgb(243, 243, 62); }
+.TOC .Entry .Box.bookmark { background: rgb(252, 84, 252); }
 .TOC .Entry .Box.tags { background: rgb(80, 80, 250); }
 /*/
 .TOC .Entry .Box.comment { background: var(--comment-fg); }
 .TOC .Entry .Box.missing { background: var(--missing-fg); }
 .TOC .Entry .Box.fill { background: var(--fill-fg); }
-.TOC .Entry .Box.synopsis { background: var(--synopsis-fg); }
+.TOC .Entry .Box.bookmark { background: var(--bookmark-fg); }
 /**/

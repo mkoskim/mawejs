@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid as getUUID, nanoid, file2buf, wcElem, wcChildren} from "../util";
+import {uuid as getUUID, nanoid, file2buf, wcElem, wcChildren, makeHeader, textToInt} from "../util";
 import { xml2js } from "xml-js";
 
 import { loadChartSettings } from "../../gui/arc/arc";
@@ -172,24 +172,28 @@ function parseAct(act, index) {
     console.log("Invalid act:", act)
     throw new Error("Invalid act", act)
   }
-  const {name, folded, numbered} = act.attributes ?? {};
-  const header = (!index && !name) ? [] : [{
-    type: "hact",
-    id: nanoid(),
-    numbered,
-    children: [{text: name ?? ""}],
-    words: {}
-  }]
+  const {name, folded: foldedStr, target: targetStr} = act.attributes ?? {};
+  const target = textToInt(targetStr)
+  const folded = foldedStr === "true"
+  const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
+    "hact",
+    nanoid(),
+    name,
+    true,
+    target,
+  )]
   const empty = [{type: "element", name: "chapter"}]
   const elements = act.elements?.length ? act.elements : empty
 
   const children = elements.map(parseChapter)
-  const words = wcChildren(children)
+  const words = wcChildren(children, target)
 
   return {
     type: "act",
     id: nanoid(),
-    folded: folded ? true : undefined,
+    name,
+    target,
+    folded,
     children: [
       ...header,
       ...children,
@@ -203,24 +207,29 @@ function parseChapter(chapter, index) {
     console.log("Invalid chapter:", chapter)
     throw new Error("Invalid chapter:", chapter)
   }
-  const {name, folded, numbered} = chapter.attributes ?? {};
-  const header = (!index && !name) ? [] : [{
-    type: "hchapter",
-    id: nanoid(),
-    numbered: numbered,
-    children: [{text: name ?? ""}],
-    words: {}
-  }]
+  const {name, folded: foldedStr, numbered, target: targetStr} = chapter.attributes ?? {};
+  const target = textToInt(targetStr)
+  const folded = foldedStr === "true"
+  const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
+    "hchapter",
+    nanoid(),
+    name,
+    numbered,
+    target,
+  )]
   const empty = [{type: "element", name: "scene"}]
   const elements = chapter.elements?.length ? chapter.elements : empty
 
   const children = elements.map(parseScene)
-  const words = wcChildren(children)
+  const words = wcChildren(children, target)
 
   return {
     type: "chapter",
     id: nanoid(),
-    folded: folded ? true : undefined,
+    name,
+    numbered,
+    target,
+    folded,
     children: [
       ...header,
       ...children,
@@ -234,24 +243,36 @@ function parseScene(scene, index) {
     console.log("Invalid scene:", scene)
     throw new Error("Invalid scene", scene)
   }
-  const {name, folded} = scene.attributes ?? {};
-  const header = (!index && !name) ? [] : [{
-    type: "hscene",
-    id: nanoid(),
-    children: [{text: name ?? ""}],
-    words: {}
-  }]
+
+  const {name, folded: foldedStr, content = "scene"} = scene.attributes ?? {};
+  const folded = foldedStr === "true"
+
+  const htype = {
+    "scene": "hscene",
+    "synopsis": "hsynopsis",
+    "notes": "hnotes",
+  }[content]
+
+  const header = (!index && !name && !folded && content == "scene") ? [] : [makeHeader(
+    htype,
+    nanoid(),
+    name,
+    true,
+    undefined,
+  )]
+
   const empty = [{type: "element", name: "p", children: []}]
   const elements = scene.elements?.length ? scene.elements : empty
 
-  const children = elements.map(parseParagraph).map(elem => ({...elem, words: wcElem(elem)}))
-  const words = wcChildren(children)
+  const children = elements.map(parseParagraph).filter(e => e).map(elem => ({...elem, words: wcElem(elem)}))
+  const words = (content === "scene") ? wcChildren(children) : undefined
 
   return {
     type: "scene",
     id: nanoid(),
-    //name,
-    folded: (folded === "true") ? true : undefined,
+    content,
+    name,
+    folded,
     children: [
       ...header,
       ...children,

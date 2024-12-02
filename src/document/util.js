@@ -8,6 +8,7 @@
 
 import {isGzip, gzip, gunzip} from "../util/compress"
 import {uuid, nanoid} from "../util"
+import { nodeBreaks, nodeIsBreak, nodeTypes } from "./elements";
 
 export {uuid, nanoid}
 
@@ -77,10 +78,12 @@ export function createDateStamp(date) {
 
 //-----------------------------------------------------------------------------
 
+//*
 export function filterCtrlElems(blocks) {
-  const ctrltypes = ["hact", "hchapter", "hscene"]
-  return blocks.filter(block => !ctrltypes.includes(block.type))
+  //const ctrltypes = ["hact", "hchapter", "hscene", "hsynopsis", "hnotes"]
+  return blocks.filter(block => !nodeIsBreak(block))
 }
+/**/
 
 export function elemAsText(elem) {
   if(!elem?.children) return ""
@@ -93,26 +96,70 @@ export function elemAsText(elem) {
 
 export function elemHeading(elem) {
 
-  const [first] = elem.children ?? []
-  if(first) {
-    if(
-      (elem.type === "act" && first.type === "hact") ||
-      (elem.type === "chapter" && first.type === "hchapter") ||
-      (elem.type === "scene" && first.type === "hscene")
-    ) {
-      return first
-    }
+  if(elem.children.length) {
+    const [first] = elem.children
+    if(nodeBreaks(first) === elem.type) return first
   }
 
   return undefined
 }
 
+export function elemHeadAttrs(elem) {
+  const {type, name, numbered, target} = elemHeading(elem) ?? {type: nodeTypes[elem.type].header}
+  const ctrl = {
+    ...nodeTypes[type].ctrl ?? {},
+    name,
+    numbered,
+    target,
+  }
+  return ctrl;
+}
+
+export function makeHeader(type, id, name, numbered, target) {
+  return {
+    type,
+    id,
+    name,
+    numbered,
+    target,
+    children: [
+      {text: name ?? ""},
+      ...numbered ? [] : [{text: "*"}],
+      ...target ? [{text: ` ::${target}`}] : [],
+    ],
+  }
+}
+
+export function textToInt(text) {
+  if(!text) return undefined
+  const number = parseInt(text.trim())
+  return isNaN(number) ? undefined : number
+}
+
+export function elemHeadParse(head) {
+  if(!head) return {}
+  const all = elemAsText(head)
+  const [textStr, targetStr] = all.split("::")
+  const text = textStr.trim()
+  const target = textToInt(targetStr)
+  const [name, numbered] = text.endsWith("*") ? [text.slice(0, -1), false] : [text, true]
+  return {
+    name: name.trim(),
+    numbered,
+    target,
+  }
+}
+
 export function elemName(elem) {
-  return elemAsText(elemHeading(elem))
+  return elem.name
+  //const head = elemHeading(elem)
+  //return elemHeadParse(head).name
 }
 
 export function elemNumbered(elem) {
-  return elemHeading(elem)?.numbered
+  //const head = elemHeading(elem)
+  //return elemHeadParse(head).numbered
+  return elem.numbered
 }
 
 //-----------------------------------------------------------------------------
@@ -145,6 +192,7 @@ export function createWordTable(section) {
   for(const act of section.acts) {
     for(const chapter of filterCtrlElems(act.children)) {
       for(const scene of filterCtrlElems(chapter.children)) {
+        if(scene.content !== "scene") continue
         for(const p of scene.children) {
           if(p.type !== "p") continue
           for(const word of text2words(elemAsText(p))) {
@@ -197,20 +245,38 @@ function wcParagraph(elem) {
     //case "p": return { chars, text: wc, map: words2map(words) }
     case "p": return { chars, text: wc }
     case "missing": return { chars, missing: wc }
+    /*
     case "fill":
-      const fill = Math.max(0, parseInt(text))
+    const fill = Math.max(0, parseInt(text))
       //console.log("Fill:", fill)
       return { missing: (isNaN(fill) ? 0 : fill) }
+    */
   }
   return undefined
 }
 
-export function wcChildren(children) {
-  return children.filter(elem => elem.words).reduce((words, elem) => ({
+export function wcChildren(children, target) {
+  const words = children.filter(elem => elem.words).reduce((words, elem) => ({
     chars: words.chars + (elem.words.chars ?? 0),
     text: words.text + (elem.words.text ?? 0),
     missing: words.missing + (elem.words.missing ?? 0),
   }), {chars: 0, text: 0, missing: 0})
+
+  if(target) {
+    const total = words.text + words.missing
+
+    if(target > total) {
+      const padding = target - total
+      return {
+        chars: words.chars,
+        text: words.text,
+        missing: words.missing + padding,
+        padding,
+      }
+    }
+  }
+
+  return words
 }
 
 export function wcElem(elem) {
@@ -219,8 +285,11 @@ export function wcElem(elem) {
     case "sect":
     case "act":
     case "chapter":
+      return wcChildren(elem.children, elem.target)
+
     case "scene":
-      return wcChildren(elem.children)
+      if(elem.content === "scene") return wcChildren(elem.children, elem.target)
+      return undefined
 
     case "p":
     case "missing":
@@ -228,7 +297,7 @@ export function wcElem(elem) {
       return wcParagraph(elem)
 
     default:
-    //case "synopsis":
+    //case "bookmark":
     //case "tag":
     //case "comment":
     //case "br":
@@ -241,7 +310,8 @@ export function wcCompare(a, b) {
   return (
     a?.chars === b?.chars &&
     a?.text === b?.text &&
-    a?.missing === b?.missing
+    a?.missing === b?.missing &&
+    a?.padding === b?.padding
   )
 }
 
@@ -262,7 +332,12 @@ export function wcCumulative(section) {
   var summed = 0
 
   for(const elem of flat) {
-    if(elem.type === "scene") summed += elem.words?.text + elem.words?.missing
+    if(elem.type === "scene") {
+      summed += (elem.words?.text ?? 0) + (elem.words?.missing ?? 0)
+    }
+    else {
+      summed += (elem.words?.padding ?? 0)
+    }
     cumulative[elem.id] = summed
   }
 

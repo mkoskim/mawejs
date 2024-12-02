@@ -10,7 +10,7 @@ import { saveViewSettings } from "../../gui/app/views";
 import { saveChartSettings } from "../../gui/arc/arc";
 import { saveEditorSettings } from "../../gui/editor/editor";
 import {saveExportSettings} from "../../gui/export/export";
-import {uuid as getUUID, buf2file, elemName, filterCtrlElems, elemNumbered} from "../util";
+import {uuid as getUUID, buf2file, elemName, filterCtrlElems, elemNumbered, elemHeadParse} from "../util";
 
 //----------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ export function toXML(doc) {
       attributes: {
         uuid: doc.uuid ?? getUUID(),
         format: "mawe",
-        version: "4",
+        version: "5",
         name: doc.head?.name
       }
     },
@@ -129,17 +129,16 @@ function toNotes(notes) {
 //-----------------------------------------------------------------------------
 
 function toAct(act) {
-  const {folded} = act;
-  const name = elemName(act)
-  const numbered = elemNumbered(act)
+  const {name, folded, numbered, target} = act;
 
   return xmlLines(
     {
       type: "act",
       attributes: {
-        name: name,
+        name: name ? name : undefined,
         folded: folded ? true : undefined,
-        numbered: numbered ? true : undefined,
+        //numbered: numbered ? true : undefined,
+        target: target ? target : undefined,
       },
     },
     ...filterCtrlElems(act.children).map(toChapter),
@@ -151,17 +150,16 @@ function toAct(act) {
 //-----------------------------------------------------------------------------
 
 function toChapter(chapter) {
-  const {folded} = chapter;
-  const name = elemName(chapter)
-  const numbered = elemNumbered(chapter)
+  const {name, folded, numbered, target} = chapter;
 
   return xmlLines(
     {
       type: "chapter",
       attributes: {
-        name: name,
+        name: name ? name : undefined,
         folded: folded ? true : undefined,
         numbered: numbered ? true : undefined,
+        target: target ? target : undefined,
       },
     },
     ...filterCtrlElems(chapter.children).map(toScene),
@@ -173,15 +171,16 @@ function toChapter(chapter) {
 //-----------------------------------------------------------------------------
 
 function toScene(scene) {
-  const {folded} = scene
-  const name = elemName(scene)
+  const {name, content, folded, target} = scene
 
   return xmlLines(
     {
       type: "scene",
       attributes: {
-        name: name,
+        name: name ? name : undefined,
+        content: content !== "scene" ? content : undefined,
         folded: folded ? true : undefined,
+        //target: target ? target : undefined,
       },
     },
     ...filterCtrlElems(scene.children).map(toParagraph),

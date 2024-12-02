@@ -106,9 +106,9 @@ export class ChooseVisibleElements extends React.PureComponent {
       tooltip: "Show scenes",
       icon: <Icon.BlockType.Scene/>
     },
-    "synopsis": {
-      tooltip: "Show synopses",
-      icon: <Icon.BlockType.Synopsis />
+    "bookmark": {
+      tooltip: "Show bookmarks",
+      icon: <Icon.BlockType.Bookmark />
     },
     "missing": {
       tooltip: "Show missing",
@@ -240,12 +240,13 @@ export class FormatWords extends React.PureComponent {
 
   cumulative(cumulative, total, text, missing) {
     //return this.percent(cumulative, missing, total)
-    return this.compact(cumulative, text, missing)
+    return this.compact(cumulative, text)
   }
 
   percent(cumulative, total, text, missing) {
+    if(!cumulative) return "-";
     if(!total) return <span>0.0</span>
-    return this.compact(Number(100.0 * cumulative / total).toFixed(1), text, missing)
+    return this.compact(Number(100.0 * cumulative / total).toFixed(1), text)
   }
 }
 

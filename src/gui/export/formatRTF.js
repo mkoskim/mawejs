@@ -139,7 +139,7 @@ ${content}
   // Paragraph styles
   "missing": (p, text) => `\\cf2 ${text}\\par}\n`,
   "p": (p, text) => ` ${text}\\par}\n`,
-  //"synopsis": (p) => undefined,
+  //"bookmark": (p) => undefined,
   //"comment": (p) => undefined,
 
   "b": (text) => `{\\b ${text}}`,
@@ -171,7 +171,7 @@ function escape(text) {
       case '\\': return "\\\\"
       case '{': return "\\{"
       case '}': return "\\}"
-      case '~': return "\\~"
+      //case '~': return "\\~"
       case '"': return "\\'94"
     }
     return c

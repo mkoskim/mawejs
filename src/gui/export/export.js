@@ -65,6 +65,7 @@ export function loadExportSettings(settings) {
 
   return {
     format: "rtf1",
+    content: "draft",
     type: "short",
     acts: "none",
     chapters: "numbered",
@@ -74,8 +75,9 @@ export function loadExportSettings(settings) {
 }
 
 export function saveExportSettings(settings) {
-  const {type, acts, chapters, scenes} = settings
+  const {content, type, acts, chapters, scenes} = settings
   return {type: "export", attributes: {
+    content,
     type,
     acts,
     chapters,
@@ -105,6 +107,7 @@ export function Export({ doc, updateDoc }) {
 // Export settings
 //-----------------------------------------------------------------------------
 
+function updateDocStoryContent(updateDoc, value) { updateDoc(doc => {doc.exports.content = value})}
 function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
 function updateDocActElem(updateDoc, value) { updateDoc(doc => {doc.exports.acts = value})}
 function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapters = value})}
@@ -129,8 +132,12 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       {/* <MenuItem value="txt">Text (wrapped)</MenuItem> */}
       </TextField>
 
-    <Separator/>
-    <Button variant="contained" color="success" onClick={e => doExport(e)}>Export</Button>
+    <TextField select label="Content" value={exports.content} onChange={e => updateDocStoryContent(updateDoc, e.target.value)}>
+      <MenuItem value="draft">Draft</MenuItem>
+      <MenuItem value="synopsis">Synopsis</MenuItem>
+      </TextField>
+
+    <Button variant="contained" color="success" onClick={e => exportToFile(doc, formatter, exports.content)}>Export</Button>
 
     <Separator/>
 
@@ -158,20 +165,35 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       <MenuItem value="none">None</MenuItem>
       </TextField>
   </VBox>
-
-  function doExport(event) {
-    const content = FormatBody(formatter, doc)
-    //console.log(content)
-    exportToFile(doc, formatter.suffix, content)
-  }
 }
 
-async function exportToFile(doc, filesuffix, content) {
+//-----------------------------------------------------------------------------
+// Export preview
+//-----------------------------------------------------------------------------
+
+function Preview({ doc }) {
+  return <div className="Filler Board">
+    <DeferredRender><div
+      className="Sheet Regular"
+      dangerouslySetInnerHTML={{ __html: FormatBody(formatHTML, doc) }}
+    /></DeferredRender>
+  </div>
+}
+
+//-----------------------------------------------------------------------------
+// Export to file
+//-----------------------------------------------------------------------------
+
+async function exportToFile(doc, formatter, type) {
+  const content = FormatBody(formatter, doc)
+
+  const typesuffix = type === "synopsis" ? ".synopsis" : ""
+
   const dirname = await fs.dirname(doc.file.id)
   const name = await fs.basename(doc.file.id)
   const suffix = getSuffix(name, [".mawe", ".mawe.gz"]);
   const basename = await fs.basename(name, suffix);
-  const filename = await fs.makepath(dirname, basename + filesuffix)
+  const filename = await fs.makepath(dirname, basename + typesuffix + formatter.suffix)
   console.log("Export to:", filename)
   fs.write(filename, content)
   .then(file => Inform.success(`Exported: ${file.name}`))
@@ -184,6 +206,8 @@ async function exportToFile(doc, filesuffix, content) {
 
 function ExportIndex({ style, doc, updateDoc }) {
   const { acts } = doc.body
+
+  return null
 
   return <VFiller className="TOC" style={style}>
     {filterCtrlElems(acts).map(act => <ActItem key={act.id} act={act} doc={doc} updateDoc={updateDoc}/>)}
@@ -232,18 +256,5 @@ function SceneItem({ scene, doc, updateDoc }) {
     style={{ cursor: "pointer" }}
   >
     <span className="Name">{name}</span>
-  </div>
-}
-
-//-----------------------------------------------------------------------------
-// Export preview
-//-----------------------------------------------------------------------------
-
-function Preview({ doc }) {
-  return <div className="Filler Board">
-    <DeferredRender><div
-      className="Sheet Regular"
-      dangerouslySetInnerHTML={{ __html: FormatBody(formatHTML, doc) }}
-    /></DeferredRender>
   </div>
 }

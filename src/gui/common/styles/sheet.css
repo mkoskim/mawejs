@@ -120,6 +120,22 @@
   */
 }
 
+.Sheet div.synopsis {
+  padding: 0pt 4pt 0pt 4pt;
+  background: var(--synopsis-bg);
+  color: var(--synopsis-fg);
+  border: var(--synopsis-border);
+  margin-bottom: 4pt;
+}
+
+.Sheet div.notes {
+  padding: 0pt 4pt 0pt 4pt;
+  background: var(--notes-bg);
+  color: var(--notes-fg);
+  border: var(--notes-border);
+  margin-bottom: 4pt;
+}
+
 /* ----------------------------------------------------------------------------
 // For debugging purposes: make chapter & scene div's visible
 // ----------------------------------------------------------------------------
@@ -137,7 +153,9 @@
   margin-bottom: 4pt;
 }
 
-.Sheet div.scene.withBorders {
+.Sheet div.scene.withBorders,
+.Sheet div.notes.withBorders,
+.Sheet div.synopsis.withBorders {
   border: 1pt dotted lightgray;
   padding: 4pt;
   margin-bottom: 4pt;
@@ -179,8 +197,10 @@
 .Sheet div.folded p,
 .Sheet div.folded div.emptyline,
 .Sheet .act.folded div.chapter,
-.Sheet .chapter.folded div.scene {
-  display: none
+.Sheet .chapter.folded div.scene,
+.Sheet .chapter.folded div.notes,
+.Sheet .chapter.folded div.synopsis {
+    display: none
 }
 
 .Sheet div.folded h4,
@@ -244,11 +264,13 @@
 */
 }
 
+/*
 .Sheet h4.Numbered::before {
   margin-right: 4pt;
   counter-increment: act;
   content: "Act " counter(act, upper-roman) ":";
 }
+*/
 
 /* Chapter */ .Sheet h5 {
   font-family: Arial, Helvetica, sans-serif;
@@ -271,21 +293,21 @@
   content: counter(chapter) ".";
 }
 
-/* Scene*/ .Sheet h6 {
+/* Scene / Synopsis */ .Sheet h6 {
   font-size: inherit;
   color: #888;
   /*
   font-weight: normal;
   font-family: Arial, Helvetica, sans-serif;
-  color: var(--synopsis-fg);
-  background: var(--synopsis-bg);
+  color: var(--bookmark-fg);
+  background: var(--bookmark-bg);
   padding-top: 4pt;
   padding-bottom: 4pt;
   margin-top: 0.5cm;
   */
 }
 
-.Sheet h6::before {
+.Sheet div.scene h6::before {
   counter-increment: scene;
   margin-right: 8pt;
   content: "##";
@@ -293,6 +315,21 @@
   content: counter(scene) ".";
 */
 }
+
+.Sheet div.synopsis h6::before {
+  content: "Synopsis: ";
+/*
+  margin-right: 8pt;
+*/
+}
+
+.Sheet div.notes h6::before {
+  content: "Notes: ";
+/*
+  margin-right: 8pt;
+*/
+}
+
 
 /*
 .Sheet div.emptyline::before {
@@ -314,53 +351,56 @@
 }
 
 /* ---------------------------------------------------------------------------- */
+/* Missing */
 
 .Sheet .missing {
   color: var(--missing-fg);
 }
 
 .Sheet .missing::before {
-  content: "!!";
-  margin-right: 4pt;
+  content: "!! ";
+  /*margin-right: 4pt;*/
 }
 
-.Sheet .fill {
-  color: var(--fill-fg);
-}
-
-.Sheet .fill::before {
-  content: "++ Fill:";
-  margin-right: 4pt;
-}
+/* ---------------------------------------------------------------------------- */
+/* Tags */
 
 .Sheet .tags {
   color: var(--tags-fg);
 }
 
 .Sheet .tags::before {
-  content: "@";
-  margin-right: 4pt;
+  content: "@@ ";
+  /*margin-right: 4pt;*/
 }
 
+/* ---------------------------------------------------------------------------- */
+/* Comment */
+
 .Sheet .comment {
-  background: var(--comment-bg);
   color: var(--comment-fg);
+  background: var(--comment-bg);
 }
 
 .Sheet .comment::before {
-  content: "//";
-  margin-right: 4pt;
+  content: "// ";
+  /*margin-right: 4pt;*/
 }
 
-.Sheet .synopsis {
+/* ---------------------------------------------------------------------------- */
+/* Bookmark */
+
+.Sheet .bookmark {
   /* color: rgb(46, 49, 7); */
-  color: var(--synopsis-fg);
-  background: var(--synopsis-bg);
+  color: var(--bookmark-fg);
+  /*
+  background: var(--bookmark-bg);
+  */
 }
 
-.Sheet .synopsis::before {
-  content: ">>";
-  margin-right: 4pt;
+.Sheet .bookmark::before {
+  content: "=> ";
+  /*margin-right: 4pt;*/
 }
 
 /* ----------------------------------------------------------------------------
