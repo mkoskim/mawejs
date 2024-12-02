@@ -18,7 +18,8 @@
     "react-build": "react-scripts build",
     "react-test": "react-scripts test",
     "react-eject": "react-scripts eject",
-    "fresh": "rm -rf dist build node_modules package-lock.json && npm install"
+    "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
+    "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox"
   },
   "dependencies": {
     "@emotion/react": "^11.13.5",
