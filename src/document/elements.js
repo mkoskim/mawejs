@@ -74,9 +74,9 @@ export const paragraphTypes = {
   "hchapter":  {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2"},
   "hscene":    {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3"},
   "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S"},
-  "hnotes":    {name: "Notes",    markup: "//"},
+  "hnotes":    {name: "Notes",    markup: "%%"},
   "bookmark":  {name: "Bookmark", markup: "=>", },
-  "comment":   {name: "Comment",  markup: "%%", },
+  "comment":   {name: "Comment",  markup: "//", },
   "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M"},
   "tags":      {name: "Tags",     markup: "@@"},
 }
@@ -98,7 +98,7 @@ export const blockstyles = {
   "hchapter":  { eol: "p", bk: "p", },
   "hscene":    { eol: "p", bk: "p", },
   "hsynopsis": { eol: "p", bk: "hscene", },
-  "hnotes":  { eol: "p", bk: "hscene", },
+  "hnotes":    { eol: "p", bk: "hscene", },
 
   'comment':   {           bk: "p", reset: "p" },
   'missing':   {           bk: "p", reset: "p" },
@@ -113,10 +113,10 @@ export const MARKUP = {
   "# " : {type: "hchapter"},
   "## ": {type: "hscene"},
   '>> ': {type: "hsynopsis"},
-  '// ': {type: 'hnotes'},
+  '%% ': {type: 'hnotes'},
   '=> ': {type: "bookmark"},
   '!! ': {type: 'missing'},
-  '%% ': {type: 'comment'},
+  '// ': {type: 'comment'},
   '@@ ': {type: 'tags'},
   //'-- ':
   //'<<':

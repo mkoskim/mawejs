@@ -383,7 +383,7 @@
 }
 
 .Sheet .comment::before {
-  content: "%% ";
+  content: "// ";
   /*margin-right: 4pt;*/
 }
 
