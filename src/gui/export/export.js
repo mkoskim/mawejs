@@ -75,8 +75,9 @@ export function loadExportSettings(settings) {
 }
 
 export function saveExportSettings(settings) {
-  const {type, acts, chapters, scenes} = settings
+  const {content, type, acts, chapters, scenes} = settings
   return {type: "export", attributes: {
+    content,
     type,
     acts,
     chapters,
