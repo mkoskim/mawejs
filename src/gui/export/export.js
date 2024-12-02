@@ -137,7 +137,7 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       <MenuItem value="synopsis">Synopsis</MenuItem>
       </TextField>
 
-    <Button variant="contained" color="success" onClick={e => exportToFile(doc, formatter)}>Export</Button>
+    <Button variant="contained" color="success" onClick={e => exportToFile(doc, formatter, exports.content)}>Export</Button>
 
     <Separator/>
 
@@ -184,14 +184,16 @@ function Preview({ doc }) {
 // Export to file
 //-----------------------------------------------------------------------------
 
-async function exportToFile(doc, formatter) {
+async function exportToFile(doc, formatter, type) {
   const content = FormatBody(formatter, doc)
+
+  const typesuffix = type === "synopsis" ? ".synopsis" : ""
 
   const dirname = await fs.dirname(doc.file.id)
   const name = await fs.basename(doc.file.id)
   const suffix = getSuffix(name, [".mawe", ".mawe.gz"]);
   const basename = await fs.basename(name, suffix);
-  const filename = await fs.makepath(dirname, basename + formatter.suffix)
+  const filename = await fs.makepath(dirname, basename + typesuffix + formatter.suffix)
   console.log("Export to:", filename)
   fs.write(filename, content)
   .then(file => Inform.success(`Exported: ${file.name}`))

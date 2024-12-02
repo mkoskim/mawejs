@@ -121,19 +121,19 @@
 }
 
 .Sheet div.synopsis {
-  padding: 4pt;
+  padding: 0pt 4pt 0pt 4pt;
   background: var(--synopsis-bg);
   color: var(--synopsis-fg);
   border: var(--synopsis-border);
-  margin-bottom: 0.5cm;
+  margin-bottom: 4pt;
 }
 
 .Sheet div.notes {
-  padding: 4pt;
+  padding: 0pt 4pt 0pt 4pt;
   background: var(--notes-bg);
   color: var(--notes-fg);
   border: var(--notes-border);
-  margin-bottom: 0.5cm;
+  margin-bottom: 4pt;
 }
 
 /* ----------------------------------------------------------------------------
