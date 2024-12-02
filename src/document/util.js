@@ -8,7 +8,7 @@
 
 import {isGzip, gzip, gunzip} from "../util/compress"
 import {uuid, nanoid} from "../util"
-import { nodeBreaks, nodeTypes } from "./elements";
+import { nodeBreaks, nodeIsBreak, nodeTypes } from "./elements";
 
 export {uuid, nanoid}
 
@@ -80,8 +80,8 @@ export function createDateStamp(date) {
 
 //*
 export function filterCtrlElems(blocks) {
-  const ctrltypes = ["hact", "hchapter", "hscene", "hsynopsis", "hnotes"]
-  return blocks.filter(block => !ctrltypes.includes(block.type))
+  //const ctrltypes = ["hact", "hchapter", "hscene", "hsynopsis", "hnotes"]
+  return blocks.filter(block => !nodeIsBreak(block))
 }
 /**/
 
