@@ -72,7 +72,10 @@ export function FormatBody(format, story) {
   const { exports, head, body } = story
   const pgbreak = exports.type === "long"
 
+  console.log("Content:", exports.content)
+
   const options = {
+    content: exports.content,
     long: exports.type === "long",
     act: getActOptions(exports.acts, pgbreak),
     chapter: getChapterOptions(exports.chapters, pgbreak),
@@ -142,7 +145,18 @@ export function FormatBody(format, story) {
   }
 
   function FormatScene(scene) {
-    if(scene.content !== "scene") return null
+    switch(options.content) {
+
+      case "synopsis":
+        if(scene.content !== "synopsis") return null
+        break;
+
+      case "draft":
+      default:
+        if(scene.content !== "scene") return null
+        break;
+    }
+    //console.log("Scene", scene)
 
     const splits = splitByTrailingElem(scene.children, p => p.type === "br")
       .map(s => s.filter(p => p.type !== "br"))
