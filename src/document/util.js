@@ -262,16 +262,20 @@ export function wcChildren(children, target) {
     missing: words.missing + (elem.words.missing ?? 0),
   }), {chars: 0, text: 0, missing: 0})
 
-  const total = words.text + words.missing
+  if(target) {
+    const total = words.text + words.missing
 
-  if(target && target > total) {
-    const diff = target - words.text
-    return {
-      chars: words.chars,
-      text: words.text,
-      missing: diff
+    if(target > total) {
+      const padding = target - total
+      return {
+        chars: words.chars,
+        text: words.text,
+        missing: words.missing + padding,
+        padding,
+      }
     }
   }
+
   return words
 }
 
@@ -306,7 +310,8 @@ export function wcCompare(a, b) {
   return (
     a?.chars === b?.chars &&
     a?.text === b?.text &&
-    a?.missing === b?.missing
+    a?.missing === b?.missing &&
+    a?.padding === b?.padding
   )
 }
 
@@ -327,7 +332,12 @@ export function wcCumulative(section) {
   var summed = 0
 
   for(const elem of flat) {
-    if(elem.type === "scene") summed += (elem.words?.text ?? 0) + (elem.words?.missing ?? 0)
+    if(elem.type === "scene") {
+      summed += (elem.words?.text ?? 0) + (elem.words?.missing ?? 0)
+    }
+    else {
+      summed += (elem.words?.padding ?? 0)
+    }
     cumulative[elem.id] = summed
   }
 
