@@ -992,7 +992,7 @@ function withFixNesting(editor) {
       }
 
       if(!mergeHeadlessChilds(node, path)) return;
-      copyHeadAttributes(node, path)
+      //copyHeadAttributes(node, path)
       return normalizeNode(entry)
     }
 
@@ -1073,19 +1073,29 @@ function withFixNesting(editor) {
 
   function updateHeadAttributes(node, path) {
     const {name, numbered, target} = elemHeadParse(node)
-    //console.log("Attrs:", node, {numbered, target})
-    return modifyAttributes(node, path, {name, numbered, target})
+    const ctrl = {
+      ...nodeTypes[node.type].ctrl ?? {},
+      name,
+      target,
+    }
+
+    const [parent, ppath] = Editor.parent(editor, path)
+
+    modifyAttributes(node, path, {numbered})
+    modifyAttributes(parent, ppath, ctrl)
   }
 
   //---------------------------------------------------------------------------
   // Check parent control
   //---------------------------------------------------------------------------
 
+  /*
   function copyHeadAttributes(node, path) {
     const attrs = elemHeadAttrs(node)
     //console.log("Copy attrs:", node.type, "Attrs:", attrs)
     return modifyAttributes(node, path, attrs)
   }
+  */
 
   //---------------------------------------------------------------------------
   // Merge childs without header
