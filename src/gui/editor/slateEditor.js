@@ -181,6 +181,7 @@ function renderElement({element, attributes, ...props}) {
     case "comment":
     case "missing":
     case "tags":
+    case "fill":
       return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
 
     case "br":
@@ -317,7 +318,7 @@ class CharStyleButtons extends React.PureComponent {
 
 class ParagraphStyleSelect extends React.PureComponent {
 
-  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "hnotes", "bookmark", "comment", "missing", "tags"]
+  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "hnotes", "bookmark", "comment", "missing", "fill", "tags"]
 
   render() {
     const {type, setSelected} = this.props;

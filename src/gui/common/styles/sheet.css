@@ -353,13 +353,17 @@
 /* ---------------------------------------------------------------------------- */
 /* Missing */
 
-.Sheet .missing {
+.Sheet .missing, .Sheet .fill {
   color: var(--missing-fg);
 }
 
 .Sheet .missing::before {
   content: "!! ";
   /*margin-right: 4pt;*/
+}
+
+.Sheet .fill::before {
+  content: "++ Fill: "
 }
 
 /* ---------------------------------------------------------------------------- */
