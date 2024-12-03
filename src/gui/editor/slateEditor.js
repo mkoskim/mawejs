@@ -1073,15 +1073,18 @@ function withFixNesting(editor) {
 
   function updateHeadAttributes(node, path) {
     const {name, numbered, target} = elemHeadParse(node)
+
+    modifyAttributes(node, path, {numbered})
+
     const ctrl = {
       ...nodeTypes[node.type].ctrl ?? {},
       name,
+      numbered,
       target,
     }
 
     const [parent, ppath] = Editor.parent(editor, path)
 
-    modifyAttributes(node, path, {numbered})
     modifyAttributes(parent, ppath, ctrl)
   }
 

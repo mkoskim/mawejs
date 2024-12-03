@@ -207,14 +207,16 @@ function parseChapter(chapter, index) {
     console.log("Invalid chapter:", chapter)
     throw new Error("Invalid chapter:", chapter)
   }
-  const {name, folded: foldedStr, numbered, target: targetStr} = chapter.attributes ?? {};
+  const {name, folded: foldedStr, numbered: numberedStr, target: targetStr} = chapter.attributes ?? {};
   const target = textToInt(targetStr)
   const folded = foldedStr === "true"
+  const numbered = numberedStr === "true"
+
   const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
     "hchapter",
     nanoid(),
     name,
-    numbered === "true",
+    numbered,
     target,
   )]
   const empty = [{type: "element", name: "scene"}]
@@ -227,6 +229,7 @@ function parseChapter(chapter, index) {
     type: "chapter",
     id: nanoid(),
     name,
+    numbered,
     target,
     folded,
     children: [
