@@ -1000,8 +1000,8 @@ function withFixNesting(editor) {
 
     // Block headers
     if(nodeIsBreak(node)) {
-      updateHeadAttributes(node, path)
       if(!checkIsFirst(node, path, nodeType.parent)) return
+      updateHeadAttributes(node, path)
     }
 
     return normalizeNode(entry)
