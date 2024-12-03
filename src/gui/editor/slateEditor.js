@@ -1068,7 +1068,7 @@ function withFixNesting(editor) {
   }
 
   //---------------------------------------------------------------------------
-  // Parse head numbering
+  // Update head attributes
   //---------------------------------------------------------------------------
 
   function updateHeadAttributes(node, path) {

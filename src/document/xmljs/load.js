@@ -214,7 +214,7 @@ function parseChapter(chapter, index) {
     "hchapter",
     nanoid(),
     name,
-    numbered,
+    numbered === "true",
     target,
   )]
   const empty = [{type: "element", name: "scene"}]
@@ -227,7 +227,6 @@ function parseChapter(chapter, index) {
     type: "chapter",
     id: nanoid(),
     name,
-    numbered,
     target,
     folded,
     children: [
