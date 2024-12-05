@@ -246,7 +246,8 @@ function parseScene(scene, index) {
     throw new Error("Invalid scene", scene)
   }
 
-  const {name, folded: foldedStr, content = "scene"} = scene.attributes ?? {};
+  const {name, folded: foldedStr, target: targetStr, content = "scene"} = scene.attributes ?? {};
+  const target = textToInt(targetStr)
   const folded = foldedStr === "true"
 
   const htype = {
@@ -260,14 +261,14 @@ function parseScene(scene, index) {
     nanoid(),
     name,
     true,
-    undefined,
+    target,
   )]
 
   const empty = [{type: "element", name: "p", children: []}]
   const elements = scene.elements?.length ? scene.elements : empty
 
   const children = elements.map(parseParagraph).filter(e => e).map(elem => ({...elem, words: wcElem(elem)}))
-  const words = (content === "scene") ? wcChildren(children) : undefined
+  const words = (content === "scene") ? wcChildren(children, target) : undefined
 
   return {
     type: "scene",
@@ -275,6 +276,7 @@ function parseScene(scene, index) {
     content,
     name,
     folded,
+    target,
     children: [
       ...header,
       ...children,
