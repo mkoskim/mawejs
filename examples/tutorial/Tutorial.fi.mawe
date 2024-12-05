@@ -9,7 +9,7 @@ STORY: Ohjeet
 <head>
 <title>Käyttöohje (v0.9.0)</title>
 </head>
-<export content="draft" type="short" acts="separated" chapters="separated" scenes="none"/>
+<export content="draft" type="short" acts="named" chapters="numbered" scenes="none"/>
 <!--/
 ===============================================================================
 /-->
@@ -22,7 +22,7 @@ STORY: Ohjeet
 </chapter>
 <chapter name="Pikaopas" numbered="true">
 <scene>
-<p>Pikaopas näppäinkomennnoista. Huomaa, että nykyään monissa napeissa ja menuissa on joko tooltip tai jokin muu info käytössä olevista näppäinkomennoista. Kaikkea ei siis tarvitse muistaa ulkoa.</p>
+<p>Pikaopas näppäinkomennoista. Huomaa, että nykyään monissa napeissa ja menuissa on joko tooltip tai jokin muu info käytössä olevista näppäinkomennoista. Kaikkea ei siis tarvitse muistaa ulkoa.</p>
 <br/>
 <p><b>Tekstityylit:</b></p>
 <p>Ctrl-B - Bold</p>
@@ -154,7 +154,8 @@ STORY: Ohjeet
 <p>Tekstin pilkkominen on MaweJS:n pääpiirre. Mutta toisin kuin ajattelet, kohtauksen jakaja ei ole otsikko:</p>
 </scene>
 <scene name="--> Tämä on kohtauksen jakaja, ei otsikko! <---">
-<p>Toisin kuin tavallisessa strukturoimattomassa editorissa - Googledocs, Microsoft Word, LibreOffice - MaweJS:ssä ei suoranaisesti anneta tekstille tyyliä. Kohtausten, lukujen ja näytösten jakajat (break) ovat siis vain jakajia. Niihin voi ja kannattaa kirjoittaa jotain kuvaavaa, mutta tämä kuvaava teksti on pääasiassa vain sinulle kirjoittajana.</p>
+<p>Toisin kuin tavallisessa strukturoimattomassa editorissa - Googledocs, Microsoft Word, LibreOffice - MaweJS:ssä ei suoranaisesti anneta tekstille tyyliä. Kursiivia ja vahvennusta lukuunottamatta MaweJS toimisi ihan hyvin pelkällä kirjoituskonefontilla.</p>
+<p>Tekstiä osasiin pilkkovat kohtausten, lukujen ja näytösten jakajat (break) ovat siis vain jakajia. Niihin voi ja kannattaa kirjoittaa itselleen jotain kuvaavaa, mutta tämä kuvaava teksti on pääasiassa vain sinulle kirjoittajana.</p>
 <p>Poikkeuksena on se, että eksporttauksessa voi valita nk. nimetyt luvut tai näytökset. Tällöin jakajaan kirjoitettu nimi tulee myös vedokseen.</p>
 </scene>
 <scene name="Tekstin pilkkominen">
@@ -182,6 +183,7 @@ STORY: Ohjeet
 </scene>
 <scene name="Kohtaus (tavallinen)">
 <p>Tämä on tavallinen kohtaus (markup "##").</p>
+<p><b>Lorem</b> ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
 </scene>
 <scene name="Tiivistelmä tai kuvaus" content="synopsis">
 <p>Tämä on kuvauslohko (synopsis) (markup "&gt;&gt;"). Kaikki tavallisessa kohtauksessa olevat elementit ovat mahdollisia myös synopsis-lohkossa:</p>
@@ -194,7 +196,7 @@ STORY: Ohjeet
 <p>Tämä on kommenttilohko (markup "%%"). Kuten tiivistelmä-lohkossakin, niin kommenttilohkossakin voi käyttää erilaisia elementtejä:</p>
 <p><b>Boldaus</b> ja <i>kursiivi.</i></p>
 <bookmark>Kirjamerkki</bookmark>
-<missing>Puuttuva teksti.</missing>
+<missing>Puuttuva teksti. Koska kommenttilohkojenkaan tekstiä ei lasketa mukaan sanamääriin, kommenttilohkon sisällä puuttuva teksti on pelkästään punaista tekstiä.</missing>
 <comment>Kommentti.</comment>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
 </scene>
@@ -254,7 +256,7 @@ STORY: Ohjeet
 </chapter>
 <chapter name="Sanamäärät" numbered="true">
 <scene name="Sanamäärät">
-<p>MaweJS käyttää pituuden indikaattorina sanamääriä. Sivumäärä on riippuvainen tekstin asettelusta: fontista ja sen koosta, rivityksestä (line spacing), sivun koosta ja marginaaleista. Tästä syystä kirjoittajat käyttävät tekstin pituuden ilmaisemiseen usein sana- tai merkkimäärää.</p>
+<p>MaweJS käyttää tekstin pituuden indikaattorina sanamääriä. Sivumäärä on riippuvainen tekstin asettelusta: fontista ja sen koosta, rivityksestä (line spacing), sivun koosta ja marginaaleista. Tästä syystä kirjoittajat käyttävät tekstin pituuden ilmaisemiseen usein sana- tai merkkimäärää.</p>
 <missing>HUOM! Puuttuva teksti lasketaan kokonaissanamäärään! Kommentteja ja tiivistelmiä (synopsis) ei lasketa.</missing>
 <br/>
 <p>Indeksistä on valittavissa erilaisia tapoja näyttää sanamäärät:</p>
@@ -423,6 +425,6 @@ NOTES
 </ui>
 <history>
 <words date="2024-12-04" text="4687" missing="1046" chars="27422"/>
-<words date="2024-12-05" text="3300" missing="2194" chars="27533"/>
+<words date="2024-12-05" text="3415" missing="2194" chars="28354"/>
 </history>
 </story>
