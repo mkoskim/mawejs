@@ -204,28 +204,37 @@ STORY: Ohjeet
 <chapter name="Kirjamerkit (bookmarks)" numbered="true">
 <scene>
 <p>Tekstin pilkkomisen lisäksi tekstiin on laitettavissa muutamia erilaisia elementtejä.</p>
-<br/>
+</scene>
+<scene name="Puuttuva teksti">
 <p><b>PUUTTUVA TEKSTI:</b> Puuttuva teksti (missing, missing text) on merkintä, joka kertoo, että kyseisestä kohdasta puuttuu jotain. Esimerkiksi, tarinaa kirjoittaessasi ajattelet, että sinun on jossain vaiheessa tarkastettava jokin asia, tai muistettava myöhemmin kirjoittaa johonkin kohtaan jotain. Voi olla, että jokin osuus on vaikea kirjoittaa sillä hetkellä, ja kirjoitat sen sijaan selostavaa tekstiä, jolla kuvaat, mitä siinä kohtaa pitäisi tapahtua.</p>
 <p>Muista, että:</p>
 <missing>Puuttuva teksti <b>tulee mukaan vedokseen!</b> Koko ajatus on se, että loppuviimeksi saat kirjoitettua kaikki puuttuvat osuudet auki ja loppuun.</missing>
 <p>Oletettavasti siis haluat, että lopullisessa vedoksessa ei ole enää puuttuvia osasia, vaan myös vaikeimmat paikat on saatu kirjoitettua loppuun. Puuttuvan tekstin ottaminen mukaan vedokseen on hyödyllistä myös silloin, jos haluat jakaa keskeneräisen tarinan vaikkapa kirjoittajakollegan kanssa</p>
 <missing>Huomaa myös, että puuttuva teksti lasketaan mukaan <b>kokonaissanamäärään.</b> Kokonaissanamäärä näkyy mm. tavoitemittana (target word count).</missing>
 <br/>
+</scene>
+<scene name="Filleri">
 <p><b>FILLERI:</b> Filleri on elementti, jonka avulla voi antaa sanamäärän, paljonko välistä puuttuu tekstiä:</p>
 <fill>500 (Lisätään 500 sanaa puuttuvaa tekstiä tähän väliin)</fill>
 <p>Fillerit olivat aiempi tapa "padata" tekstiä silloin, kun puolivalmiin tekstin kanssa halusi puuhata rakenteen kanssa. Sitä ennen ainoa tapa täyttää aukkoja oli luoda sanoja vain tarpeeksi paljon ja merkitä ne puuttuvaksi, esimerkiksi siis näin (lisää 100 puuttuvaa sanaa tekstiin):</p>
 <missing>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</missing>
 <p>Tässä 0.9.0 -versiossa on käytetävissä tavoitesanamäärät, jotka voi antaa kohtauksille, luvuille ja näytöksille. Tästä lisää hetken kuluttua.</p>
 <br/>
+</scene>
+<scene name="Kommentti">
 <p><b>KOMMENTTI:</b> Kommentit ovat pieniä muistutuksia ja huomautuksia sinulle kirjoittajana itsellesi:</p>
 <comment>Kommentit <b>eivät</b> tule mukaan vedokseen.</comment>
 <comment>Ne ovat pelkästään sinulle itsellesi.</comment>
 <p>Voit hyvin jättää kommentteja myös lopulliseen vedokseen, jos katsot tarpeelliseksi esimerkiksi vaikka sitä varten, jos joskus joudut palaamaan työstämään tarinaa lisää.</p>
 <br/>
+</scene>
+<scene name="Kirjamerkki">
 <p><b>KIRJAMERKKI:</b> Kirjamerkki (bookmark) on yksinkertaisesti vain kirjamerkki keskellä tekstiä. Tämä helpottaa asioiden löytämistä indeksistä, eli kohtausta ei ole pakko pilkkoa, jos haluaa kohtauksen keskelle paikan, jonne voi palata indeksiä klikkaamalla:</p>
 <bookmark>Tämä on kirjamerkki (bookmark)</bookmark>
 <p>Myöskään kirjamerkit eivät tule mukaan vedokseen.</p>
 <br/>
+</scene>
+<scene name="HUOM!">
 <p><b>HUOM!</b> Monet strukturoidut editorit kuten Scrivener ja Manuskript liittävät metadatan kohtaus- ja lukuelementteihin, eli kirjoitat kuvauksen tai kommentin <b>kohtaukselle. </b>MaweJS poikkeaa näistä perustavanlaatuisesti siksi, että pääasiassa liität huomautukset (annotations) tekstiin itseensä. Ne - kirjamerkit, kommentit, puuttuva teksti - eivät siis ole sidoksissa kohtaus- tai lukujakoon, vaan ne ovat elementtejä, jotka koskevat kirjoitettua tekstiä itseään. Niinpä ne säilyvät, vaikka muokkaisit kohtaus- ja lukujakoa.</p>
 </scene>
 <scene name="Esimerkkejä">
