@@ -44,7 +44,8 @@ import {
   cmdNewFile, cmdOpenFile, cmdOpenFolder, cmdOpenHelp,
   cmdOpenImportFile, cmdImportFile,
   cmdSaveFile, cmdSaveFileAs,
-  cmdImportClipboard
+  cmdImportClipboard,
+  cmdOpenResource
 } from "./context"
 
 import {
@@ -324,7 +325,7 @@ function WithoutDoc({ setCommand, recent }) {
     <Filler />
     <Separator />
     <HelpButton setCommand={setCommand} />
-    <SettingsButton />
+    {/* <SettingsButton /> */}
   </ToolBox>
 }
 
@@ -373,7 +374,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 
     <Separator />
     <HelpButton setCommand={setCommand} />
-    <SettingsButton />
+    {/* <SettingsButton /> */}
   </ToolBox>
 }
 
@@ -446,9 +447,21 @@ class RecentItems extends React.PureComponent {
 class HelpButton extends React.PureComponent {
   render() {
     const { setCommand } = this.props
+
+    return <PopupState variant="popover" popupId="file-menu">
+    {(popupState) => <React.Fragment>
+      <IconButton tooltip="Help" {...bindTrigger(popupState)}><Icon.Help/></IconButton>
+      <Menu {...bindMenu(popupState)}>
+        <MenuItem onClick={e => { popupState.close(e); cmdOpenResource(setCommand, "examples/tutorial/Tutorial.en.mawe")}}>Tutorial (English)</MenuItem>
+        <MenuItem onClick={e => { popupState.close(e); cmdOpenResource(setCommand, "examples/tutorial/Tutorial.fi.mawe")}}>Tutorial (Finnish)</MenuItem>
+      </Menu>
+    </React.Fragment>}
+    </PopupState>
+    /*
     return <IconButton tooltip="Help" onClick={e => cmdOpenHelp(setCommand)}>
       <Icon.Help />
     </IconButton>
+    */
   }
 }
 

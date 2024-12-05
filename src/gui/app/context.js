@@ -41,15 +41,16 @@ export async function cmdOpenFolder(file) {
   fs.openexternal(dirname)
 }
 
-export async function cmdOpenHelp(setCommand) {
-  setCommand({action: "resource", filename: "examples/UserGuide.mawe"})
-}
-
 export async function cmdNewFile({ setCommand }) {
   setCommand({
     action: "set",
     buffer: '<story format="mawe" />'
   })
+}
+
+export async function cmdOpenResource(setCommand, filename) {
+  // setCommand({action: "resource", filename: "examples/UserGuide.mawe"})
+  setCommand({action: "resource", filename})
 }
 
 //-----------------------------------------------------------------------------

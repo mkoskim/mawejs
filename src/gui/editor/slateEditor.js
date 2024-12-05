@@ -181,6 +181,7 @@ function renderElement({element, attributes, ...props}) {
     case "comment":
     case "missing":
     case "tags":
+    case "fill":
       return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
 
     case "br":
@@ -317,7 +318,7 @@ class CharStyleButtons extends React.PureComponent {
 
 class ParagraphStyleSelect extends React.PureComponent {
 
-  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "hnotes", "bookmark", "comment", "missing", "tags"]
+  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "hnotes", "bookmark", "comment", "missing", "fill", "tags"]
 
   render() {
     const {type, setSelected} = this.props;
@@ -991,7 +992,7 @@ function withFixNesting(editor) {
       }
 
       if(!mergeHeadlessChilds(node, path)) return;
-      copyHeadAttributes(node, path)
+      updateBlockAttributes(node, path)
       return normalizeNode(entry)
     }
 
@@ -999,8 +1000,8 @@ function withFixNesting(editor) {
 
     // Block headers
     if(nodeIsBreak(node)) {
-      updateHeadAttributes(node, path)
       if(!checkIsFirst(node, path, nodeType.parent)) return
+      updateHeadAttributes(node, path)
     }
 
     return normalizeNode(entry)
@@ -1067,20 +1068,20 @@ function withFixNesting(editor) {
   }
 
   //---------------------------------------------------------------------------
-  // Parse head numbering
+  // Update head attributes
   //---------------------------------------------------------------------------
 
   function updateHeadAttributes(node, path) {
     const {name, numbered, target} = elemHeadParse(node)
-    //console.log("Attrs:", node, {numbered, target})
-    return modifyAttributes(node, path, {name, numbered, target})
+
+    modifyAttributes(node, path, {name, numbered, target})
   }
 
   //---------------------------------------------------------------------------
-  // Check parent control
+  // Update block attributes from head element
   //---------------------------------------------------------------------------
 
-  function copyHeadAttributes(node, path) {
+  function updateBlockAttributes(node, path) {
     const attrs = elemHeadAttrs(node)
     //console.log("Copy attrs:", node.type, "Attrs:", attrs)
     return modifyAttributes(node, path, attrs)

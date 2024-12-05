@@ -36,6 +36,7 @@ export const nodeTypes = {
   "bookmark":  {parent: "scene", },
   "comment":   {parent: "scene", },
   "missing":   {parent: "scene", },
+  "fill":      {parent: "scene", },
   "tags":      {parent: "scene", },
   "p":         {parent: "scene", },
   "br":        {parent: "scene", },
@@ -82,10 +83,11 @@ export const paragraphTypes = {
   "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S", eol: "p", bk: "hscene",},
   "hnotes":    {name: "Notes",    markup: "%%", shortcut: "Ctrl-Alt-N", eol: "p", bk: "hscene",},
 
-  "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl-Alt-B", eol: "p", bk: "p", reset: "p" },
   "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C",           bk: "p", reset: "p" },
   "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M",           bk: "p", reset: "p" },
+  "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl-Alt-B", eol: "p", bk: "p", reset: "p" },
   "tags":      {name: "Tags",     markup: "@@",                         eol: "p", bk: "p", reset: "p" },
+  "fill":      {name: "Fill",     markup: "++",                         eol: "p", bk: "p", reset: "p" },
   "p":         {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
 }
 
@@ -120,6 +122,7 @@ export const MARKUP = {
   '!! ': {type: 'missing'},
   '// ': {type: 'comment'},
   '@@ ': {type: 'tags'},
+  '++ ': {type: 'fill'},
   //'-- ':
   //'<<':
   //'((':

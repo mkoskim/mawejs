@@ -260,7 +260,7 @@ function v3_to_v4(story) {
 
 //*****************************************************************************
 //
-// v4 --> v4.1
+// v4 --> v5
 //
 // - Synopsis --> bookmark
 //
@@ -319,8 +319,6 @@ function v4_to_v5(story) {
   }
 
   function fixParagraph(elem) {
-    if(elem.name === "fill") return
-
     if(elem.name === "synopsis") {
       return {
         ...elem,

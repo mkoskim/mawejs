@@ -180,7 +180,7 @@ function toScene(scene) {
         name: name ? name : undefined,
         content: content !== "scene" ? content : undefined,
         folded: folded ? true : undefined,
-        //target: target ? target : undefined,
+        target: target ? target : undefined,
       },
     },
     ...filterCtrlElems(scene.children).map(toParagraph),
