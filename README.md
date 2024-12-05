@@ -26,7 +26,14 @@ In newer Ubuntus you may encounter errors due to changed permissions. First, if 
 $ mawejs-0.7.0.Linux.amd.AppImage --no-sandbox
 ```
 
-Second, if you run the sources, you may need to set SUID bit on:
+In newer Ubuntus, if you run the sources, you may need to set SUID bit on. There is now npm run target to do that:
+
+```
+mawejs$ npm run fix
+```
+
+It uses `sudo`, so it will ask your password. If you don't trust my target, you can do it manually, too:
+
 
 ```
 mawejs$ npm i

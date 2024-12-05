@@ -96,7 +96,7 @@ STORY: Ohjeet
 <p>Yleisperiaatteena MaweJS tukee sellaisia tyylejä ja asetteluja, joita kustannustoimittajat ja kirjoituskisojen tuomaristo haluaa nähdä, ja suurimmaksi osaksi tämä tarkoittaa pelkkää puhdasta tekstiä.</p>
 <p>Nykyään editori tukee <b>vahvennusta</b> ja <i>kursiivia</i>. En itse välitä niiden laajamittaisesta käytöstä, mutta kursiivi on yleisesti käytetty esimerkiksi vieraskielisten fraasien merkitsemisessä: "<i>C'est la vie, ma cheri.</i>"</p>
 <br/>
-<p>Yhdestä näkökulmasta katsottuna MaweJS on lähempänä Notepadia kuin Microsoft Wordia tai Googledocsia. MaweJS on jollain tavalla "Notepad steroideilla", ei niinkän tekstin tyylittelyn kannalta, vaan sen rakenteen kannalta katsottuna, samaan tapaan kuin esimerkiksi koodaukseen on olemassa omia tarkoitusta varten tehtyjä editoreja (esim. Visual Studio Code).</p>
+<p>Yhdestä näkökulmasta katsottuna MaweJS on lähempänä Notepadia kuin Microsoft Wordia tai Googledocsia. MaweJS on jollain tavalla "Notepad steroideilla", ei niinkään tekstin tyylittelyn kannalta, vaan sen rakenteen kannalta katsottuna, samaan tapaan kuin esimerkiksi koodaukseen on olemassa omia tarkoitusta varten tehtyjä editoreja (esim. Visual Studio Code).</p>
 <p>1. MaweJS on ikään kuin Notepad, jossa tekstiä voi pilkkoa osiin, ja osia pystyy liikuttelemaan ja ryhmittelemään.</p>
 <p>2. MaweJS:ssä on mahdollista liittää tekstiin metatietoa (kommentteja, kuvauksia yms), joka ei tule mukaan vedokseen, vaikka saattaa ohjata vedoksen muodostamista.</p>
 <br/>
@@ -113,7 +113,8 @@ STORY: Ohjeet
 <act name="Tutoriaali">
 <chapter name="Tutoriaali" numbered="true">
 <scene name="Huomautus!">
-<p>Huomaathan, että tämä ohjedokumentti on muokattavissa. Lukiessasi voit kokeilla erilaisia asioita, ja palauttaa dokumentin alkuperäiseen muotoonsa.</p>
+<p>Huomaathan, että tämä ohjedokumentti on muokattavissa. Lukiessasi voit kokeilla erilaisia asioita, ja palauttaa dokumentin alkuperäiseen muotoonsa. Kokeile vaikka kirjoittaa jotain tähän jatkoksi:</p>
+<p>Kirjoita tähän jotain --&gt;</p>
 </scene>
 <scene name="Terminologiaa">
 <p><b>KOHTAUS:</b> Kohtaus (scene) on tarinoiden perusrakennuspalikka. Tavallisesti kohtaus määritellään niin, että se on pienin jakamaton yksikkö tekstiä. Se tarkoittaa sitä, että jos kohtauksen jakaa vaikkapa keskeltä puoliksi ja hajottaa erilleen, niin nuo yksittäiset osat eivät enää ole kokonaan ymmärrettävissä. Kohtauksen sisällä oleva teksti liikkuu aina yhdessä.</p>
@@ -134,8 +135,8 @@ STORY: Ohjeet
 <br/>
 </scene>
 <scene name="Käyttöliittymän perusteet">
-<p>&lt;-- Vasemmalla rungon indeksi.</p>
-<p>Oikealla muistion indeksi --&gt;</p>
+<p>&lt;-- Vasemmalla rungon (body) indeksi.</p>
+<p>Oikealla muistion (notes) indeksi --&gt;</p>
 <br/>
 <p><b>Kokeile itse:</b> Klikkaile indekseistä näytöksiä, lukuja, kohtauksia ja kirjamerkkejä.</p>
 <br/>
@@ -155,7 +156,7 @@ STORY: Ohjeet
 </scene>
 <scene name="--> Tämä on kohtauksen jakaja, ei otsikko! <---">
 <p>Toisin kuin tavallisessa strukturoimattomassa editorissa - Googledocs, Microsoft Word, LibreOffice - MaweJS:ssä ei suoranaisesti anneta tekstille tyyliä. Kursiivia ja vahvennusta lukuunottamatta MaweJS toimisi ihan hyvin pelkällä kirjoituskonefontilla.</p>
-<p>Tekstiä osasiin pilkkovat kohtausten, lukujen ja näytösten jakajat (break) ovat siis vain jakajia. Niihin voi ja kannattaa kirjoittaa itselleen jotain kuvaavaa, mutta tämä kuvaava teksti on pääasiassa vain sinulle kirjoittajana.</p>
+<p>Tekstiä osasiin pilkkovat kohtausten, lukujen ja näytösten jakajat (break) ovat siis vain jakajia. Niitä ei kannata erikseen tyylitellä, koska tyyli joka tapauksessa määräytyy vasta eksporttauksessa. Niihin voi ja kannattaa kirjoittaa itselleen jotain kuvaavaa, mutta tämä kuvaava teksti on pääasiassa vain sinulle kirjoittajana.</p>
 <p>Poikkeuksena on se, että eksporttauksessa voi valita nk. nimetyt luvut tai näytökset. Tällöin jakajaan kirjoitettu nimi tulee myös vedokseen.</p>
 </scene>
 <scene name="Tekstin pilkkominen">
@@ -166,16 +167,14 @@ STORY: Ohjeet
 <missing>&lt;-- Kirjoita ## + välilyönti</missing>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum...</p>
 <br/>
-<p>Kohtausjaon saa takaisin tavalliseksi tekstiksi käyttämällä backspacea rivin alussa.</p>
-<br/>
-<p><b>Kokeile itse:</b></p>
+<p>Kohtausjaon saa takaisin tavalliseksi tekstiksi käyttämällä backspacea rivin alussa. <b>Kokeile itse:</b></p>
 </scene>
 <scene name="<-- Paina backspacea">
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum...</p>
 </scene>
 <scene name="Kohtaustyypit (v0.9.0)">
 <p>MaweJS:n versiossa 0.9.0 on uutena erilaiset kohtaustyypit. Näitä on kolme:</p>
-<p>1. Kohtaus: Tavallinen kohtaus, jossa on kerrottuna tarinaa.</p>
+<p>1. Kohtaus: Tavallinen kohtaus, jossa on kerrotaan tarinaa.</p>
 <p>2. Synopsis: Kuvauksen (synopsis) voi kirjoittaa omaan lohkoonsa. Synopsiksen voi eksportata erillään (valitse Export-näkymässä sisällön tyypiksi "synopsis").</p>
 <p>3. Kommentit: Kommenteista voi tehdä oman lohkonsa. Tämä voi olla hyödyllistä silloin, jos on kommentoitava jotain asiaa monisanaisemmin.</p>
 <br/>
@@ -235,7 +234,7 @@ STORY: Ohjeet
 <br/>
 </scene>
 <scene name="HUOM!">
-<p><b>HUOM!</b> Monet strukturoidut editorit kuten Scrivener ja Manuskript liittävät metadatan kohtaus- ja lukuelementteihin, eli kirjoitat kuvauksen tai kommentin <b>kohtaukselle. </b>MaweJS poikkeaa näistä perustavanlaatuisesti siksi, että pääasiassa liität huomautukset (annotations) tekstiin itseensä. Ne - kirjamerkit, kommentit, puuttuva teksti - eivät siis ole sidoksissa kohtaus- tai lukujakoon, vaan ne ovat elementtejä, jotka koskevat kirjoitettua tekstiä itseään. Niinpä ne säilyvät, vaikka muokkaisit kohtaus- ja lukujakoa.</p>
+<p>Monet strukturoidut editorit kuten Scrivener, yWriter ja Manuskript liittävät metadatan kohtaus- ja lukuelementteihin, eli kirjoitat kuvauksen tai kommentin <b>kohtaukselle</b> tai <b>luvulle</b>.<b> </b>MaweJS poikkeaa näistä perustavanlaatuisesti siksi, että pääasiassa liität huomautukset (annotations) tekstiin itseensä. Ne - kirjamerkit, kommentit, puuttuva teksti - eivät siis ole sidoksissa kohtaus- tai lukujakoon, vaan ne ovat elementtejä, jotka koskevat kirjoitettua tekstiä itseään. Niinpä ne säilyvät, vaikka muokkaisit kohtaus- ja lukujakoa.</p>
 </scene>
 <scene name="Esimerkkejä">
 <p>Esimerkkejä kirjamerkeistä:</p>
@@ -436,6 +435,6 @@ NOTES
 </ui>
 <history>
 <words date="2024-12-04" text="4687" missing="1046" chars="27422"/>
-<words date="2024-12-05" text="3488" missing="2194" chars="28997"/>
+<words date="2024-12-05" text="3513" missing="2194" chars="29203"/>
 </history>
 </story>
