@@ -267,6 +267,8 @@ STORY: Ohjeet
 <scene name="Sanamäärät">
 <p>MaweJS käyttää tekstin pituuden indikaattorina sanamääriä. Sivumäärä on riippuvainen tekstin asettelusta: fontista ja sen koosta, rivityksestä (line spacing), sivun koosta ja marginaaleista. Tästä syystä kirjoittajat käyttävät tekstin pituuden ilmaisemiseen usein sana- tai merkkimäärää.</p>
 <missing>HUOM! Puuttuva teksti lasketaan kokonaissanamäärään! Kommentteja ja tiivistelmiä (synopsis) ei lasketa.</missing>
+<p>Sana- vai merkkimäärä? Eri kielissä sanan keskimääräinen pituus vaihtelee. Esimerkiksi suomenkielisessä tekstissä sanojen pituus on keskimäärin isompi kuin englanninkielisessä: siksi esimerkiksi NaNoWriMossa englanninkieliselle tekstille tavoitesanamäärä on 50,000 sanaa, mutta vastaava on suomenkieliselle tekstille noin 30,000 sanaa. Merkkimääriltään tarinat ovat silti melko samanmittaisia.</p>
+<p>Tästä syystä joku voisi ajatella, että merkkimäärä on parempi mittari pituudelle. Mutta tämä riippuu merkistöstä. Esimerkiksi japaninkielinen teksti on merkkimääriltään huomattavasti lyhyempi kuin länsimainen, vaikka sanamäärältään voi olla vastaava.</p>
 <br/>
 <p>Indeksistä on valittavissa erilaisia tapoja näyttää sanamäärät:</p>
 <p><b>OFF:</b> Ei sanamääriä.</p>
@@ -434,6 +436,6 @@ NOTES
 </ui>
 <history>
 <words date="2024-12-04" text="4687" missing="1046" chars="27422"/>
-<words date="2024-12-05" text="3415" missing="2194" chars="28354"/>
+<words date="2024-12-05" text="3488" missing="2194" chars="28997"/>
 </history>
 </story>
