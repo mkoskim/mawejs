@@ -20,13 +20,13 @@ In short, MaweJS is externally unstructured editor (like Notepad, Word or Google
 
 ## Known Issues
 
-In newer Ubuntus you may encounter errors due to changed permissions. First, if you want to try AppImage, you may need to run it without sandboxing:
+In newer Ubuntus you may encounter errors due to changed permissions. First, you may need to run AppImage without sandboxing:
 
 ```
 $ mawejs-0.7.0.Linux.amd.AppImage --no-sandbox
 ```
 
-In newer Ubuntus, if you run the sources, you may need to set SUID bit on. There is now npm run target to do that:
+In newer Ubuntus, if you run the sources, you may need to set SUID bit on. You need to do this every time ElectronJS is updated. There is now npm run target to do that:
 
 ```
 mawejs$ npm run fix
@@ -34,21 +34,16 @@ mawejs$ npm run fix
 
 It uses `sudo`, so it will ask your password. If you don't trust my target, you can do it manually, too:
 
-
 ```
-mawejs$ npm i
 mawejs$ sudo chown root node_modules/electron/dist/chrome-sandbox
 mawejs$ sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
-mawejs$ npm run dev
 ```
-
-You need to do this every time ElectronJS is updated.
 
 ## Status
 
-Check out discussions page for status:
+Check out discussions page for status: https://github.com/mkoskim/mawejs/discussions/88
 
-https://github.com/mkoskim/mawejs/discussions/88
+**Dec 5, 2024:** There are now three types of scenes: regular scenes, synopsis and notes. It is now possible to export synopsis (just synopsis blocks). It is now possible to give target word counts for acts, chapters and scenes.
 
 **Oct 13, 2024:** Added "acts", "chapter containers" as top-most elements.
 
