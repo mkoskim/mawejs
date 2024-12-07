@@ -187,12 +187,12 @@ export class ChooseWordFormat extends React.PureComponent {
 export class FormatWords extends React.PureComponent {
 
   render() {
-    const {format, text, missing, cumulative, total} = this.props
+    const {format, text, missing, padding, cumulative, total} = this.props
     const target = text + missing
 
     switch(format) {
-      case "numbers": return this.number(target, text, missing)
-      case "compact": return this.compact(target, text, missing)
+      case "numbers": return this.number(target, text, missing, padding)
+      case "compact": return this.compact(target, text, missing, padding)
       case "percent": return this.percent(cumulative, total, text, missing)
       case "cumulative": return this.cumulative(cumulative, total, text, missing)
       default: break;
@@ -205,20 +205,23 @@ export class FormatWords extends React.PureComponent {
     halfway:  {color: "red"},
     almost:   {color: "darkorange"},
     complete: {}, //"#59F"},
+    padded:   {color: "magenta"},
   }
 
-  getStyle(text, missing) {
+  getStyle(text, missing, padding) {
     const styles = this.constructor.styles;
     const target = text + missing
 
+    if(padding) return styles.padded;
     if(!missing) return styles.complete
     if(text/target > 0.85) return styles.almost
     //if(text/target > 0.7) return styles.halfway
     return styles.missing
   }
 
-  number(target, text, missing) {
+  number(target, text, missing, padding) {
     if(!target) return "-";
+    const totstyle = this.getStyle(text, undefined, padding)
     const style = this.getStyle(text, missing)
 
     return <>
@@ -226,14 +229,14 @@ export class FormatWords extends React.PureComponent {
         ? <><span style={style}>-{missing}</span>&nbsp;/&nbsp;</>
         : <Icon.Starred sx={{...style, color: "#59F", marginRight: "4pt", fontSize: 14}}/>
       }
-      <span>{target}</span>
+      <span style={totstyle}>{target}</span>
       {/*<span style={{...style, display: "inline-block", width: "1cm"}}>{Number(100.0 * text / target).toFixed(0)}%</span>*/}
     </>
   }
 
-  compact(target, text, missing) {
+  compact(target, text, missing, padding) {
     if(!target) return "-";
-    const style = this.getStyle(text, missing)
+    const style = this.getStyle(text, missing, padding)
 
     return <span style={style}>{target}</span>
   }

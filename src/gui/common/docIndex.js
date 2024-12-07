@@ -83,6 +83,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
       format={wcFormat}
       text={words?.text}
       missing={words?.missing}
+      padding={words?.padding}
       cumulative={cumulative && id in cumulative && cumulative[id]}
       total={total}
     />,
