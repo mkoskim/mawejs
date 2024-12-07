@@ -83,6 +83,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
       format={wcFormat}
       text={words?.text}
       missing={words?.missing}
+      padding={words?.padding}
       cumulative={cumulative && id in cumulative && cumulative[id]}
       total={total}
     />,
@@ -349,8 +350,8 @@ class IndexItem extends React.PureComponent {
     "act": "Act",
     "chapter": "Chapter",
     "scene": "Scene",
-    "synopsis": "Scene",
-    "notes": "Scene",
+    "synopsis": "Scene Synopsis",
+    "notes": "Scene Notes",
 
     "bookmark": "Bookmark",
     "missing": "Bookmark",
@@ -380,7 +381,7 @@ class IndexItem extends React.PureComponent {
     return <ScrollRef current={current} id={id} refCurrent={refCurrent}>
       <HBox className={addClass(className, "Entry", typeClass, numClass, foldClass)} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
-      <ItemLabel name={ItemName(type, name)}/>
+      <ItemLabel type={type} name={name}/>
       {/*<ItemLabel name={id}/>*/}
       {wcFormat && <><Filler/><span className="WordCount">{wcFormat(id, words)}</span></>}
       </HBox>
@@ -398,8 +399,8 @@ function ScrollRef({current, id, refCurrent, children}) {
 
 function ItemName(type, name) {
   switch(type) {
-    case "synopsis": return "Synopsis" + (name ? `: ${name}` : "")
-    case "notes":    return "Notes" + (name ? `: ${name}` : "")
+    case "synopsis": return (name?.length) ? name : "Synopsis" // "Synopsis" + (name ? `: ${name}` : "")
+    case "notes":    return (name?.length) ? name : "Notes" // return "Notes" + (name ? `: ${name}` : "")
     default: break;
   }
   return name ? name : "<Unnamed>"
@@ -412,6 +413,8 @@ class ItemIcon extends React.PureComponent {
       case "bookmark":
       case "missing":
       case "fill":
+      //case "synopsis":
+      //case "notes":
       case "comment":
       case "tags":
         return <span className={addClass("Box", type)} />
@@ -422,7 +425,7 @@ class ItemIcon extends React.PureComponent {
 
 class ItemLabel extends React.PureComponent {
   render() {
-    const {name} = this.props
-    return <span className="Name">{name}</span>
+    const {type, name} = this.props
+    return <span className="Name">{ItemName(type, name)}</span>
   }
 }

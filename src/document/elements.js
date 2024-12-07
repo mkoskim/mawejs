@@ -80,8 +80,8 @@ export const paragraphTypes = {
   "hact":      {name: "Act",      markup: "**", shortcut: "Ctrl-Alt-1", eol: "p", bk: "p",},
   "hchapter":  {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2", eol: "p", bk: "p",},
   "hscene":    {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3", eol: "p", bk: "p",},
-  "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S", eol: "p", bk: "hscene",},
-  "hnotes":    {name: "Notes",    markup: "%%", shortcut: "Ctrl-Alt-N", eol: "p", bk: "hscene",},
+  "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S", eol: "p", bk: "p",},
+  "hnotes":    {name: "Notes",    markup: "%%", shortcut: "Ctrl-Alt-N", eol: "p", bk: "p",},
 
   "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C",           bk: "p", reset: "p" },
   "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M",           bk: "p", reset: "p" },
