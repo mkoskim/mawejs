@@ -399,8 +399,8 @@ function ScrollRef({current, id, refCurrent, children}) {
 
 function ItemName(type, name) {
   switch(type) {
-    case "synopsis": return name ?? "Synopsis" // "Synopsis" + (name ? `: ${name}` : "")
-    case "notes":    return name ?? "Notes" // return "Notes" + (name ? `: ${name}` : "")
+    case "synopsis": return (name?.length) ? name : "Synopsis" // "Synopsis" + (name ? `: ${name}` : "")
+    case "notes":    return (name?.length) ? name : "Notes" // return "Notes" + (name ? `: ${name}` : "")
     default: break;
   }
   return name ? name : "<Unnamed>"
