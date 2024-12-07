@@ -31,17 +31,41 @@
 
 /* ---------------------------------------------------------------------------- */
 
-/*
-.TOC div.Chapter, .TOC div.Scene {
-  background: #F5F7F9;
-}
-*/
-
-.TOC div.Scene:hover {
-  background-color: #DEF;
+.TOC .Entry {
+  margin: 0;
+  cursor: default;
+  align-items: center;
+  padding: 2px;
+  /*
+  padding-left: 6pt;
+  padding-right: 4pt;
+  padding-bottom: 2pt;
+  padding-left: 16px;
+  */
 }
 
 /* ---------------------------------------------------------------------------- */
+/* Entry names */
+
+.TOC .Entry .Name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------------------------------------------------------------------------- */
+
+.TOC .Current {
+  background-color: rgb(210, 230, 250);
+}
+
+.TOC .Entry.Folded {
+  opacity: 33%;
+}
+
+.TOC .Entry:hover {
+  background-color: lightgrey !important;
+}
 
 .TOC .Entry.Section {
   padding: 6px;
@@ -120,6 +144,12 @@
 
 /* ---------------------------------------------------------------------------- */
 
+/*
+.TOC div.Chapter, .TOC div.Scene {
+  background: #F5F7F9;
+}
+*/
+
 .TOC div.Scene {
   /*
   padding-left: 0.5cm !important;
@@ -129,6 +159,10 @@
   margin: 3pt;
   margin-left: 16pt;
   */
+}
+
+.TOC div.Scene:hover {
+  background-color: #DEF;
 }
 
 .TOC div.Scene .Separator {
@@ -154,6 +188,36 @@
 */
 }
 
+/* ---------------------------------------------------------------------------- */
+/* Scene content types */
+
+.TOC .Entry.Scene.Synopsis .Name {
+  background: rgb(230, 230, 80);
+  border: 1px solid grey;
+  border-radius: 6pt;
+  padding: 0pt 6pt 0pt 6pt;
+  font-size: 11pt;
+  /*
+  content: "Synopsis";
+  margin-right: 4pt;
+  */
+}
+
+.TOC .Entry.Scene.Notes .Name {
+  background: rgb(120, 230, 120);
+  border: 1px solid grey;
+  border-radius: 6pt;
+  padding: 0pt 6pt 0pt 6pt;
+  font-size: 11pt;
+  /*
+  font-size: 10pt;
+  content: "Synopsis";
+  margin-right: 4pt;
+  */
+}
+
+/* ---------------------------------------------------------------------------- */
+
 .TOC .Entry.Bookmark {
   padding-left: 0.5cm !important;
 }
@@ -165,37 +229,7 @@
 }
 
 /* ---------------------------------------------------------------------------- */
-
-.TOC .Entry {
-  margin: 0;
-  cursor: default;
-  align-items: center;
-  padding: 2px;
-  /*
-  padding-left: 6pt;
-  padding-right: 4pt;
-  padding-bottom: 2pt;
-  padding-left: 16px;
-  */
-}
-
-.TOC .Current {
-  background-color: rgb(210, 230, 250);
-}
-
-.TOC .Entry.Folded {
-  opacity: 33%;
-}
-
-.TOC .Entry:hover {
-  background-color: lightgrey !important;
-}
-
-.TOC .Entry .Name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+/* Entry small boxes */
 
 .TOC .Entry .Box {
   min-height: 7pt;
@@ -203,9 +237,9 @@
   min-width: 7pt;
   max-width: 7pt;
   border: 1px solid grey;
-  margin-left: 0.5cm;
   margin-right: 6pt;
   /*
+  margin-left: 0.5cm;
   margin-left: 8pt;
   border-radius: 4pt;
   */
