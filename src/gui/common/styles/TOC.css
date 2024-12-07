@@ -192,10 +192,10 @@
 /* Scene content types */
 
 .TOC .Entry.Scene.Synopsis .Name {
-  background: rgb(230, 230, 80);
+  background: rgb(240, 240, 80);
   border: 1px solid grey;
-  border-radius: 6pt;
-  padding: 0pt 6pt 0pt 6pt;
+  border-radius: 3pt;
+  padding: 0pt 3pt 0pt 3pt;
   font-size: 11pt;
   /*
   content: "Synopsis";
@@ -204,10 +204,10 @@
 }
 
 .TOC .Entry.Scene.Notes .Name {
-  background: rgb(120, 230, 120);
+  background: rgb(100, 230, 100);
   border: 1px solid grey;
-  border-radius: 6pt;
-  padding: 0pt 6pt 0pt 6pt;
+  border-radius: 3pt;
+  padding: 0pt 3pt 0pt 3pt;
   font-size: 11pt;
   /*
   font-size: 10pt;
