@@ -26,7 +26,7 @@ import {
   Label,
 } from "../common/factory";
 
-import { elemName, getSuffix, nanoid, filterCtrlElems } from "../../document/util";
+import { elemName, getSuffix, filterCtrlElems } from "../../document/util";
 import {
   EditHead, SectionWordInfo,
 } from "../common/components";
