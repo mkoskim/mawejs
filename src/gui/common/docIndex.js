@@ -25,28 +25,13 @@ import {FormatWords} from "./components";
 import {elemAsText, elemName} from "../../document";
 import {elemNumbered, nodeIsCtrl, wcCumulative} from "../../document/util";
 import { nodeIsContainer } from "../../document/elements";
+import { IDappend } from "../editor/slateDnD";
 
 //*****************************************************************************
 //
 // Helpers
 //
 //*****************************************************************************
-
-export function IDfromPath(sectID, path) {
-  return sectID + path.join(".")
-}
-
-export function IDappend(ID, index) {
-  return [ID, index].join(".")
-}
-
-export function IDtoPath(ID) {
-  const [sectID, ...path] = ID.split(".")
-  return {
-    sectID,
-    path: path.map(p => parseInt(p)),
-  }
-}
 
 //-----------------------------------------------------------------------------
 
@@ -420,8 +405,7 @@ class IndexItem extends React.PureComponent {
     return <ScrollRef current={current} id={id} refCurrent={refCurrent}>
       <HBox className={addClass(className, "Entry", typeClass, numClass, foldClass)} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
-      <ItemLabel type={type} name={id}/>
-      {/*<ItemLabel name={id}/>*/}
+      <ItemLabel type={type} name={name}/>
       {wcFormat && <><Filler/><span className="WordCount">{wcFormat(id, words)}</span></>}
       </HBox>
     </ScrollRef>

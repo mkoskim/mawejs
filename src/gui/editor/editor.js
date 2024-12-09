@@ -36,7 +36,7 @@ import {
   FoldButtons,
 } from "./slateEditor"
 
-import {DocIndex, IDtoPath} from "../common/docIndex"
+import {DocIndex} from "../common/docIndex"
 import {WordTable} from "./wordTable"
 import {TagTable} from "./tagTable"
 
@@ -56,7 +56,8 @@ import {
 
 import { wcElem } from "../../document/util";
 import { elemFind } from "../../document/xmljs/tree";
-import {dndDrop, elemIsBlock, focusByPath} from "./slateHelpers";
+import {elemIsBlock, focusByPath} from "./slateHelpers";
+import { IDtoPath, dndDrop} from "./slateDnD"
 
 //*****************************************************************************
 //
@@ -136,8 +137,10 @@ export function saveEditorSettings(settings) {
 export function getFocusTo(doc) { return doc.ui.editor.focusTo.id; }
 export function setFocusTo(updateDoc, id) {
   updateDoc(doc => {
-    doc.ui.view.selected  = "editor"
-    doc.ui.editor.focusTo = id
+    doc.ui.view.selected = "editor"
+    const {sectID, path} = IDtoPath(id)
+    doc.ui.editor.active = sectID
+    doc.ui.editor.focusTo = path
     console.log("setFocusTo:", id)
   })
 }
@@ -227,16 +230,7 @@ export function SingleEditView({doc, updateDoc}) {
   // Section selection + focusing
   //---------------------------------------------------------------------------
 
-  const {focusTo, active} = doc.ui.editor
-
-  /*
-  const getSectIDByElemID = useCallback(elemID => {
-    if(!elemID) return undefined
-    if(hasElem(bodyeditor, elemID)) return "body"
-    if(hasElem(noteeditor, elemID)) return "notes"
-    return undefined
-  }, [bodyeditor, noteeditor])
-  */
+  const {active, focusTo} = doc.ui.editor
 
   const getEditorBySectID = useCallback(sectID => {
     switch(sectID) {
@@ -250,19 +244,18 @@ export function SingleEditView({doc, updateDoc}) {
   }, [getEditorBySectID, active])
 
   const setActive = useCallback(id => {
-    //const {sectID, path} = IDtoPath(id)
     //console.log("setActive:", sectID, path)
     setFocusTo(updateDoc, id)
   }, [updateDoc])
 
   useEffect(() => {
-    console.log("Focus to:", focusTo)
+    //console.log("Focus to:", focusTo)
 
     if(focusTo) {
-      const {sectID, path} = IDtoPath(focusTo)
-      console.log("Focus path", path)
-      const editor = getEditorBySectID(sectID)
-      focusByPath(editor, path)
+      //const {sectID, path} = IDtoPath(focusTo)
+      console.log("Focus path", focusTo)
+      const editor = getEditorBySectID(active)
+      focusByPath(editor, focusTo)
     }
   }, [focusTo, getActiveEdit])
 
@@ -406,17 +399,20 @@ export function SingleEditView({doc, updateDoc}) {
 
     //console.log(type, source, "-->", destination)
 
-    /*
     switch(type) {
       case "chapter":
       case "scene": {
+        const {sectID: srcSectID, path: srcEditID} = IDtoPath(draggableId)
+        const {sectID: dstSectID, path: dstEditID} = IDtoPath(destination.droppableId)
+        /*
         const srcEditID = getSectIDByElemID(source.droppableId)
         const dstEditID = getSectIDByElemID(destination.droppableId)
-        const srcEdit = getEditorBySectID(srcEditID)
-        const dstEdit = getEditorBySectID(dstEditID)
+        */
+        const srcEdit = getEditorBySectID(srcSectID)
+        const dstEdit = getEditorBySectID(dstSectID)
 
-        dndDrop(srcEdit, draggableId, dstEdit, destination.droppableId, destination.index)
-        setActive(dstEditID, draggableId)
+        dndDrop(srcEdit, srcEditID, dstEdit, dstEditID, destination.index)
+        //setActive(dstEditID, draggableId)
         break;
       }
 
@@ -424,7 +420,6 @@ export function SingleEditView({doc, updateDoc}) {
         console.log("Unknown draggable type:", type, result)
         break;
     }
-    */
   }
 }
 
