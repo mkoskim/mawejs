@@ -36,7 +36,7 @@ import {
   FoldButtons,
 } from "./slateEditor"
 
-import {DocIndex} from "../common/docIndex"
+import {DocIndex, IDtoPath} from "../common/docIndex"
 import {WordTable} from "./wordTable"
 import {TagTable} from "./tagTable"
 
@@ -56,7 +56,7 @@ import {
 
 import { wcElem } from "../../document/util";
 import { elemFind } from "../../document/xmljs/tree";
-import {dndDrop, elemIsBlock} from "./slateHelpers";
+import {dndDrop, elemIsBlock, focusByPath} from "./slateHelpers";
 
 //*****************************************************************************
 //
@@ -88,7 +88,7 @@ export function loadEditorSettings(settings) {
 
   return {
     active: "body",
-    focusTo: {id: undefined},
+    focusTo: undefined,
     body: {
       indexed: ["act", "chapter", "scene", "bookmark"],
       words: "numbers",
@@ -134,12 +134,11 @@ export function saveEditorSettings(settings) {
 //-----------------------------------------------------------------------------
 
 export function getFocusTo(doc) { return doc.ui.editor.focusTo.id; }
-export function setFocusTo(updateDoc, sectID, elemID) {
+export function setFocusTo(updateDoc, id) {
   updateDoc(doc => {
     doc.ui.view.selected  = "editor"
-    doc.ui.editor.focusTo = {id: elemID}
-    doc.ui.editor.active = sectID
-    console.log("setFocusTo:", sectID, elemID)
+    doc.ui.editor.focusTo = id
+    console.log("setFocusTo:", id)
   })
 }
 
@@ -250,17 +249,20 @@ export function SingleEditView({doc, updateDoc}) {
     return getEditorBySectID(active)
   }, [getEditorBySectID, active])
 
-  const setActive = useCallback((sectID, elemID) => {
-    setFocusTo(updateDoc, sectID, elemID)
+  const setActive = useCallback(id => {
+    //const {sectID, path} = IDtoPath(id)
+    //console.log("setActive:", sectID, path)
+    setFocusTo(updateDoc, id)
   }, [updateDoc])
 
   useEffect(() => {
-    const {id} = focusTo
-    const editor = getActiveEdit()
+    console.log("Focus to:", focusTo)
 
-    console.log("Focus to:", id)
-    if(id && editor) {
-      //focusByID(editor, id)
+    if(focusTo) {
+      const {sectID, path} = IDtoPath(focusTo)
+      console.log("Focus path", path)
+      const editor = getEditorBySectID(sectID)
+      focusByPath(editor, path)
     }
   }, [focusTo, getActiveEdit])
 

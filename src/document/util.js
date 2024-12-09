@@ -78,10 +78,14 @@ export function createDateStamp(date) {
 
 //-----------------------------------------------------------------------------
 
+export function nodeIsCtrl(elem) {
+  return nodeIsBreak(elem)
+}
+
 //*
 export function filterCtrlElems(blocks) {
   //const ctrltypes = ["hact", "hchapter", "hscene", "hsynopsis", "hnotes"]
-  return blocks.filter(block => !nodeIsBreak(block))
+  return blocks.filter(elem => !nodeIsCtrl(elem))
 }
 /**/
 
