@@ -25,7 +25,7 @@ import {
 //-----------------------------------------------------------------------------
 
 export function IDfromPath(sectID, path) {
-  return sectID + path.join(".")
+  return [sectID, ...path].join(".")
 }
 
 export function IDappend(ID, index) {
@@ -43,17 +43,14 @@ export function IDtoPath(ID) {
 //-----------------------------------------------------------------------------
 // Drag'n'drop pop and push
 
-export function dndDrop(srcEdit, srcId, dstEdit, dstId, dstIndex) {
-  console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
+export function dndDrop(srcEdit, srcPath, dstEdit, dstPath, dstIndex) {
+  //console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
 
-  const node = dndElemPop(srcEdit, srcId)
-  dndElemPushTo(dstEdit, node, dstId, dstIndex)
+  const node = dndElemPop(srcEdit, srcPath)
+  return dndElemPushTo(dstEdit, node, dstPath, dstIndex)
 }
 
 function dndElemPop(editor, path) {
-
-  //const match = elemByID(editor, id)
-  //if(!match) return
 
   const [node] = Editor.node(editor, path)
 
@@ -76,13 +73,13 @@ function dndElemPop(editor, path) {
 }
 
 function dndElemPushTo(editor, node, path, index) {
-  console.log("Push", node, path, index)
+  //console.log("Push", node, path, index)
 
   if(!node) return
 
   const [container] = Editor.node(editor, path)
 
-  console.log("Container:", container)
+  //console.log("Container:", container)
 
   //---------------------------------------------------------------------------
   // Check if container has head element. If so, add +1 to index
@@ -94,7 +91,6 @@ function dndElemPushTo(editor, node, path, index) {
   }
 
   const childindex = getChildIndex(container)
-  //const childindex = index
   const childpath = [...path, childindex]
 
   //---------------------------------------------------------------------------
@@ -119,5 +115,6 @@ function dndElemPushTo(editor, node, path, index) {
   //console.log("Index at:", [...ppath, index])
   //console.log("Insert at:", childpath)
   Transforms.insertNodes(editor, node, {at: childpath})
+  return childpath
 }
 

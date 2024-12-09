@@ -57,7 +57,7 @@ import {
 import { wcElem } from "../../document/util";
 import { elemFind } from "../../document/xmljs/tree";
 import {elemIsBlock, focusByPath} from "./slateHelpers";
-import { IDtoPath, dndDrop} from "./slateDnD"
+import { IDfromPath, IDtoPath, dndDrop} from "./slateDnD"
 
 //*****************************************************************************
 //
@@ -386,9 +386,6 @@ export function SingleEditView({doc, updateDoc}) {
 
     console.log("onDragEnd:", result)
 
-    //console.log("DnD disabled")
-    //return
-
     const {type, draggableId, source, destination} = result;
 
     if(!destination) return;
@@ -402,17 +399,13 @@ export function SingleEditView({doc, updateDoc}) {
     switch(type) {
       case "chapter":
       case "scene": {
-        const {sectID: srcSectID, path: srcEditID} = IDtoPath(draggableId)
-        const {sectID: dstSectID, path: dstEditID} = IDtoPath(destination.droppableId)
-        /*
-        const srcEditID = getSectIDByElemID(source.droppableId)
-        const dstEditID = getSectIDByElemID(destination.droppableId)
-        */
+        const {sectID: srcSectID, path: srcPath} = IDtoPath(draggableId)
+        const {sectID: dstSectID, path: dstPath} = IDtoPath(destination.droppableId)
         const srcEdit = getEditorBySectID(srcSectID)
         const dstEdit = getEditorBySectID(dstSectID)
 
-        dndDrop(srcEdit, srcEditID, dstEdit, dstEditID, destination.index)
-        //setActive(dstEditID, draggableId)
+        const dropped = dndDrop(srcEdit, srcPath, dstEdit, dstPath, destination.index)
+        setActive(IDfromPath(dstSectID, dropped))
         break;
       }
 
