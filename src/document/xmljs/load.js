@@ -177,7 +177,6 @@ function parseAct(act, index) {
   const folded = foldedStr === "true"
   const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
     "hact",
-    nanoid(),
     name,
     true,
     target,
@@ -190,7 +189,6 @@ function parseAct(act, index) {
 
   return {
     type: "act",
-    id: nanoid(),
     name,
     target,
     folded,
@@ -214,7 +212,6 @@ function parseChapter(chapter, index) {
 
   const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
     "hchapter",
-    nanoid(),
     name,
     numbered,
     target,
@@ -227,7 +224,6 @@ function parseChapter(chapter, index) {
 
   return {
     type: "chapter",
-    id: nanoid(),
     name,
     numbered,
     target,
@@ -258,7 +254,6 @@ function parseScene(scene, index) {
 
   const header = (!index && !name && !folded && content == "scene") ? [] : [makeHeader(
     htype,
-    nanoid(),
     name,
     true,
     target,
@@ -272,7 +267,6 @@ function parseScene(scene, index) {
 
   return {
     type: "scene",
-    id: nanoid(),
     content,
     name,
     folded,
@@ -312,7 +306,6 @@ function parseParagraph(elem, index) {
 
   return {
     type: (name === "p" && !text) ? "br" : name,
-    id: nanoid(),
     children
   }
 }

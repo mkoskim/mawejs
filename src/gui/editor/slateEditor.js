@@ -20,7 +20,6 @@ import {
 
 import { withHistory } from "slate-history"
 import { addClass, IsKey, ListItemText, Separator } from '../common/factory';
-import { nanoid } from '../../util';
 import { wcElem, wcCompare, elemHeading, elemHeadParse, elemHeadAttrs} from '../../document/util';
 
 import {
@@ -37,8 +36,7 @@ import {
   text2Regexp, searchOffsets, searchPattern,
   isAstChange,
   searchFirst, searchForward, searchBackward,
-  focusByID, focusByPath,
-  hasElem,
+  focusByPath,
   elemIsBlock,
   toggleFold, foldAll, doFold,
 } from "./slateHelpers"
@@ -54,8 +52,7 @@ export {
   text2Regexp,
   isAstChange,
   searchFirst, searchForward, searchBackward,
-  focusByID, focusByPath,
-  hasElem,
+  focusByPath,
 }
 
 //-----------------------------------------------------------------------------
@@ -509,7 +506,7 @@ function onKeyDown(editor, event) {
       "Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, " +
       "fringilla."
     )
-    Transforms.insertNodes(editor, {type: "p", id: nanoid(), children: [{text: ""}]})
+    Transforms.insertNodes(editor, {type: "p", children: [{text: ""}]})
     return
   }
 }
@@ -526,7 +523,6 @@ export function getEditor() {
     createEditor,
     // Base editor
     withHistory,
-    withIDs,              // Autogenerate IDs
     withWordCount,        // Autogenerate word counts
     withBR,           // empty <p> -> <br>
     withFixNesting,       // Keep correct nesting: chapter -> scene -> paragraph
@@ -572,7 +568,6 @@ function withTextPaste(editor) {
       editor.insertText(first)
       editor.insertNodes(lines.map(line => ({
         type: line ? "p" : "br",
-        id: nanoid(),
         children: [{text: line}]
       })))
     })
@@ -665,7 +660,7 @@ function withMarkup(editor) {
         // If we hit enter at line, which has STYLEAFTER, split line and apply style
         Editor.withoutNormalizing(editor, () => {
           Transforms.splitNodes(editor, {always: true})
-          Transforms.setNodes(editor, {type: eol, id: nanoid()})
+          Transforms.setNodes(editor, {type: eol})
         })
         return
       }
@@ -711,94 +706,6 @@ function withMarkup(editor) {
   }
 
   return editor
-}
-
-//*****************************************************************************
-//
-// Ensure that indexable blocks have unique ID
-//
-//*****************************************************************************
-
-function withIDs(editor) {
-
-  const { normalizeNode } = editor;
-
-  //---------------------------------------------------------------------------
-  // Create lookup table for Node IDs:
-  // {
-  //    id: path,
-  //    ...
-  // }
-  //
-  //---------------------------------------------------------------------------
-
-  editor.idlookup = undefined
-
-  editor.normalizeNode = (entry)=> {
-    const [node, path] = entry
-
-    //-------------------------------------------------------------------------
-    // If lookup table is undefined, rebuild it
-    //-------------------------------------------------------------------------
-
-    if(Editor.isEditor(node)) {
-      //console.log(node.idLookup)
-      if(!editor.idlookup) Editor.withoutNormalizing(editor, () => {
-        editor.idlookup = buildLookup(editor)
-      })
-      return normalizeNode(entry)
-    }
-
-    if(!Element.isElement(node)) return normalizeNode(entry)
-    if(!editor.idlookup) return normalizeNode(entry)
-    //console.log(node)
-
-    //-------------------------------------------------------------------------
-    // Check that node id belongs to it in the table. If not, request rebuild.
-    //-------------------------------------------------------------------------
-
-    const {id} = node
-
-    if(!(id in editor.idlookup) || Path.compare(path, editor.idlookup[node.id]) !== 0) {
-      editor.idlookup = undefined
-    }
-    //console.log("Path/Node:", path, node)
-
-    return normalizeNode(entry)
-  }
-
-  return editor
-
-  //-------------------------------------------------------------------------
-  // Building ID table and fixing conflicting IDs
-  //-------------------------------------------------------------------------
-
-  function buildLookup(editor) {
-    console.log("Fix IDs")
-    const blocks = Editor.nodes(editor, {
-      at: [],
-      match: (node, path) => Element.isElement(node),
-    })
-
-    //console.log(Array.from(blocks))
-
-    const lookup = {}
-
-    for(const block of blocks) {
-      const [node, path] = block
-
-      if(!node.id || node.id in lookup) {
-        console.log("ID clash fixed:", node.id, path)
-        const id = nanoid()
-        Transforms.setNodes(editor, {id}, {at: path})
-        lookup[id] = path
-      }
-      else {
-        lookup[node.id] = path
-      }
-    }
-    return lookup
-  }
 }
 
 //*****************************************************************************

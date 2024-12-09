@@ -115,10 +115,9 @@ export function elemHeadAttrs(elem) {
   return ctrl;
 }
 
-export function makeHeader(type, id, name, numbered, target) {
+export function makeHeader(type, name, numbered, target) {
   return {
     type,
-    id,
     name,
     numbered,
     target,

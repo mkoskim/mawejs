@@ -15,7 +15,6 @@ import {
 } from 'slate'
 import { ReactEditor } from 'slate-react'
 
-import { nanoid } from 'nanoid';
 import { appBeep } from '../../system/host';
 import {elemHeading, elemTags} from '../../document/util';
 import { nodeTypes } from '../../document/elements';
@@ -76,31 +75,6 @@ export function isAstChange(editor) {
 
 //-----------------------------------------------------------------------------
 
-export function elemByID(editor, id) {
-  if(!id) return undefined
-
-  /*
-  if(editor.idlookup) {
-    const path = editor.idlookup[id]
-    const node = Editor.node(editor, path)
-    if(node?.id === id) return [node, path]
-  }
-  */
-
-  const match = Editor.nodes(editor, {
-    //at: { anchor: Editor.start(editor, []), focus: Editor.end(editor, [])},
-    at: [],
-    match: (n, p) => Editor.isBlock(editor, n) && n.id === id
-  }).next()
-
-  if(match.done) return undefined
-  return match.value
-}
-
-export function hasElem(editor, id) {
-  return !!elemByID(editor, id)
-}
-
 export function elemByTypes(editor, types, anchor, focus) {
   if(!anchor) anchor = Editor.start(editor, [])
   if(!focus) focus = Editor.end(editor, [])
@@ -128,10 +102,12 @@ export function elemsByRange(editor, anchor, focus) {
 export function dndDrop(srcEdit, srcId, dstEdit, dstId, dstIndex) {
   console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
 
-  const node = dndElemPop(srcEdit, srcId)
-  dndElemPushTo(dstEdit, node, dstId, dstIndex)
+  throw new Error("DnD disabled!")
+  //const node = dndElemPop(srcEdit, srcId)
+  //dndElemPushTo(dstEdit, node, dstId, dstIndex)
 }
 
+/*
 function dndElemPop(editor, id) {
 
   const match = elemByID(editor, id)
@@ -208,10 +184,12 @@ function dndElemPushTo(editor, block, id, index) {
   Transforms.insertNodes(editor, block, {at: childpath})
 
 }
+*/
 
 //-----------------------------------------------------------------------------
 // Focusing elements
 
+/*
 export function focusByID(editor, id) {
   const match = elemByID(editor, id)
 
@@ -223,6 +201,7 @@ export function focusByID(editor, id) {
     focusByPath(editor, path)
   }
 }
+*/
 
 export async function focusByPath(editor, path, collapse = true) {
   //console.log("FocusByPath", path)
@@ -330,7 +309,6 @@ export function doFold(editor, node, path, fold) {
       Transforms.insertNodes(editor,
         {
           type: nodeTypes[node.type].header,
-          id: nanoid(),
           children: [{text: ""}]
         },
         {at: path.concat([0])}

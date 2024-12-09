@@ -30,8 +30,6 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 import {
   getEditor, SlateEditable,
-  hasElem,
-  focusByPath, focusByID,
   searchFirst, searchForward, searchBackward,
   isAstChange,
   EditButtons,
@@ -232,12 +230,14 @@ export function SingleEditView({doc, updateDoc}) {
 
   const {focusTo, active} = doc.ui.editor
 
+  /*
   const getSectIDByElemID = useCallback(elemID => {
     if(!elemID) return undefined
     if(hasElem(bodyeditor, elemID)) return "body"
     if(hasElem(noteeditor, elemID)) return "notes"
     return undefined
   }, [bodyeditor, noteeditor])
+  */
 
   const getEditorBySectID = useCallback(sectID => {
     switch(sectID) {
@@ -260,7 +260,7 @@ export function SingleEditView({doc, updateDoc}) {
 
     console.log("Focus to:", id)
     if(id && editor) {
-      focusByID(editor, id)
+      //focusByID(editor, id)
     }
   }, [focusTo, getActiveEdit])
 
@@ -404,7 +404,7 @@ export function SingleEditView({doc, updateDoc}) {
 
     //console.log(type, source, "-->", destination)
 
-
+    /*
     switch(type) {
       case "chapter":
       case "scene": {
@@ -422,6 +422,7 @@ export function SingleEditView({doc, updateDoc}) {
         console.log("Unknown draggable type:", type, result)
         break;
     }
+    */
   }
 }
 

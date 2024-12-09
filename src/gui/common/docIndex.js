@@ -29,6 +29,8 @@ import { nodeIsContainer } from "../../document/elements";
 //-----------------------------------------------------------------------------
 
 function getCurrent(parents, include) {
+  return
+
   if(!parents) return
   const visible = parents
     .filter(e => nodeIsContainer(e))
@@ -103,7 +105,7 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
 
   return <VBox style={style} className="TOC">
     {section.acts.map((elem, index) => <ActItem
-      key={elem.id}
+      key={index}
       index={index}
       elem={elem}
       activeID={activeID}
@@ -185,7 +187,7 @@ class ChapterDropZone extends React.PureComponent {
       {...droppableProps}
     >
     {filterCtrlElems(chapters).map((elem, index) => <ChapterItem
-      key={elem.id}
+      key={index}
       index={index}
       elem={elem}
       include={include}
@@ -272,7 +274,7 @@ class SceneDropZone extends React.PureComponent {
       {...droppableProps}
     >
     {filterCtrlElems(scenes).map((elem, index) => <SceneItem
-      key={elem.id}
+      key={index}
       index={index}
       elem={elem}
       include={include}
@@ -328,8 +330,8 @@ class SceneItem extends React.PureComponent {
       current={current}
       refCurrent={refCurrent}
     />
-    {!elem.folded && bookmarks.map(elem => <IndexItem
-      key={elem.id}
+    {!elem.folded && bookmarks.map((elem, index) => <IndexItem
+      key={index}
       id={elem.id}
       type={elem.type}
       name={elemAsText(elem)}
@@ -392,7 +394,7 @@ class IndexItem extends React.PureComponent {
 function ScrollRef({current, id, refCurrent, children}) {
   if(current === id) {
     //console.log("Match:", current, id)
-    return <div className="Current" ref={refCurrent}>{children}</div>
+    //return <div className="Current" ref={refCurrent}>{children}</div>
   }
   return children
 }
