@@ -22,29 +22,44 @@ import {
 } from "./factory";
 
 import {FormatWords} from "./components";
-import {elemAsText, elemName, filterCtrlElems} from "../../document";
-import {elemNumbered, wcCumulative} from "../../document/util";
-import { nodeIsContainer } from "../../document/elements";
+import {elemAsText, elemName} from "../../document";
+import {elemNumbered, nodeIsCtrl, wcCumulative} from "../../document/util";
+import {IDappend, IDtoPath} from "../editor/slateDnD";
+
+//*****************************************************************************
+//
+// Helpers
+//
+//*****************************************************************************
 
 //-----------------------------------------------------------------------------
 
-function getCurrent(parents, include) {
-  if(!parents) return
-  const visible = parents
-    .filter(e => nodeIsContainer(e))
-    .filter(e => include.includes(e.type))
-  //console.log("Parents", parents, "Visible:", visible)
-  return visible[visible.length-1]
+function getAt(activeID, current) {
+  if(!current) return {}
+  const {sectID, path} = IDtoPath(current)
+  if(sectID !== activeID) return {}
+  return {
+    act: path[0],
+    chapter: path.length > 1 ? path[1] : undefined,
+    scene: path.length > 2 ? path[2] : undefined,
+  }
 }
 
-export function DocIndex({name, style, activeID, section, wcFormat, include, setActive, unfold, parents})
+//*****************************************************************************
+//
+// Document index
+//
+//*****************************************************************************
+
+export function DocIndex({style, activeID, section, wcFormat, include, setActive, unfold, current})
 {
   //---------------------------------------------------------------------------
-  // Blocks -> current
+  // Path to section
   //---------------------------------------------------------------------------
 
-  const current = getCurrent(parents, include)
-  //console.log(current)
+  const at = getAt(activeID, current)
+  //const current = getCurrent(parents, include)
+  //console.log(at)
 
   const refCurrent = useRef(null)
 
@@ -58,15 +73,15 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
 
   const onActivate = useCallback(id => {
     //console.log("Activate:", activeID, id)
-    if(setActive) setActive(activeID, id)
-  }, [activeID])
+    if(setActive) setActive(id)
+  }, [setActive])
 
   //---------------------------------------------------------------------------
   // Word counts
   //---------------------------------------------------------------------------
 
   const cumulative = useDeferredValue((["percent", "cumulative"].includes(wcFormat))
-    ? wcCumulative(section)
+    ? wcCumulative(section, activeID)
     : undefined
   )
 
@@ -103,15 +118,16 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
 
   return <VBox style={style} className="TOC">
     {section.acts.map((elem, index) => <ActItem
-      key={elem.id}
-      index={index}
+      key={index}
+      id={IDappend(activeID, index)}
       elem={elem}
-      activeID={activeID}
       wcFormat={wcFormatFunction}
       include={include}
       onActivate={onActivate}
       unfold={unfold}
-      current={current?.id}
+      atAct={at.act === index}
+      atChapter={at.act === index ? at.chapter : undefined}
+      atScene={at.act === index ? at.scene : undefined}
       refCurrent={refCurrent}
       skipActName={skipActName}
       />
@@ -125,14 +141,19 @@ export function DocIndex({name, style, activeID, section, wcFormat, include, set
 class ActItem extends React.PureComponent {
 
   render() {
-    const {skipActName, elem, wcFormat, activeID, include, onActivate, unfold, current, refCurrent} = this.props
+    const {skipActName, elem, wcFormat, id, include, onActivate, unfold, atAct, atChapter, atScene, refCurrent} = this.props
 
     const hasDropzone = (include.includes("chapter")) && (unfold || !elem.folded)
     //const hasDropzone = (unfold || !elem.folded)
 
+    const isCurrent = (
+      atAct &&
+      (!hasDropzone || atChapter === undefined || elem.children[atChapter].type === "hact")
+    )
+
     return <div>
       {!skipActName && <IndexItem
-        id={elem.id}
+        id={id}
         type={elem.type}
         name={elemName(elem)}
         words={elem.words}
@@ -140,18 +161,19 @@ class ActItem extends React.PureComponent {
         numbered={elemNumbered(elem)}
         wcFormat={wcFormat}
         onActivate={onActivate}
-        current={current}
+        isCurrent={isCurrent}
         refCurrent={refCurrent}
       />}
       {hasDropzone && <ChapterDropZone
-        id={elem.id}
+        id={id}
         folded={!unfold && elem.folded}
         chapters={elem.children}
         wcFormat={wcFormat}
         include={include}
         onActivate={onActivate}
         unfold={unfold}
-        current={current}
+        atChapter={atChapter}
+        atScene={atScene}
         refCurrent={refCurrent}
       />}
     </div>
@@ -175,7 +197,7 @@ class ChapterDropZone extends React.PureComponent {
   }
 
   DropZone(provided, snapshot) {
-    const {chapters, wcFormat, include, onActivate, unfold, current, refCurrent} = this.props
+    const {chapters, id, wcFormat, include, onActivate, unfold, atChapter, atScene, refCurrent} = this.props
     const {innerRef, droppableProps, placeholder} = provided
     const {isDraggingOver} = snapshot
 
@@ -184,15 +206,17 @@ class ChapterDropZone extends React.PureComponent {
       ref={innerRef}
       {...droppableProps}
     >
-    {filterCtrlElems(chapters).map((elem, index) => <ChapterItem
-      key={elem.id}
+    {chapters.map((elem, index) => !nodeIsCtrl(elem) && <ChapterItem
+      key={index}
+      id={id}
       index={index}
       elem={elem}
       include={include}
       wcFormat={wcFormat}
       onActivate={onActivate}
       unfold={unfold}
-      current={current}
+      atChapter={atChapter === index}
+      atScene={atChapter === index ? atScene : undefined}
       refCurrent={refCurrent}
       />)}
     {placeholder}
@@ -203,9 +227,9 @@ class ChapterDropZone extends React.PureComponent {
 class ChapterItem extends React.PureComponent {
 
   render() {
-    const {elem, index} = this.props
+    const {id, index} = this.props
     return <Draggable
-      draggableId={elem.id}
+      draggableId={IDappend(id, index)}
       index={index}
       type="chapter"
       >
@@ -214,10 +238,16 @@ class ChapterItem extends React.PureComponent {
   }
 
   Draggable(provided, snapshot) {
-    const {elem, include, wcFormat, onActivate, unfold, current, refCurrent} = this.props
+    const {elem, id, index, include, wcFormat, onActivate, unfold, atChapter, atScene, refCurrent} = this.props
     const {innerRef, draggableProps, dragHandleProps} = provided
 
+    const ID = IDappend(id, index)
     const hasDropzone = (include.includes("scene")) && (unfold || !elem.folded)
+
+    const isCurrent = (
+      atChapter &&
+      (!hasDropzone || atScene === undefined || elem.children[atScene].type === "hchapter")
+    )
 
     //console.log(include)
 
@@ -226,7 +256,7 @@ class ChapterItem extends React.PureComponent {
       {...draggableProps}
       >
       <IndexItem
-        id={elem.id}
+        id={ID}
         type={elem.type}
         name={elemName(elem)}
         words={elem.words}
@@ -234,17 +264,17 @@ class ChapterItem extends React.PureComponent {
         numbered={elemNumbered(elem)}
         wcFormat={wcFormat}
         onActivate={onActivate}
-        current={current}
+        isCurrent={isCurrent}
         refCurrent={refCurrent}
         {...dragHandleProps}
       />
       {hasDropzone && <SceneDropZone
-        id={elem.id}
+        id={ID}
         scenes={elem.children}
         include={include}
         wcFormat={wcFormat}
         onActivate={onActivate}
-        current={current}
+        atScene={atScene}
         refCurrent={refCurrent}
       />}
     </div>
@@ -262,7 +292,7 @@ class SceneDropZone extends React.PureComponent {
   }
 
   DropZone(provided, snapshot) {
-    const {scenes, include, wcFormat, onActivate, current, refCurrent} = this.props
+    const {scenes, id, include, wcFormat, onActivate, atScene, refCurrent} = this.props
     const {innerRef, droppableProps, placeholder} = provided
     const {isDraggingOver} = snapshot
 
@@ -271,14 +301,15 @@ class SceneDropZone extends React.PureComponent {
       ref={innerRef}
       {...droppableProps}
     >
-    {filterCtrlElems(scenes).map((elem, index) => <SceneItem
-      key={elem.id}
+    {scenes.map((elem, index) => !nodeIsCtrl(elem) && <SceneItem
+      key={index}
+      id={IDappend(id, index)}
       index={index}
       elem={elem}
       include={include}
       wcFormat={wcFormat}
       onActivate={onActivate}
-      current={current}
+      isCurrent={index === atScene}
       refCurrent={refCurrent}
       />)}
     {placeholder}
@@ -292,9 +323,9 @@ class SceneItem extends React.PureComponent {
 
   render() {
     //*
-    const {elem, index} = this.props
+    const {id, index} = this.props
     return <Draggable
-      draggableId={elem.id}
+      draggableId={id}
       index={index}
       type="scene"
     >
@@ -307,9 +338,11 @@ class SceneItem extends React.PureComponent {
 
   Draggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
-    const {elem, include, wcFormat, onActivate, current, refCurrent} = this.props
+    const {elem, id, include, wcFormat, onActivate, isCurrent, refCurrent} = this.props
 
-    const bookmarks = elem.children.filter(elem => include.includes(elem.type))
+    const bookmarks = elem.children
+      .map((elem, index) => [index, elem])
+      .filter(([index, elem]) => include.includes(elem.type))
 
     return <div
       className="VBox Scene"
@@ -318,24 +351,23 @@ class SceneItem extends React.PureComponent {
       {...dragHandleProps}
     >
     <IndexItem
-      id={elem.id}
+      id={id}
       type={elem.content}
       name={elemName(elem)}
       folded={elem.folded}
       words={elem.words}
       wcFormat={wcFormat}
       onActivate={onActivate}
-      current={current}
+      isCurrent={isCurrent}
       refCurrent={refCurrent}
     />
-    {!elem.folded && bookmarks.map(elem => <IndexItem
-      key={elem.id}
-      id={elem.id}
+    {!elem.folded && bookmarks.map(([index, elem]) => <IndexItem
+      key={index}
+      id={IDappend(id, index)}
       type={elem.type}
       name={elemAsText(elem)}
       wcFormat={wcFormat}
       onActivate={onActivate}
-      current={current}
     />)}
     </div>
   }
@@ -363,7 +395,7 @@ class IndexItem extends React.PureComponent {
   static numbered = ["act", "chapter"]
 
   render() {
-    const {className, refCurrent, id, type, name, folded, numbered, words, wcFormat, onActivate, current, ...rest} = this.props
+    const {className, isCurrent, refCurrent, id, type, name, folded, numbered, words, wcFormat, onActivate, ...rest} = this.props
 
     //console.log("Render IndexItem:", type, id, name)
     const typeClasses = this.constructor.typeClasses
@@ -378,19 +410,18 @@ class IndexItem extends React.PureComponent {
       return onActivate && onActivate(id)
     }
 
-    return <ScrollRef current={current} id={id} refCurrent={refCurrent}>
+    return <ScrollRef isCurrent={isCurrent} refCurrent={refCurrent}>
       <HBox className={addClass(className, "Entry", typeClass, numClass, foldClass)} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
       <ItemLabel type={type} name={name}/>
-      {/*<ItemLabel name={id}/>*/}
       {wcFormat && <><Filler/><span className="WordCount">{wcFormat(id, words)}</span></>}
       </HBox>
     </ScrollRef>
   }
 }
 
-function ScrollRef({current, id, refCurrent, children}) {
-  if(current === id) {
+function ScrollRef({isCurrent, refCurrent, children}) {
+  if(isCurrent) {
     //console.log("Match:", current, id)
     return <div className="Current" ref={refCurrent}>{children}</div>
   }

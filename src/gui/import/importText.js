@@ -19,7 +19,6 @@ import {
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
-import { nanoid } from "../../document/util";
 import { text2lines} from "./util"
 import { splitByLeadingElem } from '../../util';
 
@@ -128,7 +127,7 @@ function importText(content, settings) {
     //console.log(first, rest)
     const chapters = splitByLeadingElem(rest, isChapterBreak).filter(e => e.length)
     return {
-      type: "element", name: "act", id: nanoid(),
+      type: "element", name: "act",
       attributes: { name: first },
       elements: chapters.map(makeChapter)
     }
@@ -145,7 +144,7 @@ function importText(content, settings) {
     //console.log(first, rest)
     const scenes = splitByLeadingElem(rest, isSceneBreak).filter(e => e.length)
     return {
-      type: "element", name: "chapter", id: nanoid(),
+      type: "element", name: "chapter",
       attributes: { name: first },
       elements: scenes.map(makeScene)
     }
@@ -161,7 +160,7 @@ function importText(content, settings) {
     const {first, rest} = getContent(lines)
 
     return {
-      type: "element", name: "scene", id: nanoid(),
+      type: "element", name: "scene",
       attributes: { name: first },
       elements: rest.map(makeParagraph)
     }
@@ -175,7 +174,7 @@ function importText(content, settings) {
 
   function makeParagraph(line) {
     return {
-      type: "element", name: "p", id: nanoid(),
+      type: "element", name: "p",
       elements: [{type: "text", text: line}]
     }
   }

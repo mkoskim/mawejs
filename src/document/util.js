@@ -9,6 +9,7 @@
 import {isGzip, gzip, gunzip} from "../util/compress"
 import {uuid, nanoid} from "../util"
 import { nodeBreaks, nodeIsBreak, nodeTypes } from "./elements";
+import { IDfromPath } from "../gui/editor/slateDnD";
 
 export {uuid, nanoid}
 
@@ -78,10 +79,14 @@ export function createDateStamp(date) {
 
 //-----------------------------------------------------------------------------
 
+export function nodeIsCtrl(elem) {
+  return nodeIsBreak(elem)
+}
+
 //*
 export function filterCtrlElems(blocks) {
   //const ctrltypes = ["hact", "hchapter", "hscene", "hsynopsis", "hnotes"]
-  return blocks.filter(block => !nodeIsBreak(block))
+  return blocks.filter(elem => !nodeIsCtrl(elem))
 }
 /**/
 
@@ -115,10 +120,9 @@ export function elemHeadAttrs(elem) {
   return ctrl;
 }
 
-export function makeHeader(type, id, name, numbered, target) {
+export function makeHeader(type, name, numbered, target) {
   return {
     type,
-    id,
     name,
     numbered,
     target,
@@ -314,30 +318,24 @@ export function wcCompare(a, b) {
   )
 }
 
-export function wcCumulative(section) {
-  const flat = new Array()
-
-  for(const act of section.acts) {
-    flat.push(act)
-    for(const chapter of act.children) {
-      flat.push(chapter)
-      for(const scene of chapter.children) {
-        flat.push(scene)
-      }
-    }
-  }
-
+export function wcCumulative(section, sectID) {
   const cumulative = {}
   var summed = 0
 
-  for(const elem of flat) {
-    if(elem.type === "scene") {
-      summed += (elem.words?.text ?? 0) + (elem.words?.missing ?? 0)
+  for(const [p1, act] of section.acts.entries()) {
+    summed += (act.words?.padding ?? 0)
+    cumulative[IDfromPath(sectID, [p1])] = summed
+
+    for(const [p2, chapter] of act.children.entries()) {
+      summed += (chapter.words?.padding ?? 0)
+      cumulative[IDfromPath(sectID, [p1, p2])] = summed
+
+      for(const [p3, scene] of chapter.children.entries()) {
+        if(scene.content !== "scene") continue
+        summed += (scene.words?.text ?? 0) + (scene.words?.missing ?? 0)
+        cumulative[IDfromPath(sectID, [p1, p2, p3])] = summed
+      }
     }
-    else {
-      summed += (elem.words?.padding ?? 0)
-    }
-    cumulative[elem.id] = summed
   }
 
   return cumulative
