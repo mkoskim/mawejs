@@ -309,22 +309,22 @@
 
 .Sheet div.scene h6::before {
   counter-increment: scene;
-  margin-right: 8pt;
-  content: "##";
+  content: "## ";
 /*
+  margin-right: 8pt;
   content: counter(scene) ".";
 */
 }
 
 .Sheet div.synopsis h6::before {
-  content: "Synopsis: ";
+  content: ">> ";
 /*
   margin-right: 8pt;
 */
 }
 
 .Sheet div.notes h6::before {
-  content: "Notes: ";
+  content: "%% ";
 /*
   margin-right: 8pt;
 */

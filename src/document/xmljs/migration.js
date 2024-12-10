@@ -126,12 +126,12 @@ function v2_to_v3(story) {
 
   const body = {
     ...bodyElem,
-    elements: bodyElem.elements.map(elem => ({...elem, name: "chapter"}))
+    elements: bodyElem.elements?.map(elem => ({...elem, name: "chapter"}))
   }
 
   const notes = {
     ...notesElem,
-    elements: notesElem.elements.map(elem => ({...elem, name: "chapter"}))
+    elements: notesElem.elements?.map(elem => ({...elem, name: "chapter"}))
   }
 
   return {
@@ -300,21 +300,21 @@ function v4_to_v5(story) {
   function fixAct(elem) {
     return {
       ...elem,
-      elements: elem.elements.map(fixChapter)
+      elements: elem.elements?.map(fixChapter)
     }
   }
 
   function fixChapter(elem) {
     return {
       ...elem,
-      elements: elem.elements.map(fixScene)
+      elements: elem.elements?.map(fixScene)
     }
   }
 
   function fixScene(elem) {
     return {
       ...elem,
-      elements: elem.elements.map(fixParagraph).filter(e => e)
+      elements: elem.elements?.map(fixParagraph).filter(e => e)
     }
   }
 

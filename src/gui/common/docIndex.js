@@ -32,8 +32,6 @@ import {IDappend, IDtoPath} from "../editor/slateDnD";
 //
 //*****************************************************************************
 
-//-----------------------------------------------------------------------------
-
 function getAt(activeID, current) {
   if(!current) return {}
   const {sectID, path} = IDtoPath(current)
@@ -136,7 +134,11 @@ export function DocIndex({style, activeID, section, wcFormat, include, setActive
   //return useDeferredValue(index)
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Act items
+//
+//*****************************************************************************
 
 class ActItem extends React.PureComponent {
 
@@ -224,6 +226,12 @@ class ChapterDropZone extends React.PureComponent {
   }
 }
 
+//*****************************************************************************
+//
+// Chapter items
+//
+//*****************************************************************************
+
 class ChapterItem extends React.PureComponent {
 
   render() {
@@ -281,6 +289,8 @@ class ChapterItem extends React.PureComponent {
   }
 }
 
+//-----------------------------------------------------------------------------
+
 class SceneDropZone extends React.PureComponent {
 
   render() {
@@ -317,7 +327,11 @@ class SceneDropZone extends React.PureComponent {
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Scene items
+//
+//*****************************************************************************
 
 class SceneItem extends React.PureComponent {
 
@@ -373,7 +387,11 @@ class SceneItem extends React.PureComponent {
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Index entries
+//
+//*****************************************************************************
 
 class IndexItem extends React.PureComponent {
 
@@ -428,15 +446,6 @@ function ScrollRef({isCurrent, refCurrent, children}) {
   return children
 }
 
-function ItemName(type, name) {
-  switch(type) {
-    case "synopsis": return (name?.length) ? name : "Synopsis" // "Synopsis" + (name ? `: ${name}` : "")
-    case "notes":    return (name?.length) ? name : "Notes" // return "Notes" + (name ? `: ${name}` : "")
-    default: break;
-  }
-  return name ? name : "<Unnamed>"
-}
-
 class ItemIcon extends React.PureComponent {
   render() {
     const {type} = this.props
@@ -452,6 +461,15 @@ class ItemIcon extends React.PureComponent {
     }
     return null
   }
+}
+
+function ItemName(type, name) {
+  switch(type) {
+    case "synopsis": return (name?.length) ? name : "Synopsis" // "Synopsis" + (name ? `: ${name}` : "")
+    case "notes":    return (name?.length) ? name : "Notes" // return "Notes" + (name ? `: ${name}` : "")
+    default: break;
+  }
+  return name ? name : "<Unnamed>"
 }
 
 class ItemLabel extends React.PureComponent {
