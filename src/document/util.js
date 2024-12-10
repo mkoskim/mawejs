@@ -9,7 +9,6 @@
 import {isGzip, gzip, gunzip} from "../util/compress"
 import {uuid, nanoid} from "../util"
 import { nodeBreaks, nodeIsBreak, nodeTypes } from "./elements";
-import { IDfromPath } from "../gui/editor/slateDnD";
 
 export {uuid, nanoid}
 
@@ -75,6 +74,28 @@ export async function buf2file(doc, buffer) {
 export function createDateStamp(date) {
   if(!date) date = new Date()
   return date.toISOString().split("T")[0]
+}
+
+//*****************************************************************************
+//
+// Node ID generation (for indices, DnD and so on)
+//
+//*****************************************************************************
+
+export function nodeID(sectID, path) {
+  return [sectID, ...path].join(".")
+}
+
+export function childID(ID, index) {
+  return [ID, index].join(".")
+}
+
+export function IDtoPath(ID) {
+  const [sectID, ...path] = ID.split(".")
+  return {
+    sectID,
+    path: path.map(p => parseInt(p)),
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -322,18 +343,22 @@ export function wcCumulative(section, IDprefix) {
   const cumulative = {}
   var summed = 0
 
-  for(const [p1, act] of section.acts.entries()) {
+  for(const [index, act] of section.acts.entries()) {
+    const actID = childID(IDprefix, index)
     summed += (act.words?.padding ?? 0)
-    cumulative[IDfromPath(IDprefix, [p1])] = summed
 
-    for(const [p2, chapter] of act.children.entries()) {
+    cumulative[actID] = summed
+
+    for(const [index, chapter] of act.children.entries()) {
+      const chapterID = childID(actID, index)
       summed += (chapter.words?.padding ?? 0)
-      cumulative[IDfromPath(IDprefix, [p1, p2])] = summed
+      cumulative[chapterID] = summed
 
-      for(const [p3, scene] of chapter.children.entries()) {
+      for(const [index, scene] of chapter.children.entries()) {
         if(scene.content !== "scene") continue
+        const sceneID = childID(chapterID, index)
         summed += (scene.words?.text ?? 0) + (scene.words?.missing ?? 0)
-        cumulative[IDfromPath(IDprefix, [p1, p2, p3])] = summed
+        cumulative[sceneID] = summed
       }
     }
   }

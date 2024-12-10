@@ -17,8 +17,6 @@ import {
 import { withHistory } from "slate-history"
 import { withReact } from 'slate-react'
 
-import {SlateEditable} from './slateEditable';
-
 import { wcElem, wcCompare, elemHeading, elemHeadParse, elemHeadAttrs} from '../../document/util';
 
 import {
@@ -70,23 +68,34 @@ import {text2lines} from '../import/util';
 //
 //*****************************************************************************
 
-export function getEditor() {
+//-----------------------------------------------------------------------------
+// Core editor for programmatic doc modifications
+//-----------------------------------------------------------------------------
 
+export function getCoreEditor() {
   return [
     createEditor,
     // Base editor
     withHistory,
-    withWordCount,        // Autogenerate word counts
+    withWordCount,    // Autogenerate word counts
     withBR,           // empty <p> -> <br>
-    withFixNesting,       // Keep correct nesting: chapter -> scene -> paragraph
-    withMarkup,           // Markups (##, **, //, etc)
+    withFixNesting,   // Keep correct nesting: chapter -> scene -> paragraph
+  ].reduce((editor, func) => func(editor), undefined)
+}
+
+//-----------------------------------------------------------------------------
+// Editor for UI use
+//-----------------------------------------------------------------------------
+
+export function getUIEditor() {
+
+  return [
+    getCoreEditor,
 
     withReact,
-
-    // ReactEditor overrides
+    withMarkup,           // Markups (##, **, //, etc)
     withTextPaste,        // Improved text paste
-
-    withProtectFolds,     // Hooks changes. Prevents messing with folded blocks
+    withProtectFolds,     // Prevents messing with folded blocks
   ].reduce((editor, func) => func(editor), undefined)
 }
 

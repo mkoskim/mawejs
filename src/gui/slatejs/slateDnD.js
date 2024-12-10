@@ -8,37 +8,14 @@
 
 import {
   Editor,
-  Node, Text,
   Transforms,
-  Range, Point, Path,
-  Element,
 } from 'slate'
 
-import {elemHeading, elemTags} from '../../document/util';
+import {elemHeading} from '../../document/util';
 
 import {
   nodeTypes,
 } from '../../document/elements';
-
-//-----------------------------------------------------------------------------
-// Drag'n'drop ID generation
-//-----------------------------------------------------------------------------
-
-export function IDfromPath(sectID, path) {
-  return [sectID, ...path].join(".")
-}
-
-export function IDappend(ID, index) {
-  return [ID, index].join(".")
-}
-
-export function IDtoPath(ID) {
-  const [sectID, ...path] = ID.split(".")
-  return {
-    sectID,
-    path: path.map(p => parseInt(p)),
-  }
-}
 
 //-----------------------------------------------------------------------------
 // Drag'n'drop pop and push

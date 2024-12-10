@@ -31,26 +31,26 @@ import { DragDropContext } from "@hello-pangea/dnd";
 import {
   isAstChange,
   focusByPath,
-} from "./slateHelpers"
+} from "../slatejs/slateHelpers"
 
 import {
   searchFirst, searchForward, searchBackward,
-} from './slateSearch';
+} from '../slatejs/slateSearch';
 
 import {
-  getEditor,
-} from "./slateEditor"
+  getUIEditor,
+} from "../slatejs/slateEditor"
 
 import {
   SlateEditable,
-} from "./slateEditable"
+} from "../slatejs/slateEditable"
 
 import {
   StyleButtons,
   FoldButtons,
-} from "./slateButtons"
+} from "../slatejs/slateButtons"
 
-import {IDfromPath, IDtoPath, dndDrop} from "./slateDnD"
+import {dndDrop} from "../slatejs/slateDnD"
 
 import {DocIndex} from "../common/docIndex"
 import {WordTable} from "./wordTable"
@@ -69,7 +69,7 @@ import {
   ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
 
-import {wcElem} from "../../document/util";
+import {wcElem, nodeID, IDtoPath} from "../../document/util";
 import {elemFind} from "../../document/xmljs/tree";
 
 //*****************************************************************************
@@ -209,7 +209,7 @@ export function SingleEditView({doc, updateDoc}) {
           const [node, path] = match
           //console.log(node, path)
           const marks = Editor.marks(editor)
-          setTrack({marks, node, id: IDfromPath(sectID, path)})
+          setTrack({marks, node, id: nodeID(sectID, path)})
           return
         }
       }
@@ -223,8 +223,8 @@ export function SingleEditView({doc, updateDoc}) {
   // sections
   //---------------------------------------------------------------------------
 
-  const bodyeditor = useMemo(() => getEditor(), [])
-  const noteeditor = useMemo(() => getEditor(), [])
+  const bodyeditor = useMemo(() => getUIEditor(), [])
+  const noteeditor = useMemo(() => getUIEditor(), [])
 
   const updateBody = useCallback(buffer => {
     trackMarks(bodyeditor, "body")
@@ -425,7 +425,7 @@ export function SingleEditView({doc, updateDoc}) {
         const dstEdit = getEditorBySectID(dstSectID)
 
         const dropped = dndDrop(srcEdit, srcPath, dstEdit, dstPath, destination.index)
-        setActive(IDfromPath(dstSectID, dropped))
+        setActive(nodeID(dstSectID, dropped))
         break;
       }
 
@@ -451,10 +451,10 @@ function LeftPanel({settings}) {
     <LeftPanelMenu settings={settings}/>
     <DocIndex
       style={rest}
+      sectID="body"
       section={doc.body}
       include={doc.ui.editor.body.indexed}
       wcFormat={doc.ui.editor.body.words}
-      activeID="body"
       setActive={setActive}
       current={track?.id}
     />
@@ -525,10 +525,10 @@ function RightPanelContent({settings, selected}) {
   switch(selected) {
     case "noteindex":
       return <DocIndex
+        sectID="notes"
         section={doc.notes}
         include={doc.ui.editor.notes.indexed}
         wcFormat={doc.ui.editor.notes.words}
-        activeID="notes"
         setActive={setActive}
         current={track?.id}
         />
