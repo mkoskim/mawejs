@@ -30,31 +30,31 @@ export class Preview extends React.PureComponent {
   }
 }
 
-function PreviewAct(act) {
-  return <div className="chapter" key={act.id}>
+function PreviewAct(act, index) {
+  return <div className="chapter" key={index}>
     <h4>{act.attributes.name}</h4>
     {act.elements.map(PreviewChapter)}
   </div>
 }
 
 
-function PreviewChapter(chapter) {
-  return <div className="chapter" key={chapter.id}>
+function PreviewChapter(chapter, index) {
+  return <div className="chapter" key={index}>
     <h5>{chapter.attributes.name}</h5>
     {chapter.elements.map(PreviewScene)}
   </div>
 }
 
-function PreviewScene(scene) {
-  return <div className="scene" key={scene.id}>
+function PreviewScene(scene, index) {
+  return <div className="scene" key={index}>
     <h6>{scene.attributes.name}</h6>
     {scene.elements.map(PreviewParagraph)}
   </div>
 }
 
-function PreviewParagraph(p) {
+function PreviewParagraph(p, index) {
   const text = p.elements.map(n => n.text).join(" ")
-  return <p key={p.id}>
+  return <p key={index}>
     {text}
     <span style={{marginLeft: "2pt", color: "grey"}}>&para;</span>
   </p>
@@ -65,21 +65,21 @@ function ImportIndex({imported}) {
     <DeferredRender>{imported.map(actIndex)}</DeferredRender>
   </div>
 
-  function actIndex(act) {
-    return <div key={act.id} className="Act">
+  function actIndex(act, index) {
+    return <div key={index} className="Act">
       <div className="Entry ActName"><p className="Name">{act.attributes.name}</p></div>
       {act.elements.map(chapterIndex)}
     </div>
   }
 
-  function chapterIndex(chapter) {
-    return <div key={chapter.id} className="Chapter">
+  function chapterIndex(chapter, index) {
+    return <div key={index} className="Chapter">
       <div className="Entry ChapterName"><p className="Name">{chapter.attributes.name}</p></div>
       {chapter.elements.map(sceneIndex)}
     </div>
   }
 
-  function sceneIndex(scene) {
-    return <div key={scene.id} className="Entry SceneName"><p className="Name">{scene.attributes.name}</p></div>
+  function sceneIndex(scene, index) {
+    return <div key={index} className="Entry SceneName"><p className="Name">{scene.attributes.name}</p></div>
   }
 }

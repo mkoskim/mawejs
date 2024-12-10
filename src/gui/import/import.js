@@ -79,7 +79,7 @@ export function ImportDialog({ updateDoc, buffer, setBuffer }) {
   );
 }
 
-export function ImportView({ updateDoc, buffer, setBuffer }) {
+function ImportView({ updateDoc, buffer, setBuffer }) {
   const { file, ext } = buffer
 
   //console.log("File:", file, "Ext:", ext)
@@ -106,7 +106,7 @@ export function ImportView({ updateDoc, buffer, setBuffer }) {
   }
 
   function Cancel(e) {
-    console.log('Cancel function called'); // Debugging log
+    //console.log('Cancel function called'); // Debugging log
     setBuffer(undefined); // Close the dialog by resetting the buffer
   }
 
@@ -139,51 +139,34 @@ export function ImportView({ updateDoc, buffer, setBuffer }) {
   }, [buffer, setContent, setFormat, setBuffer])
 
   return <VBox style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
-    <IconButton
-      onClick={Cancel}
-      aria-label="close"
-      sx={(theme) => ({
-        position: 'absolute',
-        right: 4,
-        top: -1,
-        color: theme.palette.grey[500],
-      })}
-    >
-      <CloseIcon />
-    </IconButton>
-    <ImportBar format={format} setFormat={setFormat} imported={imported} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer} />
+
+    <ToolBox>
+      <Label>Import: {buffer.file?.name ?? "Clipboard"}</Label>
+      <Separator />
+      <Filler />
+
+      <Separator />
+      <Label>Format: {formats[format]?.name ?? format}</Label>
+      {/*<SelectFormatButton value={format} setFormat={setFormat}/>*/}
+
+      <Separator />
+
+      {/* <Button variant="contained" color="success" onClick={Import}>Import</Button> */}
+      <Separator />
+      <IconButton onClick={Cancel} aria-label="close"><CloseIcon /></IconButton>
+      {/* <Button variant="contained" color="error" onClick={Cancel}>Cancel</Button> */}
+    </ToolBox>
+
     <HBox style={{ overflow: "auto" }}>
       <Preview imported={imported} />
       <VBox className="ImportSettings">
         <SelectFormat format={format} content={content} setImported={setImported} />
+        <Button variant="contained" color="success" onClick={Import}>
+          Import
+        </Button>
       </VBox>
     </HBox>
-    <DialogActions>
-      <Button variant="contained" color="success" onClick={Import}>
-        Import
-      </Button>
-    </DialogActions>
   </VBox>
-}
-
-//-----------------------------------------------------------------------------
-
-export function ImportBar({ format, buffer }) {
-  return <ToolBox>
-    <Label>Import: {buffer.file?.name ?? "Clipboard"}</Label>
-    <Separator />
-    <Label>Format: {formats[format]?.name ?? format}</Label>
-    {/*<SelectFormatButton value={format} setFormat={setFormat}/>*/}
-
-    <Separator />
-    <Filler />
-    <Separator />
-
-    {/* <Button variant="contained" color="success" onClick={Import}>Import</Button> */}
-    <Separator />
-    {/* <Button variant="contained" color="error" onClick={Cancel}>Cancel</Button> */}
-    <Separator />
-  </ToolBox>
 }
 
 //-----------------------------------------------------------------------------

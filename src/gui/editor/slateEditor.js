@@ -387,8 +387,7 @@ export function EditButtons({editor, track}) {
   //console.log("Track:", track)
 
   const type = track?.node?.type
-  const bold = track?.marks?.bold
-  const italic = track?.marks?.italic
+  const {bold, italic} = track?.marks ?? {}
 
   const applyStyle = useCallback(type => {
     Transforms.setNodes(editor, {type})
