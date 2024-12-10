@@ -298,7 +298,7 @@ class SceneDropZone extends React.PureComponent {
   }
 
   DropZone(provided, snapshot) {
-    const {scenes, id, index, include, wcFormat, onActivate, atScene, refCurrent} = this.props
+    const {scenes, id, include, wcFormat, onActivate, atScene, refCurrent} = this.props
     const {innerRef, droppableProps, placeholder} = provided
     const {isDraggingOver} = snapshot
 
