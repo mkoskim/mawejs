@@ -369,9 +369,9 @@ export class FoldButtons extends React.PureComponent {
 export function EditButtons({editor, track}) {
   //console.log("Track:", track)
 
-  const type = track.node?.type
-  const bold = track.marks?.bold
-  const italic = track.marks?.italic
+  const type = track?.node?.type
+  const bold = track?.marks?.bold
+  const italic = track?.marks?.italic
 
   const applyStyle = useCallback(type => {
     Transforms.setNodes(editor, {type})

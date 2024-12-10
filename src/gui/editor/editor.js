@@ -176,27 +176,34 @@ export function SingleEditView({doc, updateDoc}) {
   // Cursor movement tracking
   //---------------------------------------------------------------------------
 
-  const [track, setTrack] = useState({
-    marks: {},
-    node: undefined,
-    parents: [],
-  })
+  const [track, setTrack] = useState(undefined)
 
-  const trackMarks = useCallback((editor) => {
+  const trackMarks = useCallback((editor, sectID) => {
     try {
-      const marks = Editor.marks(editor)
-      const parents = Array
-        .from(Editor.levels(editor))
-        .map(([n, p]) => n)
-        .filter(e => elemIsBlock(editor, e));
-      const node = parents[parents.length - 1]
-      //console.log("Levels:", levels)
+      const {selection} = editor
+      if(selection) {
+        const {focus} = selection
 
-      //console.log("Track:", marks, node, parents)
-      setTrack({marks, node, parents})
+        const match = Editor.parent(editor,
+          focus,
+          {
+            match: n =>
+              !Editor.isEditor(n) &&
+              Element.isElement(n)
+          }
+        )
+        if(match) {
+          const [node, path] = match
+          //console.log(node, path)
+          const marks = Editor.marks(editor)
+          setTrack({marks, node, id: IDfromPath(sectID, path)})
+          return
+        }
+      }
     } catch(e) {
       //console.log("Track error:", e)
     }
+    setTrack(undefined)
   }, [setTrack])
 
   //---------------------------------------------------------------------------
@@ -207,7 +214,7 @@ export function SingleEditView({doc, updateDoc}) {
   const noteeditor = useMemo(() => getEditor(), [])
 
   const updateBody = useCallback(buffer => {
-    trackMarks(bodyeditor)
+    trackMarks(bodyeditor, "body")
     if(isAstChange(bodyeditor)) {
       updateDoc(doc => {
         doc.body.acts = buffer;
@@ -217,7 +224,7 @@ export function SingleEditView({doc, updateDoc}) {
   }, [bodyeditor])
 
   const updateNotes = useCallback(buffer => {
-    trackMarks(noteeditor)
+    trackMarks(noteeditor, "notes")
     if(isAstChange(noteeditor)) {
       updateDoc(doc => {
         doc.notes.acts = buffer
@@ -436,7 +443,7 @@ function LeftPanel({settings}) {
       wcFormat={doc.ui.editor.body.words}
       activeID="body"
       setActive={setActive}
-      parents={track.parents}
+      current={track?.id}
     />
   </VBox>
 }
@@ -510,7 +517,6 @@ function RightPanelContent({settings, selected}) {
         wcFormat={doc.ui.editor.notes.words}
         activeID="notes"
         setActive={setActive}
-        parents={track.parents}
       />
     case "wordtable":
       return <WordTable
@@ -662,7 +668,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
       <Separator/>
       <Filler />
       <Separator/>
-      <FoldButtons editor={editor} folded={track.block?.folded}/>
+      <FoldButtons editor={editor} folded={track?.node?.folded}/>
     </ToolBox>
 
     {/* Editor board and sheet */}
