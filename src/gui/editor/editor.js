@@ -12,52 +12,54 @@ import "../common/styles/sheet.css"
 /* eslint-disable no-unused-vars */
 
 import React, {
-  useState, useEffect, useReducer,
-  memo, useMemo, useCallback,
+  useState, useEffect,
+  useMemo, useCallback,
   useDeferredValue,
-  useRef, useContext,
+  useRef,
 } from 'react';
 
 import {
-  Slate, useSlate, ReactEditor,
+  Slate, ReactEditor,
 } from "slate-react"
 
 import {
-  Editor, Node, Transforms, Range, Point,
+  Editor, Transforms, Range,
 } from "slate";
 
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { DragDropContext } from "@hello-pangea/dnd";
 
 import {
   getEditor, SlateEditable,
   searchFirst, searchForward, searchBackward,
   isAstChange,
+} from "./slateEditor"
+
+import {
   EditButtons,
   FoldButtons,
-} from "./slateEditor"
+} from "./slateButtons"
 
 import {DocIndex} from "../common/docIndex"
 import {WordTable} from "./wordTable"
 import {TagTable} from "./tagTable"
 
 import {
-  FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon, IconButton, Tooltip,
-  ToggleButton, ToggleButtonGroup, MakeToggleGroup,
-  Input,
+  VBox, HBox, Filler, VFiller, HFiller,
+  ToolBox, Icon, IconButton,
+  MakeToggleGroup,
   SearchBox,
   IsKey, addHotkeys,
-  Separator, Loading, addClass,
+  Separator, addClass,
 } from "../common/factory";
 
 import {
   ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
 
-import { wcElem } from "../../document/util";
-import { elemFind } from "../../document/xmljs/tree";
-import {elemIsBlock, focusByPath} from "./slateHelpers";
-import { IDfromPath, IDtoPath, dndDrop} from "./slateDnD"
+import {wcElem} from "../../document/util";
+import {elemFind} from "../../document/xmljs/tree";
+import {focusByPath} from "./slateHelpers";
+import {IDfromPath, IDtoPath, dndDrop} from "./slateDnD"
 
 //*****************************************************************************
 //
