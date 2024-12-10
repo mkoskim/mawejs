@@ -113,19 +113,13 @@ export function DocIndex({style, activeID, section, wcFormat, include, setActive
   const skipActName = (section.acts.length === 1 && !elemName(section.acts[0]))
 
   //---------------------------------------------------------------------------
-  // Generate elems & keys
-
-  const acts = section.acts.map((elem, index) => [IDappend(activeID, [index]), index, elem])
-
-  //---------------------------------------------------------------------------
   // Index
   //---------------------------------------------------------------------------
 
   return <VBox style={style} className="TOC">
-    <div>{current}</div>
-    {acts.map(([key, index, elem]) => <ActItem
-      key={key}
-      id={key}
+    {section.acts.map((elem, index) => <ActItem
+      key={index}
+      id={IDappend(activeID, index)}
       elem={elem}
       wcFormat={wcFormatFunction}
       include={include}
@@ -155,8 +149,8 @@ class ActItem extends React.PureComponent {
     function isCurrent() {
       if(!atAct) return false
       if(!hasDropzone) return true
-      if(!atChapter) return true
-      if(elem.children[atChapter].type !== "chapter") return true
+      if(atChapter === undefined) return true
+      if(elem.children[atChapter].type === "hact") return true
       return false
     }
 
@@ -256,8 +250,8 @@ class ChapterItem extends React.PureComponent {
     function isCurrent() {
       if(!atChapter) return false
       if(!hasDropzone) return true
-      if(!atScene) return true
-      if(elem.children[atScene].type !== "scene") return true
+      if(atScene === undefined) return true
+      if(elem.children[atScene].type === "hchapter") return true
       return false
     }
 
