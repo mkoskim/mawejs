@@ -146,13 +146,10 @@ class ActItem extends React.PureComponent {
     const hasDropzone = (include.includes("chapter")) && (unfold || !elem.folded)
     //const hasDropzone = (unfold || !elem.folded)
 
-    function isCurrent() {
-      if(!atAct) return false
-      if(!hasDropzone) return true
-      if(atChapter === undefined) return true
-      if(elem.children[atChapter].type === "hact") return true
-      return false
-    }
+    const isCurrent = (
+      atAct &&
+      (!hasDropzone || atChapter === undefined || elem.children[atChapter].type === "hact")
+    )
 
     return <div>
       {!skipActName && <IndexItem
@@ -164,7 +161,7 @@ class ActItem extends React.PureComponent {
         numbered={elemNumbered(elem)}
         wcFormat={wcFormat}
         onActivate={onActivate}
-        isCurrent={isCurrent()}
+        isCurrent={isCurrent}
         refCurrent={refCurrent}
       />}
       {hasDropzone && <ChapterDropZone
@@ -247,13 +244,10 @@ class ChapterItem extends React.PureComponent {
     const ID = IDappend(id, index)
     const hasDropzone = (include.includes("scene")) && (unfold || !elem.folded)
 
-    function isCurrent() {
-      if(!atChapter) return false
-      if(!hasDropzone) return true
-      if(atScene === undefined) return true
-      if(elem.children[atScene].type === "hchapter") return true
-      return false
-    }
+    const isCurrent = (
+      atChapter &&
+      (!hasDropzone || atScene === undefined || elem.children[atScene].type === "hchapter")
+    )
 
     //console.log(include)
 
@@ -270,7 +264,7 @@ class ChapterItem extends React.PureComponent {
         numbered={elemNumbered(elem)}
         wcFormat={wcFormat}
         onActivate={onActivate}
-        isCurrent={isCurrent()}
+        isCurrent={isCurrent}
         refCurrent={refCurrent}
         {...dragHandleProps}
       />
