@@ -22,8 +22,8 @@
     "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.5",
-    "@emotion/styled": "^11.13.5",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@hello-pangea/dnd": "^17.0.0",
     "@mui/icons-material": "^6.1.10",
     "@mui/material": "^6.1.10",
@@ -45,9 +45,9 @@
     "react-dom": "^18.3.1",
     "react-infinite-scroll-component": "^6.1.0",
     "recharts": "^2.14.1",
-    "slate": "^0.110.2",
+    "slate": "^0.112.0",
     "slate-history": "^0.110.3",
-    "slate-react": "^0.111.0",
+    "slate-react": "^0.112.0",
     "stream": "^0.0.3",
     "use-immer": "^0.10.0",
     "uuid": "^11.0.3",

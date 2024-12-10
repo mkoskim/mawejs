@@ -318,22 +318,22 @@ export function wcCompare(a, b) {
   )
 }
 
-export function wcCumulative(section, sectID) {
+export function wcCumulative(section, IDprefix) {
   const cumulative = {}
   var summed = 0
 
   for(const [p1, act] of section.acts.entries()) {
     summed += (act.words?.padding ?? 0)
-    cumulative[IDfromPath(sectID, [p1])] = summed
+    cumulative[IDfromPath(IDprefix, [p1])] = summed
 
     for(const [p2, chapter] of act.children.entries()) {
       summed += (chapter.words?.padding ?? 0)
-      cumulative[IDfromPath(sectID, [p1, p2])] = summed
+      cumulative[IDfromPath(IDprefix, [p1, p2])] = summed
 
       for(const [p3, scene] of chapter.children.entries()) {
         if(scene.content !== "scene") continue
         summed += (scene.words?.text ?? 0) + (scene.words?.missing ?? 0)
-        cumulative[IDfromPath(sectID, [p1, p2, p3])] = summed
+        cumulative[IDfromPath(IDprefix, [p1, p2, p3])] = summed
       }
     }
   }
