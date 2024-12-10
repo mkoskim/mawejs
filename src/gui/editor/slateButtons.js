@@ -98,7 +98,23 @@ function applyStyle(editor, type) {
 
 class ParagraphStyleSelect extends React.PureComponent {
 
-  static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "hnotes", "bookmark", "comment", "missing", "fill", "tags"]
+  static order = ["p", "|", "hact", "hchapter", "hscene", "hsynopsis", "hnotes", "|", "bookmark", "comment", "missing", "fill", "tags"]
+
+  styleMenuItem(popupState, editor, type, style) {
+    return (
+      <MenuItem key={type} value={type} onClick={e => {applyStyle(editor, type); popupState.close(e)}}>
+      <ListItemIcon>{style.markup}</ListItemIcon>
+      <ListItemText sx={{width: 100}}>{style.name}</ListItemText>
+      <Typography sx={{ color: 'text.secondary' }}>{style.shortcut}</Typography>
+      </MenuItem>
+    )
+  }
+
+  menuItem(popupState, editor, index, choices, type) {
+    if(type in choices) return this.styleMenuItem(popupState, editor, type, choices[type]);
+    if(type === "|") return <Separator key={index}/>
+    return null;
+  }
 
   render() {
     const {type, editor} = this.props;
@@ -107,21 +123,14 @@ class ParagraphStyleSelect extends React.PureComponent {
     //console.log("Block type:", type)
 
     const choices = paragraphTypes
-    const order   = this.constructor.order
-    const name = type in choices ? choices[type].name : "Text"
+    const order = this.constructor.order
+    const name  = type in choices ? choices[type].name : "Text"
 
     return <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
         <Button tooltip="Paragraph style" style={{width: 100, justifyContent: "flex-start"}} {...bindTrigger(popupState)}>{name}</Button>
         <Menu {...bindMenu(popupState)}>
-          {order.map(k => [k, choices[k]]).map(([k, v]) => (
-            <MenuItem key={k} value={k} onClick={e => {applyStyle(editor, k); popupState.close(e)}}>
-              <ListItemIcon>{v.markup}</ListItemIcon>
-              <ListItemText sx={{width: 100}}>{v.name}</ListItemText>
-              <Typography sx={{ color: 'text.secondary' }}>{v.shortcut}</Typography>
-              </MenuItem>
-            )
-          )}
+          {order.map((type, index) => this.menuItem(popupState, editor, index, choices, type))}
         </Menu>
       </React.Fragment>
       }
@@ -139,7 +148,7 @@ export class StyleButtons extends React.PureComponent {
   render() {
     const {editor, type, bold, italic} = this.props
 
-    console.log("Style:", type, bold, italic)
+    //console.log("Style:", type, bold, italic)
     return <>
       <ParagraphStyleSelect editor={editor} type={type}/>
       <Separator/>
