@@ -7,30 +7,18 @@
 //*****************************************************************************
 
 import React, {
-  useState, useEffect, useReducer,
-  useMemo, useCallback,
-  useDeferredValue,
-  StrictMode,
-  useRef,
+  useState, useCallback,
 } from 'react';
 
 import {
-  FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon, Tooltip,
-  ToggleButton, ToggleButtonGroup, MakeToggleGroup,
+  VBox, HBox, Filler,
+  ToolBox, Button, Icon,
   Input,
-  SearchBox,
   Label,
-  List, ListItem, ListItemText,
-  Grid,
-  Separator, Loading, addClass,
-  Menu, MenuItem,
-  isHotkey,
 } from "../common/factory";
 
 import {createWordTable} from "../../document/util";
-//import {text2Regexp} from "./slateFlatEditor"
-import {text2Regexp} from "./slateEditor"
+import {text2Regexp} from "../slatejs/slateSearch"
 
 //-----------------------------------------------------------------------------
 // Wordtable

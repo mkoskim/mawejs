@@ -8,6 +8,7 @@
 
 import React, {
   useCallback,
+  useMemo,
 } from "react"
 
 import {
@@ -26,6 +27,11 @@ import {
 import {DragDropContext, Droppable, Draggable} from "@hello-pangea/dnd";
 import {DocIndex} from "../common/docIndex";
 import {elemName, filterCtrlElems, mawe} from "../../document";
+import { IDtoPath, wcElem } from "../../document/util";
+import { getCoreEditor } from "../slatejs/slateEditor";
+import { Slate } from "slate-react";
+import { isAstChange } from "../slatejs/slateHelpers";
+import { dndDrop } from "../slatejs/slateDnD";
 
 //*****************************************************************************
 //
@@ -74,6 +80,25 @@ export function StoryArc({doc, updateDoc}) {
   */
 
   //---------------------------------------------------------------------------
+  // Slate editor for buffer manipulations
+  //---------------------------------------------------------------------------
+
+  const bodyeditor = useMemo(() => {
+    const editor = getCoreEditor()
+    editor.onChange = () => {
+      //console.log("Body update")
+      if(isAstChange(editor)) {
+        updateDoc(doc => {
+          doc.body.acts = editor.children;
+          doc.body.words = wcElem({type: "sect", children: editor.children})
+        })
+      }
+    }
+    editor.children = doc.body.acts
+    return editor
+  }, [])
+
+  //---------------------------------------------------------------------------
   // View
   //---------------------------------------------------------------------------
 
@@ -115,8 +140,8 @@ export function StoryArc({doc, updateDoc}) {
       <VBox style={{maxWidth: "300px", borderRight: "1px solid lightgray"}}>
         <IndexToolbar settings={settings}/>
         <DocIndex
+          sectID="body"
           section={doc.body}
-          activeID="body"
           include={indexElements()}
           wcFormat={"compact"}
           unfold={true}
@@ -126,8 +151,41 @@ export function StoryArc({doc, updateDoc}) {
     </HBox>
   </DragDropContext>
 
+  //---------------------------------------------------------------------------
+  // Index DnD
+  //---------------------------------------------------------------------------
+
   function onDragEnd(result) {
-    //onDragEndUpdateDoc(doc, updateDoc, result)
+
+    console.log("onDragEnd:", result)
+
+    const {type, draggableId, source, destination} = result;
+
+    if(!destination) return;
+
+    if(source.droppableId === destination.droppableId) {
+      if(source.index === destination.index) return;
+    }
+
+    //console.log(type, source, "-->", destination)
+
+    switch(type) {
+      case "chapter":
+      case "scene": {
+        const {path: srcPath} = IDtoPath(draggableId)
+        const {path: dstPath} = IDtoPath(destination.droppableId)
+        //const srcEdit = getEditorBySectID(srcSectID)
+        //const dstEdit = getEditorBySectID(dstSectID)
+
+        const dropped = dndDrop(bodyeditor, srcPath, bodyeditor, dstPath, destination.index)
+        //setActive(nodeID(dstSectID, dropped))
+        break;
+      }
+
+      default:
+        console.log("Unknown draggable type:", type, result)
+        break;
+    }
   }
 }
 

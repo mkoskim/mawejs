@@ -9,12 +9,12 @@
 import "./styles/TOC.css"
 
 import React, {
-  useCallback, memo, useRef,
+  useCallback, useRef,
   useEffect,
   useDeferredValue,
 } from "react"
 
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { Droppable, Draggable } from "@hello-pangea/dnd";
 
 import {
   VBox, HBox, Filler,
@@ -23,8 +23,10 @@ import {
 
 import {FormatWords} from "./components";
 import {elemAsText, elemName} from "../../document";
-import {elemNumbered, nodeIsCtrl, wcCumulative} from "../../document/util";
-import {IDappend, IDtoPath} from "../editor/slateDnD";
+import {
+  elemNumbered, nodeIsCtrl, wcCumulative,
+  nodeID, childID, IDtoPath,
+} from "../../document/util";
 
 //*****************************************************************************
 //
@@ -49,14 +51,13 @@ function getAt(activeID, current) {
 //
 //*****************************************************************************
 
-export function DocIndex({style, activeID, section, wcFormat, include, setActive, unfold, current})
+export function DocIndex({style, sectID, section, wcFormat, include, setActive, unfold, current})
 {
   //---------------------------------------------------------------------------
   // Path to section
   //---------------------------------------------------------------------------
 
-  const at = getAt(activeID, current)
-  //const current = getCurrent(parents, include)
+  const at = getAt(sectID, current)
   //console.log(at)
 
   const refCurrent = useRef(null)
@@ -79,7 +80,7 @@ export function DocIndex({style, activeID, section, wcFormat, include, setActive
   //---------------------------------------------------------------------------
 
   const cumulative = useDeferredValue((["percent", "cumulative"].includes(wcFormat))
-    ? wcCumulative(section, activeID)
+    ? wcCumulative(section, sectID)
     : undefined
   )
 
@@ -117,7 +118,7 @@ export function DocIndex({style, activeID, section, wcFormat, include, setActive
   return <VBox style={style} className="TOC">
     {section.acts.map((elem, index) => <ActItem
       key={index}
-      id={IDappend(activeID, index)}
+      id={childID(sectID, index)}
       elem={elem}
       wcFormat={wcFormatFunction}
       include={include}
@@ -237,7 +238,7 @@ class ChapterItem extends React.PureComponent {
   render() {
     const {id, index} = this.props
     return <Draggable
-      draggableId={IDappend(id, index)}
+      draggableId={childID(id, index)}
       index={index}
       type="chapter"
       >
@@ -249,7 +250,7 @@ class ChapterItem extends React.PureComponent {
     const {elem, id, index, include, wcFormat, onActivate, unfold, atChapter, atScene, refCurrent} = this.props
     const {innerRef, draggableProps, dragHandleProps} = provided
 
-    const ID = IDappend(id, index)
+    const ID = childID(id, index)
     const hasDropzone = (include.includes("scene")) && (unfold || !elem.folded)
 
     const isCurrent = (
@@ -313,7 +314,7 @@ class SceneDropZone extends React.PureComponent {
     >
     {scenes.map((elem, index) => !nodeIsCtrl(elem) && <SceneItem
       key={index}
-      id={IDappend(id, index)}
+      id={childID(id, index)}
       index={index}
       elem={elem}
       include={include}
@@ -377,7 +378,7 @@ class SceneItem extends React.PureComponent {
     />
     {!elem.folded && bookmarks.map(([index, elem]) => <IndexItem
       key={index}
-      id={IDappend(id, index)}
+      id={childID(id, index)}
       type={elem.type}
       name={elemAsText(elem)}
       wcFormat={wcFormat}
@@ -418,32 +419,25 @@ class IndexItem extends React.PureComponent {
     //console.log("Render IndexItem:", type, id, name)
     const typeClasses = this.constructor.typeClasses
 
-    const typeClass = type in typeClasses ? typeClasses[type] : ""
-
-    const numClass = (numbered && (this.constructor.numbered.includes(type))) ? "Numbered" : ""
-
-    const foldClass = (folded) ? "Folded" : ""
+    const classes = addClass(
+      className,
+      "HBox Entry",
+      type in typeClasses ? typeClasses[type] : "",
+      (numbered && (this.constructor.numbered.includes(type))) ? "Numbered" : "",
+      (folded) ? "Folded" : "",
+      (isCurrent) ? "Current" : "",
+    )
 
     function onClick(ev) {
       return onActivate && onActivate(id)
     }
 
-    return <ScrollRef isCurrent={isCurrent} refCurrent={refCurrent}>
-      <HBox className={addClass(className, "Entry", typeClass, numClass, foldClass)} onClick={onClick} {...rest}>
+    return <div ref={isCurrent ? refCurrent : null} className={classes} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
       <ItemLabel type={type} name={name}/>
-      {wcFormat && <><Filler/><span className="WordCount">{wcFormat(id, words)}</span></>}
-      </HBox>
-    </ScrollRef>
+      {wcFormat && <><Filler/><div className="WordCount">{wcFormat(id, words)}</div></>}
+    </div>
   }
-}
-
-function ScrollRef({isCurrent, refCurrent, children}) {
-  if(isCurrent) {
-    //console.log("Match:", current, id)
-    return <div className="Current" ref={refCurrent}>{children}</div>
-  }
-  return children
 }
 
 class ItemIcon extends React.PureComponent {
@@ -457,7 +451,7 @@ class ItemIcon extends React.PureComponent {
       //case "notes":
       case "comment":
       case "tags":
-        return <span className={addClass("Box", type)} />
+        return <div className={addClass("Box", type)} />
     }
     return null
   }
@@ -475,6 +469,6 @@ function ItemName(type, name) {
 class ItemLabel extends React.PureComponent {
   render() {
     const {type, name} = this.props
-    return <span className="Name">{ItemName(type, name)}</span>
+    return <div className="Name">{ItemName(type, name)}</div>
   }
 }

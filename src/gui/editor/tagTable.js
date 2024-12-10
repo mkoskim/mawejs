@@ -16,7 +16,7 @@ import {
 } from "../common/factory";
 
 import {createTagTable} from "../../document/util";
-import {foldByTags} from './slateHelpers';
+import {foldByTags} from '../slatejs/slateFolding';
 
 //-----------------------------------------------------------------------------
 // Wordtable
