@@ -271,11 +271,13 @@ export function SingleEditView({doc, updateDoc}) {
   useEffect(() => {
     //console.log("Focus to:", focusTo)
 
-    if(focusTo) {
+    if(focusTo) try {
       //const {sectID, path} = IDtoPath(focusTo)
       console.log("Focus path", focusTo)
       const editor = getActiveEdit()
       focusByPath(editor, focusTo)
+    } catch(e) {
+      // Ignore
     }
   }, [getActiveEdit, focusTo])
 
