@@ -10,6 +10,7 @@ import React, {
 
 import {
   Editor,
+  removeMark,
   Transforms,
 } from 'slate'
 
@@ -33,7 +34,22 @@ import {
 } from '../common/factory';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Character style buttons
+//
+//*****************************************************************************
+
+function applyMarks(editor, marks) {
+  const current = Object.keys(Editor.marks(editor))
+  for(const key of current) {
+    if(!marks.includes(key)) removeMark(editor, key)
+  }
+  for(const key of marks) {
+    if(!current.includes(key)) setMark(editor, key, true)
+  }
+  ReactEditor.focus(editor)
+}
 
 class CharStyleButtons extends React.PureComponent {
 
@@ -51,7 +67,7 @@ class CharStyleButtons extends React.PureComponent {
   static choices = ["bold", "italic"]
 
   render() {
-    const {bold, italic, setSelected} = this.props
+    const {editor, bold, italic} = this.props
 
     const active = [
       bold ? "bold" : "",
@@ -63,20 +79,29 @@ class CharStyleButtons extends React.PureComponent {
       buttons={this.constructor.buttons}
       choices={this.constructor.choices}
       selected={active}
-      setSelected={setSelected}
+      setSelected={marks => applyMarks(editor, marks)}
       exclusive={false}
     />
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Paragraph style buttons
+//
+//*****************************************************************************
+
+function applyStyle(editor, type) {
+  Transforms.setNodes(editor, {type})
+  ReactEditor.focus(editor)
+}
 
 class ParagraphStyleSelect extends React.PureComponent {
 
   static order = ["p", "hact", "hchapter", "hscene", "hsynopsis", "hnotes", "bookmark", "comment", "missing", "fill", "tags"]
 
   render() {
-    const {type, setSelected} = this.props;
+    const {type, editor} = this.props;
     //const type = node?.type ?? undefined
 
     //console.log("Block type:", type)
@@ -90,7 +115,7 @@ class ParagraphStyleSelect extends React.PureComponent {
         <Button tooltip="Paragraph style" style={{width: 100, justifyContent: "flex-start"}} {...bindTrigger(popupState)}>{name}</Button>
         <Menu {...bindMenu(popupState)}>
           {order.map(k => [k, choices[k]]).map(([k, v]) => (
-            <MenuItem key={k} value={k} onClick={e => {setSelected(k); popupState.close(e)}}>
+            <MenuItem key={k} value={k} onClick={e => {applyStyle(editor, k); popupState.close(e)}}>
               <ListItemIcon>{v.markup}</ListItemIcon>
               <ListItemText sx={{width: 100}}>{v.name}</ListItemText>
               <Typography sx={{ color: 'text.secondary' }}>{v.shortcut}</Typography>
@@ -104,7 +129,30 @@ class ParagraphStyleSelect extends React.PureComponent {
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Style buttons
+//
+//*****************************************************************************
+
+export class StyleButtons extends React.PureComponent {
+  render() {
+    const {editor, type, bold, italic} = this.props
+
+    console.log("Style:", type, bold, italic)
+    return <>
+      <ParagraphStyleSelect editor={editor} type={type}/>
+      <Separator/>
+      <CharStyleButtons editor={editor} bold={bold} italic={italic}/>
+    </>
+  }
+}
+
+//*****************************************************************************
+//
+// Folding buttons
+//
+//*****************************************************************************
 
 export class FoldButtons extends React.PureComponent {
   render() {
@@ -120,35 +168,4 @@ export class FoldButtons extends React.PureComponent {
       <IconButton tooltip="Unfold all (Alt-S)" onClick={onUnfoldAll}><Icon.Style.UnfoldAll/></IconButton>
       </>
   }
-}
-
-//-----------------------------------------------------------------------------
-
-export function EditButtons({editor, track}) {
-  //console.log("Track:", track)
-
-  const type = track?.node?.type
-  const {bold, italic} = track?.marks ?? {}
-
-  const applyStyle = useCallback(type => {
-    Transforms.setNodes(editor, {type})
-    ReactEditor.focus(editor)
-  }, [editor])
-
-  const applyMarks = useCallback(marks => {
-    const current = Object.keys(Editor.marks(editor))
-    for(const key of current) {
-      if(!marks.includes(key)) setMark(editor, key, false)
-    }
-    for(const key of marks) {
-      if(!current.includes(key)) setMark(editor, key, true)
-    }
-    ReactEditor.focus(editor)
-  }, [editor])
-
-  return <>
-    <ParagraphStyleSelect type={type} setSelected={applyStyle}/>
-    <Separator/>
-    <CharStyleButtons bold={bold} italic={italic} setSelected={applyMarks}/>
-  </>
 }

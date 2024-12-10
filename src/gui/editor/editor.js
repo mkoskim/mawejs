@@ -46,7 +46,7 @@ import {
 } from "./slateEditable"
 
 import {
-  EditButtons,
+  StyleButtons,
   FoldButtons,
 } from "./slateButtons"
 
@@ -672,11 +672,14 @@ function EditorBox({style, settings, mode="Condensed"}) {
   const {searchBoxRef, searchText, setSearchText} = settings
   const {highlightText} = settings
 
+  const type = track?.node?.type
+  const {bold, italic} = track?.marks ?? {}
+
   return <VFiller>
     {/* Editor toolbar */}
 
     <ToolBox style={doc.ui.editor.toolbox.mid}>
-      <EditButtons editor={editor} track={track}/>
+      <StyleButtons editor={editor} type={type} bold={bold} italic={italic}/>
       <Separator/>
       <Searching editor={editor} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Separator/>
