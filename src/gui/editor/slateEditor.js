@@ -15,7 +15,6 @@ import {
   Range, Point,
   createEditor,
   Element,
-  Path,
 } from 'slate'
 
 import { withHistory } from "slate-history"
@@ -42,7 +41,7 @@ import {
 } from "./slateHelpers"
 
 import {
-  MakeToggleGroup, Button, Icon, ToggleButton, IconButton,
+  MakeToggleGroup, Button, Icon, IconButton,
   Menu, MenuItem, ListItemIcon, Typography,
 } from '../common/factory';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';

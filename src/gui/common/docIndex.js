@@ -418,32 +418,25 @@ class IndexItem extends React.PureComponent {
     //console.log("Render IndexItem:", type, id, name)
     const typeClasses = this.constructor.typeClasses
 
-    const typeClass = type in typeClasses ? typeClasses[type] : ""
-
-    const numClass = (numbered && (this.constructor.numbered.includes(type))) ? "Numbered" : ""
-
-    const foldClass = (folded) ? "Folded" : ""
+    const classes = addClass(
+      className,
+      "HBox Entry",
+      type in typeClasses ? typeClasses[type] : "",
+      (numbered && (this.constructor.numbered.includes(type))) ? "Numbered" : "",
+      (folded) ? "Folded" : "",
+      (isCurrent) ? "Current" : "",
+    )
 
     function onClick(ev) {
       return onActivate && onActivate(id)
     }
 
-    return <ScrollRef isCurrent={isCurrent} refCurrent={refCurrent}>
-      <HBox className={addClass(className, "Entry", typeClass, numClass, foldClass)} onClick={onClick} {...rest}>
+    return <div ref={isCurrent ? refCurrent : null} className={classes} onClick={onClick} {...rest}>
       <ItemIcon type={type}/>
       <ItemLabel type={type} name={name}/>
-      {wcFormat && <><Filler/><span className="WordCount">{wcFormat(id, words)}</span></>}
-      </HBox>
-    </ScrollRef>
+      {wcFormat && <><Filler/><div className="WordCount">{wcFormat(id, words)}</div></>}
+    </div>
   }
-}
-
-function ScrollRef({isCurrent, refCurrent, children}) {
-  if(isCurrent) {
-    //console.log("Match:", current, id)
-    return <div className="Current" ref={refCurrent}>{children}</div>
-  }
-  return children
 }
 
 class ItemIcon extends React.PureComponent {
@@ -457,7 +450,7 @@ class ItemIcon extends React.PureComponent {
       //case "notes":
       case "comment":
       case "tags":
-        return <span className={addClass("Box", type)} />
+        return <div className={addClass("Box", type)} />
     }
     return null
   }
@@ -475,6 +468,6 @@ function ItemName(type, name) {
 class ItemLabel extends React.PureComponent {
   render() {
     const {type, name} = this.props
-    return <span className="Name">{ItemName(type, name)}</span>
+    return <div className="Name">{ItemName(type, name)}</div>
   }
 }

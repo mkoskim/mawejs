@@ -6,11 +6,12 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import { saveViewSettings } from "../../gui/app/views";
-import { saveChartSettings } from "../../gui/arc/arc";
-import { saveEditorSettings } from "../../gui/editor/editor";
+import {uuid as getUUID, buf2file, filterCtrlElems} from "../util";
+
+import {saveViewSettings} from "../../gui/app/views";
+import {saveChartSettings} from "../../gui/arc/arc";
+import {saveEditorSettings} from "../../gui/editor/editor";
 import {saveExportSettings} from "../../gui/export/export";
-import {uuid as getUUID, buf2file, elemName, filterCtrlElems, elemNumbered, elemHeadParse} from "../util";
 
 //----------------------------------------------------------------------------
 
