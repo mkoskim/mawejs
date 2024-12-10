@@ -517,7 +517,8 @@ function RightPanelContent({settings, selected}) {
         wcFormat={doc.ui.editor.notes.words}
         activeID="notes"
         setActive={setActive}
-      />
+        current={track?.id}
+        />
     case "wordtable":
       return <WordTable
         section={doc.body}
