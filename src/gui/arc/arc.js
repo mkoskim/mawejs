@@ -65,6 +65,13 @@ export function saveChartSettings(settings) {
 //
 //*****************************************************************************
 
+const indexStyle = {
+  maxWidth: "350px",
+  minWidth: "350px",
+  width: "350px",
+  borderRight: "1px solid lightgray"
+}
+
 export function StoryArc({doc, updateDoc}) {
   //const section = doc.body
 
@@ -137,13 +144,13 @@ export function StoryArc({doc, updateDoc}) {
 
   return <DragDropContext onDragEnd={onDragEnd}>
     <HBox style={{overflow: "auto"}}>
-      <VBox style={{maxWidth: "300px", borderRight: "1px solid lightgray"}}>
+      <VBox style={indexStyle}>
         <IndexToolbar settings={settings}/>
         <DocIndex
           sectID="body"
           section={doc.body}
           include={indexElements()}
-          wcFormat={"compact"}
+          wcFormat={"numbers"}
           unfold={true}
         />
       </VBox>

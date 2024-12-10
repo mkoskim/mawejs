@@ -73,9 +73,9 @@
 }
 
 .TOC .Entry.Act {
-  border-top: 1px dashed gray;
   font-weight: bold;
   /*
+  border-top: 1px dashed gray;
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
   */
