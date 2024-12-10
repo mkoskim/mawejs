@@ -81,7 +81,7 @@ export function DocIndex({style, activeID, section, wcFormat, include, setActive
   //---------------------------------------------------------------------------
 
   const cumulative = useDeferredValue((["percent", "cumulative"].includes(wcFormat))
-    ? wcCumulative(section)
+    ? wcCumulative(section, activeID)
     : undefined
   )
 
