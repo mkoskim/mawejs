@@ -70,10 +70,12 @@ export async function focusByPath(editor, path, collapse = true) {
     ReactEditor.focus(editor)
     //await sleep(20);
   }
-  if(path) {
+  if(path) try {
     Transforms.select(editor, path);
     if(collapse) Transforms.collapse(editor);
     scrollToPoint(editor, {path, offset: 0})
+  } catch(e) {
+    console.log("Focus: invalid path ignored.")
   }
 }
 
