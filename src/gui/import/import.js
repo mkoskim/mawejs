@@ -21,6 +21,8 @@ import {
   Menu, MenuItem,
   Inform,
   Filler,
+  addHotkeys,
+  IsKey,
 } from "../common/factory";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
@@ -110,19 +112,9 @@ function ImportView({ updateDoc, buffer, setBuffer }) {
     setBuffer(undefined); // Close the dialog by resetting the buffer
   }
 
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        Cancel();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
+  useEffect(() => addHotkeys([
+    [IsKey.Escape, Cancel],
+  ]))
 
   useEffect(() => {
     const { loader, format } = getContent(file, ext)
@@ -151,10 +143,8 @@ function ImportView({ updateDoc, buffer, setBuffer }) {
 
       <Separator />
 
-      {/* <Button variant="contained" color="success" onClick={Import}>Import</Button> */}
       <Separator />
       <IconButton onClick={Cancel} aria-label="close"><CloseIcon /></IconButton>
-      {/* <Button variant="contained" color="error" onClick={Cancel}>Cancel</Button> */}
     </ToolBox>
 
     <HBox style={{ overflow: "auto" }}>
