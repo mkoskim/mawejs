@@ -15,7 +15,6 @@ import {
 } from 'slate'
 import { ReactEditor } from 'slate-react'
 
-import { nanoid } from 'nanoid';
 import { appBeep } from '../../system/host';
 import {elemHeading, elemTags} from '../../document/util';
 import { nodeTypes } from '../../document/elements';
@@ -76,31 +75,6 @@ export function isAstChange(editor) {
 
 //-----------------------------------------------------------------------------
 
-export function elemByID(editor, id) {
-  if(!id) return undefined
-
-  /*
-  if(editor.idlookup) {
-    const path = editor.idlookup[id]
-    const node = Editor.node(editor, path)
-    if(node?.id === id) return [node, path]
-  }
-  */
-
-  const match = Editor.nodes(editor, {
-    //at: { anchor: Editor.start(editor, []), focus: Editor.end(editor, [])},
-    at: [],
-    match: (n, p) => Editor.isBlock(editor, n) && n.id === id
-  }).next()
-
-  if(match.done) return undefined
-  return match.value
-}
-
-export function hasElem(editor, id) {
-  return !!elemByID(editor, id)
-}
-
 export function elemByTypes(editor, types, anchor, focus) {
   if(!anchor) anchor = Editor.start(editor, [])
   if(!focus) focus = Editor.end(editor, [])
@@ -123,95 +97,9 @@ export function elemsByRange(editor, anchor, focus) {
 }
 
 //-----------------------------------------------------------------------------
-// Drag'n'drop po and push
-
-export function dndDrop(srcEdit, srcId, dstEdit, dstId, dstIndex) {
-  console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
-
-  const node = dndElemPop(srcEdit, srcId)
-  dndElemPushTo(dstEdit, node, dstId, dstIndex)
-}
-
-function dndElemPop(editor, id) {
-
-  const match = elemByID(editor, id)
-  if(!match) return
-
-  const [node, path] = match
-
-  //console.log("Pop:", path, node)
-
-  Transforms.removeNodes(editor, {at: path, hanging: true})
-
-  if(!elemHeading(node)) {
-    const htype = nodeTypes[node.type].header
-    return {
-      ...node,
-      children: [
-        {type: htype, id: nanoid(), children: [{text: ""}]},
-        ...node.children
-      ]
-    }
-  }
-
-  return node
-}
-
-function dndElemPushTo(editor, block, id, index) {
-  //console.log("Push", block, id, index)
-
-  if(!block) return
-
-  function getContainer() {
-    if(!id) return [editor, []]
-    return elemByID(editor, id)
-  }
-
-  const [container, pcontainer] = getContainer()
-
-  //console.log("Container:", container)
-
-  //---------------------------------------------------------------------------
-  // Check if container has head element. If so, add +1 to index
-  //---------------------------------------------------------------------------
-
-  function getChildIndex(container) {
-    if(elemHeading(container)) return index+1
-    return index
-  }
-
-  const childindex = getChildIndex(container)
-  const childpath = [...pcontainer, childindex]
-
-  //---------------------------------------------------------------------------
-  // Check that elem at drop point has header (prevent merge)
-  //---------------------------------------------------------------------------
-
-  if(container.children.length > childindex) {
-    const node = container.children[childindex]
-
-    if(!elemHeading(node)) {
-      const htype = nodeTypes[node.type].header
-      Transforms.insertNodes(editor,
-        {
-          type: htype,
-          id: nanoid(),
-          children: [{text: ""}]
-        },
-        {at: [...childpath, 0]}
-      )
-    }
-  }
-
-  //console.log("Index at:", [...ppath, index])
-  //console.log("Insert at:", childpath)
-  Transforms.insertNodes(editor, block, {at: childpath})
-
-}
-
-//-----------------------------------------------------------------------------
 // Focusing elements
 
+/*
 export function focusByID(editor, id) {
   const match = elemByID(editor, id)
 
@@ -223,6 +111,7 @@ export function focusByID(editor, id) {
     focusByPath(editor, path)
   }
 }
+*/
 
 export async function focusByPath(editor, path, collapse = true) {
   //console.log("FocusByPath", path)
@@ -330,7 +219,6 @@ export function doFold(editor, node, path, fold) {
       Transforms.insertNodes(editor,
         {
           type: nodeTypes[node.type].header,
-          id: nanoid(),
           children: [{text: ""}]
         },
         {at: path.concat([0])}

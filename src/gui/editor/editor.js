@@ -30,8 +30,6 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 import {
   getEditor, SlateEditable,
-  hasElem,
-  focusByPath, focusByID,
   searchFirst, searchForward, searchBackward,
   isAstChange,
   EditButtons,
@@ -58,7 +56,8 @@ import {
 
 import { wcElem } from "../../document/util";
 import { elemFind } from "../../document/xmljs/tree";
-import {dndDrop, elemIsBlock} from "./slateHelpers";
+import {elemIsBlock, focusByPath} from "./slateHelpers";
+import { IDfromPath, IDtoPath, dndDrop} from "./slateDnD"
 
 //*****************************************************************************
 //
@@ -90,7 +89,7 @@ export function loadEditorSettings(settings) {
 
   return {
     active: "body",
-    focusTo: {id: undefined},
+    focusTo: undefined,
     body: {
       indexed: ["act", "chapter", "scene", "bookmark"],
       words: "numbers",
@@ -136,12 +135,13 @@ export function saveEditorSettings(settings) {
 //-----------------------------------------------------------------------------
 
 export function getFocusTo(doc) { return doc.ui.editor.focusTo.id; }
-export function setFocusTo(updateDoc, sectID, elemID) {
+export function setFocusTo(updateDoc, id) {
   updateDoc(doc => {
-    doc.ui.view.selected  = "editor"
-    doc.ui.editor.focusTo = {id: elemID}
+    doc.ui.view.selected = "editor"
+    const {sectID, path} = IDtoPath(id)
     doc.ui.editor.active = sectID
-    console.log("setFocusTo:", sectID, elemID)
+    doc.ui.editor.focusTo = path
+    console.log("setFocusTo:", id)
   })
 }
 
@@ -176,27 +176,34 @@ export function SingleEditView({doc, updateDoc}) {
   // Cursor movement tracking
   //---------------------------------------------------------------------------
 
-  const [track, setTrack] = useState({
-    marks: {},
-    node: undefined,
-    parents: [],
-  })
+  const [track, setTrack] = useState(undefined)
 
-  const trackMarks = useCallback((editor) => {
+  const trackMarks = useCallback((editor, sectID) => {
     try {
-      const marks = Editor.marks(editor)
-      const parents = Array
-        .from(Editor.levels(editor))
-        .map(([n, p]) => n)
-        .filter(e => elemIsBlock(editor, e));
-      const node = parents[parents.length - 1]
-      //console.log("Levels:", levels)
+      const {selection} = editor
+      if(selection) {
+        const {focus} = selection
 
-      //console.log("Track:", marks, node, parents)
-      setTrack({marks, node, parents})
+        const match = Editor.parent(editor,
+          focus,
+          {
+            match: n =>
+              !Editor.isEditor(n) &&
+              Element.isElement(n)
+          }
+        )
+        if(match) {
+          const [node, path] = match
+          //console.log(node, path)
+          const marks = Editor.marks(editor)
+          setTrack({marks, node, id: IDfromPath(sectID, path)})
+          return
+        }
+      }
     } catch(e) {
       //console.log("Track error:", e)
     }
+    setTrack(undefined)
   }, [setTrack])
 
   //---------------------------------------------------------------------------
@@ -207,7 +214,7 @@ export function SingleEditView({doc, updateDoc}) {
   const noteeditor = useMemo(() => getEditor(), [])
 
   const updateBody = useCallback(buffer => {
-    trackMarks(bodyeditor)
+    trackMarks(bodyeditor, "body")
     if(isAstChange(bodyeditor)) {
       updateDoc(doc => {
         doc.body.acts = buffer;
@@ -217,7 +224,7 @@ export function SingleEditView({doc, updateDoc}) {
   }, [bodyeditor])
 
   const updateNotes = useCallback(buffer => {
-    trackMarks(noteeditor)
+    trackMarks(noteeditor, "notes")
     if(isAstChange(noteeditor)) {
       updateDoc(doc => {
         doc.notes.acts = buffer
@@ -230,14 +237,7 @@ export function SingleEditView({doc, updateDoc}) {
   // Section selection + focusing
   //---------------------------------------------------------------------------
 
-  const {focusTo, active} = doc.ui.editor
-
-  const getSectIDByElemID = useCallback(elemID => {
-    if(!elemID) return undefined
-    if(hasElem(bodyeditor, elemID)) return "body"
-    if(hasElem(noteeditor, elemID)) return "notes"
-    return undefined
-  }, [bodyeditor, noteeditor])
+  const {active, focusTo} = doc.ui.editor
 
   const getEditorBySectID = useCallback(sectID => {
     switch(sectID) {
@@ -250,17 +250,19 @@ export function SingleEditView({doc, updateDoc}) {
     return getEditorBySectID(active)
   }, [getEditorBySectID, active])
 
-  const setActive = useCallback((sectID, elemID) => {
-    setFocusTo(updateDoc, sectID, elemID)
+  const setActive = useCallback(id => {
+    //console.log("setActive:", sectID, path)
+    setFocusTo(updateDoc, id)
   }, [updateDoc])
 
   useEffect(() => {
-    const {id} = focusTo
-    const editor = getActiveEdit()
+    //console.log("Focus to:", focusTo)
 
-    console.log("Focus to:", id)
-    if(id && editor) {
-      focusByID(editor, id)
+    if(focusTo) {
+      //const {sectID, path} = IDtoPath(focusTo)
+      console.log("Focus path", focusTo)
+      const editor = getEditorBySectID(active)
+      focusByPath(editor, focusTo)
     }
   }, [focusTo, getActiveEdit])
 
@@ -391,9 +393,6 @@ export function SingleEditView({doc, updateDoc}) {
 
     console.log("onDragEnd:", result)
 
-    //console.log("DnD disabled")
-    //return
-
     const {type, draggableId, source, destination} = result;
 
     if(!destination) return;
@@ -404,17 +403,16 @@ export function SingleEditView({doc, updateDoc}) {
 
     //console.log(type, source, "-->", destination)
 
-
     switch(type) {
       case "chapter":
       case "scene": {
-        const srcEditID = getSectIDByElemID(source.droppableId)
-        const dstEditID = getSectIDByElemID(destination.droppableId)
-        const srcEdit = getEditorBySectID(srcEditID)
-        const dstEdit = getEditorBySectID(dstEditID)
+        const {sectID: srcSectID, path: srcPath} = IDtoPath(draggableId)
+        const {sectID: dstSectID, path: dstPath} = IDtoPath(destination.droppableId)
+        const srcEdit = getEditorBySectID(srcSectID)
+        const dstEdit = getEditorBySectID(dstSectID)
 
-        dndDrop(srcEdit, draggableId, dstEdit, destination.droppableId, destination.index)
-        setActive(dstEditID, draggableId)
+        const dropped = dndDrop(srcEdit, srcPath, dstEdit, dstPath, destination.index)
+        setActive(IDfromPath(dstSectID, dropped))
         break;
       }
 
@@ -445,7 +443,7 @@ function LeftPanel({settings}) {
       wcFormat={doc.ui.editor.body.words}
       activeID="body"
       setActive={setActive}
-      parents={track.parents}
+      current={track?.id}
     />
   </VBox>
 }
@@ -519,8 +517,8 @@ function RightPanelContent({settings, selected}) {
         wcFormat={doc.ui.editor.notes.words}
         activeID="notes"
         setActive={setActive}
-        parents={track.parents}
-      />
+        current={track?.id}
+        />
     case "wordtable":
       return <WordTable
         section={doc.body}
@@ -671,7 +669,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
       <Separator/>
       <Filler />
       <Separator/>
-      <FoldButtons editor={editor} folded={track.block?.folded}/>
+      <FoldButtons editor={editor} folded={track?.node?.folded}/>
     </ToolBox>
 
     {/* Editor board and sheet */}
