@@ -140,6 +140,23 @@ const debug = {
   //blocks: "withBorders",  // Borders around chapter & scene div's to make them visible
 }
 
+/*
+function renderElement({element, attributes, ...props}) {
+  const {type} = element
+
+  switch (type) {
+    case "act":
+    case "chapter":
+    case "scene": {
+      return <div {...attributes} {...props}/>
+    }
+    default: break;
+  }
+
+  return <p {...attributes} {...props}/>
+}
+*/
+
 function renderElement({element, attributes, ...props}) {
 
   const {type, folded, numbered, content} = element
