@@ -29,28 +29,13 @@ import {
   nodeBreaks,
 } from '../../document/elements';
 
-import {
-  text2Regexp,
-  searchFirst, searchForward, searchBackward,
-} from './slateSearch';
-
 import {doFold} from "./slateFolding"
 
 import {
-  isAstChange,
-  focusByPath,
   elemIsBlock,
 } from "./slateHelpers"
 
 import {text2lines} from '../import/util';
-
-export {
-  SlateEditable,
-  text2Regexp,
-  isAstChange,
-  searchFirst, searchForward, searchBackward,
-  focusByPath,
-}
 
 //-----------------------------------------------------------------------------
 //
@@ -105,9 +90,11 @@ export function getEditor() {
   ].reduce((editor, func) => func(editor), undefined)
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
 // Pasting text to editor
-//-----------------------------------------------------------------------------
+//
+//*****************************************************************************
 
 function withTextPaste(editor) {
 
@@ -169,6 +156,12 @@ function withTextPaste(editor) {
 
   return editor;
 }
+
+//*****************************************************************************
+//
+// With Markups
+//
+//*****************************************************************************
 
 function withMarkup(editor) {
 

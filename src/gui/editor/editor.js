@@ -29,15 +29,28 @@ import {
 import { DragDropContext } from "@hello-pangea/dnd";
 
 import {
-  getEditor, SlateEditable,
-  searchFirst, searchForward, searchBackward,
   isAstChange,
+  focusByPath,
+} from "./slateHelpers"
+
+import {
+  searchFirst, searchForward, searchBackward,
+} from './slateSearch';
+
+import {
+  getEditor,
 } from "./slateEditor"
+
+import {
+  SlateEditable,
+} from "./slateEditable"
 
 import {
   EditButtons,
   FoldButtons,
 } from "./slateButtons"
+
+import {IDfromPath, IDtoPath, dndDrop} from "./slateDnD"
 
 import {DocIndex} from "../common/docIndex"
 import {WordTable} from "./wordTable"
@@ -58,8 +71,6 @@ import {
 
 import {wcElem} from "../../document/util";
 import {elemFind} from "../../document/xmljs/tree";
-import {focusByPath} from "./slateHelpers";
-import {IDfromPath, IDtoPath, dndDrop} from "./slateDnD"
 
 //*****************************************************************************
 //
