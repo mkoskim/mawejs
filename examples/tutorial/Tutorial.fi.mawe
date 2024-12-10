@@ -234,7 +234,7 @@ STORY: Ohjeet
 <br/>
 </scene>
 <scene name="HUOM!">
-<p>Monet strukturoidut editorit kuten Scrivener, yWriter ja Manuskript liittävät metadatan kohtaus- ja lukuelementteihin, eli kirjoitat kuvauksen tai kommentin <b>kohtaukselle</b> tai <b>luvulle</b>.<b> </b>MaweJS poikkeaa näistä perustavanlaatuisesti siksi, että pääasiassa liität huomautukset (annotations) tekstiin itseensä. Ne - kirjamerkit, kommentit, puuttuva teksti - eivät siis ole sidoksissa kohtaus- tai lukujakoon, vaan ne ovat elementtejä, jotka koskevat kirjoitettua tekstiä itseään. Niinpä ne säilyvät, vaikka muokkaisit kohtaus- ja lukujakoa.</p>
+<p>Monet strukturoidut editorit kuten Scrivener, yWriter ja Manuskript liittävät metadatan kohtaus- ja lukuelementteihin, eli kirjoitat kuvauksen tai kommentin <b>kohtaukselle</b> tai <b>luvulle</b>. MaweJS poikkeaa näistä perustavanlaatuisesti siksi, että pääasiassa liität huomautukset (annotations) tekstiin itseensä. Ne - kirjamerkit, kommentit, puuttuva teksti - eivät siis ole sidoksissa kohtaus- tai lukujakoon, vaan ne ovat elementtejä, jotka koskevat kirjoitettua tekstiä itseään. Niinpä ne säilyvät, vaikka muokkaisit kohtaus- ja lukujakoa.</p>
 </scene>
 <scene name="Esimerkkejä">
 <p>Esimerkkejä kirjamerkeistä:</p>
@@ -436,5 +436,6 @@ NOTES
 <history>
 <words date="2024-12-04" text="4687" missing="1046" chars="27422"/>
 <words date="2024-12-05" text="3513" missing="2194" chars="29203"/>
+<words date="2024-12-10" text="3513" missing="2194" chars="29203"/>
 </history>
 </story>
