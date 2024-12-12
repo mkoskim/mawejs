@@ -69,7 +69,7 @@ import {
   ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
 
-import {wcElem, nodeID, IDtoPath} from "../../document/util";
+import {wcElem, nodeID, IDtoPath, nanoid} from "../../document/util";
 import {elemFind} from "../../document/xmljs/tree";
 
 //*****************************************************************************
@@ -152,9 +152,10 @@ export function setFocusTo(updateDoc, id) {
   updateDoc(doc => {
     doc.ui.view.selected = "editor"
     const {sectID, path} = IDtoPath(id)
+    doc.ui.editor.refocus = nanoid()
     doc.ui.editor.active = sectID
     doc.ui.editor.focusTo = path
-    console.log("setFocusTo:", id)
+    //console.log("setFocusTo:", sectID, path)
   })
 }
 
@@ -171,6 +172,7 @@ export function SingleEditView({doc, updateDoc}) {
   //---------------------------------------------------------------------------
 
   //console.log("Doc:", doc)
+  //console.log("Body:", doc.body.acts)
 
   /*
   return <React.Fragment>
@@ -250,7 +252,7 @@ export function SingleEditView({doc, updateDoc}) {
   // Section selection + focusing
   //---------------------------------------------------------------------------
 
-  const {active, focusTo} = doc.ui.editor
+  const {refocus, active, focusTo} = doc.ui.editor
 
   const getEditorBySectID = useCallback(sectID => {
     switch(sectID) {
@@ -270,14 +272,9 @@ export function SingleEditView({doc, updateDoc}) {
 
   useEffect(() => {
     //console.log("Focus to:", focusTo)
-
-    if(focusTo) {
-      //const {sectID, path} = IDtoPath(focusTo)
-      console.log("Focus path", focusTo)
-      const editor = getActiveEdit()
-      focusByPath(editor, focusTo)
-    }
-  }, [getActiveEdit, focusTo])
+    const editor = getActiveEdit()
+    focusByPath(editor, focusTo)
+  }, [refocus, active, focusTo])
 
   // Initially focus editor
   useEffect(() => {
@@ -424,8 +421,8 @@ export function SingleEditView({doc, updateDoc}) {
         const srcEdit = getEditorBySectID(srcSectID)
         const dstEdit = getEditorBySectID(dstSectID)
 
-        const dropped = dndDrop(srcEdit, srcPath, dstEdit, dstPath, destination.index)
-        setActive(nodeID(dstSectID, dropped))
+        dndDrop(srcEdit, srcPath, dstEdit, dstPath, destination.index)
+        setActive(nodeID(dstSectID))
         break;
       }
 

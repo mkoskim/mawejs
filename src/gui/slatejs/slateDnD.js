@@ -23,8 +23,22 @@ import {
 export function dndDrop(srcEdit, srcPath, dstEdit, dstPath, dstIndex) {
   //console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
 
-  const node = dndElemPop(srcEdit, srcPath)
-  return dndElemPushTo(dstEdit, node, dstPath, dstIndex)
+  if(srcEdit === dstEdit) {
+    srcEdit.withoutNormalizing(() => {
+      const node = dndElemPop(srcEdit, srcPath)
+      const path = dndElemPushTo(srcEdit, node, dstPath, dstIndex)
+      setSelection(srcEdit, path)
+    })
+  } else {
+    const node = dndElemPop(srcEdit, srcPath)
+    const path = dndElemPushTo(dstEdit, node, dstPath, dstIndex)
+    setSelection(dstEdit, path)
+  }
+}
+
+function setSelection(editor, path) {
+  Transforms.select(editor, path)
+  Transforms.collapse(editor)
 }
 
 function dndElemPop(editor, path) {
