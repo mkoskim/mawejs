@@ -184,36 +184,37 @@ export class FoldButtons extends React.PureComponent {
         <Button tooltip="Folding" {...bindTrigger(popupState)}>Fold</Button>
         <Menu {...bindMenu(popupState)}>
 
-        {/* Fold/unfold all */}
+        {/* Folding */}
         <MenuItem onClick={e => {onFoldAll(e); popupState.close(e)}}>
           <ListItemText>Fold All</ListItemText>
           <Typography sx={{ color: 'text.secondary' }}>Alt-A</Typography>
           </MenuItem>
-        <MenuItem onClick={e => {onUnfoldAll(e); popupState.close(e)}}>
-          <ListItemText>Unfold All</ListItemText>
-          <Typography sx={{ color: 'text.secondary' }}>Alt-S</Typography>
-          </MenuItem>
 
-        {/* Fold/unfold chapters */}
         <Separator/>
         <MenuItem onClick={e => {onFoldChapters(e); popupState.close(e)}}>
-          <ListItemText>Chapters: Fold</ListItemText>
+          <ListItemText>Fold Chapters</ListItemText>
           <Typography sx={{ color: 'text.secondary' }}></Typography>
           </MenuItem>
         <MenuItem onClick={e => {onUnfoldChapters(e); popupState.close(e)}}>
-          <ListItemText>Chapters: Unfold</ListItemText>
+          <ListItemText>Unfold Chapters</ListItemText>
           <Typography sx={{ color: 'text.secondary' }}></Typography>
           </MenuItem>
 
-        {/* Fold/unfold scenes/synopses */}
+        {/* Unfolding */}
         <Separator/>
         <MenuItem onClick={e => {onUnfoldSynopsis(e); popupState.close(e)}}>
-          <ListItemText>Unfold synopsis</ListItemText>
+          <ListItemText>Unfold Synopsis</ListItemText>
           <Typography sx={{ color: 'text.secondary' }}></Typography>
           </MenuItem>
         <MenuItem onClick={e => {onUnfoldScenes(e); popupState.close(e)}}>
-          <ListItemText>Unfold scenes</ListItemText>
+          <ListItemText>Unfold Manuscript</ListItemText>
           <Typography sx={{ color: 'text.secondary' }}></Typography>
+          </MenuItem>
+
+        <Separator/>
+          <MenuItem onClick={e => {onUnfoldAll(e); popupState.close(e)}}>
+          <ListItemText>Unfold All</ListItemText>
+          <Typography sx={{ color: 'text.secondary' }}>Alt-S</Typography>
           </MenuItem>
 
         </Menu>
