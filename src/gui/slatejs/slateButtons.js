@@ -24,6 +24,8 @@ import { setMark } from './slateMarks';
 
 import {
   toggleFold, foldAll,
+  foldByType,
+  FOLD,
 } from "./slateFolding"
 
 import {
@@ -164,9 +166,62 @@ export class StyleButtons extends React.PureComponent {
 //*****************************************************************************
 
 export class FoldButtons extends React.PureComponent {
-  render() {
-    const {editor, folded} = this.props
 
+  render() {
+    const {editor} = this.props
+
+    function onFoldAll(e) { foldByType(editor, FOLD.foldAll); ReactEditor.focus(editor);}
+    function onUnfoldAll(e) { foldByType(editor, FOLD.unfoldAll); ReactEditor.focus(editor); }
+
+    function onFoldChapters(e) { foldByType(editor, FOLD.foldChapters); ReactEditor.focus(editor);}
+    function onUnfoldChapters(e) { foldByType(editor, FOLD.unfoldChapters); ReactEditor.focus(editor);}
+
+    function onUnfoldScenes(e) { foldByType(editor, FOLD.unfoldScenes); ReactEditor.focus(editor);}
+    function onUnfoldSynopsis(e) { foldByType(editor, FOLD.unfoldSynopsis); ReactEditor.focus(editor);}
+
+    return <PopupState variant="popover" popupId="file-menu">
+      {(popupState) => <React.Fragment>
+        <Button tooltip="Folding" {...bindTrigger(popupState)}>Fold</Button>
+        <Menu {...bindMenu(popupState)}>
+
+        {/* Fold/unfold all */}
+        <MenuItem onClick={e => {onFoldAll(e); popupState.close(e)}}>
+          <ListItemText>Fold All</ListItemText>
+          <Typography sx={{ color: 'text.secondary' }}>Alt-A</Typography>
+          </MenuItem>
+        <MenuItem onClick={e => {onUnfoldAll(e); popupState.close(e)}}>
+          <ListItemText>Unfold All</ListItemText>
+          <Typography sx={{ color: 'text.secondary' }}>Alt-S</Typography>
+          </MenuItem>
+
+        {/* Fold/unfold chapters */}
+        <Separator/>
+        <MenuItem onClick={e => {onFoldChapters(e); popupState.close(e)}}>
+          <ListItemText>Chapters: Fold</ListItemText>
+          <Typography sx={{ color: 'text.secondary' }}></Typography>
+          </MenuItem>
+        <MenuItem onClick={e => {onUnfoldChapters(e); popupState.close(e)}}>
+          <ListItemText>Chapters: Unfold</ListItemText>
+          <Typography sx={{ color: 'text.secondary' }}></Typography>
+          </MenuItem>
+
+        {/* Fold/unfold scenes/synopses */}
+        <Separator/>
+        <MenuItem onClick={e => {onUnfoldSynopsis(e); popupState.close(e)}}>
+          <ListItemText>Unfold synopsis</ListItemText>
+          <Typography sx={{ color: 'text.secondary' }}></Typography>
+          </MenuItem>
+        <MenuItem onClick={e => {onUnfoldScenes(e); popupState.close(e)}}>
+          <ListItemText>Unfold scenes</ListItemText>
+          <Typography sx={{ color: 'text.secondary' }}></Typography>
+          </MenuItem>
+
+        </Menu>
+      </React.Fragment>
+      }
+    </PopupState>
+
+    /*
     function onFoldToggle(e) { toggleFold(editor); ReactEditor.focus(editor); }
     function onFoldAll(e) { foldAll(editor, true); ReactEditor.focus(editor);}
     function onUnfoldAll(e) { foldAll(editor, false); ReactEditor.focus(editor); }
@@ -176,5 +231,6 @@ export class FoldButtons extends React.PureComponent {
       <IconButton tooltip="Fold all (Alt-A)" onClick={onFoldAll}><Icon.Style.FoldAll/></IconButton>
       <IconButton tooltip="Unfold all (Alt-S)" onClick={onUnfoldAll}><Icon.Style.UnfoldAll/></IconButton>
       </>
+    */
   }
 }

@@ -29,64 +29,14 @@ export function elemIsFolded(editor, path) {
 //
 //*****************************************************************************
 
-export function foldAll(editor, folded) {
-
-  function getChapters() {
-    return Editor.nodes(editor, {
-      at: [],
-      match: n => Element.isElement(n) && n.type === "chapter"
-    })
-  }
-
-  function getFolded() {
-    return Editor.nodes(editor, {
-      at: [],
-      match: n => Element.isElement(n) && n.folded
-    })
-  }
-
-  const matches = folded ? getChapters() : getFolded()
-
-  Editor.withoutNormalizing(editor, () => {
-    for(const [node, path] of matches) {
-      doFold(editor, node, path, folded)
-    }
-  })
-
-  if(folded) {
-    Transforms.select(editor, [0])
-    Transforms.collapse(editor)
-  }
-}
-
-export function toggleFold(editor) {
-  const { selection } = editor
-
-  if(!selection) return
-  if(!Range.isCollapsed(selection)) return
-
-  const { anchor } = selection
-  //const [node, path] = Editor.node(editor, anchor)
-  //console.log("Toggle fold", path, node)
-
-  //const foldable = ["chapter", "scene", "synopsis", "comment", "missing"]
-  const foldable = ["act", "chapter", "scene"]
-
-  const [node, path] = Editor.above(editor, {
-    at: anchor,
-    match: n => Element.isElement(n) && (foldable.includes(n.type)),
-  })
-
-  const folded = !node.folded
-  doFold(editor, node, path, folded)
-
-  Transforms.select(editor, path)
-  Transforms.collapse(editor)
-}
+//const foldable = ["chapter", "scene", "synopsis", "comment", "missing"]
+const foldable = ["act", "chapter", "scene"]
 
 //-----------------------------------------------------------------------------
+// Fold/unfold a node
+//-----------------------------------------------------------------------------
 
-export function doFold(editor, node, path, fold) {
+export function foldNode(editor, node, path, fold) {
 
   if((node.folded ?? false) === (fold ?? false)) return;
 
@@ -106,6 +56,104 @@ export function doFold(editor, node, path, fold) {
   Transforms.setNodes(editor, {folded: fold}, {at: path})
 }
 
+//-----------------------------------------------------------------------------
+// Toggle folding at selection
+//-----------------------------------------------------------------------------
+
+export function toggleFold(editor) {
+  const { selection } = editor
+
+  if(!selection) return
+  if(!Range.isCollapsed(selection)) return
+
+  const { focus } = selection
+  //const [node, path] = Editor.node(editor, anchor)
+  //console.log("Toggle fold", path, node)
+
+  const [node, path] = Editor.above(editor, {
+    at: focus,
+    match: n => Element.isElement(n) && (foldable.includes(n.type)),
+  })
+
+  const folded = !node.folded
+  foldNode(editor, node, path, folded)
+
+  Transforms.select(editor, path)
+  Transforms.collapse(editor)
+}
+
+//-----------------------------------------------------------------------------
+// Fold by node type
+//-----------------------------------------------------------------------------
+
+export const FOLD = {
+  foldAll: {
+    act: true,
+    chapter: true,
+    scene: true,
+    synopsis: true,
+    notes: true,
+  },
+  unfoldAll: {
+    act: false,
+    chapter: false,
+    scene: false,
+    synopsis: false,
+    notes: false,
+  },
+
+  foldChapters: {
+    act: false,
+    chapter: true,
+  },
+  unfoldChapters: {
+    act: false,
+    chapter: false,
+  },
+
+  unfoldScenes: {
+    act: false,
+    chapter: false,
+    scene: false,
+    synopsis: true,
+    notes: true,
+  },
+  unfoldSynopsis: {
+    act: false,
+    chapter: false,
+    synopsis: false,
+    scene: true,
+    notes: true,
+  },
+}
+
+export function foldByType(editor, types) {
+  console.log("Fold by type:", types)
+
+  const matches = Editor.nodes(editor, {
+    at: [],
+    match: n => {
+      if(Editor.isEditor(n)) return false;
+      if(!Element.isElement(n)) return false;
+
+      const type = n.type === "scene" ? n.content : n.type
+
+      if(!(type in types)) return false;
+      if(n.folded === types[type]) return false
+      return true
+    }
+  })
+
+  Editor.withoutNormalizing(editor, () => {
+    for(const [node, path] of matches) {
+      const fold = node.type === "scene" ? types[node.content] : types[node.type]
+      foldNode(editor, node, path, fold)
+    }
+  })
+}
+
+//-----------------------------------------------------------------------------
+// Fold by tags
 //-----------------------------------------------------------------------------
 
 export function foldByTags(editor, tags) {
@@ -165,7 +213,7 @@ export function foldByTags(editor, tags) {
 
   Editor.withoutNormalizing(editor, () => {
     for(const {node, path, folded} of folders) {
-      doFold(editor, node, path, folded)
+      foldNode(editor, node, path, folded)
     }
   })
 }
