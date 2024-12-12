@@ -13,11 +13,6 @@ import {
 import { focusByPath } from './slateHelpers';
 
 //-----------------------------------------------------------------------------
-
-//const foldable = ["chapter", "scene", "synopsis", "comment", "missing"]
-const foldable = ["act", "chapter", "scene"]
-
-//-----------------------------------------------------------------------------
 // Check, if element is inside folded block
 
 export function elemIsFolded(editor, path) {
@@ -98,7 +93,7 @@ export function toggleFold(editor) {
 
   const [node, path] = Editor.above(editor, {
     at: focus,
-    match: n => Element.isElement(n) && (foldable.includes(n.type)),
+    match: n => !Editor.isEditor(n) && Element.isElement(n) && nodeTypes[n.type].foldable,
   })
 
   const folded = !node.folded
