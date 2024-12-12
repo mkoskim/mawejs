@@ -424,8 +424,8 @@ export function SingleEditView({doc, updateDoc}) {
         const srcEdit = getEditorBySectID(srcSectID)
         const dstEdit = getEditorBySectID(dstSectID)
 
-        const dropped = dndDrop(srcEdit, srcPath, dstEdit, dstPath, destination.index)
-        setActive(nodeID(dstSectID, dropped))
+        dndDrop(srcEdit, srcPath, dstEdit, dstPath, destination.index)
+        setActive(nodeID(dstSectID))
         break;
       }
 

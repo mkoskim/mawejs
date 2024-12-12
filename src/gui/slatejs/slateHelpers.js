@@ -73,9 +73,12 @@ export async function focusByPath(editor, path, collapse = true) {
   if(path) try {
     Transforms.select(editor, path);
     if(collapse) Transforms.collapse(editor);
-    scrollToPoint(editor, {path, offset: 0})
   } catch(e) {
     console.log("Focus: invalid path ignored.")
+  }
+  const {focus} = editor.selection
+  if(focus) {
+    scrollToPoint(editor, focus)
   }
 }
 

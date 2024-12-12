@@ -83,6 +83,7 @@ export function createDateStamp(date) {
 //*****************************************************************************
 
 export function nodeID(sectID, path) {
+  if(!path) return sectID
   return [sectID, ...path].join(".")
 }
 
@@ -94,7 +95,7 @@ export function IDtoPath(ID) {
   const [sectID, ...path] = ID.split(".")
   return {
     sectID,
-    path: path.map(p => parseInt(p)),
+    path: path?.length ? path.map(p => parseInt(p)) : undefined,
   }
 }
 

@@ -16,6 +16,7 @@ import {elemHeading} from '../../document/util';
 import {
   nodeTypes,
 } from '../../document/elements';
+import {focusByPath} from './slateHelpers';
 
 //-----------------------------------------------------------------------------
 // Drag'n'drop pop and push
@@ -23,8 +24,17 @@ import {
 export function dndDrop(srcEdit, srcPath, dstEdit, dstPath, dstIndex) {
   //console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
 
-  const node = dndElemPop(srcEdit, srcPath)
-  return dndElemPushTo(dstEdit, node, dstPath, dstIndex)
+  if(srcEdit === dstEdit) {
+    srcEdit.withoutNormalizing(() => {
+      const node = dndElemPop(srcEdit, srcPath)
+      const path = dndElemPushTo(srcEdit, node, dstPath, dstIndex)
+      focusByPath(srcEdit, path)
+    })
+  } else {
+    const node = dndElemPop(srcEdit, srcPath)
+    const path = dndElemPushTo(dstEdit, node, dstPath, dstIndex)
+    focusByPath(dstEdit, path)
+  }
 }
 
 function dndElemPop(editor, path) {
