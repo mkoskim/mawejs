@@ -78,6 +78,7 @@ export function getCoreEditor() {
     // Base editor
     withHistory,
     withWordCount,    // Autogenerate word counts
+    withNoEmptySect,  // Prevent totally empty sections
     withBR,           // empty <p> -> <br>
     withFixNesting,   // Keep correct nesting: chapter -> scene -> paragraph
   ].reduce((editor, func) => func(editor), undefined)
@@ -304,6 +305,31 @@ function withWordCount(editor) {
 
 //*****************************************************************************
 //
+// Prevent totally empty sections
+//
+//*****************************************************************************
+
+function withNoEmptySect(editor) {
+  const { normalizeNode } = editor;
+
+  editor.normalizeNode = (entry)=> {
+    const [node] = entry
+
+    if(Editor.isEditor(node) && !node.children.length) {
+      Transforms.insertNodes(editor, {type: "br", children: [{text: ""}]})
+      return
+      //console.log("Editor:", node.children)
+      //return normalizeNode(entry)
+    }
+
+    return normalizeNode(entry);
+  }
+
+  return editor;
+}
+
+//*****************************************************************************
+//
 // With Breaks (br elements)
 //
 //*****************************************************************************
@@ -463,15 +489,14 @@ function withFixNesting(editor) {
         return;
       }
 
-      if(path.length < nodeType.level) {
-        Transforms.wrapNodes(editor, {type: nodeType.parent}, {at: path})
-        return;
-      }
+      if(!checkParent(node, path, nodeType.parent)) return
 
       if(!mergeHeadlessChilds(node, path)) return;
       updateBlockAttributes(node, path)
       return normalizeNode(entry)
     }
+
+    // Check parent
 
     if(!checkParent(node, path, nodeType.parent)) return
 
@@ -498,7 +523,7 @@ function withFixNesting(editor) {
 
     if(parent.type === type) return true
 
-    //console.log("FixNesting: Wrapping", path, node, type)
+    //console.log("FixNesting: Parent:", path, node, type)
     Transforms.wrapNodes(editor, {type}, {at: path})
     //console.log("Node:", node.type, "Parent:", parent.type, "->", type)
     return false

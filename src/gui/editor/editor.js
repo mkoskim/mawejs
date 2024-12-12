@@ -172,6 +172,7 @@ export function SingleEditView({doc, updateDoc}) {
   //---------------------------------------------------------------------------
 
   //console.log("Doc:", doc)
+  //console.log("Body:", doc.body.acts)
 
   /*
   return <React.Fragment>
