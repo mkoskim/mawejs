@@ -78,7 +78,7 @@ export async function focusByPath(editor, path, collapse = true) {
   }
   const {focus} = editor.selection
   if(focus) {
-    console.log("Scroll to:", focus)
+    //console.log("Scroll to:", focus)
     scrollToPoint(editor, focus)
   }
 }

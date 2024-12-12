@@ -155,7 +155,7 @@ export function setFocusTo(updateDoc, id) {
     doc.ui.editor.refocus = nanoid()
     doc.ui.editor.active = sectID
     doc.ui.editor.focusTo = path
-    console.log("setFocusTo:", sectID, path)
+    //console.log("setFocusTo:", sectID, path)
   })
 }
 
@@ -271,7 +271,7 @@ export function SingleEditView({doc, updateDoc}) {
   }, [updateDoc])
 
   useEffect(() => {
-    console.log("Focus to:", focusTo)
+    //console.log("Focus to:", focusTo)
     const editor = getActiveEdit()
     focusByPath(editor, focusTo)
   }, [refocus, active, focusTo])
