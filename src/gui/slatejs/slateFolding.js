@@ -10,6 +10,12 @@ import { elemHeading, elemTags } from '../../document/util';
 import {
   nodeTypes,
 } from '../../document/elements';
+import { focusByPath } from './slateHelpers';
+
+//-----------------------------------------------------------------------------
+
+//const foldable = ["chapter", "scene", "synopsis", "comment", "missing"]
+const foldable = ["act", "chapter", "scene"]
 
 //-----------------------------------------------------------------------------
 // Check, if element is inside folded block
@@ -17,10 +23,33 @@ import {
 export function elemIsFolded(editor, path) {
   for(const np of Node.levels(editor, path)) {
     const [node, path] = np
+    const {foldable} = nodeTypes[node.type]
+    if(!foldable) break
     //console.log("Node:", node);
     if(node.folded) return true;
   }
   return false;
+}
+
+function setCursor(editor) {
+  Transforms.collapse(editor)
+  const {selection} = editor;
+  if(!selection) return
+  const {focus} = selection;
+  if(!focus) return;
+
+  for(const np of Node.levels(editor, focus.path)) {
+    const [node, path] = np
+    if(Editor.isEditor(node)) continue
+
+    const {foldable} = nodeTypes[node.type]
+    if(!foldable) break
+    if(node.folded) {
+      Transforms.select(editor, Editor.start(editor, path))
+      //focusByPath(editor, path)
+      return
+    }
+  }
 }
 
 //*****************************************************************************
@@ -28,9 +57,6 @@ export function elemIsFolded(editor, path) {
 // Folding
 //
 //*****************************************************************************
-
-//const foldable = ["chapter", "scene", "synopsis", "comment", "missing"]
-const foldable = ["act", "chapter", "scene"]
 
 //-----------------------------------------------------------------------------
 // Fold/unfold a node
@@ -77,9 +103,7 @@ export function toggleFold(editor) {
 
   const folded = !node.folded
   foldNode(editor, node, path, folded)
-
-  Transforms.select(editor, path)
-  Transforms.collapse(editor)
+  setCursor(editor)
 }
 
 //-----------------------------------------------------------------------------
@@ -150,6 +174,8 @@ export function foldByType(editor, types) {
       foldNode(editor, node, path, fold)
     }
   })
+
+  setCursor(editor)
 }
 
 //-----------------------------------------------------------------------------
