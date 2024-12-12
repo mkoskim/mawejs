@@ -69,7 +69,7 @@ export function buf2tree(buffer) {
 export function fromXML(root) {
   const story = migrate(root)
 
-  console.log("Migrated:", story)
+  //console.log("Migrated:", story)
 
   const {uuid, name} = story.attributes ?? {};
 
@@ -127,7 +127,7 @@ function parseHead(head, history) {
   //const date = strftime("%Y-%m-%d")
   const date = createDateStamp()
   const [last] = history.filter(e => e.type === "words" && e.date !== date).sort().slice(-1)
-  console.log("Last time:", last)
+  //console.log("Last time:", last)
 
   return {
     title: optional(head, "title", elem2Text),
@@ -359,8 +359,8 @@ function parseWordEntry(elem) {
   return {
     type: "words",
     date,
-    text: parseInt(text),
-    missing: parseInt(missing),
-    chars: parseInt(chars),
+    text: textToInt(text),
+    missing: textToInt(missing),
+    chars: textToInt(chars),
   }
 }

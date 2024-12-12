@@ -128,7 +128,7 @@ export const FOLD = {
 }
 
 export function foldByType(editor, types) {
-  console.log("Fold by type:", types)
+  //console.log("Fold by type:", types)
 
   const matches = Editor.nodes(editor, {
     at: [],

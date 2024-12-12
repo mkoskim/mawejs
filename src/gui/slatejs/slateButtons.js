@@ -207,7 +207,7 @@ export class FoldButtons extends React.PureComponent {
           <Typography sx={{ color: 'text.secondary' }}></Typography>
           </MenuItem>
         <MenuItem onClick={e => {onUnfoldScenes(e); popupState.close(e)}}>
-          <ListItemText>Unfold Manuscript</ListItemText>
+          <ListItemText>Unfold Draft</ListItemText>
           <Typography sx={{ color: 'text.secondary' }}></Typography>
           </MenuItem>
 
