@@ -7,7 +7,7 @@
 import { mawe } from "../../document"
 import { splitByTrailingElem } from "../../util";
 import { nodeIsBreak, nodeIsNotBreak } from "../../document/elements";
-import {elemHeading} from "../../document/util";
+import {elemAsText, elemHeading} from "../../document/util";
 import {isNotEmpty} from "../common/factory";
 
 //*****************************************************************************
@@ -19,23 +19,6 @@ function getActOptions(acts, pgbreak) {
     type: acts,
     pgbreak,
   }
-/*
-  switch(acts) {
-    case "named": return {
-      numbered:   { pgbreak, name: true},
-      unnumbered: { pgbreak, name: true }
-    }
-    case "separated": return {
-      separator: "* * *",
-      numbered:   { skip: true },
-      unnumbered: { skip: true }
-    }
-  }
-  return {
-    numbered: {skip: true},
-    unnumbered: {skip: true},
-  }
-*/
 }
 
 function getChapterOptions(chapters, pgbreak) {
@@ -43,47 +26,12 @@ function getChapterOptions(chapters, pgbreak) {
     type: chapters,
     pgbreak,
   }
-
-/*
-  switch(chapters) {
-    case "numbered": return {
-      numbered:   { pgbreak, number: true},
-      unnumbered: { pgbreak, name: true }
-    }
-    case "named": return {
-      numbered:   { pgbreak, name: true},
-      unnumbered: { pgbreak, name: true }
-    }
-    case "numbered&named": return {
-      numbered:   { pgbreak, number: true, name: true},
-      unnumbered: { pgbreak, name: true }
-    }
-    case "separated": return {
-      separator: "* * *",
-      numbered:   { skip: true },
-      unnumbered: { skip: true }
-    }
-  }
-  return {
-    numbered: {skip: true},
-    unnumbered: {skip: true},
-  }
-*/
 }
 
 function getSceneOptions(scenes) {
   return {
     type: scenes,
   }
-
-/*
-  switch(scenes) {
-    case "separated": return {
-      separator: "* * *"
-    }
-  }
-  return {}
-*/
 }
 
 //*****************************************************************************
@@ -265,6 +213,33 @@ export function storyToFlatted(story) {
     return [first, ...separated].flat()
   }
 
+}
+
+//*****************************************************************************
+// Formatting flattened story
+//*****************************************************************************
+
+export function flattedToText(flatted) {
+
+  const {content} = flatted
+
+  return content.map(ParagraphToText).filter(isNotEmpty).join("\n")
+
+  function ParagraphToText(p) {
+    switch(p.type) {
+      case "hact":
+      case "hchapter":
+      case "hscene":
+        return (p.number ? p.number + " " : "") + (p.title ?? "")
+
+      case "separator":
+      case "br":
+        return
+
+      default: break;
+    }
+    return elemAsText(p)
+  }
 }
 
 //*****************************************************************************
