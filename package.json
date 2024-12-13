@@ -44,12 +44,12 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-infinite-scroll-component": "^6.1.0",
-    "recharts": "^2.14.1",
+    "recharts": "^2.15.0",
     "slate": "^0.112.0",
     "slate-history": "^0.110.3",
     "slate-react": "^0.112.0",
     "stream": "^0.0.3",
-    "use-immer": "^0.10.0",
+    "use-immer": "^0.11.0",
     "uuid": "^11.0.3",
     "xml-js": "^1.6.11"
   },
@@ -60,7 +60,7 @@
     "electron": "^33.2.1",
     "electron-builder": "^25.1.8",
     "electron-reload": "^2.0.0-alpha.1",
-    "nodemon": "^3.1.7",
+    "nodemon": "^3.1.9",
     "react-scripts": "^5.0.1",
     "wait-on": "^8.0.1"
   },
