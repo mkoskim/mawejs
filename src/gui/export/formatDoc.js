@@ -201,7 +201,7 @@ export function storyToFlatted(story) {
 
     const children = scene.children.filter(n => !nodeIsBreak(n))
     const splits = splitByTrailingElem(children, p => p.type === "br")
-      .map(s => s.filter(p => p.type !== "br"))
+      .map(s => s.filter(chooseParagraphs))
       .map(([first, ...rest]) => [{...first, first: true}, ...rest])
       .filter(s => s.length)
 
@@ -212,6 +212,14 @@ export function storyToFlatted(story) {
     if(head?.number) scenenum = head.number
 
     return [head, ...content].filter(isNotEmpty)
+  }
+
+  function chooseParagraphs(p) {
+    switch(p.type) {
+      case "p":
+      case "missing": return true
+    }
+    return false
   }
 
   //---------------------------------------------------------------------------
@@ -282,10 +290,7 @@ export function flattedFormat(format, flatted) {
       case "separator": return formatter(p)
       case "br": return formatter(p)
 
-      case "p":
-      case "missing": break;
-
-      default: return;
+      default: break;
     }
 
     const text = p.children.map(FormatMarks).join("")
