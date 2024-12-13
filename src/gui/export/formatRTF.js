@@ -96,7 +96,7 @@ ${subtitle ? "{\\sa440\\qc\\b\\fs28" + escape(subtitle) + "\\par}" : ""}
     const head = [ ...numbering, ...text].join(". ")
     const pgbreak = p.pgbreak ? "\\pagebb" : ""
 
-    return `{${pgbreak}\\sb1000\\qc\\b\\fs32 ${escape(head)}\\par}`
+    return `{${pgbreak}\\sb1000\\sa480\\qc\\b\\fs32 ${escape(head)}\\par}`
   },
 
   hchapter: (p) => {
@@ -109,16 +109,26 @@ ${subtitle ? "{\\sa440\\qc\\b\\fs28" + escape(subtitle) + "\\par}" : ""}
     const head = [ ...numbering, ...text].join(". ")
     const pgbreak = p.pgbreak ? "\\pagebb" : "\\sb480"
 
-    return `{${pgbreak}\\b\\fs28 ${escape(head)}\\par}`
+    return `{${pgbreak}\\sa480\\b\\fs28 ${escape(head)}\\par}`
   },
 
-  hscene: undefined,
+  hscene: (p) => {
+
+    const {title, number} = p
+    if(!title && !number) return
+
+    const numbering = number ? [`${number}`] : []
+    const text = title ? [title] : []
+    const head = [ ...numbering, ...text].join(". ")
+
+    return `{\\sb480\\b ${escape(head)}\\par}`
+  },
 
   //---------------------------------------------------------------------------
   // Breaks
   //---------------------------------------------------------------------------
 
-  separator: () => `{\\sb480\\qc ${escape("* * *")}\\par}`,
+  separator: () => `{\\sb480\\sa480\\qc ${escape("* * *")}\\par}`,
   //br: () => "\n",
 
   //---------------------------------------------------------------------------
@@ -127,8 +137,8 @@ ${subtitle ? "{\\sa440\\qc\\b\\fs28" + escape(subtitle) + "\\par}" : ""}
 
   //split: (paragraphs) => "{\\sb480" + paragraphs.join("{\\fi567"),
 
-  "missing": (p, text) => `{${p.first ? "\\sb480" : "\\fi567"}\\cf2 ${text}\\par}`,
-  "p": (p, text) => `{${p.first ? "\\sb480" : "\\fi567 "}${text}\\par}`,
+  "missing": (p, text) => `{${p.first ? "" : "\\fi567"}\\cf2 ${text}\\par}`,
+  "p": (p, text) => `{${p.first ? "" : "\\fi567 "}${text}\\par}`,
 
   //"bookmark": (p) => undefined,
   //"comment": (p) => undefined,

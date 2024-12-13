@@ -20,11 +20,13 @@ import {
   DeferredRender,
   Inform,
   Label,
+  ToolBox,
+  Filler,
 } from "../common/factory";
 
-import { elemName, getSuffix } from "../../document/util";
+import { elemName, getSuffix, text2words } from "../../document/util";
 
-import { flattedFormat, storyToFlatted } from "./formatDoc"
+import { flattedFormat, flattedToText, storyToFlatted } from "./formatDoc"
 
 import { formatRTF } from "./formatRTF";
 import { formatHTML } from "./formatHTML"
@@ -87,13 +89,60 @@ export function Export({ doc, updateDoc }) {
   const {exports} = doc
 
   const flatted = storyToFlatted(doc)
-  console.log("Flatted:", flatted)
+  //console.log("Flatted:", flatted)
 
   return <HBox style={{ overflow: "auto" }}>
     <ExportIndex style={{ maxWidth: "300px", width: "300px", borderRight: "1px solid lightgray" }} flatted={flatted}/>
     <Preview flatted={flatted}/>
     <ExportSettings style={{minWidth: "300px"}} flatted={flatted} exports={exports} updateDoc={updateDoc}/>
   </HBox>
+}
+
+//-----------------------------------------------------------------------------
+// Export settings
+//-----------------------------------------------------------------------------
+
+function ExportInfo({flatted}) {
+  const text = flattedToText(flatted)
+
+  const words = text2words(text)
+  const wc = words.length
+  const chars = text.length
+
+  const style={
+    padding: "6pt 0pt 6pt 0pt",
+    //border: "1pt solid lightgray",
+    //borderRadius: "2pt",
+  }
+
+  const numfmt = Intl.NumberFormat(undefined, {useGrouping: true})
+
+  return <VBox style={style}>
+    <Label>Words: {numfmt.format(wc)}</Label>
+    <Label>Chars: {numfmt.format(chars)}</Label>
+    </VBox>
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+
+class ChooseFormat extends React.PureComponent {
+  render() {
+    const {format, updateDoc} = this.props;
+
+    return <TextField select label="Format" value={format} onChange={e => updateDocFormat(updateDoc, e.target.value)}>
+      <ListSubheader>RTF</ListSubheader>
+      <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
+      {/*<MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>*/}
+      <ListSubheader>LaTeX</ListSubheader>
+      <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
+      <MenuItem value="tex2">LaTeX, A5 booklet</MenuItem>
+      <ListSubheader>Other</ListSubheader>
+      <MenuItem value="md">MD (Mark Down)</MenuItem>
+      {/* <MenuItem value="txt">Text (wrapped)</MenuItem> */}
+      </TextField>
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -113,26 +162,20 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
   const formatter = formatters[format]
 
   return <VBox style={style} className="ExportSettings">
-    <TextField select label="Format" value={format} onChange={e => updateDocFormat(updateDoc, e.target.value)}>
-      <ListSubheader>RTF</ListSubheader>
-      <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
-      {/*<MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>*/}
-      <ListSubheader>LaTeX</ListSubheader>
-      <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
-      <MenuItem value="tex2">LaTeX, A5 booklet</MenuItem>
-      <ListSubheader>Other</ListSubheader>
-      <MenuItem value="md">MD (Mark Down)</MenuItem>
-      {/* <MenuItem value="txt">Text (wrapped)</MenuItem> */}
-      </TextField>
+    <ExportInfo flatted={flatted}/>
+
+    <Separator/>
+
+    <ChooseFormat format={format} updateDoc={updateDoc}/>
+
+    <Button variant="contained" color="success" onClick={e => exportToFile(formatter, flatted)}>Export</Button>
+
+    <Separator/>
 
     <TextField select label="Content" value={exports.content} onChange={e => updateDocStoryContent(updateDoc, e.target.value)}>
       <MenuItem value="draft">Draft</MenuItem>
       <MenuItem value="synopsis">Synopsis</MenuItem>
       </TextField>
-
-    <Button variant="contained" color="success" onClick={e => exportToFile(formatter, flatted)}>Export</Button>
-
-    <Separator/>
 
     <TextField select label="Story Class" value={exports.type} onChange={e => updateDocStoryType(updateDoc, e.target.value)}>
       <MenuItem value="short">Short Story</MenuItem>
