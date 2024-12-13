@@ -87,7 +87,7 @@ export function Export({ doc, updateDoc }) {
   const {exports} = doc
 
   const flatted = storyToFlatted(doc)
-  console.log("Flatted:", flatted)
+  //console.log("Flatted:", flatted)
 
   return <HBox style={{ overflow: "auto" }}>
     <ExportIndex style={{ maxWidth: "300px", width: "300px", borderRight: "1px solid lightgray" }} flatted={flatted}/>
