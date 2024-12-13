@@ -171,23 +171,22 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
 
 async function exportToFile(formatter, flatted) {
 
-  throw new Error("Export disabled.")
+  const {options, file} = flatted
 
-  /*
-  const content = FormatBody(formatter, doc)
+  const content = flattedFormat(formatter, flatted)
 
-  const typesuffix = type === "synopsis" ? ".synopsis" : ""
+  const typesuffix = options.content === "synopsis" ? ".synopsis" : ""
 
-  const dirname = await fs.dirname(doc.file.id)
-  const name = await fs.basename(doc.file.id)
+  const dirname = await fs.dirname(file.id)
+  const name = await fs.basename(file.id)
   const suffix = getSuffix(name, [".mawe", ".mawe.gz"]);
   const basename = await fs.basename(name, suffix);
   const filename = await fs.makepath(dirname, basename + typesuffix + formatter.suffix)
   console.log("Export to:", filename)
+
   fs.write(filename, content)
-  .then(file => Inform.success(`Exported: ${file.name}`))
-  .catch(err => Inform.error(err))
-*/
+    .then(file => Inform.success(`Exported: ${file.name}`))
+    .catch(err => Inform.error(err))
 }
 
 //-----------------------------------------------------------------------------

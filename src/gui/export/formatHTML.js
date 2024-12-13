@@ -37,34 +37,39 @@ export const formatHTML = {
   // Headings
   //---------------------------------------------------------------------------
 
-  hact: (p, options) => {
+  hact: (p) => {
     const {title, number} = p
-    const pgbreak = options.pgbreak ? "<hr/>\n" : ""
+    if(!title && !number) return
+
     const numbering = number ? [`${number}`] : []
     const text = title ? [title] : []
     const head = [ ...numbering, ...text].join(". ")
+    const pgbreak = p.pgbreak ? "<hr/>\n" : ""
 
     return `${pgbreak}<h1>${escape(head)}</h1>`
   },
 
-  hchapter: (p, options) => {
+  hchapter: (p) => {
     const {title, number} = p
-    const pgbreak = options.pgbreak ? "<hr/>\n" : ""
+    if(!title && !number) return
+
     const numbering = number ? [`${number}`] : []
     const text = title ? [title] : []
     const head = [ ...numbering, ...text].join(". ")
+    const pgbreak = p.pgbreak ? "<hr/>\n" : ""
 
     return `${pgbreak}<h2>${head}</h2>`
   },
 
-  hscene: (p, options) => {
+  hscene: (p) => {
     const {title, number} = p
-    const pgbreak = options.pgbreak ? "<hr/>\n" : ""
+    if(!title && !number) return
+
     const numbering = number ? [`${number}`] : []
     const text = title ? [title] : []
     const head = [ ...numbering, ...text].join(". ")
 
-    return `${pgbreak}<h3>${head}</h3>`
+    return `<h3>${head}</h3>`
   },
 
   //---------------------------------------------------------------------------

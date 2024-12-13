@@ -92,7 +92,7 @@ function getSceneOptions(scenes) {
 
 export function storyToFlatted(story) {
 
-  const { exports, head, body } = story
+  const { file, exports, head, body } = story
   const pgbreak = exports.type === "long"
 
   const options = {
@@ -110,6 +110,7 @@ export function storyToFlatted(story) {
   var scenenum = 0
 
   return {
+    file,
     options,
     head: {author, title, subtitle},
     content: processBody(body.acts).filter(isNotEmpty)
@@ -201,6 +202,7 @@ export function storyToFlatted(story) {
     const children = scene.children.filter(n => !nodeIsBreak(n))
     const splits = splitByTrailingElem(children, p => p.type === "br")
       .map(s => s.filter(p => p.type !== "br"))
+      .map(([first, ...rest]) => [{...first, first: true}, ...rest])
       .filter(s => s.length)
 
     const content = separate(splits, {type: "br"})
@@ -216,14 +218,16 @@ export function storyToFlatted(story) {
 
   function makeHeader(hdr, num, options) {
     if(!hdr) return undefined
+    const {pgbreak} = options
     const {type, name, numbered} = hdr
     const number = numbered ? num + 1 : undefined
     const title = name
 
     switch(options.type) {
-      case "named": return {type, name, title}
-      case "numbered": return numbered ? {type, name, number} : {type, name, title}
-      case "numbered&named": return {type, name, number, title}
+      case "named": return {pgbreak, type, name, title}
+      case "numbered": return numbered ? {pgbreak, type, name, number} : {pgbreak, type, name, title}
+      case "numbered&named": return {pgbreak, type, name, number, title}
+      case "separated": return {type, name}
       default: break;
     }
     return undefined
@@ -264,20 +268,24 @@ export function flattedFormat(format, flatted) {
   const {head, content, options} = flatted
 
   return format.head(head, options) +
-    content.map(FormatParagraph).join("\n") +
-    format.footer()
+    content.map(FormatParagraph).filter(isNotEmpty).join("\n") +
+    format.footer(options)
 
   function FormatParagraph(p) {
     const formatter = format[p.type];
     if(!formatter) return
 
     switch(p.type) {
-      case "hact": return formatter(p, options.act)
-      case "hchapter": return formatter(p, options.chapter)
-      case "hscene": return formatter(p, options.scene)
+      case "hact": return formatter(p)
+      case "hchapter": return formatter(p)
+      case "hscene": return formatter(p)
       case "separator": return formatter(p)
       case "br": return formatter(p)
-      default: break;
+
+      case "p":
+      case "missing": break;
+
+      default: return;
     }
 
     const text = p.children.map(FormatMarks).join("")

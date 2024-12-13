@@ -9,7 +9,7 @@ export const formatTXT = {
   suffix: ".txt",
 
   // File
-  file: (head, content, options) => {
+  head: (head, options) => {
     //const author = head.nickname || head.author
     const {author, title, subtitle} = head
     //const headinfo = author ? `${author}: ${title}` : title
@@ -18,50 +18,34 @@ ${center(author ?? "")}
 
 ${center(title.toUpperCase()) ?? ""}
 ${subtitle ? "\n" + center(subtitle) + "\n" : ""}
-
-${content}
 `
   },
+
+  footer: (options) => "",
 
   //---------------------------------------------------------------------------
   // Joining elements
 
-  body: (chapters, options) => {
-    return chapters.join(getSeparator(options.separator))
+  hact: (p) => {
+    const {title, number} = p
+    if(!title && !number) return
+
+    const numbering = number ? [`${number}`] : []
+    const text = title ? [title] : []
+    const head = [ ...numbering, ...text].join(". ")
+
+    return `${escape(head)}\n`
   },
 
-  chapter: (head, scenes, options) => {
-    return head + scenes.join(getSeparator(options.separator))
-  },
+  hchapter: (p) => {
+    const {title, number} = p
+    if(!title && !number) return
 
-  scene: (head, splits) => {
-    return head + splits.join("\n\n")
-  },
+    const numbering = number ? [`${number}`] : []
+    const text = title ? [title] : []
+    const head = [ ...numbering, ...text].join(". ")
 
-  split: (paragraphs) => paragraphs.join("\n    "),
-
-  hact: (id, number, name, options) => {
-    if(options.skip) return ""
-
-    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
-    const title = options.name ? [escape(name)] : []
-    const head = [ ...numbering, ...title].join(". ")
-
-    if(!head) return ""
-
-    return `${head}\n\n`
-  },
-
-  hchapter: (id, number, name, options) => {
-    if(options.skip) return ""
-
-    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
-    const title = options.name ? [escape(name)] : []
-    const head = [ ...numbering, ...title].join(". ")
-
-    if(!head) return ""
-
-    return `${head}\n\n`
+    return `${escape(head)}\n`
   },
 
   hscene: undefined,
@@ -69,8 +53,8 @@ ${content}
   // Paragraph styles
   //"bookmark": (p) => undefined,
   //"comment": (sp) => undefined,
-  "missing": (p,text) => `!! ${linify(text)}`,
-  "p": (p, text) => `${linify(text)}`,
+  "missing": (p, text) => linify(`${p.first ? "    " : ""}!! ${text}`),
+  "p": (p, text) => linify(`${p.first ? "    " : ""}${text}`),
 
   "b": (text) => `*${text}*`,
   "i": (text) => `_${text}_`,
@@ -84,7 +68,7 @@ export const formatMD = {
   suffix: ".md",
 
   // File
-  file: (head, content, options) => {
+  head: (head, options) => {
     //const author = head.nickname || head.author
     const {author, title, subtitle} = head
     //const headinfo = author ? `${author}: ${title}` : title
@@ -94,63 +78,55 @@ ${author ?? ""}
 # ${title.toUpperCase() ?? ""}
 
 ${subtitle ? "\n## " + subtitle + "\n" : ""}
-
-${content}
 `
   },
 
-  //---------------------------------------------------------------------------
-  // Joining elements
-
-  body: (chapters, options) => {
-    return chapters.join(getSeparator(options.separator))
-  },
-
-  chapter: (head, scenes, options) => {
-    return head + scenes.join(getSeparator(options.separator))
-  },
-
-  scene: (head, splits) => {
-    return head + splits.join("\n\n")
-  },
-
-  split: (paragraphs) => paragraphs.join("\n\n"),
+  footer: (options) => "",
 
   //---------------------------------------------------------------------------
   // Headings
   //---------------------------------------------------------------------------
 
-  hact: (id, number, name, options) => {
-    if(options.skip) return ""
+  hact: (p) => {
+    const {title, number} = p
+    if(!title && !number) return
 
-    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
-    const title = options.name ? [escape(name)] : []
-    const head = [ ...numbering, ...title].join(". ")
+    const numbering = number ? [`${number}`] : []
+    const text = title ? [title] : []
+    const head = [ ...numbering, ...text].join(". ")
 
-    if(!head) return ""
-
-    return `# ${head}\n\n`
+    return `# ${escape(head)}\n`
   },
 
-  hchapter: (id, number, name, options) => {
-    if(options.skip) return ""
+  hchapter: (p) => {
+    const {title, number} = p
+    if(!title && !number) return
 
-    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
-    const title = options.name ? [escape(name)] : []
-    const head = [ ...numbering, ...title].join(". ")
+    const numbering = number ? [`${number}`] : []
+    const text = title ? [title] : []
+    const head = [ ...numbering, ...text].join(". ")
 
-    if(!head) return ""
-
-    return `## ${head}\n\n`
+    return `## ${escape(head)}\n`
   },
 
   hscene: undefined,
 
+  //---------------------------------------------------------------------------
+  // Breaks
+  //---------------------------------------------------------------------------
+
+  separator: () => "* * *\n",
+  br: () => "\n",
+
+  //---------------------------------------------------------------------------
+  // Paragraph styles
+  //---------------------------------------------------------------------------
+
   // Paragraph styles
   //"bookmark": (p) => undefined,
   //"comment": (sp) => undefined,
-  "missing": (p,text) => `!! ${text}`,
-  "p": (p, text) => `${text}`,
+  "missing": (p, text) => `!! ${text}\n`,
+  "p": (p, text) => `${text}\n`,
 
   "b": (text) => `**${text}**`,
   "i": (text) => `_${text}_`,
@@ -158,13 +134,6 @@ ${content}
 }
 
 //-----------------------------------------------------------------------------
-
-function getSeparator(separator) {
-  if(separator) {
-    return `\n\n${center(separator)}\n\n`
-  }
-  return "\n\n"
-}
 
 function escape(text) {
   return text
