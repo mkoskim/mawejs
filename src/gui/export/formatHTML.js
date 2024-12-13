@@ -12,8 +12,11 @@ export const formatHTML = {
   // Info
   suffix: ".html",
 
-  // File
-  file: (head, content, options) => {
+  //---------------------------------------------------------------------------
+  // Head & footer
+  //---------------------------------------------------------------------------
+
+  head: (head, options) => {
     const {author, title, subtitle} = head
     const headinfo = getHeader(head)
     return `\
@@ -23,59 +26,53 @@ export const formatHTML = {
   <h1>${escape(title ?? "<New Story>")}</h1>
   ${subtitle ? "<h2>" + escape(subtitle) + "</h2>" : ""}
 </div>
-${content}
 `
   },
 
-  //---------------------------------------------------------------------------
-  // Blocks
-  //---------------------------------------------------------------------------
-
-  body: (chapters, options) => {
-    return chapters.join(getSeparator(options.separator))
+  footer: () => {
+    return ""
   },
-
-  chapter: (head, scenes, options) => {
-    return head + scenes.join(getSeparator(options.separator))
-  },
-
-  scene: (head, splits) => {
-    return head + splits.join("<br/>\n")
-  },
-
-  split: (paragraphs) => paragraphs.join("\n"),
 
   //---------------------------------------------------------------------------
   // Headings
   //---------------------------------------------------------------------------
 
-  hact: (id, number, name, options) => {
-    if(options.skip) return `<div id=${id}></div>`
-
+  hact: (p, options) => {
+    const {title, number} = p
     const pgbreak = options.pgbreak ? "<hr/>\n" : ""
-    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
-    const title = options.name ? [escape(name)] : []
-    const head = [ ...numbering, ...title].join(". ")
+    const numbering = number ? [`${number}`] : []
+    const text = title ? [title] : []
+    const head = [ ...numbering, ...text].join(". ")
 
-    if(!head) return ""
-
-    return `${pgbreak}<h1 id="${id}">${head}</h1>`
+    return `${pgbreak}<h1>${escape(head)}</h1>`
   },
 
-  hchapter: (id, number, name, options) => {
-    if(options.skip) return `<div id=${id}></div>`
-
+  hchapter: (p, options) => {
+    const {title, number} = p
     const pgbreak = options.pgbreak ? "<hr/>\n" : ""
-    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
-    const title = options.name ? [escape(name)] : []
-    const head = [ ...numbering, ...title].join(". ")
+    const numbering = number ? [`${number}`] : []
+    const text = title ? [title] : []
+    const head = [ ...numbering, ...text].join(". ")
 
-    if(!head) return ""
-
-    return `${pgbreak}<h2 id="${id}">${head}</h2>`
+    return `${pgbreak}<h2>${head}</h2>`
   },
 
-  hscene: undefined,
+  hscene: (p, options) => {
+    const {title, number} = p
+    const pgbreak = options.pgbreak ? "<hr/>\n" : ""
+    const numbering = number ? [`${number}`] : []
+    const text = title ? [title] : []
+    const head = [ ...numbering, ...text].join(". ")
+
+    return `${pgbreak}<h3>${head}</h3>`
+  },
+
+  //---------------------------------------------------------------------------
+  // Breaks
+  //---------------------------------------------------------------------------
+
+  separator: () => `<br/><center>${escape("* * *")}</center><br/>\n`,
+  br: () => "<br/>",
 
   //---------------------------------------------------------------------------
   // Paragraphs
@@ -83,8 +80,12 @@ ${content}
 
   // "bookmark": (p) => null,
   // "comment": (p) => null,
-  "missing": (p, text) => `<p id="${p.id}" style="color: rgb(180, 20, 20);">${text}</p>`,
-  "p": (p, text) => `<p id="${p.id}">${text}</p>`,
+  "missing": (p, text) => `<p style="color: rgb(180, 20, 20);">${text}</p>`,
+  "p": (p, text) => `<p>${text}</p>`,
+
+  //---------------------------------------------------------------------------
+  // Text styles
+  //---------------------------------------------------------------------------
 
   "b": (text) => `<strong>${text}</strong>`,
   "i": (text) => `<em>${text}</em>`,
@@ -94,13 +95,6 @@ ${content}
 }
 
 // ****************************************************************************
-
-function getSeparator(options) {
-  if(options) {
-    return `<br/><center>${options}</center><br/>\n`
-  }
-  return "<br\n>"
-}
 
 function escape(text) {
   return (text && text

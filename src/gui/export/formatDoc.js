@@ -6,12 +6,20 @@
 
 import { mawe } from "../../document"
 import { splitByTrailingElem } from "../../util";
+import { nodeIsBreak, nodeIsNotBreak } from "../../document/elements";
+import {elemHeading} from "../../document/util";
+import {isNotEmpty} from "../common/factory";
 
 //*****************************************************************************
 // Settings
 //*****************************************************************************
 
 function getActOptions(acts, pgbreak) {
+  return {
+    type: acts,
+    pgbreak,
+  }
+/*
   switch(acts) {
     case "named": return {
       numbered:   { pgbreak, name: true},
@@ -27,9 +35,16 @@ function getActOptions(acts, pgbreak) {
     numbered: {skip: true},
     unnumbered: {skip: true},
   }
+*/
 }
 
 function getChapterOptions(chapters, pgbreak) {
+  return {
+    type: chapters,
+    pgbreak,
+  }
+
+/*
   switch(chapters) {
     case "numbered": return {
       numbered:   { pgbreak, number: true},
@@ -53,26 +68,32 @@ function getChapterOptions(chapters, pgbreak) {
     numbered: {skip: true},
     unnumbered: {skip: true},
   }
+*/
 }
 
 function getSceneOptions(scenes) {
+  return {
+    type: scenes,
+  }
+
+/*
   switch(scenes) {
     case "separated": return {
       separator: "* * *"
     }
   }
   return {}
+*/
 }
 
 //*****************************************************************************
-// Formatting
+// Make story a sequence of paragraphs
 //*****************************************************************************
 
-export function FormatBody(format, story) {
+export function storyToFlatted(story) {
+
   const { exports, head, body } = story
   const pgbreak = exports.type === "long"
-
-  console.log("Content:", exports.content)
 
   const options = {
     content: exports.content,
@@ -88,100 +109,177 @@ export function FormatBody(format, story) {
   var chapternum = 0
   var scenenum = 0
 
-  return format.file(
+  return {
+    options,
+    head: {author, title, subtitle},
+    content: processBody(body.acts).filter(isNotEmpty)
+  }
+
+  //---------------------------------------------------------------------------
+
+  function processBody(acts) {
+    if(options.act.type === "none")
     {
-      author: escape(author),
-      title: escape(title),
-      subtitle: escape(subtitle),
-    },
-    FormatBody(body.acts),
-    options
-  )
-
-  function FormatBody(acts) {
-    const content = acts.map(FormatAct).filter(p => p)
-
-    return format.body(content, options.act)
-  }
-
-  function FormatAct(act) {
-    return format.chapter(
-      FormatActHead(act),
-      act.children.filter(e => e.type === "chapter").map(FormatChapter).filter(s => s),
-      options.chapter
-    )
-  }
-
-  function FormatChapter(chapter) {
-    return format.chapter(
-      FormatChapterHead(chapter),
-      chapter.children.filter(e => e.type === "scene").map(FormatScene).filter(s => s),
-      options.scene
-    )
-  }
-
-  function FormatActHead(act) {
-
-    const {id, name, numbered} = act
-
-    if(numbered) {
-      actnum = actnum + 1
-      return format.hact(id, actnum, name, options.act.numbered)
-    } else {
-      return format.hact(id, undefined, name, options.act.unnumbered)
+      return processChapters(skip(acts))
     }
+    const processed = acts
+      .map(flatAct)
+      .filter(isNotEmpty)
+
+    if(options.act.type === "separated") {
+      return separate(processed)
+    }
+    return processed.flat()
   }
 
-  function FormatChapterHead(chapter) {
+  //---------------------------------------------------------------------------
 
-    const {id, name, numbered} = chapter
+  function flatAct(act) {
 
-    if(numbered) {
-      chapternum = chapternum + 1
-      return format.hchapter(id, chapternum, name, options.chapter.numbered)
-    } else {
-      return format.hchapter(id, undefined, name, options.chapter.unnumbered)
-    }
+    const content = processChapters(act.children)
+    if(!content.length) return undefined
+
+    const head = makeHeader(elemHeading(act), actnum, options.act)
+    if(head?.number) actnum = head.number
+
+    return [head, ...content].filter(isNotEmpty)
   }
 
-  function FormatScene(scene) {
-    switch(options.content) {
+  //---------------------------------------------------------------------------
 
-      case "synopsis":
-        if(scene.content !== "synopsis") return null
-        break;
-
-      case "draft":
-      default:
-        if(scene.content !== "scene") return null
-        break;
+  function processChapters(chapters) {
+    if(options.chapter.type === "none")
+    {
+      return processScenes(skip(chapters))
     }
-    //console.log("Scene", scene)
+    const processed = chapters
+      .filter(nodeIsNotBreak)
+      .map(flatChapter)
+      .filter(isNotEmpty)
 
-    const splits = splitByTrailingElem(scene.children, p => p.type === "br")
+    if(options.chapter.type === "separated") {
+      return separate(processed)
+    }
+    return processed.flat()
+  }
+
+  //---------------------------------------------------------------------------
+
+  function flatChapter(chapter) {
+
+    const content = processScenes(chapter.children)
+    if(!content.length) return undefined
+
+    const head = makeHeader(elemHeading(chapter), chapternum, options.chapter)
+    if(head?.number) chapternum = head.number
+
+    return [head, ...content].filter(isNotEmpty)
+  }
+
+  //---------------------------------------------------------------------------
+
+  function processScenes(scenes) {
+    const processed = scenes
+      .filter(nodeIsNotBreak)
+      .map(flatScene)
+      .filter(isNotEmpty)
+
+    switch(options.scene.type) {
+      case "none": return separate(processed, {type: "br"})
+      case "separated": return separate(processed)
+      default: break;
+    }
+
+    return processed.flat()
+  }
+
+  //---------------------------------------------------------------------------
+
+  function flatScene(scene) {
+    if(!chooseContent(scene)) return
+
+    const children = scene.children.filter(n => !nodeIsBreak(n))
+    const splits = splitByTrailingElem(children, p => p.type === "br")
       .map(s => s.filter(p => p.type !== "br"))
       .filter(s => s.length)
-      .map(FormatSplit)
-      .filter(s => s?.length)
-    //console.log(splits)
 
-    if (!splits.length) return null
+    const content = separate(splits, {type: "br"})
+    if(!content.length) return undefined
 
-    //if(chapters.element === "scene") scenenum = scenenum + 1
+    const head = makeHeader(elemHeading(scene), scenenum, options.scene)
+    if(head?.number) scenenum = head.number
 
-    return format.scene("", splits)
+    return [head, ...content].filter(isNotEmpty)
   }
 
-  function FormatSplit(split) {
-    const paragraphs = split.map(FormatParagraph).filter(p => p?.length)
-    //console.log(split, "->", content)
-    if (!paragraphs.length) return null
-    return format.split(paragraphs)
+  //---------------------------------------------------------------------------
+
+  function makeHeader(hdr, num, options) {
+    if(!hdr) return undefined
+    const {type, name, numbered} = hdr
+    const number = numbered ? num + 1 : undefined
+    const title = name
+
+    switch(options.type) {
+      case "named": return {type, name, title}
+      case "numbered": return numbered ? {type, name, number} : {type, name, title}
+      case "numbered&named": return {type, name, number, title}
+      default: break;
+    }
+    return undefined
   }
+
+  //---------------------------------------------------------------------------
+
+  function skip(elems) {
+    return elems.map(elem => elem.children.filter(nodeIsNotBreak)).flat()
+  }
+
+  //---------------------------------------------------------------------------
+
+  function chooseContent(s) {
+    switch(options.content) {
+      case "synopsis": return s.content === "synopsis"
+      default: break
+    }
+    return s.content === "scene"
+  }
+
+  //---------------------------------------------------------------------------
+
+  function separate(elems, separator = {type: "separator"}) {
+    const [first, ...rest] = elems
+    const separated = rest.map(e => [separator, ...e]).flat()
+    return [first, ...separated].flat()
+  }
+
+}
+
+//*****************************************************************************
+// Formatting flattened story
+//*****************************************************************************
+
+export function flattedFormat(format, flatted) {
+
+  const {head, content, options} = flatted
+
+  return format.head(head, options) +
+    content.map(FormatParagraph).join("\n") +
+    format.footer()
 
   function FormatParagraph(p) {
     const formatter = format[p.type];
     if(!formatter) return
+
+    switch(p.type) {
+      case "hact": return formatter(p, options.act)
+      case "hchapter": return formatter(p, options.chapter)
+      case "hscene": return formatter(p, options.scene)
+      case "separator": return formatter(p)
+      case "br": return formatter(p)
+      default: break;
+    }
+
     const text = p.children.map(FormatMarks).join("")
     return formatter(p, text)
   }

@@ -60,6 +60,10 @@ export function nodeIsBreak(node) {
   return breaks
 }
 
+export function nodeIsNotBreak(node) {
+  return !nodeIsBreak(node)
+}
+
 export function nodeBreaks(node) {
   if(!node || !(node.type in nodeTypes)) return
 
