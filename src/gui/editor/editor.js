@@ -676,13 +676,13 @@ function EditorBox({style, settings, mode="Condensed"}) {
     {/* Editor toolbar */}
 
     <ToolBox style={doc.ui.editor.toolbox.mid}>
+      <FoldButtons editor={editor}/>
+      <Separator/>
       <StyleButtons editor={editor} type={type} bold={bold} italic={italic}/>
       <Separator/>
       <Searching editor={editor} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Separator/>
       <Filler />
-      <Separator/>
-      <FoldButtons editor={editor} folded={track?.node?.folded}/>
     </ToolBox>
 
     {/* Editor board and sheet */}

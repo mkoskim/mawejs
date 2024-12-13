@@ -25,7 +25,9 @@ import {
 } from './slateSearch';
 
 import {
-  toggleFold, foldAll,
+  toggleFold,
+  foldByType,
+  FOLD,
 } from "./slateFolding"
 
 import { addClass, IsKey } from '../common/factory';
@@ -246,12 +248,14 @@ function onKeyDown(editor, event) {
   }
   if (IsKey.AltA(event)) {
     event.preventDefault()
-    foldAll(editor, true)
+    foldByType(editor, FOLD.foldAll)
+    //foldAll(editor, true)
     return
   }
   if (IsKey.AltS(event)) {
     event.preventDefault()
-    foldAll(editor, false)
+    foldByType(editor, FOLD.unfoldAll)
+    //foldAll(editor, false)
     return
   }
 

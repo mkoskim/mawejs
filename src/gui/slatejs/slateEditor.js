@@ -27,7 +27,7 @@ import {
   nodeBreaks,
 } from '../../document/elements';
 
-import {doFold} from "./slateFolding"
+import {foldNode} from "./slateFolding"
 
 import {
   elemIsBlock,
@@ -78,9 +78,9 @@ export function getCoreEditor() {
     // Base editor
     withHistory,
     withWordCount,    // Autogenerate word counts
-    withNoEmptySect,  // Prevent totally empty sections
     withBR,           // empty <p> -> <br>
     withFixNesting,   // Keep correct nesting: chapter -> scene -> paragraph
+    withNoEmptySect,  // Prevent totally empty sections
   ].reduce((editor, func) => func(editor), undefined)
 }
 
@@ -377,7 +377,7 @@ function withProtectFolds(editor) {
     })
     if(!match) return false
     const [node, path] = match
-    doFold(editor, node, path, false)
+    foldNode(editor, node, path, false)
     return true
   }
 
@@ -489,23 +489,23 @@ function withFixNesting(editor) {
         return;
       }
 
-      if(!checkParent(node, path, nodeType.parent)) return
+      if(nodeType.parent && !checkParent(node, path, nodeType.parent)) return
 
       if(!mergeHeadlessChilds(node, path)) return;
       updateBlockAttributes(node, path)
       return normalizeNode(entry)
     }
+    else {
+      // Check parent
 
-    // Check parent
+      if(!checkParent(node, path, nodeType.parent)) return
 
-    if(!checkParent(node, path, nodeType.parent)) return
-
-    // Block headers
-    if(nodeIsBreak(node)) {
-      if(!checkIsFirst(node, path, nodeType.parent)) return
-      updateHeadAttributes(node, path)
+      // Block headers
+      if(nodeIsBreak(node)) {
+        if(!checkIsFirst(node, path, nodeType.parent)) return
+        updateHeadAttributes(node, path)
+      }
     }
-
     return normalizeNode(entry)
   }
 
@@ -608,8 +608,8 @@ function withFixNesting(editor) {
       // Can we merge headingless block?
       if(prev && prev[0].type === node.type) {
         //console.log("Merging")
-        doFold(editor, prev[0], prev[1], false)
-        doFold(editor, block, path, false)
+        foldNode(editor, prev[0], prev[1], false)
+        foldNode(editor, block, path, false)
         Transforms.mergeNodes(editor, {at: path})
 
         return false

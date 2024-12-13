@@ -136,12 +136,11 @@ const formatTEX = {
   suffix: ".tex",
 
   // File
-  file: (head, content, options) => {
+  head: (head, options) => {
     const sides = "oneside"
     const titlepage = options.long ? "titlepage" : "notitlepage"
     const frontmatter = options.long ? "\\frontmatter\\pagestyle{empty}" : "\\pagestyle{plain}"
     const mainmatter  = options.long ? "\\mainmatter\\pagestyle{plain}" : ""
-    const backmatter  = options.long ? "\\backmatter\\pagestyle{empty}" : ""
     // const mainmatter = options.pgbreak ? "\\mainmatter" : ""
 
     return `\
@@ -154,9 +153,11 @@ ${frontmatter}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${mainmatter}
-${options.pgbreak ? "" : ""}
-${content}
+`},
 
+  footer: (options) => {
+    const backmatter  = options.long ? "\\backmatter\\pagestyle{empty}" : ""
+    return `
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${backmatter}
@@ -166,56 +167,51 @@ ${backmatter}
   },
 
   //---------------------------------------------------------------------------
-  // Joining elements
-
-  body: (chapters, options) => {
-    return chapters.join(getSeparator(options.separator))
-  },
-
-  chapter: (head, scenes, options) => {
-    return head + scenes.join(getSeparator(options.separator))
-  },
-
-  scene: (head, splits) => {
-    const brk = getSeparator()
-    return head + splits.join(brk)
-  },
-
-  split: (paragraphs) => "\\noindent " + paragraphs.join("\n\n"),
-
-  //---------------------------------------------------------------------------
   // Headings
   //---------------------------------------------------------------------------
 
-  hact: (id, number, name, options) => {
-    if(options.skip) return ""
+  hact: (p) => {
+    const {title, number} = p
+    if(!title) return
 
-    const chnum = options.number ? escape(`${options.prefix ?? ""}${number}`) : ""
-    const title = options.name ? escape(name) : ""
-
-    if(!chnum && !title) return ""
-
-    return `\n\n\\part{${title}}\n\n`
+    return `\\part{${escape(title)}}\n`
   },
 
-  hchapter: (id, number, name, options) => {
-    if(options.skip) return ""
+  hchapter: (p) => {
 
-    const chnum = options.number ? escape(`${options.prefix ?? ""}${number}`) : ""
-    const title = options.name ? escape(name) : ""
+    const {title, number} = p
+    if(!title && !number) return
 
-    if(!chnum && !title) return ""
+    const numbering = number ? escape(number.toString()) : ""
+    const head = title ? escape(title) : ""
+    //const numbering = number ? [`${number}`] : []
+    //const text = title ? [title] : []
+    //const head = [ ...numbering, ...text].join(". ")
 
-    return `\n\n\\chapter{${chnum}}{${title}}\n\n`
+    return `\\chapter{${numbering}}{${head}}\n`
   },
 
   //---------------------------------------------------------------------------
+  // Breaks
+  //---------------------------------------------------------------------------
 
+  separator: () => "\\separator{* * *}\n",
+  //br: () => "\n\n\\par\\null\n\n",
+  br: () => "\\par\\null\n",
+
+  //---------------------------------------------------------------------------
   // Paragraph styles
+  //---------------------------------------------------------------------------
+
+  "missing": (p, text) => linify(`{${p.first ? "\\noindent" : ""}\\color{red}${text}}`) + "\n",
+  "p": (p, text) => linify(`${p.first ? "\\noindent " : ""}${text}`) + "\n",
+
   //"bookmark": (p) => undefined,
   //"comment": (p) => undefined,
-  "missing": (p, text) => `{\\color{red}${linify(text)}}`,
-  "p": (p, text) => `${linify(text)}`,
+
+  //---------------------------------------------------------------------------
+  // Character styles
+  //---------------------------------------------------------------------------
 
   "b": (text) => `\\textbf{${text}}`,
   "i": (text) => `\\textit{${text}}`,
@@ -238,7 +234,7 @@ export const formatTEX2 = {
   ...formatTEX,
 
   // File
-  file: (head, content, options) => {
+  head: (head, options) => {
     const sides = "twoside"
     //const titlepage = options.pgbreak ? "titlepage" : "notitlepage"
     //const frontmatter = options.pgbreak ? "\\frontmatter\\pagestyle{empty}" : ""
@@ -249,7 +245,6 @@ export const formatTEX2 = {
     const titlepage = "titlepage"
     const frontmatter = "\\frontmatter\\pagestyle{empty}"
     const mainmatter  = "\\mainmatter\\pagestyle{plain}"
-    const backmatter  = "\\backmatter\\pagestyle{empty}"
 
     return `\
 \\documentclass[${sides},${titlepage},12pt]{book}
@@ -265,8 +260,11 @@ ${frontmatter}
 
 ${mainmatter}
 ${pgbreak ? "" : "\\innertitle"}
-${content}
+`},
 
+footer: () => {
+  const backmatter  = "\\backmatter\\pagestyle{empty}"
+  return `
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${backmatter}
@@ -281,14 +279,6 @@ ${backmatter}
 }
 
 //-----------------------------------------------------------------------------
-
-function getSeparator(separator, pgbreak) {
-  if (separator) {
-    //if(pgbreak) return "\\page"
-    return "\n\n\\separator{* * *}\n\n"
-  }
-  return "\n\n\\par\\null\n\n"
-}
 
 function escape(text) {
   return (text && text
@@ -320,9 +310,4 @@ function linify(text) {
     }
   }
   return lines.join("\n")
-}
-
-function center(text) {
-  //const escaped = escape(text)
-  return text.padStart((40 + text.length / 2), " ")
 }

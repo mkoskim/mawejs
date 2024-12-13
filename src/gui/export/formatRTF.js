@@ -45,7 +45,7 @@ export const formatRTF = {
   suffix: ".rtf",
 
   // File
-  file: (head, content, options) => {
+  head: (head, options) => {
     const pgbreak = options.pgbreak ? "\\page" : ""
 
     const {author, title, subtitle} = head
@@ -77,70 +77,65 @@ ${escape(headinfo)}\\tab ${pgnum} / ${pgtot}
 ${author ? `{\\sa220\\qc ${escape(author)}\\par}` : ""}
 {\\sa440\\qc\\b\\fs34 ${escape(title)}\\par}
 ${subtitle ? "{\\sa440\\qc\\b\\fs28" + escape(subtitle) + "\\par}" : ""}
+`},
 
-${content}
-}\n`
-  },
+  footer: () => "}\n",
 
   //\\headery851\\f0\\fs24\\fi0\\li0\\ri0\\rin0\\lin0
-
-  //---------------------------------------------------------------------------
-  // Joining elements
-
-  body: (chapters, options) => {
-    return chapters.join(getSeparator(options.separator))
-  },
-
-  chapter: (head, scenes, options) => {
-    const {separator} = options
-    return head + scenes.join(getSeparator(separator))
-  },
-
-  scene: (head, splits) => {
-    return head + splits.join("\n")
-  },
-
-  split: (paragraphs) => "{\\sb480" + paragraphs.join("{\\fi567"),
 
   //---------------------------------------------------------------------------
   // Headings
   //---------------------------------------------------------------------------
 
-  hact: (id, number, name, options) => {
-    if(options.skip) return ""
+  hact: (p) => {
+    const {title, number} = p
+    if(!title && !number) return
 
-    const pgbreak = options.pgbreak ? "\\pagebb" : ""
-    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
-    const title = options.name ? [escape(name)] : []
-    const head = [ ...numbering, ...title].join(". ")
+    const numbering = number ? [`${number}`] : []
+    const text = title ? [title] : []
+    const head = [ ...numbering, ...text].join(". ")
+    const pgbreak = p.pgbreak ? "\\pagebb" : ""
 
-    if(!head) return ""
-
-    return `{${pgbreak}\\sb1000\\qc\\b\\fs32 ${head}\\par}\n`
+    return `{${pgbreak}\\sb1000\\qc\\b\\fs32 ${escape(head)}\\par}`
   },
 
-  hchapter: (id, number, name, options) => {
-    if(options.skip) return ""
+  hchapter: (p) => {
 
-    const pgbreak = options.pgbreak ? "\\pagebb" : "\\sb480"
-    const numbering = options.number ? [escape(`${options.prefix ?? ""}${number}`)] : []
-    const title = options.name ? [escape(name)] : []
-    const head = [ ...numbering, ...title].join(". ")
+    const {title, number} = p
+    if(!title && !number) return
 
-    if(!head) return ""
+    const numbering = number ? [`${number}`] : []
+    const text = title ? [title] : []
+    const head = [ ...numbering, ...text].join(". ")
+    const pgbreak = p.pgbreak ? "\\pagebb" : "\\sb480"
 
-    return `{${pgbreak}\\b\\fs28 ${head}\\par}\n`
+    return `{${pgbreak}\\b\\fs28 ${escape(head)}\\par}`
   },
 
   hscene: undefined,
 
   //---------------------------------------------------------------------------
+  // Breaks
+  //---------------------------------------------------------------------------
 
+  separator: () => `{\\sb480\\qc ${escape("* * *")}\\par}`,
+  //br: () => "\n",
+
+  //---------------------------------------------------------------------------
   // Paragraph styles
-  "missing": (p, text) => `\\cf2 ${text}\\par}\n`,
-  "p": (p, text) => ` ${text}\\par}\n`,
+  //---------------------------------------------------------------------------
+
+  //split: (paragraphs) => "{\\sb480" + paragraphs.join("{\\fi567"),
+
+  "missing": (p, text) => `{${p.first ? "\\sb480" : "\\fi567"}\\cf2 ${text}\\par}`,
+  "p": (p, text) => `{${p.first ? "\\sb480" : "\\fi567 "}${text}\\par}`,
+
   //"bookmark": (p) => undefined,
   //"comment": (p) => undefined,
+
+  //---------------------------------------------------------------------------
+  // Character styles
+  //---------------------------------------------------------------------------
 
   "b": (text) => `{\\b ${text}}`,
   "i": (text) => `{\\i ${text}}`,
@@ -150,14 +145,6 @@ ${content}
 }
 
 //-----------------------------------------------------------------------------
-
-function getSeparator(separator, pgbreak) {
-  if(separator) {
-    //if(pgbreak) return "\\page"
-    return `{\\sb480\\qc ${separator}\\par}\n`
-  }
-  return ""
-}
 
 function escape(text) {
   if(!text) return text

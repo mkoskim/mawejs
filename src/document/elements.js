@@ -15,9 +15,9 @@ export const nodeTypes = {
   // Containers
   //---------------------------------------------------------------------------
 
-  "act":       {parent: undefined, level: 1, header: "hact", },
-  "chapter":   {parent: "act",     level: 2, header: "hchapter", },
-  "scene":     {parent: "chapter", level: 3, header: "hscene"},
+  "act":       {parent: undefined, level: 1, foldable: true, header: "hact", },
+  "chapter":   {parent: "act",     level: 2, foldable: true, header: "hchapter", },
+  "scene":     {parent: "chapter", level: 3, foldable: true, header: "hscene"},
 
   //---------------------------------------------------------------------------
   // Container breaks
@@ -58,6 +58,10 @@ export function nodeIsBreak(node) {
 
   const {breaks} = nodeTypes[node.type]
   return breaks
+}
+
+export function nodeIsNotBreak(node) {
+  return !nodeIsBreak(node)
 }
 
 export function nodeBreaks(node) {

@@ -8,32 +8,23 @@ import "./styles/export.css"
 import "../common/styles/sheet.css"
 
 import React, {
-  useMemo, useCallback,
-  useDeferredValue,
 } from 'react';
 
 import {
-  FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon, Tooltip,
-  List, ListItem, ListItemText, ListSubheader,
-  Grid,
-  Separator, addClass,
+  VBox, HBox, VFiller,
+  Button,
+  ListSubheader,
+  Separator,
   TextField,
   MenuItem,
-  Accordion, AccordionSummary, AccordionDetails,
   DeferredRender,
   Inform,
   Label,
 } from "../common/factory";
 
-import { elemName, getSuffix, filterCtrlElems } from "../../document/util";
-import {
-  EditHead, SectionWordInfo,
-} from "../common/components";
+import { elemName, getSuffix } from "../../document/util";
 
-import { storyType } from "../../document/head"
-
-import { FormatBody } from "./formatDoc"
+import { flattedFormat, storyToFlatted } from "./formatDoc"
 
 import { formatRTF } from "./formatRTF";
 import { formatHTML } from "./formatHTML"
@@ -93,13 +84,15 @@ export function saveExportSettings(settings) {
 
 export function Export({ doc, updateDoc }) {
 
-  const format = doc.exports.format
-  const setFormat = useCallback(value => updateDoc(doc => { doc.exports.format = value}), [])
+  const {exports} = doc
+
+  const flatted = storyToFlatted(doc)
+  console.log("Flatted:", flatted)
 
   return <HBox style={{ overflow: "auto" }}>
-    <ExportIndex style={{ maxWidth: "300px", width: "300px" }} doc={doc} updateDoc={updateDoc}/>
-    <Preview doc={doc}/>
-    <ExportSettings style={{minWidth: "300px"}} doc={doc} updateDoc={updateDoc} format={format} setFormat={setFormat}/>
+    <ExportIndex style={{ maxWidth: "300px", width: "300px", borderRight: "1px solid lightgray" }} flatted={flatted}/>
+    <Preview flatted={flatted}/>
+    <ExportSettings style={{minWidth: "300px"}} flatted={flatted} exports={exports} updateDoc={updateDoc}/>
   </HBox>
 }
 
@@ -107,20 +100,20 @@ export function Export({ doc, updateDoc }) {
 // Export settings
 //-----------------------------------------------------------------------------
 
+function updateDocFormat(updateDoc, value) { updateDoc(doc => { doc.exports.format = value})}
 function updateDocStoryContent(updateDoc, value) { updateDoc(doc => {doc.exports.content = value})}
 function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
 function updateDocActElem(updateDoc, value) { updateDoc(doc => {doc.exports.acts = value})}
 function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapters = value})}
 function updateDocSceneElem(updateDoc, value) { updateDoc(doc => {doc.exports.scenes = value})}
 
-function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
+function ExportSettings({ style, flatted, exports, updateDoc}) {
 
+  const {format} = exports
   const formatter = formatters[format]
 
-  const { exports } = doc
-
   return <VBox style={style} className="ExportSettings">
-    <TextField select label="Format" value={format} onChange={e => setFormat(e.target.value)}>
+    <TextField select label="Format" value={format} onChange={e => updateDocFormat(updateDoc, e.target.value)}>
       <ListSubheader>RTF</ListSubheader>
       <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
       {/*<MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>*/}
@@ -137,7 +130,7 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       <MenuItem value="synopsis">Synopsis</MenuItem>
       </TextField>
 
-    <Button variant="contained" color="success" onClick={e => exportToFile(doc, formatter, exports.content)}>Export</Button>
+    <Button variant="contained" color="success" onClick={e => exportToFile(formatter, flatted)}>Export</Button>
 
     <Separator/>
 
@@ -147,114 +140,121 @@ function ExportSettings({ style, doc, updateDoc, format, setFormat }) {
       </TextField>
 
     <TextField select label="Acts" value={exports.acts} onChange={e => updateDocActElem(updateDoc, e.target.value)}>
-      <MenuItem value="named">Named</MenuItem>
-      <MenuItem value="separated">Separated</MenuItem>
       <MenuItem value="none">None</MenuItem>
-      </TextField>
-
-    <TextField select label="Chapters" value={exports.chapters} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
+      <MenuItem value="separated">Separated</MenuItem>
       <MenuItem value="numbered">Numbered</MenuItem>
       <MenuItem value="named">Named</MenuItem>
       <MenuItem value="numbered&named">Numbered & Named</MenuItem>
+      </TextField>
+
+    <TextField select label="Chapters" value={exports.chapters} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
+    <MenuItem value="none">None</MenuItem>
       <MenuItem value="separated">Separated</MenuItem>
-      <MenuItem value="none">None</MenuItem>
+      <MenuItem value="numbered">Numbered</MenuItem>
+      <MenuItem value="named">Named</MenuItem>
+      <MenuItem value="numbered&named">Numbered & Named</MenuItem>
       </TextField>
 
     <TextField select label="Scenes" value={exports.scenes} onChange={e => updateDocSceneElem(updateDoc, e.target.value)}>
+    <MenuItem value="none">None</MenuItem>
       <MenuItem value="separated">Separated</MenuItem>
-      <MenuItem value="none">None</MenuItem>
+      <MenuItem value="numbered">Numbered</MenuItem>
+      <MenuItem value="named">Named</MenuItem>
+      <MenuItem value="numbered&named">Numbered & Named</MenuItem>
       </TextField>
   </VBox>
-}
-
-//-----------------------------------------------------------------------------
-// Export preview
-//-----------------------------------------------------------------------------
-
-function Preview({ doc }) {
-  return <div className="Filler Board">
-    <DeferredRender><div
-      className="Sheet Regular"
-      dangerouslySetInnerHTML={{ __html: FormatBody(formatHTML, doc) }}
-    /></DeferredRender>
-  </div>
 }
 
 //-----------------------------------------------------------------------------
 // Export to file
 //-----------------------------------------------------------------------------
 
-async function exportToFile(doc, formatter, type) {
-  const content = FormatBody(formatter, doc)
+async function exportToFile(formatter, flatted) {
 
-  const typesuffix = type === "synopsis" ? ".synopsis" : ""
+  const {options, file} = flatted
 
-  const dirname = await fs.dirname(doc.file.id)
-  const name = await fs.basename(doc.file.id)
+  const content = flattedFormat(formatter, flatted)
+
+  const typesuffix = options.content === "synopsis" ? ".synopsis" : ""
+
+  const dirname = await fs.dirname(file.id)
+  const name = await fs.basename(file.id)
   const suffix = getSuffix(name, [".mawe", ".mawe.gz"]);
   const basename = await fs.basename(name, suffix);
   const filename = await fs.makepath(dirname, basename + typesuffix + formatter.suffix)
   console.log("Export to:", filename)
+
   fs.write(filename, content)
-  .then(file => Inform.success(`Exported: ${file.name}`))
-  .catch(err => Inform.error(err))
+    .then(file => Inform.success(`Exported: ${file.name}`))
+    .catch(err => Inform.error(err))
 }
 
 //-----------------------------------------------------------------------------
-// Export index / TODO: Generate from exported data
+// Export preview
 //-----------------------------------------------------------------------------
 
-function ExportIndex({ style, doc, updateDoc }) {
-  const { acts } = doc.body
+function Preview({ flatted }) {
 
-  return null
+  return <div className="Filler Board">
+    <DeferredRender><div
+      className="Sheet Regular"
+      dangerouslySetInnerHTML={{ __html: flattedFormat(formatHTML, flatted) }}
+    /></DeferredRender>
+  </div>
+}
+
+//-----------------------------------------------------------------------------
+// Export index
+//-----------------------------------------------------------------------------
+
+function ExportIndex({ style, flatted}) {
+  const { content } = flatted
 
   return <VFiller className="TOC" style={style}>
-    {filterCtrlElems(acts).map(act => <ActItem key={act.id} act={act} doc={doc} updateDoc={updateDoc}/>)}
+    {content.map((node, index) => indexItem(node, index))}
   </VFiller>
+
+  function indexItem(node, index) {
+    switch(node.type) {
+      case "hact": return <ActItem key={index} node={node}/>
+      case "hchapter": return <ChapterItem key={index} node={node}/>
+      case "hscene": return <SceneItem key={index} node={node}/>
+    }
+  }
 }
 
-function ActItem({act, doc, updateDoc}) {
-  const { id, children } = act
-  const name = elemName(act)
-  return <>
-    <div
+function ActItem({node}) {
+  const {name, number} = node
+  return <div
       className="Entry ActName"
-      onClick={ev => window.location.href = `#${id}`}
-      onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
+      //onClick={ev => window.location.href = `#${id}`}
+      //onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
       style={{ cursor: "pointer" }}
     >
-      <span className="Name">ACT: {name}</span>
+      <span className="Name">{number ? number + ". " + name : name}</span>
     </div>
-    {filterCtrlElems(children).map(chapter => <ChapterItem key={chapter.id} chapter={chapter} doc={doc} updateDoc={updateDoc}/>)}
-  </>
 }
 
-function ChapterItem({ chapter, doc, updateDoc }) {
-  const { id, children } = chapter
-  const name = elemName(chapter)
-  return <>
-    <div
+function ChapterItem({node}) {
+  const { name, number } = node
+  return <div
       className="Entry ChapterName"
-      onClick={ev => window.location.href = `#${id}`}
-      onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
+      //onClick={ev => window.location.href = `#${id}`}
+      //onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
       style={{ cursor: "pointer" }}
     >
-      <span className="Name">{name}</span>
-    </div>
-    {filterCtrlElems(children).map(scene => <SceneItem key={scene.id} scene={scene} doc={doc} updateDoc={updateDoc}/>)}
-  </>
+      <span className="Name">{number ? number + ". " + name : name}</span>
+      </div>
 }
 
-function SceneItem({ scene, doc, updateDoc }) {
-  const { id } = scene
-  const name = elemName(scene)
+function SceneItem({node}) {
+  const { name, number } = node
   return <div
     className="Entry SceneName"
-    onClick={ev => window.location.href = `#${id}`}
-    onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
+    //onClick={ev => window.location.href = `#${id}`}
+    //onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
     style={{ cursor: "pointer" }}
   >
-    <span className="Name">{name}</span>
-  </div>
+    <span className="Name">{number ? number + ". " + name : name}</span>
+    </div>
 }
