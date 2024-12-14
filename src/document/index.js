@@ -8,7 +8,6 @@
 
 import {loadmawe, createmawe, buf2tree, fromXML} from "./xmljs/load"
 import {savemawe, toXML} from "./xmljs/save"
-import {asRTF, asHTML} from "./print"
 
 import {info} from "./head"
 
@@ -33,9 +32,6 @@ export const mawe = {
   },
   decodebuf, file2buf, buf2tree, fromXML,
   toXML,
-
-  // Exporting
-  asRTF, asHTML,
 }
 
 export {elemAsText, elemName, filterCtrlElems}
@@ -72,7 +68,7 @@ function create(buffer) {
 
 //-----------------------------------------------------------------------------
 
-export async function saveas(doc, filename) {
+async function saveas(doc, filename) {
   //const file = await fs.fstat(filename)
   //console.log("Saving:", doc)
   // TODO: Fill in basename + suffix
@@ -82,6 +78,6 @@ export async function saveas(doc, filename) {
   })
 }
 
-export async function save(doc) {
+async function save(doc) {
   return await savemawe(doc);
 }

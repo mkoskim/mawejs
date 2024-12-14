@@ -71,7 +71,7 @@ async function createWindow()
   mainWindow.setMenu(null);
   //console.log("Languages:", mainWindow.webContents.session.availableSpellCheckerLanguages)
   //mainWindow.webContents.session.setSpellCheckerLanguages(['fi'])
-  mainWindow.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
 
   if(isDev)
   {
@@ -112,7 +112,7 @@ const reduxDevToolsPath = path.join(
 const {app, session} = electron;
 
 app.whenReady().then(async () => {
-  try {
+  if(isDev) try {
     console.log("Loading extension:", reactDevToolsPath)
     await session.defaultSession.loadExtension(reactDevToolsPath)
     //session.defaultSession.loadExtension(reduxDevToolsPath)
@@ -121,6 +121,12 @@ app.whenReady().then(async () => {
   }
   createWindow();
   //globalShortcut.register('CommandOrControl+Q', () => { app.quit() });
+
+  if(!isDev) {
+    globalShortcut.register('F12', () => {
+      mainWindow.webContents.openDevTools();
+    });
+  }
 });
 
 app.on("window-all-closed", () => {

@@ -4,7 +4,7 @@
 //
 // ****************************************************************************
 
-import "./styles/export.css"
+import "./export.css"
 import "../common/styles/sheet.css"
 
 import React, {
