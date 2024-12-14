@@ -18,9 +18,9 @@ import { focusByPath } from './slateHelpers';
 export function elemIsFolded(editor, path) {
   for(const np of Node.levels(editor, path)) {
     const [node, path] = np
+    if(Editor.isEditor(node)) continue
     const {foldable} = nodeTypes[node.type]
     if(!foldable) break
-    //console.log("Node:", node);
     if(node.folded) return true;
   }
   return false;
