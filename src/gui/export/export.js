@@ -33,6 +33,7 @@ import { formatHTML } from "./formatHTML"
 import { formatMD, formatTXT } from "./formatTXT"
 import { formatTEX1, formatTEX2 } from "./formatTEX"
 import { setFocusTo } from "../editor/editor";
+import { numfmt } from "../../util";
 
 //-----------------------------------------------------------------------------
 
@@ -115,11 +116,9 @@ function ExportInfo({flatted}) {
     //borderRadius: "2pt",
   }
 
-  const numfmt = Intl.NumberFormat(undefined, {useGrouping: true})
-
   return <VBox style={style}>
-    <Label>Words: {numfmt.format(wc)}</Label>
-    <Label>Chars: {numfmt.format(chars)}</Label>
+    <Label>Words: {numfmt.group.format(wc)}</Label>
+    <Label>Chars: {numfmt.group.format(chars)}</Label>
     </VBox>
 }
 
