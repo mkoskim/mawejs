@@ -13,10 +13,14 @@ import {nanoid} from "nanoid"
 
 import {
   splitByLeadingElem, splitByTrailingElem,
+  isEmpty, isNotEmpty,
   sleep, numfmt,
 } from "./generic"
 
-export {uuid, nanoid}
-export {splitByLeadingElem, splitByTrailingElem}
-export {sleep}
-export {numfmt}
+export {
+  uuid, nanoid,
+  splitByLeadingElem, splitByTrailingElem,
+  isEmpty, isNotEmpty,
+  sleep,
+  numfmt,
+}

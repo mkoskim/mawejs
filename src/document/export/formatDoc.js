@@ -4,11 +4,10 @@
 //
 //*****************************************************************************
 
-import { mawe } from "../../document"
-import { splitByTrailingElem } from "../../util";
-import { nodeIsBreak, nodeIsNotBreak } from "../../document/elements";
-import {elemAsText, elemHeading} from "../../document/util";
-import {isNotEmpty} from "../common/factory";
+import { mawe } from ".."
+import { splitByTrailingElem, isNotEmpty } from "../../util";
+import { nodeIsBreak, nodeIsNotBreak } from "../elements";
+import {elemAsText, elemHeading} from "../util";
 
 //*****************************************************************************
 // Settings

@@ -26,12 +26,12 @@ import {
 
 import { elemName, getSuffix, text2words } from "../../document/util";
 
-import { flattedFormat, flattedToText, storyToFlatted } from "./formatDoc"
+import { flattedFormat, flattedToText, storyToFlatted } from "../../document/export/formatDoc"
 
-import { formatRTF } from "./formatRTF";
-import { formatHTML } from "./formatHTML"
-import { formatMD, formatTXT } from "./formatTXT"
-import { formatTEX1, formatTEX2 } from "./formatTEX"
+import { formatRTF } from "../../document/export/formatRTF";
+import { formatHTML } from "../../document/export/formatHTML"
+import { formatMD, formatTXT } from "../../document/export/formatTXT"
+import { formatTEX1, formatTEX2 } from "../../document/export/formatTEX"
 import { setFocusTo } from "../editor/editor";
 import { numfmt } from "../../util";
 

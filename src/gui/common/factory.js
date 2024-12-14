@@ -39,6 +39,7 @@ import {Icon} from "./icons"
 import {IsKey, addHotkeys} from "./hotkeys"
 
 import { enqueueSnackbar, closeSnackbar } from "notistack";
+import { isNotEmpty } from "../../util";
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export { theme }
@@ -83,11 +84,6 @@ export function DeferredRender({children}) {
   //return props.children
   return useDeferredValue(children)
 }
-
-//-----------------------------------------------------------------------------
-
-export const isEmpty = x => !x;
-export const isNotEmpty = x => !!x;
 
 //-----------------------------------------------------------------------------
 
