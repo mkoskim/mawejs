@@ -26,12 +26,8 @@ import {
 
 import { elemName, getSuffix, text2words } from "../../document/util";
 
-import { flattedFormat, flattedToText, storyToFlatted } from "../../document/export/formatDoc"
+import { exportAs, flattedFormat, flattedToText, storyToFlatted } from "../../document/export"
 
-import { formatRTF } from "../../document/export/formatRTF";
-import { formatHTML } from "../../document/export/formatHTML"
-import { formatMD, formatTXT } from "../../document/export/formatTXT"
-import { formatTEX1, formatTEX2 } from "../../document/export/formatTEX"
 import { setFocusTo } from "../editor/editor";
 import { numfmt } from "../../util";
 
@@ -46,12 +42,12 @@ const fs = require("../../system/localfs");
 // ****************************************************************************
 
 const formatters = {
-  "rtf1": formatRTF,
-  "rtf2": formatRTF,
-  "tex1": formatTEX1,
-  "tex2": formatTEX2,
-  "md": formatMD,
-  "txt": formatTXT,
+  "rtf1": exportAs.RTF,
+  "rtf2": exportAs.RTF,
+  "tex1": exportAs.TEX1,
+  "tex2": exportAs.TEX2,
+  "md": exportAs.MD,
+  "txt": exportAs.TXT,
 }
 
 export function loadExportSettings(settings) {
@@ -240,7 +236,7 @@ function Preview({ flatted }) {
   return <div className="Filler Board">
     <DeferredRender><div
       className="Sheet Regular"
-      dangerouslySetInnerHTML={{ __html: flattedFormat(formatHTML, flatted) }}
+      dangerouslySetInnerHTML={{ __html: flattedFormat(exportAs.HTML, flatted) }}
     /></DeferredRender>
   </div>
 }
