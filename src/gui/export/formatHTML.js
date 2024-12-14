@@ -13,64 +13,20 @@ export const formatHTML = {
   suffix: ".html",
 
   //---------------------------------------------------------------------------
-  // Head & footer
+  // Wrapping content to file with head elements
   //---------------------------------------------------------------------------
 
-  head: (head, options) => {
-    const {author, title, subtitle} = head
-    const headinfo = getHeader(head)
-    return `\
-<div style="margin-bottom: 1cm">${headinfo}</div>\n
-<center>${escape(author ?? "")}</center>
-<div style="margin-bottom: 0.5in">
-  <h1>${escape(title ?? "<New Story>")}</h1>
-  ${subtitle ? "<h2>" + escape(subtitle) + "</h2>" : ""}
-</div>
-`
-  },
-
-  footer: () => {
-    return ""
-  },
+  file: formatFile,
 
   //---------------------------------------------------------------------------
   // Headings
   //---------------------------------------------------------------------------
 
-  hact: (p) => {
-    const {title, number} = p
-    if(!title && !number) return
-
-    const numbering = number ? [`${number}`] : []
-    const text = title ? [title] : []
-    const head = [ ...numbering, ...text].join(". ")
-    const pgbreak = p.pgbreak ? "<hr/>\n" : ""
-
-    return `${pgbreak}<h1>${escape(head)}</h1>`
-  },
-
-  hchapter: (p) => {
-    const {title, number} = p
-    if(!title && !number) return
-
-    const numbering = number ? [`${number}`] : []
-    const text = title ? [title] : []
-    const head = [ ...numbering, ...text].join(". ")
-    const pgbreak = p.pgbreak ? "<hr/>\n" : ""
-
-    return `${pgbreak}<h2>${head}</h2>`
-  },
-
-  hscene: (p) => {
-    const {title, number} = p
-    if(!title && !number) return
-
-    const numbering = number ? [`${number}`] : []
-    const text = title ? [title] : []
-    const head = [ ...numbering, ...text].join(". ")
-
-    return `<h3>${head}</h3>`
-  },
+  hact: (p) => formatHeading(p, "h1"),
+  hchapter: (p) => formatHeading(p, "h2"),
+  hscene: (p) => formatHeading(p, "h3"),
+  hsynopsis: (p) => formatHeading(p, "h3"),
+  hnotes: (p) => formatHeading(p, "h3"),
 
   //---------------------------------------------------------------------------
   // Breaks
@@ -95,8 +51,34 @@ export const formatHTML = {
   "b": (text) => `<strong>${text}</strong>`,
   "i": (text) => `<em>${text}</em>`,
   "text": (text) => escape(text),
+}
 
-  //---------------------------------------------------------------------------
+// ****************************************************************************
+
+function formatFile(head, content, options) {
+  const {author, title, subtitle} = head
+  const headinfo = getHeader(head)
+  return `\
+<div style="margin-bottom: 1cm">${headinfo}</div>\n
+<center>${escape(author ?? "")}</center>
+<div style="margin-bottom: 0.5in">
+<h1>${escape(title ?? "<New Story>")}</h1>
+${subtitle ? "<h2>" + escape(subtitle) + "</h2>" : ""}
+</div>
+${content}
+`
+}
+
+function formatHeading(p, tag) {
+  const {title, number} = p
+  if(!title && !number) return
+
+  const numbering = number ? [`${number}`] : []
+  const text = title ? [title] : []
+  const head = [ ...numbering, ...text].join(". ")
+  const pgbreak = p.pgbreak ? "<hr/>\n" : ""
+
+  return `${pgbreak}<${tag}>${escape(head)}</${tag}>`
 }
 
 // ****************************************************************************

@@ -261,6 +261,8 @@ function ExportIndex({ style, flatted}) {
       case "hact": return <ActItem key={index} node={node}/>
       case "hchapter": return <ChapterItem key={index} node={node}/>
       case "hscene": return <SceneItem key={index} node={node}/>
+      case "hsynopsis": return <SceneItem key={index} node={node}/>
+      case "hnotes": return <SceneItem key={index} node={node}/>
     }
   }
 }

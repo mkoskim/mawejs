@@ -4,8 +4,105 @@
 //
 // ****************************************************************************
 
-import {elemAsText, elemName} from "../../document"
 import {getHeader} from "../../document/head"
+
+//-----------------------------------------------------------------------------
+
+export const formatRTF = {
+  // Info
+  suffix: ".rtf",
+
+  // File
+  file: formatFile,
+
+  //\\headery851\\f0\\fs24\\fi0\\li0\\ri0\\rin0\\lin0
+
+  //---------------------------------------------------------------------------
+  // Headings
+  //---------------------------------------------------------------------------
+
+  hact: formatActHdr,
+  hchapter: formatChapterHdr,
+  hscene: formatSceneHdr,
+  hsynopsis: formatSceneHdr,
+
+  //---------------------------------------------------------------------------
+  // Breaks
+  //---------------------------------------------------------------------------
+
+  separator: () => `{\\sb480\\sa480\\qc ${escape("* * *")}\\par}`,
+  //br: () => "\n",
+
+  //---------------------------------------------------------------------------
+  // Paragraph styles
+  //---------------------------------------------------------------------------
+
+  //split: (paragraphs) => "{\\sb480" + paragraphs.join("{\\fi567"),
+
+  "missing": (p, text) => `{${p.first ? "" : "\\fi567"}\\cf2 ${text}\\par}`,
+  "p": (p, text) => `{${p.first ? "" : "\\fi567 "}${text}\\par}`,
+
+  //"bookmark": (p) => undefined,
+  //"comment": (p) => undefined,
+
+  //---------------------------------------------------------------------------
+  // Character styles
+  //---------------------------------------------------------------------------
+
+  "b": (text) => `{\\b ${text}}`,
+  "i": (text) => `{\\i ${text}}`,
+  "text": (text) => escape(text),
+
+  //---------------------------------------------------------------------------
+}
+
+// ****************************************************************************
+//
+// Paragraphs
+//
+// ****************************************************************************
+
+function formatActHdr(p) {
+    const {title, number} = p
+    if(!title && !number) return
+
+    const head = formatHdrName(title, number)
+    const pgbreak = p.pgbreak ? "\\pagebb" : ""
+
+    return `{${pgbreak}\\sb1000\\sa480\\qc\\b\\fs32 ${escape(head)}\\par}`
+}
+
+function formatChapterHdr(p) {
+  const {title, number} = p
+  if(!title && !number) return
+
+  const head = formatHdrName(title, number)
+  const pgbreak = p.pgbreak ? "\\pagebb" : "\\sb480"
+
+  return `{${pgbreak}\\sa480\\b\\fs28 ${escape(head)}\\par}`
+}
+
+function formatSceneHdr(p) {
+  const {title, number} = p
+  if(!title && !number) return
+
+  const head = formatHdrName(title, number)
+
+  return `{\\sb480\\b ${escape(head)}\\par}`
+}
+
+function formatHdrName(title, number) {
+  const numbering = number ? [`${number}`] : []
+  const text = title ? [title] : []
+  const head = [ ...numbering, ...text].join(". ")
+  return head
+}
+
+// ****************************************************************************
+//
+// RTF file elements
+//
+// ****************************************************************************
 
 //-----------------------------------------------------------------------------
 
@@ -40,22 +137,17 @@ ${paperA4}
 
 //-----------------------------------------------------------------------------
 
-export const formatRTF = {
-  // Info
-  suffix: ".rtf",
+function formatFile(head, content, options) {
+  const pgbreak = options.pgbreak ? "\\page" : ""
 
-  // File
-  head: (head, options) => {
-    const pgbreak = options.pgbreak ? "\\page" : ""
+  const {author, title, subtitle} = head
+  const headinfo = getHeader(head)
+  const langcode = 1035
 
-    const {author, title, subtitle} = head
-    const headinfo = getHeader(head)
-    const langcode = 1035
+  const pgnum = `{\\field{\\*\\fldinst PAGE}}`
+  const pgtot = `{\\field{\\*\\fldinst NUMPAGES}}`
 
-    const pgnum = `{\\field{\\*\\fldinst PAGE}}`
-    const pgtot = `{\\field{\\*\\fldinst NUMPAGES}}`
-
-    return `{\\rtf1\\ansi\\deff0
+  return `{\\rtf1\\ansi\\deff0
 ${fonts}
 ${colors}
 {\\info
@@ -77,82 +169,9 @@ ${escape(headinfo)}\\tab ${pgnum} / ${pgtot}
 ${author ? `{\\sa220\\qc ${escape(author)}\\par}` : ""}
 {\\sa440\\qc\\b\\fs34 ${escape(title)}\\par}
 ${subtitle ? "{\\sa440\\qc\\b\\fs28" + escape(subtitle) + "\\par}" : ""}
-`},
-
-  footer: () => "}\n",
-
-  //\\headery851\\f0\\fs24\\fi0\\li0\\ri0\\rin0\\lin0
-
-  //---------------------------------------------------------------------------
-  // Headings
-  //---------------------------------------------------------------------------
-
-  hact: (p) => {
-    const {title, number} = p
-    if(!title && !number) return
-
-    const numbering = number ? [`${number}`] : []
-    const text = title ? [title] : []
-    const head = [ ...numbering, ...text].join(". ")
-    const pgbreak = p.pgbreak ? "\\pagebb" : ""
-
-    return `{${pgbreak}\\sb1000\\sa480\\qc\\b\\fs32 ${escape(head)}\\par}`
-  },
-
-  hchapter: (p) => {
-
-    const {title, number} = p
-    if(!title && !number) return
-
-    const numbering = number ? [`${number}`] : []
-    const text = title ? [title] : []
-    const head = [ ...numbering, ...text].join(". ")
-    const pgbreak = p.pgbreak ? "\\pagebb" : "\\sb480"
-
-    return `{${pgbreak}\\sa480\\b\\fs28 ${escape(head)}\\par}`
-  },
-
-  hscene: (p) => {
-
-    const {title, number} = p
-    if(!title && !number) return
-
-    const numbering = number ? [`${number}`] : []
-    const text = title ? [title] : []
-    const head = [ ...numbering, ...text].join(". ")
-
-    return `{\\sb480\\b ${escape(head)}\\par}`
-  },
-
-  //---------------------------------------------------------------------------
-  // Breaks
-  //---------------------------------------------------------------------------
-
-  separator: () => `{\\sb480\\sa480\\qc ${escape("* * *")}\\par}`,
-  //br: () => "\n",
-
-  //---------------------------------------------------------------------------
-  // Paragraph styles
-  //---------------------------------------------------------------------------
-
-  //split: (paragraphs) => "{\\sb480" + paragraphs.join("{\\fi567"),
-
-  "missing": (p, text) => `{${p.first ? "" : "\\fi567"}\\cf2 ${text}\\par}`,
-  "p": (p, text) => `{${p.first ? "" : "\\fi567 "}${text}\\par}`,
-
-  //"bookmark": (p) => undefined,
-  //"comment": (p) => undefined,
-
-  //---------------------------------------------------------------------------
-  // Character styles
-  //---------------------------------------------------------------------------
-
-  "b": (text) => `{\\b ${text}}`,
-  "i": (text) => `{\\i ${text}}`,
-  "text": (text) => escape(text),
-
-  //---------------------------------------------------------------------------
+${content}
 }
+`}
 
 //-----------------------------------------------------------------------------
 

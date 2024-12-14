@@ -1,15 +1,21 @@
-// ****************************************************************************
+//*****************************************************************************
 //
 // ASCII .TXT formatting table
 //
-// ****************************************************************************
+//*****************************************************************************
+
+//*****************************************************************************
+//
+// Generic .TXT
+//
+//*****************************************************************************
 
 export const formatTXT = {
   // Info
   suffix: ".txt",
 
   // File
-  head: (head, options) => {
+  file: (head, content, options) => {
     //const author = head.nickname || head.author
     const {author, title, subtitle} = head
     //const headinfo = author ? `${author}: ${title}` : title
@@ -18,39 +24,17 @@ ${center(author ?? "")}
 
 ${center(title.toUpperCase()) ?? ""}
 ${subtitle ? "\n" + center(subtitle) + "\n" : ""}
-`
-  },
 
-  footer: (options) => "",
+${content}
+`},
 
-  //---------------------------------------------------------------------------
-  // Joining elements
-
-  hact: (p) => {
-    const {title, number} = p
-    if(!title && !number) return
-
-    const numbering = number ? [`${number}`] : []
-    const text = title ? [title] : []
-    const head = [ ...numbering, ...text].join(". ")
-
-    return `${escape(head)}\n`
-  },
-
-  hchapter: (p) => {
-    const {title, number} = p
-    if(!title && !number) return
-
-    const numbering = number ? [`${number}`] : []
-    const text = title ? [title] : []
-    const head = [ ...numbering, ...text].join(". ")
-
-    return `${escape(head)}\n`
-  },
-
+  hact: (p) => formatHeading(p, ""),
+  hchapter: (p) => formatHeading(p, ""),
   hscene: undefined,
 
-  // Paragraph styles
+  separator: () => "* * *\n",
+  br: () => "\n",
+
   //"bookmark": (p) => undefined,
   //"comment": (sp) => undefined,
   "missing": (p, text) => linify(`${p.first ? "    " : ""}!! ${text}`),
@@ -61,14 +45,18 @@ ${subtitle ? "\n" + center(subtitle) + "\n" : ""}
   "text": (text) => text,
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Generic .MD (Mark-Down)
+//
+//*****************************************************************************
 
 export const formatMD = {
   // Info
   suffix: ".md",
 
   // File
-  head: (head, options) => {
+  file: (head, content, options) => {
     //const author = head.nickname || head.author
     const {author, title, subtitle} = head
     //const headinfo = author ? `${author}: ${title}` : title
@@ -78,51 +66,18 @@ ${author ?? ""}
 # ${title.toUpperCase() ?? ""}
 
 ${subtitle ? "\n## " + subtitle + "\n" : ""}
+
+${content}
 `
   },
 
-  footer: (options) => "",
-
-  //---------------------------------------------------------------------------
-  // Headings
-  //---------------------------------------------------------------------------
-
-  hact: (p) => {
-    const {title, number} = p
-    if(!title && !number) return
-
-    const numbering = number ? [`${number}`] : []
-    const text = title ? [title] : []
-    const head = [ ...numbering, ...text].join(". ")
-
-    return `# ${escape(head)}\n`
-  },
-
-  hchapter: (p) => {
-    const {title, number} = p
-    if(!title && !number) return
-
-    const numbering = number ? [`${number}`] : []
-    const text = title ? [title] : []
-    const head = [ ...numbering, ...text].join(". ")
-
-    return `## ${escape(head)}\n`
-  },
-
+  hact: (p) => formatHeading(p, "#"),
+  hchapter: (p) => formatHeading(p, "##"),
   hscene: undefined,
-
-  //---------------------------------------------------------------------------
-  // Breaks
-  //---------------------------------------------------------------------------
 
   separator: () => "* * *\n",
   br: () => "\n",
 
-  //---------------------------------------------------------------------------
-  // Paragraph styles
-  //---------------------------------------------------------------------------
-
-  // Paragraph styles
   //"bookmark": (p) => undefined,
   //"comment": (sp) => undefined,
   "missing": (p, text) => `!! ${text}\n`,
@@ -133,11 +88,35 @@ ${subtitle ? "\n## " + subtitle + "\n" : ""}
   "text": (text) => text,
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Paragraph formatting
+//
+//*****************************************************************************
+
+function formatHeading(p, tag)
+{
+  const {title, number} = p
+  if(!title && !number) return
+
+  const numbering = number ? [`${number}`] : []
+  const text = title ? [title] : []
+  const head = [ ...numbering, ...text].join(". ")
+
+  return `${tag} ${escape(head)}\n`
+}
+
+//*****************************************************************************
+//
+// Misc text utils
+//
+//*****************************************************************************
 
 function escape(text) {
   return text
 }
+
+//-----------------------------------------------------------------------------
 
 function linify(text) {
   const words = escape(text).split(" ").filter(p => p.length)

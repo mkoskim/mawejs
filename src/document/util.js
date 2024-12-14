@@ -270,7 +270,7 @@ function wcParagraph(elem) {
   switch(elem.type) {
     //case "p": return { chars, text: wc, map: words2map(words) }
     case "p": return { chars, text: wc }
-    case "missing": return { chars, missing: wc }
+    case "missing": return { missing: wc }
     case "fill": {
       const fill = Math.max(0, parseInt(text))
       //console.log("Fill:", fill)
