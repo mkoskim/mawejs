@@ -59,7 +59,7 @@ import { useImmer } from "use-immer"
 
 import { mawe } from "../../document"
 
-import { appQuit, appLog } from "../../system/host"
+import { appQuit, appLog, appInfo } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
 
@@ -74,6 +74,19 @@ const fs = require("../../system/localfs")
 //*****************************************************************************
 
 export default function App(props) {
+
+  //---------------------------------------------------------------------------
+  // Application info (name & version)
+  //---------------------------------------------------------------------------
+
+  const [app, setAppInfo] = useState()
+
+  useEffect(() => {
+    appInfo().then(info => {
+      //console.log("Application:", info)
+      setAppInfo(info)
+    })
+  }, [])
 
   //---------------------------------------------------------------------------
   // External settings
@@ -159,12 +172,13 @@ export default function App(props) {
   //---------------------------------------------------------------------------
 
   useEffect(() => {
+    const name = app ? `${app.name} (v${app.version})` : ""
     if (doc?.head) {
-      document.title = (dirty ? "* " : "") + mawe.info(doc.head).title + " - MaweJS"
+      document.title = (dirty ? "* " : "") + mawe.info(doc.head).title + " - " + name
     } else {
-      document.title = "MaweJS"
+      document.title = name
     }
-  }, [doc?.head, dirty])
+  }, [doc?.head, dirty, app])
 
   //---------------------------------------------------------------------------
   // Add application hotkeys common to all views
