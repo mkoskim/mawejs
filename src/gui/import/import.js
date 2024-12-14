@@ -7,7 +7,6 @@
 //*****************************************************************************
 
 import "./import.css"
-import "../common/styles/sheet.css"
 
 import React, {
   useState, useEffect,
@@ -32,7 +31,7 @@ import { maweFromTree } from "../../document/xmljs/load";
 import { Preview } from "./preview";
 import { ImportText } from "./importText";
 
-import DialogActions from '@mui/material/DialogActions';
+//import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { Dialog } from "@mui/material";
@@ -74,14 +73,6 @@ function getContent(file, ext) {
 }
 
 export function ImportDialog({ updateDoc, buffer, setBuffer }) {
-  return (
-    <Dialog open={true} fullWidth={true} maxWidth="xl" disableEscapeKeyDown={true}>
-      <ImportView updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer} />
-    </Dialog>
-  );
-}
-
-function ImportView({ updateDoc, buffer, setBuffer }) {
   const { file, ext } = buffer
 
   //console.log("File:", file, "Ext:", ext)
@@ -130,7 +121,8 @@ function ImportView({ updateDoc, buffer, setBuffer }) {
       })
   }, [buffer, setContent, setFormat, setBuffer])
 
-  return <VBox style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
+  return <Dialog open={true} fullWidth={true} maxWidth="xl" disableEscapeKeyDown={true}>
+    <VBox style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
 
     <ToolBox>
       <Label>Import: {buffer.file?.name ?? "Clipboard"}</Label>
@@ -156,7 +148,7 @@ function ImportView({ updateDoc, buffer, setBuffer }) {
         </Button>
       </VBox>
     </HBox>
-  </VBox>
+  </VBox></Dialog>
 }
 
 //-----------------------------------------------------------------------------

@@ -27,11 +27,16 @@
   border-right: 1pt solid lightgray;
   */
   counter-reset: act chapter scene;
-}
 
 /* ---------------------------------------------------------------------------- */
 
-.TOC .Entry {
+  .Current {
+    background-color: rgb(210, 230, 250);
+  }
+
+/* ---------------------------------------------------------------------------- */
+
+.Entry {
   margin: 0;
   cursor: default;
   align-items: center;
@@ -42,75 +47,57 @@
   padding-bottom: 2pt;
   padding-left: 16px;
   */
+
+  .Name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .WordCount {
+    margin-left: 6pt;
+    min-width: 1.5cm;
+    text-align: right;
+  }
 }
 
-/* ---------------------------------------------------------------------------- */
-/* Entry names */
-
-.TOC .Entry .Name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ---------------------------------------------------------------------------- */
-
-.TOC .Current {
-  background-color: rgb(210, 230, 250);
-}
-
-.TOC .Entry.Folded {
-  opacity: 33%;
-}
-
-.TOC .Entry:hover {
+.Entry:hover {
   background-color: lightgrey !important;
 }
 
-.TOC .Entry.Section {
+/* ---------------------------------------------------------------------------- */
+
+.Entry.Folded {
+  opacity: 33%;
+}
+
+.Entry.Section {
   padding: 6px;
   border-bottom: 1px solid lightgray;
 }
 
-.TOC .Entry.Act {
+.Entry.Act {
   font-weight: bold;
   /*
   border-top: 1px dashed gray;
   padding-top: 4pt !important;
   padding-bottom: 4pt !important;
   */
-}
 
-.TOC .Entry.Act .Name {
-  text-transform: uppercase;
-}
+  .Name {
+    text-transform: uppercase;
+  }
 
 /*
-.TOC .Entry.Act.Numbered .Name::before {
+Entry.Act.Numbered .Name::before {
   counter-increment: act;
   content: "ACT " counter(act, upper-roman) ": ";
 }
 */
 
-.TOC div.ChapterDropZone {
-  min-height: 16pt;
 }
 
-.TOC div.ChapterDropZone.DragOver {
-  margin-left: -4px;
-  margin-right: -4px;
-  border: 1px dashed grey;
-  padding: 3px;
-  /*
-  border-radius: 4px;
-  padding-top: 6px;
-  padding-bottom: 6px;
-  */
-}
-
-/* ---------------------------------------------------------------------------- */
-
-.TOC .Entry.Chapter {
+.Entry.Chapter {
   font-weight: bold;
   /*
   padding-top: 4pt !important;
@@ -118,7 +105,7 @@
   */
 }
 
-.TOC .Entry.Chapter.Numbered .Name::before {
+.Entry.Chapter.Numbered .Name::before {
   counter-increment: chapter;
   content: counter(chapter) ". ";
 /*
@@ -126,11 +113,29 @@
 */
 }
 
-.TOC div.SceneDropZone {
+/* ---------------------------------------------------------------------------- */
+
+div.ChapterDropZone {
+  min-height: 16pt;
+}
+
+div.ChapterDropZone.DragOver {
+  margin-left: -4px;
+  margin-right: -4px;
+  border: 1px dashed grey;
+  padding: 3px;
+  /*
+  border-radius: 4px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  */
+}
+
+div.SceneDropZone {
   min-height: 16pt
 }
 
-.TOC div.SceneDropZone.DragOver {
+div.SceneDropZone.DragOver {
   margin-left: -4px;
   margin-right: -4px;
   border: 1px dashed grey;
@@ -145,12 +150,12 @@
 /* ---------------------------------------------------------------------------- */
 
 /*
-.TOC div.Chapter, .TOC div.Scene {
+div.Chapter, div.Scene {
   background: #F5F7F9;
 }
 */
 
-.TOC div.Scene {
+div.Scene {
   /*
   padding-left: 0.5cm !important;
   padding-left: 0.25cm;
@@ -161,11 +166,11 @@
   */
 }
 
-.TOC div.Scene:hover {
+div.Scene:hover {
   background-color: #DEF;
 }
 
-.TOC div.Scene .Separator {
+div.Scene .Separator {
   /*
   margin: 0;
   margin-bottom: 2pt;
@@ -173,7 +178,10 @@
   */
 }
 
-.TOC .Entry.Scene {
+/* ---------------------------------------------------------------------------- */
+/* Scene content types */
+
+.Entry.Scene {
   padding-left: 0.5cm !important;
   /*
   padding-top: 4pt !important;
@@ -188,10 +196,7 @@
 */
 }
 
-/* ---------------------------------------------------------------------------- */
-/* Scene content types */
-
-.TOC .Entry.Scene.Synopsis .Name {
+.Entry.Scene.Synopsis .Name {
   background: rgb(240, 240, 80);
   border: 1px solid grey;
   border-radius: 3pt;
@@ -203,7 +208,7 @@
   */
 }
 
-.TOC .Entry.Scene.Notes .Name {
+.Entry.Scene.Notes .Name {
   background: rgb(100, 230, 100);
   border: 1px solid grey;
   border-radius: 3pt;
@@ -218,49 +223,47 @@
 
 /* ---------------------------------------------------------------------------- */
 
-.TOC .Entry.Bookmark {
+.Entry.Bookmark {
   padding-left: 1.0cm !important;
-}
-
-.TOC .WordCount {
-  margin-left: 6pt;
-  min-width: 1.5cm;
-  text-align: right;
 }
 
 /* ---------------------------------------------------------------------------- */
 /* Entry small boxes */
 
-.TOC .Entry .Box {
-  min-height: 7pt;
-  max-height: 7pt;
-  min-width: 7pt;
-  max-width: 7pt;
-  border: 1px solid grey;
-  margin-right: 6pt;
-  /*
-  margin-left: 0.5cm;
-  margin-left: 8pt;
-  border-radius: 4pt;
-  */
-}
+.Entry {
+
+  .Box {
+    min-height: 7pt;
+    max-height: 7pt;
+    min-width: 7pt;
+    max-width: 7pt;
+    border: 1px solid grey;
+    margin-right: 6pt;
+    /*
+    margin-left: 0.5cm;
+    margin-left: 8pt;
+    border-radius: 4pt;
+    */
+  }
 
 /*
-.TOC .Entry .Box.bookmark,
-.TOC .Entry .Box.comment,
-.TOC .Entry .Box.missing {
-  margin-left: 0.5cm;
-}
+  .Box.bookmark,
+  .Box.comment,
+  .Box.missing {
+    margin-left: 0.5cm;
+  }
 */
 
 /**/
-.TOC .Entry .Box.comment { background: rgb(71, 207, 71); }
-.TOC .Entry .Box.missing { background: rgb(232, 14, 14); }
-.TOC .Entry .Box.bookmark { background: rgb(252, 84, 252); }
-.TOC .Entry .Box.tags { background: rgb(80, 80, 250); }
+  .Box.comment { background: rgb(71, 207, 71); }
+  .Box.missing { background: rgb(232, 14, 14); }
+  .Box.bookmark { background: rgb(252, 84, 252); }
+  .Box.tags { background: rgb(80, 80, 250); }
 /*/
-.TOC .Entry .Box.comment { background: var(--comment-fg); }
-.TOC .Entry .Box.missing { background: var(--missing-fg); }
-.TOC .Entry .Box.fill { background: var(--fill-fg); }
-.TOC .Entry .Box.bookmark { background: var(--bookmark-fg); }
+  .Box.comment { background: var(--comment-fg); }
+  .Box.missing { background: var(--missing-fg); }
+  .Box.fill { background: var(--fill-fg); }
+  .Box.bookmark { background: var(--bookmark-fg); }
 /**/
+}
+}

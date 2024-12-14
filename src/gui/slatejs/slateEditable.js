@@ -156,10 +156,10 @@ function renderElement({element, attributes, ...props}) {
 
 function renderLeaf({ leaf, attributes, children}) {
   if(leaf.bold) {
-    children = <strong>{children}</strong>
+    children = <b>{children}</b>
   }
   if(leaf.italic) {
-    children = <em>{children}</em>
+    children = <i>{children}</i>
   }
 
   const className = [

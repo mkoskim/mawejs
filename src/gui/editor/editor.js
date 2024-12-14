@@ -7,7 +7,6 @@
 //*****************************************************************************
 
 import "./editor.css"
-import "../common/styles/sheet.css"
 
 /* eslint-disable no-unused-vars */
 
@@ -687,7 +686,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
 
     {/* Editor board and sheet */}
 
-    <div className="Filler Board" style={{...style}}>
+    <div className="Filler Board Editor" style={{...style}}>
 
       <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
         <SlateEditable className={addClass("Sheet", mode, (active !== "body" && "Hidden"))} highlight={highlightText}/>

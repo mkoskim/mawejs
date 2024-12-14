@@ -22,11 +22,11 @@ export const formatHTML = {
   // Headings
   //---------------------------------------------------------------------------
 
-  hact: (p) => formatHeading(p, "h1"),
-  hchapter: (p) => formatHeading(p, "h2"),
-  hscene: (p) => formatHeading(p, "h3"),
-  hsynopsis: (p) => formatHeading(p, "h3"),
-  hnotes: (p) => formatHeading(p, "h3"),
+  hact: (p) => formatHeading(p, "h4"),
+  hchapter: (p) => formatHeading(p, "h5"),
+  hscene: (p) => formatHeading(p, "h6"),
+  hsynopsis: (p) => formatHeading(p, "h6"),
+  hnotes: (p) => formatHeading(p, "h6"),
 
   //---------------------------------------------------------------------------
   // Breaks
@@ -41,15 +41,15 @@ export const formatHTML = {
 
   // "bookmark": (p) => null,
   // "comment": (p) => null,
-  "missing": (p, text) => `<p style="color: rgb(180, 20, 20);">${text}</p>`,
+  "missing": (p, text) => `<p class="missing">${text}</p>`,
   "p": (p, text) => `<p>${text}</p>`,
 
   //---------------------------------------------------------------------------
   // Text styles
   //---------------------------------------------------------------------------
 
-  "b": (text) => `<strong>${text}</strong>`,
-  "i": (text) => `<em>${text}</em>`,
+  "b": (text) => `<b>${text}</b>`,
+  "i": (text) => `<i>${text}</i>`,
   "text": (text) => escape(text),
 }
 

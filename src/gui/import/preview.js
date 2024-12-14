@@ -18,8 +18,9 @@ export class Preview extends React.PureComponent {
     return <>
       <ImportIndex
         style={{minWidth: "200px", maxWidth: "300px", width: "300px"}}
-        imported={imported}/>
-      <div className="Filler Board"
+        imported={imported}
+        />
+      <div className="Filler Board Editor"
         style={{borderRight: "1px solid lightgray", borderLeft: "1px solid lightgray"}}
         >
         <div className="Sheet Regular">
@@ -67,19 +68,19 @@ function ImportIndex({imported}) {
 
   function actIndex(act, index) {
     return <div key={index} className="Act">
-      <div className="Entry ActName"><p className="Name">{act.attributes.name}</p></div>
+      <div className="Entry ActName"><div className="Name">{act.attributes.name}</div></div>
       {act.elements.map(chapterIndex)}
     </div>
   }
 
   function chapterIndex(chapter, index) {
     return <div key={index} className="Chapter">
-      <div className="Entry ChapterName"><p className="Name">{chapter.attributes.name}</p></div>
+      <div className="Entry ChapterName"><div className="Name">{chapter.attributes.name}</div></div>
       {chapter.elements.map(sceneIndex)}
     </div>
   }
 
   function sceneIndex(scene, index) {
-    return <div key={index} className="Entry SceneName"><p className="Name">{scene.attributes.name}</p></div>
+    return <div key={index} className="Entry SceneName"><div className="Name">{scene.attributes.name}</div></div>
   }
 }
