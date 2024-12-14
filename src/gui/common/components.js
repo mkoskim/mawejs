@@ -25,6 +25,7 @@ import { mawe } from "../../document"
 import {cmdOpenFolder} from '../app/context';
 import {Popover} from '@mui/material';
 import {getHeader} from '../../document/head';
+import { numfmt } from '../../util';
 
 //-----------------------------------------------------------------------------
 // Head info editing box
@@ -269,25 +270,6 @@ export class HeadInfo extends React.PureComponent {
   }
 }
 
-/*
-export class WordInfo extends React.PureComponent {
-  render() {
-    const {text, missing, last, chars} = this.props;
-
-    return <>
-      <ActualWords text={text}/>
-      <Separator/>
-      <WordsToday text={text} last={last}/>
-      <Separator/>
-      <TargetWords text={text} missing={missing}/>
-      <MissingWords missing={missing}/>
-      <Separator/>
-      <CharInfo chars={chars}/>
-    </>
-  }
-}
-*/
-
 export class ActualWords extends React.PureComponent {
   render() {
     const {text} = this.props
@@ -305,7 +287,7 @@ export class TargetWords extends React.PureComponent {
 export class MissingWords extends React.PureComponent {
   render() {
     const {missing} = this.props
-    const detail = missing ? `-${missing}` : ""
+    const detail = missing ? `${-missing}` : ""
 
     return <span style={{color: "firebrick"}}>{detail}</span>
   }
@@ -315,7 +297,7 @@ export class CharInfo extends React.PureComponent {
   render() {
     const {chars} = this.props;
 
-    return <>Chars: {chars}</>
+    return <>Chars: {numfmt.group.format(chars)}</>
   }
 }
 
@@ -325,6 +307,6 @@ export class WordsToday extends React.PureComponent {
     if(!last) return null;
 
     const delta = text - last.text
-    return <>Today: {delta >= 0 ? "+" : ""}{delta}</>
+    return <>Today: {numfmt.sign.format(delta)}</>
   }
 }

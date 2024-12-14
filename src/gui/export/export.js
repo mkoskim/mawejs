@@ -26,13 +26,10 @@ import {
 
 import { elemName, getSuffix, text2words } from "../../document/util";
 
-import { flattedFormat, flattedToText, storyToFlatted } from "./formatDoc"
+import { exportAs, flattedFormat, flattedToText, storyToFlatted } from "../../document/export"
 
-import { formatRTF } from "./formatRTF";
-import { formatHTML } from "./formatHTML"
-import { formatMD, formatTXT } from "./formatTXT"
-import { formatTEX1, formatTEX2 } from "./formatTEX"
 import { setFocusTo } from "../editor/editor";
+import { numfmt } from "../../util";
 
 //-----------------------------------------------------------------------------
 
@@ -45,12 +42,12 @@ const fs = require("../../system/localfs");
 // ****************************************************************************
 
 const formatters = {
-  "rtf1": formatRTF,
-  "rtf2": formatRTF,
-  "tex1": formatTEX1,
-  "tex2": formatTEX2,
-  "md": formatMD,
-  "txt": formatTXT,
+  "rtf1": exportAs.RTF,
+  "rtf2": exportAs.RTF,
+  "tex1": exportAs.TEX1,
+  "tex2": exportAs.TEX2,
+  "md": exportAs.MD,
+  "txt": exportAs.TXT,
 }
 
 export function loadExportSettings(settings) {
@@ -115,11 +112,9 @@ function ExportInfo({flatted}) {
     //borderRadius: "2pt",
   }
 
-  const numfmt = Intl.NumberFormat(undefined, {useGrouping: true})
-
   return <VBox style={style}>
-    <Label>Words: {numfmt.format(wc)}</Label>
-    <Label>Chars: {numfmt.format(chars)}</Label>
+    <Label>Words: {numfmt.group.format(wc)}</Label>
+    <Label>Chars: {numfmt.group.format(chars)}</Label>
     </VBox>
 }
 
@@ -241,7 +236,7 @@ function Preview({ flatted }) {
   return <div className="Filler Board">
     <DeferredRender><div
       className="Sheet Regular"
-      dangerouslySetInnerHTML={{ __html: flattedFormat(formatHTML, flatted) }}
+      dangerouslySetInnerHTML={{ __html: flattedFormat(exportAs.HTML, flatted) }}
     /></DeferredRender>
   </div>
 }
@@ -262,6 +257,8 @@ function ExportIndex({ style, flatted}) {
       case "hact": return <ActItem key={index} node={node}/>
       case "hchapter": return <ChapterItem key={index} node={node}/>
       case "hscene": return <SceneItem key={index} node={node}/>
+      case "hsynopsis": return <SceneItem key={index} node={node}/>
+      case "hnotes": return <SceneItem key={index} node={node}/>
     }
   }
 }

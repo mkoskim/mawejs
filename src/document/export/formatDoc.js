@@ -4,11 +4,10 @@
 //
 //*****************************************************************************
 
-import { mawe } from "../../document"
-import { splitByTrailingElem } from "../../util";
-import { nodeIsBreak, nodeIsNotBreak } from "../../document/elements";
-import {elemAsText, elemHeading} from "../../document/util";
-import {isNotEmpty} from "../common/factory";
+import { mawe } from ".."
+import { splitByTrailingElem, isNotEmpty } from "../../util";
+import { nodeIsBreak, nodeIsNotBreak } from "../elements";
+import {elemAsText, elemHeading} from "../util";
 
 //*****************************************************************************
 // Settings
@@ -150,8 +149,8 @@ export function storyToFlatted(story) {
     const children = scene.children.filter(n => !nodeIsBreak(n))
     const splits = splitByTrailingElem(children, p => p.type === "br")
       .map(s => s.filter(chooseParagraphs))
-      .map(([first, ...rest]) => [{...first, first: true}, ...rest])
       .filter(s => s.length)
+      .map(([first, ...rest]) => [{...first, first: true}, ...rest])
 
     const content = separate(splits, {type: "br"})
     if(!content.length) return undefined
@@ -250,18 +249,24 @@ export function flattedFormat(format, flatted) {
 
   const {head, content, options} = flatted
 
-  return format.head(head, options) +
-    content.map(FormatParagraph).filter(isNotEmpty).join("\n") +
-    format.footer(options)
+  return format.file(
+    head,
+    content.map(FormatParagraph).filter(isNotEmpty).join("\n"),
+    options
+  )
 
   function FormatParagraph(p) {
     const formatter = format[p.type];
     if(!formatter) return
 
     switch(p.type) {
+
       case "hact": return formatter(p)
       case "hchapter": return formatter(p)
       case "hscene": return formatter(p)
+      case "hsynopsis": return formatter(p)
+      case "hnotes": return formatter(p)
+
       case "separator": return formatter(p)
       case "br": return formatter(p)
 

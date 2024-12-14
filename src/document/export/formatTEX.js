@@ -1,8 +1,94 @@
 // ****************************************************************************
 //
-// LaTeX formatting table
+// LaTeX formatting
 //
 // ****************************************************************************
+
+//-----------------------------------------------------------------------------
+// Generic TEX formatter
+//-----------------------------------------------------------------------------
+
+const formatTEX = {
+  // Info
+  suffix: ".tex",
+
+  // File
+  file: formatFile1,
+
+  //---------------------------------------------------------------------------
+  // Headings
+  //---------------------------------------------------------------------------
+
+  hact: (p) => {
+    const {title, number} = p
+    if(!title) return
+
+    return `\\part{${escape(title)}}\n`
+  },
+
+  hchapter: (p) => {
+
+    const {title, number} = p
+    if(!title && !number) return
+
+    const numbering = number ? escape(number.toString()) : ""
+    const head = title ? escape(title) : ""
+    //const numbering = number ? [`${number}`] : []
+    //const text = title ? [title] : []
+    //const head = [ ...numbering, ...text].join(". ")
+
+    return `\\chapter{${numbering}}{${head}}\n`
+  },
+
+  //---------------------------------------------------------------------------
+  // Breaks
+  //---------------------------------------------------------------------------
+
+  separator: () => "\\separator{* * *}\n",
+  //br: () => "\n\n\\par\\null\n\n",
+  br: () => "\\par\\null\n",
+
+  //---------------------------------------------------------------------------
+  // Paragraph styles
+  //---------------------------------------------------------------------------
+
+  "missing": (p, text) => linify(`{${p.first ? "\\noindent" : ""}\\color{red}${text}}`) + "\n",
+  "p": (p, text) => linify(`${p.first ? "\\noindent " : ""}${text}`) + "\n",
+
+  //"bookmark": (p) => undefined,
+  //"comment": (p) => undefined,
+
+  //---------------------------------------------------------------------------
+  // Character styles
+  //---------------------------------------------------------------------------
+
+  "b": (text) => `\\textbf{${text}}`,
+  "i": (text) => `\\textit{${text}}`,
+  "text": (text) => escape(text),
+}
+
+//-----------------------------------------------------------------------------
+// Onesided TEX
+//-----------------------------------------------------------------------------
+
+export const formatTEX1 = {
+  ...formatTEX,
+}
+
+//-----------------------------------------------------------------------------
+// Twosided booklet TEX: Always insert title page, and backcover
+//-----------------------------------------------------------------------------
+
+export const formatTEX2 = {
+  ...formatTEX,
+  file: formatFile2,
+}
+
+//*****************************************************************************
+//
+// LaTeX formatting
+//
+//*****************************************************************************
 
 function paperSize(sides) {
   if(sides === "twoside") {
@@ -127,23 +213,21 @@ ${renewCommands(options, sides)}
 `
 }
 
-//-----------------------------------------------------------------------------
-// Generic TEX formatter
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// One-sided file
+//
+//*****************************************************************************
 
-const formatTEX = {
-  // Info
-  suffix: ".tex",
+function formatFile1(head, content, options) {
+  const sides = "oneside"
+  const titlepage = options.long ? "titlepage" : "notitlepage"
+  const frontmatter = options.long ? "\\frontmatter\\pagestyle{empty}" : "\\pagestyle{plain}"
+  const mainmatter  = options.long ? "\\mainmatter\\pagestyle{plain}" : ""
+  // const mainmatter = options.pgbreak ? "\\mainmatter" : ""
+  const backmatter  = options.long ? "\\backmatter\\pagestyle{empty}" : ""
 
-  // File
-  head: (head, options) => {
-    const sides = "oneside"
-    const titlepage = options.long ? "titlepage" : "notitlepage"
-    const frontmatter = options.long ? "\\frontmatter\\pagestyle{empty}" : "\\pagestyle{plain}"
-    const mainmatter  = options.long ? "\\mainmatter\\pagestyle{plain}" : ""
-    // const mainmatter = options.pgbreak ? "\\mainmatter" : ""
-
-    return `\
+  return `\
 \\documentclass[${sides},${titlepage},12pt]{book}
 ${FileHeading(head, options, sides)}
 
@@ -153,100 +237,37 @@ ${frontmatter}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${mainmatter}
-`},
 
-  footer: (options) => {
-    const backmatter  = options.long ? "\\backmatter\\pagestyle{empty}" : ""
-    return `
+${content}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${backmatter}
 
 \\end{document}
 `
-  },
-
-  //---------------------------------------------------------------------------
-  // Headings
-  //---------------------------------------------------------------------------
-
-  hact: (p) => {
-    const {title, number} = p
-    if(!title) return
-
-    return `\\part{${escape(title)}}\n`
-  },
-
-  hchapter: (p) => {
-
-    const {title, number} = p
-    if(!title && !number) return
-
-    const numbering = number ? escape(number.toString()) : ""
-    const head = title ? escape(title) : ""
-    //const numbering = number ? [`${number}`] : []
-    //const text = title ? [title] : []
-    //const head = [ ...numbering, ...text].join(". ")
-
-    return `\\chapter{${numbering}}{${head}}\n`
-  },
-
-  //---------------------------------------------------------------------------
-  // Breaks
-  //---------------------------------------------------------------------------
-
-  separator: () => "\\separator{* * *}\n",
-  //br: () => "\n\n\\par\\null\n\n",
-  br: () => "\\par\\null\n",
-
-  //---------------------------------------------------------------------------
-  // Paragraph styles
-  //---------------------------------------------------------------------------
-
-  "missing": (p, text) => linify(`{${p.first ? "\\noindent" : ""}\\color{red}${text}}`) + "\n",
-  "p": (p, text) => linify(`${p.first ? "\\noindent " : ""}${text}`) + "\n",
-
-  //"bookmark": (p) => undefined,
-  //"comment": (p) => undefined,
-
-  //---------------------------------------------------------------------------
-  // Character styles
-  //---------------------------------------------------------------------------
-
-  "b": (text) => `\\textbf{${text}}`,
-  "i": (text) => `\\textit{${text}}`,
-  "text": (text) => escape(text),
 }
 
-//-----------------------------------------------------------------------------
-// Onesided TEX
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Two-sided file
+//
+//*****************************************************************************
 
-export const formatTEX1 = {
-  ...formatTEX,
-}
+function formatFile2(head, content, options) {
+  const sides = "twoside"
+  //const titlepage = options.pgbreak ? "titlepage" : "notitlepage"
+  //const frontmatter = options.pgbreak ? "\\frontmatter\\pagestyle{empty}" : ""
+  //const mainmatter  = options.pgbreak ? "\\mainmatter\\pagestyle{plain}" : ""
+  //const backmatter  = options.pgbreak ? "\\backmatter\\pagestyle{empty}" : ""
 
-//-----------------------------------------------------------------------------
-// Twosided booklet TEX: Always insert title page, and backcover
-//-----------------------------------------------------------------------------
+  const pgbreak = options.long
+  const titlepage = "titlepage"
+  const frontmatter = "\\frontmatter\\pagestyle{empty}"
+  const mainmatter  = "\\mainmatter\\pagestyle{plain}"
+  const backmatter  = "\\backmatter\\pagestyle{empty}"
 
-export const formatTEX2 = {
-  ...formatTEX,
-
-  // File
-  head: (head, options) => {
-    const sides = "twoside"
-    //const titlepage = options.pgbreak ? "titlepage" : "notitlepage"
-    //const frontmatter = options.pgbreak ? "\\frontmatter\\pagestyle{empty}" : ""
-    //const mainmatter  = options.pgbreak ? "\\mainmatter\\pagestyle{plain}" : ""
-    //const backmatter  = options.pgbreak ? "\\backmatter\\pagestyle{empty}" : ""
-
-    const pgbreak = options.long
-    const titlepage = "titlepage"
-    const frontmatter = "\\frontmatter\\pagestyle{empty}"
-    const mainmatter  = "\\mainmatter\\pagestyle{plain}"
-
-    return `\
+  return `\
 \\documentclass[${sides},${titlepage},12pt]{book}
 ${FileHeading(head, options, sides)}
 \\pagestyle{plain}
@@ -260,11 +281,9 @@ ${frontmatter}
 
 ${mainmatter}
 ${pgbreak ? "" : "\\innertitle"}
-`},
 
-footer: () => {
-  const backmatter  = "\\backmatter\\pagestyle{empty}"
-  return `
+${content}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${backmatter}
@@ -275,10 +294,13 @@ ${backmatter}
 \\null
 \\end{document}
 `
-  },
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Misc text utils
+//
+//*****************************************************************************
 
 function escape(text) {
   return (text && text
@@ -295,6 +317,8 @@ function escape(text) {
     .replaceAll('"', "''")
   )
 }
+
+//-----------------------------------------------------------------------------
 
 function linify(text) {
   const words = text.split(" ").filter(p => p.length)

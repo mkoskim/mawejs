@@ -7,17 +7,20 @@
 //*****************************************************************************
 
 //-----------------------------------------------------------------------------
-// UUID generator
-//-----------------------------------------------------------------------------
 
 import {v4 as uuid} from "uuid"
 import {nanoid} from "nanoid"
 
 import {
   splitByLeadingElem, splitByTrailingElem,
-  sleep,
+  isEmpty, isNotEmpty,
+  sleep, numfmt,
 } from "./generic"
 
-export {uuid, nanoid}
-export {splitByLeadingElem, splitByTrailingElem}
-export {sleep}
+export {
+  uuid, nanoid,
+  splitByLeadingElem, splitByTrailingElem,
+  isEmpty, isNotEmpty,
+  sleep,
+  numfmt,
+}
