@@ -11,7 +11,7 @@ import "./app.css"
 /* eslint-disable no-unused-vars */
 
 import React, {
-  useEffect, useState, useReducer, useCallback,
+  useEffect, useState, useCallback,
   useMemo, useContext,
 } from "react"
 
@@ -19,19 +19,17 @@ import { ThemeProvider } from '@mui/material/styles';
 
 import {
   theme,
-  FlexBox, VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Button, Icon, Tooltip, IconButton,
+  VBox, Filler,
+  ToolBox, Button, Icon, IconButton,
   IsKey, addHotkeys,
-  Label,
-  Separator, Loading, addClass,
-  Menu, MenuItem, MenuList, ListSubheader,
+  Separator,
+  Menu, MenuItem,
   Inform,
   ListItemText,
   Typography,
-  DeferredRender,
 } from "../common/factory";
 
-import { OpenFolderButton, HeadInfo, WordInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords } from "../common/components";
+import { OpenFolderButton, HeadInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords } from "../common/components";
 
 import { SnackbarProvider } from "notistack";
 
@@ -41,8 +39,8 @@ import {
   CmdContext,
   cmdCloseFile,
   cmdLoadFile,
-  cmdNewFile, cmdOpenFile, cmdOpenFolder, cmdOpenHelp,
-  cmdOpenImportFile, cmdImportFile,
+  cmdNewFile, cmdOpenFile,
+  cmdOpenImportFile,
   cmdSaveFile, cmdSaveFileAs,
   cmdImportClipboard,
   cmdOpenResource
@@ -50,8 +48,7 @@ import {
 
 import {
   SettingsContext,
-  getViewDefaults,
-  getStartupCommand, useSetting, recentRemove, recentAdd
+  useSetting, recentRemove, recentAdd
 } from "./settings"
 
 import { ViewSelectButtons, ViewSwitch } from "./views";
@@ -59,11 +56,9 @@ import { useImmer } from "use-immer"
 
 import { mawe } from "../../document"
 
-import { appQuit, appLog } from "../../system/host"
+import { appQuit, appInfo } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
-
-
 
 const fs = require("../../system/localfs")
 
@@ -74,6 +69,19 @@ const fs = require("../../system/localfs")
 //*****************************************************************************
 
 export default function App(props) {
+
+  //---------------------------------------------------------------------------
+  // Get application info (name & version)
+  //---------------------------------------------------------------------------
+
+  const [app, setAppInfo] = useState()
+
+  useEffect(() => {
+    appInfo().then(info => {
+      //console.log("Application:", info)
+      setAppInfo(info)
+    })
+  }, [])
 
   //---------------------------------------------------------------------------
   // External settings
@@ -159,12 +167,13 @@ export default function App(props) {
   //---------------------------------------------------------------------------
 
   useEffect(() => {
+    const name = app ? `${app.name} (v${app.version})` : ""
     if (doc?.head) {
-      document.title = (dirty ? "* " : "") + mawe.info(doc.head).title + " - MaweJS"
+      document.title = (dirty ? "* " : "") + mawe.info(doc.head).title + " - " + name
     } else {
-      document.title = "MaweJS"
+      document.title = name
     }
-  }, [doc?.head, dirty])
+  }, [doc?.head, dirty, app])
 
   //---------------------------------------------------------------------------
   // Add application hotkeys common to all views

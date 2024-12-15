@@ -7,6 +7,7 @@
 //*****************************************************************************
 
 module.exports = {
+  info,
   quit,
   log,
   beep,
@@ -17,6 +18,13 @@ module.exports = {
 const {app, shell} = require("electron");
 
 //-----------------------------------------------------------------------------
+
+function info() {
+  return {
+    name: app.getName(),
+    version: app.getVersion(),
+  }
+}
 
 function quit() {
   app.quit();

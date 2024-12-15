@@ -18,8 +18,9 @@ function ipcDispatch(channel, params, browserWindow) {
   //console.log("IPC:", channel, cmd, args)
 
   switch(channel) {
-    case "host": {
+    case "app": {
       switch(cmd) {
+        case "info": return hostapp.info(...args)
         case "quit": return hostapp.quit(...args)
         case "log": return hostapp.log(...args)
         case "beep": return hostapp.beep(...args)

@@ -1,8 +1,12 @@
-/* ---------------------------------------------------------------------------- */
-/* Document outlining */
-/* ---------------------------------------------------------------------------- */
+/*---------------------------------------------------------------------------*/
+/* Document outlining (table of content) */
+/*---------------------------------------------------------------------------*/
 
 @import "colors.css";
+
+/*---------------------------------------------------------------------------*/
+/* TOC div */
+/*---------------------------------------------------------------------------*/
 
 .TOC {
   overflow: auto;
@@ -29,7 +33,9 @@
   counter-reset: act chapter scene;
 }
 
-/* ---------------------------------------------------------------------------- */
+/*---------------------------------------------------------------------------*/
+/* TOC entries */
+/*---------------------------------------------------------------------------*/
 
 .TOC .Entry {
   margin: 0;
@@ -42,225 +48,240 @@
   padding-bottom: 2pt;
   padding-left: 16px;
   */
-}
 
-/* ---------------------------------------------------------------------------- */
-/* Entry names */
+  /*-------------------------------------------------------------------------*/
 
-.TOC .Entry .Name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  &:hover {
+    background-color: lightgrey !important;
+  }
 
-/* ---------------------------------------------------------------------------- */
+  /*-------------------------------------------------------------------------*/
 
-.TOC .Current {
-  background-color: rgb(210, 230, 250);
-}
+  &.Current {
+    background-color: rgb(210, 230, 250);
+  }
 
-.TOC .Entry.Folded {
-  opacity: 33%;
-}
+  /*-------------------------------------------------------------------------*/
 
-.TOC .Entry:hover {
-  background-color: lightgrey !important;
-}
+  &.Folded {
+    opacity: 33%;
+  }
 
-.TOC .Entry.Section {
-  padding: 6px;
-  border-bottom: 1px solid lightgray;
-}
+  &.Section {
+    padding: 6px;
+    border-bottom: 1px solid lightgray;
+  }
 
-.TOC .Entry.Act {
-  font-weight: bold;
+  /*-------------------------------------------------------------------------*/
+
+  &.Act {
+    font-weight: bold;
+    /*
+    border-top: 1px dashed gray;
+    padding-top: 4pt !important;
+    padding-bottom: 4pt !important;
+    */
+
+    /*
+    &.Numbered .Name::before {
+      counter-increment: act;
+      content: "ACT " counter(act, upper-roman) ": ";
+    }
+    */
+
+    .Name {
+      text-transform: uppercase;
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  &.Chapter {
+    font-weight: bold;
+    /*
+    padding-top: 4pt !important;
+    padding-bottom: 4pt !important;
+    */
+
+    &.Numbered .Name::before {
+      counter-increment: chapter;
+      content: counter(chapter) ". ";
+    /*
+      content: counter(chapter, upper-roman) "\00a0-\00a0";
+    */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  &.Scene {
+    padding-left: 0.5cm !important;
+    /*
+    padding-top: 4pt !important;
+    padding-bottom: 4pt !important;
+    */
   /*
-  border-top: 1px dashed gray;
-  padding-top: 4pt !important;
-  padding-bottom: 4pt !important;
+    font-weight: 450;
+    background: #FFD;
+    font-weight: bold;
+    padding-top: 4pt !important;
+    border-bottom: 1pt solid gray;
   */
+
+    &.Synopsis .Name {
+      background: rgb(240, 240, 80);
+      border: 1px solid grey;
+      border-radius: 3pt;
+      padding: 0pt 3pt 0pt 3pt;
+      font-size: 11pt;
+      /*
+      content: "Synopsis";
+      margin-right: 4pt;
+      */
+    }
+
+    &.Notes .Name {
+      background: rgb(100, 230, 100);
+      border: 1px solid grey;
+      border-radius: 3pt;
+      padding: 0pt 3pt 0pt 3pt;
+      font-size: 11pt;
+      /*
+      font-size: 10pt;
+      content: "Synopsis";
+      margin-right: 4pt;
+      */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  &.Bookmark {
+    padding-left: 1.0cm !important;
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  .Name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .WordCount {
+    margin-left: 6pt;
+    min-width: 1.5cm;
+    text-align: right;
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Entry small boxes */
+
+  .Box {
+    min-height: 7pt;
+    max-height: 7pt;
+    min-width: 7pt;
+    max-width: 7pt;
+    border: 1px solid grey;
+    margin-right: 6pt;
+    /*
+    margin-left: 0.5cm;
+    margin-left: 8pt;
+    border-radius: 4pt;
+    */
+
+    /*
+    &.bookmark,
+    &.comment,
+    &.missing {
+        margin-left: 0.5cm;
+    }
+    */
+
+    /**/
+    &.comment { background: rgb(71, 207, 71); }
+    &.missing { background: rgb(232, 14, 14); }
+    &.bookmark { background: rgb(252, 84, 252); }
+    &.tags { background: rgb(80, 80, 250); }
+    /*/
+    &.comment { background: var(--comment-fg); }
+    &.missing { background: var(--missing-fg); }
+    &.fill { background: var(--fill-fg); }
+    &.bookmark { background: var(--bookmark-fg); }
+    /**/
+  }
 }
 
-.TOC .Entry.Act .Name {
-  text-transform: uppercase;
-}
+/*---------------------------------------------------------------------------*/
+/* TOC div's (drop zones etc) */
+/*---------------------------------------------------------------------------*/
 
-/*
-.TOC .Entry.Act.Numbered .Name::before {
-  counter-increment: act;
-  content: "ACT " counter(act, upper-roman) ": ";
-}
-*/
+.TOC {
 
-.TOC div.ChapterDropZone {
-  min-height: 16pt;
-}
+  /*-------------------------------------------------------------------------*/
 
-.TOC div.ChapterDropZone.DragOver {
-  margin-left: -4px;
-  margin-right: -4px;
-  border: 1px dashed grey;
-  padding: 3px;
+  div.ChapterDropZone {
+    min-height: 16pt;
+
+    &.DragOver {
+      margin-left: -4px;
+      margin-right: -4px;
+      border: 1px dashed grey;
+      padding: 3px;
+      /*
+      border-radius: 4px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  div.SceneDropZone {
+    min-height: 16pt;
+
+    &.DragOver {
+      margin-left: -4px;
+      margin-right: -4px;
+      border: 1px dashed grey;
+      padding: 3px;
+      /*
+      border-radius: 4px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
   /*
-  border-radius: 4px;
-  padding-top: 6px;
-  padding-bottom: 6px;
+  div.Chapter, div.Scene {
+    background: #F5F7F9;
+  }
   */
+
+  div.Scene {
+    /*
+    padding-left: 0.5cm !important;
+    padding-left: 0.25cm;
+    border: 2px solid lightgray;
+    border-radius: 3px;
+    margin: 3pt;
+    margin-left: 16pt;
+    */
+
+    &:hover {
+      background-color: #DEF;
+    }
+
+    .Separator {
+      /*
+      margin: 0;
+      margin-bottom: 2pt;
+      border: 1px solid lightgrey;
+      */
+    }
+  }
 }
-
-/* ---------------------------------------------------------------------------- */
-
-.TOC .Entry.Chapter {
-  font-weight: bold;
-  /*
-  padding-top: 4pt !important;
-  padding-bottom: 4pt !important;
-  */
-}
-
-.TOC .Entry.Chapter.Numbered .Name::before {
-  counter-increment: chapter;
-  content: counter(chapter) ". ";
-/*
-  content: counter(chapter, upper-roman) "\00a0-\00a0";
-*/
-}
-
-.TOC div.SceneDropZone {
-  min-height: 16pt
-}
-
-.TOC div.SceneDropZone.DragOver {
-  margin-left: -4px;
-  margin-right: -4px;
-  border: 1px dashed grey;
-  padding: 3px;
-  /*
-  border-radius: 4px;
-  padding-top: 6px;
-  padding-bottom: 6px;
-  */
-}
-
-/* ---------------------------------------------------------------------------- */
-
-/*
-.TOC div.Chapter, .TOC div.Scene {
-  background: #F5F7F9;
-}
-*/
-
-.TOC div.Scene {
-  /*
-  padding-left: 0.5cm !important;
-  padding-left: 0.25cm;
-  border: 2px solid lightgray;
-  border-radius: 3px;
-  margin: 3pt;
-  margin-left: 16pt;
-  */
-}
-
-.TOC div.Scene:hover {
-  background-color: #DEF;
-}
-
-.TOC div.Scene .Separator {
-  /*
-  margin: 0;
-  margin-bottom: 2pt;
-  border: 1px solid lightgrey;
-  */
-}
-
-.TOC .Entry.Scene {
-  padding-left: 0.5cm !important;
-  /*
-  padding-top: 4pt !important;
-  padding-bottom: 4pt !important;
-  */
-/*
-  font-weight: 450;
-  background: #FFD;
-  font-weight: bold;
-  padding-top: 4pt !important;
-  border-bottom: 1pt solid gray;
-*/
-}
-
-/* ---------------------------------------------------------------------------- */
-/* Scene content types */
-
-.TOC .Entry.Scene.Synopsis .Name {
-  background: rgb(240, 240, 80);
-  border: 1px solid grey;
-  border-radius: 3pt;
-  padding: 0pt 3pt 0pt 3pt;
-  font-size: 11pt;
-  /*
-  content: "Synopsis";
-  margin-right: 4pt;
-  */
-}
-
-.TOC .Entry.Scene.Notes .Name {
-  background: rgb(100, 230, 100);
-  border: 1px solid grey;
-  border-radius: 3pt;
-  padding: 0pt 3pt 0pt 3pt;
-  font-size: 11pt;
-  /*
-  font-size: 10pt;
-  content: "Synopsis";
-  margin-right: 4pt;
-  */
-}
-
-/* ---------------------------------------------------------------------------- */
-
-.TOC .Entry.Bookmark {
-  padding-left: 1.0cm !important;
-}
-
-.TOC .WordCount {
-  margin-left: 6pt;
-  min-width: 1.5cm;
-  text-align: right;
-}
-
-/* ---------------------------------------------------------------------------- */
-/* Entry small boxes */
-
-.TOC .Entry .Box {
-  min-height: 7pt;
-  max-height: 7pt;
-  min-width: 7pt;
-  max-width: 7pt;
-  border: 1px solid grey;
-  margin-right: 6pt;
-  /*
-  margin-left: 0.5cm;
-  margin-left: 8pt;
-  border-radius: 4pt;
-  */
-}
-
-/*
-.TOC .Entry .Box.bookmark,
-.TOC .Entry .Box.comment,
-.TOC .Entry .Box.missing {
-  margin-left: 0.5cm;
-}
-*/
-
-/**/
-.TOC .Entry .Box.comment { background: rgb(71, 207, 71); }
-.TOC .Entry .Box.missing { background: rgb(232, 14, 14); }
-.TOC .Entry .Box.bookmark { background: rgb(252, 84, 252); }
-.TOC .Entry .Box.tags { background: rgb(80, 80, 250); }
-/*/
-.TOC .Entry .Box.comment { background: var(--comment-fg); }
-.TOC .Entry .Box.missing { background: var(--missing-fg); }
-.TOC .Entry .Box.fill { background: var(--fill-fg); }
-.TOC .Entry .Box.bookmark { background: var(--bookmark-fg); }
-/**/

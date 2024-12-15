@@ -4,9 +4,6 @@
 //
 //*****************************************************************************
 
-import "../common/styles/TOC.css"
-import "../common/styles/sheet.css"
-
 import React, {
   useEffect
 } from 'react';

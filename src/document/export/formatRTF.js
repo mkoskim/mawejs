@@ -31,7 +31,7 @@ export const formatRTF = {
   //---------------------------------------------------------------------------
 
   separator: () => `{\\sb480\\sa480\\qc ${escape("* * *")}\\par}`,
-  //br: () => "\n",
+  br: () => "{\\fi567\\par}",
 
   //---------------------------------------------------------------------------
   // Paragraph styles
@@ -63,39 +63,28 @@ export const formatRTF = {
 // ****************************************************************************
 
 function formatActHdr(p) {
-    const {title, number} = p
-    if(!title && !number) return
-
-    const head = formatHdrName(title, number)
-    const pgbreak = p.pgbreak ? "\\pagebb" : ""
-
-    return `{${pgbreak}\\sb1000\\sa480\\qc\\b\\fs32 ${escape(head)}\\par}`
+  const pgbreak = p.pgbreak ? "\\pagebb" : ""
+  return formatHdr(p, `${pgbreak}\\sb1000\\sa480\\qc\\b\\fs32`)
 }
 
 function formatChapterHdr(p) {
-  const {title, number} = p
-  if(!title && !number) return
-
-  const head = formatHdrName(title, number)
   const pgbreak = p.pgbreak ? "\\pagebb" : "\\sb480"
-
-  return `{${pgbreak}\\sa480\\b\\fs28 ${escape(head)}\\par}`
+  return formatHdr(p, `${pgbreak}\\sa480\\b\\fs28`)
 }
 
 function formatSceneHdr(p) {
+  return formatHdr(p, `\\sb480\\b`)
+}
+
+function formatHdr(p, style) {
   const {title, number} = p
   if(!title && !number) return
 
-  const head = formatHdrName(title, number)
-
-  return `{\\sb480\\b ${escape(head)}\\par}`
-}
-
-function formatHdrName(title, number) {
   const numbering = number ? [`${number}`] : []
   const text = title ? [title] : []
   const head = [ ...numbering, ...text].join(". ")
-  return head
+
+  return `{${style} ${escape(head)}\\par}`
 }
 
 // ****************************************************************************

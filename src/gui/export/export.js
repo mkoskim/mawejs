@@ -5,7 +5,6 @@
 // ****************************************************************************
 
 import "./export.css"
-import "../common/styles/sheet.css"
 
 import React, {
 } from 'react';
@@ -233,7 +232,7 @@ async function exportToFile(formatter, flatted) {
 
 function Preview({ flatted }) {
 
-  return <div className="Filler Board">
+  return <div className="Filler Board Preview">
     <DeferredRender><div
       className="Sheet Regular"
       dangerouslySetInnerHTML={{ __html: flattedFormat(exportAs.HTML, flatted) }}

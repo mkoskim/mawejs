@@ -85,7 +85,7 @@ export function storyToFlatted(story) {
   function flatAct(act) {
 
     const content = processChapters(act.children)
-    if(!content.length) return undefined
+    if(!content?.length) return undefined
 
     const head = makeHeader(elemHeading(act), actnum, options.act)
     if(head?.number) actnum = head.number
@@ -100,15 +100,18 @@ export function storyToFlatted(story) {
     {
       return processScenes(skip(chapters))
     }
-    const processed = chapters
+
+    const content = chapters
       .filter(nodeIsNotBreak)
       .map(flatChapter)
       .filter(isNotEmpty)
 
+    if(!content?.length) return undefined
+
     if(options.chapter.type === "separated") {
-      return separate(processed)
+      return separate(content)
     }
-    return processed.flat()
+    return content.flat()
   }
 
   //---------------------------------------------------------------------------
@@ -116,7 +119,7 @@ export function storyToFlatted(story) {
   function flatChapter(chapter) {
 
     const content = processScenes(chapter.children)
-    if(!content.length) return undefined
+    if(!content?.length) return undefined
 
     const head = makeHeader(elemHeading(chapter), chapternum, options.chapter)
     if(head?.number) chapternum = head.number
@@ -127,18 +130,20 @@ export function storyToFlatted(story) {
   //---------------------------------------------------------------------------
 
   function processScenes(scenes) {
-    const processed = scenes
+    const content = scenes
       .filter(nodeIsNotBreak)
       .map(flatScene)
       .filter(isNotEmpty)
 
+    if(!content.length) return
+
     switch(options.scene.type) {
-      case "none": return separate(processed, {type: "br"})
-      case "separated": return separate(processed)
+      case "none": return separate(content, {type: "br"})
+      case "separated": return separate(content)
       default: break;
     }
 
-    return processed.flat()
+    return content.flat()
   }
 
   //---------------------------------------------------------------------------

@@ -11,7 +11,7 @@
 //-----------------------------------------------------------------------------
 
 function syscall(cmd, ...args) {
-  return window.ipc.callMain("host", [cmd, ...args]);
+  return window.ipc.callMain("app", [cmd, ...args]);
 }
 
 //-----------------------------------------------------------------------------
@@ -28,4 +28,8 @@ export function appLog(message) {
 
 export function appBeep() {
   return syscall("beep");
+}
+
+export function appInfo() {
+  return syscall("info");
 }
