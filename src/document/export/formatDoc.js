@@ -155,11 +155,15 @@ export function storyToFlatted(story) {
     const splits = splitByTrailingElem(children, p => p.type === "br")
       .map(s => s.filter(chooseParagraphs))
       .filter(s => s.length)
-      .map(([first, ...rest]) => [{...first, first: true}, ...rest])
+      .map(([first, ...rest]) => [
+        ...(first ? [{...first, first: true}] : []),
+        ...rest]
+      )
+
+    //console.log("Splits:", splits)
+    if(!splits.length) return undefined
 
     const content = separate(splits, {type: "br"})
-    if(!content.length) return undefined
-
     const head = makeHeader(elemHeading(scene), scenenum, options.scene)
     if(head?.number) scenenum = head.number
 

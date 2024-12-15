@@ -121,42 +121,36 @@
       counter-increment: scene;
       content: "## ";
     /*
-      margin-right: 8pt;
       content: counter(scene) ".";
     */
     }
     div.synopsis &::before {
       content: ">> ";
-    /*
-      margin-right: 8pt;
-    */
     }
     div.notes &::before {
       content: "%% ";
-    /*
-      margin-right: 8pt;
-    */
     }
   }
 
-  div.scene {
+  div.scene:not(.folded) {
     margin-bottom: 0.5cm;
   }
 
-  div.synopsis {
+  div.synopsis, div.notes {
     padding: 0pt 4pt 0pt 4pt;
+    margin-bottom: 2pt;
+  }
+
+  div.synopsis {
     background: var(--synopsis-bg);
     color: var(--synopsis-fg);
     border: var(--synopsis-border);
-    margin-bottom: 4pt;
   }
 
   div.notes {
-    padding: 0pt 4pt 0pt 4pt;
     background: var(--notes-bg);
     color: var(--notes-fg);
     border: var(--notes-border);
-    margin-bottom: 4pt;
   }
 
   /*-------------------------------------------------------------------------*/
@@ -164,9 +158,8 @@
   /*-------------------------------------------------------------------------*/
 
   div.folded {
-    position: relative;
-    margin: 0 !important;
     /*
+    margin: 0 !important;
     margin-left: -4pt;
     padding-left: 4pt;
     margin-top: 4pt;
@@ -174,6 +167,8 @@
     background: rgb(247, 247, 247);
     animation: splash 0.1s linear;
     */
+
+    position: relative;
 
     &::before {
       position: absolute;
@@ -228,6 +223,12 @@
     }
   }
 
+  /*
+  div.emptyline::before {
+    content: "<br>";
+  }
+  */
+
   /*-------------------------------------------------------------------------*/
   /* Sheet subelements */
   /*-------------------------------------------------------------------------*/
@@ -237,49 +238,28 @@
     p + & { text-indent: 1.0cm; }
   }
 
-  /*
-  div.emptyline::before {
-    content: "<br>";
-  }
-  */
-
   /*-------------------------------------------------------------------------*/
 
-  .missing, .fill {
+  .missing {
     color: var(--missing-fg);
+    &::before {content: "!! ";}
   }
 
-  .missing::before {
-    content: "!! ";
-    /*margin-right: 4pt;*/
+  .fill {
+    color: var(--missing-fg);
+    &::before {content: "++ Fill: ";}
   }
-
-  .fill::before {
-    content: "++ Fill: "
-  }
-
-  /*-------------------------------------------------------------------------*/
 
   .tags {
     color: var(--tags-fg);
-    &::before {
-      content: "@@ ";
-      /*margin-right: 4pt;*/
-    }
+    &::before {content: "@@ ";}
   }
-
-  /*-------------------------------------------------------------------------*/
 
   .comment {
     color: var(--comment-fg);
     background: var(--comment-bg);
-    &::before {
-      content: "// ";
-      /*margin-right: 4pt;*/
-    }
+    &::before {content: "// ";}
   }
-
-  /*-------------------------------------------------------------------------*/
 
   .bookmark {
     /* color: rgb(46, 49, 7); */
@@ -287,9 +267,6 @@
     /*
     background: var(--bookmark-bg);
     */
-    &::before {
-      content: "=> ";
-      /*margin-right: 4pt;*/
-    }
+    &::before {content: "=> ";}
   }
 }

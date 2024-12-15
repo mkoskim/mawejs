@@ -9,7 +9,9 @@
 /*---------------------------------------------------------------------------*/
 
 .TOC {
+  /* Catch scrollbars */
   overflow: auto;
+
   /*
   min-width: 350px;
   max-width: 350px;
@@ -17,7 +19,8 @@
   background-color: lightgray;
   */
 
-  flex-grow: 1;
+  flex-grow: 1; /* Fill empty space */
+
   padding: 6px;
   padding-bottom: 1cm; /* For DnD */
   /*
