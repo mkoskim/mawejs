@@ -127,10 +127,7 @@
 
   p, div.emptyline {
     margin: 0pt;
-  }
-
-  p + p, p + div.emptyline {
-    text-indent: 1.0cm;
+    p + & { text-indent: 1.0cm; }
   }
 
   /*-------------------------------------------------------------------------*/
