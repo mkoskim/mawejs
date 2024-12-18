@@ -320,7 +320,6 @@ function SceneItem({node, index}) {
       const target = document.getElementById(sectionId);
       if(target) {
         target.scrollIntoView({ behavior: "smooth", block: "start"});
-        Inform.success(`CLICKED ON: ${sectionId}`);
 
         target.classList.add("highlight");
 
