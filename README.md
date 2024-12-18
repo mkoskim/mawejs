@@ -23,7 +23,7 @@ In short, MaweJS is externally unstructured editor (like Notepad, Word or Google
 In newer Ubuntus you may encounter errors due to changed permissions. First, you may need to run AppImage without sandboxing:
 
 ```
-$ mawejs-0.7.0.Linux.amd.AppImage --no-sandbox
+$ mawejs-A.B.C.Linux.amd.AppImage --no-sandbox
 ```
 
 In newer Ubuntus, if you run the sources, you may need to set SUID bit on. You need to do this every time ElectronJS is updated. There is now npm run target to do that:
@@ -125,10 +125,20 @@ Get dependencies:
 
     mawejs$ npm install
 
-Running (development version). Open up two terminals (one for the dev server and one for the ElectronJS application):
+## Running from Sources
+
+**Linux:**
 
     mawejs$ npm run dev
-    mawejs$ npm run dev:electron
+
+**Windows:** If you use command prompt, it can't understand shell commands in `dev` target written for Bash shell. Open up two terminals (one for the dev server and one for the ElectronJS application). Run the latter command, when React dev server is up:
+
+    shell 1: mawejs$ npm run dev:react
+    shell 2: mawejs$ npm run dev:electron
+
+`dev:react` React starts development server, and `dev:electron` starts Electron browser. The Electron browser is standard Chromium, but it has ElectronJS backend to allow local access.
+
+## Updating
 
 If you update the project with 'git pull', you may need to update the libraries, too:
 
@@ -138,6 +148,8 @@ If you update the project with 'git pull', you may need to update the libraries,
 ## React Dev Tools
 
 Instructions to get React DevTools working: https://github.com/mkoskim/mawejs/discussions/131
+
+VS Code Electron debugging: https://github.com/Microsoft/vscode-recipes/tree/master/Electron
 
 ## Example files
 
