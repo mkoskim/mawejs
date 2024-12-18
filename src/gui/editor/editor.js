@@ -413,6 +413,7 @@ export function SingleEditView({doc, updateDoc}) {
     //console.log(type, source, "-->", destination)
 
     switch(type) {
+      case "act":
       case "chapter":
       case "scene": {
         const {sectID: srcSectID, path: srcPath} = IDtoPath(draggableId)
@@ -420,7 +421,7 @@ export function SingleEditView({doc, updateDoc}) {
         const srcEdit = getEditorBySectID(srcSectID)
         const dstEdit = getEditorBySectID(dstSectID)
 
-        dndDrop(srcEdit, srcPath, dstEdit, dstPath, destination.index)
+        dndDrop(srcEdit, srcPath, dstEdit, dstPath ?? [], destination.index)
         setActive(nodeID(dstSectID))
         break;
       }
