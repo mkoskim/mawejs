@@ -22,11 +22,11 @@ export const formatHTML = {
   // Headings
   //---------------------------------------------------------------------------
 
-  hact: (p) => formatHeading(p, "h4"),
-  hchapter: (p) => formatHeading(p, "h5"),
-  hscene: (p) => formatHeading(p, "h6"),
-  hsynopsis: (p) => formatHeading(p, "h6"),
-  hnotes: (p) => formatHeading(p, "h6"),
+  hact: (p, index) => formatHeading(p, "h4", `act-section-${index}`),
+  hchapter: (p, index) => formatHeading(p, "h5", `chapter-section-${index}`),
+  hscene: (p, index) => formatHeading(p, "h6", `scene-section-${index}`),
+  hsynopsis: (p, index) => formatHeading(p, "h6", index),
+  hnotes: (p, index) => formatHeading(p, "h6", index),
 
   //---------------------------------------------------------------------------
   // Breaks
@@ -69,7 +69,7 @@ ${content}
 `
 }
 
-function formatHeading(p, tag) {
+function formatHeading(p, tag, index) {
   const {title, number} = p
   if(!title && !number) return
 
@@ -78,7 +78,7 @@ function formatHeading(p, tag) {
   const head = [ ...numbering, ...text].join(". ")
   const pgbreak = p.pgbreak ? "<hr/>\n" : ""
 
-  return `${pgbreak}<${tag}>${escape(head)}</${tag}>`
+  return `${pgbreak}<${tag} id=${index}>${escape(head)}</${tag}>`
 }
 
 // ****************************************************************************
