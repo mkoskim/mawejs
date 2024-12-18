@@ -22,9 +22,9 @@ export const formatHTML = {
   // Headings
   //---------------------------------------------------------------------------
 
-  hact: (p, index) => formatHeading(p, "h4", `act-section-${index}`),
-  hchapter: (p, index) => formatHeading(p, "h5", `chapter-section-${index}`),
-  hscene: (p, index) => formatHeading(p, "h6", `scene-section-${index}`),
+  hact: (p, index) => formatHeading(p, "h4", index),
+  hchapter: (p, index) => formatHeading(p, "h5", index),
+  hscene: (p, index) => formatHeading(p, "h6", index),
   hsynopsis: (p, index) => formatHeading(p, "h6", index),
   hnotes: (p, index) => formatHeading(p, "h6", index),
 

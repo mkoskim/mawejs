@@ -244,7 +244,7 @@ function Preview({ flatted }) {
 // Export index
 //-----------------------------------------------------------------------------
 
-function ExportIndex({ style, flatted}) {
+function ExportIndex({ style, flatted }) {
   const { content } = flatted
 
   return <VFiller className="TOC" style={style}>
@@ -265,12 +265,18 @@ function ExportIndex({ style, flatted}) {
 
 function ActItem({node, index}) {
   const { name, number } = node;
-  const sectionId = `act-section-${index}`;
+  const sectionId = index;
 
   return <div
       className="Entry ActName"
-      id={sectionId}
-      //onClick={ev => window.location.href = `#${id}`}
+      //onClick={ev => window.location.href = `${sectionId}`}
+      onClick={() => {
+        const target = document.getElementById(sectionId);
+        if(target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start"});
+          Inform.success(`CLICKED ON: ${sectionId}`);
+        }
+      }}
       style={{ cursor: "pointer" }}
     >
       <span className="Name">{number ? number + ". " + name : name}</span>
@@ -279,13 +285,21 @@ function ActItem({node, index}) {
 
 function ChapterItem({node, index}) {
   const { name, number } = node;
-  const sectionId = `chapter-section-${index}`;
+  const sectionId = index;
 
   return <div
       className="Entry ChapterName"
-      id={sectionId}
-      //onClick={ev => window.location.href = `#${id}`}
+      //onClick={ev => window.location.href = `${sectionId}`}
       //onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
+      //onClick={() => {Inform.success(`CLICKED ON: ${sectionId}`)}}
+      onClick={() => {
+        const target = document.getElementById(sectionId);
+        if(target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start"});
+          Inform.success(`CLICKED ON: ${sectionId}`);
+        }
+      }}
+      
       style={{ cursor: "pointer" }}
     >
       <span className="Name">{number ? number + ". " + name : name}</span>
@@ -294,12 +308,18 @@ function ChapterItem({node, index}) {
 
 function SceneItem({node, index}) {
   const { name, number} = node;
-  const sectionId = `scene-section-${index}`
+  const sectionId = index;
   return <div
     className="Entry SceneName"
-    id={sectionId}
-    //onClick={ev => window.location.href = `#${id}`}
+    //onClick={ev => window.location.href = `${sectionId}`}
     //onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
+    onClick={() => {
+      const target = document.getElementById(sectionId);
+      if(target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start"});
+        Inform.success(`CLICKED ON: ${sectionId}`);
+      }
+    }}
     style={{ cursor: "pointer" }}
   >
     <span className="Name">{number ? number + ". " + name : name}</span>
