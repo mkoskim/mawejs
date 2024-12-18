@@ -9,7 +9,7 @@
 
 @keyframes fadeHighlight {
   0% {
-    background-color: #fff9c4;
+    background-color: rgb(242, 255, 122);
   }
   100% {
     background-color: transparent;
