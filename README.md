@@ -125,9 +125,10 @@ Get dependencies:
 
     mawejs$ npm install
 
-Running (development version):
+Running (development version). Open up two terminals (one for the dev server and one for the ElectronJS application):
 
     mawejs$ npm run dev
+    mawejs$ npm run dev:electron
 
 If you update the project with 'git pull', you may need to update the libraries, too:
 
