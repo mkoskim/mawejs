@@ -269,12 +269,15 @@ function ActItem({node, index}) {
 
   return <div
       className="Entry ActName"
-      //onClick={ev => window.location.href = `${sectionId}`}
+      /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
       onClick={() => {
         const target = document.getElementById(sectionId);
         if(target) {
           target.scrollIntoView({ behavior: "smooth", block: "start"});
-          Inform.success(`CLICKED ON: ${sectionId}`);
+
+          target.classList.add("highlight");
+
+          setTimeout(() => target.classList.remove("highlight"), 2000);
         }
       }}
       style={{ cursor: "pointer" }}
@@ -289,14 +292,15 @@ function ChapterItem({node, index}) {
 
   return <div
       className="Entry ChapterName"
-      //onClick={ev => window.location.href = `${sectionId}`}
-      //onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
-      //onClick={() => {Inform.success(`CLICKED ON: ${sectionId}`)}}
+      /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
       onClick={() => {
         const target = document.getElementById(sectionId);
         if(target) {
           target.scrollIntoView({ behavior: "smooth", block: "start"});
-          Inform.success(`CLICKED ON: ${sectionId}`);
+
+          target.classList.add("highlight");
+
+          setTimeout(() => target.classList.remove("highlight"), 2000);
         }
       }}
       
@@ -311,13 +315,16 @@ function SceneItem({node, index}) {
   const sectionId = index;
   return <div
     className="Entry SceneName"
-    //onClick={ev => window.location.href = `${sectionId}`}
-    //onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
+    /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
     onClick={() => {
       const target = document.getElementById(sectionId);
       if(target) {
         target.scrollIntoView({ behavior: "smooth", block: "start"});
         Inform.success(`CLICKED ON: ${sectionId}`);
+
+        target.classList.add("highlight");
+
+        setTimeout(() => target.classList.remove("highlight"), 2000);
       }
     }}
     style={{ cursor: "pointer" }}

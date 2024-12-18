@@ -6,3 +6,16 @@
   padding: 6px;
   border-left: 1px solid lightgray;
 }
+
+@keyframes fadeHighlight {
+  0% {
+    background-color: #fff9c4;
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.highlight {
+  animation: fadeHighlight 2s ease-out forwards;
+}
