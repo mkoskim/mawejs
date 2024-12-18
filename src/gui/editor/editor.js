@@ -676,9 +676,9 @@ function EditorBox({style, settings, mode="Condensed"}) {
     {/* Editor toolbar */}
 
     <ToolBox style={doc.ui.editor.toolbox.mid}>
-      <StyleButtons editor={editor} type={type} bold={bold} italic={italic}/>
-      <Separator/>
       <FoldButtons editor={editor}/>
+      <Separator/>
+      <StyleButtons editor={editor} type={type} bold={bold} italic={italic}/>
       <Separator/>
       <Searching editor={editor} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Separator/>
