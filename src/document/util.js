@@ -125,7 +125,7 @@ export function elemHeading(elem) {
 
   if(elem.children.length) {
     const [first] = elem.children
-    if(nodeBreaks(first) === elem.type) return first
+    if(nodeIsBreak(first) && nodeBreaks(first) === elem.type) return first
   }
 
   return undefined

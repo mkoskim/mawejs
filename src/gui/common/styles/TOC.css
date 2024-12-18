@@ -223,6 +223,24 @@
 
   /*-------------------------------------------------------------------------*/
 
+  div.ActDropZone {
+    min-height: 16pt;
+
+    &.DragOver {
+      margin-left: -4px;
+      margin-right: -4px;
+      border: 1px dashed grey;
+      padding: 3px;
+      /*
+      border-radius: 4px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
   div.ChapterDropZone {
     min-height: 16pt;
 

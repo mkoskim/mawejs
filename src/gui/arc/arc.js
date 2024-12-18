@@ -177,6 +177,7 @@ export function StoryArc({doc, updateDoc}) {
     //console.log(type, source, "-->", destination)
 
     switch(type) {
+      case "act":
       case "chapter":
       case "scene": {
         const {path: srcPath} = IDtoPath(draggableId)
@@ -184,7 +185,7 @@ export function StoryArc({doc, updateDoc}) {
         //const srcEdit = getEditorBySectID(srcSectID)
         //const dstEdit = getEditorBySectID(dstSectID)
 
-        const dropped = dndDrop(bodyeditor, srcPath, bodyeditor, dstPath, destination.index)
+        dndDrop(bodyeditor, srcPath, bodyeditor, dstPath ?? [], destination.index)
         //setActive(nodeID(dstSectID, dropped))
         break;
       }

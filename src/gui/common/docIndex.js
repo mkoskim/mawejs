@@ -109,30 +109,74 @@ export function DocIndex({style, sectID, section, wcFormat, include, setActive, 
   // Single unnamed act -> don't show
   //---------------------------------------------------------------------------
 
-  const skipActName = (section.acts.length === 1 && !elemName(section.acts[0]))
+  //const skipActName = (section.acts.length === 1 && !elemName(section.acts[0]))
 
   //---------------------------------------------------------------------------
   // Index
   //---------------------------------------------------------------------------
 
   return <VBox style={style} className="TOC">
-    {section.acts.map((elem, index) => <ActItem
-      key={index}
-      id={childID(sectID, index)}
-      elem={elem}
+    <ActDropZone
+      id={sectID}
+      acts={section.acts}
       wcFormat={wcFormatFunction}
       include={include}
       onActivate={onActivate}
       unfold={unfold}
-      atAct={at.act === index}
-      atChapter={at.act === index ? at.chapter : undefined}
-      atScene={at.act === index ? at.scene : undefined}
+      atAct={at.act}
+      atChapter={at.chapter}
+      atScene={at.scene}
       refCurrent={refCurrent}
-      skipActName={skipActName}
       />
-    )}
     </VBox>
   //return useDeferredValue(index)
+}
+
+//*****************************************************************************
+//
+// Act drop zone
+//
+//*****************************************************************************
+
+class ActDropZone extends React.PureComponent {
+
+  render() {
+    const {id} = this.props
+
+    //console.log("Index update:", activeID)
+
+    return <Droppable droppableId={id} type="act">
+      {this.DropZone.bind(this)}
+    </Droppable>
+  }
+
+  DropZone(provided, snapshot) {
+    const {acts, id, wcFormat, include, onActivate, unfold, atAct, atChapter, atScene, refCurrent} = this.props
+    const {innerRef, droppableProps, placeholder} = provided
+    const {isDraggingOver} = snapshot
+
+    return <div
+      className={addClass("VBox ActDropZone", isDraggingOver && "DragOver")}
+      ref={innerRef}
+      {...droppableProps}
+    >
+    {acts.map((elem, index) => !nodeIsCtrl(elem) && <ActItem
+      key={index}
+      id={childID(id, index)}
+      index={index}
+      elem={elem}
+      include={include}
+      wcFormat={wcFormat}
+      onActivate={onActivate}
+      unfold={unfold}
+      atAct={atAct === index}
+      atChapter={atAct === index ? atChapter : undefined}
+      atScene={atAct === index ? atScene : undefined}
+      refCurrent={refCurrent}
+      />)}
+    {placeholder}
+    </div>
+  }
 }
 
 //*****************************************************************************
@@ -144,7 +188,19 @@ export function DocIndex({style, sectID, section, wcFormat, include, setActive, 
 class ActItem extends React.PureComponent {
 
   render() {
-    const {skipActName, elem, wcFormat, id, include, onActivate, unfold, atAct, atChapter, atScene, refCurrent} = this.props
+    const {id, index} = this.props
+    return <Draggable
+      draggableId={id}
+      index={index}
+      type="act"
+      >
+      {this.Draggable.bind(this)}
+    </Draggable>
+  }
+
+  Draggable(provided, snapshot) {
+    const {elem, wcFormat, id, index, include, onActivate, unfold, atAct, atChapter, atScene, refCurrent} = this.props
+    const {innerRef, draggableProps, dragHandleProps} = provided
 
     const hasDropzone = (include.includes("chapter")) && (unfold || !elem.folded)
     //const hasDropzone = (unfold || !elem.folded)
@@ -154,19 +210,23 @@ class ActItem extends React.PureComponent {
       (!hasDropzone || atChapter === undefined || elem.children[atChapter].type === "hact")
     )
 
-    return <div>
-      {!skipActName && <IndexItem
+    return <div
+      ref={innerRef}
+      {...draggableProps}
+      >
+      <IndexItem
         id={id}
         type={elem.type}
-        name={elemName(elem)}
+        name={elem.name}
         words={elem.words}
         folded={!unfold && elem.folded}
-        numbered={elemNumbered(elem)}
+        numbered={elem.numbered}
         wcFormat={wcFormat}
         onActivate={onActivate}
         isCurrent={isCurrent}
         refCurrent={refCurrent}
-      />}
+        {...dragHandleProps}
+      />
       {hasDropzone && <ChapterDropZone
         id={id}
         folded={!unfold && elem.folded}
@@ -188,9 +248,7 @@ class ActItem extends React.PureComponent {
 class ChapterDropZone extends React.PureComponent {
 
   render() {
-    const {chapters, id} = this.props
-
-    if(!chapters) return null
+    const {id} = this.props
 
     //console.log("Index update:", activeID)
 
