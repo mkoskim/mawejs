@@ -264,20 +264,20 @@ export function flattedFormat(format, flatted) {
     options
   )
 
-  function FormatParagraph(p) {
+  function FormatParagraph(p, index) {
     const formatter = format[p.type];
     if(!formatter) return
 
     switch(p.type) {
 
-      case "hact": return formatter(p)
-      case "hchapter": return formatter(p)
-      case "hscene": return formatter(p)
-      case "hsynopsis": return formatter(p)
-      case "hnotes": return formatter(p)
+      case "hact": return formatter(p, index)
+      case "hchapter": return formatter(p, index)
+      case "hscene": return formatter(p, index)
+      case "hsynopsis": return formatter(p, index)
+      case "hnotes": return formatter(p, index)
 
-      case "separator": return formatter(p)
-      case "br": return formatter(p)
+      case "separator": return formatter(p, index)
+      case "br": return formatter(p, index)
 
       default: break;
     }

@@ -244,7 +244,7 @@ function Preview({ flatted }) {
 // Export index
 //-----------------------------------------------------------------------------
 
-function ExportIndex({ style, flatted}) {
+function ExportIndex({ style, flatted }) {
   const { content } = flatted
 
   return <VFiller className="TOC" style={style}>
@@ -252,46 +252,80 @@ function ExportIndex({ style, flatted}) {
   </VFiller>
 
   function indexItem(node, index) {
+
     switch(node.type) {
-      case "hact": return <ActItem key={index} node={node}/>
-      case "hchapter": return <ChapterItem key={index} node={node}/>
-      case "hscene": return <SceneItem key={index} node={node}/>
-      case "hsynopsis": return <SceneItem key={index} node={node}/>
-      case "hnotes": return <SceneItem key={index} node={node}/>
+      case "hact": return <ActItem key={index} node={node} index={index}/>
+      case "hchapter": return <ChapterItem key={index} node={node} index={index}/>
+      case "hscene": return <SceneItem key={index} node={node} index={index}/> 
+      case "hsynopsis": return <SceneItem key={index} node={node} index={index}/>
+      case "hnotes": return <SceneItem key={index} node={node} index={index}/>
     }
   }
 }
 
-function ActItem({node}) {
-  const {name, number} = node
+function ActItem({node, index}) {
+  const { name, number } = node;
+  const sectionId = index;
+
   return <div
       className="Entry ActName"
-      //onClick={ev => window.location.href = `#${id}`}
-      //onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
+      /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
+      onClick={() => {
+        const target = document.getElementById(sectionId);
+        if(target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start"});
+
+          target.classList.add("highlight");
+
+          setTimeout(() => target.classList.remove("highlight"), 2000);
+        }
+      }}
       style={{ cursor: "pointer" }}
     >
       <span className="Name">{number ? number + ". " + name : name}</span>
     </div>
 }
 
-function ChapterItem({node}) {
-  const { name, number } = node
+function ChapterItem({node, index}) {
+  const { name, number } = node;
+  const sectionId = index;
+
   return <div
       className="Entry ChapterName"
-      //onClick={ev => window.location.href = `#${id}`}
-      //onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
+      /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
+      onClick={() => {
+        const target = document.getElementById(sectionId);
+        if(target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start"});
+
+          target.classList.add("highlight");
+
+          setTimeout(() => target.classList.remove("highlight"), 2000);
+        }
+      }}
+      
       style={{ cursor: "pointer" }}
     >
       <span className="Name">{number ? number + ". " + name : name}</span>
       </div>
 }
 
-function SceneItem({node}) {
-  const { name, number } = node
+function SceneItem({node, index}) {
+  const { name, number} = node;
+  const sectionId = index;
   return <div
     className="Entry SceneName"
-    //onClick={ev => window.location.href = `#${id}`}
-    //onDoubleClick={ev => setFocusTo(updateDoc, "body", id)}
+    /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
+    onClick={() => {
+      const target = document.getElementById(sectionId);
+      if(target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start"});
+
+        target.classList.add("highlight");
+
+        setTimeout(() => target.classList.remove("highlight"), 2000);
+      }
+    }}
     style={{ cursor: "pointer" }}
   >
     <span className="Name">{number ? number + ". " + name : name}</span>
