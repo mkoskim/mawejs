@@ -256,7 +256,7 @@ function ExportIndex({ style, flatted }) {
     switch(node.type) {
       case "hact": return <ActItem key={index} node={node} index={index}/>
       case "hchapter": return <ChapterItem key={index} node={node} index={index}/>
-      case "hscene": return <SceneItem key={index} node={node} index={index}/> 
+      case "hscene": return <SceneItem key={index} node={node} index={index}/>
       case "hsynopsis": return <SceneItem key={index} node={node} index={index}/>
       case "hnotes": return <SceneItem key={index} node={node} index={index}/>
     }
@@ -268,7 +268,7 @@ function ActItem({node, index}) {
   const sectionId = index;
 
   return <div
-      className="Entry ActName"
+      className="Entry Act"
       /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
       onClick={() => {
         const target = document.getElementById(sectionId);
@@ -291,7 +291,7 @@ function ChapterItem({node, index}) {
   const sectionId = index;
 
   return <div
-      className="Entry ChapterName"
+      className="Entry Chapter"
       /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
       onClick={() => {
         const target = document.getElementById(sectionId);
@@ -303,7 +303,7 @@ function ChapterItem({node, index}) {
           setTimeout(() => target.classList.remove("highlight"), 2000);
         }
       }}
-      
+
       style={{ cursor: "pointer" }}
     >
       <span className="Name">{number ? number + ". " + name : name}</span>
@@ -314,7 +314,7 @@ function SceneItem({node, index}) {
   const { name, number} = node;
   const sectionId = index;
   return <div
-    className="Entry SceneName"
+    className="Entry Scene"
     /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
     onClick={() => {
       const target = document.getElementById(sectionId);
