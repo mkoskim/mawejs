@@ -140,4 +140,19 @@
     color: var(--comment-fg);
     background: var(--comment-bg);
   }
+
+  /*-------------------------------------------------------------------------*/
+
+  .flash {
+    animation: fadeFlash 2s ease-out forwards;
+  }
+}
+
+@keyframes fadeFlash {
+  0% {
+    background-color: rgb(242, 255, 122);
+  }
+  100% {
+    background-color: transparent;
+  }
 }
