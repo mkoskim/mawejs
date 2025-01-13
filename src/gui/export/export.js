@@ -256,7 +256,7 @@ function ExportIndex({ style, flatted }) {
     switch(node.type) {
       case "hact": return <ActItem key={index} node={node} index={index}/>
       case "hchapter": return <ChapterItem key={index} node={node} index={index}/>
-      case "hscene": return <SceneItem key={index} node={node} index={index}/> 
+      case "hscene": return <SceneItem key={index} node={node} index={index}/>
       case "hsynopsis": return <SceneItem key={index} node={node} index={index}/>
       case "hnotes": return <SceneItem key={index} node={node} index={index}/>
     }
@@ -265,22 +265,12 @@ function ExportIndex({ style, flatted }) {
 
 function ActItem({node, index}) {
   const { name, number } = node;
-  const sectionId = index;
 
   return <div
-      className="Entry ActName"
+      className="Entry Act"
       /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
-      onClick={() => {
-        const target = document.getElementById(sectionId);
-        if(target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start"});
-
-          target.classList.add("highlight");
-
-          setTimeout(() => target.classList.remove("highlight"), 2000);
-        }
-      }}
-      style={{ cursor: "pointer" }}
+      onClick={() => scrollToId(index)}
+      //style={{ cursor: "pointer" }}
     >
       <span className="Name">{number ? number + ". " + name : name}</span>
     </div>
@@ -288,23 +278,12 @@ function ActItem({node, index}) {
 
 function ChapterItem({node, index}) {
   const { name, number } = node;
-  const sectionId = index;
 
   return <div
-      className="Entry ChapterName"
+      className="Entry Chapter"
       /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
-      onClick={() => {
-        const target = document.getElementById(sectionId);
-        if(target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start"});
-
-          target.classList.add("highlight");
-
-          setTimeout(() => target.classList.remove("highlight"), 2000);
-        }
-      }}
-      
-      style={{ cursor: "pointer" }}
+      onClick={() => scrollToId(index)}
+      //style={{ cursor: "pointer" }}
     >
       <span className="Name">{number ? number + ". " + name : name}</span>
       </div>
@@ -312,22 +291,24 @@ function ChapterItem({node, index}) {
 
 function SceneItem({node, index}) {
   const { name, number} = node;
-  const sectionId = index;
+
   return <div
-    className="Entry SceneName"
+    className="Entry Scene"
     /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
-    onClick={() => {
-      const target = document.getElementById(sectionId);
-      if(target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start"});
-
-        target.classList.add("highlight");
-
-        setTimeout(() => target.classList.remove("highlight"), 2000);
-      }
-    }}
-    style={{ cursor: "pointer" }}
-  >
-    <span className="Name">{number ? number + ". " + name : name}</span>
+    onClick={() => scrollToId(index)}
+    //style={{ cursor: "pointer" }}
+    >
+      <span className="Name">{number ? number + ". " + name : name}</span>
     </div>
+}
+
+function scrollToId(id) {
+  const target = document.getElementById(id);
+  if(target) {
+    target.scrollIntoView({ behavior: "smooth", block: "start"});
+
+    target.classList.add("flash");
+
+    setTimeout(() => target.classList.remove("flash"), 2000);
+  }
 }
