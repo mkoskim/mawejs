@@ -163,7 +163,7 @@ export default function App(props) {
   }, [])
 
   //---------------------------------------------------------------------------
-  // Set title
+  // Set window title
   //---------------------------------------------------------------------------
 
   useEffect(() => {
@@ -255,8 +255,6 @@ export default function App(props) {
       })
       .catch(err => Inform.error(err))
   }
-
-
 
   function docSaveAs({ filename }) {
     mawe.saveas(insertHistory(doc), filename)
