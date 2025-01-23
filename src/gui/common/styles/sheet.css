@@ -100,4 +100,15 @@
     padding-top: 0.5in;
     padding-bottom: 1in;
   }
+
+  /*-------------------------------------------------------------------------*/
+  /* Basic styles */
+
+  .bold {
+    font-weight: bold;
+  }
+
+  .italic {
+    font-style: italic;
+  }
 }
