@@ -128,7 +128,7 @@
       content: ">> ";
     }
     div.notes &::before {
-      content: "//* ";
+      content: "/* ";
     }
   }
 
