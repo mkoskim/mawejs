@@ -81,18 +81,18 @@ export function nodeBreaks(node) {
 //-----------------------------------------------------------------------------
 
 export const paragraphTypes = {
-  "hact":      {name: "Act",      markup: "**", shortcut: "Ctrl-Alt-1", eol: "p", bk: "p",},
-  "hchapter":  {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2", eol: "p", bk: "p",},
-  "hscene":    {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3", eol: "p", bk: "p",},
-  "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S", eol: "p", bk: "p",},
-  "hnotes":    {name: "Notes",    markup: "%%", shortcut: "Ctrl-Alt-N", eol: "p", bk: "p",},
+  "hact":      {name: "Act",      markup: "**",  shortcut: "Ctrl-Alt-1", eol: "p", bk: "p",},
+  "hchapter":  {name: "Chapter",  markup: "#",   shortcut: "Ctrl-Alt-2", eol: "p", bk: "p",},
+  "hscene":    {name: "Scene",    markup: "##",  shortcut: "Ctrl-Alt-3", eol: "p", bk: "p",},
+  "hsynopsis": {name: "Synopsis", markup: ">>",  shortcut: "Ctrl-Alt-S", eol: "p", bk: "p",},
+  "hnotes":    {name: "Notes",    markup: "//*", shortcut: "Ctrl-Alt-N", eol: "p", bk: "p",},
 
-  "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C",           bk: "p", reset: "p" },
-  "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M",           bk: "p", reset: "p" },
-  "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl-Alt-B", eol: "p", bk: "p", reset: "p" },
+  "comment":   {name: "Comment",  markup: "//",  shortcut: "Ctrl-Alt-C",           bk: "p", reset: "p" },
+  "missing":   {name: "Missing",  markup: "!!",  shortcut: "Ctrl-Alt-M",           bk: "p", reset: "p" },
+  "bookmark":  {name: "Bookmark", markup: "=>",  shortcut: "Ctrl-Alt-B", eol: "p", bk: "p", reset: "p" },
   "tags":      {name: "Tags",     markup: "@@",                         eol: "p", bk: "p", reset: "p" },
   "fill":      {name: "Fill",     markup: "++",                         eol: "p", bk: "p", reset: "p" },
-  "p":         {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
+  "p":         {name: "Text",     markup: "",    shortcut: "Ctrl-Alt-0"},
 }
 
 //-----------------------------------------------------------------------------
@@ -117,16 +117,16 @@ export const markShortcuts = [
 ]
 
 export const MARKUP = {
-  "** ": {type: "hact"},
-  "# " : {type: "hchapter"},
-  "## ": {type: "hscene"},
-  '>> ': {type: "hsynopsis"},
-  '%% ': {type: 'hnotes'},
-  '=> ': {type: "bookmark"},
-  '!! ': {type: 'missing'},
-  '// ': {type: 'comment'},
-  '@@ ': {type: 'tags'},
-  '++ ': {type: 'fill'},
+  "** ":  {type: "hact"},
+  "# " :  {type: "hchapter"},
+  "## ":  {type: "hscene"},
+  '>> ':  {type: "hsynopsis"},
+  '//* ': {type: 'hnotes'},
+  '=> ':  {type: "bookmark"},
+  '!! ':  {type: 'missing'},
+  '// ':  {type: 'comment'},
+  '@@ ':  {type: 'tags'},
+  '++ ':  {type: 'fill'},
   //'-- ':
   //'<<':
   //'((':
