@@ -144,7 +144,7 @@
   /*-------------------------------------------------------------------------*/
 
   .flash {
-    animation: fadeFlash 2s ease-out forwards;
+    animation: fadeFlash 500ms ease-out forwards;
   }
 }
 

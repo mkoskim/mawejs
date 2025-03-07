@@ -307,9 +307,10 @@ function scrollToId(id) {
   if(target) {
     target.scrollIntoView({ block: "start"});
     //target.scrollIntoView({ behavior: "smooth", block: "start"});
+    //target.scrollIntoViewIfNeeded(false)
 
     target.classList.add("flash");
 
-    setTimeout(() => target.classList.remove("flash"), 2000);
+    setTimeout(() => target.classList.remove("flash"), 500);
   }
 }
