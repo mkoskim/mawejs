@@ -86,7 +86,7 @@ export async function focusByPath(editor, path, collapse = true) {
 async function scrollToPoint(editor, point) {
   const [dom] = ReactEditor.toDOMPoint(editor, point)
   //console.log("Parent:", dom.parentElement)
-  //*
+  /*
   dom.parentElement.scrollIntoView({
     //behaviour: "smooth",
     block: "start",
