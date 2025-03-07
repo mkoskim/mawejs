@@ -172,13 +172,14 @@ function parseAct(act, index) {
     console.log("Invalid act:", act)
     throw new Error("Invalid act", act)
   }
-  const {name, folded: foldedStr, target: targetStr} = act.attributes ?? {};
+  const {name, folded: foldedStr, numbered: numberedStr, target: targetStr} = act.attributes ?? {};
   const target = textToInt(targetStr)
   const folded = foldedStr === "true"
+  const numbered = numberedStr === "true"
   const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
     "hact",
     name,
-    true,
+    numbered,
     target,
   )]
   const empty = [{type: "element", name: "chapter"}]
@@ -190,6 +191,7 @@ function parseAct(act, index) {
   return {
     type: "act",
     name,
+    numbered,
     target,
     folded,
     children: [

@@ -138,7 +138,7 @@ function toAct(act) {
       attributes: {
         name: name ? name : undefined,
         folded: folded ? true : undefined,
-        //numbered: numbered ? true : undefined,
+        numbered: numbered ? true : undefined,
         target: target ? target : undefined,
       },
     },
