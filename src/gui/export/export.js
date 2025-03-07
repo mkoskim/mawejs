@@ -305,7 +305,8 @@ function SceneItem({node, index}) {
 function scrollToId(id) {
   const target = document.getElementById(id);
   if(target) {
-    target.scrollIntoView({ behavior: "smooth", block: "start"});
+    target.scrollIntoView({ block: "start"});
+    //target.scrollIntoView({ behavior: "smooth", block: "start"});
 
     target.classList.add("flash");
 
