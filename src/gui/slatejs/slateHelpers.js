@@ -92,7 +92,7 @@ async function scrollToPoint(editor, point) {
     block: "start",
   })
   /*/
-  dom.parentElement.scrollIntoViewIfNeeded(false)
+  dom.parentElement.scrollIntoViewIfNeeded()
   /**/
 }
 

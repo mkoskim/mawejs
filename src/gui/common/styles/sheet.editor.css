@@ -13,6 +13,11 @@
   /* Sheet Subelements */
   /*-------------------------------------------------------------------------*/
 
+  div, span, p, h1, h2, h3, h4, h5, h6 {
+    scroll-margin-top: 16pt;
+    scroll-margin-bottom: 16pt;
+  }
+
   .highlight {
     background: #ffeeba;
   }
