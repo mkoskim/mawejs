@@ -64,23 +64,23 @@ export const formatRTF = {
 
 function formatActHdr(p) {
   const pgbreak = p.pgbreak ? "\\pagebb" : ""
-  return formatHdr(p, `${pgbreak}\\sb1000\\sa480\\qc\\b\\fs32`, "Näytös ")
+  return formatHdr(p, `${pgbreak}\\sb1000\\sa480\\qc\\b\\fs32`)
 }
 
 function formatChapterHdr(p) {
   const pgbreak = p.pgbreak ? "\\pagebb" : "\\sb480"
-  return formatHdr(p, `${pgbreak}\\sa480\\b\\fs28`, "Luku ")
+  return formatHdr(p, `${pgbreak}\\sa480\\b\\fs28`)
 }
 
 function formatSceneHdr(p) {
-  return formatHdr(p, `\\sb480\\b`, "")
+  return formatHdr(p, `\\sb480\\b`)
 }
 
-function formatHdr(p, style, prefix) {
-  const {title, number} = p
+function formatHdr(p, style) {
+  const {title, number, prefix} = p
   if(!title && !number) return
 
-  const numbering = number ? [`${prefix}${number}`] : []
+  const numbering = number ? [`${prefix ? (prefix + " ") : ""}${number}`] : []
   const text = title ? [title] : []
   const head = [ ...numbering, ...text].join(". ")
 

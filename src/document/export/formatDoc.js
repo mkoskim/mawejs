@@ -13,23 +13,26 @@ import {elemAsText, elemHeading} from "../util";
 // Settings
 //*****************************************************************************
 
-function getActOptions(acts, pgbreak) {
+function getActOptions(acts, prefix, pgbreak) {
   return {
     type: acts,
+    prefix,
     pgbreak,
   }
 }
 
-function getChapterOptions(chapters, pgbreak) {
+function getChapterOptions(chapters, prefix, pgbreak) {
   return {
     type: chapters,
+    prefix,
     pgbreak,
   }
 }
 
-function getSceneOptions(scenes) {
+function getSceneOptions(scenes, prefix) {
   return {
     type: scenes,
+    prefix,
   }
 }
 
@@ -40,14 +43,16 @@ function getSceneOptions(scenes) {
 export function storyToFlatted(story) {
 
   const { file, exports, head, body } = story
+  const { content, prefix_act, prefix_chapter, prefix_scene } = exports
+
   const pgbreak = exports.type === "long"
 
   const options = {
-    content: exports.content,
+    content,
     long: exports.type === "long",
-    act: getActOptions(exports.acts, pgbreak),
-    chapter: getChapterOptions(exports.chapters, pgbreak),
-    scene: getSceneOptions(exports.scenes)
+    act: getActOptions(exports.acts, prefix_act, pgbreak),
+    chapter: getChapterOptions(exports.chapters, prefix_chapter, pgbreak),
+    scene: getSceneOptions(exports.scenes, prefix_scene),
   }
 
   const {author, title, subtitle} = mawe.info(head)
@@ -182,15 +187,15 @@ export function storyToFlatted(story) {
 
   function makeHeader(hdr, num, options) {
     if(!hdr) return undefined
-    const {pgbreak} = options
+    const {prefix, pgbreak} = options
     const {type, name, numbered} = hdr
     const number = numbered ? num + 1 : undefined
     const title = name
 
     switch(options.type) {
-      case "named": return {pgbreak, type, name, title}
-      case "numbered": return numbered ? {pgbreak, type, name, number} : {pgbreak, type, name, title}
-      case "numbered&named": return {pgbreak, type, name, number, title}
+      case "named": return {pgbreak, prefix, type, name, title}
+      case "numbered": return numbered ? {pgbreak, prefix, type, name, number} : {pgbreak, prefix, type, name, title}
+      case "numbered&named": return {pgbreak, prefix, type, name, number, title}
       case "separated": return {type, name}
       default: break;
     }

@@ -22,11 +22,11 @@ export const formatHTML = {
   // Headings
   //---------------------------------------------------------------------------
 
-  hact: (p, index) => formatHeading(p, "h4", "Näytös ", index),
-  hchapter: (p, index) => formatHeading(p, "h5", "Luku ", index),
-  hscene: (p, index) => formatHeading(p, "h6", "", index),
-  hsynopsis: (p, index) => formatHeading(p, "h6", "", index),
-  hnotes: (p, index) => formatHeading(p, "h6", "", index),
+  hact: (p, index) => formatHeading(p, "h4", index),
+  hchapter: (p, index) => formatHeading(p, "h5", index),
+  hscene: (p, index) => formatHeading(p, "h6", index),
+  hsynopsis: (p, index) => formatHeading(p, "h6", index),
+  hnotes: (p, index) => formatHeading(p, "h6", index),
 
   //---------------------------------------------------------------------------
   // Breaks
@@ -69,11 +69,11 @@ ${content}
 `
 }
 
-function formatHeading(p, tag, prefix, index) {
-  const {title, number} = p
+function formatHeading(p, tag, index) {
+  const {title, number, prefix} = p
   if(!title && !number) return
 
-  const numbering = number ? [`${prefix}${number}`] : []
+  const numbering = number ? [`${prefix ? (prefix + " ") : ""}${number}`] : []
   const text = title ? [title] : []
   const head = [ ...numbering, ...text].join(". ")
   const pgbreak = p.pgbreak ? "<hr/>\n" : ""
