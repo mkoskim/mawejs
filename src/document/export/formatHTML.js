@@ -41,7 +41,7 @@ export const formatHTML = {
 
   // "bookmark": (p) => null,
   // "comment": (p) => null,
-  "quote": (p, text) => `<div class="quote">${text}</div>`,
+  "quote": (p, text) => text ? `<div class="quote">${text}</div>` : "<br/>",
   "missing": (p, text) => `<p class="missing">${text}</p>`,
   "p": (p, text) => `<p>${text}</p>`,
 
