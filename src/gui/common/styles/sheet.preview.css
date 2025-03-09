@@ -15,11 +15,10 @@
 
 .Preview .Sheet {
 
-  div, p, h1, h2, h3, h4, h5, h6 {
-    padding: 0;
-    margin: 0;
+  div, span, p, h1, h2, h3, h4, h5, h6 {
+    scroll-margin-top: 2cm;
+    scroll-margin-bottom: 2cm;
   }
-
   h1 { /* Title */
     font-size: 17pt;
     font-weight: bold;
@@ -144,7 +143,7 @@
   /*-------------------------------------------------------------------------*/
 
   .flash {
-    animation: fadeFlash 2s ease-out forwards;
+    animation: fadeFlash 500ms ease-out forwards;
   }
 }
 

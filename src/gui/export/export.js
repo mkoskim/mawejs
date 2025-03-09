@@ -59,20 +59,42 @@ export function loadExportSettings(settings) {
     acts: "none",
     chapters: "numbered",
     scenes: "none",
+    prefix_act: undefined,
+    prefix_chapter: undefined,
+    prefix_scene: undefined,
     ...(settings?.attributes ?? {})
   }
 }
 
 export function saveExportSettings(settings) {
-  const {content, type, acts, chapters, scenes} = settings
+  const {
+    content, type,
+    acts, chapters, scenes,
+    prefix_act, prefix_chapter, prefix_scene
+  } = settings
   return {type: "export", attributes: {
     content,
     type,
     acts,
     chapters,
     scenes,
+    prefix_act,
+    prefix_chapter,
+    prefix_scene
   }}
 }
+
+function updateDocFormat(updateDoc, value) { updateDoc(doc => { doc.exports.format = value})}
+function updateDocStoryContent(updateDoc, value) { updateDoc(doc => {doc.exports.content = value})}
+function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
+
+function updateDocActElem(updateDoc, value) { updateDoc(doc => {doc.exports.acts = value})}
+function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapters = value})}
+function updateDocSceneElem(updateDoc, value) { updateDoc(doc => {doc.exports.scenes = value})}
+
+function updateDocActPrefix(updateDoc, value) { updateDoc(doc => {doc.exports.prefix_act = value})}
+function updateDocChapterPrefix(updateDoc, value) { updateDoc(doc => {doc.exports.prefix_chapter = value})}
+function updateDocScenePrefix(updateDoc, value) { updateDoc(doc => {doc.exports.prefix_scene = value})}
 
 // ****************************************************************************
 //
@@ -143,13 +165,6 @@ class ChooseFormat extends React.PureComponent {
 // Export settings
 //-----------------------------------------------------------------------------
 
-function updateDocFormat(updateDoc, value) { updateDoc(doc => { doc.exports.format = value})}
-function updateDocStoryContent(updateDoc, value) { updateDoc(doc => {doc.exports.content = value})}
-function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
-function updateDocActElem(updateDoc, value) { updateDoc(doc => {doc.exports.acts = value})}
-function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapters = value})}
-function updateDocSceneElem(updateDoc, value) { updateDoc(doc => {doc.exports.scenes = value})}
-
 function ExportSettings({ style, flatted, exports, updateDoc}) {
 
   const {format} = exports
@@ -176,6 +191,8 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
       <MenuItem value="long">Long Story</MenuItem>
       </TextField>
 
+    <Separator/>
+
     <TextField select label="Acts" value={exports.acts} onChange={e => updateDocActElem(updateDoc, e.target.value)}>
       <MenuItem value="none">None</MenuItem>
       <MenuItem value="separated">Separated</MenuItem>
@@ -185,7 +202,7 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
       </TextField>
 
     <TextField select label="Chapters" value={exports.chapters} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
-    <MenuItem value="none">None</MenuItem>
+      <MenuItem value="none">None</MenuItem>
       <MenuItem value="separated">Separated</MenuItem>
       <MenuItem value="numbered">Numbered</MenuItem>
       <MenuItem value="named">Named</MenuItem>
@@ -193,12 +210,19 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
       </TextField>
 
     <TextField select label="Scenes" value={exports.scenes} onChange={e => updateDocSceneElem(updateDoc, e.target.value)}>
-    <MenuItem value="none">None</MenuItem>
+      <MenuItem value="none">None</MenuItem>
       <MenuItem value="separated">Separated</MenuItem>
       <MenuItem value="numbered">Numbered</MenuItem>
       <MenuItem value="named">Named</MenuItem>
       <MenuItem value="numbered&named">Numbered & Named</MenuItem>
       </TextField>
+
+    <Separator/>
+
+    <TextField label="Act Prefix" value={exports.prefix_act} onChange={e => updateDocActPrefix(updateDoc, e.target.value)}/>
+    <TextField label="Chapter Prefix" value={exports.prefix_chapter} onChange={e => updateDocChapterPrefix(updateDoc, e.target.value)}/>
+    <TextField label="Scene Prefix" value={exports.prefix_scene} onChange={e => updateDocScenePrefix(updateDoc, e.target.value)}/>
+
   </VBox>
 }
 
@@ -305,10 +329,12 @@ function SceneItem({node, index}) {
 function scrollToId(id) {
   const target = document.getElementById(id);
   if(target) {
-    target.scrollIntoView({ behavior: "smooth", block: "start"});
+    target.scrollIntoView({ block: "start"});
+    //target.scrollIntoView({ behavior: "smooth", block: "start"});
+    //target.scrollIntoViewIfNeeded(false)
 
     target.classList.add("flash");
 
-    setTimeout(() => target.classList.remove("flash"), 2000);
+    setTimeout(() => target.classList.remove("flash"), 500);
   }
 }

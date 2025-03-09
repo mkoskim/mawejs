@@ -155,16 +155,20 @@ function renderElement({element, attributes, ...props}) {
 }
 
 function renderLeaf({ leaf, attributes, children}) {
+/*
   if(leaf.bold) {
     children = <b>{children}</b>
   }
   if(leaf.italic) {
     children = <i>{children}</i>
   }
+*/
 
   const className = [
     leaf.highlight ? "highlight" : undefined,
     leaf.target ? "target" : undefined,
+    leaf.bold ? "bold" : undefined,
+    leaf.italic ? "italic" : undefined,
   ].filter(e => e).join(" ")
 
   return <span className={className} {...attributes}>{children}</span>

@@ -100,4 +100,28 @@
     padding-top: 0.5in;
     padding-bottom: 1in;
   }
+
+  /*-------------------------------------------------------------------------*/
+  /* Basic styles */
+
+  .bold {
+    font-weight: bold;
+  }
+
+  .italic {
+    font-style: italic;
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Sheet Subelements */
+  /*-------------------------------------------------------------------------*/
+
+  div, span, p, h1, h2, h3, h4, h5, h6 {
+    padding: 0;
+    margin: 0;
+    /*
+    scroll-margin-top: 12pt;
+    scroll-margin-bottom: 12pt;
+    */
+  }
 }

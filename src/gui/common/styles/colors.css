@@ -7,11 +7,11 @@
 
 :root {
   --synopsis-fg: rgb(0, 0, 0);
-  --synopsis-bg: rgb(254, 254, 234);
+  --synopsis-bg: rgb(255, 255, 245);
   --synopsis-border: 1pt solid lightgray;
 
   --notes-fg: rgb(0, 0, 0);
-  --notes-bg: rgb(236, 254, 236);
+  --notes-bg: rgb(245, 255, 245);
   --notes-border: 1pt solid lightgray;
 
   --bookmark-fg: rgb(190, 30, 170);

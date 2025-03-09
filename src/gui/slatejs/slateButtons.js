@@ -100,7 +100,7 @@ function applyStyle(editor, type) {
 
 class ParagraphStyleSelect extends React.PureComponent {
 
-  static order = ["p", "|", "hact", "hchapter", "hscene", "hsynopsis", "hnotes", "|", "bookmark", "comment", "missing", "fill", "tags"]
+  static order = ["p", "|", "hact", "hchapter", "|", "hscene", "hsynopsis", "hnotes", "|", "bookmark", "comment", "missing", "fill", "tags"]
 
   styleMenuItem(popupState, editor, type, style) {
     return (
