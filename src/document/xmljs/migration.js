@@ -85,24 +85,33 @@ function v2_fixes(story) {
 
   console.log("Fix v2")
 
-  const body  = elemFind(story, "body")
-  const head  = elemFind(body, "head")
+  const bodyElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}
+  const notesElem = elemFind(story, "notes") ?? {type: "element", name: "notes", elements: []}
+  const headElem  = elemFind(bodyElem, "head") ?? {type: "element", name: "head", elements: []}
 
-  if(!head) return story
+  const exports = elemFind(headElem, "export") ?? {type: "element", name: "export", attributes: {}, elements: []}
 
-  const exports = elemFind(head, "export")
+  const body = {
+    ...bodyElem,
+    elements: bodyElem.elements?.filter(elem => elem.name !== "head") ?? []
+  }
+
+  const notes = {
+    ...notesElem,
+    elements: notesElem.elements?.filter(elem => elem.name !== "head") ?? []
+  }
+
+  const head = {
+    ...headElem,
+    elements: headElem.elements?.filter(elem => elem.name !== "export") ?? []
+  }
 
   return {
     ...story,
-    elements: [
-      ...story.elements.filter(elem => elem.name !== "body"),
-      head,
-      ...(exports ? [exports] : []),
-      {
-        ...body,
-        elements: body.elements.filter(elem => elem.name !== "head")
-      },
-    ]
+    elements: (story.elements ?? [])
+      .filter(elem => elem.name !== "body")
+      .filter(elem => elem.name !== "notes")
+      .concat([head, exports, body, notes]),
   }
 }
 
