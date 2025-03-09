@@ -178,6 +178,7 @@ export function storyToFlatted(story) {
   function chooseParagraphs(p) {
     switch(p.type) {
       case "p":
+      case "quote":
       case "missing": return true
     }
     return false
