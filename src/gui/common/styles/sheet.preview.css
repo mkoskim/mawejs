@@ -140,6 +140,11 @@
     background: var(--comment-bg);
   }
 
+  div.quote {
+    margin-left: 2cm;
+    margin-right: 2cm;
+  }
+
   /*-------------------------------------------------------------------------*/
 
   .flash {

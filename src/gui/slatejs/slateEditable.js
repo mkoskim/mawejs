@@ -134,7 +134,7 @@ function renderElement({element, attributes, ...props}) {
     case "hscene": return <h6 {...attributes} {...props}/>
 
     //-------------------------------------------------------------------------
-    // Paragraphs
+    // Paragraph styles
     //-------------------------------------------------------------------------
 
     case "bookmark":
@@ -143,6 +143,9 @@ function renderElement({element, attributes, ...props}) {
     case "tags":
     case "fill":
       return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
+
+    case "quote":
+      return <div className="quote" {...attributes} {...props}/>
 
     case "br":
       return <div className="emptyline" {...attributes} {...props}/>

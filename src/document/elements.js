@@ -39,6 +39,7 @@ export const nodeTypes = {
   "fill":      {parent: "scene", },
   "tags":      {parent: "scene", },
   "p":         {parent: "scene", },
+  "quote":     {parent: "scene", },
   "br":        {parent: "scene", },
 }
 
@@ -92,6 +93,7 @@ export const paragraphTypes = {
   "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl-Alt-B", eol: "p", bk: "p", reset: "p" },
   "tags":      {name: "Tags",     markup: "@@",                         eol: "p", bk: "p", reset: "p" },
   "fill":      {name: "Fill",     markup: "++",                         eol: "p", bk: "p", reset: "p" },
+  "quote":     {name: "Quote",    markup: "",   shortcut: "Ctrl-Alt-Q",           bk: "p", reset: "p" },
   "p":         {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
 }
 
@@ -109,6 +111,7 @@ export const nodeShortcuts = [
   {shortcut: IsKey.CtrlAltB, node: {type: "bookmark"}},
   {shortcut: IsKey.CtrlAltC, node: {type: "comment"}},
   {shortcut: IsKey.CtrlAltM, node: {type: "missing"}},
+  {shortcut: IsKey.CtrlAltQ, node: {type: "quote"}},
 ]
 
 export const markShortcuts = [

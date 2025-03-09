@@ -38,6 +38,7 @@ export const formatRTF = {
   //---------------------------------------------------------------------------
 
   //split: (paragraphs) => "{\\sb480" + paragraphs.join("{\\fi567"),
+  "quote": (p, text) => `{\\li1134\\ri1134 ${text}\\par}`,
 
   "missing": (p, text) => `{${p.first ? "" : "\\fi567"}\\cf2 ${text}\\par}`,
   "p": (p, text) => `{${p.first ? "" : "\\fi567 "}${text}\\par}`,

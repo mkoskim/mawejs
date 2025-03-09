@@ -269,4 +269,9 @@
     */
     &::before {content: "=> ";}
   }
+
+  .quote {
+    margin-left: 2cm;
+    margin-right: 2cm;
+  }
 }
