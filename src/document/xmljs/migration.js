@@ -50,9 +50,6 @@ export function migrate(root) {
 //
 // v1 --> v2
 //
-// These are very old single chapter stories. Need to find one, and write
-// migration.
-//
 //*****************************************************************************
 
 function v1_to_v2(story) {
@@ -74,6 +71,7 @@ function v1_to_v2(story) {
 // v2 fixing
 //
 // - Take head out of body, take exports out of head
+// - Some old files have head in notes section: remove it
 //
 //*****************************************************************************
 
