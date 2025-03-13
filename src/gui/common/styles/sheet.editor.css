@@ -128,7 +128,7 @@
       content: ">> ";
     }
     div.notes &::before {
-      content: "/* ";
+      content: "%% ";
     }
   }
 
@@ -190,7 +190,7 @@
       color: #AAA;
     }
 
-    p, div.emptyline {display: none;}
+    p, div.emptyline, div.quote {display: none;}
   }
 
   .act.folded {
@@ -268,5 +268,10 @@
     background: var(--bookmark-bg);
     */
     &::before {content: "=> ";}
+  }
+
+  .quote {
+    margin-left: 2cm;
+    margin-right: 2cm;
   }
 }

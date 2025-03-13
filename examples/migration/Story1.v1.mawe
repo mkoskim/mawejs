@@ -1,0 +1,59 @@
+<story format="mawe" uuid="f9a05419-db74-4358-b46b-0dcc2435972c">
+<body>
+<!--/
+===============================================================================
+
+Story: Story v1
+
+===============================================================================
+/-->
+<head>
+<title>Story v1</title>
+<status>Work</status>
+<subtitle />
+<year />
+<author>Author</author>
+<covertext>Covertext</covertext>
+<version />
+<deadline>Deadline</deadline>
+<translated />
+<nickname>Nickname</nickname>
+<!--/
+===============================================================================
+/-->
+<words>
+<text>3941</text>
+<comments>877</comments>
+<missing>299</missing>
+</words>
+</head>
+<part>
+<scene name="Scene1">
+<missing>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</missing>
+</scene>
+<scene name="Scene 2">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+<br />
+<comment>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</comment>
+</scene>
+</part>
+</body>
+<notes>
+<!--/
+===============================================================================
+
+Notes
+
+===============================================================================
+/-->
+<head>
+<publisher />
+<published />
+</head>
+<part>
+<scene name="Scene A">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+</part>
+</notes>
+</story>

@@ -39,6 +39,7 @@ export const nodeTypes = {
   "fill":      {parent: "scene", },
   "tags":      {parent: "scene", },
   "p":         {parent: "scene", },
+  "quote":     {parent: "scene", },
   "br":        {parent: "scene", },
 }
 
@@ -85,13 +86,14 @@ export const paragraphTypes = {
   "hchapter":  {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2", eol: "p", bk: "p",},
   "hscene":    {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3", eol: "p", bk: "p",},
   "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S", eol: "p", bk: "p",},
-  "hnotes":    {name: "Notes",    markup: "/*", shortcut: "Ctrl-Alt-N", eol: "p", bk: "p",},
+  "hnotes":    {name: "Notes",    markup: "%%", shortcut: "Ctrl-Alt-N", eol: "p", bk: "p",},
 
   "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C",           bk: "p", reset: "p" },
   "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M",           bk: "p", reset: "p" },
   "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl-Alt-B", eol: "p", bk: "p", reset: "p" },
   "tags":      {name: "Tags",     markup: "@@",                         eol: "p", bk: "p", reset: "p" },
   "fill":      {name: "Fill",     markup: "++",                         eol: "p", bk: "p", reset: "p" },
+  "quote":     {name: "Quote",    markup: "",   shortcut: "Ctrl-Alt-Q",           bk: "p", reset: "p" },
   "p":         {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
 }
 
@@ -109,6 +111,7 @@ export const nodeShortcuts = [
   {shortcut: IsKey.CtrlAltB, node: {type: "bookmark"}},
   {shortcut: IsKey.CtrlAltC, node: {type: "comment"}},
   {shortcut: IsKey.CtrlAltM, node: {type: "missing"}},
+  {shortcut: IsKey.CtrlAltQ, node: {type: "quote"}},
 ]
 
 export const markShortcuts = [
@@ -121,7 +124,7 @@ export const MARKUP = {
   "# " : {type: "hchapter"},
   "## ": {type: "hscene"},
   '>> ': {type: "hsynopsis"},
-  '/* ': {type: 'hnotes'},
+  '%% ': {type: 'hnotes'},
   '=> ': {type: "bookmark"},
   '!! ': {type: 'missing'},
   '// ': {type: 'comment'},
@@ -133,6 +136,5 @@ export const MARKUP = {
   //'))':
   //'==':
   //'??':
-  //'%%':
   //'::':
 }
