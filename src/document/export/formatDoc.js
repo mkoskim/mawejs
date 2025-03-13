@@ -6,8 +6,8 @@
 
 import { mawe } from ".."
 import { splitByTrailingElem, isNotEmpty } from "../../util";
-import { nodeChildren, nodeIsBreak, nodeIsNotBreak } from "../elements";
-import {elemAsText, elemHeading} from "../util";
+import { nodeUnfolded, nodeIsBreak, nodeIsNotBreak } from "../elements";
+import {elemAsText, elemHeading, filterCtrlElems} from "../util";
 
 //*****************************************************************************
 // Settings
@@ -89,7 +89,7 @@ export function storyToFlatted(story) {
 
   function flatAct(act) {
 
-    const content = processChapters(nodeChildren(act, true))
+    const content = processChapters(nodeUnfolded(act))
     if(!content?.length) return undefined
 
     const head = makeHeader(elemHeading(act), actnum, options.act)
@@ -123,7 +123,7 @@ export function storyToFlatted(story) {
 
   function flatChapter(chapter) {
 
-    const content = processScenes(nodeChildren(chapter, true))
+    const content = processScenes(nodeUnfolded(chapter))
     if(!content?.length) return undefined
 
     const head = makeHeader(elemHeading(chapter), chapternum, options.chapter)
@@ -156,7 +156,7 @@ export function storyToFlatted(story) {
   function flatScene(scene) {
     if(!chooseContent(scene)) return
 
-    const children = nodeChildren(scene, true).filter(n => !nodeIsBreak(n))
+    const children = filterCtrlElems(nodeUnfolded(scene))
     const splits = splitByTrailingElem(children, p => p.type === "br")
       .map(s => s.filter(chooseParagraphs))
       .filter(s => s.length)

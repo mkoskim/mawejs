@@ -27,7 +27,7 @@ import {
   elemNumbered, nodeIsCtrl, wcCumulative,
   nodeID, childID, IDtoPath,
 } from "../../document/util";
-import {nodeChildren} from "../../document/elements";
+import {nodeUnfolded} from "../../document/elements";
 
 //*****************************************************************************
 //
@@ -231,7 +231,7 @@ class ActItem extends React.PureComponent {
       {hasDropzone && <ChapterDropZone
         id={id}
         folded={!unfold && elem.folded}
-        chapters={nodeChildren(elem, unfold)}
+        chapters={unfold ? nodeUnfolded(elem) : elem.children}
         wcFormat={wcFormat}
         include={include}
         onActivate={onActivate}
@@ -338,7 +338,7 @@ class ChapterItem extends React.PureComponent {
       />
       {hasDropzone && <SceneDropZone
         id={ID}
-        scenes={nodeChildren(elem, unfold)}
+        scenes={unfold ? nodeUnfolded(elem) : elem.children}
         include={include}
         wcFormat={wcFormat}
         onActivate={onActivate}

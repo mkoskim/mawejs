@@ -15,6 +15,7 @@ import { focusByPath } from './slateHelpers';
 //-----------------------------------------------------------------------------
 // Check, if element is inside folded block
 
+/*
 export function elemIsFolded(editor, path) {
   for(const np of Node.levels(editor, path)) {
     const [node, path] = np
@@ -26,7 +27,6 @@ export function elemIsFolded(editor, path) {
   return false;
 }
 
-/*
 function setCursor(editor) {
   Transforms.collapse(editor)
   const {selection} = editor;
@@ -82,8 +82,7 @@ export function foldNode(editor, node, path, fold) {
         {at: path}
       )
     }
-    Transforms.select(editor, editor.start(path))
-})
+  })
 }
 
 //-----------------------------------------------------------------------------
@@ -107,6 +106,7 @@ export function toggleFold(editor) {
 
   const folded = !node.folded
   foldNode(editor, node, path, folded)
+  Transforms.select(editor, editor.start(path))
   //setCursor(editor)
 }
 

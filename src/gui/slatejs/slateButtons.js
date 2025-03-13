@@ -181,7 +181,7 @@ export class FoldButtons extends React.PureComponent {
 
     return <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
-        <Button tooltip="Folding" {...bindTrigger(popupState)}>Fold</Button>
+        <Button disabled tooltip="Folding" {...bindTrigger(popupState)}>Fold</Button>
         <Menu {...bindMenu(popupState)}>
 
         {/* Folding */}

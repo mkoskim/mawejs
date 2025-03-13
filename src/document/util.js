@@ -8,7 +8,7 @@
 
 import {isGzip, gzip, gunzip} from "../util/compress"
 import {uuid, nanoid} from "../util"
-import { nodeBreaks, nodeIsBreak, nodeTypes } from "./elements";
+import { nodeBreaks, nodeUnfolded, nodeIsBreak, nodeTypes } from "./elements";
 
 export {uuid, nanoid}
 
@@ -310,10 +310,10 @@ export function wcElem(elem) {
     case "sect":
     case "act":
     case "chapter":
-      return wcChildren(elem.children, elem.target)
+      return wcChildren(nodeUnfolded(elem), elem.target)
 
     case "scene":
-      if(elem.content === "scene") return wcChildren(elem.children, elem.target)
+      if(elem.content === "scene") return wcChildren(nodeUnfolded(elem), elem.target)
       return undefined
 
     case "p":

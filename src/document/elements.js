@@ -76,8 +76,7 @@ export function nodeIsFolded(node) {
   return node.folded
 }
 
-export function nodeChildren(node, expandAll = false) {
-  if(!expandAll) return node.children
+export function nodeUnfolded(node) {
   return node.folded ? node.data : node.children
 }
 
