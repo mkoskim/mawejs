@@ -127,7 +127,7 @@ function renderElement({element, attributes, ...props}) {
     // Container breaks
     //-------------------------------------------------------------------------
 
-    case "hact": return <h4 {...attributes} {...props}/>
+    case "hact": return <h4 className={numClass} {...attributes} {...props}/>
     case "hchapter": return <h5 className={numClass} {...attributes} {...props}/>
     case "hsynopsis":
     case "hnotes":
@@ -142,7 +142,7 @@ function renderElement({element, attributes, ...props}) {
     case "missing":
     case "tags":
     case "fill":
-      return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
+      return <p className={element.type} {...attributes} {...props}/>
 
     case "quote":
       return <div className="quote" {...attributes} {...props}/>
