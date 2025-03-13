@@ -12,6 +12,7 @@ import {saveViewSettings} from "../../gui/app/views";
 import {saveChartSettings} from "../../gui/arc/arc";
 import {saveEditorSettings} from "../../gui/editor/editor";
 import {saveExportSettings} from "../../gui/export/export";
+import {nodeUnfolded} from "../elements";
 
 //----------------------------------------------------------------------------
 
@@ -131,7 +132,6 @@ function toNotes(notes) {
 
 function toAct(act) {
   const {name, folded, numbered, target} = act;
-  const children = folded ? act.data : act.children
 
   return xmlLines(
     {
@@ -143,7 +143,7 @@ function toAct(act) {
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(children).map(toChapter),
+    ...filterCtrlElems(nodeUnfolded(act)).map(toChapter),
   )
 }
 
@@ -153,7 +153,6 @@ function toAct(act) {
 
 function toChapter(chapter) {
   const {name, folded, numbered, target} = chapter;
-  const children = folded ? chapter.data : chapter.children
 
   return xmlLines(
     {
@@ -165,7 +164,7 @@ function toChapter(chapter) {
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(children).map(toScene),
+    ...filterCtrlElems(nodeUnfolded(chapter)).map(toScene),
   )
 }
 
@@ -175,7 +174,6 @@ function toChapter(chapter) {
 
 function toScene(scene) {
   const {name, content, folded, target} = scene
-  const children = folded ? scene.data : scene.children
 
   return xmlLines(
     {
@@ -187,7 +185,7 @@ function toScene(scene) {
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(children).map(toParagraph),
+    ...filterCtrlElems(nodeUnfolded(scene)).map(toParagraph),
   )
 }
 
