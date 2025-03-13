@@ -12,6 +12,7 @@ import {saveViewSettings} from "../../gui/app/views";
 import {saveChartSettings} from "../../gui/arc/arc";
 import {saveEditorSettings} from "../../gui/editor/editor";
 import {saveExportSettings} from "../../gui/export/export";
+import {nodeUnfolded} from "../elements";
 
 //----------------------------------------------------------------------------
 
@@ -142,7 +143,7 @@ function toAct(act) {
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(act.children).map(toChapter),
+    ...filterCtrlElems(nodeUnfolded(act)).map(toChapter),
   )
 }
 
@@ -163,7 +164,7 @@ function toChapter(chapter) {
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(chapter.children).map(toScene),
+    ...filterCtrlElems(nodeUnfolded(chapter)).map(toScene),
   )
 }
 
@@ -184,7 +185,7 @@ function toScene(scene) {
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(scene.children).map(toParagraph),
+    ...filterCtrlElems(nodeUnfolded(scene)).map(toParagraph),
   )
 }
 

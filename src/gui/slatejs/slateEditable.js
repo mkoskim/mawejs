@@ -16,6 +16,7 @@ import { useSlate, Editable } from 'slate-react'
 import {
   nodeShortcuts,
   markShortcuts,
+  nodeIsContainer,
 } from '../../document/elements';
 
 import { toggleMark } from './slateMarks';
@@ -274,13 +275,13 @@ function onKeyDown(editor, event) {
     event.preventDefault()
 
     const current = Editor.above(editor, {
-      match: n => Element.isElement(n) && n.type === "scene"
+      match: n => Element.isElement(n) && nodeIsContainer(n)
     })
     if(!current) return
 
     const match = Editor.previous(editor, {
-      at: current[1],
-      match: n => Element.isElement(n) && n.type === "scene"
+      //at: current[1],
+      match: n => n !== current[0] && Element.isElement(n) && nodeIsContainer(n)
     })
     if(match) {
       const [,path] = match
@@ -294,13 +295,13 @@ function onKeyDown(editor, event) {
     event.preventDefault()
 
     const current = Editor.above(editor, {
-      match: n => Element.isElement(n) && n.type === "scene"
+      match: n => Element.isElement(n) && nodeIsContainer(n)
     })
     if(!current) return
 
     const match = Editor.next(editor, {
-      at: current[1],
-      match: n => Element.isElement(n) && n.type === "scene"
+      //at: current[1],
+      match: n => n !== current[0] && Element.isElement(n) && nodeIsContainer(n)
     })
     if(match) {
       const [,path] = match

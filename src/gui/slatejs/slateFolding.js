@@ -5,16 +5,19 @@ import {
   Element,
 } from 'slate'
 
-import { elemHeading, elemTags } from '../../document/util';
+import { elemHeading, elemTags, filterCtrlElems } from '../../document/util';
 
 import {
+  nodeIsBreak,
   nodeTypes,
+  nodeUnfolded,
 } from '../../document/elements';
 import { focusByPath } from './slateHelpers';
 
 //-----------------------------------------------------------------------------
 // Check, if element is inside folded block
 
+/*
 export function elemIsFolded(editor, path) {
   for(const np of Node.levels(editor, path)) {
     const [node, path] = np
@@ -46,6 +49,7 @@ function setCursor(editor) {
     }
   }
 }
+*/
 
 //*****************************************************************************
 //
@@ -61,20 +65,26 @@ export function foldNode(editor, node, path, fold) {
 
   if((node.folded ?? false) === (fold ?? false)) return;
 
-  if(fold) {
-    const head = elemHeading(node)
-    if(!head) {
+  // Do folding / unfolding
+
+  editor.withoutNormalizing(() => {
+    if(fold) {
+      const head = elemHeading(node) ?? {type: nodeTypes[node.type].header, children: [{text: ""}]}
+      const {children} = node
+      Transforms.removeNodes(editor, {at: path})
       Transforms.insertNodes(editor,
-        {
-          type: nodeTypes[node.type].header,
-          children: [{text: ""}]
-        },
-        {at: path.concat([0])}
+        {...node, folded: true, data: children, children: [head]},
+        {at: path}
+      )
+    } else {
+      const {data} = node
+      Transforms.removeNodes(editor, {at: path})
+      Transforms.insertNodes(editor,
+        {...node, folded: false, data: undefined, children: data},
+        {at: path}
       )
     }
-  }
-
-  Transforms.setNodes(editor, {folded: fold}, {at: path})
+  })
 }
 
 //-----------------------------------------------------------------------------
@@ -98,7 +108,8 @@ export function toggleFold(editor) {
 
   const folded = !node.folded
   foldNode(editor, node, path, folded)
-  setCursor(editor)
+  Transforms.select(editor, editor.start(path))
+  //setCursor(editor)
 }
 
 //-----------------------------------------------------------------------------
@@ -149,6 +160,28 @@ export const FOLD = {
 export function foldByType(editor, types) {
   //console.log("Fold by type:", types)
 
+  //Editor.withoutNormalizing(editor, () => {
+    for(const [aindex, act] of editor.children.entries()) {
+      const fold = types[act.type]
+      foldNode(editor, act, [aindex], fold)
+      if(fold) continue
+
+      for(const [cindex, chapter] of nodeUnfolded(act).entries()) {
+        if(nodeIsBreak(chapter)) continue
+        const fold = types[chapter.type]
+        foldNode(editor, chapter, [aindex, cindex], fold)
+        if(fold) continue
+
+        for(const [sindex, scene] of nodeUnfolded(chapter).entries()) {
+          if(nodeIsBreak(scene)) continue
+          foldNode(editor, scene, [aindex, cindex, sindex], types[scene.content])
+        }
+      }
+    }
+  //})
+
+  Transforms.select(editor, Editor.start(editor, []))
+  /*
   const matches = Editor.nodes(editor, {
     at: [],
     match: n => {
@@ -171,6 +204,7 @@ export function foldByType(editor, types) {
   })
 
   setCursor(editor)
+*/
 }
 
 //-----------------------------------------------------------------------------
@@ -180,6 +214,7 @@ export function foldByType(editor, types) {
 export function foldByTags(editor, tags) {
   console.log("FoldByTags:", tags)
 
+  /*
   const tagset = new Set(tags)
   var folders = []
 
@@ -237,4 +272,5 @@ export function foldByTags(editor, tags) {
       foldNode(editor, node, path, folded)
     }
   })
+  */
 }

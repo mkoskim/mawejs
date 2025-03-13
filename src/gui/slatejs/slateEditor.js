@@ -376,8 +376,10 @@ function withProtectFolds(editor) {
       match: n => Element.isElement(n) && n.folded,
     })
     if(!match) return false
+    const {focus} = editor.selection
     const [node, path] = match
     foldNode(editor, node, path, false)
+    Transforms.select(editor, focus)
     return true
   }
 
