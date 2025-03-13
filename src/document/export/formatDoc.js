@@ -6,7 +6,7 @@
 
 import { mawe } from ".."
 import { splitByTrailingElem, isNotEmpty } from "../../util";
-import { nodeIsBreak, nodeIsNotBreak } from "../elements";
+import { nodeChildren, nodeIsBreak, nodeIsNotBreak } from "../elements";
 import {elemAsText, elemHeading} from "../util";
 
 //*****************************************************************************
@@ -89,7 +89,7 @@ export function storyToFlatted(story) {
 
   function flatAct(act) {
 
-    const content = processChapters(act.children)
+    const content = processChapters(nodeChildren(act, true))
     if(!content?.length) return undefined
 
     const head = makeHeader(elemHeading(act), actnum, options.act)
@@ -123,7 +123,7 @@ export function storyToFlatted(story) {
 
   function flatChapter(chapter) {
 
-    const content = processScenes(chapter.children)
+    const content = processScenes(nodeChildren(chapter, true))
     if(!content?.length) return undefined
 
     const head = makeHeader(elemHeading(chapter), chapternum, options.chapter)
@@ -156,7 +156,7 @@ export function storyToFlatted(story) {
   function flatScene(scene) {
     if(!chooseContent(scene)) return
 
-    const children = scene.children.filter(n => !nodeIsBreak(n))
+    const children = nodeChildren(scene, true).filter(n => !nodeIsBreak(n))
     const splits = splitByTrailingElem(children, p => p.type === "br")
       .map(s => s.filter(chooseParagraphs))
       .filter(s => s.length)

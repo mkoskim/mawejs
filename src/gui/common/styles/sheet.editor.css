@@ -189,16 +189,6 @@
       display: inline;
       color: #AAA;
     }
-
-    p, div.emptyline, div.quote {display: none;}
-  }
-
-  .act.folded {
-    div.chapter {display: none}
-  }
-
-  .chapter.folded {
-    div.scene, div.notes, div.synopsis {display: none}
   }
 
   /*-------------------------------------------------------------------------*/

@@ -5,10 +5,6 @@ import {
 } from 'slate'
 
 import {
-  elemIsFolded,
-} from "./slateFolding"
-
-import {
   scrollToRange,
 } from "./slateHelpers"
 
@@ -68,7 +64,7 @@ function searchTextForward(editor, text, path, offset) {
   if(match) return match
 
   const next = Editor.next(editor, {
-    match: (n, p) => !Path.equals(path, p) && !elemIsFolded(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
+    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && searchOffsets(n.text, re).length
   })
   if(!next) return undefined
 
@@ -84,7 +80,7 @@ function searchTextBackward(editor, text, path, offset) {
   if(match) return match
 
   const prev = Editor.previous(editor, {
-    match: (n, p) => !Path.equals(path, p) && !elemIsFolded(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
+    match: (n, p) => !Path.equals(path, p) && Text.isText(n) && searchOffsets(n.text, re).length
   })
   if(!prev) return undefined
   //console.log(next)

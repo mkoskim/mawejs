@@ -185,7 +185,7 @@ function parseAct(act, index) {
   const empty = [{type: "element", name: "chapter"}]
   const elements = act.elements?.length ? act.elements : empty
 
-  const children = elements.map(parseChapter)
+  const children = header.concat(elements.map(parseChapter))
   const words = wcChildren(children, target)
 
   return {
@@ -193,12 +193,10 @@ function parseAct(act, index) {
     name,
     numbered,
     target,
+    words,
     folded,
-    children: [
-      ...header,
-      ...children,
-    ],
-    words
+    data: folded ? children : undefined,
+    children: folded ? header : children,
   }
 }
 
@@ -221,7 +219,7 @@ function parseChapter(chapter, index) {
   const empty = [{type: "element", name: "scene"}]
   const elements = chapter.elements?.length ? chapter.elements : empty
 
-  const children = elements.map(parseScene)
+  const children = header.concat(elements.map(parseScene))
   const words = wcChildren(children, target)
 
   return {
@@ -229,12 +227,10 @@ function parseChapter(chapter, index) {
     name,
     numbered,
     target,
-    folded,
-    children: [
-      ...header,
-      ...children,
-    ],
     words,
+    folded,
+    data: folded ? children : undefined,
+    children: folded ? header : children,
   }
 }
 
@@ -264,20 +260,23 @@ function parseScene(scene, index) {
   const empty = [{type: "element", name: "p", children: []}]
   const elements = scene.elements?.length ? scene.elements : empty
 
-  const children = elements.map(parseParagraph).filter(e => e).map(elem => ({...elem, words: wcElem(elem)}))
+  const children = header.concat(
+    elements
+    .map(parseParagraph)
+    .filter(e => e)
+    .map(elem => ({...elem, words: wcElem(elem)}))
+  )
   const words = (content === "scene") ? wcChildren(children, target) : undefined
 
   return {
     type: "scene",
     content,
     name,
-    folded,
     target,
-    children: [
-      ...header,
-      ...children,
-    ],
     words,
+    folded,
+    data: folded ? children : undefined,
+    children: folded ? header : children,
   }
 }
 

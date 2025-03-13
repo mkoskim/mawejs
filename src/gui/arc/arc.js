@@ -32,6 +32,7 @@ import { getCoreEditor } from "../slatejs/slateEditor";
 import { Slate } from "slate-react";
 import { isAstChange } from "../slatejs/slateHelpers";
 import { dndDrop } from "../slatejs/slateDnD";
+import {nodeChildren} from "../../document/elements";
 
 //*****************************************************************************
 //
@@ -318,7 +319,7 @@ function createData(section, elements) {
       }
     }
     return [
-      ...filterCtrlElems(act.children).map(flatChapter).flat(),
+      ...filterCtrlElems(nodeChildren(act, true)).map(flatChapter).flat(),
       pad(act.words.padding)
     ]
   }
@@ -333,7 +334,7 @@ function createData(section, elements) {
     }
 
     return [
-      ...filterCtrlElems(chapter.children).filter(s => s.content === "scene").map(flatScene),
+      ...filterCtrlElems(nodeChildren(chapter, true)).filter(s => s.content === "scene").map(flatScene),
       pad(chapter.words.padding)
     ]
   }

@@ -72,6 +72,15 @@ export function nodeBreaks(node) {
   return breaks ? parent : undefined
 }
 
+export function nodeIsFolded(node) {
+  return node.folded
+}
+
+export function nodeChildren(node, expandAll = false) {
+  if(!expandAll) return node.children
+  return node.folded ? node.data : node.children
+}
+
 //-----------------------------------------------------------------------------
 // Paragraph types
 //
