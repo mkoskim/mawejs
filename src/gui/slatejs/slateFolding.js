@@ -5,10 +5,12 @@ import {
   Element,
 } from 'slate'
 
-import { elemHeading, elemTags } from '../../document/util';
+import { elemHeading, elemTags, filterCtrlElems } from '../../document/util';
 
 import {
+  nodeIsBreak,
   nodeTypes,
+  nodeUnfolded,
 } from '../../document/elements';
 import { focusByPath } from './slateHelpers';
 
@@ -158,6 +160,27 @@ export const FOLD = {
 export function foldByType(editor, types) {
   //console.log("Fold by type:", types)
 
+  //Editor.withoutNormalizing(editor, () => {
+    for(const [aindex, act] of editor.children.entries()) {
+      const fold = types[act.type]
+      foldNode(editor, act, [aindex], fold)
+      if(fold) continue
+
+      for(const [cindex, chapter] of nodeUnfolded(act).entries()) {
+        if(nodeIsBreak(chapter)) continue
+        const fold = types[chapter.type]
+        foldNode(editor, chapter, [aindex, cindex], fold)
+        if(fold) continue
+
+        for(const [sindex, scene] of nodeUnfolded(chapter).entries()) {
+          if(nodeIsBreak(scene)) continue
+          foldNode(editor, scene, [aindex, cindex, sindex], types[scene.content])
+        }
+      }
+    }
+  //})
+
+  Transforms.select(editor, Editor.start(editor, []))
   /*
   const matches = Editor.nodes(editor, {
     at: [],
