@@ -56,6 +56,7 @@
 
     &.Numbered::before {
       counter-increment: act;
+      content: counter(act) ". ";
     /*
       margin-right: 4pt;
       content: "Act " counter(act, upper-roman) ":";
@@ -88,9 +89,8 @@
     */
 
     &.Numbered::before {
-      margin-right: 4pt;
       counter-increment: chapter;
-      content: counter(chapter) ".";
+      content: counter(chapter) ". ";
     }
   }
 
@@ -158,16 +158,6 @@
   /*-------------------------------------------------------------------------*/
 
   div.folded {
-    /*
-    margin: 0 !important;
-    margin-left: -4pt;
-    padding-left: 4pt;
-    margin-top: 4pt;
-    margin-bottom: 4pt;
-    background: rgb(247, 247, 247);
-    animation: splash 0.1s linear;
-    */
-
     position: relative;
 
     &::before {
@@ -175,14 +165,6 @@
       left: -0.75cm;
       color: grey;
       content: "[+]";
-      /*
-      content: "•••";
-      border: 1px solid lightgray;
-      font-size: 10pt;
-      border-radius: 4px;
-      padding-right: 4pt;
-      padding-left: 4pt;
-      */
     }
 
     h4, h5, h6 {
@@ -194,11 +176,11 @@
   }
 
   .act.folded {
-    div.chapter {display: none}
+    div.chapter {display: none;}
   }
 
   .chapter.folded {
-    div.scene, div.notes, div.synopsis {display: none}
+    div.scene, div.notes, div.synopsis {display: none;}
   }
 
   /*-------------------------------------------------------------------------*/

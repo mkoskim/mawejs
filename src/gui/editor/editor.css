@@ -21,6 +21,4 @@ pre {
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 
-.Hidden {
-  display: none;
-}
+.Hidden { display: none; }

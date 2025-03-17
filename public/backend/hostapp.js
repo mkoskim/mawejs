@@ -36,5 +36,5 @@ function log(message) {
 
 function beep() {
   console.log("Beep")
-  shell.beep()
+  //shell.beep()
 }
