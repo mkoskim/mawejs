@@ -87,23 +87,6 @@ const debug = {
   //blocks: "withBorders",  // Borders around chapter & scene div's to make them visible
 }
 
-/*
-function renderElement({element, attributes, ...props}) {
-  const {type} = element
-
-  switch (type) {
-    case "act":
-    case "chapter":
-    case "scene": {
-      return <div {...attributes} {...props}/>
-    }
-    default: break;
-  }
-
-  return <p {...attributes} {...props}/>
-}
-*/
-
 function renderElement({element, attributes, ...props}) {
 
   const {type, folded, numbered, content} = element
@@ -128,7 +111,7 @@ function renderElement({element, attributes, ...props}) {
     // Container breaks
     //-------------------------------------------------------------------------
 
-    case "hact": return <h4 {...attributes} {...props}/>
+    case "hact": return <h4 className={numClass} {...attributes} {...props}/>
     case "hchapter": return <h5 className={numClass} {...attributes} {...props}/>
     case "hsynopsis":
     case "hnotes":
@@ -143,7 +126,7 @@ function renderElement({element, attributes, ...props}) {
     case "missing":
     case "tags":
     case "fill":
-      return <p className={addClass(element.type, foldClass)} {...attributes} {...props}/>
+      return <p className={element.type} {...attributes} {...props}/>
 
     case "quote":
       return <div className="quote" {...attributes} {...props}/>
@@ -158,24 +141,14 @@ function renderElement({element, attributes, ...props}) {
   return <p {...attributes} {...props}/>
 }
 
-function renderLeaf({ leaf, attributes, children}) {
-/*
-  if(leaf.bold) {
-    children = <b>{children}</b>
-  }
-  if(leaf.italic) {
-    children = <i>{children}</i>
-  }
-*/
-
+function renderLeaf({ leaf, attributes, ...props}) {
   const className = [
     leaf.highlight ? "highlight" : undefined,
-    leaf.target ? "target" : undefined,
     leaf.bold ? "bold" : undefined,
     leaf.italic ? "italic" : undefined,
   ].filter(e => e).join(" ")
 
-  return <span className={className} {...attributes}>{children}</span>
+  return <span className={className} {...attributes} {...props}/>
 }
 
 //*****************************************************************************
