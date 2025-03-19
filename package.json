@@ -46,6 +46,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "recharts": "^2.15.1",
     "slate": "^0.112.0",
+    "slate-dom": "^0.112.2",
     "slate-history": "^0.110.3",
     "slate-react": "^0.112.1",
     "stream": "^0.0.3",
