@@ -14,6 +14,7 @@ import {
 } from "../common/factory";
 
 import { SingleEditView } from "../editor/editor";
+import { ProseEditView } from "../prosemirror/ProseMirror"
 import { StoryArc } from "../arc/arc"
 import { Stats } from "../stats/stats"
 import { Export } from "../export/export"
@@ -26,7 +27,8 @@ import { Export } from "../export/export"
 
 export function loadViewSettings(settings) {
   return {
-    selected: "editor",
+    //selected: "editor",
+    selected: "prosemirror",
     ...(settings?.attributes ?? {})
   }
 }
@@ -61,10 +63,11 @@ export class ViewSelectButtons extends React.PureComponent {
     />
   }
 
-  choices = ["editor", "arc", "stats", "export"]
+  choices = ["editor", "prosemirror", "arc", "stats", "export"]
 
   viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
+    "prosemirror": { tooltip: "ProseMirror", icon: <Icon.View.Edit style={{color: "plum"}}/> },
     "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
     "arc": { tooltip: "Story Arc", icon: <Icon.View.Arc /> },
     "stats": { tooltip: "Statistics", icon: <Icon.View.Stats /> },
@@ -80,6 +83,7 @@ export function ViewSwitch({doc, updateDoc}) {
 
   switch (getViewMode(doc)) {
     case "editor": return <SingleEditView {...props} />
+    case "prosemirror": return <ProseEditView {...props} />
     //case "organizer": return <Organizer {...props} />
     case "stats": return <Stats {...props} />
     case "arc": return <StoryArc {...props} />
