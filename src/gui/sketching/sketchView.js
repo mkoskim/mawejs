@@ -91,6 +91,21 @@ function findContainer(event, section) {
   return node.id
 }
 
+function findParagraphByNode(node) {
+  while(node && !node.id) node = node.parentElement
+
+  return node
+}
+
+function findParagraphByEvent(event) {
+  const {view} = event.nativeEvent
+  const selection = view.getSelection()
+
+  return findParagraphByNode(selection.focusNode)
+}
+
+//*****************************************************************************
+
 function toggleFold(e, section, setSection) {
   //console.log("Event:", e)
 
@@ -102,15 +117,84 @@ function toggleFold(e, section, setSection) {
   })
 }
 
+function setType(e, section, setSection, type) {
+  const id = findParagraphByEvent(e, section)
+  setSection(draft => {
+    draft[id].type = type
+  })
+}
+
+//*****************************************************************************
+
+class EditorObserver {
+  constructor(editorElem, section, setSection) {
+    this.editorElem = editorElem;
+    this.section = section;
+    this.setSection = setSection;
+    //this.callback = callback;
+
+    this.observer = new MutationObserver(this.handleMutations.bind(this));
+    this.observer.observe(this.editorElem, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+  }
+
+  handleMutations(mutations) {
+    for(const mutation of mutations) {
+      switch(mutation.type) {
+        case "characterData":
+          return this.handleCharacterData(mutation)
+        default: break;
+      }
+      console.log(mutation)
+    }
+  }
+
+  handleCharacterData(mutation) {
+    console.log("Character data:", mutation)
+    const {target} = mutation
+    const node = findParagraphByNode(target)
+    if(!node) return
+    const {id} = node
+    this.setSection(draft => {
+      draft[id].content = target.textContent
+    })
+  }
+
+  disconnect() {
+    this.observer.disconnect();
+  }
+}
+
 //*****************************************************************************
 
 class Editor extends React.PureComponent {
 
   onKeyDown(e, section, setSection) {
+    /*
     if(IsKey.AltF(e)) {
       e.preventDefault()
       //console.log("Alt-F")
       toggleFold(e, section, setSection)
+      return
+    }
+    */
+    if(IsKey.CtrlAlt0(e)) {
+      e.preventDefault()
+      setType(e, section, setSection, "p")
+      return
+    }
+    if(IsKey.CtrlAltM(e)) {
+      e.preventDefault()
+      setType(e, section, setSection, "missing")
+      return
+    }
+    if(IsKey.CtrlAltC(e)) {
+      e.preventDefault()
+      setType(e, section, setSection, "comment")
+      return
     }
     //console.log("onKeydown:", e)
   }
@@ -132,11 +216,27 @@ class Editor extends React.PureComponent {
     //console.log("- Selection:", view.getSelection())
   }
 
+  //---------------------------------------------------------------------------
+
+  componentDidMount() {
+    const { section, setSection } = this.props;
+
+    // Käynnistetään Observer-luokka editorielementille
+    this.observer = new EditorObserver(this.editorElem, section, setSection);
+  }
+
+  componentWillUnmount() {
+    if (this.observer) this.observer.disconnect();
+  }
+
+  //---------------------------------------------------------------------------
+
   render() {
     const {sectionid, section, setSection, className} = this.props
     const elem = section[sectionid]
 
     return <div className={className}
+      ref={ref => this.editorElem = ref}
       suppressContentEditableWarning={true}
       contentEditable="plaintext-only"
       spellCheck={false}
@@ -188,7 +288,7 @@ class Act extends React.PureComponent {
     const {type, name, folded, id, children} = elem
 
     return <>
-      {/* <h4 id={id}>{name}</h4> */}
+      {<h4 id={id}>{name}</h4>}
       {renderFolded(folded, children.map((elemid) => <Chapter key={elemid} section={section} elem={section[elemid]} />))}
     </>
   }
@@ -200,7 +300,7 @@ class Chapter extends React.PureComponent {
     const {type, name, folded, id, children} = elem
 
     return <>
-      {/* <h5 id={id}>{name}</h5> */}
+      {<h5 id={id}>{name}</h5>}
       {renderFolded(folded, children.map((elemid) => <Scene key={elemid} section={section} elem={section[elemid]} />))}
     </>
   }
@@ -212,7 +312,7 @@ class Scene extends React.PureComponent {
     const {name, content, folded, id, children} = elem
 
     return <>
-      {/* <h6 id={id}>{name ? name : <br/>}</h6> */}
+      {<h6 id={id}>{name ? name : <br/>}</h6>}
       {renderFolded(folded, children.map((elemid) => <Paragraph key={elemid} elem={section[elemid]} />))}
     </>
   }
