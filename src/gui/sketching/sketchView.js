@@ -117,11 +117,14 @@ function toggleFold(e, section, setSection) {
   })
 }
 
-function setType(e, section, setSection, type) {
-  const id = findParagraphByEvent(e, section)
-  setSection(draft => {
-    draft[id].type = type
-  })
+function setParagraphType(e, section, setSection, type) {
+  const node = findParagraphByEvent(e, section)
+
+  if(!node) return
+
+  const {id} = node
+
+  setSection(draft => { draft[id].type = type })
 }
 
 //*****************************************************************************
@@ -183,17 +186,17 @@ class Editor extends React.PureComponent {
     */
     if(IsKey.CtrlAlt0(e)) {
       e.preventDefault()
-      setType(e, section, setSection, "p")
+      setParagraphType(e, section, setSection, "p")
       return
     }
     if(IsKey.CtrlAltM(e)) {
       e.preventDefault()
-      setType(e, section, setSection, "missing")
+      setParagraphType(e, section, setSection, "missing")
       return
     }
     if(IsKey.CtrlAltC(e)) {
       e.preventDefault()
-      setType(e, section, setSection, "comment")
+      setParagraphType(e, section, setSection, "comment")
       return
     }
     //console.log("onKeydown:", e)

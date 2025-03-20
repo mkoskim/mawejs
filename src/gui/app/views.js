@@ -27,8 +27,8 @@ import { SketchView } from "../sketching/sketchView"
 
 export function loadViewSettings(settings) {
   return {
-    //selected: "editor",
-    selected: "sketch",
+    selected: "editor",
+    //selected: "sketch",
     ...(settings?.attributes ?? {})
   }
 }
@@ -63,7 +63,13 @@ export class ViewSelectButtons extends React.PureComponent {
     />
   }
 
-  choices = ["editor", "sketch", "arc", "stats", "export"]
+  choices = [
+    "editor",
+    //"sketch",
+    "arc",
+    "stats",
+    "export"
+  ]
 
   viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
