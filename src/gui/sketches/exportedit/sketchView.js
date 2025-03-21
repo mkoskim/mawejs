@@ -1,9 +1,9 @@
 import React from 'react';
-import {elemAsText, filterCtrlElems} from '../../document';
-import { nanoid } from '../../util';
+import {elemAsText, filterCtrlElems} from '../../../document';
+import { nanoid } from '../../../util';
 import {useImmer} from 'use-immer';
-import {IsKey} from '../common/hotkeys';
-import {childID, IDtoPath} from '../../document/util';
+import {IsKey} from '../../common/hotkeys';
+import {childID, IDtoPath} from '../../../document/util';
 
 //*****************************************************************************
 //
@@ -11,7 +11,7 @@ import {childID, IDtoPath} from '../../document/util';
 //
 //*****************************************************************************
 
-export function SketchView({doc, setDoc}) {
+export function SketchEditView({doc, setDoc}) {
   const [section, setSection] = useImmer(processSection(doc.body))
 
   //console.log(section)

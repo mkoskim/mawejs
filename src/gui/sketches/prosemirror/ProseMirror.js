@@ -21,10 +21,10 @@ import {
   reactKeys,
 } from "@handlewithcare/react-prosemirror";
 
-import {HBox} from "../common/factory";
+import {HBox} from "../../common/factory";
 
 import {
-} from "../common/factory";
+} from "../../common/factory";
 
 //*****************************************************************************
 //
