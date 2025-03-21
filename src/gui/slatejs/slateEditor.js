@@ -291,6 +291,9 @@ function withWordCount(editor) {
   editor.normalizeNode = (entry)=> {
     const [node, path] = entry
 
+    if(Editor.isEditor(node)) return normalizeNode(entry)
+    if(!Editor.isBlock(editor, node)) return normalizeNode(entry)
+
     const words = wcElem(node)
     if(!wcCompare(words, node.words)) {
       Transforms.setNodes(editor, {words}, {at: path})
@@ -400,14 +403,6 @@ function withProtectFolds(editor) {
     //console.log("insertText", text, options)
     return insertText(text, options)
   }
-
-  /*
-  const {isVoid} = editor
-  editor.isVoid = elem => {
-    if(elem.type === "fold") return true
-    return isVoid(elem)
-  }
-  */
 
   return editor
 }
