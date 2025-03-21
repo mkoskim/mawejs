@@ -172,7 +172,7 @@
       color: #AAA;
     }
 
-    p, div.emptyline, div.quote {display: none;}
+    p, div.br, div.quote {display: none;}
   }
 
   .act.folded {
@@ -206,7 +206,15 @@
   }
 
   /*
-  div.emptyline::before {
+  p {
+    border: 1pt solid lightgreen;
+    padding: 4pt;
+    margin-bottom: 2pt !important;
+  }
+  */
+
+  /*
+  div.br::before {
     content: "<br>";
   }
   */
@@ -215,7 +223,7 @@
   /* Sheet subelements */
   /*-------------------------------------------------------------------------*/
 
-  p, div.emptyline {
+  p, div.br {
     margin: 0pt;
     p + & { text-indent: 1.0cm; }
   }

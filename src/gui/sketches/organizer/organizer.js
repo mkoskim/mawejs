@@ -22,14 +22,14 @@ import {
   SearchBox,
   Label,
   Loading,
-} from "../common/factory";
+} from "../../common/factory";
 
 import {
   ChooseVisibleElements, ChooseWordFormat, FormatWords,
-} from "../common/components";
+} from "../../common/components";
 
-import {elemAsText} from "../../document";
-import {elemName, filterCtrlElems, wcCumulative} from "../../document/util";
+import {elemAsText} from "../../../document";
+import {elemName, filterCtrlElems, wcCumulative} from "../../../document/util";
 import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
 
 //-----------------------------------------------------------------------------

@@ -118,13 +118,13 @@
   /* Sheet Subelements */
   /*-------------------------------------------------------------------------*/
 
-  p, div.emptyline {
+  p, div.br {
     margin: 0pt;
     p + & { text-indent: 1.0cm; }
   }
 
   /*
-  div.emptyline::before {
+  div.br::before {
     content: "<br>";
   }
   */

@@ -99,12 +99,10 @@ function renderElement({element, attributes, ...props}) {
     //-------------------------------------------------------------------------
 
     case "act":
-      return <div className={addClass("act", foldClass, debug?.blocks)} {...attributes} {...props}/>
     case "chapter":
-      return <div className={addClass("chapter", foldClass, debug?.blocks)} {...attributes} {...props}/>
-    case "scene": {
+      return <div className={addClass(type, foldClass, debug?.blocks)} {...attributes} {...props}/>
+    case "scene":
       return <div className={addClass(content, foldClass, debug?.blocks)} {...attributes} {...props}/>
-    }
 
     //-------------------------------------------------------------------------
     // Container breaks
@@ -125,13 +123,11 @@ function renderElement({element, attributes, ...props}) {
     case "missing":
     case "tags":
     case "fill":
-      return <p className={element.type} {...attributes} {...props}/>
+      return <p className={type} {...attributes} {...props}/>
 
     case "quote":
-      return <div className="quote" {...attributes} {...props}/>
-
     case "br":
-      return <div className="emptyline" {...attributes} {...props}/>
+      return <div className={type} {...attributes} {...props}/>
 
     case "p":
     default: break;

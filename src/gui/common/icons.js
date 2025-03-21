@@ -89,6 +89,8 @@ import {
   ReportOutlined,
   AlternateEmailOutlined,
 
+  EditNote,
+
 } from '@mui/icons-material';
 
 // Material icons
@@ -114,7 +116,7 @@ export const Icon = {
   View: {
     Index: FormatAlignLeft,
     List: FormatListNumberedRtl,
-    Edit: ArticleOutlined,
+    Edit: EditNote, //ArticleOutlined,
     Organize: GridViewOutlined,
     Export: PrintOutlined,
     Arc: DonutLarge,
