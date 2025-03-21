@@ -18,6 +18,7 @@ import { ProseEditView } from "../prosemirror/ProseMirror"
 import { StoryArc } from "../arc/arc"
 import { Stats } from "../stats/stats"
 import { Export } from "../export/export"
+import { SketchView } from "../sketching/sketchView"
 
 //*****************************************************************************
 //
