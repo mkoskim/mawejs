@@ -86,11 +86,19 @@ const debug = {
   //blocks: "withBorders",  // Borders around chapter & scene div's to make them visible
 }
 
+function renderContainer(type, folded, attributes, children) {
+  const foldClass = folded ? "folded" : ""
+  const [first, ...rest] = children
+  return <div className={addClass(type, foldClass, debug?.blocks)} {...attributes}>
+    {first}
+    {folded ? null : rest}
+  </div>
+}
+
 function renderElement({element, attributes, ...props}) {
 
   const {type, folded, numbered, content} = element
-
-  const foldClass = folded ? "folded" : ""
+  const {children} = props
   const numClass = numbered ? "Numbered" : ""
 
   switch (type) {
@@ -99,12 +107,10 @@ function renderElement({element, attributes, ...props}) {
     //-------------------------------------------------------------------------
 
     case "act":
-      return <div className={addClass("act", foldClass, debug?.blocks)} {...attributes} {...props}/>
     case "chapter":
-      return <div className={addClass("chapter", foldClass, debug?.blocks)} {...attributes} {...props}/>
-    case "scene": {
-      return <div className={addClass(content, foldClass, debug?.blocks)} {...attributes} {...props}/>
-    }
+      return renderContainer(type, folded, attributes, children)
+    case "scene":
+      return renderContainer(content, folded, attributes, children)
 
     //-------------------------------------------------------------------------
     // Container breaks
@@ -125,13 +131,11 @@ function renderElement({element, attributes, ...props}) {
     case "missing":
     case "tags":
     case "fill":
-      return <p className={element.type} {...attributes} {...props}/>
+      return <p className={type} {...attributes} {...props}/>
 
     case "quote":
-      return <div className="quote" {...attributes} {...props}/>
-
     case "br":
-      return <div className="emptyline" {...attributes} {...props}/>
+      return <div className={type} {...attributes} {...props}/>
 
     case "p":
     default: break;

@@ -172,9 +172,12 @@
       color: #AAA;
     }
 
-    p, div.emptyline, div.quote {display: none;}
+    /*
+    p, div.br, div.quote {display: none;}
+    */
   }
 
+  /*
   .act.folded {
     div.chapter {display: none;}
   }
@@ -182,6 +185,7 @@
   .chapter.folded {
     div.scene, div.notes, div.synopsis {display: none;}
   }
+  */
 
   /*-------------------------------------------------------------------------*/
   /* For debugging purposes: make chapter & scene div's visible */
@@ -206,7 +210,7 @@
   }
 
   /*
-  div.emptyline::before {
+  div.br::before {
     content: "<br>";
   }
   */
@@ -215,7 +219,7 @@
   /* Sheet subelements */
   /*-------------------------------------------------------------------------*/
 
-  p, div.emptyline {
+  p, div.br {
     margin: 0pt;
     p + & { text-indent: 1.0cm; }
   }
