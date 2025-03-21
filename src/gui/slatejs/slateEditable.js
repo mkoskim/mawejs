@@ -86,11 +86,19 @@ const debug = {
   //blocks: "withBorders",  // Borders around chapter & scene div's to make them visible
 }
 
+function renderContainer(type, folded, attributes, children) {
+  const foldClass = folded ? "folded" : ""
+  const [first, ...rest] = children
+  return <div className={addClass(type, foldClass, debug?.blocks)} {...attributes}>
+    {first}
+    {folded ? null : rest}
+  </div>
+}
+
 function renderElement({element, attributes, ...props}) {
 
   const {type, folded, numbered, content} = element
-
-  const foldClass = folded ? "folded" : ""
+  const {children} = props
   const numClass = numbered ? "Numbered" : ""
 
   switch (type) {
@@ -100,9 +108,9 @@ function renderElement({element, attributes, ...props}) {
 
     case "act":
     case "chapter":
-      return <div className={addClass(type, foldClass, debug?.blocks)} {...attributes} {...props}/>
+      return renderContainer(type, folded, attributes, children)
     case "scene":
-      return <div className={addClass(content, foldClass, debug?.blocks)} {...attributes} {...props}/>
+      return renderContainer(content, folded, attributes, children)
 
     //-------------------------------------------------------------------------
     // Container breaks
