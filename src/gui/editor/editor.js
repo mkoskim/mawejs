@@ -591,8 +591,8 @@ function RightPanelContent({settings, selected}) {
         */}
         <TrashcanIndex  settings={settings} style={{
           height: "25%",
-          background: "#FDA",
-          borderTop: "1px solid #F64",
+          background: "#FDC",
+          borderTop: "2px dashed #F64",
         }}/>
       </>
     case "wordtable":
