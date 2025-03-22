@@ -89,6 +89,8 @@ import {
   ReportOutlined,
   AlternateEmailOutlined,
   Sort,
+  DeleteForeverOutlined,
+  DeleteOutlined,
 
 } from '@mui/icons-material';
 
@@ -126,6 +128,7 @@ export const Icon = {
     Arc: DonutLarge,
     Stats: BarChartOutlined,
     Tags: AlternateEmail,
+    Trashcan: DeleteOutlined,
   },
 
   //NewFile: NoteAddOutlined,

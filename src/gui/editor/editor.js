@@ -62,6 +62,7 @@ import {
   SearchBox,
   IsKey, addHotkeys,
   Separator, addClass,
+  Label,
 } from "../common/factory";
 
 import {
@@ -226,6 +227,7 @@ export function SingleEditView({doc, updateDoc}) {
 
   const bodyeditor = useMemo(() => getUIEditor(), [])
   const noteeditor = useMemo(() => getUIEditor(), [])
+  const trasheditor = useMemo(() => getUIEditor(), [])
 
   const updateBody = useCallback(buffer => {
     trackMarks(bodyeditor, "body")
@@ -247,6 +249,16 @@ export function SingleEditView({doc, updateDoc}) {
     }
   }, [noteeditor])
 
+  const updateTrash = useCallback(buffer => {
+    trackMarks(trasheditor, "trash")
+    if(isAstChange(trasheditor)) {
+      updateDoc(doc => {
+        doc.trashcan.acts = buffer
+        doc.trashcan.words = wcElem({type: "sect", children: buffer})
+      })
+    }
+  }, [trasheditor])
+
   //---------------------------------------------------------------------------
   // Section selection + focusing
   //---------------------------------------------------------------------------
@@ -257,8 +269,9 @@ export function SingleEditView({doc, updateDoc}) {
     switch(sectID) {
       case "body": return bodyeditor;
       case "notes": return noteeditor;
+      case "trash": return trasheditor;
     }
-  }, [bodyeditor, noteeditor])
+  }, [bodyeditor, noteeditor, trasheditor])
 
   const getActiveEdit = useCallback(() => {
     return getEditorBySectID(active)
@@ -314,11 +327,16 @@ export function SingleEditView({doc, updateDoc}) {
       editor: bodyeditor,
       buffer: doc.body.acts,
       onChange: updateBody,
-      },
+    },
     notes: {
       editor: noteeditor,
       buffer: doc.notes.acts,
       onChange: updateNotes,
+    },
+    trash: {
+      editor: trasheditor,
+      buffer: doc.trashcan.acts,
+      onChange: updateTrash,
     },
   }
 
@@ -511,39 +529,6 @@ function RightPanel({settings}) {
     </VFiller>
 }
 
-function RightPanelContent({settings, selected}) {
-  const {
-    doc,
-    setActive,
-    setSearchText, searchBoxRef,
-    body, track,
-  } = settings
-
-  switch(selected) {
-    case "noteindex":
-      return <DocIndex
-        sectID="notes"
-        section={doc.notes}
-        include={doc.ui.editor.notes.indexed}
-        wcFormat={doc.ui.editor.notes.words}
-        setActive={setActive}
-        current={track?.id}
-        />
-    case "wordtable":
-      return <WordTable
-        section={doc.body}
-        setSearchText={setSearchText}
-        searchBoxRef={searchBoxRef}
-      />
-    case "tagtable":
-      return <TagTable
-        editor={body.editor}
-        section={doc.body}
-      />
-    default: break;
-  }
-}
-
 class ChooseRightPanel extends React.PureComponent {
 
   buttons = {
@@ -559,9 +544,13 @@ class ChooseRightPanel extends React.PureComponent {
       tooltip: "Tags",
       icon: <Icon.View.Tags />
     },
+    "trashcan": {
+      tooltip: "Trashcan",
+      icon: <Icon.View.Trashcan />
+    },
   }
 
-  choices = ["noteindex", "wordtable", "tagtable"]
+  choices = ["noteindex", "wordtable", "tagtable", "trashcan"]
 
   render() {
     const {selected, setSelected} = this.props
@@ -574,6 +563,75 @@ class ChooseRightPanel extends React.PureComponent {
       exclusive={true}
     />
   }
+}
+
+function RightPanelContent({settings, selected}) {
+  const {
+    doc,
+    setActive,
+    setSearchText, searchBoxRef,
+    body, track,
+  } = settings
+
+  switch(selected) {
+    case "noteindex":
+      return <>
+        <ClipboardIndex settings={settings}/>
+        <Separator/>
+        <TrashcanIndex settings={settings}/>
+      </>
+    case "wordtable":
+      return <WordTable
+        section={doc.body}
+        setSearchText={setSearchText}
+        searchBoxRef={searchBoxRef}
+      />
+    case "tagtable":
+      return <TagTable
+        editor={body.editor}
+        section={doc.body}
+      />
+    case "trashcan":
+      return <TrashcanIndex settings={settings}/>
+    default: break;
+  }
+}
+
+function ClipboardIndex({settings}) {
+  const {
+    doc,
+    setActive,
+    track,
+  } = settings
+
+  return <DocIndex
+    sectID="notes"
+    section={doc.notes}
+    include={doc.ui.editor.notes.indexed}
+    wcFormat={doc.ui.editor.notes.words}
+    setActive={setActive}
+    current={track?.id}
+  />
+}
+
+function TrashcanIndex({settings}) {
+  const {
+    doc,
+    setActive,
+    track,
+  } = settings
+
+  return <>
+    <Label text="Trashcan"/>
+    <DocIndex
+      sectID="trash"
+      section={doc.trashcan}
+      include={doc.ui.editor.notes.indexed}
+      wcFormat={doc.ui.editor.notes.words}
+      setActive={setActive}
+      current={track?.id}
+    />
+  </>
 }
 
 //-----------------------------------------------------------------------------
@@ -695,6 +753,10 @@ function EditorBox({style, settings, mode="Condensed"}) {
 
       <Slate editor={settings.notes.editor} initialValue={settings.notes.buffer} onChange={settings.notes.onChange}>
         <SlateEditable className={addClass("Sheet", mode, (active !== "notes" && "Hidden"))} highlight={highlightText}/>
+      </Slate>
+
+      <Slate editor={settings.trash.editor} initialValue={settings.trash.buffer} onChange={settings.trash.onChange}>
+        <SlateEditable className={addClass("Sheet", mode, (active !== "trash" && "Hidden"))} highlight={highlightText}/>
       </Slate>
     </div>
   </VFiller>
