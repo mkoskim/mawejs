@@ -88,6 +88,7 @@ import {
   CommentOutlined,
   ReportOutlined,
   AlternateEmailOutlined,
+  Sort,
 
 } from '@mui/icons-material';
 
@@ -109,6 +110,11 @@ export const Icon = {
     Right: ArrowRight,
     Up: ArrowUpward,
     Down: ArrowDownward,
+  },
+
+  Sort: {
+    Ascending: ArrowUpward,
+    Descending: ArrowDownward,
   },
 
   View: {

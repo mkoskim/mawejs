@@ -8,6 +8,8 @@
 
 import React, {
   useState, useCallback,
+  useMemo,
+  useEffect,
 } from 'react';
 
 import {
@@ -15,6 +17,8 @@ import {
   ToolBox, Button, Icon,
   Input,
   Label,
+  SearchBox,
+  InfiniteScroll,
 } from "../common/factory";
 
 import {createWordTable} from "../../document/util";
@@ -24,49 +28,70 @@ import {text2Regexp} from "../slatejs/slateSearch"
 // Wordtable
 //-----------------------------------------------------------------------------
 
+function filterWordTable(wt, filterText) {
+  if(!filterText) return Array.from(wt)
+
+  const table = new Array()
+  const re = new RegExp(`^${text2Regexp(filterText)}`, "gi")
+
+  for(const entry of wt) {
+    const [key, count] = entry
+    re.lastIndex = 0
+    if(key.match(re)) table.push(entry)
+  }
+  return table
+}
+
 export function WordTable({section, setSearchText, searchBoxRef}) {
 
+  //---------------------------------------------------------------------------
+  // Create word table
+  const wt = useMemo(() => createWordTable(section), [section])
+
+  //---------------------------------------------------------------------------
+  // Filter table
   const [filterText, setFilterText] = useState("")
 
-  function doFilter(wt) {
-    if(!filterText) return Array.from(wt)
+  const filtered = useMemo(() => filterWordTable(wt, filterText), [wt, filterText])
 
-    const table = new Array()
-    const re = new RegExp(`^${text2Regexp(filterText)}`, "gi")
+  const total = useMemo(() => filtered.map(([wt, c]) => c).reduce((total, c) => total + c, 0))
 
-    for(const entry of wt) {
-      const [key, count] = entry
-      re.lastIndex = 0
-      if(key.match(re)) table.push(entry)
-    }
-    return table
-  }
-
+  //---------------------------------------------------------------------------
+  // Sort table
   const [sortAscending, setSortAscending] = useState(false)
 
-  const fSortAscending  = (a, b) => (a[1] > b[1]) ? 1 : (a[1] < b[1]) ? -1 : 0
-  const fSortDescending = (a, b) => (a[1] < b[1]) ? 1 : (a[1] > b[1]) ? -1 : 0
+  const fSortAscending  = useCallback((a, b) => (a[1] > b[1]) ? 1 : (a[1] < b[1]) ? -1 : 0)
+  const fSortDescending = useCallback((a, b) => (a[1] < b[1]) ? 1 : (a[1] > b[1]) ? -1 : 0)
 
-  //console.log(doc.body.words)
-  //const table = createWordTable(section)
-  //console.log(table)
-  const wt = doFilter(createWordTable(section))
-    .sort(sortAscending ? fSortAscending : fSortDescending)
+  const sorted = useMemo(() => filtered.toSorted(sortAscending ? fSortAscending : fSortDescending), [filtered, sortAscending])
+
+  //---------------------------------------------------------------------------
+  // Make batch for infinite scroll
+  const [items, setItems] = useState(100)
+
+  const visible = useMemo(() => sorted.slice(0, items), [sorted, items])
+  //const visible = sorted.slice(0, items)
+
+  // Reset item count when content is changed
+  useEffect(() => {
+    //console.log("Resetting items")
+    setItems(100);
+  }, [sorted])
+
+  //console.log("Items:", items, "Total:", sorted.length)
+
+  //---------------------------------------------------------------------------
 
   const onSelect = useCallback(word => {
     setSearchText(word)
     if(searchBoxRef.current) searchBoxRef.current.focus()
   }, [setSearchText, searchBoxRef])
 
-  // Use this to test performance of table generation
-  /*
-  return <VBox style={style}>
-    Testing, testing...
-  </VBox>
-  /**/
+  //---------------------------------------------------------------------------
+
   return <VBox style={{overflow: "auto"}}>
     <ToolBox style={{background: "white"}}>
-      <Input
+      <SearchBox
         value={filterText}
         onChange={ev => setFilterText(ev.target.value)}
       />
@@ -74,9 +99,18 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
         {sortAscending ? <Icon.Arrow.Up/>: <Icon.Arrow.Down/>}
       </Button>
     </ToolBox>
-    <div className="VBox TOC">
-      {wt.slice(0, 100).map(([word, count]) => <WordCountRow key={word} className={"Entry"} word={word} count={count} onSelect={onSelect}/>)}
-    </div>
+    <Label style={{padding: "4px", borderBottom: "1px solid lightgray"}} text={`Total: ${total}`}/>
+    <VBox id="wordlist" className="TOC">
+      <InfiniteScroll
+        scrollableTarget="wordlist"
+        dataLength={items}
+        next={() => setItems(Math.floor(items * 1.1))}
+        hasMore={items < sorted.length}
+        scrollThreshold={0.95}
+      >
+        {visible.map(([word, count]) => <WordCountRow key={word} className={"Entry"} word={word} count={count} onSelect={onSelect}/>)}
+      </InfiniteScroll>
+    </VBox>
   </VBox>
 }
 
@@ -91,4 +125,3 @@ class WordCountRow extends React.PureComponent {
     </HBox>
   }
 }
-
