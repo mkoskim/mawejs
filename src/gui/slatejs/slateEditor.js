@@ -253,21 +253,20 @@ function withMarkup(editor) {
 
     // Which block we are:
     const match = Editor.above(editor, {
-      match: n => Editor.isBlock(editor, n),
+      match: n => elemIsBlock(editor, n),
     })
     if(!match) return deleteBackward(...args)
 
     const [node, path] = match
 
-    if(!elemIsBlock(editor, node)) return deleteBackward(...args)
+    // Beginning of line?
+    if(!Point.equals(selection.focus, Editor.start(editor, path))) return deleteBackward(...args)
 
     if(node.type in paragraphTypes) {
-      // Beginning of line?
-      if(!Point.equals(selection.anchor, Editor.start(editor, path))) return deleteBackward(...args)
-
-      const {bk} = paragraphTypes[node.type]
+      const {bk, markup} = paragraphTypes[node.type]
       if(bk) {
         // Remove formatting
+        // Transforms.insertText(editor, markup + " ")  // If you want to "undo" formatting
         Transforms.setNodes(editor, {type: bk})
         return
       }
