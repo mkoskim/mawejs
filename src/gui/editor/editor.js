@@ -112,15 +112,19 @@ export function loadEditorSettings(settings) {
       indexed: ["act", "chapter", "scene", "bookmark"],
       words: undefined,
     },
+    trash: {
+      indexed: ["act", "chapter", "scene"],
+      words: undefined,
+    },
     left: {
-      style: {maxWidth: "400px", width: "400px", borderRight: "2px solid lightgray"},
+      style: {maxWidth: "400px", width: "400px", borderRight: "1px solid lightgray"},
     },
     right: {
-      style: {maxWidth: "300px", width: "300px", borderLeft: "2px solid lightgray"},
+      style: {maxWidth: "300px", width: "300px", borderLeft: "1px solid lightgray"},
       selected: "noteindex"
     },
     toolbox: {
-      left: {background: "white", borderRight: "2px solid lightgray"},
+      left: {background: "white", borderRight: "1px solid lightgray"},
       mid: {background: "white"},
       right: {background: "white"},
     }
@@ -577,8 +581,19 @@ function RightPanelContent({settings, selected}) {
     case "noteindex":
       return <>
         <ClipboardIndex settings={settings}/>
-        <Separator/>
-        <TrashcanIndex settings={settings}/>
+        {/*
+        <Label text="Trashcan" style={{
+          padding: "4pt",
+          background: "#FDA",
+          borderTop: "3px solid #F64",
+          borderBottom: "1px solid #F64",
+        }}/>
+        */}
+        <TrashcanIndex  settings={settings} style={{
+          height: "25%",
+          background: "#FDA",
+          borderTop: "1px solid #F64",
+        }}/>
       </>
     case "wordtable":
       return <WordTable
@@ -604,30 +619,34 @@ function ClipboardIndex({settings}) {
     track,
   } = settings
 
+  const {indexed, words} = doc.ui.editor.notes
+
   return <DocIndex
     sectID="notes"
     section={doc.notes}
-    include={doc.ui.editor.notes.indexed}
-    wcFormat={doc.ui.editor.notes.words}
+    include={indexed}
+    wcFormat={words}
     setActive={setActive}
     current={track?.id}
   />
 }
 
-function TrashcanIndex({settings}) {
+function TrashcanIndex({style, settings}) {
   const {
     doc,
     setActive,
     track,
   } = settings
 
+  const {indexed, words} = doc.ui.editor.trash
+
   return <>
-    <Label text="Trashcan"/>
     <DocIndex
+      style={style}
       sectID="trash"
       section={doc.trashcan}
-      include={doc.ui.editor.notes.indexed}
-      wcFormat={doc.ui.editor.notes.words}
+      include={indexed}
+      wcFormat={words}
       setActive={setActive}
       current={track?.id}
     />
