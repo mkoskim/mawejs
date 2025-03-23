@@ -194,14 +194,15 @@ export class MakeToggleGroup extends React.PureComponent {
 //-----------------------------------------------------------------------------
 
 export function Input({...props}) {
-  return <OutlinedInput {...props}/>
+  return <OutlinedInput
+    {...props}
+  />
 }
 
 export function SearchBox({...props})
 {
   return <OutlinedInput
     sx= {{
-      paddingLeft: "5px",
       height: "32px",
       padding: "4px",
     }}

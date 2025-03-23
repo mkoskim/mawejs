@@ -93,10 +93,10 @@ export function getUIEditor() {
   return [
     getCoreEditor,
 
-    withReact,
     withMarkup,           // Markups (##, **, //, etc)
-    withTextPaste,        // Improved text paste
     withProtectFolds,     // Prevents messing with folded blocks
+    withTextPaste,        // Improved text paste
+    withReact,
   ].reduce((editor, func) => func(editor), undefined)
 }
 
@@ -175,6 +175,10 @@ function withTextPaste(editor) {
 
 function withMarkup(editor) {
 
+  //---------------------------------------------------------------------------
+  // Inserting text
+  //---------------------------------------------------------------------------
+
   const { insertText } = editor
 
   editor.insertText = text => {
@@ -203,6 +207,7 @@ function withMarkup(editor) {
 
   //---------------------------------------------------------------------------
   // Pressing ENTER at EOL
+  //---------------------------------------------------------------------------
 
   const { insertBreak } = editor
 
@@ -242,6 +247,7 @@ function withMarkup(editor) {
 
   //---------------------------------------------------------------------------
   // Backspace at the start of line resets formatting
+  //---------------------------------------------------------------------------
 
   const { deleteBackward } = editor;
 
@@ -253,21 +259,20 @@ function withMarkup(editor) {
 
     // Which block we are:
     const match = Editor.above(editor, {
-      match: n => Editor.isBlock(editor, n),
+      match: n => elemIsBlock(editor, n),
     })
     if(!match) return deleteBackward(...args)
 
     const [node, path] = match
 
-    if(!elemIsBlock(editor, node)) return deleteBackward(...args)
+    // Beginning of line?
+    if(!Point.equals(selection.focus, Editor.start(editor, path))) return deleteBackward(...args)
 
     if(node.type in paragraphTypes) {
-      // Beginning of line?
-      if(!Point.equals(selection.anchor, Editor.start(editor, path))) return deleteBackward(...args)
-
-      const {bk} = paragraphTypes[node.type]
+      const {bk, markup} = paragraphTypes[node.type]
       if(bk) {
         // Remove formatting
+        // Transforms.insertText(editor, markup + " ")  // If you want to "undo" formatting
         Transforms.setNodes(editor, {type: bk})
         return
       }
@@ -292,7 +297,7 @@ function withWordCount(editor) {
     const [node, path] = entry
 
     if(Editor.isEditor(node)) return normalizeNode(entry)
-    if(!Editor.isBlock(editor, node)) return normalizeNode(entry)
+    if(!Element.isElement(node)) return normalizeNode(entry)
 
     const words = wcElem(node)
     if(!wcCompare(words, node.words)) {
@@ -371,7 +376,6 @@ function withProtectFolds(editor) {
   const {
     deleteBackward, deleteForward,
     insertText, insertBreak,
-    apply,
   } = editor
 
   function unfoldSelection() {
@@ -449,7 +453,6 @@ function withProtectFolds(editor) {
 //
 //-----------------------------------------------------------------------------
 
-
 function withFixNesting(editor) {
 
   const { normalizeNode } = editor;
@@ -469,7 +472,9 @@ function withFixNesting(editor) {
 
     const nodeType = nodeTypes[node.type]
 
+    //-------------------------------------------------------------------------
     // Container types
+    //-------------------------------------------------------------------------
 
     if(nodeIsContainer(node)) {
       //console.log("Fix nesting: Block:", node.type)
@@ -490,18 +495,22 @@ function withFixNesting(editor) {
       updateBlockAttributes(node, path)
       return normalizeNode(entry)
     }
-    else {
-      // Check parent
 
-      if(!checkParent(node, path, nodeType.parent)) return
+    //-------------------------------------------------------------------------
+    // Non-containers
+    //-------------------------------------------------------------------------
 
-      // Block headers
-      if(nodeIsBreak(node)) {
-        if(!checkIsFirst(node, path, nodeType.parent)) return
-        updateHeadAttributes(node, path)
-      }
+    // Check parent
+
+    if(!checkParent(node, path, nodeType.parent)) return
+
+    // Block headers
+    if(nodeIsBreak(node)) {
+      if(!checkIsFirst(node, path, nodeType.parent)) return
+      updateHeadAttributes(node, path)
     }
-    return normalizeNode(entry)
+
+      return normalizeNode(entry)
   }
 
   return editor

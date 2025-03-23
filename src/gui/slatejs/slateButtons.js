@@ -102,19 +102,18 @@ class ParagraphStyleSelect extends React.PureComponent {
 
   static order = ["p", "|", "hact", "hchapter", "|", "hscene", "hsynopsis", "hnotes", "|", "quote", "bookmark", "comment", "missing", "fill", "tags"]
 
-  styleMenuItem(popupState, editor, type, style) {
-    return (
-      <MenuItem key={type} value={type} onClick={e => {applyStyle(editor, type); popupState.close(e)}}>
-      <ListItemIcon>{style.markup}</ListItemIcon>
-      <ListItemText sx={{width: 100}}>{style.name}</ListItemText>
-      <Typography sx={{ color: 'text.secondary' }}>{style.shortcut}</Typography>
-      </MenuItem>
-    )
-  }
-
   menuItem(popupState, editor, index, choices, type) {
-    if(type in choices) return this.styleMenuItem(popupState, editor, type, choices[type]);
     if(type === "|") return <Separator key={index}/>
+    if(type in choices) {
+      const style = choices[type];
+      return (
+        <MenuItem key={type} value={type} onClick={e => {applyStyle(editor, type); popupState.close(e)}}>
+        <ListItemIcon>{style.markup}</ListItemIcon>
+        <ListItemText sx={{width: 100}}>{style.name}</ListItemText>
+        <Typography sx={{ color: 'text.secondary' }}>{style.shortcut}</Typography>
+        </MenuItem>
+      )
+    }
     return null;
   }
 

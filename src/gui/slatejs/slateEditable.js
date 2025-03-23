@@ -86,10 +86,10 @@ const debug = {
   //blocks: "withBorders",  // Borders around chapter & scene div's to make them visible
 }
 
-function renderContainer(type, folded, attributes, children) {
-  const foldClass = folded ? "folded" : ""
+function renderContainer(type, content, folded, attributes, children) {
+  const foldClass = folded ? "folded" : undefined
   const [first, ...rest] = children
-  return <div className={addClass(type, foldClass, debug?.blocks)} {...attributes}>
+  return <div className={addClass(content ?? type, foldClass, debug?.blocks)} {...attributes}>
     {first}
     {folded ? null : rest}
   </div>
@@ -108,9 +108,8 @@ function renderElement({element, attributes, ...props}) {
 
     case "act":
     case "chapter":
-      return renderContainer(type, folded, attributes, children)
     case "scene":
-      return renderContainer(content, folded, attributes, children)
+      return renderContainer(type, content, folded, attributes, children)
 
     //-------------------------------------------------------------------------
     // Container breaks

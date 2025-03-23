@@ -88,6 +88,9 @@ import {
   CommentOutlined,
   ReportOutlined,
   AlternateEmailOutlined,
+  Sort,
+  DeleteForeverOutlined,
+  DeleteOutlined,
 
 } from '@mui/icons-material';
 
@@ -111,6 +114,11 @@ export const Icon = {
     Down: ArrowDownward,
   },
 
+  Sort: {
+    Ascending: ArrowUpward,
+    Descending: ArrowDownward,
+  },
+
   View: {
     Index: FormatAlignLeft,
     List: FormatListNumberedRtl,
@@ -120,6 +128,7 @@ export const Icon = {
     Arc: DonutLarge,
     Stats: BarChartOutlined,
     Tags: AlternateEmail,
+    Trashcan: DeleteOutlined,
   },
 
   //NewFile: NoteAddOutlined,

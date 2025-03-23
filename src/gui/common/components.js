@@ -13,6 +13,8 @@ import {
   VBox,
   Button, Icon, IconButton,
   MakeToggleGroup,
+  Menu, MenuItem,
+  ListItemIcon, ListItemText, Typography,
   TextField,
   Label,
   Accordion, AccordionSummary, AccordionDetails,
@@ -144,6 +146,7 @@ export class ChooseVisibleElements extends React.PureComponent {
 // Button group to choose how words are shown
 //-----------------------------------------------------------------------------
 
+/*
 export class ChooseWordFormat extends React.PureComponent {
 
   static buttons = {
@@ -180,6 +183,72 @@ export class ChooseWordFormat extends React.PureComponent {
     />
   }
 }
+/*/
+export class ChooseWordFormat extends React.PureComponent {
+
+  static selections = {
+    "off": {
+      name: "Off",
+      tooltip: "Don't show words",
+      icon: <Icon.StatType.Off />
+    },
+    "numbers": {
+      name: "Numbers",
+      tooltip: "Words as numbers",
+      icon: <Icon.StatType.Words />,
+    },
+    "compact": {
+      name: "Compact",
+      tooltip: "Compact word count",
+      icon: <Icon.StatType.Compact style={{transform: "rotate(90deg)"}}/>
+    },
+    "cumulative": {
+      name: "Cumulative",
+      tooltip: "Words as cumulative",
+      icon: <Icon.StatType.Cumulative />
+    },
+    "percent": {
+      name: "Percent",
+      tooltip: "Words as cumulative percent",
+      icon: <Icon.StatType.Percent />
+    },
+  }
+
+  menuItem(popupState, index, type, setSelected) {
+    if(type === "|") return <Separator key={index}/>
+    if(type in this.constructor.selections) {
+      const style = this.constructor.selections[type]
+      return (
+        <MenuItem key={type} value={type} onClick={e => {setSelected(type); popupState.close(e);}}>
+        <ListItemIcon>{style.icon}</ListItemIcon>
+        <ListItemText sx={{width: 100}}>{style.name}</ListItemText>
+        {/*<Typography sx={{ color: 'text.secondary' }}>{style.shortcut}</Typography>*/}
+        </MenuItem>
+      )
+    }
+    return null;
+  }
+
+  render() {
+    const {choices, selected, setSelected} = this.props
+    const {name} = this.constructor.selections[selected]
+
+    //const type = node?.type ?? undefined
+
+    //console.log("Block type:", type)
+
+    return <PopupState variant="popover" popupId="file-menu">
+      {(popupState) => <React.Fragment>
+        <Button tooltip="Word count format" style={{width: 100}} {...bindTrigger(popupState)}>{name}</Button>
+        <Menu {...bindMenu(popupState)}>
+          {choices.map((type, index) => this.menuItem(popupState, index, type, setSelected))}
+        </Menu>
+      </React.Fragment>
+      }
+    </PopupState>
+  }
+}
+/**/
 
 //-----------------------------------------------------------------------------
 // Word formatter
