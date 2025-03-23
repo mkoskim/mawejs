@@ -554,7 +554,12 @@ class ChooseRightPanel extends React.PureComponent {
     },
   }
 
-  choices = ["noteindex", "wordtable", "tagtable", "trashcan"]
+  choices = [
+    "noteindex",
+    "wordtable",
+    "tagtable",
+    //"trashcan"
+  ]
 
   render() {
     const {selected, setSelected} = this.props
@@ -582,17 +587,11 @@ function RightPanelContent({settings, selected}) {
       return <>
         <ClipboardIndex settings={settings}/>
         {/*
-        <Label text="Trashcan" style={{
-          padding: "4pt",
-          background: "#FDA",
-          borderTop: "3px solid #F64",
-          borderBottom: "1px solid #F64",
-        }}/>
-        */}
         <TrashcanIndex  settings={settings} style={{
           height: "25%",
-          borderTop: "2px dashed #F64",
+          borderTop: "1px dashed #F64",
         }}/>
+        */}
       </>
     case "wordtable": {
       return <WordTable
@@ -642,7 +641,7 @@ function TrashcanIndex({style, settings}) {
 
   return <>
     <DocIndex
-      style={{background: "#FDC", ...style}}
+      style={{background: "#FED", ...style}}
       sectID="trash"
       section={doc.trashcan}
       include={indexed}
