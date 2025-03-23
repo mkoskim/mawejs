@@ -203,9 +203,11 @@ export function elemTags(elem) {
 // comments, synopses, chapter & section headers and so on.
 //-----------------------------------------------------------------------------
 
+const reSplit2Words = new RegExp(/[^\p{L}\p{N}]+/, "iu")
+
 export function text2words(text) {
   //return text.split(/[^\wåäö]+/i).filter(word => word.length)
-  return text.split(/[^\p{L}\p{N}]+/iu).filter(word => word.length)
+  return text.split(reSplit2Words).filter(word => word.length)
 }
 
 export function wordcount(text) {
@@ -281,11 +283,13 @@ function wcParagraph(elem) {
 }
 
 export function wcChildren(children, target) {
-  const words = children.filter(elem => elem.words).reduce((words, elem) => ({
-    chars: words.chars + (elem.words.chars ?? 0),
-    text: words.text + (elem.words.text ?? 0),
-    missing: words.missing + (elem.words.missing ?? 0),
-  }), {chars: 0, text: 0, missing: 0})
+
+  let words = {chars: 0, text: 0, missing: 0}
+  for(const elem of children) if(elem.words) {
+    words.chars += elem.words.chars ?? 0
+    words.text += elem.words.text ?? 0
+    words.missing += elem.words.missing ?? 0
+  }
 
   if(target) {
     const total = words.text + words.missing
