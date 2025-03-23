@@ -27,6 +27,7 @@ import {
   Inform,
   ListItemText,
   Typography,
+  DeferredRender,
 } from "../common/factory";
 
 import { OpenFolderButton, HeadInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords } from "../common/components";
@@ -286,7 +287,7 @@ function View({ doc, updateDoc, buffer, setBuffer }) {
 
   return (
     <VBox className="ViewPort">
-      <WorkspaceTab doc={doc} updateDoc={updateDoc} />
+      <DeferredRender><WorkspaceTab doc={doc} updateDoc={updateDoc} /></DeferredRender>
       <ViewSwitch doc={doc} updateDoc={updateDoc} />
       <RenderDialogs doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer} />
     </VBox>
