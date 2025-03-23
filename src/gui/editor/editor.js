@@ -591,16 +591,16 @@ function RightPanelContent({settings, selected}) {
         */}
         <TrashcanIndex  settings={settings} style={{
           height: "25%",
-          background: "#FDC",
           borderTop: "2px dashed #F64",
         }}/>
       </>
-    case "wordtable":
+    case "wordtable": {
       return <WordTable
         section={doc.body}
         setSearchText={setSearchText}
         searchBoxRef={searchBoxRef}
       />
+    }
     case "tagtable":
       return <TagTable
         editor={body.editor}
@@ -642,7 +642,7 @@ function TrashcanIndex({style, settings}) {
 
   return <>
     <DocIndex
-      style={style}
+      style={{background: "#FDC", ...style}}
       sectID="trash"
       section={doc.trashcan}
       include={indexed}
@@ -741,6 +741,7 @@ function EditorBox({style, settings, mode="Condensed"}) {
   const editor = {
     "body": settings.body.editor,
     "notes": settings.notes.editor,
+    "trash": settings.trash.editor,
   }[active]
 
   const {searchBoxRef, searchText, setSearchText} = settings
@@ -781,17 +782,11 @@ function EditorBox({style, settings, mode="Condensed"}) {
   </VFiller>
 }
 
-//-----------------------------------------------------------------------------
-
-/*
-function IndexBox({settings, section, style}) {
-  const props = {settings, section, style}
-
-  return <SlateTOC {...props}/>
-}
-*/
-
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Debugging
+//
+//*****************************************************************************
 
 class ASTChildren extends React.PureComponent {
   render() {
