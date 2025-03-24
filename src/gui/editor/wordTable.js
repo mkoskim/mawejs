@@ -10,6 +10,7 @@ import React, {
   useState, useCallback,
   useMemo,
   useEffect,
+  useRef,
 } from 'react';
 
 import {
@@ -73,9 +74,13 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
   const visible = useMemo(() => sorted.slice(0, items), [sorted, items])
   //const visible = sorted.slice(0, items)
 
+  const wordlistRef = useRef()
+
   // Reset item count when content is changed
   useEffect(() => {
-    //console.log("Resetting items")
+    const {el} = wordlistRef.current
+    //console.log("Resetting items:", el)
+    el.scrollTo(0, 0)
     setItems(100);
   }, [sorted])
 
@@ -106,9 +111,10 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
       <InfiniteScroll
         scrollableTarget="wordlist"
         dataLength={items}
-        next={() => setItems(Math.floor(items * 1.1))}
+        next={() => setItems(Math.floor(items * 1.3))}
         hasMore={items < sorted.length}
         scrollThreshold={0.95}
+        ref={wordlistRef}
       >
         {visible.map(([word, count]) => <WordCountRow key={word} className={"Entry"} word={word} count={count} onSelect={onSelect}/>)}
       </InfiniteScroll>
