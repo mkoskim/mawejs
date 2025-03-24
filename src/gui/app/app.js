@@ -13,12 +13,10 @@ import "./app.css"
 import React, {
   useEffect, useState, useCallback,
   useMemo, useContext,
+  useDeferredValue,
 } from "react"
 
-import { ThemeProvider } from '@mui/material/styles';
-
 import {
-  theme,
   VBox, Filler,
   ToolBox, Button, Icon, IconButton,
   IsKey, addHotkeys,
@@ -27,11 +25,10 @@ import {
   Inform,
   ListItemText,
   Typography,
+  DeferredRender,
 } from "../common/factory";
 
 import { OpenFolderButton, HeadInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords } from "../common/components";
-
-import { SnackbarProvider } from "notistack";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
@@ -59,6 +56,7 @@ import { mawe } from "../../document"
 import { appQuit, appInfo } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
+import {useTheme} from "@mui/material";
 
 const fs = require("../../system/localfs")
 
@@ -187,15 +185,13 @@ export default function App(props) {
   // Render
   //---------------------------------------------------------------------------
 
-  return <ThemeProvider theme={theme}>
-    <SnackbarProvider>
-      <SettingsContext.Provider value={settings}>
-        <CmdContext.Provider value={setCommand}>
-          <View key={doc?.key} doc={doc} updateDoc={updateDoc} buffer={importing} setBuffer={setImporting} />
-        </CmdContext.Provider>
-      </SettingsContext.Provider>
-    </SnackbarProvider>
-  </ThemeProvider>
+  return (
+    <SettingsContext.Provider value={settings}>
+      <CmdContext.Provider value={setCommand}>
+        <View key={doc?.key} doc={doc} updateDoc={updateDoc} buffer={importing} setBuffer={setImporting} />
+      </CmdContext.Provider>
+    </SettingsContext.Provider>
+  )
 
   //---------------------------------------------------------------------------
 
@@ -286,7 +282,9 @@ function View({ doc, updateDoc, buffer, setBuffer }) {
 
   return (
     <VBox className="ViewPort">
-      <WorkspaceTab doc={doc} updateDoc={updateDoc} />
+      {//*
+        <WorkspaceTab doc={doc} updateDoc={updateDoc} />
+      /**/}
       <ViewSwitch doc={doc} updateDoc={updateDoc} />
       <RenderDialogs doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer} />
     </VBox>
@@ -342,12 +340,12 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
   const { head, body } = doc
   const setSelected = useCallback(value => updateDoc(doc => { doc.ui.view.selected = value }), [])
 
-  const { chars, text, missing } = {
+  const { chars, text, missing } = useDeferredValue({
     chars: 0,
     text: 0,
     missing: 0,
     ...(body.words ?? {})
-  }
+  })
 
   useEffect(() => addHotkeys([
     [IsKey.CtrlS, (e) => cmdSaveFile({ setCommand, file })],
@@ -359,7 +357,6 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
     <Separator />
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected} />
     <Separator />
-    {/* No need for real time rendering */}
 
     <HeadInfo head={head} updateDoc={updateDoc} />
 
@@ -376,7 +373,6 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
     <MissingWords missing={missing} />
     <Separator />
     <CharInfo chars={chars} />
-
     {/* <CloseButton setCommand={setCommand}/> */}
 
     <Separator />
