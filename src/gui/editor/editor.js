@@ -412,7 +412,6 @@ export function SingleEditView({doc, updateDoc}) {
     /**/}
     <EditorBox
       settings={settings}
-      mode="Regular"
     />
     {//*
       <RightPanel settings={settings} />
@@ -737,7 +736,7 @@ class Searching extends React.PureComponent {
 
 //-----------------------------------------------------------------------------
 
-function EditorBox({style, settings, mode="Condensed"}) {
+function EditorBox({style, settings}) {
   const {doc, track} = settings
   const {active} = doc.ui.editor
 
@@ -768,18 +767,18 @@ function EditorBox({style, settings, mode="Condensed"}) {
 
     {/* Editor board and sheet */}
 
-    <div className="Filler Board Editor" style={{...style}}>
+    <div className="Board Editor" style={{...style}}>
 
       <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
-        <SlateEditable className={addClass("Sheet", mode, (active !== "body" && "Hidden"))} highlight={highlightText}/>
+        <SlateEditable visible={active === "body"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
       <Slate editor={settings.notes.editor} initialValue={settings.notes.buffer} onChange={settings.notes.onChange}>
-        <SlateEditable className={addClass("Sheet", mode, (active !== "notes" && "Hidden"))} highlight={highlightText}/>
+        <SlateEditable visible={active === "notes"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
       <Slate editor={settings.trash.editor} initialValue={settings.trash.buffer} onChange={settings.trash.onChange}>
-        <SlateEditable className={addClass("Sheet", mode, (active !== "trash" && "Hidden"))} highlight={highlightText}/>
+        <SlateEditable visible={active === "trash"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
     </div>
   </VFiller>
