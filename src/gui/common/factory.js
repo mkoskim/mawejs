@@ -27,6 +27,7 @@ import {
   Menu as MuiMenu,
   MenuItem as MuiMenuItem,
   MenuList as MuiMenuList,
+  Dialog,
 
   Breadcrumbs,
   Chip, Link,
@@ -55,6 +56,7 @@ export {
   List, ListItem, ListItemText, ListSubheader, ListItemIcon, Typography,
   //Menu, MenuItem, MenuList,
   Accordion, AccordionSummary, AccordionDetails,
+  Dialog,
 }
 
 export {

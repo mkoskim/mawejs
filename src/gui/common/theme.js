@@ -195,5 +195,10 @@ export const theme = createTheme({
         slotProps: {transition: {timeout: {enter: 75, exit: 75}}},
       }
     },
+    MuiDialog: {
+      defaultProps: {
+        transitionDuration: 200,
+      }
+    },
   },
 });
