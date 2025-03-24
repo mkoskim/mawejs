@@ -91,6 +91,7 @@ import {
   Sort,
   DeleteForeverOutlined,
   DeleteOutlined,
+  KeyboardArrowDown,
 } from '@mui/icons-material';
 
 import {
@@ -127,6 +128,7 @@ export const Icon = {
     Right: ArrowRight,
     Up: ArrowUpward,
     Down: ArrowDownward,
+    DropDown: ArrowDropDown,
   },
 
   Sort: {

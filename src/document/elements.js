@@ -93,8 +93,8 @@ export const paragraphTypes = {
   "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl-Alt-B", eol: "p", bk: "p", reset: "p" },
   "tags":      {name: "Tags",     markup: "@@",                         eol: "p", bk: "p", reset: "p" },
   "fill":      {name: "Fill",     markup: "++",                         eol: "p", bk: "p", reset: "p" },
-  "quote":     {name: "Quote",    markup: "",   shortcut: "Ctrl-Alt-Q",           bk: "p", reset: "p" },
-  "p":         {name: "Text",     markup: "",   shortcut: "Ctrl-Alt-0"},
+  "quote":     {name: "Quote",                  shortcut: "Ctrl-Alt-Q",           bk: "p", reset: "p" },
+  "p":         {name: "Text",                   shortcut: "Ctrl-Alt-0"},
 }
 
 //-----------------------------------------------------------------------------

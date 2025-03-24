@@ -56,7 +56,8 @@ import { mawe } from "../../document"
 import { appQuit, appInfo } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
-import {useTheme} from "@mui/material";
+import {Fade, useTheme} from "@mui/material";
+import { bindHover, usePopupState } from "material-ui-popup-state/hooks";
 
 const fs = require("../../system/localfs")
 
@@ -387,47 +388,51 @@ class FileMenu extends React.PureComponent {
   render() {
     const { setCommand, file, text, recent, hasdoc } = this.props
 
-    return <PopupState variant="popover" popupId="file-menu">
+    return <PopupState variant="popover">
       {(popupState) => <React.Fragment>
-        <Button tooltip="File menu" {...bindTrigger(popupState)}>{text ?? <Icon.Menu />}</Button>
+        <Button tooltip="File menu" {...bindTrigger(popupState)} endIcon={<Icon.Arrow.DropDown/>}>{text ?? <Icon.Menu />}</Button>
         <Menu {...bindMenu(popupState)}>
-          <MenuItem onClick={e => { cmdNewFile({ setCommand }); popupState.close(e); }}>
-            <ListItemText>New</ListItemText>
-            <Typography sx={{ color: 'text.secondary' }}>Ctrl-N</Typography>
-          </MenuItem>
-          <MenuItem onClick={e => { cmdOpenFile({ setCommand, file }); popupState.close(e); }}>
-            <ListItemText>Open</ListItemText>
-            <Typography sx={{ color: 'text.secondary' }}>Ctrl-O</Typography>
-          </MenuItem>
+          <MenuItem
+            title="New" endAdornment="Ctrl-N"
+            onClick={e => { cmdNewFile({ setCommand }); popupState.close(e); }}
+            />
+          <MenuItem
+            title="Open" endAdornment="Ctrl-O"
+            onClick={e => { cmdOpenFile({ setCommand, file }); popupState.close(e); }}
+            />
+          <Separator />
           <RecentItems recent={recent} setCommand={setCommand} popupState={popupState} />
           <Separator />
-          <MenuItem onClick={e => { cmdOpenImportFile({ setCommand, file }); popupState.close(e); }}>
-            <ListItemText>Import File...</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={e => { cmdImportClipboard({ setCommand }); popupState.close(e); }}>
-            <ListItemText>Import From Clipboard</ListItemText>
-          </MenuItem>
+          <MenuItem
+            title="Import File..."
+            onClick={e => { cmdOpenImportFile({ setCommand, file }); popupState.close(e); }}
+            />
+          <MenuItem
+            title="Import From Clipboard"
+            onClick={e => { cmdImportClipboard({ setCommand }); popupState.close(e); }}
+            />
           <Separator />
-          <MenuItem disabled={!file} onClick={e => { cmdSaveFile({ setCommand, file }); popupState.close(e); }}>
-            <ListItemText>Save</ListItemText>
-            <Typography sx={{ color: 'text.secondary' }}>Ctrl-S</Typography>
-          </MenuItem>
-          <MenuItem disabled={!hasdoc} onClick={e => { cmdSaveFileAs({ setCommand, file }); popupState.close(e); }}>
-            <ListItemText>Save as...</ListItemText>
-          </MenuItem>
-          <MenuItem disabled={!hasdoc} onClick={e => { cmdCloseFile({ setCommand, file }); popupState.close(e); }}>
-            <ListItemText>Close</ListItemText>
-            <Typography sx={{ color: 'text.secondary' }}>Ctrl-W</Typography>
-          </MenuItem>
+          <MenuItem
+            title="Save" endAdornment="Ctrl-S"
+            disabled={!file} onClick={e => { cmdSaveFile({ setCommand, file }); popupState.close(e); }}
+            />
+          <MenuItem
+            title="Save as..."
+            disabled={!hasdoc} onClick={e => { cmdSaveFileAs({ setCommand, file }); popupState.close(e); }}
+            />
+          <MenuItem
+            title="Close" endAdornment="Ctrl-W"
+            disabled={!hasdoc} onClick={e => { cmdCloseFile({ setCommand, file }); popupState.close(e); }}
+            />
           {/*
           <MenuItem onClick={popupState.close}>Revert</MenuItem>
           <MenuItem onClick={e => { popupState.close(e); }}>Open Folder</MenuItem>
           */}
           <Separator />
-          <MenuItem onClick={e => { appQuit(); popupState.close(e); }}>
-            <ListItemText>Quit</ListItemText>
-            <Typography sx={{ color: 'text.secondary' }}>Ctrl-Q</Typography>
-          </MenuItem>
+          <MenuItem
+            title="Quit" //endAdornment="Ctrl-Q"
+            onClick={e => { appQuit(); popupState.close(e); }}
+          />
         </Menu>
       </React.Fragment>
       }
@@ -440,9 +445,12 @@ class RecentItems extends React.PureComponent {
     const { recent, setCommand, popupState } = this.props
     if (!recent?.length) return null
     return <>
-      <Separator />
-      {/* <MenuItem>Recent:</MenuItem> */}
-      {recent.slice(0, 5).map(entry => <MenuItem key={entry.id} onClick={(e => { cmdLoadFile({ setCommand, filename: entry.id }); popupState.close(e); })}>{entry.name}</MenuItem>)}
+      {recent.slice(0, 5).map(entry => <MenuItem
+        key={entry.id}
+        title={entry.name}
+        onClick={(e => { cmdLoadFile({ setCommand, filename: entry.id }); popupState.close(e); })}
+        />
+      )}
     </>
   }
 }
@@ -455,8 +463,12 @@ class HelpButton extends React.PureComponent {
     {(popupState) => <React.Fragment>
       <IconButton tooltip="Help" {...bindTrigger(popupState)}><Icon.Help/></IconButton>
       <Menu {...bindMenu(popupState)}>
-        <MenuItem onClick={e => { popupState.close(e); cmdOpenResource(setCommand, "examples/tutorial/Tutorial.en.mawe")}}>Tutorial (English)</MenuItem>
-        <MenuItem onClick={e => { popupState.close(e); cmdOpenResource(setCommand, "examples/tutorial/Tutorial.fi.mawe")}}>Tutorial (Finnish)</MenuItem>
+        <MenuItem title="Tutorial (English)"
+          onClick={e => { popupState.close(e); cmdOpenResource(setCommand, "examples/tutorial/Tutorial.en.mawe")}}
+          />
+        <MenuItem title="Tutorial (Finnish)"
+          onClick={e => { popupState.close(e); cmdOpenResource(setCommand, "examples/tutorial/Tutorial.fi.mawe")}}
+          />
       </Menu>
     </React.Fragment>}
     </PopupState>

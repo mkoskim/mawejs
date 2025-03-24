@@ -163,11 +163,36 @@ export const theme = createTheme({
         variant: 'dense',
       },
     },
+
+    //-------------------------------------------------------------------------
+    // Tooltip
+    //-------------------------------------------------------------------------
+
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
           fontSize: "11pt",
         }
+      }
+    },
+
+    //-------------------------------------------------------------------------
+    // Transitions
+    //-------------------------------------------------------------------------
+
+    MuiMenu: {
+      defaultProps: {
+        transitionDuration: 0,
+      }
+    },
+    MuiPopover: {
+      defaultProps: {
+        transitionDuration: 0,
+      }
+    },
+    MuiAccordion: {
+      defaultProps: {
+        slotProps: {transition: {timeout: {enter: 0, exit: 0}}},
       }
     },
   },

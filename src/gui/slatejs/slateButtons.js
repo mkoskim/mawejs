@@ -107,11 +107,12 @@ class ParagraphStyleSelect extends React.PureComponent {
     if(type in choices) {
       const style = choices[type];
       return (
-        <MenuItem key={type} value={type} onClick={e => {applyStyle(editor, type); popupState.close(e)}}>
-        <ListItemIcon>{style.markup}</ListItemIcon>
-        <ListItemText sx={{width: 100}}>{style.name}</ListItemText>
-        <Typography sx={{ color: 'text.secondary' }}>{style.shortcut}</Typography>
-        </MenuItem>
+        <MenuItem
+          key={type}
+          title={<div style={{width: "100px"}}>{style.name}</div>}
+          startAdornment={style.markup ?? " "} endAdornment={style.shortcut}
+          onClick={e => {applyStyle(editor, type); popupState.close(e)}}
+        />
       )
     }
     return null;
@@ -129,7 +130,14 @@ class ParagraphStyleSelect extends React.PureComponent {
 
     return <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
-        <Button tooltip="Paragraph style" style={{width: 100, justifyContent: "flex-start"}} {...bindTrigger(popupState)}>{name}</Button>
+        <Button
+          tooltip="Paragraph style"
+          style={{justifyContent: "flex-start"}}
+          endIcon={<Icon.Arrow.DropDown/>}
+          {...bindTrigger(popupState)}
+          >
+            <div style={{width: 80, textAlign: "left"}}>{name}</div>
+          </Button>
         <Menu {...bindMenu(popupState)}>
           {order.map((type, index) => this.menuItem(popupState, editor, index, choices, type))}
         </Menu>
@@ -180,41 +188,44 @@ export class FoldButtons extends React.PureComponent {
 
     return <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
-        <Button tooltip="Folding" {...bindTrigger(popupState)}>Fold</Button>
+        <Button tooltip="Folding" {...bindTrigger(popupState)} endIcon={<Icon.Arrow.DropDown/>}>Fold</Button>
         <Menu {...bindMenu(popupState)}>
 
-        {/* Folding */}
-        <MenuItem onClick={e => {onFoldAll(e); popupState.close(e)}}>
-          <ListItemText>Fold All</ListItemText>
-          <Typography sx={{ color: 'text.secondary' }}>Alt-A</Typography>
-          </MenuItem>
+        <MenuItem
+          title="Fold All"
+          endAdornment="Alt-A"
+          onClick={e => {onFoldAll(e); popupState.close(e)}}
+          />
 
         <Separator/>
-        <MenuItem onClick={e => {onFoldChapters(e); popupState.close(e)}}>
-          <ListItemText>Fold Chapters</ListItemText>
-          <Typography sx={{ color: 'text.secondary' }}></Typography>
-          </MenuItem>
-        <MenuItem onClick={e => {onUnfoldChapters(e); popupState.close(e)}}>
-          <ListItemText>Unfold Chapters</ListItemText>
-          <Typography sx={{ color: 'text.secondary' }}></Typography>
-          </MenuItem>
 
-        {/* Unfolding */}
-        <Separator/>
-        <MenuItem onClick={e => {onUnfoldSynopsis(e); popupState.close(e)}}>
-          <ListItemText>Unfold Synopsis</ListItemText>
-          <Typography sx={{ color: 'text.secondary' }}></Typography>
-          </MenuItem>
-        <MenuItem onClick={e => {onUnfoldScenes(e); popupState.close(e)}}>
-          <ListItemText>Unfold Draft</ListItemText>
-          <Typography sx={{ color: 'text.secondary' }}></Typography>
-          </MenuItem>
+        <MenuItem
+          title="Fold Chapters"
+          onClick={e => {onFoldChapters(e); popupState.close(e)}}
+          />
+        <MenuItem
+          title="Unfold Chapters"
+          onClick={e => {onUnfoldChapters(e); popupState.close(e)}}
+          />
 
         <Separator/>
-          <MenuItem onClick={e => {onUnfoldAll(e); popupState.close(e)}}>
-          <ListItemText>Unfold All</ListItemText>
-          <Typography sx={{ color: 'text.secondary' }}>Alt-S</Typography>
-          </MenuItem>
+
+        <MenuItem
+          title="Unfold Synopsis"
+          onClick={e => {onUnfoldSynopsis(e); popupState.close(e)}}
+          />
+        <MenuItem
+          title="Unfold Draft"
+          onClick={e => {onUnfoldScenes(e); popupState.close(e)}}
+          />
+
+        <Separator/>
+
+        <MenuItem
+          title="Unfold All"
+          endAdornment="Alt-S"
+          onClick={e => {onUnfoldAll(e); popupState.close(e)}}
+          />
 
         </Menu>
       </React.Fragment>

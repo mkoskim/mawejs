@@ -70,8 +70,9 @@ export class EditHeadButton extends React.PureComponent {
     const {text, head, updateDoc, expanded} = this.props
     return <PopupState variant="popover" popupId="head-edit">
     {(popupState) => <React.Fragment>
-      <Button {...bindTrigger(popupState)} tooltip="Edit story info">{text}</Button>
+      <Button {...bindTrigger(popupState)} endIcon={<Icon.Arrow.DropDown/>} tooltip="Edit story info">{text}</Button>
       <Popover {...bindMenu(popupState)}
+        //transitionDuration={0}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left',
@@ -218,13 +219,11 @@ export class ChooseWordFormat extends React.PureComponent {
     if(type === "|") return <Separator key={index}/>
     if(type in this.constructor.selections) {
       const style = this.constructor.selections[type]
-      return (
-        <MenuItem key={type} value={type} onClick={e => {setSelected(type); popupState.close(e);}}>
-        <ListItemIcon>{style.icon}</ListItemIcon>
-        <ListItemText sx={{width: 100}}>{style.name}</ListItemText>
-        {/*<Typography sx={{ color: 'text.secondary' }}>{style.shortcut}</Typography>*/}
-        </MenuItem>
-      )
+      return <MenuItem
+        title={style.name}
+        key={type}
+        onClick={e => {setSelected(type); popupState.close(e);}}
+      />
     }
     return null;
   }
@@ -239,7 +238,13 @@ export class ChooseWordFormat extends React.PureComponent {
 
     return <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
-        <Button tooltip="Word count format" style={{width: 100}} {...bindTrigger(popupState)}>{name}</Button>
+        <Button
+          tooltip="Word count format"
+          endIcon={<Icon.Arrow.DropDown/>}
+          {...bindTrigger(popupState)}
+        >
+          {name}
+        </Button>
         <Menu {...bindMenu(popupState)}>
           {choices.map((type, index) => this.menuItem(popupState, index, type, setSelected))}
         </Menu>
