@@ -19,6 +19,7 @@ import {
   Label,
   SearchBox,
   InfiniteScroll,
+  Separator,
 } from "../common/factory";
 
 import {createWordTable} from "../../document/util";
@@ -95,8 +96,9 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
         value={filterText}
         onChange={ev => setFilterText(ev.target.value)}
       />
+      <Separator />
       <Button tooltip="Sort order" onClick={ev => setSortAscending(!sortAscending)}>
-        {sortAscending ? <Icon.Arrow.Up/>: <Icon.Arrow.Down/>}
+        {sortAscending ? <Icon.Sort.Ascending/>: <Icon.Sort.Descending/>}
       </Button>
     </ToolBox>
     <Label style={{padding: "4px", borderBottom: "1px solid lightgray"}} text={`Total: ${total}`}/>

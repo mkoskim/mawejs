@@ -25,6 +25,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@hello-pangea/dnd": "^18.0.1",
+    "@mdi/js": "^7.4.47",
     "@mui/icons-material": "^6.4.8",
     "@mui/material": "^6.4.8",
     "buffer": "^6.0.3",
