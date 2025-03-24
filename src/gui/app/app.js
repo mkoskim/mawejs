@@ -30,8 +30,6 @@ import {
 
 import { OpenFolderButton, HeadInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords } from "../common/components";
 
-import { SnackbarProvider } from "notistack";
-
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
 import {
@@ -187,15 +185,13 @@ export default function App(props) {
   // Render
   //---------------------------------------------------------------------------
 
-  return <>
-    <SnackbarProvider>
-      <SettingsContext.Provider value={settings}>
-        <CmdContext.Provider value={setCommand}>
-          <View key={doc?.key} doc={doc} updateDoc={updateDoc} buffer={importing} setBuffer={setImporting} />
-        </CmdContext.Provider>
-      </SettingsContext.Provider>
-    </SnackbarProvider>
-  </>
+  return (
+    <SettingsContext.Provider value={settings}>
+      <CmdContext.Provider value={setCommand}>
+        <View key={doc?.key} doc={doc} updateDoc={updateDoc} buffer={importing} setBuffer={setImporting} />
+      </CmdContext.Provider>
+    </SettingsContext.Provider>
+  )
 
   //---------------------------------------------------------------------------
 

@@ -407,12 +407,16 @@ export function SingleEditView({doc, updateDoc}) {
 
   return <HBox style={{overflow: "auto"}}>
     <DragDropContext onDragEnd={onDragEnd}>
-    <LeftPanel settings={settings}/>
+    {//*
+      <LeftPanel settings={settings}/>
+    /**/}
     <EditorBox
       settings={settings}
       mode="Regular"
     />
-    <RightPanel settings={settings} />
+    {//*
+      <RightPanel settings={settings} />
+    /**/}
     </DragDropContext>
   </HBox>
 
