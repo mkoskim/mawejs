@@ -192,7 +192,7 @@ export const theme = createTheme({
     },
     MuiAccordion: {
       defaultProps: {
-        slotProps: {transition: {timeout: {enter: 0, exit: 0}}},
+        slotProps: {transition: {timeout: {enter: 75, exit: 75}}},
       }
     },
   },
