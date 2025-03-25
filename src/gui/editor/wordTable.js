@@ -10,6 +10,7 @@ import React, {
   useState, useCallback,
   useMemo,
   useEffect,
+  useRef,
 } from 'react';
 
 import {
@@ -19,6 +20,7 @@ import {
   Label,
   SearchBox,
   InfiniteScroll,
+  Separator,
 } from "../common/factory";
 
 import {createWordTable} from "../../document/util";
@@ -72,9 +74,13 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
   const visible = useMemo(() => sorted.slice(0, items), [sorted, items])
   //const visible = sorted.slice(0, items)
 
+  const infScrollRef = useRef()
+
   // Reset item count when content is changed
   useEffect(() => {
-    //console.log("Resetting items")
+    const {el} = infScrollRef.current
+    //console.log("Resetting items:", el)
+    el.scrollTo(0, 0)
     setItems(100);
   }, [sorted])
 
@@ -95,8 +101,9 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
         value={filterText}
         onChange={ev => setFilterText(ev.target.value)}
       />
+      <Separator />
       <Button tooltip="Sort order" onClick={ev => setSortAscending(!sortAscending)}>
-        {sortAscending ? <Icon.Arrow.Up/>: <Icon.Arrow.Down/>}
+        {sortAscending ? <Icon.Sort.Ascending/>: <Icon.Sort.Descending/>}
       </Button>
     </ToolBox>
     <Label style={{padding: "4px", borderBottom: "1px solid lightgray"}} text={`Total: ${total}`}/>
@@ -104,9 +111,10 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
       <InfiniteScroll
         scrollableTarget="wordlist"
         dataLength={items}
-        next={() => setItems(Math.floor(items * 1.1))}
+        next={() => setItems(Math.floor(items * 1.3))}
         hasMore={items < sorted.length}
         scrollThreshold={0.95}
+        ref={infScrollRef}
       >
         {visible.map(([word, count]) => <WordCountRow key={word} className={"Entry"} word={word} count={count} onSelect={onSelect}/>)}
       </InfiniteScroll>

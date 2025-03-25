@@ -91,8 +91,24 @@ import {
   Sort,
   DeleteForeverOutlined,
   DeleteOutlined,
-
+  KeyboardArrowDown,
 } from '@mui/icons-material';
+
+import {
+  mdiSortAscending,
+  mdiSortDescending,
+  mdiSortReverseVariant,
+  mdiSortVariant,
+  mdiTextBoxEditOutline,
+  mdiArrowDownThin,
+} from '@mdi/js';
+import { createSvgIcon } from '@mui/material';
+
+const MdiSortAscending = createSvgIcon(<path d={mdiSortAscending}/>)
+const MdiSortDescending = createSvgIcon(<path d={mdiSortDescending}/>)
+//const MdiSortAscending = createSvgIcon(<path d={mdiSortReverseVariant}/>)
+//const MdiSortDescending = createSvgIcon(<path d={mdiSortVariant}/>)
+const MdiTextBoxEditOutline = createSvgIcon(<path d={mdiTextBoxEditOutline}/>)
 
 // Material icons
 export const Icon = {
@@ -112,17 +128,18 @@ export const Icon = {
     Right: ArrowRight,
     Up: ArrowUpward,
     Down: ArrowDownward,
+    DropDown: ArrowDropDown,
   },
 
   Sort: {
-    Ascending: ArrowUpward,
-    Descending: ArrowDownward,
+    Ascending: MdiSortAscending,
+    Descending: MdiSortDescending,
   },
 
   View: {
     Index: FormatAlignLeft,
     List: FormatListNumberedRtl,
-    Edit: ArticleOutlined,
+    Edit: MdiTextBoxEditOutline,
     Organize: GridViewOutlined,
     Export: PrintOutlined,
     Arc: DonutLarge,

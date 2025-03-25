@@ -23,6 +23,12 @@ import {
   ToggleButton as MuiToggleButton,
   IconButton as MuiIconButton,
   ToggleButtonGroup,  ButtonGroup,
+
+  Menu as MuiMenu,
+  MenuItem as MuiMenuItem,
+  MenuList as MuiMenuList,
+  Dialog,
+
   Breadcrumbs,
   Chip, Link,
   TextField, InputAdornment, OutlinedInput,
@@ -30,7 +36,6 @@ import {
   Divider, CircularProgress as Spinner,
   Typography,
   List, ListItem, ListItemText, ListSubheader, ListItemIcon,
-  Menu, MenuItem, MenuList,
   Select, InputLabel, FormControl,
   Accordion, AccordionSummary, AccordionDetails,
 } from "@mui/material"
@@ -40,6 +45,7 @@ import {IsKey, addHotkeys} from "./hotkeys"
 
 import { enqueueSnackbar, closeSnackbar } from "notistack";
 import { isNotEmpty } from "../../util";
+import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 export { theme }
@@ -48,14 +54,21 @@ export {
   Chip, Link,
   TextField,
   List, ListItem, ListItemText, ListSubheader, ListItemIcon, Typography,
-  Menu, MenuItem, MenuList,
+  //Menu, MenuItem, MenuList,
   Accordion, AccordionSummary, AccordionDetails,
+  Dialog,
 }
 
 export {
   Icon,
   IsKey, addHotkeys,
 }
+
+//*****************************************************************************
+//
+// General
+//
+//*****************************************************************************
 
 //-----------------------------------------------------------------------------
 // Tooltips
@@ -90,6 +103,12 @@ export function DeferredRender({children}) {
 export function addClass(...classNames) {
   return classNames.filter(isNotEmpty).join(" ");
 }
+
+//*****************************************************************************
+//
+// Boxes
+//
+//*****************************************************************************
 
 //-----------------------------------------------------------------------------
 // Nice guide: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
@@ -163,7 +182,11 @@ export function ToolBox({style, ...props}) {
   return <HBox className="ToolBox" style={style} {...props}/>
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Buttons & groups
+//
+//*****************************************************************************
 
 export class MakeToggleGroup extends React.PureComponent {
 
@@ -190,33 +213,6 @@ export class MakeToggleGroup extends React.PureComponent {
     }
   }
 }
-
-//-----------------------------------------------------------------------------
-
-export function Input({...props}) {
-  return <OutlinedInput
-    {...props}
-  />
-}
-
-export function SearchBox({...props})
-{
-  return <OutlinedInput
-    sx= {{
-      height: "32px",
-      padding: "4px",
-    }}
-    //spellCheck={false}
-    startAdornment={
-      <InputAdornment position="start"><Icon.Action.Search /></InputAdornment>
-    }
-    {...props}
-  />
-}
-
-//-----------------------------------------------------------------------------
-
-export {Breadcrumbs}
 
 //-----------------------------------------------------------------------------
 
@@ -266,6 +262,56 @@ export class ToggleButton extends React.PureComponent {
 
 //-----------------------------------------------------------------------------
 
+export function Radio({style, choice, selected, setSelected}) {
+  const props = {
+    className: "RadioButton",
+    fontSize: "small",
+    style: {...style},
+    onClick: e => setSelected && setSelected(choice),
+  }
+
+  if(selected === choice) {
+    return <Icon.RadioButton.Checked {...props}/>
+  }
+  return <Icon.RadioButton.Unchecked {...props}/>
+}
+
+//*****************************************************************************
+//
+// Input
+//
+//*****************************************************************************
+
+export function Input({...props}) {
+  return <OutlinedInput
+    {...props}
+  />
+}
+
+export function SearchBox({...props})
+{
+  return <OutlinedInput
+    sx= {{
+      height: "32px",
+      padding: "4px",
+    }}
+    //spellCheck={false}
+    startAdornment={<Icon.Action.Search />}
+    //endAdornment={<Icon.Close/>}
+    {...props}
+  />
+}
+
+//-----------------------------------------------------------------------------
+
+export {Breadcrumbs}
+
+//*****************************************************************************
+//
+// Labels
+//
+//*****************************************************************************
+
 export class Label extends React.PureComponent
 {
   render() {
@@ -286,25 +332,46 @@ export function Loading({className, style}) {
     </Filler>
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Menus
+//
+//*****************************************************************************
 
-export function Radio({style, choice, selected, setSelected}) {
-  const props = {
-    className: "RadioButton",
-    fontSize: "small",
-    style: {...style},
-    onClick: e => setSelected && setSelected(choice),
-  }
+export {
+  MuiMenu as Menu,
+  MuiMenuItem
+}
+//Menu, MenuItem, MenuList,
 
-  if(selected === choice) {
-    return <Icon.RadioButton.Checked {...props}/>
-  }
-  return <Icon.RadioButton.Unchecked {...props}/>
+export function MenuItem({onClick, value, disabled, title, startAdornment, endAdornment}) {
+  return <MuiMenuItem value={value} disabled={disabled} onClick={onClick}>
+    {startAdornment ? <ListItemIcon>{startAdornment}</ListItemIcon> : null}
+    {title ? <ListItemText>{title}</ListItemText> : null}
+    {endAdornment ? <Typography sx={{ color: 'text.secondary' }}>{endAdornment}</Typography> : null}
+  </MuiMenuItem>
 }
 
-//-----------------------------------------------------------------------------
-// Inform user about things that are happening or happened.
-//-----------------------------------------------------------------------------
+/*
+// Need to figure out how to close popup when clicking child item
+export function DropDown({variant = "popover", popupId, label, children}) {
+  return <PopupState variant={variant} popupId={popupId}>
+    {(popupState) => <>
+      <Button {...bindTrigger(popupState)} endIcon={<Icon.Arrow.DropDown/>}>{label}</Button>
+      <MuiMenu {...bindMenu(popupState)}>
+        {children}
+      </MuiMenu>
+      </>
+    }
+  </PopupState>
+}
+*/
+
+//*****************************************************************************
+//
+// Snackbar inform
+//
+//*****************************************************************************
 
 //*
 export const Inform = {

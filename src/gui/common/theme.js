@@ -17,8 +17,8 @@ export const theme = createTheme({
         root: {
           textTransform: 'none',
           lineHeight: 1.0,
-          minWidth: "32px",
-          minHeight: "32px",
+          //minWidth: "28px",
+          //minHeight: "28px",
           padding: "4px",
           "&:hover": {
             background: "lightgrey",
@@ -36,7 +36,9 @@ export const theme = createTheme({
           lineHeight: 1.0,
           fontSize: "12pt",
           padding: "4px",
-          minWidth: "32px",
+          minWidth: "24px",
+          minHeight: "24px",
+          //minWidth: "32px",
           borderRadius: 0,
           //minHeight: "32px",
           //padding: "4px 4px",
@@ -163,11 +165,41 @@ export const theme = createTheme({
         variant: 'dense',
       },
     },
+
+    //-------------------------------------------------------------------------
+    // Tooltip
+    //-------------------------------------------------------------------------
+
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
           fontSize: "11pt",
         }
+      }
+    },
+
+    //-------------------------------------------------------------------------
+    // Transitions
+    //-------------------------------------------------------------------------
+
+    MuiMenu: {
+      defaultProps: {
+        transitionDuration: 0,
+      }
+    },
+    MuiPopover: {
+      defaultProps: {
+        transitionDuration: 0,
+      }
+    },
+    MuiAccordion: {
+      defaultProps: {
+        slotProps: {transition: {timeout: {enter: 75, exit: 75}}},
+      }
+    },
+    MuiDialog: {
+      defaultProps: {
+        transitionDuration: 200,
       }
     },
   },

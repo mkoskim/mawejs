@@ -21,6 +21,7 @@ import {
   Label,
   ToolBox,
   Filler,
+  MuiMenuItem,
 } from "../common/factory";
 
 import { elemName, getSuffix, text2words } from "../../document/util";
@@ -149,14 +150,14 @@ class ChooseFormat extends React.PureComponent {
 
     return <TextField select label="Format" value={format} onChange={e => updateDocFormat(updateDoc, e.target.value)}>
       <ListSubheader>RTF</ListSubheader>
-      <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
-      {/*<MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>*/}
+      <MuiMenuItem value="rtf1">RTF, A4, 1-side</MuiMenuItem>
+      {/*<MuiMenuItem value="rtf2">RTF, A4, 2-side</MuiMenuItem>*/}
       <ListSubheader>LaTeX</ListSubheader>
-      <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
-      <MenuItem value="tex2">LaTeX, A5 booklet</MenuItem>
+      <MuiMenuItem value="tex1">LaTeX, A5, 1-side</MuiMenuItem>
+      <MuiMenuItem value="tex2">LaTeX, A5 booklet</MuiMenuItem>
       <ListSubheader>Other</ListSubheader>
-      <MenuItem value="md">MD (Mark Down)</MenuItem>
-      {/* <MenuItem value="txt">Text (wrapped)</MenuItem> */}
+      <MuiMenuItem value="md">MD (Mark Down)</MuiMenuItem>
+      {/* <MuiMenuItem value="txt">Text (wrapped)</MuiMenuItem> */}
       </TextField>
   }
 }
@@ -182,39 +183,39 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
     <Separator/>
 
     <TextField select label="Content" value={exports.content} onChange={e => updateDocStoryContent(updateDoc, e.target.value)}>
-      <MenuItem value="draft">Draft</MenuItem>
-      <MenuItem value="synopsis">Synopsis</MenuItem>
+      <MuiMenuItem value="draft">Draft</MuiMenuItem>
+      <MuiMenuItem value="synopsis">Synopsis</MuiMenuItem>
       </TextField>
 
     <TextField select label="Story Class" value={exports.type} onChange={e => updateDocStoryType(updateDoc, e.target.value)}>
-      <MenuItem value="short">Short Story</MenuItem>
-      <MenuItem value="long">Long Story</MenuItem>
+      <MuiMenuItem value="short">Short Story</MuiMenuItem>
+      <MuiMenuItem value="long">Long Story</MuiMenuItem>
       </TextField>
 
     <Separator/>
 
     <TextField select label="Acts" value={exports.acts} onChange={e => updateDocActElem(updateDoc, e.target.value)}>
-      <MenuItem value="none">None</MenuItem>
-      <MenuItem value="separated">Separated</MenuItem>
-      <MenuItem value="numbered">Numbered</MenuItem>
-      <MenuItem value="named">Named</MenuItem>
-      <MenuItem value="numbered&named">Numbered & Named</MenuItem>
+      <MuiMenuItem value="none">None</MuiMenuItem>
+      <MuiMenuItem value="separated">Separated</MuiMenuItem>
+      <MuiMenuItem value="numbered">Numbered</MuiMenuItem>
+      <MuiMenuItem value="named">Named</MuiMenuItem>
+      <MuiMenuItem value="numbered&named">Numbered & Named</MuiMenuItem>
       </TextField>
 
     <TextField select label="Chapters" value={exports.chapters} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
-      <MenuItem value="none">None</MenuItem>
-      <MenuItem value="separated">Separated</MenuItem>
-      <MenuItem value="numbered">Numbered</MenuItem>
-      <MenuItem value="named">Named</MenuItem>
-      <MenuItem value="numbered&named">Numbered & Named</MenuItem>
+      <MuiMenuItem value="none">None</MuiMenuItem>
+      <MuiMenuItem value="separated">Separated</MuiMenuItem>
+      <MuiMenuItem value="numbered">Numbered</MuiMenuItem>
+      <MuiMenuItem value="named">Named</MuiMenuItem>
+      <MuiMenuItem value="numbered&named">Numbered & Named</MuiMenuItem>
       </TextField>
 
     <TextField select label="Scenes" value={exports.scenes} onChange={e => updateDocSceneElem(updateDoc, e.target.value)}>
-      <MenuItem value="none">None</MenuItem>
-      <MenuItem value="separated">Separated</MenuItem>
-      <MenuItem value="numbered">Numbered</MenuItem>
-      <MenuItem value="named">Named</MenuItem>
-      <MenuItem value="numbered&named">Numbered & Named</MenuItem>
+      <MuiMenuItem value="none">None</MuiMenuItem>
+      <MuiMenuItem value="separated">Separated</MuiMenuItem>
+      <MuiMenuItem value="numbered">Numbered</MuiMenuItem>
+      <MuiMenuItem value="named">Named</MuiMenuItem>
+      <MuiMenuItem value="numbered&named">Numbered & Named</MuiMenuItem>
       </TextField>
 
     <Separator/>

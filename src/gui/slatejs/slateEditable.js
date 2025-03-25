@@ -34,7 +34,7 @@ import { addClass, IsKey } from '../common/factory';
 
 //-----------------------------------------------------------------------------
 
-export function SlateEditable({className, highlight, ...props}) {
+export function SlateEditable({className, visible, highlight, ...props}) {
   //console.log("Search:", search)
 
   const editor = useSlate()
@@ -63,7 +63,9 @@ export function SlateEditable({className, highlight, ...props}) {
   )
 
   return <Editable
-    className={className}
+    //readOnly={!active}
+    className={addClass(className, !visible ? "Hidden" : undefined)}
+    //className={className}
     spellCheck={false} // Keep false until you find out how to change language
     renderElement={renderElement}
     renderLeaf={renderLeaf}

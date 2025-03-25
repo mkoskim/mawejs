@@ -22,6 +22,7 @@ import {
   Filler,
   addHotkeys,
   IsKey,
+  Dialog,
 } from "../common/factory";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
@@ -34,7 +35,6 @@ import { ImportText } from "./importText";
 //import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Dialog } from "@mui/material";
 
 //const anytext = require("any-text")
 const mammoth = require("mammoth")
@@ -121,11 +121,17 @@ export function ImportDialog({ updateDoc, buffer, setBuffer }) {
       })
   }, [buffer, setContent, setFormat, setBuffer])
 
-  return <Dialog open={true} fullWidth={true} maxWidth="xl" disableEscapeKeyDown={true}>
+  return <Dialog
+      open={true}
+      //fullScreen={true}
+      fullWidth={true}
+      maxWidth="xl"
+      disableEscapeKeyDown={true}
+    >
     <VBox style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
 
     <ToolBox>
-      <Label>Import: {buffer.file?.name ?? "Clipboard"}</Label>
+      <Label>Import from: {buffer.file?.name ?? "Clipboard"}</Label>
       <Separator />
       <Filler />
 
