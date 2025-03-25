@@ -432,7 +432,9 @@ function LeftPanel({settings}) {
 
   return <VBox style={style}>
     <LeftPanelMenu settings={settings}/>
-    <SectionIndex sectID="body" settings={settings}/>
+    {//*
+      <SectionIndex sectID="body" settings={settings}/>
+    /**/}
   </VBox>
 }
 
