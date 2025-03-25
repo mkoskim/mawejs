@@ -2,7 +2,7 @@
   "name": "mawejs",
   "description": "Editor for writers.",
   "author": "Markus Koskimies <mkoskim@gmail.com>",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "main": "./public/electron.js",
   "homepage": "./",
   "scripts": {
