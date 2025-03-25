@@ -112,9 +112,10 @@ export function loadEditorSettings(settings) {
       indexed: ["act", "chapter", "scene", "bookmark"],
       words: undefined,
     },
-    trash: {
+    trashcan: {
       indexed: ["act", "chapter", "scene"],
       words: undefined,
+      style: {background: "#FED"},
     },
     left: {
       style: {maxWidth: "400px", width: "400px", borderRight: "1px solid lightgray"},
@@ -229,39 +230,22 @@ export function SingleEditView({doc, updateDoc}) {
   // sections
   //---------------------------------------------------------------------------
 
-  const bodyeditor = useMemo(() => getUIEditor(), [])
-  const noteeditor = useMemo(() => getUIEditor(), [])
-  const trasheditor = useMemo(() => getUIEditor(), [])
+  const editors = useMemo(() => ({
+    body: getUIEditor(),
+    notes: getUIEditor(),
+    trashcan: getUIEditor(),
+  }), [])
 
-  const updateBody = useCallback(buffer => {
-    trackMarks(bodyeditor, "body")
-    if(isAstChange(bodyeditor)) {
+  const updateSection = useCallback((key, buffer) => {
+    const editor = editors[key]
+    trackMarks(editor, key)
+    if(isAstChange(editor)) {
       updateDoc(doc => {
-        doc.body.acts = buffer;
-        doc.body.words = wcElem({type: "sect", children: buffer})
+        doc[key].acts = buffer
+        doc[key].words = wcElem({type: "sect", children: buffer})
       })
     }
-  }, [bodyeditor])
-
-  const updateNotes = useCallback(buffer => {
-    trackMarks(noteeditor, "notes")
-    if(isAstChange(noteeditor)) {
-      updateDoc(doc => {
-        doc.notes.acts = buffer
-        doc.notes.words = wcElem({type: "sect", children: buffer})
-      })
-    }
-  }, [noteeditor])
-
-  const updateTrash = useCallback(buffer => {
-    trackMarks(trasheditor, "trash")
-    if(isAstChange(trasheditor)) {
-      updateDoc(doc => {
-        doc.trashcan.acts = buffer
-        doc.trashcan.words = wcElem({type: "sect", children: buffer})
-      })
-    }
-  }, [trasheditor])
+  }, [editors])
 
   //---------------------------------------------------------------------------
   // Section selection + focusing
@@ -270,12 +254,9 @@ export function SingleEditView({doc, updateDoc}) {
   const {refocus, active, focusTo} = doc.ui.editor
 
   const getEditorBySectID = useCallback(sectID => {
-    switch(sectID) {
-      case "body": return bodyeditor;
-      case "notes": return noteeditor;
-      case "trash": return trasheditor;
-    }
-  }, [bodyeditor, noteeditor, trasheditor])
+    if(sectID in editors) return editors[sectID]
+    return null
+  }, [editors])
 
   const getActiveEdit = useCallback(() => {
     return getEditorBySectID(active)
@@ -311,10 +292,6 @@ export function SingleEditView({doc, updateDoc}) {
   }, [getActiveEdit])
 
   //---------------------------------------------------------------------------
-  // Render elements: what we want is to get menu items from subcomponents to
-  // the toolbar.
-
-  //---------------------------------------------------------------------------
 
   const settings = {
     doc,
@@ -327,21 +304,8 @@ export function SingleEditView({doc, updateDoc}) {
     focusTo,
     setFocusTo,
     track,
-    body: {
-      editor: bodyeditor,
-      buffer: doc.body.acts,
-      onChange: updateBody,
-    },
-    notes: {
-      editor: noteeditor,
-      buffer: doc.notes.acts,
-      onChange: updateNotes,
-    },
-    trash: {
-      editor: trasheditor,
-      buffer: doc.trashcan.acts,
-      onChange: updateTrash,
-    },
+    updateSection,
+    editors,
   }
 
   //---------------------------------------------------------------------------
@@ -463,23 +427,12 @@ export function SingleEditView({doc, updateDoc}) {
 //---------------------------------------------------------------------------
 
 function LeftPanel({settings}) {
-  const {doc, setActive, track} = settings
+  const {doc} = settings
   const {style} = doc.ui.editor.left
 
-  const {width, minWidth, maxWidth, ...rest} = style
-  const widths={width, minWidth, maxWidth}
-
-  return <VBox style={widths}>
+  return <VBox style={style}>
     <LeftPanelMenu settings={settings}/>
-    <DocIndex
-      style={rest}
-      sectID="body"
-      section={doc.body}
-      include={doc.ui.editor.body.indexed}
-      wcFormat={doc.ui.editor.body.words}
-      setActive={setActive}
-      current={track?.id}
-    />
+    <SectionIndex sectID="body" settings={settings}/>
   </VBox>
 }
 
@@ -580,15 +533,14 @@ class ChooseRightPanel extends React.PureComponent {
 function RightPanelContent({settings, selected}) {
   const {
     doc,
-    setActive,
     setSearchText, searchBoxRef,
-    body, track,
+    body,
   } = settings
 
   switch(selected) {
     case "noteindex":
       return <>
-        <ClipboardIndex settings={settings}/>
+        <SectionIndex sectID="notes" settings={settings}/>
         {/*
         <TrashcanIndex  settings={settings} style={{
           height: "25%",
@@ -609,50 +561,33 @@ function RightPanelContent({settings, selected}) {
         section={doc.body}
       />
     case "trashcan":
-      return <TrashcanIndex settings={settings}/>
+      return <SectionIndex sectID="trashcan" settings={settings}/>
     default: break;
   }
 }
 
-function ClipboardIndex({settings}) {
+//-----------------------------------------------------------------------------
+// Index rendering
+//-----------------------------------------------------------------------------
+
+function SectionIndex({sectID, settings}) {
   const {
     doc,
     setActive,
     track,
   } = settings
 
-  const {indexed, words} = doc.ui.editor.notes
+  const {style, indexed, words} = doc.ui.editor[sectID]
 
   return <DocIndex
-    sectID="notes"
-    section={doc.notes}
+    style={style}
+    sectID={sectID}
+    section={doc[sectID]}
     include={indexed}
     wcFormat={words}
     setActive={setActive}
     current={track?.id}
   />
-}
-
-function TrashcanIndex({style, settings}) {
-  const {
-    doc,
-    setActive,
-    track,
-  } = settings
-
-  const {indexed, words} = doc.ui.editor.trash
-
-  return <>
-    <DocIndex
-      style={{background: "#FED", ...style}}
-      sectID="trash"
-      section={doc.trashcan}
-      include={indexed}
-      wcFormat={words}
-      setActive={setActive}
-      current={track?.id}
-    />
-  </>
 }
 
 //-----------------------------------------------------------------------------
@@ -740,17 +675,18 @@ function EditorBox({style, settings}) {
   const {doc, track} = settings
   const {active} = doc.ui.editor
 
-  const editor = {
-    "body": settings.body.editor,
-    "notes": settings.notes.editor,
-    "trash": settings.trash.editor,
-  }[active]
+  const {editors, updateSection} = settings
+  const editor = editors[active]
 
   const {searchBoxRef, searchText, setSearchText} = settings
   const {highlightText} = settings
 
   const type = track?.node?.type
   const {bold, italic} = track?.marks ?? {}
+
+  const updateBody = useCallback(buffer => updateSection("body", buffer), [])
+  const updateNotes = useCallback(buffer => updateSection("notes", buffer), [])
+  const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [])
 
   return <VFiller>
     {/* Editor toolbar */}
@@ -769,16 +705,16 @@ function EditorBox({style, settings}) {
 
     <div className="Board Editor" style={{...style}}>
 
-      <Slate editor={settings.body.editor} initialValue={settings.body.buffer} onChange={settings.body.onChange}>
+      <Slate editor={editors.body} initialValue={doc.body.acts} onChange={updateBody}>
         <SlateEditable visible={active === "body"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
-      <Slate editor={settings.notes.editor} initialValue={settings.notes.buffer} onChange={settings.notes.onChange}>
+      <Slate editor={editors.notes} initialValue={doc.notes.acts} onChange={updateNotes}>
         <SlateEditable visible={active === "notes"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
-      <Slate editor={settings.trash.editor} initialValue={settings.trash.buffer} onChange={settings.trash.onChange}>
-        <SlateEditable visible={active === "trash"} className="Sheet Regular" highlight={highlightText}/>
+      <Slate editor={editors.trashcan} initialValue={doc.trashcan.acts} onChange={updateTrash}>
+        <SlateEditable visible={active === "trashcan"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
     </div>
   </VFiller>
