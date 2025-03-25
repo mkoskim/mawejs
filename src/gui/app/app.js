@@ -23,14 +23,17 @@ import {
   Separator,
   Menu, MenuItem,
   Inform,
-  ListItemText,
-  Typography,
-  DeferredRender,
 } from "../common/factory";
 
-import { OpenFolderButton, HeadInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords } from "../common/components";
+import {
+  OpenFolderButton,
+  HeadInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords
+} from "../common/components";
 
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import PopupState, {
+  bindTrigger,
+  bindMenu
+} from 'material-ui-popup-state';
 
 import {
   CmdContext,
@@ -56,8 +59,6 @@ import { mawe } from "../../document"
 import { appQuit, appInfo } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
-import {Fade, useTheme} from "@mui/material";
-import { bindHover, usePopupState } from "material-ui-popup-state/hooks";
 
 const fs = require("../../system/localfs")
 
@@ -77,7 +78,8 @@ export default function App(props) {
 
   useEffect(() => {
     appInfo().then(info => {
-      //console.log("Application:", info)
+      console.log("Application:", info)
+      console.log("React:", React.version)
       setAppInfo(info)
     })
   }, [])
