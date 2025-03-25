@@ -342,7 +342,7 @@ export function SingleEditView({doc, updateDoc}) {
     }],
     [IsKey.CtrlG,  ev => searchForward(getActiveEdit(), searchText, true)],
     [IsKey.CtrlShiftG, ev => searchBackward(getActiveEdit(), searchText, true)]
-  ]));
+  ]), []);
 
   //---------------------------------------------------------------------------
   // Debug/development view

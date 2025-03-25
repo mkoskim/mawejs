@@ -105,7 +105,7 @@ export function ImportDialog({ updateDoc, buffer, setBuffer }) {
 
   useEffect(() => addHotkeys([
     [IsKey.Escape, Cancel],
-  ]))
+  ]), [])
 
   useEffect(() => {
     const { loader, format } = getContent(file, ext)

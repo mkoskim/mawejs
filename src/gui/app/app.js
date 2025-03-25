@@ -182,7 +182,7 @@ export default function App(props) {
 
   useEffect(() => addHotkeys([
     //[IsKey.CtrlQ, (e) => appQuit()],
-  ]));
+  ]), []);
 
   //---------------------------------------------------------------------------
   // Render
@@ -319,7 +319,7 @@ function WorkspaceTab({ doc, updateDoc }) {
   useEffect(() => addHotkeys([
     [IsKey.CtrlN, (e) => cmdNewFile({ setCommand })],
     [IsKey.CtrlO, (e) => cmdOpenFile({ setCommand, file })],
-  ]));
+  ]), []);
 
   //console.log("Recent:", recent)
   if (!doc) return <WithoutDoc setCommand={setCommand} recent={recent} />
@@ -352,7 +352,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 
   useEffect(() => addHotkeys([
     [IsKey.CtrlS, (e) => cmdSaveFile({ setCommand, file })],
-  ]))
+  ]), [])
 
   return <ToolBox>
     <FileMenu hasdoc={true} setCommand={setCommand} file={file} text={filename} recent={recent} />
