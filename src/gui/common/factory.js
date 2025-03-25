@@ -116,29 +116,29 @@ export function addClass(...classNames) {
 
 export class Box extends React.PureComponent {
   render() {
-    const {style, ...props} = this.props
-    return <div style={style} {...props}/>
+    const {ref, ...props} = this.props
+    return <div ref={ref} {...props}/>
   }
 }
 
 export class FlexBox extends React.PureComponent {
   render() {
-    const {style, ...props} = this.props
-    return <div style={{display: "flex", ...style}} {...props} />;
+    const {ref, style, ...props} = this.props
+    return <div ref={ref} style={{display: "flex", ...style}} {...props} />;
   }
 }
 
 export class VBox extends React.PureComponent {
   render() {
-    const {className, ...props} = this.props
-    return <div className={addClass("VBox", className)} {...props} />
+    const {ref, className, ...props} = this.props
+    return <div ref={ref} className={addClass("VBox", className)} {...props} />
   }
 }
 
 export class HBox extends React.PureComponent {
   render() {
-    const {className, ...props} = this.props
-    return <div className={addClass("HBox", className)} {...props}/>
+    const {ref, className, ...props} = this.props
+    return <div ref={ref} className={addClass("HBox", className)} {...props}/>
   }
 }
 
@@ -146,30 +146,30 @@ export class HBox extends React.PureComponent {
 
 export class Filler extends React.PureComponent {
   render() {
-    const {weight = 1, style, ...props} = this.props
-    return <div style={{display: "flex", flexGrow: weight, ...style}} {...props}/>
+    const {ref, weight = 1, style, ...props} = this.props
+    return <div ref={ref} style={{display: "flex", flexGrow: weight, ...style}} {...props}/>
   }
 }
 
 export class VFiller extends React.PureComponent {
   render() {
-    const {className, ...props} = this.props
-    return <div className={addClass(className, "VBox Filler")} {...props} />
+    const {ref, className, ...props} = this.props
+    return <div ref={ref} className={addClass("VBox Filler", className)} {...props} />
   }
 }
 
 export class HFiller extends React.PureComponent {
   render() {
-    const {className, ...props} = this.props
-    return <div className={addClass(className, "HBox Filler")} {...props} />
+    const {ref, className, ...props} = this.props
+    return <div ref={ref} className={addClass("HBox Filler", className)} {...props} />
   }
 }
 
 //*
 export class Separator extends React.PureComponent {
   render() {
-    const {className, fullWidth, ...props} = this.props
-    return <div className={addClass(className, "Separator")} {...props}/>;
+    const {ref, className, fullWidth, ...props} = this.props
+    return <div ref={ref} className={addClass("Separator", className)} {...props}/>;
   }
 }
 /*/
@@ -178,8 +178,11 @@ export {Divider as Separator}
 
 //-----------------------------------------------------------------------------
 
-export function ToolBox({style, ...props}) {
-  return <HBox className="ToolBox" style={style} {...props}/>
+export class ToolBox extends React.PureComponent {
+  render() {
+    const {className, ...props} = this.props
+    return <HBox className={addClass("ToolBox", className)} {...props}/>
+  }
 }
 
 //*****************************************************************************
@@ -200,17 +203,17 @@ export class MakeToggleGroup extends React.PureComponent {
       value={selected}
       onChange={(e, value) => (exclusive ? value : true) && setSelected(value)}
     >
-      {choices.map(choice => makeButton(choice))}
+      {choices.map(choice => this.makeButton(buttons, choice))}
     </ToggleButtonGroup>
+  }
 
-    function makeButton(choice) {
-      if(!(choice in buttons)) return <ToggleButton key={choice} value={choice}>
-        {choice}
-      </ToggleButton>
+  makeButton(buttons, choice) {
+    if(!(choice in buttons)) return <ToggleButton key={choice} value={choice}>
+      {choice}
+    </ToggleButton>
 
-      const {tooltip, icon} = buttons[choice]
-      return <ToggleButton key={choice} value={choice} tooltip={tooltip}>{icon}</ToggleButton>
-    }
+    const {tooltip, icon} = buttons[choice]
+    return <ToggleButton key={choice} value={choice} tooltip={tooltip}>{icon}</ToggleButton>
   }
 }
 
@@ -229,33 +232,33 @@ export {Button, IconButton, ToggleButton}
 export class Button extends React.PureComponent {
 
   render() {
-    const {tooltip, ...props} = this.props
+    const {ref, tooltip, ...props} = this.props
     if(tooltip) {
-      return <Tooltip title={tooltip}><MuiButton {...props}/></Tooltip>
+      return <Tooltip title={tooltip}><MuiButton ref={ref} {...props}/></Tooltip>
     }
-    return <MuiButton {...props}/>
+    return <MuiButton ref={ref} {...props}/>
   }
 }
 
 export class IconButton extends React.PureComponent {
 
   render() {
-    const {tooltip, ...props} = this.props
+    const {ref, tooltip, ...props} = this.props
     if(tooltip) {
-      return <Tooltip title={tooltip}><MuiIconButton {...props}/></Tooltip>
+      return <Tooltip title={tooltip}><MuiIconButton ref={ref} {...props}/></Tooltip>
     }
-    return <MuiIconButton {...props}/>
+    return <MuiIconButton ref={ref} {...props}/>
   }
 }
 
 export class ToggleButton extends React.PureComponent {
 
   render() {
-    const {tooltip, ...props} = this.props
+    const {ref, tooltip, ...props} = this.props
     if(tooltip) {
-      return <Tooltip title={tooltip}><MuiToggleButton {...props}/></Tooltip>
+      return <Tooltip title={tooltip}><MuiToggleButton ref={ref} {...props}/></Tooltip>
     }
-    return <MuiToggleButton {...props}/>
+    return <MuiToggleButton ref={ref} {...props}/>
   }
 }
 /**/
@@ -282,24 +285,28 @@ export function Radio({style, choice, selected, setSelected}) {
 //
 //*****************************************************************************
 
-export function Input({...props}) {
-  return <OutlinedInput
-    {...props}
-  />
+export class Input extends React.PureComponent {
+  render() {
+    return <OutlinedInput {...this.props}/>
+  }
 }
 
-export function SearchBox({...props})
-{
-  return <OutlinedInput
-    sx= {{
-      height: "32px",
-      padding: "4px",
-    }}
-    //spellCheck={false}
-    startAdornment={<Icon.Action.Search />}
-    //endAdornment={<Icon.Close/>}
-    {...props}
-  />
+export class SearchBox extends React.PureComponent {
+
+  sx = {
+    height: "32px",
+    padding: "4px",
+  }
+
+  render() {
+    return <OutlinedInput
+      sx={this.constructor.sx}
+      //spellCheck={false}
+      startAdornment={<Icon.Action.Search />}
+      //endAdornment={<Icon.Close/>}
+      {...this.props}
+    />
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -315,14 +322,9 @@ export {Breadcrumbs}
 export class Label extends React.PureComponent
 {
   render() {
-    const {text, style, children, ...props} = this.props
+    const {ref, text, children, ...props} = this.props
 
-    return <span
-        style={{...style}}
-        {...props}
-      >
-        {text}{children}
-      </span>
+    return <span ref={ref} {...props}>{text}{children}</span>
   }
 }
 
