@@ -125,7 +125,7 @@ export function loadEditorSettings(settings) {
       selected: "noteindex"
     },
     toolbox: {
-      left: {background: "white", borderRight: "1px solid lightgray"},
+      left: {background: "white"},
       mid: {background: "white"},
       right: {background: "white"},
     }
