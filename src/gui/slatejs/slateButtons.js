@@ -136,7 +136,7 @@ class ParagraphStyleSelect extends React.PureComponent {
           endIcon={<Icon.Arrow.DropDown/>}
           {...bindTrigger(popupState)}
           >
-            <div style={{width: 80, textAlign: "left"}}>{name}</div>
+            <div style={{width: 70, textAlign: "left"}}>{name}</div>
           </Button>
         <Menu {...bindMenu(popupState)}>
           {order.map((type, index) => this.menuItem(popupState, editor, index, choices, type))}

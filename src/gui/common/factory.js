@@ -296,9 +296,8 @@ export function SearchBox({...props})
       padding: "4px",
     }}
     //spellCheck={false}
-    startAdornment={
-      <InputAdornment position="start"><Icon.Action.Search /></InputAdornment>
-    }
+    startAdornment={<Icon.Action.Search />}
+    //endAdornment={<Icon.Close/>}
     {...props}
   />
 }

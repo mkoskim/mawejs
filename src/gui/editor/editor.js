@@ -62,7 +62,7 @@ import {
   SearchBox,
   IsKey, addHotkeys,
   Separator, addClass,
-  Label,
+  Button,
 } from "../common/factory";
 
 import {
@@ -599,6 +599,7 @@ class Searching extends React.PureComponent {
   handleEscBehavior = () => {
     // Call the method that you would normally call when ESC is pressed
     this.props.setSearchText(undefined);
+    ReactEditor.focus(this.props.editor)
   }
 
   /**
@@ -638,34 +639,30 @@ class Searching extends React.PureComponent {
       );
     }
 
-    // Render the search box with additional controls for clearing the search text,
-    // and navigating through search results.
-    return (
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <SearchBox
-          inputRef={searchBoxRef}
-          size="small"
-          value={searchText}
-          autoFocus
-          onChange={ev => setSearchText(ev.target.value)}
-          onBlur={ev => { if (!searchText) setSearchText(undefined) }}
-          onKeyDown={ev => {
-            if (IsKey.Enter(ev)) {
-              ev.preventDefault();
-              ev.stopPropagation();
-              if (searchText === "") setSearchText(undefined);
-              searchFirst(editor, searchText, true);
-            }
-          }}
-        />
-        <IconButton tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up/></IconButton>
-        <IconButton tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down/></IconButton>
-        {/*
-        <button style={iconButtonStyle} onClick={this.searchPrevious} title="Previous search result">↑</button> {}
-        <button style={iconButtonStyle} onClick={this.searchNext} title="Next search result">↓</button> {}
-        */}
-       </div>
-    );
+    const sx={borderRadius: "12px"}
+
+    return <SearchBox
+      inputRef={searchBoxRef}
+      style={{width: 250}}
+      size="small"
+      value={searchText}
+      autoFocus
+      onChange={ev => setSearchText(ev.target.value)}
+      onBlur={ev => { if (!searchText) setSearchText(undefined) }}
+      onKeyDown={ev => {
+        if (IsKey.Enter(ev)) {
+          ev.preventDefault();
+          ev.stopPropagation();
+          if (searchText === "") setSearchText(undefined);
+          searchFirst(editor, searchText, true);
+        }
+      }}
+      endAdornment={<HBox style={{borderLeft: "1px solid lightgray", paddingLeft: "4px"}}>
+        <Button sx={sx} tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up fontSize="12pt"/></Button>
+        <Button sx={sx} tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down fontSize="12pt"/></Button>
+        <Button sx={sx} tooltip="Clear" onClick={this.clearSearch}><Icon.Close fontSize="12pt"/></Button>
+      </HBox>}
+    />
   }
 }
 
