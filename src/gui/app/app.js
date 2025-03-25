@@ -23,14 +23,17 @@ import {
   Separator,
   Menu, MenuItem,
   Inform,
-  ListItemText,
-  Typography,
-  DeferredRender,
 } from "../common/factory";
 
-import { OpenFolderButton, HeadInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords } from "../common/components";
+import {
+  OpenFolderButton,
+  HeadInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords
+} from "../common/components";
 
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import PopupState, {
+  bindTrigger,
+  bindMenu
+} from 'material-ui-popup-state';
 
 import {
   CmdContext,
@@ -56,8 +59,6 @@ import { mawe } from "../../document"
 import { appQuit, appInfo } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
-import {Fade, useTheme} from "@mui/material";
-import { bindHover, usePopupState } from "material-ui-popup-state/hooks";
 
 const fs = require("../../system/localfs")
 
@@ -77,7 +78,8 @@ export default function App(props) {
 
   useEffect(() => {
     appInfo().then(info => {
-      //console.log("Application:", info)
+      console.log("Application:", info)
+      console.log("React:", React.version)
       setAppInfo(info)
     })
   }, [])
@@ -180,18 +182,18 @@ export default function App(props) {
 
   useEffect(() => addHotkeys([
     //[IsKey.CtrlQ, (e) => appQuit()],
-  ]));
+  ]), []);
 
   //---------------------------------------------------------------------------
   // Render
   //---------------------------------------------------------------------------
 
   return (
-    <SettingsContext.Provider value={settings}>
-      <CmdContext.Provider value={setCommand}>
+    <SettingsContext value={settings}>
+      <CmdContext value={setCommand}>
         <View key={doc?.key} doc={doc} updateDoc={updateDoc} buffer={importing} setBuffer={setImporting} />
-      </CmdContext.Provider>
-    </SettingsContext.Provider>
+      </CmdContext>
+    </SettingsContext>
   )
 
   //---------------------------------------------------------------------------
@@ -202,6 +204,7 @@ export default function App(props) {
         updateDoc(content)
         setSaved(content)
         recentAdd(content.file, recent, setRecent)
+        console.log("Loaded:", content.file)
         Inform.success(`Loaded: ${content.file.name}`);
       })
       .catch(err => {
@@ -317,7 +320,7 @@ function WorkspaceTab({ doc, updateDoc }) {
   useEffect(() => addHotkeys([
     [IsKey.CtrlN, (e) => cmdNewFile({ setCommand })],
     [IsKey.CtrlO, (e) => cmdOpenFile({ setCommand, file })],
-  ]));
+  ]), []);
 
   //console.log("Recent:", recent)
   if (!doc) return <WithoutDoc setCommand={setCommand} recent={recent} />
@@ -350,7 +353,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 
   useEffect(() => addHotkeys([
     [IsKey.CtrlS, (e) => cmdSaveFile({ setCommand, file })],
-  ]))
+  ]), [])
 
   return <ToolBox>
     <FileMenu hasdoc={true} setCommand={setCommand} file={file} text={filename} recent={recent} />

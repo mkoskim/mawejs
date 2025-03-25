@@ -15,9 +15,7 @@ import App from "./gui/app/app.js"
 // Keep it here, so it will be rendered only once.
 //-----------------------------------------------------------------------------
 
-const container = document.getElementById('root');
-const root = createRoot(container); // createRoot(container!) if you use TypeScript
-root.render(
+createRoot(document.getElementById('root')).render(
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <App />

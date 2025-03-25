@@ -24,7 +24,7 @@ const fs = require("../../system/localfs")
 //-----------------------------------------------------------------------------
 
 const filters = [
-  { name: 'Mawe Files', extensions: ['moe', 'mawe', 'mawe.gz'] },
+  { name: 'Mawe Files', extensions: ['moe', 'moex', 'mawe', 'mawe.gz'] },
   { name: 'All Files', extensions: ['*'] }
 ]
 
@@ -35,8 +35,8 @@ const importFilters = [
 
 //-----------------------------------------------------------------------------
 
-export async function cmdOpenFolder(file) {
-  const dirname = file ? await fs.dirname(file) : "."
+export async function cmdOpenFolder(filename) {
+  const dirname = await fs.dirname(filename ?? ".")
   console.log("Open folder:", dirname)
   fs.openexternal(dirname)
 }
@@ -61,10 +61,11 @@ export function cmdLoadFile({setCommand, filename}) {
 }
 
 export async function cmdOpenFile({ setCommand, file }) {
-  //const dirname = await fs.dirname(doc.file.id)
+  const defaultPath = await fs.dirname(file?.id ?? ".")
+  console.log("Open path:", defaultPath)
   const { canceled, filePaths } = await fileOpenDialog({
     filters,
-    defaultPath: file?.id ?? ".",
+    defaultPath,
     properties: ["OpenFile"],
   })
   if (!canceled) {
@@ -86,10 +87,12 @@ export function cmdImportFile({setCommand, file, ext}) {
 }
 
 export async function cmdOpenImportFile({setCommand, file}) {
+  const defaultPath = await fs.dirname(file?.id ?? ".")
+  console.log("Import path:", defaultPath)
   const { canceled, filePaths } = await fileOpenDialog({
     title: "Import File",
     filters: importFilters,
-    defaultPath: file?.id ?? ".",
+    defaultPath,
     properties: ["OpenFile"],
   })
   if (!canceled) {

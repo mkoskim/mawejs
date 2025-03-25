@@ -70,6 +70,7 @@ class CharStyleButtons extends React.PureComponent {
 
   render() {
     const {editor, bold, italic} = this.props
+    const {buttons, choices} = this.constructor
 
     const active = [
       bold ? "bold" : "",
@@ -78,8 +79,8 @@ class CharStyleButtons extends React.PureComponent {
     //const active = Object.entries(marks).filter(([k, v]) => v).map(([k, v]) => k)
 
     return <MakeToggleGroup
-      buttons={this.constructor.buttons}
-      choices={this.constructor.choices}
+      buttons={buttons}
+      choices={choices}
       selected={active}
       setSelected={marks => applyMarks(editor, marks)}
       exclusive={false}
@@ -100,10 +101,31 @@ function applyStyle(editor, type) {
 
 class ParagraphStyleSelect extends React.PureComponent {
 
-  static order = ["p", "|", "hact", "hchapter", "|", "hscene", "hsynopsis", "hnotes", "|", "quote", "bookmark", "comment", "missing", "fill", "tags"]
+  static order = [
+    "p",
+    "---",
+    "hact",
+    "hchapter",
+    "---",
+    "hscene",
+    "hsynopsis",
+    "hnotes",
+    "---",
+    "quote",
+    "bookmark",
+    "comment",
+    "missing",
+    "fill",
+    "tags"
+  ]
+
+  static separator_types = {
+    "|": true,
+    "---": true,
+  }
 
   menuItem(popupState, editor, index, choices, type) {
-    if(type === "|") return <Separator key={index}/>
+    if(type in this.constructor.separator_types) return <Separator key={index}/>
     if(type in choices) {
       const style = choices[type];
       return (
@@ -120,12 +142,8 @@ class ParagraphStyleSelect extends React.PureComponent {
 
   render() {
     const {type, editor} = this.props;
-    //const type = node?.type ?? undefined
-
-    //console.log("Block type:", type)
-
     const choices = paragraphTypes
-    const order = this.constructor.order
+    const {order} = this.constructor
     const name  = type in choices ? choices[type].name : "Text"
 
     return <PopupState variant="popover" popupId="file-menu">
