@@ -189,11 +189,11 @@ export default function App(props) {
   //---------------------------------------------------------------------------
 
   return (
-    <SettingsContext.Provider value={settings}>
-      <CmdContext.Provider value={setCommand}>
+    <SettingsContext value={settings}>
+      <CmdContext value={setCommand}>
         <View key={doc?.key} doc={doc} updateDoc={updateDoc} buffer={importing} setBuffer={setImporting} />
-      </CmdContext.Provider>
-    </SettingsContext.Provider>
+      </CmdContext>
+    </SettingsContext>
   )
 
   //---------------------------------------------------------------------------
