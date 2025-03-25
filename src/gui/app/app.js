@@ -204,6 +204,7 @@ export default function App(props) {
         updateDoc(content)
         setSaved(content)
         recentAdd(content.file, recent, setRecent)
+        console.log("Loaded:", content.file)
         Inform.success(`Loaded: ${content.file.name}`);
       })
       .catch(err => {
