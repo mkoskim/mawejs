@@ -535,7 +535,7 @@ function RightPanelContent({settings, selected}) {
   const {
     doc,
     setSearchText, searchBoxRef,
-    body,
+    editors,
   } = settings
 
   switch(selected) {
@@ -558,7 +558,7 @@ function RightPanelContent({settings, selected}) {
     }
     case "tagtable":
       return <TagTable
-        editor={body.editor}
+        editor={editors.body}
         section={doc.body}
       />
     case "trashcan":

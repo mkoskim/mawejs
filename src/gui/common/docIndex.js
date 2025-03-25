@@ -18,7 +18,8 @@ import { Droppable, Draggable } from "@hello-pangea/dnd";
 
 import {
   VBox, HBox, Filler,
-  addClass
+  addClass,
+  DeferredRender
 } from "./factory";
 
 import {FormatWords} from "./components";
@@ -491,9 +492,11 @@ class IndexItem extends React.PureComponent {
     }
 
     return <div ref={isCurrent ? refCurrent : null} className={classes} onClick={onClick} {...rest}>
+      <DeferredRender>
       <ItemIcon type={type}/>
       <ItemLabel type={type} name={name}/>
       {wcFormat && <><Filler/><div className="WordCount">{wcFormat(id, words)}</div></>}
+      </DeferredRender>
     </div>
   }
 }

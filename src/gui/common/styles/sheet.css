@@ -11,7 +11,8 @@
 
 .Board {
   /* Catch scrollbars */
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   /*
   background: #F5F7F9;

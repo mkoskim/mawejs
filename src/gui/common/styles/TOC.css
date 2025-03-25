@@ -10,7 +10,8 @@
 
 .TOC {
   /* Catch scrollbars */
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   /*
   min-width: 350px;
