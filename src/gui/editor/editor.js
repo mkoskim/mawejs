@@ -491,7 +491,7 @@ function RightPanel({settings}) {
 
 class ChooseRightPanel extends React.PureComponent {
 
-  buttons = {
+  static buttons = {
     "noteindex": {
       tooltip: "Notes Index",
       icon: <Icon.View.Index />
@@ -510,7 +510,7 @@ class ChooseRightPanel extends React.PureComponent {
     },
   }
 
-  choices = [
+  static choices = [
     "noteindex",
     "wordtable",
     "tagtable",
@@ -519,10 +519,11 @@ class ChooseRightPanel extends React.PureComponent {
 
   render() {
     const {selected, setSelected} = this.props
+    const {buttons, choices} = this.constructor
 
     return <MakeToggleGroup
-      buttons={this.buttons}
-      choices={this.choices}
+      buttons={buttons}
+      choices={choices}
       selected={selected}
       setSelected={setSelected}
       exclusive={true}
@@ -623,8 +624,13 @@ class Searching extends React.PureComponent {
     searchBackward(this.props.editor, this.props.searchText, true);
   }
 
+
+  static btn_sx = {borderRadius: "12px"}
+  static input_style = {width: 250}
+
   render() {
     const { editor, searchText, setSearchText, searchBoxRef } = this.props;
+    const {input_style, btn_sx} = this.constructor
 
     // Render a search icon button if no search text is defined.
     if (typeof(searchText) !== "string") {
@@ -639,11 +645,9 @@ class Searching extends React.PureComponent {
       );
     }
 
-    const sx={borderRadius: "12px"}
-
     return <SearchBox
       inputRef={searchBoxRef}
-      style={{width: 250}}
+      style={input_style}
       size="small"
       value={searchText}
       autoFocus
@@ -658,9 +662,9 @@ class Searching extends React.PureComponent {
         }
       }}
       endAdornment={<HBox style={{borderLeft: "1px solid lightgray", paddingLeft: "4px"}}>
-        <Button sx={sx} tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up fontSize="12pt"/></Button>
-        <Button sx={sx} tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down fontSize="12pt"/></Button>
-        <Button sx={sx} tooltip="Clear" onClick={this.clearSearch}><Icon.Close fontSize="12pt"/></Button>
+        <Button sx={btn_sx} tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up fontSize="12pt"/></Button>
+        <Button sx={btn_sx} tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down fontSize="12pt"/></Button>
+        <Button sx={btn_sx} tooltip="Clear" onClick={this.clearSearch}><Icon.Close fontSize="12pt"/></Button>
       </HBox>}
     />
   }

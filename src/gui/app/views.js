@@ -52,18 +52,20 @@ export class ViewSelectButtons extends React.PureComponent {
 
   render() {
     const {selected, setSelected} = this.props
+    const {choices, viewbuttons} = this.constructor
+
     return <MakeToggleGroup
       exclusive={true}
-      choices={this.choices}
+      choices={choices}
       selected={selected}
       setSelected={setSelected}
-      buttons={this.viewbuttons}
+      buttons={viewbuttons}
     />
   }
 
-  choices = ["editor", "arc", "stats", "export"]
+  static choices = ["editor", "arc", "stats", "export"]
 
-  viewbuttons = {
+  static viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
     "organizer": { tooltip: "Organizer", icon: <Icon.View.Organize /> },
     "arc": { tooltip: "Story Arc", icon: <Icon.View.Arc /> },
