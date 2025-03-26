@@ -42,6 +42,7 @@ import {
   cmdLoadFile,
   cmdNewFile, cmdOpenFile,
   cmdOpenImportFile,
+  cmdRenameFile,
   cmdSaveFile, cmdSaveFileAs,
   cmdImportClipboard,
   cmdOpenResource
@@ -141,6 +142,7 @@ export default function App(props) {
       case "set": { docFromBuffer(command); break; }
       case "resource": { docFromResource(command); break; }
       case "saveas": { docSaveAs(command); break; }
+      case "rename": { docRename(command); break; }
       case "close": { docClose(command); break; }
       case "error": { Inform.error(command.message); break; }
     }
@@ -204,12 +206,12 @@ export default function App(props) {
       .then(content => {
         updateDoc(content)
         setSaved(content)
-        recentAdd(content.file, recent, setRecent)
+        setRecent(recentAdd(recent, content.file))
         console.log("Loaded:", content.file)
         Inform.success(`Loaded: ${content.file.name}`);
       })
       .catch(err => {
-        recentRemove({ id: filename }, recent, setRecent)
+        setRecent(recentRemove(recent, { id: filename }))
         Inform.error(err)
       })
   }
@@ -262,9 +264,19 @@ export default function App(props) {
       .then(file => {
         setSaved(doc)
         updateDoc(doc => { doc.file = file })
-        //recentRemove(doc.file, recent, setRecent)
-        recentAdd(file, recent, setRecent)
+        setRecent(recentAdd(recent, file))
         Inform.success(`Saved ${file.name}`)
+      })
+      .catch(err => Inform.error(err))
+  }
+
+  function docRename({ filename }) {
+    mawe.rename(doc.file, filename)
+      .then(file => {
+        //setSaved(doc)
+        setRecent(recentAdd(recentRemove(recent, doc.file), file))
+        updateDoc(doc => { doc.file = file })
+        Inform.success(`Renamed: ${file.name}`)
       })
       .catch(err => Inform.error(err))
   }
@@ -357,8 +369,8 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
   ]), [])
 
   return <ToolBox>
-    <FileMenu hasdoc={true} setCommand={setCommand} file={file} recent={recent} />
-    <FileOperations file={file}/>
+    <FileMenu setCommand={setCommand} file={file} recent={recent} hasdoc={true}/>
+    <FileOperations file={file} setCommand={setCommand}/>
     <Separator />
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected} />
     <Separator />
@@ -390,11 +402,12 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 
 class FileOperations extends React.PureComponent {
   render() {
-    const {file} = this.props
+    const {file, setCommand} = this.props
     const filename = file?.name ?? "<Unnamed>"
 
     return <>
       <Label style={{paddingLeft: "4px", paddingRight: "4px"}} text={filename}/>
+      <IconButton tooltip="Rename" onClick={e => { cmdRenameFile({ setCommand, file }) }}><Icon.Action.File.Rename/></IconButton>
       <OpenFolderButton filename={file?.id} />
       </>
   }
@@ -437,6 +450,10 @@ class FileMenu extends React.PureComponent {
           <MenuItem
             title="Save as..."
             disabled={!hasdoc} onClick={e => { cmdSaveFileAs({ setCommand, file }); popupState.close(e); }}
+            />
+          <MenuItem
+            title="Rename..."
+            disabled={!file} onClick={e => { cmdRenameFile({ setCommand, file }); popupState.close(e); }}
             />
           <MenuItem
             title="Close" endAdornment="Ctrl-W"

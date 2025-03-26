@@ -45,15 +45,13 @@ export function useSetting(key, defaultValue) {
 //
 //*****************************************************************************
 
-export function recentAdd(file, recent, setRecent) {
-  setRecent([
+export function recentAdd(recent, file) {
+  return [
     { name: file.name, id: file.id },
     ...recent.filter(entry => entry.id !== file.id)
-  ])
+  ]
 }
 
-export function recentRemove(file, recent, setRecent) {
-  if(file) setRecent([
-    ...recent.filter(entry => entry.id !== file.id)
-  ])
+export function recentRemove(recent, file) {
+  return recent.filter(entry => entry.id !== file.id)
 }

@@ -157,7 +157,6 @@ async function fsSettingsWrite(fileid, content, encoding) {
 //-----------------------------------------------------------------------------
 
 async function fsRename(fileid, name) {
-  name = path.join(path.dirname(fileid), name)
   console.log("Rename:", fileid, "=>", name)
 
   if(await fs.pathExists(name)) {
