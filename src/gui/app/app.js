@@ -401,8 +401,34 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 //-----------------------------------------------------------------------------
 
 class FileOperations extends React.PureComponent {
+  gzip_style = {
+    fontSize: "10pt",
+    border: "2px solid grey",
+    //paddingLeft: "2px",
+    //paddingRight: "2px",
+    //paddingTop: "2px",
+    paddingBottom: "2px",
+    borderRadius: "3px",
+  }
+  gunzip_style = {
+    ...this.gzip_style,
+    textDecorationLine: "line-through",
+    textDecorationThickness: "2px",
+    textDecorationColor: "rgb(240, 80, 40)",
+  }
+
+  toggleCompress(file, setCommand) {
+    const compressed = file.id.endsWith(".gz")
+    const filename = compressed ? file.id.slice(0, -3) : (file.id + ".gz")
+    setCommand({action: "rename", filename})
+  }
+
   render() {
     const {file, setCommand} = this.props
+    const compressed = file.id.endsWith(".gz")
+    const {gzip_style, gunzip_style} = this
+    const compress_style = compressed ? gunzip_style : gzip_style
+    const compress_tooltip = compressed ? "Uncompress" : "Compress"
     //const filename = file?.name ?? "<Unnamed>"
 
     return <>
@@ -410,6 +436,7 @@ class FileOperations extends React.PureComponent {
       <Label style={{paddingLeft: "4px", paddingRight: "4px"}} text={filename}/>
       <IconButton tooltip="Rename" onClick={e => { cmdRenameFile({ setCommand, file }) }}><Icon.Action.File.Rename/></IconButton>
       */}
+      <Button tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>&nbsp;gz&nbsp;</span></Button>
       <OpenFolderButton filename={file?.id} />
       </>
   }
