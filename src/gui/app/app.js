@@ -369,7 +369,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
   ]), [])
 
   return <ToolBox>
-    <FileMenu setCommand={setCommand} file={file} recent={recent} hasdoc={true}/>
+    <FileMenu file={file} setCommand={setCommand} recent={recent} hasdoc={true}/>
     <FileOperations file={file} setCommand={setCommand}/>
     <Separator />
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected} />
@@ -406,8 +406,10 @@ class FileOperations extends React.PureComponent {
     const filename = file?.name ?? "<Unnamed>"
 
     return <>
+      {/*
       <Label style={{paddingLeft: "4px", paddingRight: "4px"}} text={filename}/>
       <IconButton tooltip="Rename" onClick={e => { cmdRenameFile({ setCommand, file }) }}><Icon.Action.File.Rename/></IconButton>
+      */}
       <OpenFolderButton filename={file?.id} />
       </>
   }
@@ -418,10 +420,12 @@ class FileOperations extends React.PureComponent {
 class FileMenu extends React.PureComponent {
   render() {
     const { setCommand, file, recent, hasdoc } = this.props
+    const filename = file?.name ?? "<Unnamed>"
+    const name = hasdoc ? filename : <Icon.Menu />
 
     return <PopupState variant="popover">
       {(popupState) => <React.Fragment>
-        <Button tooltip="File menu" {...bindTrigger(popupState)}><Icon.Menu /></Button>
+        <Button tooltip="File menu" {...bindTrigger(popupState)}>{name}</Button>
         <Menu {...bindMenu(popupState)}>
           <MenuItem
             title="New" endAdornment="Ctrl-N"
