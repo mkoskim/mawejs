@@ -687,9 +687,9 @@ function EditorBox({style, settings}) {
   const type = track?.node?.type
   const {bold, italic} = track?.marks ?? {}
 
-  const updateBody = useCallback(buffer => updateSection("body", buffer), [])
-  const updateNotes = useCallback(buffer => updateSection("notes", buffer), [])
-  const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [])
+  const updateBody = useCallback(buffer => updateSection("body", buffer), [updateSection])
+  const updateNotes = useCallback(buffer => updateSection("notes", buffer), [updateSection])
+  const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [updateSection])
 
   return <VFiller>
     {/* Editor toolbar */}
