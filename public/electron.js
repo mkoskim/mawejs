@@ -54,7 +54,9 @@ async function createWindow()
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
+
     icon: path.join(__dirname, "./favicon.png"),
+
     webPreferences: {
         nodeIntegration: false,
         sandbox: false,
@@ -62,6 +64,18 @@ async function createWindow()
         enableRemoteModule: false,
         preload: path.join(__dirname, "./backend/services.js")
     },
+
+    /*
+    // remove the default titlebar
+    titleBarStyle: 'hidden',
+    // expose window controlls in Windows/Linux
+    ...(process.platform !== 'darwin' ? { titleBarOverlay: true } : {}),
+    titleBarOverlay: {
+      //color: "rgba(200, 0, 0, 0)",
+      //symbolColor: "#808080",
+      height: 32
+    },
+    /**/
   });
 
   mainWindowState.manage(mainWindow);

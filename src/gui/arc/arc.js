@@ -19,7 +19,6 @@ import {
 import {
   HBox, VBox, HFiller, VFiller,
   ToolBox,
-  Button, Label,
   MakeToggleGroup,
   Separator, Icon,
 } from "../common/factory"
@@ -29,7 +28,6 @@ import {DocIndex} from "../common/docIndex";
 import {elemName, filterCtrlElems, mawe} from "../../document";
 import { IDtoPath, wcElem } from "../../document/util";
 import { getCoreEditor } from "../slatejs/slateEditor";
-import { Slate } from "slate-react";
 import { isAstChange } from "../slatejs/slateHelpers";
 import { dndDrop } from "../slatejs/slateDnD";
 

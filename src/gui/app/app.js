@@ -286,6 +286,7 @@ function View({ doc, updateDoc, buffer, setBuffer }) {
 
   return (
     <VBox className="ViewPort">
+      {/* <ToolBox className="WindowTitleBar">Title bar</ToolBox> */}
       {//*
         <WorkspaceTab doc={doc} updateDoc={updateDoc} />
       /**/}

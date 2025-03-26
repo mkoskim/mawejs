@@ -187,7 +187,7 @@ export const Icon = {
   },
 
   FileType: {
-    Folder: Folder,
+    Folder: FolderOutlined,
     File: InsertDriveFileOutlined,
     Unknown: BrokenImageOutlined,
     Selected: CheckBox,
