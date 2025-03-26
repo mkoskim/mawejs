@@ -9,7 +9,7 @@
 import {uuid as getUUID, nanoid, file2buf, wcElem, wcChildren, makeHeader, textToInt} from "../util";
 import { xml2js } from "xml-js";
 
-import { loadChartSettings } from "../../gui/arc/arc";
+import { loadArcSettings } from "../../gui/arc/arc";
 import { loadViewSettings } from "../../gui/app/views";
 import { loadEditorSettings } from "../../gui/editor/editor";
 import {loadExportSettings} from "../../gui/export/export";
@@ -93,7 +93,7 @@ export function fromXML(root) {
   const exports = loadExportSettings(expElem)
   const ui = {
     view   : loadViewSettings(elemFind(uiElem, "view")),
-    arc    : loadChartSettings(elemFind(uiElem, "arc")),
+    arc    : loadArcSettings(elemFind(uiElem, "arc")),
     editor : loadEditorSettings(elemFind(uiElem, "editor"))
   }
 

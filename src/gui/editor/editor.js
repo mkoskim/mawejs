@@ -170,7 +170,7 @@ export function setFocusTo(updateDoc, id) {
 //
 //*****************************************************************************
 
-export function SingleEditView({doc, updateDoc}) {
+export function EditView({doc, updateDoc}) {
 
   //---------------------------------------------------------------------------
   // For development purposes:

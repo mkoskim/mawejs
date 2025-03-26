@@ -39,7 +39,7 @@ import { dndDrop } from "../slatejs/slateDnD";
 //
 //*****************************************************************************
 
-export function loadChartSettings(settings) {
+export function loadArcSettings(settings) {
   // TODO: Check that fields have valid values (table keys)
   return {
     elements: "scene",
@@ -49,7 +49,7 @@ export function loadChartSettings(settings) {
   }
 }
 
-export function saveChartSettings(settings) {
+export function saveArcSettings(settings) {
   return {type: "arc",
     attributes: {
       elements: settings.elements,
@@ -72,7 +72,7 @@ const indexStyle = {
   borderRight: "1px solid lightgray"
 }
 
-export function StoryArc({doc, updateDoc}) {
+export function StoryArcView({doc, updateDoc}) {
   //const section = doc.body
 
   const setElements = useCallback(value => updateDoc(doc => {doc.ui.arc.elements = value}), [updateDoc])
