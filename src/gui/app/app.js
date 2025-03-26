@@ -403,7 +403,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 class FileOperations extends React.PureComponent {
   render() {
     const {file, setCommand} = this.props
-    const filename = file?.name ?? "<Unnamed>"
+    //const filename = file?.name ?? "<Unnamed>"
 
     return <>
       {/*
