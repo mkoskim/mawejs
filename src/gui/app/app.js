@@ -23,6 +23,7 @@ import {
   Separator,
   Menu, MenuItem,
   Inform,
+  Label,
 } from "../common/factory";
 
 import {
@@ -341,7 +342,6 @@ function WithoutDoc({ setCommand, recent }) {
 
 function WithDoc({ setCommand, doc, updateDoc, recent }) {
   const file = doc?.file
-  const filename = file?.name ?? "<Unnamed>"
   const { head, body } = doc
   const setSelected = useCallback(value => updateDoc(doc => { doc.ui.view.selected = value }), [])
 
@@ -357,8 +357,8 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
   ]), [])
 
   return <ToolBox>
-    <FileMenu hasdoc={true} setCommand={setCommand} file={file} text={filename} recent={recent} />
-    <OpenFolderButton filename={file?.id} />
+    <FileMenu hasdoc={true} setCommand={setCommand} file={file} recent={recent} />
+    <FileOperations file={file}/>
     <Separator />
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected} />
     <Separator />
@@ -388,13 +388,27 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 
 //-----------------------------------------------------------------------------
 
+class FileOperations extends React.PureComponent {
+  render() {
+    const {file} = this.props
+    const filename = file?.name ?? "<Unnamed>"
+
+    return <>
+      <Label style={{paddingLeft: "4px", paddingRight: "4px"}} text={filename}/>
+      <OpenFolderButton filename={file?.id} />
+      </>
+  }
+}
+
+//-----------------------------------------------------------------------------
+
 class FileMenu extends React.PureComponent {
   render() {
-    const { setCommand, file, text, recent, hasdoc } = this.props
+    const { setCommand, file, recent, hasdoc } = this.props
 
     return <PopupState variant="popover">
       {(popupState) => <React.Fragment>
-        <Button tooltip="File menu" {...bindTrigger(popupState)} endIcon={<Icon.Arrow.DropDown/>}>{text ?? <Icon.Menu />}</Button>
+        <Button tooltip="File menu" {...bindTrigger(popupState)}><Icon.Menu /></Button>
         <Menu {...bindMenu(popupState)}>
           <MenuItem
             title="New" endAdornment="Ctrl-N"
