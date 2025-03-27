@@ -156,6 +156,8 @@ export const Icon = {
   Settings: SettingsOutlined,
 
   Action: {
+    Quit: Close,
+    Close: Close,
     Search: Search,
     Edit: ArticleOutlined,
     Cards: GridViewOutlined,

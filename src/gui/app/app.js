@@ -24,6 +24,10 @@ import {
   Menu, MenuItem,
   Inform,
   Label,
+  HBox,
+  addClass,
+  HFiller,
+  FlexBox,
 } from "../common/factory";
 
 import {
@@ -299,9 +303,11 @@ function View({ doc, updateDoc, buffer, setBuffer }) {
 
   return (
     <VBox className="ViewPort">
-      {/* <ToolBox className="WindowTitleBar">Title bar</ToolBox> */}
+      {/*
+        <WorkspaceBar doc={doc}/>
+      /**/}
       {//*
-        <WorkspaceTab doc={doc} updateDoc={updateDoc} />
+      <DocBar doc={doc} updateDoc={updateDoc} />
       /**/}
       <ViewSwitch doc={doc} updateDoc={updateDoc} />
       <RenderDialogs doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer} />
@@ -321,9 +327,49 @@ function RenderDialogs({ doc, updateDoc, buffer, setBuffer }) {
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Experimental: Document toolbar
+//
+//*****************************************************************************
 
-function WorkspaceTab({ doc, updateDoc }) {
+function WorkspaceBar({doc}) {
+  return <HBox className="WorkspaceBar">
+    {//*
+    <HBox className="LeftSide">
+      <Button>Workspace</Button>
+      {/*<IconButton tooltip="File Menu"><Icon.Menu/></IconButton>*/}
+    </HBox>
+    /**/}
+    <DocTabItem name="File1.mawe"/>
+    <DocTabItem name="File2.mawe" active={true}/>
+    <DocTabItem name="File3.mawe"/>
+    <DocTabItem name="File4.mawe"/>
+    <HBox className="RightSide">
+      <IconButton tooltip="New"><Icon.Action.File.New/></IconButton>
+      <IconButton tooltip="Open"><Icon.Action.File.Open/></IconButton>
+      <IconButton tooltip="Help"><Icon.Help/></IconButton>
+    </HBox>
+    <HFiller/>
+    <IconButton tooltip="Quit"><Icon.Action.Quit/></IconButton>
+    </HBox>
+}
+
+function DocTabItem({name, active}) {
+  return <HBox className={addClass("Item", active ? "Active" : undefined)}>
+    <FlexBox className="Name">{name}</FlexBox>
+    <IconButton><Icon.Action.Close/></IconButton>
+    {/*<Separator/>*/}
+  </HBox>
+}
+
+//*****************************************************************************
+//
+// Document toolbar
+//
+//*****************************************************************************
+
+function DocBar({ doc, updateDoc }) {
   //console.log("Workspace:id=", id)
   //console.log("Workspace:doc=", doc)
 
