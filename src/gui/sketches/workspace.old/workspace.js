@@ -13,9 +13,9 @@ import "./workspace.css"
 import React from "react";
 import { useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import {action, docByID } from "../app/store"
+import {action, docByID } from "../../app/store"
 
-import { FileBrowser } from "../filebrowser";
+import { FileBrowser } from "../../filebrowser";
 
 import {
   DndContext,
@@ -34,7 +34,7 @@ import {
   addClass,
   Spinner, Loading,
   Icon,
-} from "../common/factory";
+} from "../../common/factory";
 
 //-----------------------------------------------------------------------------
 

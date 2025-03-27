@@ -1,0 +1,171 @@
+/*---------------------------------------------------------------------------*/
+/* Workspace tab */
+/*---------------------------------------------------------------------------*/
+
+div.WorkspaceBar {
+  background: rgb(225, 240, 255);
+  width: 100%;
+  /*
+  padding-top: 2px;
+  app-region: drag;
+  */
+  /*-------------------------------------------------------------------------*/
+  /* Left & right side containers
+  /*-------------------------------------------------------------------------*/
+
+  .LeftSide, .RightSide {
+    /*background: rgb(247, 222, 247);*/
+    border-bottom: 2px solid grey;
+    align-items: center;
+    /*
+    background: plum;
+    padding-bottom: 2px;
+    &:hover {
+      background: #F5F7F9;
+    }
+    */
+  }
+
+  .RightSide {
+    /*
+    padding-left: 1cm;
+    */
+  }
+
+  .Gap {
+    flex-grow: 1;
+    border-bottom: 2px solid grey;
+  }
+
+  /*-----------------------------------------------------------------------*/
+  /* Box to add new items to tab */
+  .NewItem {
+    flex-grow: 1;
+    /*
+    background: rgb(236, 206, 236);
+    */
+    border-bottom: 2px solid grey;
+    padding-right: 1cm;
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* File tab
+  /*-------------------------------------------------------------------------*/
+
+  .FileTab {
+    display: flex;
+    flex-grow: 1;
+    justify-content: stretch;
+
+    /*-----------------------------------------------------------------------*/
+    /* Item top & bottom borders */
+
+    & > .Active {
+      /*
+      border-top: 2px solid grey;
+      border-radius: 6px 6px 0 0;
+      */
+      padding-bottom: 2px;
+    }
+
+    & > :not(.Active) {
+      /*
+      padding-top: 2px;
+      */
+      border-bottom: 2px solid grey;
+    }
+
+    /*-------------------------------------------------------------------------*/
+    /* Item side borders */
+
+    .Item:not(:first-child) {
+      padding-left: 6px;
+    }
+
+    .Item:first-child {
+      &.Active {
+        border-left: 2px solid grey;
+      }
+      &:not(.Active) {
+        border-left: 2px dotted grey;
+      }
+      padding-left: 4px;
+    }
+
+    .Item:last-child {
+      &.Active {
+        border-right: 2px solid grey;
+      }
+      &:not(.Active) {
+        border-right: 2px dotted grey;
+      }
+      padding-right: 4px;
+    }
+
+    /* Right border between two inactive items */
+    .Item:not(.Active):has(+ :not(.Active)) {
+      /*color: red;*/
+      border-right: 2px dotted grey;
+      padding-right: 4px;
+    }
+
+    .Item:not(.Active):has(+ .Active) {
+      /*color: red;*/
+      border-right: 2px solid grey;
+      padding-right: 4px;
+    }
+
+    /* Right border between inactive and active items */
+    .Item.Active {
+      border-right: 2px solid grey;
+      padding-right: 4px;
+      /*color: red;*/
+      /*
+      border-left: 2px solid grey;
+      padding-left: 4px;
+      padding-right: 4px;
+      */
+    }
+
+    /*
+    .Item:not(.Active) {
+      padding-left: 6px;
+    }
+    */
+
+    /*-------------------------------------------------------------------------*/
+    /* Items in the tab */
+
+    .Item {
+      /*
+      display: flex;
+      */
+      flex-grow: 1;
+      min-width: 10px;
+      max-width: 2.5in;
+
+      /*
+      padding-left: 4pt;
+      padding-right: 4pt;
+      min-width: 10px;
+      max-width: 100px;
+      */
+
+      align-items: center;
+      cursor: pointer;
+
+      &.Active, &:hover {
+        background: #F5F7F9;
+      }
+
+      .Name {
+        flex-grow: 1;
+        align-items: center;
+        padding-right: 6pt;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}

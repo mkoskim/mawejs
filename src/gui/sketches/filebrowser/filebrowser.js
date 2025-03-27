@@ -13,7 +13,7 @@ import "./filebrowser.css"
 import React from "react"
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { action } from "../app/store"
+import { action } from "../../app/store"
 
 import {
   Box, FlexBox, VBox, HBox, HFiller, VFiller,
@@ -26,7 +26,7 @@ import {
   addClass,
   addHotkeys,
   InfiniteScroll,
-} from "../common/factory";
+} from "../../common/factory";
 
 import { FileEntry } from "./file"
 
