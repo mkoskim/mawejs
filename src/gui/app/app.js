@@ -23,17 +23,14 @@ import {
   Separator,
   Menu, MenuItem,
   Inform,
-  Label,
-  HBox,
-  addClass,
-  HFiller,
-  FlexBox,
 } from "../common/factory";
 
 import {
   OpenFolderButton,
   HeadInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords
 } from "../common/components";
+
+//import { WorkspaceBar } from "../sketches/workspacebar/workspacebar";
 
 import PopupState, {
   bindTrigger,
@@ -303,9 +300,7 @@ function View({ doc, updateDoc, buffer, setBuffer }) {
 
   return (
     <VBox className="ViewPort">
-      {/*
-        <WorkspaceBar doc={doc}/>
-      /**/}
+      {/* <WorkspaceBar doc={doc}/> /**/}
       {//*
       <DocBar doc={doc} updateDoc={updateDoc} />
       /**/}
@@ -325,42 +320,6 @@ function RenderDialogs({ doc, updateDoc, buffer, setBuffer }) {
       setBuffer={setBuffer}
     ></ImportDialog>
   }
-}
-
-//*****************************************************************************
-//
-// Experimental: Document toolbar
-//
-//*****************************************************************************
-
-function WorkspaceBar({doc}) {
-  return <HBox className="WorkspaceBar">
-    {//*
-    <HBox className="LeftSide">
-      <Button>Workspace</Button>
-      {/*<IconButton tooltip="File Menu"><Icon.Menu/></IconButton>*/}
-    </HBox>
-    /**/}
-    <DocTabItem name="File1.mawe"/>
-    <DocTabItem name="File2.mawe" active={true}/>
-    <DocTabItem name="File3.mawe"/>
-    <DocTabItem name="File4.mawe"/>
-    <HBox className="RightSide">
-      <IconButton tooltip="New"><Icon.Action.File.New/></IconButton>
-      <IconButton tooltip="Open"><Icon.Action.File.Open/></IconButton>
-      <IconButton tooltip="Help"><Icon.Help/></IconButton>
-    </HBox>
-    <HFiller/>
-    <IconButton tooltip="Quit"><Icon.Action.Quit/></IconButton>
-    </HBox>
-}
-
-function DocTabItem({name, active}) {
-  return <HBox className={addClass("Item", active ? "Active" : undefined)}>
-    <FlexBox className="Name">{name}</FlexBox>
-    <IconButton><Icon.Action.Close/></IconButton>
-    {/*<Separator/>*/}
-  </HBox>
 }
 
 //*****************************************************************************
