@@ -60,8 +60,12 @@ export function cmdLoadFile({setCommand, filename}) {
   setCommand({action: "load", filename})
 }
 
+function getDefaultPath(file) {
+  return fs.dirname(file?.id ?? ".")
+}
+
 export async function cmdOpenFile({ setCommand, file }) {
-  const defaultPath = await fs.dirname(file?.id ?? ".")
+  const defaultPath = await getDefaultPath(file)
   console.log("Open path:", defaultPath)
   const { canceled, filePaths } = await fileOpenDialog({
     filters,
@@ -87,7 +91,7 @@ export function cmdImportFile({setCommand, file, ext}) {
 }
 
 export async function cmdOpenImportFile({setCommand, file}) {
-  const defaultPath = await fs.dirname(file?.id ?? ".")
+  const defaultPath = await getDefaultPath(file)
   console.log("Import path:", defaultPath)
   const { canceled, filePaths } = await fileOpenDialog({
     title: "Import File",
@@ -124,7 +128,20 @@ export async function cmdSaveFileAs({ setCommand, file }) {
   }
 }
 
+export async function cmdRenameFile({ setCommand, file }) {
+  const { canceled, filePath } = await fileSaveDialog({
+    title: "Rename File",
+    buttonLabel: "Rename",
+    filters,
+    defaultPath: file.id,
+    properties: ["createDirectory", "showOverwriteConfirmation"],
+  })
+  if (!canceled) {
+    //console.log("Rename:", file.id, "->", filePath)
+    setCommand({action: "rename", filename: filePath})
+  }
+}
+
 export function cmdCloseFile({setCommand}) {
   setCommand({action: "close"})
 }
-

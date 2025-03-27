@@ -39,7 +39,7 @@ import { createDateStamp } from "../../document/util"
 //
 //*****************************************************************************
 
-export function Stats({doc, updateDoc}) {
+export function StatsView({doc, updateDoc}) {
 
   const today = createDateStamp()
 

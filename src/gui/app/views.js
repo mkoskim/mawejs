@@ -13,10 +13,10 @@ import {
   Icon, MakeToggleGroup,
 } from "../common/factory";
 
-import { SingleEditView } from "../editor/editor";
-import { StoryArc } from "../arc/arc"
-import { Stats } from "../stats/stats"
-import { Export } from "../export/export"
+import { EditView } from "../editor/editor";
+import { StoryArcView } from "../arc/arc"
+import { StatsView } from "../stats/stats"
+import { ExportView } from "../export/export"
 
 //*****************************************************************************
 //
@@ -81,11 +81,11 @@ export function ViewSwitch({doc, updateDoc}) {
   const props = { doc, updateDoc }
 
   switch (getViewMode(doc)) {
-    case "editor": return <SingleEditView {...props} />
+    case "editor": return <EditView {...props} />
     //case "organizer": return <Organizer {...props} />
-    case "stats": return <Stats {...props} />
-    case "arc": return <StoryArc {...props} />
-    case "export": return <Export {...props} />
+    case "stats": return <StatsView {...props} />
+    case "arc": return <StoryArcView {...props} />
+    case "export": return <ExportView {...props} />
     default: break;
   }
   return null;

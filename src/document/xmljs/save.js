@@ -9,7 +9,7 @@
 import {uuid as getUUID, buf2file, filterCtrlElems} from "../util";
 
 import {saveViewSettings} from "../../gui/app/views";
-import {saveChartSettings} from "../../gui/arc/arc";
+import {saveArcSettings} from "../../gui/arc/arc";
 import {saveEditorSettings} from "../../gui/editor/editor";
 import {saveExportSettings} from "../../gui/export/export";
 
@@ -232,7 +232,7 @@ function toUI(ui) {
       type: "ui",
       elements: [
         saveViewSettings(ui.view),
-        saveChartSettings(ui.arc),
+        saveArcSettings(ui.arc),
         saveEditorSettings(ui.editor),
       ]
     },

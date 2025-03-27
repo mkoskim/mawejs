@@ -23,6 +23,7 @@ import {
   Separator,
   Menu, MenuItem,
   Inform,
+  Label,
 } from "../common/factory";
 
 import {
@@ -41,6 +42,7 @@ import {
   cmdLoadFile,
   cmdNewFile, cmdOpenFile,
   cmdOpenImportFile,
+  cmdRenameFile,
   cmdSaveFile, cmdSaveFileAs,
   cmdImportClipboard,
   cmdOpenResource
@@ -140,6 +142,7 @@ export default function App(props) {
       case "set": { docFromBuffer(command); break; }
       case "resource": { docFromResource(command); break; }
       case "saveas": { docSaveAs(command); break; }
+      case "rename": { docRename(command); break; }
       case "close": { docClose(command); break; }
       case "error": { Inform.error(command.message); break; }
     }
@@ -203,12 +206,12 @@ export default function App(props) {
       .then(content => {
         updateDoc(content)
         setSaved(content)
-        recentAdd(content.file, recent, setRecent)
+        setRecent(recentAdd(recent, content.file))
         console.log("Loaded:", content.file)
         Inform.success(`Loaded: ${content.file.name}`);
       })
       .catch(err => {
-        recentRemove({ id: filename }, recent, setRecent)
+        setRecent(recentRemove(recent, { id: filename }))
         Inform.error(err)
       })
   }
@@ -261,9 +264,19 @@ export default function App(props) {
       .then(file => {
         setSaved(doc)
         updateDoc(doc => { doc.file = file })
-        //recentRemove(doc.file, recent, setRecent)
-        recentAdd(file, recent, setRecent)
+        setRecent(recentAdd(recent, file))
         Inform.success(`Saved ${file.name}`)
+      })
+      .catch(err => Inform.error(err))
+  }
+
+  function docRename({ filename }) {
+    mawe.rename(doc.file, filename)
+      .then(file => {
+        //setSaved(doc)
+        setRecent(recentAdd(recentRemove(recent, doc.file), file))
+        updateDoc(doc => { doc.file = file })
+        Inform.success(`Renamed: ${file.name}`)
       })
       .catch(err => Inform.error(err))
   }
@@ -286,6 +299,7 @@ function View({ doc, updateDoc, buffer, setBuffer }) {
 
   return (
     <VBox className="ViewPort">
+      {/* <ToolBox className="WindowTitleBar">Title bar</ToolBox> */}
       {//*
         <WorkspaceTab doc={doc} updateDoc={updateDoc} />
       /**/}
@@ -340,7 +354,6 @@ function WithoutDoc({ setCommand, recent }) {
 
 function WithDoc({ setCommand, doc, updateDoc, recent }) {
   const file = doc?.file
-  const filename = file?.name ?? "<Unnamed>"
   const { head, body } = doc
   const setSelected = useCallback(value => updateDoc(doc => { doc.ui.view.selected = value }), [])
 
@@ -356,8 +369,8 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
   ]), [])
 
   return <ToolBox>
-    <FileMenu hasdoc={true} setCommand={setCommand} file={file} text={filename} recent={recent} />
-    <OpenFolderButton filename={file?.id} />
+    <FileMenu file={file} setCommand={setCommand} recent={recent} hasdoc={true}/>
+    <FileOperations file={file} setCommand={setCommand}/>
     <Separator />
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected} />
     <Separator />
@@ -387,13 +400,59 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 
 //-----------------------------------------------------------------------------
 
+class FileOperations extends React.PureComponent {
+  gzip_style = {
+    fontSize: "10pt",
+    border: "2px solid grey",
+    //paddingLeft: "2px",
+    //paddingRight: "2px",
+    //paddingTop: "2px",
+    paddingBottom: "2px",
+    borderRadius: "3px",
+  }
+  gunzip_style = {
+    ...this.gzip_style,
+    textDecorationLine: "line-through",
+    textDecorationThickness: "2px",
+    textDecorationColor: "rgb(240, 80, 40)",
+  }
+
+  toggleCompress(file, setCommand) {
+    const compressed = file.id.endsWith(".gz")
+    const filename = compressed ? file.id.slice(0, -3) : (file.id + ".gz")
+    setCommand({action: "rename", filename})
+  }
+
+  render() {
+    const {file, setCommand} = this.props
+    const compressed = file.id.endsWith(".gz")
+    const {gzip_style, gunzip_style} = this
+    const compress_style = compressed ? gunzip_style : gzip_style
+    const compress_tooltip = compressed ? "Uncompress" : "Compress"
+    //const filename = file?.name ?? "<Unnamed>"
+
+    return <>
+      {/*
+      <Label style={{paddingLeft: "4px", paddingRight: "4px"}} text={filename}/>
+      <IconButton tooltip="Rename" onClick={e => { cmdRenameFile({ setCommand, file }) }}><Icon.Action.File.Rename/></IconButton>
+      */}
+      <Button tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>&nbsp;gz&nbsp;</span></Button>
+      <OpenFolderButton filename={file?.id} />
+      </>
+  }
+}
+
+//-----------------------------------------------------------------------------
+
 class FileMenu extends React.PureComponent {
   render() {
-    const { setCommand, file, text, recent, hasdoc } = this.props
+    const { setCommand, file, recent, hasdoc } = this.props
+    const filename = file?.name ?? "<Unnamed>"
+    const name = hasdoc ? filename : <Icon.Menu />
 
     return <PopupState variant="popover">
       {(popupState) => <React.Fragment>
-        <Button tooltip="File menu" {...bindTrigger(popupState)} endIcon={<Icon.Arrow.DropDown/>}>{text ?? <Icon.Menu />}</Button>
+        <Button tooltip="File menu" {...bindTrigger(popupState)}>{name}</Button>
         <Menu {...bindMenu(popupState)}>
           <MenuItem
             title="New" endAdornment="Ctrl-N"
@@ -422,6 +481,10 @@ class FileMenu extends React.PureComponent {
           <MenuItem
             title="Save as..."
             disabled={!hasdoc} onClick={e => { cmdSaveFileAs({ setCommand, file }); popupState.close(e); }}
+            />
+          <MenuItem
+            title="Rename..."
+            disabled={!file} onClick={e => { cmdRenameFile({ setCommand, file }); popupState.close(e); }}
             />
           <MenuItem
             title="Close" endAdornment="Ctrl-W"

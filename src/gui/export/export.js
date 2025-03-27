@@ -103,7 +103,7 @@ function updateDocScenePrefix(updateDoc, value) { updateDoc(doc => {doc.exports.
 //
 // ****************************************************************************
 
-export function Export({ doc, updateDoc }) {
+export function ExportView({ doc, updateDoc }) {
 
   const {exports} = doc
 

@@ -24,11 +24,8 @@ export const mawe = {
   create,
   save,
   saveas,
-  rename: async (file, name, suffix) => {
-    //name   = name ? name : this.basename;
-    //suffix = suffix ? suffix : this.suffix;
-
-    return await fs.rename(file.id, name + suffix);
+  rename: (file, to) => {
+    return fs.rename(file.id, to);
   },
   decodebuf, file2buf, buf2tree, fromXML,
   toXML,

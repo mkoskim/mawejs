@@ -125,7 +125,7 @@ export function loadEditorSettings(settings) {
       selected: "noteindex"
     },
     toolbox: {
-      left: {background: "white", borderRight: "1px solid lightgray"},
+      left: {background: "white"},
       mid: {background: "white"},
       right: {background: "white"},
     }
@@ -170,7 +170,7 @@ export function setFocusTo(updateDoc, id) {
 //
 //*****************************************************************************
 
-export function SingleEditView({doc, updateDoc}) {
+export function EditView({doc, updateDoc}) {
 
   //---------------------------------------------------------------------------
   // For development purposes:
@@ -432,7 +432,9 @@ function LeftPanel({settings}) {
 
   return <VBox style={style}>
     <LeftPanelMenu settings={settings}/>
-    <SectionIndex sectID="body" settings={settings}/>
+    {//*
+      <SectionIndex sectID="body" settings={settings}/>
+    /**/}
   </VBox>
 }
 
@@ -535,7 +537,7 @@ function RightPanelContent({settings, selected}) {
   const {
     doc,
     setSearchText, searchBoxRef,
-    body,
+    editors,
   } = settings
 
   switch(selected) {
@@ -558,7 +560,7 @@ function RightPanelContent({settings, selected}) {
     }
     case "tagtable":
       return <TagTable
-        editor={body.editor}
+        editor={editors.body}
         section={doc.body}
       />
     case "trashcan":
@@ -685,9 +687,9 @@ function EditorBox({style, settings}) {
   const type = track?.node?.type
   const {bold, italic} = track?.marks ?? {}
 
-  const updateBody = useCallback(buffer => updateSection("body", buffer), [])
-  const updateNotes = useCallback(buffer => updateSection("notes", buffer), [])
-  const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [])
+  const updateBody = useCallback(buffer => updateSection("body", buffer), [updateSection])
+  const updateNotes = useCallback(buffer => updateSection("notes", buffer), [updateSection])
+  const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [updateSection])
 
   return <VFiller>
     {/* Editor toolbar */}

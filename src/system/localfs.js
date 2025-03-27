@@ -70,12 +70,8 @@ export function settingswrite(fileid, content, encoding="utf8") {
   return fscall("settingswrite", fileid, content, encoding);
 }
 
-export function rename(fileid, name) {
-  return fscall("rename", fileid, name);
-}
-
-export function move(fileid, dirid) {
-  throw new Error("Not implemented.");
+export function rename(fileid, to) {
+  return fscall("rename", fileid, to);
 }
 
 export function remove(fileid) {

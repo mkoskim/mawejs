@@ -21,3 +21,12 @@ html, body {
 body {
   background: #F5F7F9;
 }
+
+.WindowTitleBar {
+  app-region: drag;
+  width: 100%;
+  height: 32px;
+  min-height: 32px;
+  max-height: 32px;
+  background: grey;
+}

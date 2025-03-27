@@ -36,7 +36,7 @@ import {onDragEndUpdateDoc} from "../common/dndDocUpdate";
 // Organizer
 //-----------------------------------------------------------------------------
 
-export function Organizer({doc, updateDoc}) {
+export function OrganizerView({doc, updateDoc}) {
 
   return <DragDropContext onDragEnd={onDragEnd}>
       <OrganizerView

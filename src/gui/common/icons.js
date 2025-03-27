@@ -92,6 +92,7 @@ import {
   DeleteForeverOutlined,
   DeleteOutlined,
   KeyboardArrowDown,
+  DriveFileRenameOutlineOutlined,
 } from '@mui/icons-material';
 
 import {
@@ -166,6 +167,7 @@ export const Icon = {
       Open: FileOpenOutlined,
       Save: SaveOutlined,
       SaveAs: SaveAsOutlined,
+      Rename: DriveFileRenameOutlineOutlined,
     },
     Replay: Replay,
     Cached: Cached,
@@ -187,7 +189,7 @@ export const Icon = {
   },
 
   FileType: {
-    Folder: Folder,
+    Folder: FolderOutlined,
     File: InsertDriveFileOutlined,
     Unknown: BrokenImageOutlined,
     Selected: CheckBox,
