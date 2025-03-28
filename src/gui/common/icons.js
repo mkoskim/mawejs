@@ -105,11 +105,39 @@ import {
 } from '@mdi/js';
 import { createSvgIcon } from '@mui/material';
 
-const MdiSortAscending = createSvgIcon(<path d={mdiSortAscending}/>)
-const MdiSortDescending = createSvgIcon(<path d={mdiSortDescending}/>)
+//const MdiSortAscending = createSvgIcon(<path d={mdiSortAscending}/>)
+//const MdiSortDescending = createSvgIcon(<path d={mdiSortDescending}/>)
 //const MdiSortAscending = createSvgIcon(<path d={mdiSortReverseVariant}/>)
 //const MdiSortDescending = createSvgIcon(<path d={mdiSortVariant}/>)
 const MdiTextBoxEditOutline = createSvgIcon(<path d={mdiTextBoxEditOutline}/>)
+
+const elements = {
+  arrowDown:   ["M19 17", "H22", "L18 21", "L14 17", "H17", "V3",  "H19"].join(""),
+  arrowUp:     ["M19 7",  "H22", "L18 3",  "L14 7",  "H17", "V21", "H19"].join(""),
+  stackAscend: [
+    "M2  5", "V7",  "H6",  "V5",
+    "M2 11", "V13", "H9",  "V11",
+    "M2 17", "V19", "H12", "V17",
+  ].join(""),
+  stackDescend: [
+    "M2  5", "V7",  "H12",  "V5",
+    "M2 11", "V13", "H9",  "V11",
+    "M2 17", "V19", "H6", "V17",
+  ].join(""),
+}
+
+const MdiSortAscending  = createSvgIcon(<path d={elements.arrowDown + elements.stackAscend}/>)
+const MdiSortDescending = createSvgIcon(<path d={elements.arrowDown + elements.stackDescend} />)
+
+/*
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <title>sort-ascending</title>
+  <path d="M19 17H22L18 21L14 17H17V3H19M2 17H12V19H2M6 5V7H2V5M2 11H9V13H2V11Z" />
+  </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <title>sort-descending</title>
+  <path d="M19 7H22L18 3L14 7H17V21H19M2 17H12V19H2M6 5V7H2V5M2 11H9V13H2V11Z" /></svg>
+*/
 
 // Material icons
 export const Icon = {
