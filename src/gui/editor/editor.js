@@ -83,7 +83,12 @@ export function loadEditorSettings(settings) {
   function getDraftSettings() {
     const draft = elemFind(settings, "draft")
     if(!draft) return {}
-    const {words, indexed} = draft.attributes
+
+    const {attributes} = draft
+
+    if(!attributes) return {}
+
+    const {words, indexed} = attributes
 
     const fixed = (indexed ?? ["scene"])
       .split(",")
