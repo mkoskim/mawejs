@@ -48,7 +48,7 @@ export function StatsView({doc, updateDoc}) {
     .filter(e => e.type === "words")
     .filter(e => e.date !== today)
     .sort((a, b) => a.date - b.date)
-    .concat([{date: today, ...doc.body.words}])
+    .concat([{date: today, ...doc.draft.words}])
 
   return <HistoryChart history={history}/>
   /*

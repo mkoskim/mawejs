@@ -80,10 +80,10 @@ import {elemFind} from "../../document/xmljs/tree";
 
 export function loadEditorSettings(settings) {
 
-  function getBodySettings() {
-    const body = elemFind(settings, "body")
-    if(!body) return {}
-    const {words, indexed} = body.attributes
+  function getDraftSettings() {
+    const draft = elemFind(settings, "body")
+    if(!draft) return {}
+    const {words, indexed} = draft.attributes
 
     const fixed = (indexed ?? ["scene"])
       .split(",")
@@ -101,12 +101,12 @@ export function loadEditorSettings(settings) {
   }
 
   return {
-    active: "body",
+    active: "draft",
     focusTo: undefined,
-    body: {
+    draft: {
       indexed: ["act", "chapter", "scene", "bookmark"],
       words: "numbers",
-      ...getBodySettings()
+      ...getDraftSettings()
     },
     notes: {
       indexed: ["act", "chapter", "scene", "bookmark"],
@@ -138,10 +138,10 @@ export function saveEditorSettings(settings) {
     attributes: {},
     elements: [
       {
-        type: "body",
+        type: "draft",
         attributes: {
-          words: settings.body.words,
-          indexed: settings.body.indexed.join(",")
+          words: settings.draft.words,
+          indexed: settings.draft.indexed.join(",")
         },
         elements: [
         ]
@@ -177,7 +177,7 @@ export function EditView({doc, updateDoc}) {
   //---------------------------------------------------------------------------
 
   //console.log("Doc:", doc)
-  //console.log("Body:", doc.body.acts)
+  //console.log("Draft:", doc.draft.acts)
 
   /*
   return <React.Fragment>
@@ -231,7 +231,7 @@ export function EditView({doc, updateDoc}) {
   //---------------------------------------------------------------------------
 
   const editors = useMemo(() => ({
-    body: getUIEditor(),
+    draft: getUIEditor(),
     notes: getUIEditor(),
     //trashcan: getUIEditor(),
   }), [])
@@ -351,7 +351,7 @@ export function EditView({doc, updateDoc}) {
   return <>
     <HBox style={{overflow: "auto"}}>
       <EditorBox settings={settings} mode="Regular"/>
-      <SlateAST editor={bodyeditor}/>
+      <SlateAST editor={drafteditor}/>
     </HBox>
     </>
   /**/
@@ -360,7 +360,7 @@ export function EditView({doc, updateDoc}) {
   return <>
   <HBox style={{overflow: "auto"}}>
     <EditorBox settings={settings} mode="Regular"/>
-    <Pre style={{width: "50%"}} content={bodyeditor}/>
+    <Pre style={{width: "50%"}} content={drafteditor}/>
   </HBox>
   </>
   /**/
@@ -433,7 +433,7 @@ function LeftPanel({settings}) {
   return <VBox style={style}>
     <LeftPanelMenu settings={settings}/>
     {//*
-      <SectionIndex sectID="body" settings={settings}/>
+      <SectionIndex sectID="draft" settings={settings}/>
     /**/}
   </VBox>
 }
@@ -447,10 +447,10 @@ function LeftPanelMenu({settings}) {
 
   const {doc, updateDoc} = settings
 
-  const indexed = doc.ui.editor.body.indexed;
-  const setIndexed = useCallback(value => updateDoc(doc => {doc.ui.editor.body.indexed = value}), [updateDoc])
-  const words = doc.ui.editor.body.words
-  const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.body.words = value}), [updateDoc])
+  const indexed = doc.ui.editor.draft.indexed;
+  const setIndexed = useCallback(value => updateDoc(doc => {doc.ui.editor.draft.indexed = value}), [updateDoc])
+  const words = doc.ui.editor.draft.words
+  const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.draft.words = value}), [updateDoc])
 
   return <ToolBox style={doc.ui.editor.toolbox.left}>
     <ChooseVisibleElements
@@ -553,15 +553,15 @@ function RightPanelContent({settings, selected}) {
       </>
     case "wordtable": {
       return <WordTable
-        section={doc.body}
+        section={doc.draft}
         setSearchText={setSearchText}
         searchBoxRef={searchBoxRef}
       />
     }
     case "tagtable":
       return <TagTable
-        editor={editors.body}
-        section={doc.body}
+        editor={editors.draft}
+        section={doc.draft}
       />
     case "trashcan":
       return <SectionIndex sectID="trashcan" settings={settings}/>
@@ -687,7 +687,7 @@ function EditorBox({style, settings}) {
   const type = track?.node?.type
   const {bold, italic} = track?.marks ?? {}
 
-  const updateBody = useCallback(buffer => updateSection("body", buffer), [updateSection])
+  const updateDraft = useCallback(buffer => updateSection("draft", buffer), [updateSection])
   const updateNotes = useCallback(buffer => updateSection("notes", buffer), [updateSection])
   //const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [updateSection])
 
@@ -708,8 +708,8 @@ function EditorBox({style, settings}) {
 
     <div className="Board Editor" style={{...style}}>
 
-      <Slate editor={editors.body} initialValue={doc.body.acts} onChange={updateBody}>
-        <SlateEditable visible={active === "body"} className="Sheet Regular" highlight={highlightText}/>
+      <Slate editor={editors.draft} initialValue={doc.draft.acts} onChange={updateDraft}>
+        <SlateEditable visible={active === "draft"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
       <Slate editor={editors.notes} initialValue={doc.notes.acts} onChange={updateNotes}>

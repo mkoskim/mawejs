@@ -73,19 +73,19 @@ export function fromXML(root) {
 
   const {uuid, name} = story.attributes ?? {};
 
-  // Inject name to body head
+  // Inject name to draft head
 
-  const bodyElem  = elemFind(story, "body")
+  const draftElem  = elemFind(story, "body")
   const notesElem = elemFind(story, "notes")
 
-  const body     = parseSection(bodyElem)
+  const draft    = parseSection(draftElem)
   const notes    = parseSection(notesElem)
 
   const headElem  = elemFind(story, "head")
   const expElem   = elemFind(story, "export")
   const uiElem    = elemFind(story, "ui")
 
-  const history = parseHistory(elemFind(story, "history"), body)
+  const history = parseHistory(elemFind(story, "history"), draft)
 
   const head  = parseHead(headElem, history)
 
@@ -106,7 +106,7 @@ export function fromXML(root) {
     },
     exports,
     ui,
-    body,
+    draft,
     notes,
     history,
   }
@@ -336,7 +336,7 @@ function parseMarks(elem, marks) {
 //
 //*****************************************************************************
 
-function parseHistory(history, body) {
+function parseHistory(history, draft) {
   //console.log("History:", history)
   if(!history?.elements) {
     var yesterday = new Date()
@@ -344,7 +344,7 @@ function parseHistory(history, body) {
     return [{
       type: "words",
       date: createDateStamp(yesterday),
-      ...body.words
+      ...draft.words
     }]
   }
   return history.elements.map(parseHistoryEntry).filter(e => e)

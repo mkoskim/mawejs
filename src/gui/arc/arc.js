@@ -71,7 +71,6 @@ const indexStyle = {
 }
 
 export function StoryArcView({doc, updateDoc}) {
-  //const section = doc.body
 
   const setElements = useCallback(value => updateDoc(doc => {doc.ui.arc.elements = value}), [updateDoc])
   const setTemplate = useCallback(value => updateDoc(doc => {doc.ui.arc.template = value}), [updateDoc])
@@ -88,18 +87,18 @@ export function StoryArcView({doc, updateDoc}) {
   // Slate editor for buffer manipulations
   //---------------------------------------------------------------------------
 
-  const bodyeditor = useMemo(() => {
+  const drafteditor = useMemo(() => {
     const editor = getCoreEditor()
     editor.onChange = () => {
-      //console.log("Body update")
+      //console.log("Draft update")
       if(isAstChange(editor)) {
         updateDoc(doc => {
-          doc.body.acts = editor.children;
-          doc.body.words = wcElem({type: "sect", children: editor.children})
+          doc.draft.acts = editor.children;
+          doc.draft.words = wcElem({type: "sect", children: editor.children})
         })
       }
     }
-    editor.children = doc.body.acts
+    editor.children = doc.draft.acts
     return editor
   }, [])
 
@@ -145,8 +144,8 @@ export function StoryArcView({doc, updateDoc}) {
       <VBox style={indexStyle}>
         <IndexToolbar settings={settings}/>
         <DocIndex
-          sectID="body"
-          section={doc.body}
+          sectID="draft"
+          section={doc.draft}
           include={indexElements()}
           wcFormat={"numbers"}
           unfold={true}
@@ -183,7 +182,7 @@ export function StoryArcView({doc, updateDoc}) {
         //const srcEdit = getEditorBySectID(srcSectID)
         //const dstEdit = getEditorBySectID(dstSectID)
 
-        dndDrop(bodyeditor, srcPath, bodyeditor, dstPath ?? [], destination.index)
+        dndDrop(drafteditor, srcPath, drafteditor, dstPath ?? [], destination.index)
         //setActive(nodeID(dstSectID, dropped))
         break;
       }
@@ -234,7 +233,7 @@ function mode2rotate(mode) {
 
 function ChartView({settings, doc, updateDoc}) {
 
-  const section = doc.body
+  const section = doc.draft
 
   //---------------------------------------------------------------------------
   // Data selection

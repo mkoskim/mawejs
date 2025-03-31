@@ -42,7 +42,7 @@ function getSceneOptions(scenes, prefix) {
 
 export function storyToFlatted(story) {
 
-  const { file, exports, head, body } = story
+  const { file, exports, head, draft } = story
   const { content, prefix_act, prefix_chapter, prefix_scene } = exports
 
   const pgbreak = exports.type === "long"
@@ -65,12 +65,12 @@ export function storyToFlatted(story) {
     file,
     options,
     head: {author, title, subtitle},
-    content: processBody(body.acts).filter(isNotEmpty)
+    content: processDraft(draft.acts).filter(isNotEmpty)
   }
 
   //---------------------------------------------------------------------------
 
-  function processBody(acts) {
+  function processDraft(acts) {
     if(options.act.type === "none")
     {
       return processChapters(skip(acts))

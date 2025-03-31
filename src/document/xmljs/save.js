@@ -53,7 +53,7 @@ export function toXML(doc) {
     xmlComment(
       "===============================================================================",
     ),
-    toBody(doc.body),
+    toDraft(doc.draft),
     xmlComment(
       "===============================================================================",
       "",
@@ -107,8 +107,8 @@ function toExport(exports) {
 //*****************************************************************************
 
 
-function toBody(body) {
-  const {acts} = body;
+function toDraft(draft) {
+  const {acts} = draft;
 
   return xmlLines(
     {type: "body"},

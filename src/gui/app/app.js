@@ -113,7 +113,7 @@ export default function App(props) {
 
   const dirty = !(
     doc?.head === saved?.head
-    && doc?.body === saved?.body
+    && doc?.draft === saved?.draft
     && doc?.notes === saved?.notes
   )
 
@@ -241,7 +241,7 @@ export default function App(props) {
     const date = createDateStamp()
     const history = [
       ...doc.history.filter(e => e.type === "words" && e.date !== date),
-      { type: "words", date, ...doc.body.words },
+      { type: "words", date, ...doc.draft.words },
     ]
     //console.log("History:", history)
     updateDoc(doc => { doc.history = history })
@@ -359,14 +359,14 @@ function WithoutDoc({ setCommand, recent }) {
 
 function WithDoc({ setCommand, doc, updateDoc, recent }) {
   const file = doc?.file
-  const { head, body } = doc
+  const { head, draft } = doc
   const setSelected = useCallback(value => updateDoc(doc => { doc.ui.view.selected = value }), [])
 
   const { chars, text, missing } = useDeferredValue({
     chars: 0,
     text: 0,
     missing: 0,
-    ...(body.words ?? {})
+    ...(draft.words ?? {})
   })
 
   useEffect(() => addHotkeys([
