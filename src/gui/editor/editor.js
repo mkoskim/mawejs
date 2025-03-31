@@ -233,7 +233,7 @@ export function EditView({doc, updateDoc}) {
   const editors = useMemo(() => ({
     body: getUIEditor(),
     notes: getUIEditor(),
-    trashcan: getUIEditor(),
+    //trashcan: getUIEditor(),
   }), [])
 
   const updateSection = useCallback((key, buffer) => {
@@ -689,7 +689,7 @@ function EditorBox({style, settings}) {
 
   const updateBody = useCallback(buffer => updateSection("body", buffer), [updateSection])
   const updateNotes = useCallback(buffer => updateSection("notes", buffer), [updateSection])
-  const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [updateSection])
+  //const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [updateSection])
 
   return <VFiller>
     {/* Editor toolbar */}
@@ -716,9 +716,11 @@ function EditorBox({style, settings}) {
         <SlateEditable visible={active === "notes"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
+    {/*
       <Slate editor={editors.trashcan} initialValue={doc.trashcan.acts} onChange={updateTrash}>
         <SlateEditable visible={active === "trashcan"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
+    */}
     </div>
   </VFiller>
 }

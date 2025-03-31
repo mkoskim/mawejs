@@ -80,7 +80,6 @@ export function fromXML(root) {
 
   const body     = parseSection(bodyElem)
   const notes    = parseSection(notesElem)
-  const trashcan = parseSection()
 
   const headElem  = elemFind(story, "head")
   const expElem   = elemFind(story, "export")
@@ -109,7 +108,6 @@ export function fromXML(root) {
     ui,
     body,
     notes,
-    trashcan,
     history,
   }
 }
