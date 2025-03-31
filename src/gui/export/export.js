@@ -60,9 +60,9 @@ export function loadExportSettings(settings) {
     acts: "none",
     chapters: "numbered",
     scenes: "none",
-    prefix_act: undefined,
-    prefix_chapter: undefined,
-    prefix_scene: undefined,
+    prefix_act: "",
+    prefix_chapter: "",
+    prefix_scene: "",
     ...(settings?.attributes ?? {})
   }
 }
