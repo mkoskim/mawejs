@@ -65,6 +65,9 @@ export const theme = createTheme({
           '&.Mui-selected': {
             background: "lightblue",
           },
+          '&.Mui-disabled': {
+            border: "0",
+          }
         },
       },
     },

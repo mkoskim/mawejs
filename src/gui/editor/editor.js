@@ -432,57 +432,61 @@ export function EditView({doc, updateDoc}) {
 // Left panels
 //---------------------------------------------------------------------------
 
-const leftPanelChoices = ["draft", "reference"]
-
 function LeftPanel({settings}) {
-  const {doc, updateDoc, setActive} = settings
-  const {style} = doc.ui.editor.left
+  const {doc} = settings
 
-  const selectLeft = doc.ui.editor.left.selected
-  const setSelectLeft = useCallback(value => {
-    setActive(value)
-    updateDoc(doc => {doc.ui.editor.left.selected = value})
-  }, [updateDoc])
+  const {left} = doc.ui.editor
+
+  const {style, selected} = left
 
   return <VBox style={style}>
-    <LeftPanelMenu settings={settings} selectLeft={selectLeft} setSelectLeft={setSelectLeft}/>
-    <SectionIndex sectID={selectLeft} settings={settings}/>
+    <LeftPanelMenu settings={settings}/>
+    <SectionIndex sectID={selected} settings={settings}/>
   </VBox>
 }
 
-function LeftPanelMenu({settings, selectLeft, setSelectLeft}) {
+function LeftPanelMenu({settings}) {
 
-  const {doc, updateDoc} = settings
+  const {doc, updateDoc, setActive} = settings
+  const {right, left} = doc.ui.editor
+  const {selected} = left
+  const disabled = useMemo(() => [right.selected], [right.selected])
+
+  const setSelected = useCallback(value => {
+    setActive(value)
+    updateDoc(doc => {doc.ui.editor.left.selected = value})
+  }, [updateDoc])
 
   const indexed = doc.ui.editor.draft.indexed;
   const setIndexed = useCallback(value => updateDoc(doc => {doc.ui.editor.draft.indexed = value}), [updateDoc])
   const words = doc.ui.editor.draft.words
   const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.draft.words = value}), [updateDoc])
 
-  switch(selectLeft) {
-    case "draft": return <ToolBox style={doc.ui.editor.toolbox.left}>
-      <ChooseLeftPanel selected={selectLeft} setSelected={setSelectLeft}/>
-      <Separator/>
-      <ChooseVisibleElements
-        choices={LeftIndexChoices.visible}
-        selected={indexed}
-        setSelected={setIndexed}
-      />
-      <Separator/>
-      <Filler/>
-      <Separator/>
-      <ChooseWordFormat
-        choices={LeftIndexChoices.words}
-        selected={words}
-        setSelected={setWords}
-      />
-    </ToolBox>
-
+  switch(selected) {
     case "reference": return <ToolBox style={doc.ui.editor.toolbox.left}>
-      <ChooseLeftPanel selected={selectLeft} setSelected={setSelectLeft}/>
+      <ChooseLeftPanel disabled={disabled} selected={selected} setSelected={setSelected}/>
       <Separator/>
     </ToolBox>
+    default: break;
   }
+
+  return <ToolBox style={doc.ui.editor.toolbox.left}>
+    <ChooseLeftPanel disabled={disabled} selected={selected} setSelected={setSelected}/>
+    <Separator/>
+    <ChooseVisibleElements
+      choices={LeftIndexChoices.visible}
+      selected={indexed}
+      setSelected={setIndexed}
+    />
+    <Separator/>
+    <Filler/>
+    <Separator/>
+    <ChooseWordFormat
+      choices={LeftIndexChoices.words}
+      selected={words}
+      setSelected={setWords}
+    />
+  </ToolBox>
 }
 
 class ChooseLeftPanel extends React.PureComponent {
@@ -492,19 +496,26 @@ class ChooseLeftPanel extends React.PureComponent {
       tooltip: "Draft Index",
       icon: <Icon.View.Draft />
     },
+    "notes": {
+      tooltip: "Notes Index",
+      icon: <Icon.View.Notes />
+    },
     "reference": {
       tooltip: "Reference Index",
       icon: <Icon.View.Research />
     },
   }
 
+  static choices = ["reference", "draft", "notes",]
+
   render() {
-    const {selected, setSelected} = this.props
+    const {disabled, selected, setSelected} = this.props
     const {buttons, choices} = this.constructor
 
     return <MakeToggleGroup
       buttons={buttons}
-      choices={leftPanelChoices}
+      choices={choices}
+      disabled={disabled}
       selected={selected}
       setSelected={setSelected}
       exclusive={true}
@@ -526,22 +537,29 @@ function RightPanel({settings}) {
     doc, updateDoc,
   } = settings
 
-  const {style} = doc.ui.editor.right
-  const selectRight = doc.ui.editor.right.selected
+  const {right, left} = doc.ui.editor
+
+  const {style, selected} = right
+
   const setSelectRight = useCallback(value => updateDoc(doc => {doc.ui.editor.right.selected = value}), [updateDoc])
+  const disabled = useMemo(() => [left.selected], [left.selected])
 
   return <VFiller style={style}>
       <ToolBox style={doc.ui.editor.toolbox.right}>
-        <ChooseRightPanel selected={selectRight} setSelected={setSelectRight}/>
+        <ChooseRightPanel selected={selected} disabled={disabled} setSelected={setSelectRight}/>
         <Filler />
       </ToolBox>
-      <RightPanelContent settings={settings} selected={selectRight}/>
+      <RightPanelContent settings={settings} selected={selected}/>
     </VFiller>
 }
 
 class ChooseRightPanel extends React.PureComponent {
 
   static buttons = {
+    "draft": {
+      tooltip: "Draft Index",
+      icon: <Icon.View.Draft />
+    },
     "notes": {
       tooltip: "Notes Index",
       icon: <Icon.View.Notes />
@@ -565,20 +583,22 @@ class ChooseRightPanel extends React.PureComponent {
   }
 
   static choices = [
+    "reference",
+    "draft",
     "notes",
-    //"reference",
     "wordtable",
     "tagtable",
     //"trashcan"
   ]
 
   render() {
-    const {selected, setSelected} = this.props
+    const {disabled, selected, setSelected} = this.props
     const {buttons, choices} = this.constructor
 
     return <MakeToggleGroup
       buttons={buttons}
       choices={choices}
+      disabled={disabled}
       selected={selected}
       setSelected={setSelected}
       exclusive={true}
@@ -594,19 +614,10 @@ function RightPanelContent({settings, selected}) {
   } = settings
 
   switch(selected) {
+    case "draft":
     case "notes":
-      return <>
-        <SectionIndex sectID="notes" settings={settings}/>
-        {/*
-        <TrashcanIndex  settings={settings} style={{
-          height: "25%",
-          borderTop: "1px dashed #F64",
-        }}/>
-        */}
-      </>
-
     case "reference": {
-      return <SectionIndex sectID="reference" settings={settings}/>
+      return <SectionIndex sectID={selected} settings={settings}/>
     }
     case "wordtable": {
       return <WordTable
