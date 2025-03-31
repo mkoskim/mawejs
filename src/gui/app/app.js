@@ -23,13 +23,14 @@ import {
   Separator,
   Menu, MenuItem,
   Inform,
-  Label,
 } from "../common/factory";
 
 import {
   OpenFolderButton,
   HeadInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords
 } from "../common/components";
+
+//import { WorkspaceBar } from "../sketches/workspacebar/workspacebar";
 
 import PopupState, {
   bindTrigger,
@@ -299,9 +300,9 @@ function View({ doc, updateDoc, buffer, setBuffer }) {
 
   return (
     <VBox className="ViewPort">
-      {/* <ToolBox className="WindowTitleBar">Title bar</ToolBox> */}
+      {/* <WorkspaceBar doc={doc}/> /**/}
       {//*
-        <WorkspaceTab doc={doc} updateDoc={updateDoc} />
+      <DocBar doc={doc} updateDoc={updateDoc} />
       /**/}
       <ViewSwitch doc={doc} updateDoc={updateDoc} />
       <RenderDialogs doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer} />
@@ -321,9 +322,13 @@ function RenderDialogs({ doc, updateDoc, buffer, setBuffer }) {
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Document toolbar
+//
+//*****************************************************************************
 
-function WorkspaceTab({ doc, updateDoc }) {
+function DocBar({ doc, updateDoc }) {
   //console.log("Workspace:id=", id)
   //console.log("Workspace:doc=", doc)
 

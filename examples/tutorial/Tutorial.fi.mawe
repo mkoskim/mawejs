@@ -9,7 +9,7 @@ STORY: Ohjeet
 <head>
 <title>Käyttöohje (v0.9.0)</title>
 </head>
-<export content="draft" type="short" acts="named" chapters="numbered" scenes="none"/>
+<export content="draft" type="short" acts="named" chapters="numbered&amp;named" scenes="named" prefix_act="" prefix_chapter="" prefix_scene=""/>
 <!--/
 ===============================================================================
 /-->
@@ -437,5 +437,6 @@ NOTES
 <words date="2024-12-04" text="4687" missing="1046" chars="27422"/>
 <words date="2024-12-05" text="3513" missing="2194" chars="29203"/>
 <words date="2024-12-10" text="3513" missing="2194" chars="29203"/>
+<words date="2025-03-29" text="3513" missing="2194" chars="27422"/>
 </history>
 </story>

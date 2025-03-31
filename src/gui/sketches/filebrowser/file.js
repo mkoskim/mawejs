@@ -13,7 +13,7 @@ import "./file.css"
 import React from "react"
 import { useDispatch } from "react-redux";
 import { CSS } from "@dnd-kit/utilities"
-import { action } from "../app/store"
+import { action } from "../../app/store"
 
 import {
   Box, FlexBox, VBox, HBox, Filler, Separator,
@@ -22,10 +22,10 @@ import {
   ToolBox,
   Label, Icon,
   addClass,
-} from "../common/factory";
+} from "../../common/factory";
 
 const fs = require("../../storage/localfs")
-const { suffix2format } = require('../../document/util');
+const { suffix2format } = require('../../../document/util');
 
 //-----------------------------------------------------------------------------
 
