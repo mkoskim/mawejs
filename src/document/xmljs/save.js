@@ -37,7 +37,7 @@ export function toXML(doc) {
       attributes: {
         uuid: doc.uuid ?? getUUID(),
         format: "mawe",
-        version: "5",
+        version: "6",
         name: doc.head?.name
       }
     },
@@ -62,6 +62,14 @@ export function toXML(doc) {
       "===============================================================================",
     ),
     toNotes(doc.notes),
+    xmlComment(
+      "===============================================================================",
+      "",
+      "REFERENCE",
+      "",
+      "===============================================================================",
+    ),
+    toReference(doc.reference),
     xmlComment(
       "===============================================================================",
     ),
@@ -111,7 +119,7 @@ function toDraft(draft) {
   const {acts} = draft;
 
   return xmlLines(
-    {type: "body"},
+    {type: "draft"},
     ...acts.map(toAct),
   )
 }
@@ -121,6 +129,15 @@ function toNotes(notes) {
 
   return xmlLines(
     {type: "notes"},
+    ...acts.map(toAct)
+  )
+}
+
+function toReference(reference) {
+  const {acts} = reference;
+
+  return xmlLines(
+    {type: "reference"},
     ...acts.map(toAct)
   )
 }

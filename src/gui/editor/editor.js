@@ -81,7 +81,7 @@ import {elemFind} from "../../document/xmljs/tree";
 export function loadEditorSettings(settings) {
 
   function getDraftSettings() {
-    const draft = elemFind(settings, "body")
+    const draft = elemFind(settings, "draft")
     if(!draft) return {}
     const {words, indexed} = draft.attributes
 
@@ -112,6 +112,10 @@ export function loadEditorSettings(settings) {
       indexed: ["act", "chapter", "scene", "bookmark"],
       words: undefined,
     },
+    reference: {
+      indexed: ["act", "chapter", "scene", "bookmark"],
+      words: undefined,
+    },
     trashcan: {
       indexed: ["act", "chapter", "scene"],
       words: undefined,
@@ -119,10 +123,11 @@ export function loadEditorSettings(settings) {
     },
     left: {
       style: {maxWidth: "400px", width: "400px", borderRight: "1px solid lightgray"},
+      selected: "draft"
     },
     right: {
       style: {maxWidth: "300px", width: "300px", borderLeft: "1px solid lightgray"},
-      selected: "noteindex"
+      selected: "notes"
     },
     toolbox: {
       left: {background: "white"},
@@ -233,6 +238,7 @@ export function EditView({doc, updateDoc}) {
   const editors = useMemo(() => ({
     draft: getUIEditor(),
     notes: getUIEditor(),
+    reference: getUIEditor(),
     //trashcan: getUIEditor(),
   }), [])
 
@@ -426,24 +432,25 @@ export function EditView({doc, updateDoc}) {
 // Left panels
 //---------------------------------------------------------------------------
 
+const leftPanelChoices = ["draft", "reference"]
+
 function LeftPanel({settings}) {
-  const {doc} = settings
+  const {doc, updateDoc, setActive} = settings
   const {style} = doc.ui.editor.left
 
+  const selectLeft = doc.ui.editor.left.selected
+  const setSelectLeft = useCallback(value => {
+    setActive(value)
+    updateDoc(doc => {doc.ui.editor.left.selected = value})
+  }, [updateDoc])
+
   return <VBox style={style}>
-    <LeftPanelMenu settings={settings}/>
-    {//*
-      <SectionIndex sectID="draft" settings={settings}/>
-    /**/}
+    <LeftPanelMenu settings={settings} selectLeft={selectLeft} setSelectLeft={setSelectLeft}/>
+    <SectionIndex sectID={selectLeft} settings={settings}/>
   </VBox>
 }
 
-const LeftIndexChoices = {
-  visible: ["scene", "bookmark", "missing", "comment", "tags"],
-  words: ["off", "numbers", "compact", "cumulative", "percent"]
-}
-
-function LeftPanelMenu({settings}) {
+function LeftPanelMenu({settings, selectLeft, setSelectLeft}) {
 
   const {doc, updateDoc} = settings
 
@@ -452,21 +459,62 @@ function LeftPanelMenu({settings}) {
   const words = doc.ui.editor.draft.words
   const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.draft.words = value}), [updateDoc])
 
-  return <ToolBox style={doc.ui.editor.toolbox.left}>
-    <ChooseVisibleElements
-      choices={LeftIndexChoices.visible}
-      selected={indexed}
-      setSelected={setIndexed}
+  switch(selectLeft) {
+    case "draft": return <ToolBox style={doc.ui.editor.toolbox.left}>
+      <ChooseLeftPanel selected={selectLeft} setSelected={setSelectLeft}/>
+      <Separator/>
+      <ChooseVisibleElements
+        choices={LeftIndexChoices.visible}
+        selected={indexed}
+        setSelected={setIndexed}
+      />
+      <Separator/>
+      <Filler/>
+      <Separator/>
+      <ChooseWordFormat
+        choices={LeftIndexChoices.words}
+        selected={words}
+        setSelected={setWords}
+      />
+    </ToolBox>
+
+    case "reference": return <ToolBox style={doc.ui.editor.toolbox.left}>
+      <ChooseLeftPanel selected={selectLeft} setSelected={setSelectLeft}/>
+      <Separator/>
+    </ToolBox>
+  }
+}
+
+class ChooseLeftPanel extends React.PureComponent {
+
+  static buttons = {
+    "draft": {
+      tooltip: "Draft Index",
+      icon: <Icon.View.Draft />
+    },
+    "reference": {
+      tooltip: "Reference Index",
+      icon: <Icon.View.Research />
+    },
+  }
+
+  render() {
+    const {selected, setSelected} = this.props
+    const {buttons, choices} = this.constructor
+
+    return <MakeToggleGroup
+      buttons={buttons}
+      choices={leftPanelChoices}
+      selected={selected}
+      setSelected={setSelected}
+      exclusive={true}
     />
-    <Separator/>
-    <Filler/>
-    <Separator/>
-    <ChooseWordFormat
-      choices={LeftIndexChoices.words}
-      selected={words}
-      setSelected={setWords}
-    />
-  </ToolBox>
+  }
+}
+
+const LeftIndexChoices = {
+  visible: ["scene", "bookmark", "missing", "comment", "tags"],
+  words: ["off", "numbers", "compact", "cumulative", "percent"]
 }
 
 //---------------------------------------------------------------------------
@@ -494,9 +542,13 @@ function RightPanel({settings}) {
 class ChooseRightPanel extends React.PureComponent {
 
   static buttons = {
-    "noteindex": {
+    "notes": {
       tooltip: "Notes Index",
-      icon: <Icon.View.Index />
+      icon: <Icon.View.Notes />
+    },
+    "reference": {
+      tooltip: "Reference Index",
+      icon: <Icon.View.Research />
     },
     "wordtable": {
       tooltip: "Word frequency",
@@ -513,7 +565,8 @@ class ChooseRightPanel extends React.PureComponent {
   }
 
   static choices = [
-    "noteindex",
+    "notes",
+    //"reference",
     "wordtable",
     "tagtable",
     //"trashcan"
@@ -541,7 +594,7 @@ function RightPanelContent({settings, selected}) {
   } = settings
 
   switch(selected) {
-    case "noteindex":
+    case "notes":
       return <>
         <SectionIndex sectID="notes" settings={settings}/>
         {/*
@@ -551,6 +604,10 @@ function RightPanelContent({settings, selected}) {
         }}/>
         */}
       </>
+
+    case "reference": {
+      return <SectionIndex sectID="reference" settings={settings}/>
+    }
     case "wordtable": {
       return <WordTable
         section={doc.draft}
@@ -580,7 +637,7 @@ function SectionIndex({sectID, settings}) {
     track,
   } = settings
 
-  const {style, indexed, words} = doc.ui.editor[sectID]
+  const {style, indexed, words} = doc.ui.editor[sectID === "reference" ? "draft" : sectID]
 
   return <DocIndex
     style={style}
@@ -689,6 +746,7 @@ function EditorBox({style, settings}) {
 
   const updateDraft = useCallback(buffer => updateSection("draft", buffer), [updateSection])
   const updateNotes = useCallback(buffer => updateSection("notes", buffer), [updateSection])
+  const updateReference = useCallback(buffer => updateSection("reference", buffer), [updateSection])
   //const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [updateSection])
 
   return <VFiller>
@@ -716,11 +774,15 @@ function EditorBox({style, settings}) {
         <SlateEditable visible={active === "notes"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
-    {/*
+      <Slate editor={editors.reference} initialValue={doc.reference.acts} onChange={updateReference}>
+        <SlateEditable visible={active === "reference"} className="Sheet Regular" highlight={highlightText}/>
+      </Slate>
+
+      {/*
       <Slate editor={editors.trashcan} initialValue={doc.trashcan.acts} onChange={updateTrash}>
         <SlateEditable visible={active === "trashcan"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
-    */}
+      */}
     </div>
   </VFiller>
 }

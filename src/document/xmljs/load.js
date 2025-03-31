@@ -23,16 +23,21 @@ import { elemFind, elemFindall, elem2Text } from "./tree";
 //
 // <story format="mawe" version="x" uuid="xxx">
 //    <head> ... </head>
-//    <body name="xxx">
+//    <draft name="xxx">
 //      <chapter> ... </chapter>
 //      <chapter> ... </chapter>
 //      ...
-//    </body>
+//    </draft>
 //    <notes>
 //      <chapter> ... </chapter>
 //      <chapter> ... </chapter>
 //      ...
 //    </notes>
+//    <reference>
+//      <chapter> ... </chapter>
+//      <chapter> ... </chapter>
+//      ...
+//    </reference>
 //
 //-----------------------------------------------------------------------------
 
@@ -75,11 +80,13 @@ export function fromXML(root) {
 
   // Inject name to draft head
 
-  const draftElem  = elemFind(story, "body")
+  const draftElem  = elemFind(story, "draft")
   const notesElem = elemFind(story, "notes")
+  const refElem = elemFind(story, "reference")
 
-  const draft    = parseSection(draftElem)
-  const notes    = parseSection(notesElem)
+  const draft     = parseSection(draftElem)
+  const notes     = parseSection(notesElem)
+  const reference = parseSection(refElem)
 
   const headElem  = elemFind(story, "head")
   const expElem   = elemFind(story, "export")
@@ -108,6 +115,7 @@ export function fromXML(root) {
     ui,
     draft,
     notes,
+    reference,
     history,
   }
 }
