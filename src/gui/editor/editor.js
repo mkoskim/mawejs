@@ -274,7 +274,7 @@ export function EditView({doc, updateDoc}) {
   }, [getEditorBySectID, active])
 
   const setActive = useCallback(id => {
-    //console.log("setActive:", sectID, path)
+    //console.log("setActive:", id)
     setFocusTo(updateDoc, id)
   }, [updateDoc])
 
@@ -353,7 +353,7 @@ export function EditView({doc, updateDoc}) {
     }],
     [IsKey.CtrlG,  ev => searchForward(getActiveEdit(), searchText, true)],
     [IsKey.CtrlShiftG, ev => searchBackward(getActiveEdit(), searchText, true)]
-  ]), []);
+  ]), [getActiveEdit, searchText]);
 
   //---------------------------------------------------------------------------
   // Debug/development view
