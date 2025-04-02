@@ -103,6 +103,7 @@ import {
   mdiSortVariant,
   mdiTextBoxEditOutline,
   mdiBookAlphabet,
+  mdiBookOpenVariantOutline,
 } from '@mdi/js';
 
 import { createSvgIcon } from '@mui/material';
@@ -120,6 +121,7 @@ import {NotesOutlined} from '@mui/icons-material';
 //const MdiSortDescending = createSvgIcon(<path d={mdiSortVariant}/>)
 const MdiTextBoxEditOutline = createSvgIcon(<path d={mdiTextBoxEditOutline}/>)
 const MdiBookAlphabet = createSvgIcon(<path d={mdiBookAlphabet}/>)
+const MdiBookOpenVariantOutline = createSvgIcon(<path d = {mdiBookOpenVariantOutline}/>)
 
 //-----------------------------------------------------------------------------
 // Custom made icons
@@ -191,11 +193,9 @@ export const Icon = {
     Arc: DonutLarge,
     Stats: BarChartOutlined,
     Tags: AlternateEmail,
-    //Research: MdiBookAlphabet,
-    //Research: BiotechOutlined,
     Draft: DescriptionOutlined,
     Notes: NotesOutlined,
-    Research: ScienceOutlined,
+    StoryBook: MdiBookOpenVariantOutline,
     Trashcan: DeleteOutlined,
   },
 

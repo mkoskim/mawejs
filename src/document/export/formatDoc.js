@@ -42,7 +42,7 @@ function getSceneOptions(scenes, prefix) {
 
 function getSection(story, contentType) {
   switch(contentType) {
-    case "reference": return story.reference;
+    case "storybook": return story.storybook;
     default: break;
   }
   return story.draft
@@ -222,7 +222,7 @@ export function storyToFlatted(story) {
   function chooseContent(s) {
     switch(options.content) {
       case "synopsis": return s.content === "synopsis"
-      //case "reference": return true
+      //case "storybook": return true
       default: break
     }
     return s.content === "scene"

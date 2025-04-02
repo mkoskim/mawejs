@@ -185,7 +185,7 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
     <TextField select label="Content" value={exports.content} onChange={e => updateDocStoryContent(updateDoc, e.target.value)}>
       <MuiMenuItem value="draft">Draft</MuiMenuItem>
       <MuiMenuItem value="synopsis">Synopsis</MuiMenuItem>
-      <MuiMenuItem value="reference">Reference</MuiMenuItem>
+      <MuiMenuItem value="storybook">Storybook</MuiMenuItem>
       </TextField>
 
     <TextField select label="Story Class" value={exports.type} onChange={e => updateDocStoryType(updateDoc, e.target.value)}>
@@ -235,7 +235,7 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
 function getTypeSuffix(contentType) {
   switch(contentType) {
     case "synopsis": return ".synopsis"
-    case "reference": return ".reference"
+    case "storybook": return ".storybook"
     default: break;
   }
   return ""

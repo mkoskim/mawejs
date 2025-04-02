@@ -65,11 +65,11 @@ export function toXML(doc) {
     xmlComment(
       "===============================================================================",
       "",
-      "REFERENCE",
+      "STORYBOOK",
       "",
       "===============================================================================",
     ),
-    toReference(doc.reference),
+    toStorybook(doc.storybook),
     xmlComment(
       "===============================================================================",
     ),
@@ -133,11 +133,11 @@ function toNotes(notes) {
   )
 }
 
-function toReference(reference) {
-  const {acts} = reference;
+function toStorybook(storybook) {
+  const {acts} = storybook;
 
   return xmlLines(
-    {type: "reference"},
+    {type: "storybook"},
     ...acts.map(toAct)
   )
 }

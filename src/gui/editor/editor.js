@@ -117,7 +117,7 @@ export function loadEditorSettings(settings) {
       indexed: ["act", "chapter", "scene", "bookmark"],
       words: undefined,
     },
-    reference: {
+    storybook: {
       indexed: ["act", "chapter", "scene", "bookmark"],
       words: undefined,
     },
@@ -243,7 +243,7 @@ export function EditView({doc, updateDoc}) {
   const editors = useMemo(() => ({
     draft: getUIEditor(),
     notes: getUIEditor(),
-    reference: getUIEditor(),
+    storybook: getUIEditor(),
     //trashcan: getUIEditor(),
   }), [])
 
@@ -468,7 +468,7 @@ function LeftPanelMenu({settings}) {
   const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.draft.words = value}), [updateDoc])
 
   switch(selected) {
-    case "reference": return <ToolBox style={doc.ui.editor.toolbox.left}>
+    case "storybook": return <ToolBox style={doc.ui.editor.toolbox.left}>
       <ChooseLeftPanel disabled={disabled} selected={selected} setSelected={setSelected}/>
       <Separator/>
     </ToolBox>
@@ -505,13 +505,13 @@ class ChooseLeftPanel extends React.PureComponent {
       tooltip: "Notes Index",
       icon: <Icon.View.Notes />
     },
-    "reference": {
-      tooltip: "Reference Index",
-      icon: <Icon.View.Research />
+    "storybook": {
+      tooltip: "Storybook Index",
+      icon: <Icon.View.StoryBook />
     },
   }
 
-  static choices = ["reference", "draft", "notes",]
+  static choices = ["storybook", "draft", "notes",]
 
   render() {
     const {disabled, selected, setSelected} = this.props
@@ -569,9 +569,9 @@ class ChooseRightPanel extends React.PureComponent {
       tooltip: "Notes Index",
       icon: <Icon.View.Notes />
     },
-    "reference": {
-      tooltip: "Reference Index",
-      icon: <Icon.View.Research />
+    "storybook": {
+      tooltip: "Storybook Index",
+      icon: <Icon.View.StoryBook />
     },
     "wordtable": {
       tooltip: "Word frequency",
@@ -588,7 +588,7 @@ class ChooseRightPanel extends React.PureComponent {
   }
 
   static choices = [
-    "reference",
+    "storybook",
     "draft",
     "notes",
     "wordtable",
@@ -621,7 +621,7 @@ function RightPanelContent({settings, selected}) {
   switch(selected) {
     case "draft":
     case "notes":
-    case "reference": {
+    case "storybook": {
       return <SectionIndex sectID={selected} settings={settings}/>
     }
     case "wordtable": {
@@ -653,7 +653,7 @@ function SectionIndex({sectID, settings}) {
     track,
   } = settings
 
-  const {style, indexed, words} = doc.ui.editor[sectID === "reference" ? "draft" : sectID]
+  const {style, indexed, words} = doc.ui.editor[sectID === "storybook" ? "draft" : sectID]
 
   return <DocIndex
     style={style}
@@ -762,7 +762,7 @@ function EditorBox({style, settings}) {
 
   const updateDraft = useCallback(buffer => updateSection("draft", buffer), [updateSection])
   const updateNotes = useCallback(buffer => updateSection("notes", buffer), [updateSection])
-  const updateReference = useCallback(buffer => updateSection("reference", buffer), [updateSection])
+  const updateStorybook = useCallback(buffer => updateSection("storybook", buffer), [updateSection])
   //const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [updateSection])
 
   return <VFiller>
@@ -790,8 +790,8 @@ function EditorBox({style, settings}) {
         <SlateEditable visible={active === "notes"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
-      <Slate editor={editors.reference} initialValue={doc.reference.acts} onChange={updateReference}>
-        <SlateEditable visible={active === "reference"} className="Sheet Regular" highlight={highlightText}/>
+      <Slate editor={editors.storybook} initialValue={doc.storybook.acts} onChange={updateStorybook}>
+        <SlateEditable visible={active === "storybook"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
       {/*

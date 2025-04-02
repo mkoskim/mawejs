@@ -44,6 +44,7 @@ export function migrate(root) {
     v3_to_v4,
     v4_to_v5,
     v5_to_v6,
+    v6_fixes,
   ].reduce((story, func) => func(story), story)
 }
 
@@ -370,7 +371,7 @@ function v5_to_v6(story) {
     })
     .concat({
       type: "element",
-      name: "reference",
+      name: "storybook",
       elements: []
     })
 
@@ -405,5 +406,30 @@ function v5_to_v6(story) {
       ...editorElem,
       elements,
     }
+  }
+}
+
+function v6_fixes(story) {
+
+  const {version} = story.attributes ?? {}
+
+  if(version !== "6") return story
+
+  const referenceElem  = elemFind(story, "reference")
+
+  if(!referenceElem) return story;
+
+  console.log("v6 rename")
+
+  const elements = story.elements
+    .filter(elem => elem.name !== "reference")
+    .concat({
+      ...referenceElem,
+      name: "storybook",
+    })
+
+  return {
+    ...story,
+    elements
   }
 }

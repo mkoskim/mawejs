@@ -114,7 +114,7 @@ export default function App(props) {
   const dirty = !(
     doc?.head === saved?.head
     && doc?.draft === saved?.draft
-    && doc?.reference === saved?.reference
+    && doc?.storybook === saved?.storybook
     && doc?.notes === saved?.notes
   )
 

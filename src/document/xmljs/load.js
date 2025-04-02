@@ -33,11 +33,11 @@ import { elemFind, elemFindall, elem2Text } from "./tree";
 //      <chapter> ... </chapter>
 //      ...
 //    </notes>
-//    <reference>
+//    <storybook>
 //      <chapter> ... </chapter>
 //      <chapter> ... </chapter>
 //      ...
-//    </reference>
+//    </storybook>
 //
 //-----------------------------------------------------------------------------
 
@@ -82,11 +82,11 @@ export function fromXML(root) {
 
   const draftElem  = elemFind(story, "draft")
   const notesElem = elemFind(story, "notes")
-  const refElem = elemFind(story, "reference")
+  const refElem = elemFind(story, "storybook")
 
   const draft     = parseSection(draftElem)
   const notes     = parseSection(notesElem)
-  const reference = parseSection(refElem)
+  const storybook = parseSection(refElem)
 
   const headElem  = elemFind(story, "head")
   const expElem   = elemFind(story, "export")
@@ -115,7 +115,7 @@ export function fromXML(root) {
     ui,
     draft,
     notes,
-    reference,
+    storybook,
     history,
   }
 }
