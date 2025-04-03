@@ -23,16 +23,21 @@ import { elemFind, elemFindall, elem2Text } from "./tree";
 //
 // <story format="mawe" version="x" uuid="xxx">
 //    <head> ... </head>
-//    <body name="xxx">
+//    <draft name="xxx">
 //      <chapter> ... </chapter>
 //      <chapter> ... </chapter>
 //      ...
-//    </body>
+//    </draft>
 //    <notes>
 //      <chapter> ... </chapter>
 //      <chapter> ... </chapter>
 //      ...
 //    </notes>
+//    <storybook>
+//      <chapter> ... </chapter>
+//      <chapter> ... </chapter>
+//      ...
+//    </storybook>
 //
 //-----------------------------------------------------------------------------
 
@@ -73,20 +78,21 @@ export function fromXML(root) {
 
   const {uuid, name} = story.attributes ?? {};
 
-  // Inject name to body head
+  // Inject name to draft head
 
-  const bodyElem  = elemFind(story, "body")
+  const draftElem  = elemFind(story, "draft")
   const notesElem = elemFind(story, "notes")
+  const refElem = elemFind(story, "storybook")
 
-  const body     = parseSection(bodyElem)
-  const notes    = parseSection(notesElem)
-  const trashcan = parseSection()
+  const draft     = parseSection(draftElem)
+  const notes     = parseSection(notesElem)
+  const storybook = parseSection(refElem)
 
   const headElem  = elemFind(story, "head")
   const expElem   = elemFind(story, "export")
   const uiElem    = elemFind(story, "ui")
 
-  const history = parseHistory(elemFind(story, "history"), body)
+  const history = parseHistory(elemFind(story, "history"), draft)
 
   const head  = parseHead(headElem, history)
 
@@ -107,9 +113,9 @@ export function fromXML(root) {
     },
     exports,
     ui,
-    body,
+    draft,
     notes,
-    trashcan,
+    storybook,
     history,
   }
 }
@@ -338,7 +344,7 @@ function parseMarks(elem, marks) {
 //
 //*****************************************************************************
 
-function parseHistory(history, body) {
+function parseHistory(history, draft) {
   //console.log("History:", history)
   if(!history?.elements) {
     var yesterday = new Date()
@@ -346,7 +352,7 @@ function parseHistory(history, body) {
     return [{
       type: "words",
       date: createDateStamp(yesterday),
-      ...body.words
+      ...draft.words
     }]
   }
   return history.elements.map(parseHistoryEntry).filter(e => e)

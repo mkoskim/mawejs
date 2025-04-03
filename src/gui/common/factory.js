@@ -194,7 +194,7 @@ export class ToolBox extends React.PureComponent {
 export class MakeToggleGroup extends React.PureComponent {
 
   render() {
-    const {buttons, choices, selected, setSelected, ...props} = this.props
+    const {buttons, choices, disabled, selected, setSelected, ...props} = this.props
 
     if(!choices) return null;
 
@@ -203,17 +203,22 @@ export class MakeToggleGroup extends React.PureComponent {
       value={selected}
       onChange={(e, value) => setSelected(value)}
     >
-      {choices.map(choice => this.constructor.makeButton(buttons, choice))}
+      {choices.map(choice => this.constructor.makeButton(buttons, disabled, choice))}
     </ToggleButtonGroup>
   }
 
-  static makeButton(buttons, choice) {
-    if(!(choice in buttons)) return <ToggleButton key={choice} value={choice}>
-      {choice}
-    </ToggleButton>
+  static makeButton(buttons, disabled, choice) {
+    const isDisabled = disabled?.includes(choice) ?? false
 
-    const {tooltip, icon} = buttons[choice]
-    return <ToggleButton key={choice} value={choice} tooltip={tooltip}>{icon}</ToggleButton>
+    if(!(choice in buttons)) return <ToggleButton key={choice} disabled={isDisabled} value={choice}>{choice}</ToggleButton>
+
+    const {icon} = buttons[choice]
+
+    if(isDisabled) return <ToggleButton key={choice} disabled={isDisabled} value={choice}>{icon}</ToggleButton>
+
+    const {tooltip} = buttons[choice]
+
+    return <ToggleButton key={choice} disabled={isDisabled} value={choice} tooltip={tooltip}>{icon}</ToggleButton>
   }
 }
 

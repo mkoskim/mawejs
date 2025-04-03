@@ -40,11 +40,19 @@ function getSceneOptions(scenes, prefix) {
 // Make story a sequence of paragraphs
 //*****************************************************************************
 
+function getSection(story, contentType) {
+  switch(contentType) {
+    case "storybook": return story.storybook;
+    default: break;
+  }
+  return story.draft
+}
+
 export function storyToFlatted(story) {
 
-  const { file, exports, head, body } = story
+  const { file, exports, head} = story
   const { content, prefix_act, prefix_chapter, prefix_scene } = exports
-
+  const section = getSection(story, content)
   const pgbreak = exports.type === "long"
 
   const options = {
@@ -65,12 +73,12 @@ export function storyToFlatted(story) {
     file,
     options,
     head: {author, title, subtitle},
-    content: processBody(body.acts).filter(isNotEmpty)
+    content: processDraft(section.acts).filter(isNotEmpty)
   }
 
   //---------------------------------------------------------------------------
 
-  function processBody(acts) {
+  function processDraft(acts) {
     if(options.act.type === "none")
     {
       return processChapters(skip(acts))
@@ -214,6 +222,7 @@ export function storyToFlatted(story) {
   function chooseContent(s) {
     switch(options.content) {
       case "synopsis": return s.content === "synopsis"
+      //case "storybook": return true
       default: break
     }
     return s.content === "scene"
