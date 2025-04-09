@@ -13,6 +13,7 @@ import {
 } from "./slateHelpers"
 
 import { appBeep } from '../../system/host';
+import {Range} from 'slate/dist';
 
 //-----------------------------------------------------------------------------
 // Search pattern
@@ -94,20 +95,26 @@ function searchTextBackward(editor, text, path, offset) {
 //-----------------------------------------------------------------------------
 // Search with scrolling and optional focusing
 
+function getStartPoint(editor, forward = true) {
+  const start = Editor.start(editor, [])
+  const range = editor.selection ?? {anchor: start, focus: start}
+  return forward ? Range.end(range) : Range.start(range)
+}
+
 export function searchFirst(editor, text, doFocus=false) {
-  const {path, offset} = editor.selection?.focus ?? Editor.start(editor, [])
+  const {path, offset} = getStartPoint(editor, false)
 
   return searchWithScroll(editor, text, path, offset, true, doFocus)
 }
 
 export function searchForward(editor, text, doFocus=false) {
-  const {path, offset} = editor.selection?.focus ?? Editor.start(editor, [])
+  const {path, offset} = getStartPoint(editor, true)
 
-  return searchWithScroll(editor, text, path, offset+1, true, doFocus)
+  return searchWithScroll(editor, text, path, offset, true, doFocus)
 }
 
 export function searchBackward(editor, text, doFocus=false) {
-  const {path, offset} = editor.selection?.focus ?? Editor.start(editor, [])
+  const {path, offset} = getStartPoint(editor, false)
 
   return searchWithScroll(editor, text, path, offset, false, doFocus)
 }
@@ -123,8 +130,8 @@ function searchWithScroll(editor, text, path, offset, forward=true, doFocus=fals
     scrollToRange(
       editor,
       {
-        focus: { path, offset },
-        anchor: { path, offset: offset + text.length }
+        anchor: { path, offset },
+        focus: { path, offset: offset + text.length }
       },
       doFocus
     )
