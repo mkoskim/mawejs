@@ -37,7 +37,7 @@ export function toXML(doc) {
       attributes: {
         uuid: doc.uuid ?? getUUID(),
         format: "mawe",
-        version: "5",
+        version: "6",
         name: doc.head?.name
       }
     },
@@ -53,7 +53,7 @@ export function toXML(doc) {
     xmlComment(
       "===============================================================================",
     ),
-    toBody(doc.body),
+    toDraft(doc.draft),
     xmlComment(
       "===============================================================================",
       "",
@@ -62,6 +62,14 @@ export function toXML(doc) {
       "===============================================================================",
     ),
     toNotes(doc.notes),
+    xmlComment(
+      "===============================================================================",
+      "",
+      "STORYBOOK",
+      "",
+      "===============================================================================",
+    ),
+    toStorybook(doc.storybook),
     xmlComment(
       "===============================================================================",
     ),
@@ -107,11 +115,11 @@ function toExport(exports) {
 //*****************************************************************************
 
 
-function toBody(body) {
-  const {acts} = body;
+function toDraft(draft) {
+  const {acts} = draft;
 
   return xmlLines(
-    {type: "body"},
+    {type: "draft"},
     ...acts.map(toAct),
   )
 }
@@ -121,6 +129,15 @@ function toNotes(notes) {
 
   return xmlLines(
     {type: "notes"},
+    ...acts.map(toAct)
+  )
+}
+
+function toStorybook(storybook) {
+  const {acts} = storybook;
+
+  return xmlLines(
+    {type: "storybook"},
     ...acts.map(toAct)
   )
 }

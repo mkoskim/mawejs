@@ -185,6 +185,7 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
     <TextField select label="Content" value={exports.content} onChange={e => updateDocStoryContent(updateDoc, e.target.value)}>
       <MuiMenuItem value="draft">Draft</MuiMenuItem>
       <MuiMenuItem value="synopsis">Synopsis</MuiMenuItem>
+      <MuiMenuItem value="storybook">Storybook</MuiMenuItem>
       </TextField>
 
     <TextField select label="Story Class" value={exports.type} onChange={e => updateDocStoryType(updateDoc, e.target.value)}>
@@ -231,13 +232,22 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
 // Export to file
 //-----------------------------------------------------------------------------
 
+function getTypeSuffix(contentType) {
+  switch(contentType) {
+    case "synopsis": return ".synopsis"
+    case "storybook": return ".storybook"
+    default: break;
+  }
+  return ""
+}
+
 async function exportToFile(formatter, flatted) {
 
   const {options, file} = flatted
 
   const content = flattedFormat(formatter, flatted)
 
-  const typesuffix = options.content === "synopsis" ? ".synopsis" : ""
+  const typesuffix = getTypeSuffix(options.content)
 
   const dirname = await fs.dirname(file.id)
   const name = await fs.basename(file.id)

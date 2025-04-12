@@ -23,7 +23,7 @@ import { elemFind, elemFindall, elem2Text } from "./tree";
 //
 //-----------------------------------------------------------------------------
 
-const supported = ["1", "2", "3", "4", "5"]
+const supported = ["1", "2", "3", "4", "5", "6"]
 
 export function migrate(root) {
 
@@ -43,6 +43,8 @@ export function migrate(root) {
     v3_fixes,
     v3_to_v4,
     v4_to_v5,
+    v5_to_v6,
+    v6_fixes,
   ].reduce((story, func) => func(story), story)
 }
 
@@ -287,7 +289,7 @@ function v4_to_v5(story) {
 
   return {
     ...story,
-    attributes: {...story.attributes, version: "4.1"},
+    attributes: {...story.attributes, version: "5"},
     elements: [
       ...story.elements
         .filter(elem => elem.name !== "body")
@@ -333,5 +335,101 @@ function v4_to_v5(story) {
       }
     }
     return elem
+  }
+}
+
+//*****************************************************************************
+//
+// v5 --> v6
+//
+// - Body --> Draft
+// - Added reference section
+//
+//*****************************************************************************
+
+function v5_to_v6(story) {
+
+  const {version} = story.attributes ?? {}
+
+  if(version !== "5") return story
+
+  console.log("Migrate v5 -> v6")
+
+  // Fix unnumbered --> numbered
+  const draftElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}
+  const uiElem = elemFind(story, "ui")
+
+  console.log("Fix:", fixSettings(uiElem))
+
+  const elements = story.elements
+    .filter(elem => elem.name !== "ui")
+    .concat(fixSettings(uiElem))
+    .filter(elem => elem.name !== "body")
+    .concat({
+      ...draftElem,
+      name: "draft",
+    })
+    .concat({
+      type: "element",
+      name: "storybook",
+      elements: []
+    })
+
+  return {
+    ...story,
+    attributes: {...story.attributes, version: "6"},
+    elements
+  }
+
+  function fixSettings(uiElem) {
+    const editorElem = elemFind(uiElem, "editor") ?? {type: "element", name: "editor", elements: []}
+    const elements = uiElem.elements
+      .filter(elem => elem.name !== "editor")
+      .concat(fixEditorElem(editorElem))
+
+    return {
+      ...uiElem,
+      elements
+    }
+  }
+
+  function fixEditorElem(editorElem) {
+    const draftElem  = elemFind(editorElem, "body") ?? {type: "element", name: "body", elements: []}
+    const elements = editorElem.elements
+      .filter(elem => elem.name !== "body")
+      .concat({
+        ...draftElem,
+        name: "draft",
+      })
+
+    return {
+      ...editorElem,
+      elements,
+    }
+  }
+}
+
+function v6_fixes(story) {
+
+  const {version} = story.attributes ?? {}
+
+  if(version !== "6") return story
+
+  const referenceElem  = elemFind(story, "reference")
+
+  if(!referenceElem) return story;
+
+  console.log("v6 rename")
+
+  const elements = story.elements
+    .filter(elem => elem.name !== "reference")
+    .concat({
+      ...referenceElem,
+      name: "storybook",
+    })
+
+  return {
+    ...story,
+    elements
   }
 }

@@ -79,12 +79,12 @@ function OutlinerToolbar({settings, section}) {
 function OrganizerView({doc, updateDoc}) {
   //console.log("Organizer: Doc:", doc)
 
-  const {body, notes} = doc
+  const {draft, notes} = doc
 
   const [indexed1, setIndexed1] = useState(["synopsis"])
   const [words1, setWords1] = useState("numbers")
 
-  const body_settings = {
+  const draft_settings = {
     indexed: {
       choices:  ["synopsis"],
       value:    indexed1,
@@ -94,8 +94,8 @@ function OrganizerView({doc, updateDoc}) {
       choices:  ["off", "numbers", "compact", "percent", "cumulative"],
       value:    words1,
       setValue: setWords1,
-      total: body.words.text + body.words.missing,
-      cumulative: wcCumulative(body)
+      total: draft.words.text + draft.words.missing,
+      cumulative: wcCumulative(draft)
     },
   }
 
@@ -109,18 +109,18 @@ function OrganizerView({doc, updateDoc}) {
   }
 
   return <div className="Filler Organizer" style={{overflow: "auto"}}>
-    <OutlinerToolbar settings={body_settings} section={body}/>
-    <Droppable droppableId="body" direction="horizontal" type="chapter">
+    <OutlinerToolbar settings={draft_settings} section={draft}/>
+    <Droppable droppableId="draft" direction="horizontal" type="chapter">
     {(provided, snapshot) => {
         const {innerRef, droppableProps, placeholder} = provided
 
-        //console.log("Body update")
+        //console.log("Draft update")
         return <div
           ref={innerRef}
           className="HBox Section"
           {...droppableProps}
           >
-          {body.chapters.map((chapter, index) => <ChapterView key={chapter.id} index={index} settings={body_settings} chapter={chapter}/>)}
+          {draft.chapters.map((chapter, index) => <ChapterView key={chapter.id} index={index} settings={draft_settings} chapter={chapter}/>)}
           {placeholder}
         </div>
       }

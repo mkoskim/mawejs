@@ -93,6 +93,7 @@ import {
   DeleteOutlined,
   KeyboardArrowDown,
   DriveFileRenameOutlineOutlined,
+  Biotech,
 } from '@mui/icons-material';
 
 import {
@@ -101,15 +102,40 @@ import {
   mdiSortReverseVariant,
   mdiSortVariant,
   mdiTextBoxEditOutline,
-  mdiArrowDownThin,
+  mdiBookAlphabet,
+  mdiBookOpenVariantOutline,
 } from '@mdi/js';
+
 import { createSvgIcon } from '@mui/material';
+import {BiotechOutlined} from '@mui/icons-material';
+import {ScienceOutlined} from '@mui/icons-material';
+import {NotesOutlined} from '@mui/icons-material';
+
+//-----------------------------------------------------------------------------
+// Material Design Icons
+//-----------------------------------------------------------------------------
 
 //const MdiSortAscending = createSvgIcon(<path d={mdiSortAscending}/>)
 //const MdiSortDescending = createSvgIcon(<path d={mdiSortDescending}/>)
 //const MdiSortAscending = createSvgIcon(<path d={mdiSortReverseVariant}/>)
 //const MdiSortDescending = createSvgIcon(<path d={mdiSortVariant}/>)
 const MdiTextBoxEditOutline = createSvgIcon(<path d={mdiTextBoxEditOutline}/>)
+const MdiBookAlphabet = createSvgIcon(<path d={mdiBookAlphabet}/>)
+const MdiBookOpenVariantOutline = createSvgIcon(<path d = {mdiBookOpenVariantOutline}/>)
+
+//-----------------------------------------------------------------------------
+// Custom made icons
+//-----------------------------------------------------------------------------
+
+/*
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <title>sort-ascending</title>
+  <path d="M19 17H22L18 21L14 17H17V3H19M2 17H12V19H2M6 5V7H2V5M2 11H9V13H2V11Z" />
+  </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <title>sort-descending</title>
+  <path d="M19 7H22L18 3L14 7H17V21H19M2 17H12V19H2M6 5V7H2V5M2 11H9V13H2V11Z" /></svg>
+*/
 
 const elements = {
   arrowDown:   ["M19 17", "H22", "L18 21", "L14 17", "H17", "V3",  "H19"].join(""),
@@ -126,20 +152,13 @@ const elements = {
   ].join(""),
 }
 
-const MdiSortAscending  = createSvgIcon(<path d={elements.arrowDown + elements.stackAscend}/>)
-const MdiSortDescending = createSvgIcon(<path d={elements.arrowDown + elements.stackDescend} />)
+const SortAscending  = createSvgIcon(<path d={elements.arrowDown + elements.stackAscend}/>)
+const SortDescending = createSvgIcon(<path d={elements.arrowDown + elements.stackDescend} />)
 
-/*
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <title>sort-ascending</title>
-  <path d="M19 17H22L18 21L14 17H17V3H19M2 17H12V19H2M6 5V7H2V5M2 11H9V13H2V11Z" />
-  </svg>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <title>sort-descending</title>
-  <path d="M19 7H22L18 3L14 7H17V21H19M2 17H12V19H2M6 5V7H2V5M2 11H9V13H2V11Z" /></svg>
-*/
+//-----------------------------------------------------------------------------
+// Icons
+//-----------------------------------------------------------------------------
 
-// Material icons
 export const Icon = {
   Placeholder: LightbulbOutlined,
 
@@ -161,8 +180,8 @@ export const Icon = {
   },
 
   Sort: {
-    Ascending: MdiSortAscending,
-    Descending: MdiSortDescending,
+    Ascending: SortAscending,
+    Descending: SortDescending,
   },
 
   View: {
@@ -174,6 +193,9 @@ export const Icon = {
     Arc: DonutLarge,
     Stats: BarChartOutlined,
     Tags: AlternateEmail,
+    Draft: DescriptionOutlined,
+    Notes: NotesOutlined,
+    StoryBook: MdiBookOpenVariantOutline,
     Trashcan: DeleteOutlined,
   },
 

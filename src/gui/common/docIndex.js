@@ -89,7 +89,7 @@ export function DocIndex({style, sectID, section, wcFormat, include, setActive, 
     ? (section.words?.text + section.words?.missing)
     : undefined
 
-  //if(activeID === "body") console.log("Index:", total, cumulative)
+  //if(activeID === "draft") console.log("Index:", total, cumulative)
 
   const wcFormatFunction = useCallback(
     (!wcFormat || wcFormat === "off")
