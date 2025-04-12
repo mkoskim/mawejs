@@ -511,7 +511,7 @@ class ChooseLeftPanel extends React.PureComponent {
     },
   }
 
-  static choices = ["storybook", "draft", "notes",]
+  static choices = ["draft", "storybook", "notes",]
 
   render() {
     const {disabled, selected, setSelected} = this.props
@@ -588,8 +588,8 @@ class ChooseRightPanel extends React.PureComponent {
   }
 
   static choices = [
-    "storybook",
     "draft",
+    "storybook",
     "notes",
     "wordtable",
     "tagtable",
