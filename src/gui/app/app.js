@@ -340,7 +340,7 @@ function DocBar({ doc, updateDoc }) {
   useEffect(() => addHotkeys([
     [IsKey.CtrlN, (e) => cmdNewFile({ setCommand })],
     [IsKey.CtrlO, (e) => cmdOpenFile({ setCommand, file })],
-  ]), []);
+  ]), [file]);
 
   //console.log("Recent:", recent)
   if (!doc) return <WithoutDoc setCommand={setCommand} recent={recent} />
@@ -372,7 +372,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 
   useEffect(() => addHotkeys([
     [IsKey.CtrlS, (e) => cmdSaveFile({ setCommand, file })],
-  ]), [])
+  ]), [file])
 
   return <ToolBox>
     <FileMenu file={file} setCommand={setCommand} recent={recent} hasdoc={true}/>
@@ -431,7 +431,7 @@ class FileOperations extends React.PureComponent {
 
   render() {
     const {file, setCommand} = this.props
-    const compressed = file.id.endsWith(".gz")
+    const compressed = file?.id.endsWith(".gz") ?? false
     const {gzip_style, gunzip_style} = this
     const compress_style = compressed ? gunzip_style : gzip_style
     const compress_tooltip = compressed ? "Uncompress" : "Compress"
