@@ -320,7 +320,7 @@ export function EditView({doc, updateDoc}) {
   }
 
   //---------------------------------------------------------------------------
-  // Hotkeys
+  // Search hotkeys
   //---------------------------------------------------------------------------
 
   useEffect(() => addHotkeys([
@@ -440,13 +440,13 @@ export function EditView({doc, updateDoc}) {
 function LeftPanel({settings}) {
   const {doc} = settings
 
-  const {left} = doc.ui.editor
+  const {left, draft} = doc.ui.editor
 
   const {style, selected} = left
 
   return <VBox style={style}>
     <LeftPanelMenu settings={settings}/>
-    <SectionIndex sectID={selected} settings={settings}/>
+    <SectionIndex sectID={selected} settings={settings} side={draft}/>
   </VBox>
 }
 
@@ -467,14 +467,6 @@ function LeftPanelMenu({settings}) {
   const words = doc.ui.editor.draft.words
   const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.draft.words = value}), [updateDoc])
 
-  switch(selected) {
-    case "storybook": return <ToolBox style={doc.ui.editor.toolbox.left}>
-      <ChooseLeftPanel disabled={disabled} selected={selected} setSelected={setSelected}/>
-      <Separator/>
-    </ToolBox>
-    default: break;
-  }
-
   return <ToolBox style={doc.ui.editor.toolbox.left}>
     <ChooseLeftPanel disabled={disabled} selected={selected} setSelected={setSelected}/>
     <Separator/>
@@ -483,7 +475,7 @@ function LeftPanelMenu({settings}) {
       selected={indexed}
       setSelected={setIndexed}
     />
-    <Separator/>
+    {/*<Separator/>*/}
     <Filler/>
     <Separator/>
     <ChooseWordFormat
@@ -622,7 +614,8 @@ function RightPanelContent({settings, selected}) {
     case "draft":
     case "notes":
     case "storybook": {
-      return <SectionIndex sectID={selected} settings={settings}/>
+      const {notes} = doc.ui.editor
+      return <SectionIndex sectID={selected} settings={settings} side={notes}/>
     }
     case "wordtable": {
       return <WordTable
@@ -646,14 +639,14 @@ function RightPanelContent({settings, selected}) {
 // Index rendering
 //-----------------------------------------------------------------------------
 
-function SectionIndex({sectID, settings}) {
+function SectionIndex({sectID, settings, side}) {
   const {
     doc,
     setActive,
     track,
   } = settings
 
-  const {style, indexed, words} = doc.ui.editor[sectID === "storybook" ? "draft" : sectID]
+  const {style, indexed, words} = side
 
   return <DocIndex
     style={style}

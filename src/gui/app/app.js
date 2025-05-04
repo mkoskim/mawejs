@@ -340,7 +340,7 @@ function DocBar({ doc, updateDoc }) {
   useEffect(() => addHotkeys([
     [IsKey.CtrlN, (e) => cmdNewFile({ setCommand })],
     [IsKey.CtrlO, (e) => cmdOpenFile({ setCommand, file })],
-  ]), []);
+  ]), [file]);
 
   //console.log("Recent:", recent)
   if (!doc) return <WithoutDoc setCommand={setCommand} recent={recent} />
@@ -372,7 +372,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 
   useEffect(() => addHotkeys([
     [IsKey.CtrlS, (e) => cmdSaveFile({ setCommand, file })],
-  ]), [])
+  ]), [file])
 
   return <ToolBox>
     <FileMenu file={file} setCommand={setCommand} recent={recent} hasdoc={true}/>
@@ -407,16 +407,16 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 //-----------------------------------------------------------------------------
 
 class FileOperations extends React.PureComponent {
-  gzip_style = {
+  static gzip_style = {
     fontSize: "10pt",
-    border: "2px solid grey",
+    border: "2px solid",
     //paddingLeft: "2px",
     //paddingRight: "2px",
     //paddingTop: "2px",
     paddingBottom: "2px",
     borderRadius: "3px",
   }
-  gunzip_style = {
+  static gunzip_style = {
     ...this.gzip_style,
     textDecorationLine: "line-through",
     textDecorationThickness: "2px",
@@ -431,8 +431,8 @@ class FileOperations extends React.PureComponent {
 
   render() {
     const {file, setCommand} = this.props
-    const compressed = file.id.endsWith(".gz")
-    const {gzip_style, gunzip_style} = this
+    const compressed = file?.id.endsWith(".gz") ?? false
+    const {gzip_style, gunzip_style} = this.constructor
     const compress_style = compressed ? gunzip_style : gzip_style
     const compress_tooltip = compressed ? "Uncompress" : "Compress"
     //const filename = file?.name ?? "<Unnamed>"
@@ -442,7 +442,7 @@ class FileOperations extends React.PureComponent {
       <Label style={{paddingLeft: "4px", paddingRight: "4px"}} text={filename}/>
       <IconButton tooltip="Rename" onClick={e => { cmdRenameFile({ setCommand, file }) }}><Icon.Action.File.Rename/></IconButton>
       */}
-      <Button tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>&nbsp;gz&nbsp;</span></Button>
+      <Button disabled={!file} tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>&nbsp;gz&nbsp;</span></Button>
       <OpenFolderButton filename={file?.id} />
       </>
   }
