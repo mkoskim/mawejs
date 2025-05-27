@@ -656,7 +656,7 @@ class SectionIndex extends React.PureComponent {
     const {doc, sectID, name, side, indexing, updateIndexing, indexed, words, setActive, track} = this.props
     const visible = indexing[sectID] === side
 
-    return <div className="Section">
+    return <div className="SectionZone">
       <SectionName
         name={name}
         side={side}
