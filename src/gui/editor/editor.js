@@ -17,6 +17,8 @@ import React, {
   useRef,
 } from 'react';
 
+import { useImmer } from "use-immer";
+
 import {
   Slate, ReactEditor,
 } from "slate-react"
@@ -80,7 +82,7 @@ import {elemFind} from "../../document/xmljs/tree";
 
 export function loadEditorSettings(settings) {
 
-  function getDraftSettings() {
+  function getLeftSettings() {
     const draft = elemFind(settings, "draft")
     if(!draft) return {}
 
@@ -108,31 +110,17 @@ export function loadEditorSettings(settings) {
   return {
     active: "draft",
     focusTo: undefined,
-    draft: {
-      indexed: ["act", "chapter", "scene", "bookmark"],
-      words: "numbers",
-      ...getDraftSettings()
-    },
-    notes: {
-      indexed: ["act", "chapter", "scene", "bookmark"],
-      words: undefined,
-    },
-    storybook: {
-      indexed: ["act", "chapter", "scene", "bookmark"],
-      words: undefined,
-    },
-    trashcan: {
-      indexed: ["act", "chapter", "scene"],
-      words: undefined,
-      style: {background: "#FED"},
-    },
     left: {
       style: {maxWidth: "400px", width: "400px", borderRight: "1px solid lightgray"},
-      selected: "draft"
+      indexed: ["act", "chapter", "scene", "bookmark"],
+      words: "numbers",
+      ...getLeftSettings()
     },
     right: {
       style: {maxWidth: "300px", width: "300px", borderLeft: "1px solid lightgray"},
-      selected: "notes"
+      selected: "index",
+      indexed: ["act", "chapter", "scene", "bookmark"],
+      words: undefined,
     },
     toolbox: {
       left: {background: "white"},
@@ -259,6 +247,16 @@ export function EditView({doc, updateDoc}) {
   }, [editors])
 
   //---------------------------------------------------------------------------
+  // Sections in indices
+  //---------------------------------------------------------------------------
+
+  const [indexing, updateIndexing] = useImmer({
+    storybook: false,
+    draft: "left",
+    notes: "right",
+  })
+
+  //---------------------------------------------------------------------------
   // Section selection + focusing
   //---------------------------------------------------------------------------
 
@@ -317,6 +315,8 @@ export function EditView({doc, updateDoc}) {
     track,
     updateSection,
     editors,
+    indexing,
+    updateIndexing
   }
 
   //---------------------------------------------------------------------------
@@ -437,39 +437,35 @@ export function EditView({doc, updateDoc}) {
 // Left panels
 //---------------------------------------------------------------------------
 
+const LeftIndexChoices = {
+  visible: ["scene", "bookmark", "missing", "comment", "tags"],
+  words: ["off", "numbers", "compact", "cumulative", "percent"]
+}
+
 function LeftPanel({settings}) {
   const {doc} = settings
 
-  const {left, draft} = doc.ui.editor
+  const {left} = doc.ui.editor
 
-  const {style, selected} = left
+  const {style, indexed, words} = left
 
   return <VBox style={style}>
     <LeftPanelMenu settings={settings}/>
-    <SectionIndex sectID={selected} settings={settings} side={draft}/>
+    <ShowIndices settings={settings} side="left" indexed={indexed} words={words}/>
   </VBox>
 }
 
 function LeftPanelMenu({settings}) {
 
-  const {doc, updateDoc, setActive} = settings
-  const {right, left} = doc.ui.editor
-  const {selected} = left
-  const disabled = useMemo(() => [right.selected], [right.selected])
+  const {doc, updateDoc} = settings
 
-  const setSelected = useCallback(value => {
-    setActive(value)
-    updateDoc(doc => {doc.ui.editor.left.selected = value})
-  }, [updateDoc])
-
-  const indexed = doc.ui.editor.draft.indexed;
-  const setIndexed = useCallback(value => updateDoc(doc => {doc.ui.editor.draft.indexed = value}), [updateDoc])
-  const words = doc.ui.editor.draft.words
-  const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.draft.words = value}), [updateDoc])
+  const indexed = doc.ui.editor.left.indexed;
+  const setIndexed = useCallback(value => updateDoc(doc => {doc.ui.editor.left.indexed = value}), [updateDoc])
+  const words = doc.ui.editor.left.words
+  const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.left.words = value}), [updateDoc])
 
   return <ToolBox style={doc.ui.editor.toolbox.left}>
-    <ChooseLeftPanel disabled={disabled} selected={selected} setSelected={setSelected}/>
-    <Separator/>
+    {/* <ChooseLeftPanel disabled={disabled} selected={selected} setSelected={setSelected}/> */}
     <ChooseVisibleElements
       choices={LeftIndexChoices.visible}
       selected={indexed}
@@ -484,45 +480,6 @@ function LeftPanelMenu({settings}) {
       setSelected={setWords}
     />
   </ToolBox>
-}
-
-class ChooseLeftPanel extends React.PureComponent {
-
-  static buttons = {
-    "draft": {
-      tooltip: "Draft Index",
-      icon: <Icon.View.Draft />
-    },
-    "notes": {
-      tooltip: "Notes Index",
-      icon: <Icon.View.Notes />
-    },
-    "storybook": {
-      tooltip: "Storybook Index",
-      icon: <Icon.View.StoryBook />
-    },
-  }
-
-  static choices = ["draft", "storybook", "notes",]
-
-  render() {
-    const {disabled, selected, setSelected} = this.props
-    const {buttons, choices} = this.constructor
-
-    return <MakeToggleGroup
-      buttons={buttons}
-      choices={choices}
-      disabled={disabled}
-      selected={selected}
-      setSelected={setSelected}
-      exclusive={true}
-    />
-  }
-}
-
-const LeftIndexChoices = {
-  visible: ["scene", "bookmark", "missing", "comment", "tags"],
-  words: ["off", "numbers", "compact", "cumulative", "percent"]
 }
 
 //---------------------------------------------------------------------------
@@ -553,6 +510,7 @@ function RightPanel({settings}) {
 class ChooseRightPanel extends React.PureComponent {
 
   static buttons = {
+    /*
     "draft": {
       tooltip: "Draft Index",
       icon: <Icon.View.Draft />
@@ -564,6 +522,11 @@ class ChooseRightPanel extends React.PureComponent {
     "storybook": {
       tooltip: "Storybook Index",
       icon: <Icon.View.StoryBook />
+    },
+    */
+    "index": {
+      tooltip: "Index",
+      icon: <Icon.View.Index />
     },
     "wordtable": {
       tooltip: "Word frequency",
@@ -580,9 +543,10 @@ class ChooseRightPanel extends React.PureComponent {
   }
 
   static choices = [
-    "draft",
-    "storybook",
-    "notes",
+    //"draft",
+    //"storybook",
+    //"notes",
+    "index",
     "wordtable",
     "tagtable",
     //"trashcan"
@@ -611,11 +575,11 @@ function RightPanelContent({settings, selected}) {
   } = settings
 
   switch(selected) {
-    case "draft":
-    case "notes":
-    case "storybook": {
-      const {notes} = doc.ui.editor
-      return <SectionIndex sectID={selected} settings={settings} side={notes}/>
+    case "index": {
+      const {right} = doc.ui.editor
+      const {indexed, words} = right
+
+      return <ShowIndices settings={settings} side="right" indexed={indexed} words={words}/>
     }
     case "wordtable": {
       return <WordTable
@@ -629,8 +593,6 @@ function RightPanelContent({settings, selected}) {
         editor={editors.draft}
         section={doc.draft}
       />
-    case "trashcan":
-      return <SectionIndex sectID="trashcan" settings={settings}/>
     default: break;
   }
 }
@@ -639,24 +601,107 @@ function RightPanelContent({settings, selected}) {
 // Index rendering
 //-----------------------------------------------------------------------------
 
-function SectionIndex({sectID, settings, side}) {
+function ShowIndices({style, settings, side, indexed, words}) {
   const {
     doc,
     setActive,
     track,
+    indexing,
+    updateIndexing,
   } = settings
 
-  const {style, indexed, words} = side
+  return <VBox style={style} className="TOC">
+    <SectionIndex
+      doc={doc}
+      sectID="storybook"
+      name="Storybook"
+      side={side}
+      indexing={indexing}
+      updateIndexing={updateIndexing}
+      indexed={indexed}
+      words={words}
+      setActive={setActive}
+      track={track}
+    />
+    <SectionIndex
+      doc={doc}
+      sectID="draft"
+      name="Draft"
+      side={side}
+      indexing={indexing}
+      updateIndexing={updateIndexing}
+      indexed={indexed}
+      words={words}
+      setActive={setActive}
+      track={track}
+    />
+    <SectionIndex
+      doc={doc}
+      sectID="notes"
+      name="Notes"
+      side={side}
+      indexing={indexing}
+      updateIndexing={updateIndexing}
+      indexed={indexed}
+      words={words}
+      setActive={setActive}
+      track={track}
+    />
+  </VBox>
+}
 
-  return <DocIndex
-    style={style}
-    sectID={sectID}
-    section={doc[sectID]}
-    include={indexed}
-    wcFormat={words}
-    setActive={setActive}
-    current={track?.id}
-  />
+class SectionIndex extends React.PureComponent {
+
+  render() {
+    const {doc, sectID, name, side, indexing, updateIndexing, indexed, words, setActive, track} = this.props
+    const visible = indexing[sectID] === side
+
+    return <div className="Section">
+      <SectionName
+        name={name}
+        side={side}
+        sectID={sectID}
+        indexing={indexing}
+        updateIndexing={updateIndexing}
+      />
+      {visible && <DocIndex
+        //style={style}
+        sectID={sectID}
+        section={doc[sectID]}
+        include={indexed}
+        wcFormat={words}
+        setActive={setActive}
+        current={track?.id}
+      />}
+    </div>
+  }
+}
+
+class SectionName extends React.PureComponent {
+
+  render() {
+    const {sectID, name, side, indexing, updateIndexing} = this.props
+    const visible = indexing[sectID] === side
+    const className = addClass("HBox Entry Section", visible ? null : "Folded")
+    return <div className={className} onClick={e => toggleIndexing(indexing, updateIndexing, sectID, side)}>
+      {name}
+    </div>
+  }
+}
+
+function toggleIndexing(indexing, updateIndexing, sectID, side) {
+  if(indexing[sectID] === side) {
+    // Hide the index
+    updateIndexing(draft => {
+      draft[sectID] = false;
+    });
+  }
+  else {
+    // Show the index
+    updateIndexing(draft => {
+      draft[sectID] = side;
+    });
+  }
 }
 
 //-----------------------------------------------------------------------------
