@@ -43,7 +43,7 @@
 .TOC {
   .SectionZone {
     counter-reset: act chapter scene;
-    border-bottom: 1px dashed lightgray;
+    border-bottom: 1px solid lightgray;
   }
 }
 

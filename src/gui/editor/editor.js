@@ -122,6 +122,11 @@ export function loadEditorSettings(settings) {
       indexed: ["act", "chapter", "scene", "bookmark"],
       words: undefined,
     },
+    indexing: {
+      storybook: false,
+      draft: "left",
+      notes: "right",
+    },
     toolbox: {
       left: {background: "white"},
       mid: {background: "white"},
@@ -247,17 +252,7 @@ export function EditView({doc, updateDoc}) {
   }, [editors])
 
   //---------------------------------------------------------------------------
-  // Sections in indices
-  //---------------------------------------------------------------------------
-
-  const [indexing, updateIndexing] = useImmer({
-    storybook: false,
-    draft: "left",
-    notes: "right",
-  })
-
-  //---------------------------------------------------------------------------
-  // Section selection + focusing
+  // Section selection + focusing + indexing
   //---------------------------------------------------------------------------
 
   const {refocus, active, focusTo} = doc.ui.editor
@@ -315,8 +310,6 @@ export function EditView({doc, updateDoc}) {
     track,
     updateSection,
     editors,
-    indexing,
-    updateIndexing
   }
 
   //---------------------------------------------------------------------------
@@ -604,11 +597,12 @@ function RightPanelContent({settings, selected}) {
 function ShowIndices({style, settings, side, indexed, words}) {
   const {
     doc,
+    updateDoc,
     setActive,
     track,
-    indexing,
-    updateIndexing,
   } = settings
+  const {indexing} = doc.ui.editor
+  const updateIndexing = useCallback((sectID, value) => updateDoc(doc => {doc.ui.editor.indexing[sectID] = value}), [updateDoc])
 
   return <VBox style={style} className="TOC">
     <SectionIndex
@@ -684,24 +678,15 @@ class SectionName extends React.PureComponent {
     const visible = indexing[sectID] === side
     const className = addClass("HBox Entry Section", visible ? null : "Folded")
     return <div className={className} onClick={e => toggleIndexing(indexing, updateIndexing, sectID, side)}>
-      {name}
+      <div className="Name">{name}</div>
+      <Filler/>
+      {visible ? <Icon.Arrow.Head.Up/> : <Icon.Arrow.Head.Down/>}
     </div>
   }
 }
 
 function toggleIndexing(indexing, updateIndexing, sectID, side) {
-  if(indexing[sectID] === side) {
-    // Hide the index
-    updateIndexing(draft => {
-      draft[sectID] = false;
-    });
-  }
-  else {
-    // Show the index
-    updateIndexing(draft => {
-      draft[sectID] = side;
-    });
-  }
+  updateIndexing(sectID, indexing[sectID] === side ? false : side)
 }
 
 //-----------------------------------------------------------------------------
