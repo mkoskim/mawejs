@@ -452,9 +452,8 @@ function LeftPanelMenu({settings}) {
 
   const {doc, updateDoc} = settings
 
-  const indexed = doc.ui.editor.left.indexed;
+  const {indexed, words} = doc.ui.editor.left
   const setIndexed = useCallback(value => updateDoc(doc => {doc.ui.editor.left.indexed = value}), [updateDoc])
-  const words = doc.ui.editor.left.words
   const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.left.words = value}), [updateDoc])
 
   return <ToolBox style={doc.ui.editor.toolbox.left}>
