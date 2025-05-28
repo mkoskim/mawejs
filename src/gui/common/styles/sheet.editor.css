@@ -96,6 +96,7 @@
 
   div.chapter {
     /*
+    content-visibility: auto;
     margin-bottom: 0.5cm;
     */
   }
@@ -131,6 +132,12 @@
       content: "%% ";
     }
   }
+
+  /*
+  div.scene, div.synopsis, div.notes {
+    content-visibility: auto;
+  }
+  /**/
 
   div.scene:not(.folded) {
     margin-bottom: 0.5cm;

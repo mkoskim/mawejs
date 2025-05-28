@@ -300,7 +300,7 @@ export class SearchBox extends React.PureComponent {
 
   static sx = {
     height: "32px",
-    padding: "2px",
+    padding: "2px 2px 2px 4px",
   }
 
   render() {

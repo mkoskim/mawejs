@@ -116,20 +116,18 @@ export function DocIndex({style, sectID, section, wcFormat, include, setActive, 
   // Index
   //---------------------------------------------------------------------------
 
-  return <VBox style={style} className="TOC">
-    <ActDropZone
-      id={sectID}
-      acts={section.acts}
-      wcFormat={wcFormatFunction}
-      include={include}
-      onActivate={onActivate}
-      unfold={unfold}
-      atAct={at.act}
-      atChapter={at.chapter}
-      atScene={at.scene}
-      refCurrent={refCurrent}
-      />
-    </VBox>
+  return <ActDropZone
+    id={sectID}
+    acts={section.acts}
+    wcFormat={wcFormatFunction}
+    include={include}
+    onActivate={onActivate}
+    unfold={unfold}
+    atAct={at.act}
+    atChapter={at.chapter}
+    atScene={at.scene}
+    refCurrent={refCurrent}
+    />
   //return useDeferredValue(index)
 }
 

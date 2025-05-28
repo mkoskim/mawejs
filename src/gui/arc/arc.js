@@ -143,13 +143,15 @@ export function StoryArcView({doc, updateDoc}) {
     <HBox style={{overflow: "auto"}}>
       <VBox style={indexStyle}>
         <IndexToolbar settings={settings}/>
-        <DocIndex
+        <VBox className="TOC">
+          <DocIndex
           sectID="draft"
           section={doc.draft}
           include={indexElements()}
           wcFormat={"numbers"}
           unfold={true}
         />
+        </VBox>
       </VBox>
       <ChartView settings={settings} doc={doc} updateDoc={updateDoc}/>
     </HBox>
