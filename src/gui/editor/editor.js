@@ -143,8 +143,8 @@ export function saveEditorSettings(settings) {
       {
         type: "draft",
         attributes: {
-          words: settings.draft.words,
-          indexed: settings.draft.indexed.join(",")
+          words: settings.left.words,
+          indexed: settings.left.indexed.join(",")
         },
         elements: [
         ]
