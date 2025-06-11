@@ -24,6 +24,11 @@ import {
   ArrowDropUp,
   ArrowDropDown,
 
+  KeyboardArrowDown,
+  KeyboardArrowUp,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+
   IndeterminateCheckBoxOutlined,
   Expand, ExpandMore,
   Collapse,
@@ -91,7 +96,6 @@ import {
   Sort,
   DeleteForeverOutlined,
   DeleteOutlined,
-  KeyboardArrowDown,
   DriveFileRenameOutlineOutlined,
   Biotech,
 } from '@mui/icons-material';
@@ -177,6 +181,12 @@ export const Icon = {
     Up: ArrowUpward,
     Down: ArrowDownward,
     DropDown: ArrowDropDown,
+    Head: {
+      Up: KeyboardArrowUp,
+      Down: KeyboardArrowDown,
+      Left: KeyboardArrowLeft,
+      Right: KeyboardArrowRight,
+    }
   },
 
   Sort: {

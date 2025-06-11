@@ -22,9 +22,9 @@
 
   flex-grow: 1; /* Fill empty space */
 
-  padding: 6px;
   padding-bottom: 1cm; /* For DnD */
   /*
+  padding: 6px;
   padding-top: 4px;
   padding-left: 6px;
   padding-top: 0.5cm;
@@ -34,7 +34,17 @@
   background: white;
   border-right: 1pt solid lightgray;
   */
-  counter-reset: act chapter scene;
+}
+
+/*---------------------------------------------------------------------------*/
+/* TOC sections */
+/*---------------------------------------------------------------------------*/
+
+.TOC {
+  .SectionZone {
+    counter-reset: act chapter scene;
+    border-bottom: 1px solid lightgray;
+  }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -45,13 +55,13 @@
   margin: 0;
   cursor: default;
   align-items: center;
-  padding: 2px;
+  padding: 2px 4px;
   /*
-  padding-left: 6pt;
+  padding-left: 4pt;
   padding-right: 4pt;
   padding-bottom: 2pt;
-  padding-left: 16px;
-  */
+  padding-bottom: 2pt;
+  /**/
 
   /*-------------------------------------------------------------------------*/
 
@@ -65,15 +75,20 @@
     background-color: rgb(210, 230, 250);
   }
 
-  /*-------------------------------------------------------------------------*/
-
   &.Folded {
     opacity: 33%;
+    /*color: rgba(0, 0, 0, 0.33);*/
+    /*color: rgb(180, 180, 180)*/
   }
 
+  /*-------------------------------------------------------------------------*/
+
   &.Section {
+    /*
+    background-color: rgb(240, 240, 240);
     padding: 6px;
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px dashed lightgray;
+    */
   }
 
   /*-------------------------------------------------------------------------*/
