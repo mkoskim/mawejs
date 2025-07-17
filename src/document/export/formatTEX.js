@@ -243,7 +243,7 @@ ${content}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${backmatter}
-
+\\IfFileExists{./backcover.tex}{\\include{backcover.tex}}{\\null}
 \\end{document}
 `
 }
@@ -291,7 +291,7 @@ ${backmatter}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \\backcover
-\\null
+\\IfFileExists{./backcover.tex}{\\include{backcover.tex}}{\\null}
 \\end{document}
 `
 }
