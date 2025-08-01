@@ -58,6 +58,8 @@ const formatTEX = {
   //"bookmark": (p) => undefined,
   //"comment": (p) => undefined,
 
+  "quote": (p, text) => (text ? `{${text}\\par}` : "\\par\\null") + "\n",
+
   //---------------------------------------------------------------------------
   // Character styles
   //---------------------------------------------------------------------------
@@ -243,7 +245,7 @@ ${content}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ${backmatter}
-
+\\IfFileExists{./backcover.tex}{\\include{backcover.tex}}{\\null}
 \\end{document}
 `
 }
@@ -291,7 +293,7 @@ ${backmatter}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \\backcover
-\\null
+\\IfFileExists{./backcover.tex}{\\include{backcover.tex}}{\\null}
 \\end{document}
 `
 }

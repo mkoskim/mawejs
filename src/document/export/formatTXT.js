@@ -40,6 +40,8 @@ ${content}
   "missing": (p, text) => linify(`${p.first ? "    " : ""}!! ${text}`),
   "p": (p, text) => linify(`${p.first ? "    " : ""}${text}`),
 
+  "quote": (p, text) => linify(`    ${text}`),
+
   "b": (text) => `*${text}*`,
   "i": (text) => `_${text}_`,
   "text": (text) => text,
@@ -82,6 +84,7 @@ ${content}
   //"comment": (sp) => undefined,
   "missing": (p, text) => `!! ${text}\n`,
   "p": (p, text) => `${text}\n`,
+  "quote": (p, text) => `    ${text}`,
 
   "b": (text) => `**${text}**`,
   "i": (text) => `_${text}_`,
