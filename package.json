@@ -59,7 +59,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
-    "electron": "^36.3.1",
+    "electron": "^36.8.1",
     "electron-builder": "^26.0.12",
     "electron-reload": "^2.0.0-alpha.1",
     "nodemon": "^3.1.10",
