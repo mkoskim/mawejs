@@ -37,7 +37,7 @@
     "immer": "^10.1.1",
     "is-gzip": "^2.0.0",
     "is-hotkey": "^0.2.0",
-    "mammoth": "^1.8.0",
+    "mammoth": "^1.11.0",
     "material-ui-popup-state": "^5.3.6",
     "nanoid": "^5.1.5",
     "notistack": "^3.0.2",
