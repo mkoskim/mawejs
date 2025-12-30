@@ -222,7 +222,7 @@ export function createWordTable(section) {
       for(const scene of filterCtrlElems(chapter.children)) {
         if(scene.content !== "scene") continue
         for(const p of scene.children) {
-          if(p.type !== "p") continue
+          if(p.type !== "p" && p.type !== "quote") continue
           for(const word of text2words(elemAsText(p))) {
             const lowcase = word.toLowerCase()
             const count = wt.has(lowcase) ? wt.get(lowcase) : 0
@@ -271,7 +271,9 @@ function wcParagraph(elem) {
 
   switch(elem.type) {
     //case "p": return { chars, text: wc, map: words2map(words) }
-    case "p": return { chars, text: wc }
+    case "p":
+    case "quote":
+      return { chars, text: wc }
     case "missing": return { missing: wc }
     case "fill": {
       const fill = Math.max(0, parseInt(text))
@@ -323,6 +325,7 @@ export function wcElem(elem) {
     case "p":
     case "missing":
     case "fill":
+    case "quote":
       return wcParagraph(elem)
 
     default:
