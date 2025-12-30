@@ -205,7 +205,7 @@ export function storyToFlatted(story) {
       case "named": return {pgbreak, prefix, type, name, title}
       case "numbered": return numbered ? {pgbreak, prefix, type, name, number} : {pgbreak, prefix, type, name, title}
       case "numbered&named": return {pgbreak, prefix, type, name, number, title}
-      case "separated": return {type, name}
+      //case "separated": return {type, name}
       default: break;
     }
     return undefined

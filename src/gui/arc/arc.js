@@ -140,7 +140,7 @@ export function StoryArcView({doc, updateDoc}) {
   }
 
   return <DragDropContext onDragEnd={onDragEnd}>
-    <HBox style={{overflow: "auto"}}>
+    <HBox style={{overflow: "auto", height: "100%"}}>
       <VBox style={indexStyle}>
         <IndexToolbar settings={settings}/>
         <VBox className="TOC">
