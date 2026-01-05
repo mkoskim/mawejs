@@ -22,6 +22,7 @@ export class Preview extends React.PureComponent {
         />
       <div className="Filler Board Editor"
         style={{borderRight: "1px solid lightgray", borderLeft: "1px solid lightgray"}}
+        tabIndex={0}
         >
         <div className="Sheet Regular">
           <DeferredRender>{imported.map(PreviewAct)}</DeferredRender>

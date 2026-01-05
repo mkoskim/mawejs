@@ -26,8 +26,8 @@ export class ImportText extends React.PureComponent {
     this.state = {
       linebreak: "double",
       actprefix: "",
-      chapterprefix: "# ",
-      sceneprefix: "## ",
+      chapterprefix: "",
+      sceneprefix: "",
     };
   }
 
@@ -132,7 +132,7 @@ function importText(content, settings) {
     function getContent(lines) {
       const [first, ...rest] = lines
       if(isActBreak(first)) return {first, rest}
-      return {first: "###", rest: [first].concat(rest)}
+      return {first: "", rest: [first].concat(rest)}
     }
   }
 
@@ -149,7 +149,7 @@ function importText(content, settings) {
     function getContent(lines) {
       const [first, ...rest] = lines
       if(isChapterBreak(first)) return {first, rest}
-      return {first: "###", rest: [first].concat(rest)}
+      return {first: "", rest: [first].concat(rest)}
     }
   }
 
@@ -165,7 +165,7 @@ function importText(content, settings) {
     function getContent(lines) {
       const [first, ...rest] = lines
       if(isSceneBreak(first)) return {first, rest}
-      return {first: "* * *", rest: [first].concat(rest)}
+      return {first: "", rest: [first].concat(rest)}
     }
   }
 
