@@ -357,7 +357,7 @@ function v5_to_v6(story) {
 
   // Fix unnumbered --> numbered
   const draftElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}
-  const uiElem = elemFind(story, "ui")
+  const uiElem = elemFind(story, "ui") ?? {type: "element", name: "ui", elements: []}
 
   console.log("Fix:", fixSettings(uiElem))
 
