@@ -26,8 +26,8 @@ export class ImportText extends React.PureComponent {
     this.state = {
       linebreak: "double",
       actprefix: "",
-      chapterprefix: "# ",
-      sceneprefix: "## ",
+      chapterprefix: "",
+      sceneprefix: "",
     };
   }
 
