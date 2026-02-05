@@ -679,7 +679,7 @@ class SectionName extends React.PureComponent {
     return <div className={className} onClick={e => toggleIndexing(indexing, updateIndexing, sectID, side)}>
       <div className="Name">{name}</div>
       <Filler/>
-      {visible ? <Icon.Arrow.Head.Up/> : <Icon.Arrow.Head.Down/>}
+      {visible ? <Icon.Arrow.Head.Down/> : <Icon.Arrow.Head.Right/>}
     </div>
   }
 }
