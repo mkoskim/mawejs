@@ -1,0 +1,106 @@
+
+
+                            HOTKEY PLANNING
+                            ---------------
+                            
+-------------------------------------------------------------------------------
+
+Lets make a quick plan about hotkeys. Objectives:
+
+- Frequently needed operations are behind easy hotkeys
+
+It is possible that we use hotkey "combinations". The first hotkey opens
+a (context) menu, from where you choose operation. For example, we might
+think that Alt-G is "goto", and then you choose where you go:
+
+    Alt-G           Goto menu
+            Alt-S   Goto synopsis
+            Alt-C   Goto content
+            Alt-..  Goto sketches
+
+-------------------------------------------------------------------------------
+
+RESERVED: There are certain hotkeys that already have default action, and it
+is probably bad idea to use them for something else. For example:
+
+Ctrl-A      Select all
+Ctrl-X      Cut
+Ctrl-C      Copy
+Ctrl-V      Paste
+Ctrl-Z      Undo
+Ctrl-Y      Redo
+
+-------------------------------------------------------------------------------
+
+Notepad++ folding shortcuts:
+
+https://superuser.com/questions/647097/notepad-expand-collapse-block-with-keyboard
+
+Alt-0, 1, 2 to fold certain level
+Shift-Alt-0, 1, 2 to unfold certain level
+
+Alt-F to fold current level
+Shift-Alt-F to unfold current level
+
+-------------------------------------------------------------------------------
+
+Alt:
+
+Alt  -  A - 
+Alt  -  B -
+Alt  -  C - 
+Alt  -  D -
+Alt  -  E -
+Alt  -  F -
+Alt  -  G -
+Alt  -  H -
+Alt  -  I -
+Alt  -  J -
+Alt  -  K -
+Alt  -  L -
+Alt  -  M -
+Alt  -  N -
+Alt  -  O -
+Alt  -  P -
+Alt  -  Q -
+Alt  -  R -
+Alt  -  S -
+Alt  -  T -
+Alt  -  U -
+Alt  -  V - 
+Alt  -  W -
+Alt  -  X - 
+Alt  -  Y - 
+Alt  -  Z - 
+
+-------------------------------------------------------------------------------
+
+Ctrl:
+
+Ctrl -  A - Select All
+Ctrl -  B -
+Ctrl -  C - Copy
+Ctrl -  D -
+Ctrl -  E -
+Ctrl -  F -
+Ctrl -  G -
+Ctrl -  H -
+Ctrl -  I -
+Ctrl -  J -
+Ctrl -  K -
+Ctrl -  L -
+Ctrl -  M -
+Ctrl -  N -
+Ctrl -  O -
+Ctrl -  P -
+Ctrl -  Q -
+Ctrl -  R -
+Ctrl -  S -
+Ctrl -  T -
+Ctrl -  U -
+Ctrl -  V - Paste
+Ctrl -  W -
+Ctrl -  X - Cut
+Ctrl -  Y - Redo
+Ctrl -  Z - Undo
+

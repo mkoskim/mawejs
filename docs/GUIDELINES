@@ -1,0 +1,167 @@
+
+
+
+                        Design Guidelines
+                        -----------------
+
+
+First and foremost rule: "Just start writing" - when you open the editor,
+you can start writing your story immediately, just like opening a notepad. No
+need for any kind of setup.
+
+The "magic" comes later.
+
+- - -
+
+There are basically two worlds of text editors:
+
+1) Notepad, office word, google docs and similar: These are editors which
+handle the text as one single bunch. They assume that if you want to split
+the text, you will create several files (as we do when making software),
+and those files are compiled together externally.
+
+This group generally lacks the ability to split the text to manageable
+pieces, which becomes a problem when your story is like 80,000 words. As an
+example, you can not move chapters in the index view in google docs
+or office word. Plain text editors don't even have an index.
+   
+2) ywriter and similar: These editors are designed for writers, and they are
+based on text splits, usually named scenes.
+
+These editors are often more like a email client. You have a list of scenes
+(c.f. list of conversions) at left side, and you have editor box at right side
+to edit the scene you chose.
+
+These editors usually have limited possibilities to edit your text "as is".
+You basically edit it block by block, and switch the block from index.
+Most of these editors can "print" you a draft of your entire text, but that
+draft is usually not editable. When you are reading it and find an error,
+you need to go back to actual editor, locate the block that had error, fix
+it and print out the new draft.
+
+- - -
+
+Moe aims between these two worlds. As far as possible, I try to keep the "draft
+view" the main view to edit your story. As far as possible, this draft view
+tries to be close to what you get when you export the text as RTF or similar
+to be sent to your publisher or editor(s).
+
+Draft view is where you start writing - many writers first start they story
+in notepad or alike, until it has grown too large, and they start editing it
+with other tools (like scrivener).
+
+Draft view is where you end your writing, when reading your final version,
+making small changes and fixing typos.
+
+That's why I like to keep it as central part. Moe starts as notepad-like
+editor, and it ends like notepad-like editor, and between those you have tools
+to view your story from different angles.
+
+- - -
+
+"All tools are applied only until you need them."
+
+Most stories get their "initial" shape pretty quickly. You have an idea of
+a character, or how it starts, how it ends, or what is the turning point. You
+might have idea where it happens, or when it happens. For most stories, you
+can write initial sketches with notepad or office word.
+
+But when the text grows, you start needing more tools to keep the text mass
+organized. If you consider a 300-500 page novel, it can be hard to edit the
+content alone as as big bunch of text. Now, when you consider that most novels
+have lots of "meta" text - plans, sketches, background studies and such -
+keeping track of all of them can be painful with regular text editors.
+
+We need to be able to develop the story in more manageable pieces. We need to
+be able to store meta data (plans, ideas, design, synopses) with the text,
+and we need to have tools to use that data in meaningful ways.
+
+To implement this without breaking the first rule, all these things will be
+done later when the story grows. Step by step you start splitting text to
+smaller pieces and add plans and sketches. At some point you may need synopses
+as guiding lines when writing a chapter. But all this, it is made afterwards:
+no need to make preparations and setups until you think you will need a tool.
+
+(The difficult thing is to weave the pieces of the story so that it goes through
+the initial idea. Close all writers do not lack ideas: they just lack ideas for
+those small things tieing certain pieces together. This is why you need to be
+able to look your story from multiple directions.)
+
+- - -
+
+LIMITATIONS
+
+The limitations to story size are not technical. They come from the design of
+GUI elements, how they are organized in the view, and so on. If the story grows
+too large, the GUI just starts to feel clunky and laborous - listboxes are too
+long, it is hard to get overview of the story from the views, and it becomes
+harder and harder to find the pieces and organize them.
+
+Let's say that initially the editor is designed for stories up to around
+50-80 scenes, split to around 15-25 chapters and 3-5 parts. Depending on the
+writer's style, it is something around 300-500 pages, and 50,000 to 100,000
+words.
+
+If you are working in multi-novel serie, with this editor it is meant to be split
+to separate books, and use both integrated project manager and external documentation
+to keep track of your work.
+
+We will integrate project manager to the editor. Initially, project manager
+mainly serves linking short stories together, but we might later add tools to use
+it to manage multipart novel series.
+
+Basically later additions for longer series would include more tools for resources
+shared between stories, for example character and world descriptions and plans
+and such. In fact, these are most probably first tools we anyways need in the
+editor and project manager: I personally need ability to have "shared tags", as
+many of my stories share the same background world, some characters and such.
+
+- - -
+
+OTHER DESIGN GUIDELINES
+
+"Writers work with keyboard" - As much as possible, it would be great to be
+able to use tools with keyboard, without needing to use mouse. Mouse is of
+course good tool when you are trying out the editor, but later you would like
+to use keyboard commands.
+
+Some other design guidelines:
+
+- "WYSIWYG": As far as possible, make it look just like what you get when
+  printing it out.
+  
+- Views: What writer needs most is ability to view her/his story from multiple
+  angles. You need to have different views to the story, and in each view, you
+  should be able to modify it directly.
+
+  Viewing story from multiple view points is more important than you
+  first think. Just like a sculptor, you will be turning your subject
+  to different angles to be able to sculpt it at one point.
+
+- - -
+
+MINIMIZE DISTRACTIONS
+
+Writers tend to be tempted to use their time to fiddle with all sorts of
+things irrelevant for the story itself. They can spend hours just
+trying to find the perfect font, the perfect export layout, the perfect
+size of the writing canvas, perfect settings and such. And they are never
+entirely satisfied, but do it again next day.
+
+One main guideline is that moe is not a layout or typesetting editor. Most
+probably, you:
+
+1) Cant change the fonts. You just cant.
+
+2) Cant change the justifying.
+
+2) Cant change the draft layout.
+
+In general, moe will most probably have very limited configurability.
+
+Of course this leads to problems. All writers work slightly different ways.
+All writers are used to slightly different tools, and have slightly different
+expectations to their tools.
+
+But in reality, we can't go that way. In the end, moe is an editor you either
+use, or use it not.

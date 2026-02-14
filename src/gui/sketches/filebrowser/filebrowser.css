@@ -1,0 +1,16 @@
+/* ----------------------------------------------------------------------------
+//
+// Styles for file browser
+//
+// ----------------------------------------------------------------------------
+*/
+
+/* Search file list */
+
+table.File {
+  flex-grow: 1;
+  width: 100%;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  font-size: 11pt;
+}

@@ -1,0 +1,54 @@
+<story uuid="ebcf78ef-9bb6-49a0-817e-64d80ad6e7d7" format="mawe" version="2" name="Style test">
+<!--/
+===============================================================================
+
+STORY: Style test
+
+===============================================================================
+/-->
+<head>
+<title>Styles</title>
+</head>
+<export type="short" chapterelem="scene" chaptertype="named"/>
+<!--/
+===============================================================================
+/-->
+<body>
+<part>
+<scene name="Scene 1">
+<p>Styles: (1) <b>&lt;bold&gt;</b>, (2) <i>&lt;italic&gt;</i>, (3) <b><i>bold and italic</i></b>.</p>
+<comment><b>Works</b> here?</comment>
+<missing><i>Or</i> here?</missing>
+<br/>
+</scene>
+<scene name="Scene 2">
+<p>How about <b>now</b>?</p>
+<br/>
+</scene>
+</part>
+</body>
+<!--/
+===============================================================================
+
+NOTES
+
+===============================================================================
+/-->
+<notes>
+<part>
+<scene>
+<br/>
+</scene>
+</part>
+</notes>
+<!--/
+===============================================================================
+/-->
+<ui>
+<view/>
+<chart elements="scenes" template="plotpoints" mode="topCCW"/>
+<editor>
+<body words="numbers" indexed="part,scene,synopsis"/>
+</editor>
+</ui>
+</story>

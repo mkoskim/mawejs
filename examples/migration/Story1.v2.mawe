@@ -1,0 +1,20 @@
+<story name="Story v2/1" format="mawe" version="2">
+
+<!-- This file has head inside body element -->
+<!-- It has chart setting, with elements=parts -->
+
+<body>
+<head>
+<title>Story</title>
+</head>
+<part name="Chapter">
+<scene name="Scene">
+<p>If loaded correctly, story title is "Story".</p>
+<p>Check, that Story Arc view shows chapters.</p>
+<p>Check, that Export chapter element is chapter.</p>
+<br/>
+</scene>
+</part>
+</body>
+<export type="long" chapterelem="part" chaptertype="numbered" scenes="separated"/>
+<ui><chart elements="parts"/></ui>

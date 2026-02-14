@@ -1,0 +1,16 @@
+Some miscellaneous toughts about the editor.
+
+Guidelines, checklists, ... - can we create a library, where you can include
+the snippet you want? For example, you might like to fit your story in the:
+
+- Snowflake method
+
+- Algis Burdys structure:
+  (1) character, (2) background, (3) problem,
+  (4) first try to solve the problem, that fails, because character does not
+  yet know enough from the problem,
+  (5) second attempt, with more knowledge, which will fail, and
+  (6) third and final attempt, "all in", which then leads to
+  (7) end.
+
+

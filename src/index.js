@@ -1,12 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import { createRoot } from 'react-dom/client';
+import { ThemeProvider } from "@mui/material";
+import { theme } from "./gui/common/theme.js";
+import { SnackbarProvider } from "notistack";
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+import App from "./gui/app/app.js"
+
+//import {store} from "./gui/app/store"
+//import {Provider} from "react-redux"
+
+//-----------------------------------------------------------------------------
+// NOTE: ThemeProvider likes to create new theme every time it is rendered.
+// Keep it here, so it will be rendered only once.
+//-----------------------------------------------------------------------------
+
+createRoot(document.getElementById('root')).render(
+  <ThemeProvider theme={theme}>
+    <SnackbarProvider>
+      <App />
+    </SnackbarProvider>
+  </ThemeProvider>
+);

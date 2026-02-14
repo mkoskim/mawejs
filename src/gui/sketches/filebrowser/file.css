@@ -1,0 +1,53 @@
+/* ----------------------------------------------------------------------------
+//
+// Styles for file objects
+//
+// ----------------------------------------------------------------------------
+*/
+
+.FileCard {
+  margin: 4px;
+  border: 2px solid lightgrey;
+  border-radius: 4px;
+
+  cursor:pointer;
+  width: 250px;
+  align-items: center;
+
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.FileCard.disabled {
+  opacity: 50%;
+}
+
+.FileCard.selected {
+  background: rgb(218, 240, 218);
+}
+
+.FileCard:hover {
+  background-color: #EEE;
+}
+
+tr.File {
+  border: 1px none lightgray;
+  border-bottom: 1px solid lightgrey;
+}
+
+tr.File:hover {
+  background-color: #EEE;
+}
+
+tr.File > td {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+tr.disabled > td { color: grey; }
+
+td.FileIcon { width: 5%; padding-left: 8pt; padding-right: 8pt; }
+td.FileName { width: 35%; }
+td.FileDir  { width: 60%; color:grey; }

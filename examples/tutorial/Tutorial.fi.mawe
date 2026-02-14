@@ -1,0 +1,442 @@
+<story uuid="0feec3fb-217c-4ba8-ab48-84b8dfc56ad3" format="mawe" version="5" name="Ohjeet">
+<!--/
+===============================================================================
+
+STORY: Ohjeet
+
+===============================================================================
+/-->
+<head>
+<title>Käyttöohje (v0.9.0)</title>
+</head>
+<export content="draft" type="short" acts="named" chapters="numbered&amp;named" scenes="named" prefix_act="" prefix_chapter="" prefix_scene=""/>
+<!--/
+===============================================================================
+/-->
+<body>
+<act name="Tutoriaali">
+<chapter>
+<scene>
+<p>Tämä on tutoriaali MaweJS:n versiolle v0.9.0.</p>
+</scene>
+</chapter>
+<chapter name="Pikaopas" numbered="true">
+<scene>
+<p>Pikaopas näppäinkomennoista. Huomaa, että nykyään monissa napeissa ja menuissa on joko tooltip tai jokin muu info käytössä olevista näppäinkomennoista. Kaikkea ei siis tarvitse muistaa ulkoa.</p>
+<br/>
+<p><b>Tekstityylit:</b></p>
+<p>Ctrl-B - Bold</p>
+<p>Ctrl-I - Italic</p>
+<br/>
+<p><b>Kappaletyylit</b> (markupit ja näppäinkomennot):</p>
+<p>Ctrl-Alt-0 | Tavallinen teksti.</p>
+<p>** | Ctrl-Alt-1 | Näytös (act)</p>
+<p># | Ctrl-Alt-2 | Luku (chapter)</p>
+<p>## | Ctrl-Alt-3 | Kohtaus (scene)</p>
+<p>&gt;&gt; | Ctrl-Alt-S | Synopsis</p>
+<p>%% | Ctrl-Alt-N | Notes</p>
+<p>=&gt; | Ctrl-Alt-B | Kirjamerkki (Bookmark)</p>
+<p>// | Ctrl-Alt-C | Kommentti (Comment)</p>
+<p>!! | Ctrl-Alt-M | Puuttuva teksti (Missing text)</p>
+<p>++ | Ctrl-Alt-F | Filleri (Filler element)</p>
+<p>@@  | Tagi (Tag element)</p>
+<br/>
+<p><b>Muita näppäinkomentoja:</b></p>
+<br/>
+<p>Foldaus:</p>
+<p>Alt-F - Toggle fold</p>
+<p>Alt-A - Foldaa kaikki (Fold all)</p>
+<p>Alt-S - Unfoldaa kaikki (Unfold (show) all)</p>
+<br/>
+<p>Etsi (search):</p>
+<p>Ctrl-F - Etsi (Search)</p>
+<p>Ctrl-G - Etsi seuraava (Find next)</p>
+<p>Ctrl-Shift-G - Etsi edellinen (Find previous)</p>
+<br/>
+<p>Muuta:</p>
+<p>Ctrl-O - Avaa tiedosto (Open file)</p>
+<p>Ctrl-N - Uusi tiedosto (New file)</p>
+<p>Ctrl-S - Tallenna tiedosto (Save file)</p>
+<p>Ctrl-W - Sulje tiedosto (Close file)</p>
+<p>Ctrl-Q - Sulje ohjelma (Quit)</p>
+</scene>
+</chapter>
+</act>
+<act name="Esittely">
+<chapter>
+<scene name="Tärkeimmät asiat">
+<p>On muutamia asioita, jotka erottavat MaweJS:n tavallisesta tekstieditorista ja tekevät sen paremmin soveltuvaksi tarinoiden kirjoittamiseen. Näistä tärkeimmät ovat:</p>
+<p>1. <b>Tekstin paloittelu:</b> Tekstin saa paloiteltua kohtauksiksi. Kohtauksia voi liikutella ja ryhmitellä luvuiksi ja näytöksiksi.</p>
+<p>2. <b>"Metateksti":</b> Tekstiin on lisättävissä tietoa tekstistä itsestään, kuten puuttuvaa tekstiä, kommentteja ja kuvauksia/tiivistelmiä (synopsis).</p>
+<p>3. <b>Foldaus:</b> Foldaus on termi koodieditorien puolelta. Se tarkoittaa jonkin kokonaisuuden piilottamista, elementti "laskostellaan" pois näkyvistä. MaweJS:ssä on mahdollista foldata lohkoja: kohtauksia, lukuja ja näytöksiä. Tällä tavalla saa tekstistä näkyviin ja editoitavaksi vain ne osat, joita on sillä hetkellä työstämässä.</p>
+</scene>
+<scene name="Suunnitteluperiaatteita">
+<p>Varmaan ensimmäinen asia, joka kiinnittää huomiota, on se, kuinka vähän editorissa on tekstin formatointiin välineitä. Saatat ihmetellä, että kuinka...</p>
+<p>... vaihdat fontin? Vaihdat tekstin tai taustan värin?</p>
+<p>... kuinka tasaat kappaleet? Kuinka keskität ne?</p>
+<p>... Kuinka muokkaat otsikoiden tyyliä? Yläpuolella olevat otsikothan ovat <i>harmaita</i>  ja ne lähes uppoavat taustaan? Kuinka ne saa paremmin esille?</p>
+<br/>
+<p>Tällaisia asioita ei voi tehdä, ei sillä tavalla kuin ajattelisi.</p>
+<p>MaweJS ei ole editori, jolla editoidaan tekstin tyyliä.</p>
+<p>MaweJS ei edes ole nk. "WYSIWYG" (What You See Is What You Get) -editori.</p>
+<p>MaweJS on tarkoitettu tarinoiden käsikirjoitusten kirjoittamiseen, ei enempään eikä vähempään: (1) Kirjoitat käsikirjoituksen (manuscript), jonka (2) eksporttaat vedokseksi (draft) sopivassa formaatissa (3) jakaaksesi tarinasi jonkun toisen kirjoittajan tai kustantajan kanssa.</p>
+</scene>
+<scene name="Keskiössä käsikirjoitus">
+<p>Tyylivalintojen vähäisyys on tarkoituksellista. Monilla kirjoittajilla on paha tapa hioa tekstin ja otsikoiden fontteja, tekstin asettelua ja muuta sellaista, jos siihen vain antaa mahdollisuuden. Surullista on se, että tuolla hiomisella ei ole kustantajalle mitään merkitystä - kustantaja joka tapauksessa käyttää painossa omia fonttejaan ja asettelujaan. Tästä syystä monet kirjoittajat edelleen käyttävät yksinkertaisia tekstieditoreita kuten Notepadia.</p>
+<p>MaweJS:ssä kaikki pyörii käsikirjoituksen ympärillä. Iso ero esimerkiksi Scrivenerin tai Manuskriptin tyylisiin editoreihin on se, että MaweJS:ssä koko käsikirjoitus on näkyvissä yhdellä ja samalla kertaa, kuten Wordissa ja Notepadissa.</p>
+<p>Minulla on myös sellainen ajatus, että kaikki mitä käsikirjoitukseen tässä kirjoitetaan, myös eksportataan vedokseen (draft). Ajatus olisi se, että tähän editointinäkymään kirjoittaessasi kirjoitat nimenomaan sanoja tarinaan. Tähän periaatteeseen on kuitenkin omat poikkeuksensa:</p>
+<p>1. Kohtausten, lukujen ja näytösten jaot: näiden pitää olla kirjoittajalle näkyvillä, vaikkei niitä näytettäisikään vedoksessa.</p>
+<p>2. Metateksti: kuvaukset, kommentit ja muut, jotka on tarkoitettu auttamaan tarinan kirjoittamista.</p>
+<p>3. Kommentti-sektio (oikealla puolella): Tämä sektio toimii eräänlaisena leikepöytänä, johon saa talteen asioita, jotka eivät ole tulossa vedokseen. Ei ole tarkoitus, että tarina ensin hahmotellaan Notes-sektioon, ei, vaan tarinaa hahmotellessa sinne saa talteen työstövaiheessa syntyneitä asioita.</p>
+<br/>
+<p>On hyvin epätodennäköistä, että MaweJS:ssä pystyy koskaan liittämään kuvia vedokseen. Kustannustoimittaja tai kirjoituskisan tuomaristo tuskin arvostaa sellaisia, ellet sitten ole tarjoamassa kustantajalle graafista novellia, mutta MaweJS ei ole oikea editori sellaisen tekemistä varten.</p>
+<p>On hyvin epätodennäköistä, että MaweJS:ssä voisi tulevaisuudessakaan vaikuttaa kappaleiden tasauksiin, lisätä pakotettuja sivunvaihtoja tai sellaisia asioita. Kustannustoimittaja ei todennäköisesti välitä näistä. Niin, ellet sitten itse ole kustannustoimittaja tai tekemässä taittoa, mutta MaweJS ei välttämättä koskaan sovellu kovin hyvin tekstien taittamiseen.</p>
+<p>On hyvin epätodennäköistä, että MaweJS koskaan tukisi taulukoita, graafeja, kaavoja ja sen kaltaisia asioita. Kustannustoimittaja ei välttämättä paljoa välitä sellaisista, ellet sitten ole tekemässä vaikkapa teknistä manuaalia. MaweJS tuskin kuitenkaan tulee olemaan paras editori siihen puuhaan.</p>
+<br/>
+<p>Yleisperiaatteena MaweJS tukee sellaisia tyylejä ja asetteluja, joita kustannustoimittajat ja kirjoituskisojen tuomaristo haluaa nähdä, ja suurimmaksi osaksi tämä tarkoittaa pelkkää puhdasta tekstiä.</p>
+<p>Nykyään editori tukee <b>vahvennusta</b> ja <i>kursiivia</i>. En itse välitä niiden laajamittaisesta käytöstä, mutta kursiivi on yleisesti käytetty esimerkiksi vieraskielisten fraasien merkitsemisessä: "<i>C'est la vie, ma cheri.</i>"</p>
+<br/>
+<p>Yhdestä näkökulmasta katsottuna MaweJS on lähempänä Notepadia kuin Microsoft Wordia tai Googledocsia. MaweJS on jollain tavalla "Notepad steroideilla", ei niinkään tekstin tyylittelyn kannalta, vaan sen rakenteen kannalta katsottuna, samaan tapaan kuin esimerkiksi koodaukseen on olemassa omia tarkoitusta varten tehtyjä editoreja (esim. Visual Studio Code).</p>
+<p>1. MaweJS on ikään kuin Notepad, jossa tekstiä voi pilkkoa osiin, ja osia pystyy liikuttelemaan ja ryhmittelemään.</p>
+<p>2. MaweJS:ssä on mahdollista liittää tekstiin metatietoa (kommentteja, kuvauksia yms), joka ei tule mukaan vedokseen, vaikka saattaa ohjata vedoksen muodostamista.</p>
+<br/>
+</scene>
+<scene name="MaweJS strukturoituna editorina">
+<p>Tekstin pilkkominen lohkoihin ja lohkojen liikuttelu ja ryhmittely tekevät MaweJS:n niin kutsutuksi strukturoiduksi editoriksi. MaweJS ei todellakaan ole ainoa maailmalla oleva strukturoitu editori, vaan päin vastoin, on olemassa monia tunnettuja kirjoittajille tarkoitettuja strukturoituja editoreja, kuten Scrivener, yWriter ja Manuskript. Kuinka MaweJS poikkeaa näistä?</p>
+<p>Yksi MaweJS:n perusperiaatteista on:</p>
+<p>"Alat vain kirjoittaa."</p>
+<p>...aivan kuten Notepadilla kun saat jonkin ajatuksen. Toisin kuin monissa muissa strukturoiduissa editoreissa, MaweJS:ssä ei tarvitse tehdä <i>minkäänlaista</i> konfigurointia alkaessaan kirjoittaa. Voit kokeilla tätä avaamalla uuden tiedoston.</p>
+<p>Sen sijaan kaikki kirjoittamista auttavat työkalut on pyritty suunnittelemaan sellaiseksi, että ne voi ottaa käyttöön vasta sitten, kun niitä tarvitsee. Esimerkiksi: kohtauksia ei tarvitse erikseen luoda, vaan ne tehdään alkamalla pilkkoa tekstiä sitä mukaa, kun sille alkaa olla tarvetta.</p>
+</scene>
+</chapter>
+</act>
+<act name="Tutoriaali">
+<chapter name="Tutoriaali" numbered="true">
+<scene name="Huomautus!">
+<p>Huomaathan, että tämä ohjedokumentti on muokattavissa. Lukiessasi voit kokeilla erilaisia asioita, ja palauttaa dokumentin alkuperäiseen muotoonsa. Kokeile vaikka kirjoittaa jotain tähän jatkoksi:</p>
+<p>Kirjoita tähän jotain --&gt;</p>
+</scene>
+<scene name="Terminologiaa">
+<p><b>KOHTAUS:</b> Kohtaus (scene) on tarinoiden perusrakennuspalikka. Tavallisesti kohtaus määritellään niin, että se on pienin jakamaton yksikkö tekstiä. Se tarkoittaa sitä, että jos kohtauksen jakaa vaikkapa keskeltä puoliksi ja hajottaa erilleen, niin nuo yksittäiset osat eivät enää ole kokonaan ymmärrettävissä. Kohtauksen sisällä oleva teksti liikkuu aina yhdessä.</p>
+<p>TÄRKEÄÄ! Loppuviimeksi tarina on siis vain huolellisesti rakennettu sarja kohtauksia. Toistetaan vielä kerran: "Tarina on huolellisesti rakennettu sarja kohtauksia" -  MaweJS on tarkoitettu nimenomaan tähän: (1) kohtausten kirjoittamiseen ja (2) niiden järjestämiseen oikeaan järjestykseen muodostamaan kokonainen tarina.</p>
+<br/>
+<p><b>LUKU:</b> Luku (chapter) kokoaa useamman kohtauksen kokonaisuudeksi. Jos halutaan, että tietyt kohtaukset liikkuvat yhdessä, ne voidaan niputtaa luvuksi. Luvut luodaan samalla tavalla kuin kohtauksetkin eli tekstiä pilkkomalla.</p>
+<br/>
+<p><b>NÄYTÖS:</b> Luvuista voi koota näytöksiä.</p>
+<br/>
+<p><b>KIRJAMERKKI:</b> Kirjamerkillä (bookmark) viittaan erilaisiin kohtauksiin liitettäviin elementteihin, kuten kirjamerkkeihin, puuttuvaan tekstiin (missing text) ja kommentteihin. Näitä saa näkymään sivussa olevaan indeksiin, jolloin niihin palaaminen on helppoa. Kirjamerkit liikkuvat aina kohtauksen mukana. Entä, jos haluat ne erilleen? Jaa kohtaus kirjamerkin kohdalta.</p>
+<br/>
+<p><b>SEKTIO:</b> Sektio (section, osio) on laajin sellaisenaan käsiteltävissä oleva kasa tekstiä. Yksinkertaisimmillaan sektio on synonyymi tarinalle, mutta jotkut tarinat voivat jakaantua useampaan osaan.</p>
+<p>Tässä editorissa näkyy kaksi sektiota: runko (body), jota luet nyt, ja joka on idensoitu vasemmalla (&lt;--) puolella, ja muistio (notes) joka on indeksoitu oikealla puolella (--&gt;).</p>
+<p>1. <b>RUNKO</b>: Runko (body) viittaa tarinan aktiiviseen vedokseen, jonka kirjoittamista varten MaweJS on olemassa.</p>
+<p>2. <b>MUISTIO</b>: Muistio (notes) on leikepöytä, jonne saa talteen kaikenlaista kirjoittamisen edetessä muodostunutta tavaraa, mutta jota ei halua mukaan vedokseen.</p>
+<br/>
+<p><b>YHTEENVETO:</b> Runko ja muistio ovat sektioita (tai osioita). Sektiot koostuvat näytöksistä, jotka koostuvat luvuista, jotka koostuvat kohtauksista. Kohtauksiin voi liittää kirjamerkkeä: puuttuvaa tekstiä, kommentteja ja muuta.</p>
+<br/>
+</scene>
+<scene name="Käyttöliittymän perusteet">
+<p>&lt;-- Vasemmalla rungon (body) indeksi.</p>
+<p>Oikealla muistion (notes) indeksi --&gt;</p>
+<br/>
+<p><b>Kokeile itse:</b> Klikkaile indekseistä näytöksiä, lukuja, kohtauksia ja kirjamerkkejä.</p>
+<br/>
+<p>Näytön ylälaidassa on kaksi työkalupalkkia. Ylempi palkki sisältää yleisluontoisempia toimintoja kuten tiedostojen käsittely (lataus, tallennus) ja näytön valinta (editori, tarinan kaari, eksporttaus).</p>
+<p>Alemmassa palkissa on työkaluja tälle näytölle (editori). Niistä voi valita mm. mitä asioita indeksissä näytetään ja kuinka sanamäärät esitetään.</p>
+<p><b>Kokeile itse:</b></p>
+<p>- Klikkaa vasemman indeksin kohdalta ikonia (huutomerkki kahdeksankulmiossa), jolloin indeksiin saa näkyville puuttuvan tekstin (missing text).</p>
+<p>- Muuta sanalaskurin formaattia.</p>
+<p><b>Kokeile itse:</b> Vaihda näkymää (editori, tarinan kaari, eksporttaus) ylemmästä palkista.</p>
+<p><b>Kokeile itse:</b> Dokumentin nimeä klikkaamalla saa editoitavaksi dokumentin otsikkotiedot (nimi, tekijä).</p>
+<p><b>Kokeile itse:</b> Tiedoston nimeä klikkaamalla saa esille tiedostovalikon.</p>
+</scene>
+</chapter>
+<chapter name="Kohtaukset" numbered="true">
+<scene name="Tekstin pilkkominen">
+<p>Tekstin pilkkominen on MaweJS:n pääpiirre. Mutta toisin kuin ajattelet, kohtauksen jakaja ei ole otsikko:</p>
+</scene>
+<scene name="--> Tämä on kohtauksen jakaja, ei otsikko! <---">
+<p>Toisin kuin tavallisessa strukturoimattomassa editorissa - Googledocs, Microsoft Word, LibreOffice - MaweJS:ssä ei suoranaisesti anneta tekstille tyyliä. Kursiivia ja vahvennusta lukuunottamatta MaweJS toimisi ihan hyvin pelkällä kirjoituskonefontilla.</p>
+<p>Tekstiä osasiin pilkkovat kohtausten, lukujen ja näytösten jakajat (break) ovat siis vain jakajia. Niitä ei kannata erikseen tyylitellä, koska tyyli joka tapauksessa määräytyy vasta eksporttauksessa. Niihin voi ja kannattaa kirjoittaa itselleen jotain kuvaavaa, mutta tämä kuvaava teksti on pääasiassa vain sinulle kirjoittajana.</p>
+<p>Poikkeuksena on se, että eksporttauksessa voi valita nk. nimetyt luvut tai näytökset. Tällöin jakajaan kirjoitettu nimi tulee myös vedokseen.</p>
+</scene>
+<scene name="Tekstin pilkkominen">
+<p>Kohtauksen luomiseksi, kirjoita rivin alkuun ## (kaksi risuaitaa) ja paina välilyöntiä. Voit myös käyttää näppäinkomentoa (Ctrl-Alt-3) tai valita tyylin tyylivalikosta. "Markupit" ovat mukana siksi, koska niiden käyttö on helppoa kirjoittaessa. Muutenkin pyrin siihen, että kirjoittaessa ei tarvitsisi nostaa sormia näppäimistöltä, vaikkakin sitten itse järjestelytyö hoituu pääosin hiirellä.</p>
+<p><b>Kokeile itse:</b> Alla on läjä tekstiä, jonne on merkitty punaisella kohta, josta teksti halutaan erottaa omaksi kohtaukseksi:</p>
+<br/>
+<p>...Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<missing>&lt;-- Kirjoita ## + välilyönti</missing>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum...</p>
+<br/>
+<p>Kohtausjaon saa takaisin tavalliseksi tekstiksi käyttämällä backspacea rivin alussa. <b>Kokeile itse:</b></p>
+</scene>
+<scene name="<-- Paina backspacea">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum...</p>
+</scene>
+<scene name="Kohtaustyypit (v0.9.0)">
+<p>MaweJS:n versiossa 0.9.0 on uutena erilaiset kohtaustyypit. Näitä on kolme:</p>
+<p>1. Kohtaus: Tavallinen kohtaus, jossa on kerrotaan tarinaa.</p>
+<p>2. Synopsis: Kuvauksen (synopsis) voi kirjoittaa omaan lohkoonsa. Synopsiksen voi eksportata erillään (valitse Export-näkymässä sisällön tyypiksi "synopsis").</p>
+<p>3. Kommentit: Kommenteista voi tehdä oman lohkonsa. Tämä voi olla hyödyllistä silloin, jos on kommentoitava jotain asiaa monisanaisemmin.</p>
+<br/>
+<p>Synopsis- ja kommenttilohkot ovat eräänlaisia PostIt-lappuja, joita voi liimata mukaan vedokseen. Niitä voi liikutella ympäriinsä samaan tapaan kuin kohtauksia.</p>
+</scene>
+<scene name="Kohtaus (tavallinen)">
+<p>Tämä on tavallinen kohtaus (markup "##").</p>
+<p><b>Lorem</b> ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+<scene name="Tiivistelmä tai kuvaus" content="synopsis">
+<p>Tämä on kuvauslohko (synopsis) (markup "&gt;&gt;"). Kaikki tavallisessa kohtauksessa olevat elementit ovat mahdollisia myös synopsis-lohkossa:</p>
+<bookmark>Kirjamerkki</bookmark>
+<missing>Puuttuvaa tekstiä voi lisätä, mutta koska tiivistelmän sisältämää tekstiä ei muutenkaan lasketa mukaan sanamääriin, niin tämä on tiivistelmän sisällä vain pelkästään punaista tekstiä.</missing>
+<comment>Kommentti.</comment>
+<p><b>Lorem</b> ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+<scene name="Kommentit" content="notes">
+<p>Tämä on kommenttilohko (markup "%%"). Kuten tiivistelmä-lohkossakin, niin kommenttilohkossakin voi käyttää erilaisia elementtejä:</p>
+<p><b>Boldaus</b> ja <i>kursiivi.</i></p>
+<bookmark>Kirjamerkki</bookmark>
+<missing>Puuttuva teksti. Koska kommenttilohkojenkaan tekstiä ei lasketa mukaan sanamääriin, kommenttilohkon sisällä puuttuva teksti on pelkästään punaista tekstiä.</missing>
+<comment>Kommentti.</comment>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+</chapter>
+<chapter name="Kirjamerkit (bookmarks)" numbered="true">
+<scene>
+<p>Tekstin pilkkomisen lisäksi tekstiin on laitettavissa muutamia erilaisia elementtejä.</p>
+</scene>
+<scene name="Puuttuva teksti">
+<p><b>PUUTTUVA TEKSTI:</b> Puuttuva teksti (missing, missing text) on merkintä, joka kertoo, että kyseisestä kohdasta puuttuu jotain. Esimerkiksi, tarinaa kirjoittaessasi ajattelet, että sinun on jossain vaiheessa tarkastettava jokin asia, tai muistettava myöhemmin kirjoittaa johonkin kohtaan jotain. Voi olla, että jokin osuus on vaikea kirjoittaa sillä hetkellä, ja kirjoitat sen sijaan selostavaa tekstiä, jolla kuvaat, mitä siinä kohtaa pitäisi tapahtua.</p>
+<p>Muista, että:</p>
+<missing>Puuttuva teksti <b>tulee mukaan vedokseen!</b> Koko ajatus on se, että loppuviimeksi saat kirjoitettua kaikki puuttuvat osuudet auki ja loppuun.</missing>
+<p>Oletettavasti siis haluat, että lopullisessa vedoksessa ei ole enää puuttuvia osasia, vaan myös vaikeimmat paikat on saatu kirjoitettua loppuun. Puuttuvan tekstin ottaminen mukaan vedokseen on hyödyllistä myös silloin, jos haluat jakaa keskeneräisen tarinan vaikkapa kirjoittajakollegan kanssa</p>
+<missing>Huomaa myös, että puuttuva teksti lasketaan mukaan <b>kokonaissanamäärään.</b> Kokonaissanamäärä näkyy mm. tavoitemittana (target word count).</missing>
+<br/>
+</scene>
+<scene name="Filleri">
+<p><b>FILLERI:</b> Filleri on elementti, jonka avulla voi antaa sanamäärän, paljonko välistä puuttuu tekstiä:</p>
+<fill>500 (Lisätään 500 sanaa puuttuvaa tekstiä tähän väliin)</fill>
+<p>Fillerit olivat aiempi tapa "padata" tekstiä silloin, kun puolivalmiin tekstin kanssa halusi puuhata rakenteen kanssa. Sitä ennen ainoa tapa täyttää aukkoja oli luoda sanoja vain tarpeeksi paljon ja merkitä ne puuttuvaksi, esimerkiksi siis näin (lisää 100 puuttuvaa sanaa tekstiin):</p>
+<missing>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</missing>
+<p>Tässä 0.9.0 -versiossa on käytetävissä tavoitesanamäärät, jotka voi antaa kohtauksille, luvuille ja näytöksille. Tästä lisää hetken kuluttua.</p>
+<br/>
+</scene>
+<scene name="Kommentti">
+<p><b>KOMMENTTI:</b> Kommentit ovat pieniä muistutuksia ja huomautuksia sinulle kirjoittajana itsellesi:</p>
+<comment>Kommentit <b>eivät</b> tule mukaan vedokseen.</comment>
+<comment>Ne ovat pelkästään sinulle itsellesi.</comment>
+<p>Voit hyvin jättää kommentteja myös lopulliseen vedokseen, jos katsot tarpeelliseksi esimerkiksi vaikka sitä varten, jos joskus joudut palaamaan työstämään tarinaa lisää.</p>
+<br/>
+</scene>
+<scene name="Kirjamerkki">
+<p><b>KIRJAMERKKI:</b> Kirjamerkki (bookmark) on yksinkertaisesti vain kirjamerkki keskellä tekstiä. Tämä helpottaa asioiden löytämistä indeksistä, eli kohtausta ei ole pakko pilkkoa, jos haluaa kohtauksen keskelle paikan, jonne voi palata indeksiä klikkaamalla:</p>
+<bookmark>Tämä on kirjamerkki (bookmark)</bookmark>
+<p>Myöskään kirjamerkit eivät tule mukaan vedokseen.</p>
+<br/>
+</scene>
+<scene name="HUOM!">
+<p>Monet strukturoidut editorit kuten Scrivener, yWriter ja Manuskript liittävät metadatan kohtaus- ja lukuelementteihin, eli kirjoitat kuvauksen tai kommentin <b>kohtaukselle</b> tai <b>luvulle</b>. MaweJS poikkeaa näistä perustavanlaatuisesti siksi, että pääasiassa liität huomautukset (annotations) tekstiin itseensä. Ne - kirjamerkit, kommentit, puuttuva teksti - eivät siis ole sidoksissa kohtaus- tai lukujakoon, vaan ne ovat elementtejä, jotka koskevat kirjoitettua tekstiä itseään. Niinpä ne säilyvät, vaikka muokkaisit kohtaus- ja lukujakoa.</p>
+</scene>
+<scene name="Esimerkkejä">
+<p>Esimerkkejä kirjamerkeistä:</p>
+<missing>Puuttuvaa tekstiä.</missing>
+<comment>Kommentti.</comment>
+<bookmark>Mitä seuraavaksi tapahtuu:</bookmark>
+<br/>
+<p><b>Kokeile itse:</b></p>
+<p>&lt;-- Kirjoita alkuun "!!" + välilyönti vaihtaaksesi tämän kappaleen puuttuvaksi tekstiksi.</p>
+<p>&lt;-- Kirjoita alkuun "//" + välilyönti muuttaaksesi tämä kappale kommentiksi.</p>
+<p>&lt;-- Kirjoita alkuun "=&gt;" + välilyönti tehdäksesi tästä kappaleesta kirjamerkki.</p>
+<br/>
+<p>Tässä tutoriaalissa käytän paljon markuppeja, mutta vaihtoehtoisesti voit myös käyttää Ctrl-Alt -näppäinkomentoja tai vaihtaa kappaleen tyylin tyylivalikosta. Käytän markuppeja siksi, että niitä on kohtuullisen nopea kirjoittaa tekstiä kirjoittaessa eli sormia ei tarvitse nostaa pois näppäimistöltä.</p>
+<br/>
+<p>Kappaletyypin vaihtaminen:</p>
+<comment>&lt;-- Kirjoita alkuun "!!" + välilyönti vaihtaaksesi tämä kappale kommentista puuttuvaksi tekstiksi, tai "=&gt;" vaihtaaksesi tämä kappale kirjamerkiksi. Kirjoita "//" + välilyönti vaihtaaksesi tämä kappale takaisin kommentiksi.</comment>
+<br/>
+<p>Kappaletyylin poistaminen:</p>
+<comment>&lt;-- Voit muuttaa tämän kappleen tavalliseksi tekstiksi painamalla backspacea (korjausnäppäin) rivin alussa.</comment>
+<comment>Jos rivi on tyhjä, ENTER:in painallus muuttaa kappaleen tavalliseksi tekstiksi. Paina ENTER:iä seuraavalla rivillä:</comment>
+<comment/>
+<br/>
+<p>Voit vaihtaa kappaleen tyypiksi myös jakajan (break):</p>
+<comment>Tämä on kommentti. Kirjoita "##" + välilyönti rivin alussa vaihtaakseksi tämän kohtausjaoksi. Painamalla backspacea rivin alussa saat vaihdettua rivin tavalliseksi tekstiksi.</comment>
+<br/>
+</scene>
+</chapter>
+<chapter name="Sanamäärät" numbered="true">
+<scene name="Sanamäärät">
+<p>MaweJS käyttää tekstin pituuden indikaattorina sanamääriä. Sivumäärä on riippuvainen tekstin asettelusta: fontista ja sen koosta, rivityksestä (line spacing), sivun koosta ja marginaaleista. Tästä syystä kirjoittajat käyttävät tekstin pituuden ilmaisemiseen usein sana- tai merkkimäärää.</p>
+<missing>HUOM! Puuttuva teksti lasketaan kokonaissanamäärään! Kommentteja ja tiivistelmiä (synopsis) ei lasketa.</missing>
+<p>Sana- vai merkkimäärä? Eri kielissä sanan keskimääräinen pituus vaihtelee. Esimerkiksi suomenkielisessä tekstissä sanojen pituus on keskimäärin isompi kuin englanninkielisessä: siksi esimerkiksi NaNoWriMossa englanninkieliselle tekstille tavoitesanamäärä on 50,000 sanaa, mutta vastaava on suomenkieliselle tekstille noin 30,000 sanaa. Merkkimääriltään tarinat ovat silti melko samanmittaisia.</p>
+<p>Tästä syystä joku voisi ajatella, että merkkimäärä on parempi mittari pituudelle. Mutta tämä riippuu merkistöstä. Esimerkiksi japaninkielinen teksti on merkkimääriltään huomattavasti lyhyempi kuin länsimainen, vaikka sanamäärältään voi olla vastaava.</p>
+<br/>
+<p>Indeksistä on valittavissa erilaisia tapoja näyttää sanamäärät:</p>
+<p><b>OFF:</b> Ei sanamääriä.</p>
+<p><b>NUMEROT: </b>Sanamäärät näytetään muodossa Puuttuvat / Kokonaissanamäärä. Sanamäärät lasketaan niin yksittäisille kohtauksille, kuin luvuille ja näytöksille. Indeksistä voit piilottaa kohtaukset kokonaan.</p>
+<p><b>KOMPAKTI:</b> Kompaktissa muodossa näytetään vain kokonaissanamäärä, ja väri kertoo, onko kohtauksessa mukana puuttuvia sanoja.</p>
+<p><b>KUMULATIIVINEN:</b> Kumulatiivinen sanamäärä näyttää kokonaissanamäärän siihen asti. Kumulatiivista sanamäärää voi käyttää tarinan rakennetta muokatessa.</p>
+<p><b>PROSENTTI:</b> Kumulatiivinen prosentti on tarkoitettu tarinan rakenteen kanssa puuhaamiseen. Se voi olla oikein hyödyllinen, jos käytät jotain kaavaa, esimerkiksi Blake Snyderin Beatsheetiä tai K. M. Weilandin hahmokaaria (Character Arc). Esimerkiksi Weiland jakaa hahmokaaren kolmeen osaan:</p>
+<p>1. näytös: 0 - 25%</p>
+<p>2. näytös: 25-75%</p>
+<p>3. näytös: 75-100%</p>
+<br/>
+</scene>
+<scene name="Fillerit">
+<p>Keskeneräisen tarinan rakenteen hahmottelemiseksi sitä täytyy usein "täyttää" (padding) puuttuvilta osiltaan.</p>
+<p>Yksinkertaisimmillaan tämä tapahtuu lisäämällä kohtaukseen tarpeeksi täytesanoja ja merkitsemällä ne puuttuviksi sanoiksi (ohessa 100 puuttuvaa sanaa):</p>
+<missing>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</missing>
+<p>Täyttämisen helpottamiseksi on olemassa "filleri" -elementti, jolla voi antaa täytettävän sanamäärän. Fillerin saa tehtyä aloittamalla rivi kirjoittamalla "++" + välilyönti, tai valitsemalla valikosta "Fill" -tyypin. Puuttuvien sanojen määrä kirjoitetaan lukuna:</p>
+<fill>1000 (kokeile vaihtaa lukua)</fill>
+<p>Yllä oleva rivi raportoi 1000 puuttuvaa sanaa.</p>
+</scene>
+<scene name="Tavoitesanamäärä" target="500">
+<p>Versiossa 0.9.0 tavoitesanamäärän voi antaa myös jakajassa (break) lisäämällä loppuun "::" ja sanamäärä (kts. yllä). Tämä helpottaa tarinan rakenteen hahmottelua, koska fillereiden kanssa ongelma on aina se, että tarinan edetessä täytyy koko ajan poistaa fillereistä sanoja, jotta rakenne pysyy suunniteltuna.</p>
+<p>HUOM! Tällä hetkellä tavoitesanamäärä parsitaan jakajan otsikosta. Tulevaisuudessa tähän saattaa tulla jokin fiksumpi keino.</p>
+</scene>
+</chapter>
+<chapter name="Numeroimattomat luvut">
+<scene>
+<p>Lisäämällä luvun nimen perään asteriski ("*") luku on numeroimaton. Jos käytät eksporttauksessa numeroituja lukuja, tällä tavalla saat tehtyä prologit ja epilogit.</p>
+</scene>
+</chapter>
+<chapter name="Etsi &amp; korvaa" numbered="true">
+<scene name="Etsiminen">
+<p>Aloittaaksesi haun (search), paina Ctrl-F (Find).</p>
+<p>Yläpalkkiin tulee tekstikenttä, johon voit kirjoittaa, mitä tekstistä etsitään.</p>
+<p>Paina ESC - sillä etsintäkentän saa tyhjennettyä.</p>
+<p>Tavallisin tapa etsiä on maalata se, mitä olet etsimässä:</p>
+<p>Maalaa tämä --&gt; EtsinTätä &lt;--</p>
+<p>...ja paina Ctrl-F.</p>
+<p>Nyt etsintäkenttä käyttää maalaamaasi tekstiä.</p>
+<p>Jos kaikki toimi oikein, niin alla olevat tekstin ovat muuttuneet korostetuiksi (highlighted):</p>
+<p>EtsinTätä EtsinTätä EtsinTätä EtsinTätä EtsinTätä</p>
+<p>EtsinTätä EtsinTätä</p>
+<p>EtsinTätä</p>
+<p>EtsinTätä</p>
+<p>EtsinTätäEtsinTätä</p>
+<br/>
+<p>Paina Ctrl-G (Find next), joka vie sinut seuraavaan löydettyyn kohtaan. Voit hakea taaksepäin painamalla Shift-Ctrl-G (Find previous). Helpointa lienee pitää vasen käsi Ctrl-G -yhdistelmällä ja painaa oikealla Shift-nappia. Kokeile muutamaan kertaan.</p>
+</scene>
+<scene name="Korvaaminen">
+<p>Helpoin tapa korvata tekstiä on:</p>
+<p>(1) Maalaa ensin korvattava teksti.</p>
+<p>(2) Paina Ctrl-F tehdäksesi siitä haun.</p>
+<p>(3) Paina ENTER palataksesi tekstiin (maalaamasi tekstiin).</p>
+<p>(4) Ylikirjoita se sillä, millä haluat korvata tekstin.</p>
+<p>(5) Valitse ylikirjoitettu teksti ja kopioi se (Ctrl-C)</p>
+<p>(6) Käy dokumentti läpi (Ctrl-G / Shift-Ctrl-G) ja korvaa (paste, Ctrl-V) löytämäsi esiintymät.</p>
+<br/>
+<p>Esimerkki: Haluat korvata tarinasta nimen Aapeli nimellä Eemeli.</p>
+<p>(1) Valitse tekstistä korvattava nimi --&gt; Aapeli &lt;--</p>
+<p>(2) Paina Ctrl-F</p>
+<p>(3) Paina Enter</p>
+<p>(4) Korvaa nyt Aapeli tekstillä Eemeli.</p>
+<p>(5) Maalaa ja kopioi se.</p>
+<p>(6) Käy teksti läpi Ctrl-G / Shift-Ctrl-G -näppäimillä ja korvaa liittämällä (Ctrl-V) nimi.</p>
+<p><b>Kokeile tässä</b>:</p>
+<p>Aapeli AAPELI aapeli aapeli</p>
+<p>Aapeli</p>
+<p>AAPELI Aapeli</p>
+<br/>
+<p>Kuten huomaat, kirjainkoolla ei ole väliä.</p>
+</scene>
+</chapter>
+<chapter name="Foldaus" numbered="true">
+<scene name="Foldaus">
+<p>Foldaus on kätevä ominaisuus, jolla saat vähennettyä näytöllä olevan tekstin määrää kirjoittaessasi pidempää tarinaa. Voit foldata ("laskostaa") tekstin osia piiloon.</p>
+<p>Kohtauksen, luvun tai näytöksen saa foldattua painamalla Alt-F (toggle fold) ja samalla näppäimellä ne saa myös takaisin. Foldattu osuus näkyy foldattuna myös indeksissä.</p>
+<br/>
+<p>Alla oleva osuus on foldattu. Koeta painaa Alt-F otsikkorivillä unfoldataksesi sen. Myös mikä tahansa muutos foldattuun osaseen palauttaa sen näkyväksi, eli sen saa näkyväksi painamalla otsikkorivillä ENTER-näppäintä.</p>
+<br/>
+</scene>
+</chapter>
+<chapter name="Foldattu luku" folded="true" numbered="true">
+<scene name="Foldattu kohtaus/1" folded="true">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+<br/>
+</scene>
+<scene name="Foldattu kohtaus/2" folded="true">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+<scene name="Foldattu kohtaus/3" folded="true">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+</chapter>
+<chapter name="Raahaaminen (Drag'n'drop, DnD)" numbered="true">
+<scene name="Drag-and-Drop">
+<p>Tarinan kohtausten ja lukujen järjesteleminen toimii indeksissä raahaamalla. Lukuja ja kohtauksia voi siirtää myös rungon (body) ja muistion (notes) välillä.</p>
+<p><b>Kokeile itse:</b> Vedä indeksissä hiirellä elementtejä - huomaat, että kohtaukset liikkuvat yksin ja lukujen mukana liikkuu sen sisällä olevat kohtaukset. Kokeile järjestellä tämä dokumentti uusiksi.</p>
+</scene>
+</chapter>
+<chapter name="Muistio" numbered="true">
+<scene name="Vilkaise muistiota -->">
+<p>Oikean käden puolella on muistion indeksi --&gt;</p>
+<p>Muistio on tarkoitettu tarinan yleiseksi leikepöydäksi, tallentamaan kaikenlaista kirjoittamisen aikana syntyvää ainesta. Se on editorin mukana siksi, että se olisi kirjoitettaessa koko ajan saatavilla.</p>
+<p>Kirjoittaminen alkaa rungosta (body). Mutta kirjoittamisen aikana tulee usein tehtyä hahmotelmia tai tutkittua taustatietoja. Nämä hahmotelmat ja taustatutkimukset saa talteen muistion puolelle myöhempää käyttöä varten.</p>
+</scene>
+</chapter>
+<chapter name="Eksporttaus" numbered="true">
+<scene name="Formaatit">
+<p>Tällä hetkellä MaweJS tukee seuraavia formaatteja:</p>
+<p><b>RTF</b> - yksinkertainen, yksipuolinen (1-sided) RTF on pääasiallinen eksporttausformaatti. Tämä on formaatti, joka on yleisimmin käytössä silloin, kun haluat jakaa tarinasi kollegojen, kustantajien tai kirjoituskilpailujen tuomariston kanssa.</p>
+<p><b>LaTeX</b> - LaTeX on mukana formaattina sitä ajatellen, että haluat tehdä tarinasta oman kotitekoisen lehtisen (booklet) tai PDF-tiedoston. Voit eksportata joko yksi- tai kaksipuoleisena TEX-tiedostona, ja käyttää pdflatex- ja pdfbook -työkaluja sen tekemiseksi lehtiseksi.</p>
+<p><b>HTML</b> - HTML-formaatti on mukana oikeastaan vähän huvin vuoksi, mutta sitä voi myöhemmin käyttää, jos tekee EPUB-eksporttauksen.</p>
+<p><b>ASCII</b> - Tarinan saa ulos puhtaana tekstitiedostona. Tämän pääsääntöinen käyttötarkoitus on se, jos haluat julkaista tarinan nettisivuilla. Useimmat nettisivut käyttävät jonkinlaista markup-kieltä (MD, BB) sivuston sisällön tuottamiseen. Yleensä sivustoille ei saa liitettyä suoraan HTML:ää.</p>
+<br/>
+</scene>
+</chapter>
+<chapter name="Muita ominaisuuksia" numbered="true">
+<scene name="Pakkaaminen">
+<p>MaweJS lukee ja kirjoittaa natiivina gzip-pakattuja tiedostoja. Voit pakata tiedoston käsin:</p>
+<p>$ ls</p>
+<p>MyStory.mawe</p>
+<p>$ gzip MyStory.mawe</p>
+<p>$ ls</p>
+<p>MyStory.mawe.gz</p>
+<br/>
+<p>MaweJS säilyttää kompression: jos lataat pakatun tiedoston, niin se myös tallennetaan pakattuna.</p>
+</scene>
+</chapter>
+<chapter name="Migraatio" numbered="true">
+<scene name="Kokeilit etkä tykännyt">
+<p>Kokeilit MaweJS:ää, kirjoitit sillä tarinan, mutta et pidä editorista. Haluat käyttää jotain muuta editoria. Mikä neuvoksi?</p>
+<p>.mawe-tiedostot ovat standardeja XML-tiedostoja, ja niitä voi käsitellä XML-editoreilla. Strippaamalla tiedostosta pois XML-ohjausmerkit jäljellä on melko puhdasta tekstiä.</p>
+<p>Tulevaisuudessa saatan parantaa yhteentoimivuutta eri editorien kanssa. Se ei kuitenkaan ole itselläni työlistalla kovin korkealla, koska en ole juuri käyttänyt muita editoreita tarinoiden kirjoittamiseen.</p>
+<br/>
+</scene>
+</chapter>
+</act>
+</body>
+<!--/
+===============================================================================
+
+NOTES
+
+===============================================================================
+/-->
+<notes>
+<act>
+<chapter name="Muistio" numbered="true">
+<scene name="Mikä on muistio">
+<p>Muistio on samanlainen osio kuin tarinan runkokin (body), mutta tätä ei koskaan eksportata vedokseen. Tänne voi kirjoittaa pidempiä muistiinpanoja ja tätä voi käyttää tarinan leikepöytänä.</p>
+<br/>
+</scene>
+</chapter>
+</act>
+</notes>
+<!--/
+===============================================================================
+/-->
+<ui>
+<view/>
+<arc elements="scenes" template="plotpoints" mode="topCCW"/>
+<editor>
+<body words="numbers" indexed="scene,bookmark,act,chapter"/>
+</editor>
+</ui>
+<history>
+<words date="2024-12-04" text="4687" missing="1046" chars="27422"/>
+<words date="2024-12-05" text="3513" missing="2194" chars="29203"/>
+<words date="2024-12-10" text="3513" missing="2194" chars="29203"/>
+<words date="2025-03-29" text="3513" missing="2194" chars="27422"/>
+</history>
+</story>

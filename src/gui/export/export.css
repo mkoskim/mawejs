@@ -1,0 +1,8 @@
+
+@import "../common/styles/sheet.preview.css";
+
+.ExportSettings {
+  background: white;
+  padding: 6px;
+  border-left: 1px solid lightgray;
+}

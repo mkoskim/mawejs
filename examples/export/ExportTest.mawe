@@ -1,0 +1,101 @@
+<story uuid="2de1ce1d-1ac6-415a-a6cf-0f74cca6ee8a" format="mawe" version="4" name="Export Test">
+<!--/
+===============================================================================
+
+STORY: Export Test
+
+===============================================================================
+/-->
+<head/>
+<export type="short" acts="named" chapters="numbered" scenes="separated"/>
+<!--/
+===============================================================================
+/-->
+<body>
+<act name="">
+<chapter name="">
+<scene name="Preface">
+<p><b>Preface.</b> Unnamed, non-numbered chapters are omitted.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+<br/>
+</scene>
+</chapter>
+<chapter name="Prologue">
+<scene name="Sc">
+<p>Unnumbered chapter as a prologue, before first part.</p>
+<p><b>Lorem </b><i>ipsum</i> dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+<br/>
+</scene>
+</chapter>
+</act>
+<act name="Part 1">
+<chapter name="">
+<scene name="">
+<p><b>Preface.</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+</chapter>
+<chapter name="Ch1" numbered="true">
+<scene name="Sc1">
+<p>First chapter, first scene.</p>
+<p><b>Lorem </b><i>ipsum</i> dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+<scene name="Sc2">
+<p>Second scene.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+</chapter>
+<chapter name="Ch">
+<scene name="Sc">
+<p>Unnumbered chapter between.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+<br/>
+</scene>
+</chapter>
+</act>
+<act name="Part B">
+<chapter name="Ch2" numbered="true">
+<scene name="">
+<p>Chapter 2.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+<br/>
+</scene>
+</chapter>
+<chapter name="Ch3" numbered="true">
+<scene name="">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+<br/>
+</scene>
+</chapter>
+</act>
+</body>
+<!--/
+===============================================================================
+
+NOTES
+
+===============================================================================
+/-->
+<notes>
+<act name="">
+<chapter name="">
+<scene name="">
+<br/>
+</scene>
+</chapter>
+</act>
+</notes>
+<!--/
+===============================================================================
+/-->
+<ui>
+<view/>
+<arc elements="scene" template="beatsheet" mode="topCCW"/>
+<editor>
+<body words="numbers" indexed="scene,synopsis,chapter"/>
+</editor>
+</ui>
+<history>
+<words date="2024-10-12" text="0" missing="0" chars="0"/>
+<words date="2024-10-13" text="827" missing="0" chars="5630"/>
+</history>
+</story>

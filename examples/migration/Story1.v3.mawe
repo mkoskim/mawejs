@@ -1,0 +1,16 @@
+<story name="Story v3/1" format="mawe" version="3">
+
+<head><title>Story v3/1</title></head>
+
+<!-- Body is formed from chapters, wrapped to an act -->
+
+<body>
+<chapter name="Chapter">
+<scene name="Scene">
+<p>If loaded correctly, story title is "Story".</p>
+<br/>
+</scene>
+</chapter>
+</body>
+
+<export type="long" chapters="numbered" scenes="separated"/>
