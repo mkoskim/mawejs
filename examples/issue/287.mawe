@@ -1,0 +1,54 @@
+<story uuid="d1de3344-17e8-4339-8a23-9d7673e6acd6" format="mawe" version="5" name="Issue#287">
+<!--/
+===============================================================================
+
+STORY: Issue#287
+
+===============================================================================
+/-->
+<head/>
+<export content="draft" type="short" acts="none" chapters="numbered" scenes="none"/>
+<!--/
+===============================================================================
+/-->
+<body>
+<act>
+<chapter>
+<scene>
+<p>Issue#287: https://github.com/mkoskim/mawejs/issues/287</p>
+<br/>
+</scene>
+</chapter>
+</act>
+</body>
+<!--/
+===============================================================================
+
+NOTES
+
+===============================================================================
+/-->
+<notes>
+<act>
+<chapter>
+<scene>
+<br/>
+</scene>
+</chapter>
+</act>
+</notes>
+<!--/
+===============================================================================
+/-->
+<ui>
+<view/>
+<arc elements="scene" template="beatsheet" mode="topCCW"/>
+<editor>
+<body words="numbers" indexed="act,chapter,scene,bookmark"/>
+</editor>
+</ui>
+<history>
+<words date="2024-12-11" text="0" missing="0" chars="0"/>
+<words date="2024-12-12" text="9" missing="0" chars="55"/>
+</history>
+</story>

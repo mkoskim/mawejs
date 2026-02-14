@@ -1,0 +1,38 @@
+/* ----------------------------------------------------------------------------
+//
+// Sheet colors
+//
+// ----------------------------------------------------------------------------
+*/
+
+:root {
+  --synopsis-fg: rgb(0, 0, 0);
+  --synopsis-bg: rgb(255, 255, 245);
+  --synopsis-border: 1pt solid lightgray;
+
+  --notes-fg: rgb(0, 0, 0);
+  --notes-bg: rgb(245, 255, 245);
+  --notes-border: 1pt solid lightgray;
+
+  --bookmark-fg: rgb(190, 30, 170);
+  --bookmark-bg: ;
+
+  --missing-fg: rgb(190, 3, 3);
+  --missing-bg: ;
+
+  /*
+  --target-fg: rgb(190, 3, 170);
+  --fill-bg: #f8e7e7;
+  */
+
+  --tags-fg: rgb(80, 80, 250);
+
+  --comment-fg: rgb(56, 131, 56);
+  --comment-bg: ;
+
+  /*
+  --comment-fg: rgb(6, 61, 6);
+  --comment-bg: #e7ffe7;
+  */
+}
+

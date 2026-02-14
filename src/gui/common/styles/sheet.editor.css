@@ -1,0 +1,270 @@
+/******************************************************************************
+//
+// Editor sheet subelements
+//
+//*****************************************************************************/
+
+@import "colors.css";
+@import "sheet.css";
+
+.Editor .Sheet {
+
+  /*-------------------------------------------------------------------------*/
+  /* Sheet Subelements */
+  /*-------------------------------------------------------------------------*/
+
+  div, span, p, h1, h2, h3, h4, h5, h6 {
+    scroll-margin-top: 16pt;
+    scroll-margin-bottom: 16pt;
+  }
+
+  .highlight {
+    background: #ffeeba;
+  }
+
+  h1 { /* Title */
+    font-size: 17pt;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1cm;
+  }
+
+  h2 { /* Subtitle */
+    font-size: 14pt;
+    text-align: center;
+  }
+
+  hr { /* Page break */
+    border: 0;
+    border-top: 1px dashed LightSteelBlue;
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Acts */
+  /*-------------------------------------------------------------------------*/
+
+  h4 { /* Act */
+    font-family: Arial, Helvetica, sans-serif;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 12pt;
+    margin-bottom: 12pt;
+    color: #666;
+  /*
+    font-size: 14pt;
+  */
+
+    &.Numbered::before {
+      counter-increment: act;
+      content: counter(act) ". ";
+    /*
+      margin-right: 4pt;
+      content: "Act " counter(act, upper-roman) ":";
+    */
+    }
+  }
+
+  div.act {
+    /*
+    margin-bottom: 0.5cm;
+    */
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Chapters */
+  /*-------------------------------------------------------------------------*/
+
+  h5 { /* Chapter */
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: inherit;
+    color: #666;
+    /*
+    font-weight: normal;
+    font-weight: bold;
+    padding-top: 4pt;
+    padding-bottom: 4pt;
+    text-align: center;
+    margin-top: 0.5cm;
+    margin-bottom: 0.5cm;
+    */
+
+    &.Numbered::before {
+      counter-increment: chapter;
+      content: counter(chapter) ". ";
+    }
+  }
+
+  div.chapter {
+    /*
+    content-visibility: auto;
+    margin-bottom: 0.5cm;
+    */
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Scenes */
+  /*-------------------------------------------------------------------------*/
+
+  h6 { /* Scene / Synopsis */
+    font-size: inherit;
+    color: #888;
+    /*
+    font-weight: normal;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--bookmark-fg);
+    background: var(--bookmark-bg);
+    padding-top: 4pt;
+    padding-bottom: 4pt;
+    margin-top: 0.5cm;
+    */
+
+    div.scene &::before {
+      counter-increment: scene;
+      content: "## ";
+    /*
+      content: counter(scene) ".";
+    */
+    }
+    div.synopsis &::before {
+      content: ">> ";
+    }
+    div.notes &::before {
+      content: "%% ";
+    }
+  }
+
+  /*
+  div.scene, div.synopsis, div.notes {
+    content-visibility: auto;
+  }
+  /**/
+
+  div.scene:not(.folded) {
+    margin-bottom: 0.5cm;
+  }
+
+  div.synopsis, div.notes {
+    padding: 0pt 4pt 0pt 4pt;
+    margin-bottom: 2pt;
+  }
+
+  div.synopsis {
+    background: var(--synopsis-bg);
+    color: var(--synopsis-fg);
+    border: var(--synopsis-border);
+  }
+
+  div.notes {
+    background: var(--notes-bg);
+    color: var(--notes-fg);
+    border: var(--notes-border);
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Folding */
+  /*-------------------------------------------------------------------------*/
+
+  div.folded {
+    position: relative;
+
+    &::before {
+      position: absolute;
+      left: -0.75cm;
+      color: grey;
+      content: "[+]";
+    }
+
+    h4, h5, h6 {
+      display: inline;
+      color: #AAA;
+    }
+
+    /*
+    p, div.br, div.quote {display: none;}
+    */
+  }
+
+  /*
+  .act.folded {
+    div.chapter {display: none;}
+  }
+
+  .chapter.folded {
+    div.scene, div.notes, div.synopsis {display: none;}
+  }
+  */
+
+  /*-------------------------------------------------------------------------*/
+  /* For debugging purposes: make chapter & scene div's visible */
+  /*-------------------------------------------------------------------------*/
+
+  div.withBorders {
+    &.act {
+      border: 1pt solid lightblue;
+      padding: 4pt;
+      margin-bottom: 4pt;
+    }
+    &.chapter {
+      border: 1pt dashed gray;
+      padding: 4pt;
+      margin-bottom: 4pt;
+    }
+    &.scene, &.notes, &.synopsis {
+      border: 1pt dotted lightgray;
+      padding: 4pt;
+      margin-bottom: 4pt;
+    }
+  }
+
+  /*
+  div.br::before {
+    content: "<br>";
+  }
+  */
+
+  /*-------------------------------------------------------------------------*/
+  /* Sheet subelements */
+  /*-------------------------------------------------------------------------*/
+
+  p, div.br {
+    margin: 0pt;
+    p + & { text-indent: 1.0cm; }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  .missing {
+    color: var(--missing-fg);
+    &::before {content: "!! ";}
+  }
+
+  .fill {
+    color: var(--missing-fg);
+    &::before {content: "++ Fill: ";}
+  }
+
+  .tags {
+    color: var(--tags-fg);
+    &::before {content: "@@ ";}
+  }
+
+  .comment {
+    color: var(--comment-fg);
+    background: var(--comment-bg);
+    &::before {content: "// ";}
+  }
+
+  .bookmark {
+    /* color: rgb(46, 49, 7); */
+    color: var(--bookmark-fg);
+    /*
+    background: var(--bookmark-bg);
+    */
+    &::before {content: "=> ";}
+  }
+
+  .quote {
+    margin-left: 2cm;
+    margin-right: 2cm;
+  }
+}

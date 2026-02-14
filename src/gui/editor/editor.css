@@ -1,0 +1,24 @@
+/* ----------------------------------------------------------------------------
+//
+// Styles for story elements in the editor.
+//
+// ----------------------------------------------------------------------------
+*/
+
+@import "../common/styles/sheet.editor.css";
+
+/* ---------------------------------------------------------------------------- */
+/* Variables */
+
+/* ---------------------------------------------------------------------------- */
+/* Wrapped pre for development */
+
+pre {
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  white-space: pre-wrap;       /* Since CSS 2.1 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.Hidden { display: none; }

@@ -1,0 +1,57 @@
+/* ----------------------------------------------------------------------------
+// Styles for Separator depending if it is horizontal or vertical box.
+// ----------------------------------------------------------------------------
+*/
+
+.VBox {
+  display: flex;
+  flex-direction: column;
+}
+
+.HBox {
+  display: flex;
+  flex-direction: row;
+}
+
+.Filler {
+  flex-grow: 1;
+}
+
+.HBox > .Separator {
+  height: 100%;
+  border-right: 1pt solid lightgrey;
+  margin-left: 4pt;
+  margin-right: 4pt;
+}
+
+.VBox > .Separator, .MuiList-root > .Separator {
+  width:  100%;
+  border-bottom: 1pt solid lightgrey;
+  margin-top: 4pt;
+  margin-bottom: 4pt;
+}
+
+.Separator.MuiToggleButtonGroup-groupedVertical {
+  /* width:  100%; */
+  padding: 0 !important;
+  border-bottom: 1pt solid lightgrey !important;
+}
+
+.ToolBox {
+  padding: 2px;
+  align-items: center;
+  border-bottom: 1pt solid lightgray;
+  /*
+  paddingLeft: 4, paddingRight: 4,
+  paddingTop: 4, paddingBottom: 4,
+  //backgroundColor: "#F8F8F8",
+  */
+}
+
+.RadioButton {
+  border-radius: 9px;
+}
+
+.RadioButton:hover {
+  background: lightgrey;
+}

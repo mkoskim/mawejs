@@ -1,0 +1,162 @@
+/* ----------------------------------------------------------------------------
+//
+// Export preview styles
+//
+// ----------------------------------------------------------------------------
+*/
+
+@import "colors.css";
+@import "sheet.css";
+
+/* ----------------------------------------------------------------------------
+// Preview Sheet Subelements
+// ----------------------------------------------------------------------------
+*/
+
+.Preview .Sheet {
+
+  div, span, p, h1, h2, h3, h4, h5, h6 {
+    scroll-margin-top: 2cm;
+    scroll-margin-bottom: 2cm;
+  }
+  h1 { /* Title */
+    font-size: 17pt;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1cm;
+  }
+
+  h2 { /* Subtitle */
+    font-size: 14pt;
+    text-align: center;
+  }
+
+  hr { /* Page break */
+    border: 0;
+    border-top: 1px dashed LightSteelBlue;
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Act */
+  /*-------------------------------------------------------------------------*/
+
+  h4 { /* Act */
+    font-size: 16pt;
+    text-align: center;
+    margin-top: 12pt;
+    margin-bottom: 12pt;
+  /*
+    font-family: Arial, Helvetica, sans-serif;
+    text-transform: uppercase;
+    color: #666;
+  */
+
+    &.Numbered::before {
+      counter-increment: act;
+    /*
+      margin-right: 4pt;
+      content: "Act " counter(act, upper-roman) ":";
+    */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Chapter */
+  /*-------------------------------------------------------------------------*/
+
+  h5 { /* Chapter */
+    font-size: 14pt;
+    font-weight: bold;
+    margin-bottom: 0.5cm;
+    margin-top: 1cm;
+    /*
+    font-family: Arial, Helvetica, sans-serif;
+    color: #666;
+    font-weight: normal;
+    padding-top: 4pt;
+    padding-bottom: 4pt;
+    text-align: center;
+    */
+
+    &.Numbered::before {
+      counter-increment: chapter;
+    /*
+      margin-right: 4pt;
+      content: counter(chapter) ".";
+    */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Chapter */
+  /*-------------------------------------------------------------------------*/
+
+  h6 { /* Scene / Synopsis */
+    font-size: inherit;
+    font-weight: bold;
+    margin-top: 12pt;
+    /*
+    color: #888;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--bookmark-fg);
+    background: var(--bookmark-bg);
+    padding-top: 4pt;
+    padding-bottom: 4pt;
+    */
+
+    &.Numbered::before {
+      counter-increment: scene;
+    /*
+      content: "## ";
+      margin-right: 8pt;
+      content: counter(scene) ".";
+    */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Sheet Subelements */
+  /*-------------------------------------------------------------------------*/
+
+  p, div.br {
+    margin: 0pt;
+    p + & { text-indent: 1.0cm; }
+  }
+
+  /*
+  div.br::before {
+    content: "<br>";
+  }
+  */
+
+  /*-------------------------------------------------------------------------*/
+
+  p.missing {
+    color: var(--missing-fg);
+  }
+
+  p.comment {
+    color: var(--comment-fg);
+    background: var(--comment-bg);
+  }
+
+  div.quote {
+    margin-left: 2cm;
+    margin-right: 2cm;
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  .flash {
+    animation: fadeFlash 500ms ease-out forwards;
+  }
+}
+
+@keyframes fadeFlash {
+  0% {
+    background-color: rgb(242, 255, 122);
+  }
+  100% {
+    background-color: transparent;
+  }
+}

@@ -1,0 +1,324 @@
+/*---------------------------------------------------------------------------*/
+/* Document outlining (table of content) */
+/*---------------------------------------------------------------------------*/
+
+@import "colors.css";
+
+/*---------------------------------------------------------------------------*/
+/* TOC div */
+/*---------------------------------------------------------------------------*/
+
+.TOC {
+  /* Catch scrollbars */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /*
+  min-width: 350px;
+  max-width: 350px;
+  width: 300px;
+  background-color: lightgray;
+  */
+
+  flex-grow: 1; /* Fill empty space */
+
+  padding-bottom: 1cm; /* For DnD */
+  /*
+  padding: 6px;
+  padding-top: 4px;
+  padding-left: 6px;
+  padding-top: 0.5cm;
+  padding-left: 4px;
+  */
+  /*
+  background: white;
+  border-right: 1pt solid lightgray;
+  */
+}
+
+/*---------------------------------------------------------------------------*/
+/* TOC sections */
+/*---------------------------------------------------------------------------*/
+
+.TOC {
+  .SectionZone {
+    counter-reset: act chapter scene;
+    border-bottom: 1px solid lightgray;
+  }
+}
+
+/*---------------------------------------------------------------------------*/
+/* TOC entries */
+/*---------------------------------------------------------------------------*/
+
+.TOC .Entry {
+  margin: 0;
+  cursor: default;
+  align-items: center;
+  padding: 2px 4px;
+  /*
+  padding-left: 4pt;
+  padding-right: 4pt;
+  padding-bottom: 2pt;
+  padding-bottom: 2pt;
+  /**/
+
+  /*-------------------------------------------------------------------------*/
+
+  &:hover {
+    background-color: lightgrey !important;
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  &.Current {
+    background-color: rgb(210, 230, 250);
+  }
+
+  &.Folded {
+    opacity: 33%;
+    /*color: rgba(0, 0, 0, 0.33);*/
+    /*color: rgb(180, 180, 180)*/
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  &.Section {
+    /*
+    background-color: rgb(240, 240, 240);
+    padding: 6px;
+    border-bottom: 1px dashed lightgray;
+    */
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  &.Act {
+    font-weight: bold;
+    /*
+    border-top: 1px dashed gray;
+    padding-top: 4pt !important;
+    padding-bottom: 4pt !important;
+    */
+
+    /*
+    &.Numbered .Name::before {
+      counter-increment: act;
+      content: "ACT " counter(act, upper-roman) ": ";
+    }
+    */
+
+    .Name {
+      text-transform: uppercase;
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  &.Chapter {
+    font-weight: bold;
+    /*
+    padding-top: 4pt !important;
+    padding-bottom: 4pt !important;
+    */
+
+    &.Numbered .Name::before {
+      counter-increment: chapter;
+      content: counter(chapter) ". ";
+    /*
+      content: counter(chapter, upper-roman) "\00a0-\00a0";
+    */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  &.Scene {
+    padding-left: 0.5cm !important;
+    /*
+    padding-top: 4pt !important;
+    padding-bottom: 4pt !important;
+    */
+  /*
+    font-weight: 450;
+    background: #FFD;
+    font-weight: bold;
+    padding-top: 4pt !important;
+    border-bottom: 1pt solid gray;
+  */
+
+    &.Synopsis .Name {
+      background: rgb(240, 240, 80);
+      border: 1px solid grey;
+      border-radius: 3pt;
+      padding: 0pt 3pt 0pt 3pt;
+      font-size: 11pt;
+      /*
+      content: "Synopsis";
+      margin-right: 4pt;
+      */
+    }
+
+    &.Notes .Name {
+      background: rgb(100, 230, 100);
+      border: 1px solid grey;
+      border-radius: 3pt;
+      padding: 0pt 3pt 0pt 3pt;
+      font-size: 11pt;
+      /*
+      font-size: 10pt;
+      content: "Synopsis";
+      margin-right: 4pt;
+      */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  &.Bookmark {
+    padding-left: 1.0cm !important;
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  .Name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .WordCount {
+    margin-left: 6pt;
+    min-width: 1.5cm;
+    text-align: right;
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Entry small boxes */
+
+  .Box {
+    min-height: 7pt;
+    max-height: 7pt;
+    min-width: 7pt;
+    max-width: 7pt;
+    border: 1px solid grey;
+    margin-right: 6pt;
+    /*
+    margin-left: 0.5cm;
+    margin-left: 8pt;
+    border-radius: 4pt;
+    */
+
+    /*
+    &.bookmark,
+    &.comment,
+    &.missing {
+        margin-left: 0.5cm;
+    }
+    */
+
+    /**/
+    &.comment { background: rgb(71, 207, 71); }
+    &.missing { background: rgb(232, 14, 14); }
+    &.bookmark { background: rgb(252, 84, 252); }
+    &.tags { background: rgb(80, 80, 250); }
+    /*/
+    &.comment { background: var(--comment-fg); }
+    &.missing { background: var(--missing-fg); }
+    &.fill { background: var(--fill-fg); }
+    &.bookmark { background: var(--bookmark-fg); }
+    /**/
+  }
+}
+
+/*---------------------------------------------------------------------------*/
+/* TOC div's (drop zones etc) */
+/*---------------------------------------------------------------------------*/
+
+.TOC {
+
+  /*-------------------------------------------------------------------------*/
+
+  div.ActDropZone {
+    min-height: 16pt;
+
+    &.DragOver {
+      margin-left: -4px;
+      margin-right: -4px;
+      border: 1px dashed grey;
+      padding: 3px;
+      /*
+      border-radius: 4px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  div.ChapterDropZone {
+    min-height: 16pt;
+
+    &.DragOver {
+      margin-left: -4px;
+      margin-right: -4px;
+      border: 1px dashed grey;
+      padding: 3px;
+      /*
+      border-radius: 4px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  div.SceneDropZone {
+    min-height: 16pt;
+
+    &.DragOver {
+      margin-left: -4px;
+      margin-right: -4px;
+      border: 1px dashed grey;
+      padding: 3px;
+      /*
+      border-radius: 4px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      */
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  /*
+  div.Chapter, div.Scene {
+    background: #F5F7F9;
+  }
+  */
+
+  div.Scene {
+    /*
+    padding-left: 0.5cm !important;
+    padding-left: 0.25cm;
+    border: 2px solid lightgray;
+    border-radius: 3px;
+    margin: 3pt;
+    margin-left: 16pt;
+    */
+
+    &:hover {
+      background-color: #DEF;
+    }
+
+    .Separator {
+      /*
+      margin: 0;
+      margin-bottom: 2pt;
+      border: 1px solid lightgrey;
+      */
+    }
+  }
+}

@@ -1,0 +1,57 @@
+/* ----------------------------------------------------------------------------
+//
+// Styles for workspace
+//
+// ----------------------------------------------------------------------------
+*/
+
+.Workspace {
+  display: flex;
+  flex-grow: 1;
+  background: #eee;
+  border: 2pt none grey;
+}
+
+.Workspace .TabName {
+  margin: 4pt;
+}
+
+.Workspace .FilesTab {
+  border: 1px solid lightgrey;
+  background: rgb(218, 240, 218);
+  padding: 2pt;
+  margin-bottom: 8pt;
+}
+
+.Workspace .RelatedTab {
+  border: 1px solid lightgrey;
+  background: rgb(218, 240, 218);
+  padding: 2pt;
+}
+
+.WorkspaceItem {
+  display: flex;
+  align-items: center;
+
+  border: 2px solid lightgrey;
+  border-radius: 4px;
+  background: white;
+
+  cursor:pointer;
+
+  margin: 1pt;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.WorkspaceItem .Name {
+	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selected {
+  background: white;
+}

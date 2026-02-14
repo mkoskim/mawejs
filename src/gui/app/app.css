@@ -1,0 +1,24 @@
+/* For all elements, measure widths and heights with padding and border */
+* {
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+html, body {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-size: 12pt;
+
+  margin: 0;
+  padding: 0;
+}
+
+.ViewPort {
+  height: 100vh;
+  width: 100vw;
+}
+
+body {
+  background: #F5F7F9;
+}
+

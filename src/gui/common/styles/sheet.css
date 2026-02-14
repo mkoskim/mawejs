@@ -1,0 +1,128 @@
+/* ----------------------------------------------------------------------------
+//
+// Sheet styling: shared between editor and export preview
+//
+// ----------------------------------------------------------------------------
+*/
+
+/* ---------------------------------------------------------------------------- */
+/* Board for scrollbars */
+/* ---------------------------------------------------------------------------- */
+
+.Board {
+  /* Catch scrollbars */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /*
+  background: #F5F7F9;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+  padding: 1cm;
+  */
+}
+
+/*
+.Board:focus-within {
+  background: #e5eaee;
+}
+*/
+
+/* ----------------------------------------------------------------------------
+// Sheet
+// ----------------------------------------------------------------------------
+*/
+
+.Sheet {
+  /*-------------------------------------------------------------------------*/
+
+  /*
+  font-family: 'Courier New', Courier, monospace;
+  font-family:Arial, Helvetica, sans-serif;
+  */
+  font-size: 12pt;
+  line-height: 180%;
+  font-family: 'Times New Roman', Times, serif;
+  counter-reset: act chapter scene;
+
+  background: white;
+
+  box-sizing:content-box;
+
+  max-width: 6in;
+  min-width: 4.5in;
+
+  /*-------------------------------------------------------------------------*/
+  /* Sheet is outlined, if one of its children have focus */
+  &:focus-within {
+    outline: 2px solid lightblue;
+  }
+
+  /* Child in Sheet are not outlined */
+  > :focus {
+    outline: none;
+  }
+
+  /*-------------------------------------------------------------------------*/
+
+  &.Condensed {
+    padding: 1cm;
+  }
+
+  &.Real, &.Regular {
+    /* Empty space around paper */
+    margin: 0.5cm;
+    margin-right: auto;
+    margin-left: auto;
+    /*
+    */
+    min-height: 10in;
+    /*
+    box-shadow: rgb(0 0 0 / 10%) 1px 1px 0px inset, rgb(0 0 0 / 7%) 0px -1px 0px inset;
+    */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.253), 0 4px 8px rgba(0, 0, 0, 0.322);
+    /*
+    */
+  }
+
+  &.Regular {
+    /* White space around text */
+    padding-left: 2cm;
+    padding-right: 2cm;
+    padding-top: 1cm;
+    padding-bottom: 2cm;
+  }
+
+  &.Real {
+    padding-left: 1in;
+    padding-right: 1in;
+    padding-top: 0.5in;
+    padding-bottom: 1in;
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Basic styles */
+
+  .bold {
+    font-weight: bold;
+  }
+
+  .italic {
+    font-style: italic;
+  }
+
+  /*-------------------------------------------------------------------------*/
+  /* Sheet Subelements */
+  /*-------------------------------------------------------------------------*/
+
+  div, span, p, h1, h2, h3, h4, h5, h6 {
+    padding: 0;
+    margin: 0;
+    /*
+    scroll-margin-top: 12pt;
+    scroll-margin-bottom: 12pt;
+    */
+  }
+}

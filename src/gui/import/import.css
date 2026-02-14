@@ -1,0 +1,11 @@
+@import "../common/styles/TOC.css";
+@import "../common/styles/sheet.editor.css";
+
+.ImportSettings {
+  min-width: 200px;
+  padding: 6px;
+/*
+  border-right: 1px solid lightgray;
+  background: white;
+*/
+}

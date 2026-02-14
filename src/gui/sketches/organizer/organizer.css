@@ -1,0 +1,112 @@
+/* ---------------------------------------------------------------------------- */
+/* Organizer styles */
+/* ---------------------------------------------------------------------------- */
+
+.Organizer div.Section {
+  counter-reset: scene;
+
+  /*
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  */
+  overflow-x: auto;
+
+  padding: 8pt;
+  padding-bottom: 1cm;
+}
+
+/* ---------------------------------------------------------------------------- */
+
+.Organizer div.Chapter {
+  display: flex;
+  /*
+  flex-direction: row;
+  flex-wrap: wrap;
+  */
+
+  background: skyblue;
+  border: 3px solid lightgray;
+  border-radius: 6px;
+  margin: 4pt;
+
+  /*
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-bottom: 8pt;
+  margin-top: 4pt;
+  border-bottom: 1pt dashed grey;
+
+  padding-left: 4pt;
+  */
+}
+
+.Organizer .Chapter > .Name {
+  padding: 4pt;
+  /*
+  border-bottom: 2pt solid lightgray;
+  */
+  background: lightgoldenrodyellow;
+}
+
+.Organizer .Chapter > .List {
+  /*
+  border: 1px solid grey;
+  */
+  min-height: 100px;
+  flex-grow: 1;
+  padding: 4pt 2pt;
+}
+
+/* ---------------------------------------------------------------------------- */
+
+.Organizer div.Scene {
+  display: flex;
+  cursor:pointer;
+
+  width: 250px;
+  min-width: 150px;
+  max-width: 400px;
+  /*
+  width: 300px;
+  height: 300px;
+  */
+
+  background: white;
+  border: 2px solid lightgray;
+  border-radius: 6px;
+  padding: 8px;
+
+  margin: 0pt 2pt;
+  /*
+  margin-top: 2pt;
+  margin-bottom: 2pt;
+  padding-top: 6pt;
+  padding-bottom: 6pt;
+  */
+}
+
+.Organizer div.Scene:hover {
+  background: lightgrey;
+}
+
+.Organizer div.Scene > .Name {
+  /*
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  */
+}
+
+.Organizer div.Scene > .Name::before {
+  counter-increment: scene;
+  content: counter(scene) ". "
+}
+
+.Organizer div.Scene div.synopsis {
+
+}
+
+.Organizer div.Scene div.synopsis::before {
+  content: "* "
+}

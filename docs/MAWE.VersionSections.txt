@@ -1,0 +1,82 @@
+STORY VERSIONS INSIDE .MAWE FILES
+
+There is also discussion about the subject in MAWE.FileFormat.txt document.
+
+<body> and <version> sections are equally structured:
+
+    <body>
+        <head> ... </head>
+        <part> ... </part>
+        <part> ... </part>
+        ...
+    </body>
+
+    <version>
+        <head> ... </head>
+        <part> ... </part>
+        <part> ... </part>
+        ...
+    </version>
+
+A MAWE file can have multiple <version> sections, but only one
+<body> section. <body> section marks the version that is currently
+actively edited. It should help fetching file info, as you need
+just get ./body/head to extract that info.
+
+-------------------------------------------------------------------------------
+
+There is three ways to make a new version:
+
+(1) Make a version by making a copy of current body:
+
+        <body>...Some text...</body>
+        <version>...Some different text...</version>
+
+    ==>
+
+        <body>...Some text...</body>
+        <version>...Some text...</version>
+        <version>...Some different text...</version>
+
+Basically, you leave a mark behind, while still continuing actively
+working on <body>.
+
+(2) Switch version: you choose some other version, which comes
+the current body, and coby becomes a version:
+
+        <body>...Some text...</body>
+        <version>...Some different text...</version>
+
+    ==>
+
+        <body>...Some different text...</body>
+        <version>...Some text...</version>
+
+(3) Create entirely new, empty body: current body becomes a version:
+
+        <body>...Some text...</body>
+        <version>...Some different text...</version>
+
+    ==>
+
+        <body></body>
+        <version>...Some text...</version>
+
+-------------------------------------------------------------------------------
+
+Both <body> and <version> have name attribute. It is not mandatory and it does 
+not need to be unique, but it probably helps if the name gives some meaningful
+information to the writer.
+
+  <body name="v2.2" />
+  <version name="v2.0" />
+  <version name="v1.1" />
+
+Version name can be chosen freely. It can be e.g. publisher's name, if you have 
+saved version you sent to some publisher at some point, or a name of competition
+you sent the text, e.g.
+
+  <version name="Random House 5/2019"> ... </version>
+  <version name="Hugo 3/2018"> ... </version>
+
+-------------------------------------------------------------------------------

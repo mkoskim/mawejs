@@ -1,0 +1,195 @@
+VERSIONED FILE FORMAT FOR MAWE
+
+Versioned file format means a file format, that stores the versions of the
+file internally. This would be great for certain things, amongst the best
+is that the user can be freed from saving files: that is, Ctrl-S is just
+advisory, the system itself keeps data safe.
+
+NOTE: Even if we don't implement versioned file formats immediately, we can
+make the editor to use it internally! That means, that as long as the editor
+is open, you can revert back to earlier versions. Then later we can make 
+the editor to save & load these versioned files from disk.
+
+NOTE: Not all file systems need versioned files. If we later can integrate 
+MAWE to google drive or dropbox, those file systems have versioning already,
+and thus you can keep using plain mawe formats.
+
+-------------------------------------------------------------------------------
+
+FILE FORMAT TYPES:
+
+(1) .mawe / .mawe.gz file formats are plain and simple file formats which can
+    be exchanged between writers. Also, these form the fundamentals to the
+    versioning format, too.
+
+(2) Versioning file format. This is meant for cases, where there is no other
+    versioning available. This is first experimental.
+
+-------------------------------------------------------------------------------
+
+.MAWE / .MAWE.GZ:
+
+- .mawe is the default file format. It is structured XML file.
+
+- .mawe.gz is created by compressing the .mawe file with gzip. You can return
+  the file back to uncompressed .mawe file by gunzip'ing it.
+
+- It should be so that the output compression is detected by file extension.
+  Compression is turned on and off by renaming the file. If that fails, file
+  remains in its old state.
+
+- During reading, the file detection can be automatic. So, in case there had
+  been some errors (e.g. file was renamed but app crashed before writing it),
+  loading would work great.
+
+- Maintaining file extension helps working with gzip/gunzip, if there is
+  need for that.
+
+About compression:
+
+- We might add support to other compression formats (bzip2, xz, ...) later.
+
+- Probably not needed, as gzip is good enough to shave off the overhead of
+  ASCII XML format. In general, files are less than half of their size.
+
+- Possible compression methods: gzip, bzip2, ...
+
+- Compressed archives: zip - these are different story.
+
+-------------------------------------------------------------------------------
+
+VERSIONING FORMAT:
+
+Versioned file is a ZIP/TAR file. It stores the chain of modifications made
+to the file. It does not track any other file, it is self-standing file itself,
+that is, the writer makes the modifications (using the editor) to this file.
+
+I think this is much cleaner solution than trying to track changes between
+versioning repository (UUID file) and external .mawe/.gz file being edited.
+I am sure it will be much simpler, if we edit the repository file directly!
+
+Archive name and location can basically be freely chosen, as we can have an
+index to locate files. But in long run, it would be great, if version
+archive would be named by UUID and they would all be located in one
+specific directory, that is hopefully protected against accidents (e.g.
+hidden folder, maybe hidden files, maybe write protected files).
+
+In principle, ZIP file stores the modified mawe files in time order:
+
+STORY.MAWE.ZIP:
+    102.mawe        Newest file
+    101.mawe
+    100.mawe
+    ...
+      3.mawe
+      2.mawe
+      1.mawe        Oldest file
+
+(1) When .mawe / .mawe.gz file is turned to versioned file, the (uncompressed)
+mawe file is stored to UUID.ZIP as "1.mawe"
+
+(2) To save space, .mawe files can be converted to .diff files. The Newest
+version is always plain .mawe file, but the older can be .diffs:
+
+    STORY.MAWE.ZIP:
+        102.mawe        Newest file
+        101.diff        102.mawe + 101.diff --> 101.mawe
+        100.diff        101.mawe + 100.diff --> 100.mawe
+        ...
+        3.diff
+        2.diff
+        1.diff        2.mawe + 1.diff --> first version
+
+Fetching head is fast: you just extract the latest file. Fetching old
+versions can take some time, as they are retrieved by applying number
+of diffs to the head.
+
+When creating diffs, the archive manager can choose the smaller of the
+.mawe and .diff files. Having occasional .mawe files helps a bit reverting
+older versions, but not necessarily that much.
+
+(3) When editing, the version manager can take snapshots from the editor.
+This snapshot can be stored to archive head:
+
+    STORY.MAWE.ZIP:
+        103.mawe        Snapshot
+        102.mawe        Previous version
+        101.diff        102.mawe + 101.diff --> 101.mawe
+        100.diff        101.mawe + 100.diff --> 100.mawe
+        ...
+
+(4) There is certainly some kinds of "commit" actions, which means that the
+snapshot becomes the newest version. At this point, we can add a diff to
+the archive:
+
+    STORY.MAWE.ZIP:
+        103.mawe        Snapshot
+        102.mawe        Previous version
+        102.diff        103.mawe + 102.diff ..> 102.mawe
+        101.diff        102.mawe + 101.diff --> 101.mawe
+        100.diff        101.mawe + 100.diff --> 100.mawe
+        ...
+
+NOTE: It is important to note, that in the archive, there can be both
+X.mawe and X.diff files. The version manager can choose which one to use.
+It can delete either one from archive, and probably it will delete the
+one that is larger (when compressed).
+
+(5) Version manager can remove versions from the archive. This needs to
+be thought later more carefully, but basically we can combine diffs:
+
+    STORY.MAWE.ZIP(1):      STORY.MAWE.ZIP(1):
+        ...                 ...
+        82.diff             82.diff (v88 -> v78 diff)
+        81.diff
+        80.diff
+        79.diff
+        78.diff             78.diff
+        ...
+
+To keep things safe. we probably need first create the combined diff with
+some different name, and only after that we can remove the diffs between.
+Something like this:
+
+    STORY.MAWE.ZIP(1): ==>  STORY.MAWE.ZIP(2): ==>  STORY.MAWE.ZIP(3):
+        ...                 ...                     ...
+                            82.78.diff              82.78.diff
+        82.diff             82.diff                 -
+        81.diff             81.diff                 -
+        80.diff             80.diff                 -
+        79.diff             79.diff                 -
+        78.diff             78.diff                 78.diff
+        ...                 ...                     ...
+
+It is possible to take head to a .mawe/.gz file, send it over to be
+edited, and then merge it back to version file:
+
+    UUID.ZIP/HEAD.mawe    --->  filename.mawe.gz
+                                ...
+                                <modifications>
+                                ...
+    UUID.ZIP/HEAD+1.mawe  <---  filename.mawe.gz
+
+-------------------------------------------------------------------------------
+
+TRACKING
+
+With versioned files, we can track the amount of work done. We
+can go back in time and count words from files.
+
+It is probably the cleanest possible solution for the problem. By being able to
+recover older versions you can basically track anything you like quite freely.
+
+Basically, we can have many recent versions available, and as the versions
+go older, we decrease the amount. For example, within a week or so, we can
+have quite a lot of versions:
+
+Version age         Amount of versions kept
+
+< 1 week            lots of versions
+1-4 weeks           e.g. daily versions
+1-4 months          weekly version
+4+ months           monthly version
+
+At some point we have pruned the older versions so that they can not be
+retrieved anymore.

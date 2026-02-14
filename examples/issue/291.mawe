@@ -1,0 +1,72 @@
+<story uuid="2576c750-f225-4d68-8984-e1f15054619f" format="mawe" version="5" name="Issue#291">
+<!--/
+===============================================================================
+
+STORY: Issue#291
+
+===============================================================================
+/-->
+<head/>
+<export content="draft" type="short" acts="none" chapters="numbered" scenes="none"/>
+<!--/
+===============================================================================
+/-->
+<body>
+<act>
+<chapter>
+<scene>
+<p>Issue#291: https://github.com/mkoskim/mawejs/issues/291</p>
+<br/>
+</scene>
+</chapter>
+</act>
+<act name="Sect 1">
+<chapter>
+<scene name="Drag me">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+</chapter>
+<chapter name="Drop here" numbered="true">
+<scene>
+<br/>
+</scene>
+</chapter>
+<chapter name="Comes here" numbered="true">
+<scene>
+<br/>
+<br/>
+</scene>
+</chapter>
+</act>
+</body>
+<!--/
+===============================================================================
+
+NOTES
+
+===============================================================================
+/-->
+<notes>
+<act>
+<chapter>
+<scene>
+<br/>
+</scene>
+</chapter>
+</act>
+</notes>
+<!--/
+===============================================================================
+/-->
+<ui>
+<view/>
+<arc elements="scene" template="beatsheet" mode="topCCW"/>
+<editor>
+<body words="numbers" indexed="act,chapter,scene,bookmark"/>
+</editor>
+</ui>
+<history>
+<words date="2024-12-11" text="0" missing="0" chars="0"/>
+<words date="2024-12-12" text="109" missing="0" chars="735"/>
+</history>
+</story>

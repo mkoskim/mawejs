@@ -1,0 +1,470 @@
+
+
+                File Format (Story structure) for mawe editor
+                ---------------------------------------------
+
+For some time I have been thinking of making an editor, which stores stories
+as linked objects in database. This would give great flexibility to use
+text pieces to form a story. Furthermore, if stories would be stored as 
+a database in a server, sharing them with others would be easy.
+
+That may happen in future, but before that, we need a file format to save 
+stories to disk or send to someone.
+
+MAWE format is based on previous MOE file format. MOE format is an XML file
+with a heading, and a tree of nested groups and scenes. Although MOE file 
+is flexible in that matter, it is too flexible - whenever making improvements 
+to editor, you need to take care that it can handle infinitely deep group
+trees.
+
+With MAWE format, I am trying to place more restrictions to the file format 
+to make it easier to implement editors for it.
+
+NOTE! We will keep native file format as XML, for two reasons: (1) we can then
+load files created by previous moe version, and (2) in the end, XML sort of 
+stands for structured document, and that is what MOE and MAWE files are in the
+end. That is, even though we could have other options like JSON or so, XML is 
+mark up language meant for structured documents.
+
+-------------------------------------------------------------------------------
+
+FORWARD COMPATIBILITY CONSIDERATIONS
+
+Some thoughts about this subject.
+
+We could now prepare for future needs. This means that in general, editor
+preserves blocks and attributes it does not recognize. For example, our first
+version might not be able to edit anything but content, but it will still
+preserve synopses and such attached to the scene. Or something similar.
+
+Extra elements and attributes can be in <story>, <body>, <head>, <version>
+elements. They can not be in <part>, <scene> and such elements, because
+editors are free to delete and create them.
+
+-------------------------------------------------------------------------------
+
+Things to remember:
+
+- name of the story is different thing than title of the story. We now
+  have work name stored in <story> -tag (name attribute).
+
+- some kind of internal wiki.
+
+- we might move one step back to old moe. That it means that by default
+  all the content is visible, you just hide something while editing.
+
+DONE: NOTE: Now when we have version groups, we might need to move <head>
+containing title and formatting options inside <body> and <version>. This
+would allow you to get the draft out as it was when you versioned it.
+
+Let's consider this very carefully. Is there need to keep <head> information
+alone? Could the project manager read the information from <body> section?
+
+Of course, versioning is meant for versioning, not for storing multiple stories
+inside one file. It assumes that versions are close enough to each other: they
+tell the same story. If they are not telling the same story, they would better be
+separate stories.
+
+NOTE: It might be better to allow in-content comments. Then, when
+there starts to be a huge comment block, you could move them to separate
+sketch element. Note: in-text comments will be visible when text is visible
+(but of course not printed to draft). It is encouraged to get rid of them
+when working towards final draft.
+
+-------------------------------------------------------------------------------
+
+Simplified structure of a file:
+
+    <story name="Workname">
+        <!-- Ordered list of scenes -->
+        <body name="v2">
+            <head> ... </head>
+            <scene> ... </scene>
+            <scene> ... </scene>
+            <scene> ... </scene>
+            ...
+        </body>
+        <version name="v1">
+            <head> ... </head>
+            <scene> ... </scene>
+            <scene> ... </scene>
+            <scene> ... </scene>
+            ...
+        </version>
+    </story>
+
+NOTE: We take back scene visibility tags. You can make entire scene as
+comment.
+
+NOTE! I need to think closer, if <scene>, <chapter> and <part> elements are
+groups, or if they are breaks. More about this later. <scene> is a group by
+nature, because it is somewhat individible piece of text - when you move scene,
+you want all the content to move with that. <part> and <chapter> are different
+in that sense, that it is very, very rare you move entire chapters or parts to
+different location. What you usually do, is to reorganize scenes inside of them
+(moving them in slightly different order, moving scenes between chapters and
+such). Lets think about this very, very closely.
+
+I would really like to emphasize the nature of a story as a sequence of scenes.
+Chapters and sections are tools for you to keep your story organized, not the
+content you work for.
+
+-------------------------------------------------------------------------------
+
+Alternatives:
+
+    <story version="A">
+        <version name="A"> 
+            <head> ... </head>
+            <scene> ... </scene>
+            ...
+            </version>
+        <version name="B"> ... </version>
+        <version name="C"> ... </version>
+        ...
+
+        <group> ... </group>
+        <group> ... </group>
+        ...
+    </story>
+
+This file format would get rid of <body> element. The version attribute at
+<story> element would tell what is the current "newest" version. <head>
+information would be stored inside <version> blocks, so that you could recall
+also title, author and draft print settings when switching version.
+
+NOTE: We preserve <body> tag for current version. It simplifies retrieving
+information from the story. So, we keep the <body> block. But we might do
+better to move <head> inside <body>.
+
+    <story>
+        <body version="B">
+            <head>
+            <scene>
+            <scene>
+            ...
+        <version name="A"> 
+            <head>
+            <scene>
+            ...
+            </version>
+        <version name="B"> ... </version>
+        <version name="C"> ... </version>
+        ...
+
+        <group> ... </group>
+        <group> ... </group>
+        ...
+    </story>
+
+-------------------------------------------------------------------------------
+
+Today, groups are mainly used for certain purposes: (1) I tend to use them
+to organize background material, (2) I tend to use them as storage for
+"clips", scenes that were cutted out to wait for correct placement, and (3)
+I tend to use them as sort of version history, when restructuring a text
+I move the old version in to one group.
+
+We need to find tools to achieve similar functionality. But unlike today, I
+would not make it so that you would use those extensively for purposes they
+are not designed for.
+
+For that purpose, I have been thinking that in addition to <head> and <body>
+blocks, a story can have multiple <group> and <version> blocks to store
+additional information:
+
+    <story>
+        <head> ... </head>
+
+        <body> ... </body>
+
+        <group>
+            <scene> ... </scene>
+            <scene> ... </scene>
+            ...
+            </group>
+        <group> ... </group>
+
+        <version>
+            <scene> ... </scene>
+            <scene> ... </scene>
+            ...
+            </version>
+        <version> ... </version>
+    </story>
+
+<body>, <group> and <version> are all similar components, they are lists of
+scenes. It is true, that they would not need different names: you could tell
+the nature of a group with id, class or another attribute. But for sake of
+simplicity, lets keep their distinct names.
+
+-------------------------------------------------------------------------------
+
+GROUPS are freeform groups to store scenes: background material, clips, ... I
+think I will preserve the "feature" that you write your background material as
+scenes. It basically does not make much sense, as background material does not
+have the same properties (content, synopsis, sketch), but this could help
+keeping the editor consistent. I have already thought that you could have
+"sketch" scenes, scenes that do not yet have content, the sketch block is
+shown instead of content block.
+
+Furthermore, one of the big need is to have storage for scene clips, and
+groups are mainly meant for those. We just use them to store background
+information, too.
+
+- We will keep the Trashcan group we have in current implementation. Basically,
+  trashcan is "clipboard", because you could use scene deletion to move them to
+  trashcan, and then take them back to another location. We might even rename
+  Trashcan to Clipboard.
+
+NOTES! Differences to current implementation:
+
+- Groups are not nested. You can't have <group> inside a <group>. Multi-level
+  groups will be flattened, i.e. moving a group in to a group will be group
+  mergning.
+
+- Groups are always invisible, i.e. they are not added to content. Only <body>
+  contains visible elements. Versions are exceptions, in that manner, that you
+  can choose the version you want to print.
+  
+NOTE! Even that chapters and parts are not groups, you will need an ability
+to edit your text one chapter at time, and have another chapter in your side
+pane. Or something very similar.
+
+In editor, we try to make group handling easy and intuitive.
+
+- Cut scenes to clipboard, paste scenes to clipboard: this could be our way
+  to move scenes instead of drag'n'dropping. But we still might have DnD
+  support.
+
+- Cut & Paste scenes between body and some other group: that is, make that
+  group "clipboard" temporarily.
+
+- "Rename" clipboard (make it a group): Scenes in clipboard will be moved
+  to new group, and clipboard group is emptied.
+
+- Group merging and splitting.
+
+- "Grabbing" scenes and moving them around
+
+-------------------------------------------------------------------------------
+
+VERSION CONTROL
+
+BACKGROUND & REASONING: This is an issue we need to have some sort of mechanism.
+It was left unfinished in Python version, and that has caused some problems. Many
+things depend on where you are storing your stories.
+
+Some places have already versioned file system, so you can recall older
+versions without any problems. Some storages do not have that, and you probably
+would like keep versions manually. There are few possibilities:
+
+1) Using in-file versioning, that is, the editor creates group where it duplicates
+   the current scenes. We will implement this possibility, so even in worst case
+   writers have some sort of versioning.
+   
+2) File system based versioning, that is, different versions are saved with
+   different names ("MyStory.v1.moe", "MyStory.v2.moe", ...). We will allow
+   storing groups as separate files, which then allows writers to create
+   versions as separate files.
+
+I feel that even that many storages nowadays give you some version control, it
+would not hurt to have one built-in to the file format. So, even if everything
+else fails, you could use the built-in version control. In-file versioning is
+anyways better than manually save versions with different names to disk.
+
+VERSIONS are mechanically equal to groups, but they are meant to store one version
+of the story (<body>) itself. Version groups are usually read-only.
+
+We add version attribute to body. It will tell, which version it is "committing".
+This then will allow us to:
+
+    (1) "Commit": <body> content is stored to <version>, based on <body version>
+        value.
+    
+    (2) Revert changes: <body> is recalled from current <version>
+    
+    (3) Create new version: <body version> is changed, and it is committed
+        as a new version.
+     
+    (4) Switch version: <body> is stored to its current <version> block,
+        <body version> is changed, and <body> is recalled from version.
+
+    (5) Delete version: <version> is deleted. If the version was loaded to
+        <body>, <body version> is changed to next available <version> and
+        recalled.
+
+Furthermore, we might need a tool that can change <version> to <group> and
+vice versa.
+
+NOTE: I was thinking if it might be possible to "strip" versions, for example,
+by removing "meta text" from it, or even store it as a draft. Most probably
+this will not make any sense.
+
+-------------------------------------------------------------------------------
+
+SPLITTING AND MERGING STORIES
+
+Both <group> and <version> can be stored to disk as a story. And, it will be
+possible to read a story inside another as a group - or to be specific:
+it will be possible to read group from another story inside a story (you need
+to choose, which group you read in). There are certain limitations in this:
+
+1) You can load a specific group from a file to your editor, not the entire text.
+   The ability to load groups from files to side pane is not meant to edit two
+   stories at the same time, but to exchange pieces between them. But it is
+   true, that if you want to save a group from your file to another file, it would
+   be great if you could edit the <head> at that time - or is it? The name of
+   the group would become the title of the text, and it could share <head> elements
+   from the parent story, and fill the rest with defaults.
+
+We could utilize this mechanism later to create collections? Of course, collections
+should have "links" to actual story files instead copies of them, so that when
+you edit the story, it will be changed in the collection, too. But lets think
+about collections later.
+
+-------------------------------------------------------------------------------
+
+Heading:
+
+NOTE! We need to think more closely, which fields are "version-specific", and
+which are story-wide.
+
+NOTE! Changes to previous thoughts:
+
+1) In current plan, tags do not have any content. Tags are only added to scenes,
+   they are not - at least integral - part of the heading. If you need a
+   description for your tag, you create a scene in to your sketch <group>, and
+   tag it with the tag it describes.
+
+2) There is no more plans and sketches stored in the <head> section. We will use
+   separate groups to store our plans and sketches.
+
+<head>
+    <title> Text </title>
+    <subtitle> Text </subtitle>
+    
+    <author> Text </author>
+    <website> Text </website>
+    <translated> Text </translated>
+    
+    <status> Text </status>
+    
+    <published> ... </published>
+
+    <!-- How about? Well, maybe we have our own specialized 
+    <!-- head block editor. -->
+    <scene>
+        <synopsis> <!-- Story-wide synopsis -->
+        <content>  <!-- Backcover text -->
+        <sketch>   <!-- Possible sketch block -->
+        </scene>
+    </head>
+    
+Comments:
+
+<synopsis> ... </synopsis> This is more formal part of the story. It is
+synopsis for entire story. In all elements, synopses are used for certain
+purpose, and they have their own editor view for that. The idea is that
+synopses form a treelike structure: when you edit a synopsis of a scene,
+you might want to review the synopsis of the chapter, then the synopsis
+of the section, and last the synopsis of the story. It is meant to be
+the guideline for writing, keeping you in a track when seeing nothing else
+but the text itself.
+
+<backcovertext> ... </backcovertext> This is freeform story-wide description,
+meant to readers thinking if they are interested to read your story or not. You
+probably refine it to its final form after the story is ready. Although it is
+at back cover in printed book, it is most probably the first chapter the
+readers will read of your book.
+
+NOTE: It is necessary, that you can include your back cover text to your
+manuscript when sending it to publishers. On the other hand, it is excluded
+in most of the cases, for example, sending your story to a competition.
+
+-------------------------------------------------------------------------------
+
+TAGS: Internally, tags are meant to filter scenes. Pressing a tag will shown
+only scenes that have the same tag.
+
+NOTE! Think a bit about tags and versions. You might have changed character names
+or places, and thus your tags in older versions are "invalid" - groups are using
+new tags, so filtering them with old tags don't work as expected. Maybe this does
+not matter? If you want tags to work again with groups, you rename them in the
+version.
+
+Externally, tags are used by project manager, initially for the same purpose as
+in story, filtering - pressing a tag will show only stories that are using that
+tag.
+
+Of course, each story can have its own tags, but some tags might be better
+as "global" ones. Project manager can - or even should? - read the tags in
+the story, and it can suggest them for tagging the story. Idea: if you have
+created a tag for a character, and there is character with same name in
+another story, it is likely that the stories are telling the same character.
+Not always, of course.
+
+As a principle, all tags are global by default. But you might want to modify
+tags a bit when using them globally:
+
+1) First, you would be able to mark some tags internal. Several stories might have
+   tags that are common, but not related to each other.
+
+2) When making a tag global, you might need to rename it. You might want to keep
+   the original tag in the stories, but access that tag globally with a different
+   name. For example, a character: the first name is good inside the story, but globally
+   you might refer to it with full name.
+
+3) You might want to group certain tags together. For example, you might have few
+   characters that form some sort of group, and thus you might want to be able
+   to view all stories, in which one or more of these characters are involved.
+
+Global tags can be used inside the editor. When you tag your scenes, your editor
+could suggest you some global tags already used in other works. When tagging with
+global tag, you should be able to access the global data attached to that tag -
+for example, background stories and such.
+
+Project manager needs to be able to link also external documents to the
+database, not only stories. These are of course handled bit differently,
+but anyways user should be able to access the background material from
+the project manager while writing the story.
+
+Some tags are entirely for project manager. These tags are story status tags:
+published, waiting, working, ...
+
+NOTE! Editor and project manager should have tight integration. When creating
+tags, we could look existing ones from project manager, and we should be able
+to include them, and then access for example the background material made for
+that tag.
+
+-------------------------------------------------------------------------------
+
+Scenes:
+
+<scene>
+    <synopsis> Text </synopsis>
+    <sketch> Rich text including links </sketch>
+    <content> Text </content>
+    <tag name="XXX"/>
+    <tag .../>
+</scene>
+
+In general, scene sketch should usually be relative short. But we still allow
+multiple sketch blocks to help intermediate phases: you cut piece of background
+plans from one scene, and move it to another, waiting for merging.
+
+Chapter and section breaks:
+
+<chapter>
+    <synopsis> Text </synopsis>
+    <sketch> Rich text including links </sketch>
+    <content> Text </content>
+    <tag name="XXX"/>
+    <tag .../>
+</chapter>
+
+Chapter and section breaks have similar format to scenes. The exception is
+that they don't usually have content, but we still enable that: in
+some cases, you might want to add something to them. It is not that rare
+to have aphorism, poem or something similar in the section break, as well as
+at the beginning of a chapter (e.g. Dune).
