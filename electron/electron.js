@@ -6,12 +6,16 @@
 //*****************************************************************************
 //*****************************************************************************
 
-const electron = require('electron');
-const isDev = require("electron-is-dev");
-const debug = require("electron-debug")
+import { app, session, BrowserWindow } from "electron";
+import {is} from '@electron-toolkit/utils'
+import path from "path"
+import os from "os"
+import windowStateKeeper from "electron-window-state"
+import {initIpcDispatch} from "./backend/ipcdispatch.js";
+import localShortcut from "electron-localshortcut";
+//import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
-const os = require("os")
-const path = require('path')
+const __dirname = import.meta.dirname;
 
 //-----------------------------------------------------------------------------
 // Print out things for debugging purposes
@@ -19,26 +23,17 @@ const path = require('path')
 
 console.log("Debug info:")
 console.log("- Dirname.:", __dirname)
-console.log("- NODE_ENV:", process.env.node)
-console.log("- isDev...:", isDev)
+console.log("- is.dev..:", is.dev)
+console.log("- URL.....:", process.env.ELECTRON_RENDERER_URL)
+console.log("- Resource:", process.resourcesPath)
 console.log("Versions:")
 console.log("- Electron:", process.versions.electron)
 console.log("- Chrome..:", process.versions.chrome)
 console.log("- Node....:", process.versions.node)
 
 //-----------------------------------------------------------------------------
-// Electron reloader
-//-----------------------------------------------------------------------------
-
-if(isDev) require("electron-reload")(path.join(__dirname, "../src/"))
-
-//-----------------------------------------------------------------------------
 // Main Window
 //-----------------------------------------------------------------------------
-
-const {BrowserWindow} = electron;
-const {globalShortcut} = electron;
-const windowStateKeeper = require('electron-window-state');
 
 var mainWindow = null;
 
@@ -55,14 +50,9 @@ async function createWindow()
     width: mainWindowState.width,
     height: mainWindowState.height,
 
-    icon: path.join(__dirname, "./favicon.png"),
-
     webPreferences: {
-        nodeIntegration: false,
-        sandbox: false,
-        contextIsolation: true,
-        enableRemoteModule: false,
-        preload: path.join(__dirname, "./backend/services.js")
+      //sandbox: false, // For electron-better-ipc
+      preload: path.join(__dirname, "../preload/index.js")
     },
 
     /*
@@ -86,14 +76,16 @@ async function createWindow()
   //console.log("Languages:", mainWindow.webContents.session.availableSpellCheckerLanguages)
   //mainWindow.webContents.session.setSpellCheckerLanguages(['fi'])
 
-  if(isDev)
+  localShortcut.register(mainWindow, 'F5', () => { mainWindow.webContents.reloadIgnoringCache(); });
+  localShortcut.register(mainWindow, 'F12', () => { mainWindow.webContents.toggleDevTools(); });
+
+  if(is.dev && process.env.ELECTRON_RENDERER_URL)
   {
-    debug();
     mainWindow.webContents.openDevTools();
-    mainWindow.loadURL('http://localhost:3000');
+    mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
   }
   else{
-    mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
   }
 }
 
@@ -101,7 +93,7 @@ async function createWindow()
 // Chrome extensions
 //-----------------------------------------------------------------------------
 
-const reactDevToolsPath = path.resolve(".", "local/ReactDevTools")
+//const reactDevToolsPath = path.resolve(".", "local/ReactDevTools")
 
 /*
 const reactDevToolsPath = path.join(
@@ -109,8 +101,9 @@ const reactDevToolsPath = path.join(
   //"/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.24.7_0"
   // "/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.27.8_0"
   //"/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.28.0_0"
+  "/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/7.0.1_0"
   )
-*/
+/**/
 
 /*
 const reduxDevToolsPath = path.join(
@@ -123,24 +116,30 @@ const reduxDevToolsPath = path.join(
 // Application
 //-----------------------------------------------------------------------------
 
-const {app, session} = electron;
-
 app.whenReady().then(async () => {
-  if(isDev) try {
+
+  /*
+  installExtension(REACT_DEVELOPER_TOOLS, { loadExtensionOptions: { allowFileAccess: true } })
+    .then((ext) => console.log(`Extension added:  ${ext.name} / ${ext.version}`))
+    .catch((err) => console.log('Extension error: ', err));
+  /**/
+
+  /*
+  if(is.dev) try {
     console.log("Loading extension:", reactDevToolsPath)
-    await session.defaultSession.loadExtension(reactDevToolsPath)
+    const result = await session.defaultSession.extensions.loadExtension(
+      reactDevToolsPath, {allowFileAccess: true}
+    )
+    console.log("Extension loaded:", result.name, "/", result.version)
     //session.defaultSession.loadExtension(reduxDevToolsPath)
   } catch(e) {
     console.log("Error:", e)
   }
-  createWindow();
-  //globalShortcut.register('CommandOrControl+Q', () => { app.quit() });
+  */
 
-  if(!isDev) {
-    globalShortcut.register('F12', () => {
-      mainWindow.webContents.openDevTools();
-    });
-  }
+  initIpcDispatch();
+
+  createWindow();
 });
 
 app.on("window-all-closed", () => {
@@ -158,11 +157,5 @@ app.on("activate", () => {
 });
 
 app.on("will-quit", () => {
-  globalShortcut.unregisterAll()
+
 })
-
-//-----------------------------------------------------------------------------
-// IPC interface
-//-----------------------------------------------------------------------------
-
-const ipcmain = require("./backend/ipcmain");

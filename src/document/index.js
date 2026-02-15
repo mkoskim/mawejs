@@ -8,6 +8,7 @@
 
 import {loadmawe, createmawe, buf2tree, fromXML} from "./xmljs/load"
 import {savemawe, toXML} from "./xmljs/save"
+import fs from "../system/localfs"
 
 import {info} from "./head"
 
@@ -32,10 +33,6 @@ export const mawe = {
 }
 
 export {elemAsText, elemName, filterCtrlElems}
-
-//-----------------------------------------------------------------------------
-
-const fs = require("../system/localfs")
 
 //-----------------------------------------------------------------------------
 

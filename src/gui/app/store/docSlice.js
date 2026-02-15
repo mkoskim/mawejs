@@ -10,8 +10,7 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 import {mawe} from "../../../document"
-
-const fs = require("../../../storage/localfs")
+import fs from "../../system/localfs"
 
 export const docSlice = createSlice({
   name: "doc",

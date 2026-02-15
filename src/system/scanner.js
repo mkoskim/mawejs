@@ -18,7 +18,7 @@ general purpose scanner for different needs.
 -------------------------------------------------------------------------------
 */
 
-const fs = require("./localfs");
+import fs from "./localfs";
 
 export class Scanner {
 

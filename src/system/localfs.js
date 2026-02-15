@@ -6,12 +6,21 @@
 //*****************************************************************************
 //*****************************************************************************
 
+import { ipcCall } from "./ipc.js";
+
+export default {
+  dirname, relpath, basename, extname, makepath,
+  fstat, parent, readdir, read, write, settingsread, settingswrite, rename, remove,
+  getlocation, getuser, openexternal, readResource,
+  splitpath,
+}
+
 //-----------------------------------------------------------------------------
 // Bridge
 //-----------------------------------------------------------------------------
 
 function fscall(cmd, ...args) {
-  return window.ipc.callMain("hostfs", [cmd, ...args]);
+  return ipcCall("hostfs", cmd, ...args);
 }
 
 //-----------------------------------------------------------------------------

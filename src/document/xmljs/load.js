@@ -41,8 +41,6 @@ import { elemFind, elemFindall, elem2Text } from "./tree";
 //
 //-----------------------------------------------------------------------------
 
-//const convert = require('xml-js');
-
 export async function loadmawe(file) {
   return maweFromBuffer(await file2buf(file))
 }

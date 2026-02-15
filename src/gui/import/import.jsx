@@ -36,9 +36,8 @@ import { ImportText } from "./importText";
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
-//const anytext = require("any-text")
-const mammoth = require("mammoth")
-const fs = require("../../system/localfs")
+import mammoth from "mammoth"
+import fs from "../../system/localfs"
 
 //*****************************************************************************
 //

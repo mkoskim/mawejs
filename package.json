@@ -2,36 +2,25 @@
   "name": "mawejs",
   "description": "Editor for writers.",
   "author": "Markus Koskimies <mkoskim@gmail.com>",
-  "version": "0.21.0",
-  "main": "./public/electron.js",
-  "homepage": "./",
+  "version": "0.22.0",
   "scripts": {
-    "dev": "concurrently -i \"wait-on http://localhost:3000 && npm run dev:electron\" npm:dev:react",
-    "dev:electron": "nodemon -w public --exec \"electron .\"",
-    "dev:react": "cross-env BROWSER=none npm run react-start",
-    "audit": "npm audit --production",
-    "build": "npm run react-build && npm run electron-build",
-    "release": "npm run react-build && npm run electron-build-mwl",
-    "electron-build": "electron-builder",
-    "electron-build-mwl": "electron-builder -wl",
-    "react-start": "react-scripts start",
-    "react-build": "react-scripts build",
-    "react-test": "react-scripts test",
-    "react-eject": "react-scripts eject",
+    "dev": "electron-vite -w dev",
+    "build": "npm run vite-build && electron-builder",
+    "vite-build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "audit": "npm audit --omit=dev",
     "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
     "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox"
   },
   "dependencies": {
+    "@electron-toolkit/utils": "^4.0.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@hello-pangea/dnd": "^18.0.1",
     "@mdi/js": "^7.4.47",
     "@mui/icons-material": "^7.3.8",
     "@mui/material": "^7.3.8",
-    "buffer": "^6.0.3",
-    "electron-better-ipc": "^2.0.1",
-    "electron-debug": "^3.2.0",
-    "electron-is-dev": "^2.0.0",
+    "electron-localshortcut": "^3.2.1",
     "electron-window-state": "^5.0.3",
     "fs-extra": "^11.3.3",
     "immer": "^11.1.4",
@@ -50,38 +39,30 @@
     "slate-dom": "^0.123.0",
     "slate-history": "^0.113.1",
     "slate-react": "^0.123.0",
-    "stream": "^0.0.3",
     "use-immer": "^0.11.0",
     "uuid": "^13.0.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "concurrently": "^9.2.1",
-    "cross-env": "^10.1.0",
+    "@vitejs/plugin-react": "^5.1.4",
     "electron": "^40.4.1",
     "electron-builder": "^26.7.0",
-    "electron-reload": "^2.0.0-alpha.1",
-    "nodemon": "^3.1.11",
-    "react-scripts": "^5.0.1",
-    "wait-on": "^9.0.4"
+    "electron-vite": "^5.0.0",
+    "node": "^25.6.1"
   },
+  "main": "./out/main/index.js",
   "build": {
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
     "extraResources": [
       "examples/tutorial/*"
-    ]
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
     ],
-    "development": [
-      "last 1 chrome version"
-    ]
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    }
   }
 }

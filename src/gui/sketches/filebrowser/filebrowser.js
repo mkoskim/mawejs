@@ -29,10 +29,7 @@ import {
 } from "../../common/factory";
 
 import { FileEntry } from "./file"
-
-//-----------------------------------------------------------------------------
-
-const fs = require("../../storage/localfs")
+import fs from "../../storage/localfs"
 
 //-----------------------------------------------------------------------------
 
@@ -350,7 +347,7 @@ function SearchDir({ directory, search, options, style }) {
 // TODO: We need this scanner for other purposes, too! So, take this to
 // storage side and make it generic directory scanner.
 
-const { Scanner } = require("../../storage/scanner")
+import { Scanner } from "../../storage/scanner"
 
 class DirScanner extends Scanner {
   constructor(directory) {

@@ -63,7 +63,7 @@ import { appQuit, appInfo } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
 
-const fs = require("../../system/localfs")
+import fs from "../../system/localfs"
 
 //*****************************************************************************
 //
@@ -71,7 +71,7 @@ const fs = require("../../system/localfs")
 //
 //*****************************************************************************
 
-export default function App(props) {
+export function App(props) {
 
   //---------------------------------------------------------------------------
   // Get application info (name & version)
@@ -158,6 +158,7 @@ export default function App(props) {
     //*
     //console.log("Recent:", recent)
     if (recent?.length) cmdLoadFile({ setCommand, filename: recent[0].id })
+    //cmdLoadFile({ setCommand, filename: "./examples/import/Frankenstein.mawe.gz" })
     /*/
     setCommand({
       action: "import",

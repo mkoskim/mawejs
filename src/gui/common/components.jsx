@@ -19,7 +19,7 @@ import {
   Label,
   Accordion, AccordionSummary, AccordionDetails,
   Separator,
-} from "../common/factory";
+} from "./factory";
 
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 

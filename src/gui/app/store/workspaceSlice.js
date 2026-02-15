@@ -17,8 +17,7 @@
 
 import { createSlice, current } from "@reduxjs/toolkit";
 import { uuid } from "../../../util";
-
-const fs = require("../../../storage/localfs")
+import fs from "../../system/localfs"
 
 export const workspaceSlice = createSlice({
   name: "workspace",

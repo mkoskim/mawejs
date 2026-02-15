@@ -6,7 +6,15 @@
 //*****************************************************************************
 //*****************************************************************************
 
-module.exports = {
+//-----------------------------------------------------------------------------
+
+import {is} from '@electron-toolkit/utils'
+import fs from "fs-extra";
+import path from "path";
+import { app, shell } from "electron";
+import os from "os";
+
+export default {
   fsGetFileEntry, fsGetParentDir,
   fsGetLocation,
   fsRead, fsWrite, fsReadDir,
@@ -17,24 +25,7 @@ module.exports = {
   fsRelpath,
   fsMakepath,
   fsReadResource,
-  }
-
-//-----------------------------------------------------------------------------
-
-const isDev = require("electron-is-dev");
-
-const fs = require("fs-extra");
-const path = require('path');
-
-//-----------------------------------------------------------------------------
-
-const {shell} = require('electron')
-
-// Shell module has some nice commands, like "trashItem", see:
-// https://github.com/electron/electron/blob/main/docs/api/shell.md
-
-// See also system dialog interface:
-// https://www.electronjs.org/docs/api/dialog
+}
 
 //-----------------------------------------------------------------------------
 // Get file entry with info: name, type, real path as ID
@@ -109,8 +100,6 @@ function fsGetParentDir(fileid) {
 
 function fsGetLocation(name)
 {
-  const os = require("os");
-  const {app} = require("electron");
 
   switch(name) {
     case "root": return "/";
@@ -177,7 +166,7 @@ function fsOpenExternal(fileid) {
 }
 
 function fsReadResource(fileid) {
-  if(isDev) {
+  if(is.dev) {
     return fsRead(path.join(fsGetLocation("appPath"), fileid))
   }
   else {

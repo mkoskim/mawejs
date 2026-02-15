@@ -6,15 +6,32 @@
 //*****************************************************************************
 //*****************************************************************************
 
-module.exports = { ipcDispatch }
+import { ipcMain, BrowserWindow } from "electron";
 
-const hostapp = require("./hostapp")
-const hostfs = require("./hostfs");
-const dialog = require("./hostdialog");
+import hostapp from "./hostapp.js";
+import hostfs from "./hostfs.js";
+import dialog from "./hostdialog.js";
 
-function ipcDispatch(channel, params, browserWindow) {
-  const [cmd, ...args] = params
+export function initIpcDispatch() {
+  ipcMain.handle("app", async (event, cmd, ...args) => { return await ipcDispatch(event.sender, "app", cmd, ...args) })
+  ipcMain.handle("hostfs", async (event, cmd, ...args) => { return await ipcDispatch(event.sender, "hostfs", cmd, ...args) })
+  ipcMain.handle("dialog", async (event, cmd, ...args) => { return await ipcDispatch(event.sender, "dialog", cmd, ...args) })
+}
 
+async function ipcDispatch(sender, channel, cmd, ...args) {
+  try {
+    const browserWindow = BrowserWindow.fromWebContents(sender);
+    return {result: await dispatch(browserWindow, channel, cmd, ...args)}
+  } catch(e) {
+    return {error: {
+      name: e.name,
+      message: e.message,
+      extra: {...e}
+    }}
+  }
+}
+
+function dispatch(browserWindow, channel, cmd, ...args) {
   //console.log("IPC:", channel, cmd, args)
 
   switch(channel) {

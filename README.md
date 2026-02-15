@@ -18,46 +18,15 @@ Sadly, neither Notepad nor Scrivener fully support plantsers. That's why I neede
 
 In short, MaweJS is externally unstructured editor (like Notepad, Word or Googledocs), and internally structured editor (like yWriter, Scrivener and Manuscript).
 
-## Known Issues
-
-In newer Ubuntus you may encounter errors due to changed permissions. First, you may need to run AppImage without sandboxing:
-
-```
-$ mawejs-A.B.C.Linux.amd.AppImage --no-sandbox
-```
-
-In newer Ubuntus, if you run the sources, you may need to set SUID bit on. You need to do this every time ElectronJS is updated. There is now npm run target to do that:
-
-```
-mawejs$ npm run fix
-```
-
-It uses `sudo`, so it will ask your password. If you don't trust my target, you can do it manually, too:
-
-```
-mawejs$ sudo chown root node_modules/electron/dist/chrome-sandbox
-mawejs$ sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
-```
-
 ## Status
 
 Check out discussions page for status: https://github.com/mkoskim/mawejs/discussions/88
 
-**Dec 5, 2024:** There are now three types of scenes: regular scenes, synopsis and notes. It is now possible to export synopsis (just synopsis blocks). It is now possible to give target word counts for acts, chapters and scenes.
+## Known Issues
 
-**Oct 13, 2024:** Added "acts", "chapter containers" as top-most elements.
+**AppImage:** In newer Ubuntus you may encounter errors due to changed permissions. You may need to run AppImage without sandboxing:
 
-**Oct 10, 2024:** I added mechanism to create **unnumbered chapters**: creating, loading, saving and exporting those. You can use these for various purposes, when you want a chapter element, but don't want it to mess with chapter numbering.
-
-**Oct 9, 2024:** I worked a bit with file imports. When importing, MaweJS now has dialog to **import preview**, where you can see what's going to be imported. You can set some options, like newlines (single or double), and patterns to separate parts and scenes. I added "mammoth" library to read **.docx** files and convert them to text for importing. Furthermore, there is now new **Import From Clipboard**. You can copy text from various sources, and choosing this option opens the clipboard content in import preview.
-
-**Oct 7, 2024:** MaweJS now stores **daily word counts** when saving the document. It can now show you how many words (actual words) you have written today, and later you can see the progression from "Statistics" view.
-
-The other improvement is **text paste performance**. Earlier, it took _minutes_ to paste 500 kB text to editor. Now it takes few seconds. This is important improvement because before we have file imports, the only way to move your story project to MaweJS is to copy-paste it to editor.
-
-There are now **filler elements**. You can create a filler by typing "++" at the beginning of the line, and entering a number makes it to report as many missing words. This helps you to fill gaps, so that you can design the story structure before you have written the story.
-
-You can now **tag** text pieces. Type "@" at the beginning of the line, and you can enter a comma-separated list of tags. There is also a tag view in the right panel. Clicking a tag will make scenes containing that tag visible, and fold all the others.
+    $ mawejs-x.y.z.AppImage --no-sandbox
 
 # Writing with MaweJS
 
@@ -73,9 +42,7 @@ When you create a new file, you can just start writing your story, just like ope
 
 ![image](https://github.com/user-attachments/assets/3cb93599-c2bf-44b4-8d1d-b8da2eea5173)
 
-**Moving stuff around:** Splitting your text to scenes allows you to move them around with drag-and-drop. Putting them in the same group allows you to move bunch of related scenes at once. There are two "sections": your draft and notes.
-
-I am pretty sure that if you don't want to use anything else, you will love drag'n'droppable story index! It can really make your life much easier.
+**Moving stuff around:** Splitting your text to scenes allows you to move them around with drag-and-drop. Putting them in the same group allows you to move bunch of related scenes at once. There are two "sections": your draft and notes. I am pretty sure that if you don't want to use anything else, you will love drag'n'droppable story index! It can really make your life much easier.
 
 **Folding:** Furthermore, a very powerful tool for writing is **folding**, you can hide parts of your text when working with other parts:
 
@@ -85,15 +52,13 @@ Folding makes the editor to resemble a bit more conventional structured editor, 
 
 **Commenting:** You can make comments for you, that will not get exported to manuscript. So, you can keep your comments within the story as long as you like.
 
-**Missing text:** You can write descriptions of story pieces still missing. So, you don't have to complete a scene at once, but you can leave there a mark, and come back to those issues later.
+**Missing text, fillers & target counts:** You can write descriptions of story pieces still missing. So, you don't have to complete a scene at once, but you can leave there a mark, and come back to those issues later. You can also give scenes, chapters and acts target word counts, and see how much you are still missing.
 
 **Story structure:** You can view your a pie diagram of the story, and compare it to selected template:
 
 ![image](https://user-images.githubusercontent.com/10298548/224184109-1d1e4dc6-afb7-462f-9798-cff04fa2eade.png)
 
 There is currently K. M. Weiland's story structure templates and Blake Snyder's Beat Sheet, but we may add more later. It wouldn't be bad, that you could have a collection of different templates for various purposes (thrillers, romances, etc).
-
-**Fillers:** When you start working with story structure, you may find filler elements handy. With fillers, you enter a number telling how many missing words it reports. This way you can pad your story before it is complete.
 
 **Live screenshot** while editing one of my stories (written in Finnish):
 
@@ -105,49 +70,79 @@ If you like to see the result, the story in the screenshot is available online:
 
 https://jumalhamara.wordpress.com/gjerta-avaruudessa/
 
+https://archiveofourown.org/works/76325336/chapters/199756276
+
+I have also translated it in English:
+
+https://archiveofourown.org/works/76329611/chapters/199767531
 
 # Development
 
-## Installing
+## Windows
 
-Install the needed tools, if you don't have them already. On Linux you can do that from command line, on Windows you can get the installation packages from web:
+It is probably better that you use Git bash shell as the npm commands are bash commands.
 
-    $ sudo apt install git
-    $ sudo apt install npm
+## Tools
+
+You need mainly too tools, git and npm. Check you have them:
+
+    $ git -v
+    $ npm -v
+
+Install the needed tools, if you don't have them already. On Linux you can do that from command line, on Windows you can get the installation packages from web.
+
+## Cloning
 
 Clone the repository:
 
-    $ mkdir mawejs
-    $ cd mawejs
     $ git clone https://github.com/mkoskim/mawejs.git
+    $ cd mawejs
+
+## Dependencies
 
 Get dependencies:
 
-    mawejs$ npm install
+    mawejs$ npm i
 
-## Running from Sources
+## Running
 
-**Linux:**
+Run application from sources:
 
     mawejs$ npm run dev
 
-**Windows:** If you use command prompt, it can't understand shell commands in `dev` target written for Bash shell. Open up two terminals (one for the dev server and one for the ElectronJS application). Run the latter command, when React dev server is up:
+## Ubuntu: SUID bit
 
-    shell 1: mawejs$ npm run dev:react
-    shell 2: mawejs$ npm run dev:electron
+In newer Ubuntus, if you run the sources, you may need to set Chrome SUID bit on. You need to do this every time ElectronJS is updated. There is now npm run target to do that:
 
-`dev:react` React starts development server, and `dev:electron` starts Electron browser. The Electron browser is standard Chromium, but it has ElectronJS backend to allow local access.
+    mawejs$ npm run fix
+
+It uses `sudo`, so it will ask your password. If you don't trust my target, you can do it manually, too:
+
+    mawejs$ sudo chown root node_modules/electron/dist/chrome-sandbox
+    mawejs$ sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
+
+## Building
+
+Building:
+
+    mawejs$ npm run build
+
+Building produces platform-specific result file (AppImage for Linux). Remember to use `--no-sandbox` to run the AppImage in newer Ubuntus:
+
+    mawejs$ dist/mawejs-x.y.z.AppImage --no-sandbox
 
 ## Updating
 
 If you update the project with 'git pull', you may need to update the libraries, too:
 
     mawejs$ git pull
-    mawejs$ npm install
+    mawejs$ npm i
 
-## React Dev Tools
+Ubuntu: Remember to reapply SUID bit, if Electron package was updated.
 
-Instructions to get React DevTools working: https://github.com/mkoskim/mawejs/discussions/131
+## Debugging
+
+React DevTools are currently not working: https://github.com/mkoskim/mawejs/issues/403
 
 VS Code Electron debugging: https://github.com/Microsoft/vscode-recipes/tree/master/Electron
 
