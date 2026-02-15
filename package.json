@@ -28,8 +28,6 @@
     "@mui/icons-material": "^7.3.8",
     "@mui/material": "^7.3.8",
     "buffer": "^6.0.3",
-    "electron-better-ipc": "^2.0.1",
-    "electron-debug": "^4.1.0",
     "electron-is-dev": "^3.0.1",
     "electron-window-state": "^5.0.3",
     "fs-extra": "^11.3.3",

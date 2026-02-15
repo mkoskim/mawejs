@@ -8,7 +8,6 @@
 
 import { app, session, BrowserWindow, globalShortcut } from "electron";
 import isDev from "electron-is-dev";
-import debug from "electron-debug"
 import path from "path"
 import windowStateKeeper from "electron-window-state"
 import {initIpcDispatch} from "./backend/ipcdispatch.js";
@@ -48,11 +47,8 @@ async function createWindow()
     height: mainWindowState.height,
 
     webPreferences: {
-        //nodeIntegration: false,
-        //contextIsolation: true,
-        //enableRemoteModule: false,
-        sandbox: false, // For electron-better-ipc
-        preload: path.join(__dirname, "./preload/services.js")
+      //sandbox: false, // For electron-better-ipc
+      preload: path.join(__dirname, "./preload/services.js")
     },
 
     /*
@@ -76,9 +72,11 @@ async function createWindow()
   //console.log("Languages:", mainWindow.webContents.session.availableSpellCheckerLanguages)
   //mainWindow.webContents.session.setSpellCheckerLanguages(['fi'])
 
+  globalShortcut.register('F5', () => { mainWindow.webContents.reloadIgnoringCache(); });
+  globalShortcut.register('F12', () => { mainWindow.webContents.toggleDevTools(); });
+
   if(isDev)
   {
-    debug();
     mainWindow.webContents.openDevTools();
     mainWindow.loadURL('http://localhost:3000');
   }
@@ -86,12 +84,6 @@ async function createWindow()
     mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
   }
 }
-
-//-----------------------------------------------------------------------------
-// Init IPC dispatch
-//-----------------------------------------------------------------------------
-
-initIpcDispatch();
 
 //-----------------------------------------------------------------------------
 // Chrome extensions
@@ -120,6 +112,9 @@ const reduxDevToolsPath = path.join(
 //-----------------------------------------------------------------------------
 
 app.whenReady().then(async () => {
+
+  initIpcDispatch();
+
   if(isDev) try {
     console.log("Loading extension:", reactDevToolsPath)
     //await session.defaultSession.loadExtension(reactDevToolsPath)
@@ -129,12 +124,6 @@ app.whenReady().then(async () => {
   }
   createWindow();
   //globalShortcut.register('CommandOrControl+Q', () => { app.quit() });
-
-  if(!isDev) {
-    globalShortcut.register('F12', () => {
-      mainWindow.webContents.openDevTools();
-    });
-  }
 });
 
 app.on("window-all-closed", () => {
