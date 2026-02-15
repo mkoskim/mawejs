@@ -6,15 +6,12 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import electron from "electron";
 import { app, session, BrowserWindow, globalShortcut } from "electron";
 import isDev from "electron-is-dev";
 import debug from "electron-debug"
-import os from "os"
 import path from "path"
 import windowStateKeeper from "electron-window-state"
-import {ipcDispatch} from "./backend/ipcdispatch.js";
-import { ipcMain as ipc } from "electron-better-ipc";
+import {initIpcDispatch} from "./backend/ipcdispatch.js";
 
 const __dirname = import.meta.dirname;
 
@@ -50,13 +47,11 @@ async function createWindow()
     width: mainWindowState.width,
     height: mainWindowState.height,
 
-    icon: path.join(__dirname, "./favicon.png"),
-
     webPreferences: {
-        nodeIntegration: false,
-        sandbox: false,
-        contextIsolation: true,
-        enableRemoteModule: false,
+        //nodeIntegration: false,
+        //contextIsolation: true,
+        //enableRemoteModule: false,
+        sandbox: false, // For electron-better-ipc
         preload: path.join(__dirname, "./preload/services.js")
     },
 
@@ -91,6 +86,12 @@ async function createWindow()
     mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
   }
 }
+
+//-----------------------------------------------------------------------------
+// Init IPC dispatch
+//-----------------------------------------------------------------------------
+
+initIpcDispatch();
 
 //-----------------------------------------------------------------------------
 // Chrome extensions
@@ -153,16 +154,3 @@ app.on("activate", () => {
 app.on("will-quit", () => {
   globalShortcut.unregisterAll()
 })
-
-//-----------------------------------------------------------------------------
-// IPC interface
-//-----------------------------------------------------------------------------
-
-// HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
-//require("electron").ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});
-
-ipc.answerRenderer("app", (params, browserWindow) => { return ipcDispatch("app", params, browserWindow)})
-ipc.answerRenderer("hostfs", (params, browserWindow) => { return ipcDispatch("hostfs", params, browserWindow)})
-ipc.answerRenderer("dialog", (params, browserWindow) => { return ipcDispatch("dialog", params, browserWindow)})
-//ipc.answerRenderer("compress", (params) => { return ipcDispatch("compress", params)})
-//ipc.answerRenderer("xml", (params) => { return ipcDispatch("xml", params)})

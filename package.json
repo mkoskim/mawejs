@@ -3,7 +3,8 @@
   "description": "Editor for writers.",
   "author": "Markus Koskimies <mkoskim@gmail.com>",
   "version": "0.22.0",
-  "main": "./public/electron.mjs",
+  "main": "./public/electron.js",
+  "homepage": "./",
   "scripts": {
     "dev": "concurrently -i \"wait-on http://localhost:3000 && npm run dev:electron\" npm:dev:react",
     "dev:electron": "nodemon -w public --exec \"electron .\"",
@@ -12,7 +13,6 @@
     "build": "npm run react-build && npm run electron-build",
     "release": "npm run react-build && npm run electron-build-mwl",
     "electron-build": "electron-builder",
-    "electron-build-mwl": "electron-builder -wl",
     "react-start": "react-scripts start",
     "react-build": "react-scripts build",
     "react-test": "react-scripts test",
@@ -67,7 +67,12 @@
   "build": {
     "extraResources": [
       "examples/tutorial/*"
-    ]
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    }
   },
   "eslintConfig": {
     "extends": "react-app"
