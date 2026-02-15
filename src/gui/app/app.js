@@ -158,6 +158,7 @@ export default function App(props) {
     //*
     //console.log("Recent:", recent)
     if (recent?.length) cmdLoadFile({ setCommand, filename: recent[0].id })
+    //cmdLoadFile({ setCommand, filename: "./examples/import/Frankenstein.mawe.gz" })
     /*/
     setCommand({
       action: "import",

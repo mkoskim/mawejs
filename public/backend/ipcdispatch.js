@@ -6,23 +6,32 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import { ipcMain as ipc } from "electron-better-ipc";
+import { ipcMain, BrowserWindow } from "electron";
 
 import hostapp from "./hostapp.js";
 import hostfs from "./hostfs.js";
 import dialog from "./hostdialog.js";
 
 export function initIpcDispatch() {
-  ipc.answerRenderer("app", (params, browserWindow) => { return ipcDispatch("app", params, browserWindow)})
-  ipc.answerRenderer("hostfs", (params, browserWindow) => { return ipcDispatch("hostfs", params, browserWindow)})
-  ipc.answerRenderer("dialog", (params, browserWindow) => { return ipcDispatch("dialog", params, browserWindow)})
-  //ipc.answerRenderer("compress", (params) => { return ipcDispatch("compress", params)})
-  //ipc.answerRenderer("xml", (params) => { return ipcDispatch("xml", params)})
+  ipcMain.handle("app", async (event, cmd, ...args) => { return await ipcDispatch(event.sender, "app", cmd, ...args) })
+  ipcMain.handle("hostfs", async (event, cmd, ...args) => { return await ipcDispatch(event.sender, "hostfs", cmd, ...args) })
+  ipcMain.handle("dialog", async (event, cmd, ...args) => { return await ipcDispatch(event.sender, "dialog", cmd, ...args) })
 }
 
-function ipcDispatch(channel, params, browserWindow) {
-  const [cmd, ...args] = params
+async function ipcDispatch(sender, channel, cmd, ...args) {
+  try {
+    const browserWindow = BrowserWindow.fromWebContents(sender);
+    return {result: await dispatch(browserWindow, channel, cmd, ...args)}
+  } catch(e) {
+    return {error: {
+      name: e.name,
+      message: e.message,
+      extra: {...e}
+    }}
+  }
+}
 
+function dispatch(browserWindow, channel, cmd, ...args) {
   //console.log("IPC:", channel, cmd, args)
 
   switch(channel) {
