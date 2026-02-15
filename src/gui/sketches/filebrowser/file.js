@@ -24,8 +24,8 @@ import {
   addClass,
 } from "../../common/factory";
 
-const fs = require("../../storage/localfs")
-const { suffix2format } = require('../../../document/util');
+import fs from "../../storage/localfs"
+import { suffix2format } from '../../../document/util';
 
 //-----------------------------------------------------------------------------
 

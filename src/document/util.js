@@ -9,10 +9,9 @@
 import {isGzip, gzip, gunzip} from "../util/compress"
 import {uuid, nanoid} from "../util"
 import { nodeBreaks, nodeIsBreak, nodeTypes } from "./elements";
+import fs from "../system/localfs"
 
 export {uuid, nanoid}
-
-const fs = require("../system/localfs");
 
 const utf8decoder = new TextDecoder();
 

@@ -9,17 +9,13 @@ import {
 } from "react"
 
 import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
-
+import fs from "../../system/localfs"
 //-----------------------------------------------------------------------------
 // "Command" Context is meant for subcomponents to trigger top level components
 // to perform certain operations (loading & saving files, and so on)
 //-----------------------------------------------------------------------------
 
 export const CmdContext = createContext(null)
-
-//-----------------------------------------------------------------------------
-
-const fs = require("../../system/localfs")
 
 //-----------------------------------------------------------------------------
 

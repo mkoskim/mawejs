@@ -11,7 +11,8 @@
 import isDev from "electron-is-dev";
 import fs from "fs-extra";
 import path from "path";
-import { shell } from "electron";
+import { app, shell } from "electron";
+import os from "os";
 
 export default {
   fsGetFileEntry, fsGetParentDir,
@@ -99,8 +100,6 @@ function fsGetParentDir(fileid) {
 
 function fsGetLocation(name)
 {
-  const os = require("os");
-  const {app} = require("electron");
 
   switch(name) {
     case "root": return "/";

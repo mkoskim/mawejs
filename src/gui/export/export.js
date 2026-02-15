@@ -30,10 +30,7 @@ import { exportAs, flattedFormat, flattedToText, storyToFlatted } from "../../do
 
 import { setFocusTo } from "../editor/editor";
 import { numfmt } from "../../util";
-
-//-----------------------------------------------------------------------------
-
-const fs = require("../../system/localfs");
+import fs from "../../system/localfs"
 
 // ****************************************************************************
 //

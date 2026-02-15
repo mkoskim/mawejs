@@ -63,7 +63,7 @@ import { appQuit, appInfo } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
 
-const fs = require("../../system/localfs")
+import fs from "../../system/localfs"
 
 //*****************************************************************************
 //

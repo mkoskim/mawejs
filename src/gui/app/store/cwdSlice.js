@@ -8,7 +8,7 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-const fs = require("../../../storage/localfs")
+import fs from "../../system/localfs"
 
 export const cwdSlice = createSlice({
   name: "cwd",
