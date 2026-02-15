@@ -6,12 +6,14 @@
 //*****************************************************************************
 //*****************************************************************************
 
-const electron = require('electron');
-const isDev = require("electron-is-dev");
-const debug = require("electron-debug")
+import { app, session, BrowserWindow, globalShortcut } from "electron";
+import isDev from "electron-is-dev";
+import debug from "electron-debug"
+import path from "path"
+import windowStateKeeper from "electron-window-state"
+import {initIpcDispatch} from "./backend/ipcdispatch.js";
 
-const os = require("os")
-const path = require('path')
+const __dirname = import.meta.dirname;
 
 //-----------------------------------------------------------------------------
 // Print out things for debugging purposes
@@ -27,18 +29,8 @@ console.log("- Chrome..:", process.versions.chrome)
 console.log("- Node....:", process.versions.node)
 
 //-----------------------------------------------------------------------------
-// Electron reloader
-//-----------------------------------------------------------------------------
-
-if(isDev) require("electron-reload")(path.join(__dirname, "../src/"))
-
-//-----------------------------------------------------------------------------
 // Main Window
 //-----------------------------------------------------------------------------
-
-const {BrowserWindow} = electron;
-const {globalShortcut} = electron;
-const windowStateKeeper = require('electron-window-state');
 
 var mainWindow = null;
 
@@ -55,14 +47,12 @@ async function createWindow()
     width: mainWindowState.width,
     height: mainWindowState.height,
 
-    icon: path.join(__dirname, "./favicon.png"),
-
     webPreferences: {
-        nodeIntegration: false,
-        sandbox: false,
-        contextIsolation: true,
-        enableRemoteModule: false,
-        preload: path.join(__dirname, "./backend/services.js")
+        //nodeIntegration: false,
+        //contextIsolation: true,
+        //enableRemoteModule: false,
+        sandbox: false, // For electron-better-ipc
+        preload: path.join(__dirname, "./preload/services.js")
     },
 
     /*
@@ -98,6 +88,12 @@ async function createWindow()
 }
 
 //-----------------------------------------------------------------------------
+// Init IPC dispatch
+//-----------------------------------------------------------------------------
+
+initIpcDispatch();
+
+//-----------------------------------------------------------------------------
 // Chrome extensions
 //-----------------------------------------------------------------------------
 
@@ -123,12 +119,10 @@ const reduxDevToolsPath = path.join(
 // Application
 //-----------------------------------------------------------------------------
 
-const {app, session} = electron;
-
 app.whenReady().then(async () => {
   if(isDev) try {
     console.log("Loading extension:", reactDevToolsPath)
-    await session.defaultSession.loadExtension(reactDevToolsPath)
+    //await session.defaultSession.loadExtension(reactDevToolsPath)
     //session.defaultSession.loadExtension(reduxDevToolsPath)
   } catch(e) {
     console.log("Error:", e)
@@ -160,9 +154,3 @@ app.on("activate", () => {
 app.on("will-quit", () => {
   globalShortcut.unregisterAll()
 })
-
-//-----------------------------------------------------------------------------
-// IPC interface
-//-----------------------------------------------------------------------------
-
-const ipcmain = require("./backend/ipcmain");

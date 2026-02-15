@@ -6,11 +6,19 @@
 //*****************************************************************************
 //*****************************************************************************
 
-module.exports = { ipcDispatch }
+import { ipcMain as ipc } from "electron-better-ipc";
 
-const hostapp = require("./hostapp")
-const hostfs = require("./hostfs");
-const dialog = require("./hostdialog");
+import hostapp from "./hostapp.js";
+import hostfs from "./hostfs.js";
+import dialog from "./hostdialog.js";
+
+export function initIpcDispatch() {
+  ipc.answerRenderer("app", (params, browserWindow) => { return ipcDispatch("app", params, browserWindow)})
+  ipc.answerRenderer("hostfs", (params, browserWindow) => { return ipcDispatch("hostfs", params, browserWindow)})
+  ipc.answerRenderer("dialog", (params, browserWindow) => { return ipcDispatch("dialog", params, browserWindow)})
+  //ipc.answerRenderer("compress", (params) => { return ipcDispatch("compress", params)})
+  //ipc.answerRenderer("xml", (params) => { return ipcDispatch("xml", params)})
+}
 
 function ipcDispatch(channel, params, browserWindow) {
   const [cmd, ...args] = params
