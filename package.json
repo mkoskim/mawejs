@@ -3,14 +3,20 @@
   "description": "Editor for writers.",
   "author": "Markus Koskimies <mkoskim@gmail.com>",
   "version": "0.22.0",
-  "main": "./public/electron.js",
+  "main": "./out/main/index.js",
   "homepage": "./",
   "scripts": {
-    "dev": "concurrently -i \"wait-on http://localhost:3000 && npm run dev:electron\" npm:dev:react",
+    "start": "electron-vite preview",
+    "dev": "electron-vite dev",
+
+    "build": "electron-vite build",
+    "build:win": "npm run build && electron-builder --win",
+    "build:mac": "npm run build && electron-builder --mac",
+    "build:linux": "npm run build && electron-builder --linux",
+
     "dev:electron": "nodemon -w public --exec \"electron .\"",
     "dev:react": "cross-env BROWSER=none npm run react-start",
     "audit": "npm audit --omit=dev",
-    "build": "npm run react-build && npm run electron-build",
     "release": "npm run react-build && npm run electron-build-mwl",
     "electron-build": "electron-builder",
     "react-start": "react-scripts start",
@@ -52,14 +58,14 @@
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@vitejs/plugin-react": "^5.1.4",
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
     "electron": "^40.4.1",
     "electron-builder": "^26.7.0",
+    "electron-vite": "^5.0.0",
     "nodemon": "^3.1.11",
-    "react-scripts": "^5.0.1",
-    "stream": "^0.0.3",
+    "vite": "^7.3.1",
     "wait-on": "^9.0.4"
   },
   "build": {

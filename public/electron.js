@@ -49,7 +49,7 @@ async function createWindow()
 
     webPreferences: {
       //sandbox: false, // For electron-better-ipc
-      preload: path.join(__dirname, "./preload/services.js")
+      preload: path.join(__dirname, "../preload/index.js")
     },
 
     /*
@@ -79,7 +79,8 @@ async function createWindow()
   if(isDev)
   {
     mainWindow.webContents.openDevTools();
-    mainWindow.loadURL('http://localhost:3000');
+    //mainWindow.loadURL('http://localhost:3000');
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
   }
   else{
     mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
