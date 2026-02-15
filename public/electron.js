@@ -6,11 +6,12 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import { app, session, BrowserWindow, globalShortcut } from "electron";
+import { app, session, BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
 import path from "path"
 import windowStateKeeper from "electron-window-state"
 import {initIpcDispatch} from "./backend/ipcdispatch.js";
+import localShortcut from "electron-localshortcut";
 
 const __dirname = import.meta.dirname;
 
@@ -72,8 +73,8 @@ async function createWindow()
   //console.log("Languages:", mainWindow.webContents.session.availableSpellCheckerLanguages)
   //mainWindow.webContents.session.setSpellCheckerLanguages(['fi'])
 
-  globalShortcut.register('F5', () => { mainWindow.webContents.reloadIgnoringCache(); });
-  globalShortcut.register('F12', () => { mainWindow.webContents.toggleDevTools(); });
+  localShortcut.register(mainWindow, 'F5', () => { mainWindow.webContents.reloadIgnoringCache(); });
+  localShortcut.register(mainWindow, 'F12', () => { mainWindow.webContents.toggleDevTools(); });
 
   if(isDev)
   {
@@ -123,7 +124,7 @@ app.whenReady().then(async () => {
     console.log("Error:", e)
   }
   createWindow();
-  //globalShortcut.register('CommandOrControl+Q', () => { app.quit() });
+  //localShortcut.register(mainWindow, 'CommandOrControl+Q', () => { app.quit() });
 });
 
 app.on("window-all-closed", () => {
@@ -141,5 +142,5 @@ app.on("activate", () => {
 });
 
 app.on("will-quit", () => {
-  globalShortcut.unregisterAll()
+
 })

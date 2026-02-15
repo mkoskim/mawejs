@@ -28,6 +28,7 @@
     "@mui/icons-material": "^7.3.8",
     "@mui/material": "^7.3.8",
     "electron-is-dev": "^3.0.1",
+    "electron-localshortcut": "^3.2.1",
     "electron-window-state": "^5.0.3",
     "fs-extra": "^11.3.3",
     "immer": "^11.1.4",
@@ -58,6 +59,7 @@
     "electron-builder": "^26.7.0",
     "nodemon": "^3.1.11",
     "react-scripts": "^5.0.1",
+    "stream": "^0.0.3",
     "wait-on": "^9.0.4"
   },
   "build": {
