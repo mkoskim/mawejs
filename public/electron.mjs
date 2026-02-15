@@ -6,12 +6,17 @@
 //*****************************************************************************
 //*****************************************************************************
 
-const electron = require('electron');
-const isDev = require("electron-is-dev");
-const debug = require("electron-debug")
+import electron from "electron";
+import { app, session, BrowserWindow, globalShortcut } from "electron";
+import isDev from "electron-is-dev";
+import debug from "electron-debug"
+import os from "os"
+import path from "path"
+import windowStateKeeper from "electron-window-state"
+import {ipcDispatch} from "./backend/ipcdispatch.js";
+import { ipcMain as ipc } from "electron-better-ipc";
 
-const os = require("os")
-const path = require('path')
+const __dirname = import.meta.dirname;
 
 //-----------------------------------------------------------------------------
 // Print out things for debugging purposes
@@ -27,18 +32,8 @@ console.log("- Chrome..:", process.versions.chrome)
 console.log("- Node....:", process.versions.node)
 
 //-----------------------------------------------------------------------------
-// Electron reloader
-//-----------------------------------------------------------------------------
-
-if(isDev) require("electron-reload")(path.join(__dirname, "../src/"))
-
-//-----------------------------------------------------------------------------
 // Main Window
 //-----------------------------------------------------------------------------
-
-const {BrowserWindow} = electron;
-const {globalShortcut} = electron;
-const windowStateKeeper = require('electron-window-state');
 
 var mainWindow = null;
 
@@ -62,7 +57,7 @@ async function createWindow()
         sandbox: false,
         contextIsolation: true,
         enableRemoteModule: false,
-        preload: path.join(__dirname, "./backend/services.js")
+        preload: path.join(__dirname, "./preload/services.js")
     },
 
     /*
@@ -123,12 +118,10 @@ const reduxDevToolsPath = path.join(
 // Application
 //-----------------------------------------------------------------------------
 
-const {app, session} = electron;
-
 app.whenReady().then(async () => {
   if(isDev) try {
     console.log("Loading extension:", reactDevToolsPath)
-    await session.defaultSession.loadExtension(reactDevToolsPath)
+    //await session.defaultSession.loadExtension(reactDevToolsPath)
     //session.defaultSession.loadExtension(reduxDevToolsPath)
   } catch(e) {
     console.log("Error:", e)
@@ -165,4 +158,11 @@ app.on("will-quit", () => {
 // IPC interface
 //-----------------------------------------------------------------------------
 
-const ipcmain = require("./backend/ipcmain");
+// HACK for https://github.com/sindresorhus/electron-better-ipc/issues/35
+//require("electron").ipcMain.addListener("fix-event-798e09ad-0ec6-5877-a214-d552934468ff", () => {});
+
+ipc.answerRenderer("app", (params, browserWindow) => { return ipcDispatch("app", params, browserWindow)})
+ipc.answerRenderer("hostfs", (params, browserWindow) => { return ipcDispatch("hostfs", params, browserWindow)})
+ipc.answerRenderer("dialog", (params, browserWindow) => { return ipcDispatch("dialog", params, browserWindow)})
+//ipc.answerRenderer("compress", (params) => { return ipcDispatch("compress", params)})
+//ipc.answerRenderer("xml", (params) => { return ipcDispatch("xml", params)})

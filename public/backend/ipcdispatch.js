@@ -6,13 +6,11 @@
 //*****************************************************************************
 //*****************************************************************************
 
-module.exports = { ipcDispatch }
+import hostapp from "./hostapp.js";
+import hostfs from "./hostfs.js";
+import dialog from "./hostdialog.js";
 
-const hostapp = require("./hostapp")
-const hostfs = require("./hostfs");
-const dialog = require("./hostdialog");
-
-function ipcDispatch(channel, params, browserWindow) {
+export function ipcDispatch(channel, params, browserWindow) {
   const [cmd, ...args] = params
 
   //console.log("IPC:", channel, cmd, args)
