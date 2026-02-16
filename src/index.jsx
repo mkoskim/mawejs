@@ -5,7 +5,7 @@ import { ThemeProvider } from "@mui/material";
 import { theme } from "./gui/common/theme.js";
 import { SnackbarProvider } from "notistack";
 
-import App from "./gui/app/app.js"
+import App from "./gui/app/app.jsx"
 
 //import {store} from "./gui/app/store"
 //import {Provider} from "react-redux"
