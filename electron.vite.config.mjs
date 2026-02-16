@@ -3,7 +3,7 @@ import { defineConfig, transformWithEsbuild } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-main: {
+  main: {
     build: {
       rollupOptions: {
         input: {
@@ -31,6 +31,7 @@ main: {
       }
     },
     plugins: [
+//*
       {
         name: 'treat-js-files-as-jsx',
         async transform(code, id) {
@@ -44,6 +45,7 @@ main: {
           })
         },
       },
+/**/
       react()
     ],
   },

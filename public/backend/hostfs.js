@@ -8,7 +8,7 @@
 
 //-----------------------------------------------------------------------------
 
-import isDev from "electron-is-dev";
+import {is} from '@electron-toolkit/utils'
 import fs from "fs-extra";
 import path from "path";
 import { app, shell } from "electron";
@@ -166,7 +166,7 @@ function fsOpenExternal(fileid) {
 }
 
 function fsReadResource(fileid) {
-  if(isDev) {
+  if(is.dev) {
     return fsRead(path.join(fsGetLocation("appPath"), fileid))
   }
   else {

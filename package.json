@@ -4,36 +4,28 @@
   "author": "Markus Koskimies <mkoskim@gmail.com>",
   "version": "0.22.0",
   "main": "./out/main/index.js",
-  "homepage": "./",
   "scripts": {
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
-
-    "build": "electron-vite build",
+    "build": "npm run vite-build && electron-builder",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "npm run build && electron-builder --mac",
     "build:linux": "npm run build && electron-builder --linux",
-
+    "vite-build": "electron-vite build",
     "dev:electron": "nodemon -w public --exec \"electron .\"",
     "dev:react": "cross-env BROWSER=none npm run react-start",
     "audit": "npm audit --omit=dev",
-    "release": "npm run react-build && npm run electron-build-mwl",
-    "electron-build": "electron-builder",
-    "react-start": "react-scripts start",
-    "react-build": "react-scripts build",
-    "react-test": "react-scripts test",
-    "react-eject": "react-scripts eject",
     "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
     "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox"
   },
   "dependencies": {
+    "@electron-toolkit/utils": "^4.0.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@hello-pangea/dnd": "^18.0.1",
     "@mdi/js": "^7.4.47",
     "@mui/icons-material": "^7.3.8",
     "@mui/material": "^7.3.8",
-    "electron-is-dev": "^3.0.1",
     "electron-localshortcut": "^3.2.1",
     "electron-window-state": "^5.0.3",
     "fs-extra": "^11.3.3",
@@ -61,14 +53,20 @@
     "@vitejs/plugin-react": "^5.1.4",
     "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
+    "crypto": "^1.0.1",
     "electron": "^40.4.1",
     "electron-builder": "^26.7.0",
     "electron-vite": "^5.0.0",
+    "node": "^25.6.1",
     "nodemon": "^3.1.11",
     "vite": "^7.3.1",
     "wait-on": "^9.0.4"
   },
   "build": {
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
     "extraResources": [
       "examples/tutorial/*"
     ],
@@ -77,18 +75,5 @@
         "AppImage"
       ]
     }
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version"
-    ]
   }
 }

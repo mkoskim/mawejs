@@ -7,7 +7,7 @@
 //*****************************************************************************
 
 import { app, session, BrowserWindow } from "electron";
-import isDev from "electron-is-dev";
+import {is} from '@electron-toolkit/utils'
 import path from "path"
 import windowStateKeeper from "electron-window-state"
 import {initIpcDispatch} from "./backend/ipcdispatch.js";
@@ -22,7 +22,7 @@ const __dirname = import.meta.dirname;
 console.log("Debug info:")
 console.log("- Dirname.:", __dirname)
 console.log("- NODE_ENV:", process.env.node)
-console.log("- isDev...:", isDev)
+console.log("- is.dev..:", is.dev)
 console.log("Versions:")
 console.log("- Electron:", process.versions.electron)
 console.log("- Chrome..:", process.versions.chrome)
@@ -76,7 +76,7 @@ async function createWindow()
   localShortcut.register(mainWindow, 'F5', () => { mainWindow.webContents.reloadIgnoringCache(); });
   localShortcut.register(mainWindow, 'F12', () => { mainWindow.webContents.toggleDevTools(); });
 
-  if(isDev)
+  if(is.dev)
   {
     mainWindow.webContents.openDevTools();
     //mainWindow.loadURL('http://localhost:3000');
@@ -117,7 +117,7 @@ app.whenReady().then(async () => {
 
   initIpcDispatch();
 
-  if(isDev) try {
+  if(is.dev) try {
     console.log("Loading extension:", reactDevToolsPath)
     //await session.defaultSession.loadExtension(reactDevToolsPath)
     //session.defaultSession.loadExtension(reduxDevToolsPath)
