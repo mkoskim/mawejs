@@ -31,7 +31,7 @@ export default defineConfig({
       }
     },
     plugins: [
-//*
+/*
       {
         name: 'treat-js-files-as-jsx',
         async transform(code, id) {
