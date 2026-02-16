@@ -6,7 +6,7 @@ export default defineConfig({
     build: {
       rollupOptions: {
         input: {
-          index: './public/electron.js'
+          index: './electron/electron.js'
         }
       }
     }
@@ -15,7 +15,7 @@ export default defineConfig({
     build: {
       rollupOptions: {
         input: {
-          index: './public/preload/services.js'
+          index: './electron/preload/services.js'
         }
       }
     }
