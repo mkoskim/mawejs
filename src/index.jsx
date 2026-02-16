@@ -1,14 +1,19 @@
-import React from "react";
-
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from "@mui/material";
 import { theme } from "./gui/common/theme.js";
 import { SnackbarProvider } from "notistack";
 
-import App from "./gui/app/app.jsx"
+import {App} from "./gui/app/app.jsx"
 
 //import {store} from "./gui/app/store"
 //import {Provider} from "react-redux"
+
+if (import.meta.hot) {
+  import.meta.hot.on(
+    "vite:beforeUpdate",
+    () => console.clear()
+  );
+}
 
 //-----------------------------------------------------------------------------
 // NOTE: ThemeProvider likes to create new theme every time it is rendered.

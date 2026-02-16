@@ -71,7 +71,7 @@ import fs from "../../system/localfs"
 //
 //*****************************************************************************
 
-export default function App(props) {
+export function App(props) {
 
   //---------------------------------------------------------------------------
   // Get application info (name & version)

@@ -31,7 +31,6 @@ import {
 
   IndeterminateCheckBoxOutlined,
   Expand, ExpandMore,
-  Collapse,
 
   FormatBold, FormatItalic,
 

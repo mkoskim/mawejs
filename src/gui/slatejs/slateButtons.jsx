@@ -23,7 +23,7 @@ import {
 import { setMark } from './slateMarks';
 
 import {
-  toggleFold, foldAll,
+  toggleFold,
   foldByType,
   FOLD,
 } from "./slateFolding"

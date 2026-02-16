@@ -29,7 +29,7 @@ import {
   ToolBox,
   Button, Label,
   MakeToggleGroup,
-  Select, MenuItem, InputLabel, FormControl, Separator, Icon,
+  MenuItem, Separator, Icon,
 } from "../common/factory"
 import { createDateStamp } from "../../document/util"
 

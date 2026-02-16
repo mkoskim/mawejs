@@ -15,14 +15,15 @@ import localShortcut from "electron-localshortcut";
 
 const __dirname = import.meta.dirname;
 
+
 //-----------------------------------------------------------------------------
 // Print out things for debugging purposes
 //-----------------------------------------------------------------------------
 
 console.log("Debug info:")
 console.log("- Dirname.:", __dirname)
-console.log("- NODE_ENV:", process.env.node)
 console.log("- is.dev..:", is.dev)
+console.log("- URL.....:", process.env.ELECTRON_RENDERER_URL)
 console.log("Versions:")
 console.log("- Electron:", process.versions.electron)
 console.log("- Chrome..:", process.versions.chrome)
@@ -79,11 +80,11 @@ async function createWindow()
   if(is.dev)
   {
     mainWindow.webContents.openDevTools();
-    //mainWindow.loadURL('http://localhost:3000');
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+    mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
   }
   else{
-    mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+    //mainWindow.loadURL(`file://${path.join(__dirname, '../build/index.html')}`);
   }
 }
 
