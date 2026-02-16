@@ -13,7 +13,7 @@ import os from "os"
 import windowStateKeeper from "electron-window-state"
 import {initIpcDispatch} from "./backend/ipcdispatch.js";
 import localShortcut from "electron-localshortcut";
-//import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
+import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 
 const __dirname = import.meta.dirname;
 
@@ -118,7 +118,7 @@ const reduxDevToolsPath = path.join(
 
 app.whenReady().then(async () => {
 
-  /*
+  //*
   installExtension(REACT_DEVELOPER_TOOLS, { loadExtensionOptions: { allowFileAccess: true } })
     .then((ext) => console.log(`Extension added:  ${ext.name} / ${ext.version}`))
     .catch((err) => console.log('Extension error: ', err));

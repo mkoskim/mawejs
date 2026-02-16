@@ -16,11 +16,15 @@ Sadly, neither Notepad nor Scrivener fully support plantsers. That's why I neede
 
 ## What MaweJS is?
 
-In short, MaweJS is externally unstructured editor (like Notepad, Word or Googledocs), and internally structured editor (like yWriter, Scrivener and Manuscript).
+In short, MaweJS is externally unstructured editor (like Notepad, Word or Googledocs), and internally structured editor (like yWriter, Scrivener and Manuscript). MaweJS is a story editor that feels like Word, but works like Scrivener underneath.
+
+Write first. Structure later. Restructure freely.
 
 ## Status
 
-Check out discussions page for status: https://github.com/mkoskim/mawejs/discussions/88
+Check out Discussions tab: https://github.com/mkoskim/mawejs/discussions
+
+- Status, see: https://github.com/mkoskim/mawejs/discussions/88
 
 ## Known Issues
 
@@ -66,30 +70,28 @@ There is currently K. M. Weiland's story structure templates and Blake Snyder's 
 
 At topmost, there is the selection of view. Below that is a toolbar to change settings in the editor. The main editing view contains three parts: (1) index of the draft, (2) editor display, and (3) index of notes.
 
-If you like to see the result, the story in the screenshot is available online:
+If you like to see the result, the story in the screenshot is available online (in Finnish):
 
 https://jumalhamara.wordpress.com/gjerta-avaruudessa/
 
 https://archiveofourown.org/works/76325336/chapters/199756276
 
-I have also translated it in English:
+I have also made an English translation from the story:
 
 https://archiveofourown.org/works/76329611/chapters/199767531
 
 # Development
 
-## Windows
-
-It is probably better that you use Git bash shell as the npm commands are bash commands.
-
 ## Tools
 
-You need mainly too tools, git and npm. Check you have them:
+You need two tools, git and npm. Check you have them:
 
     $ git -v
     $ npm -v
 
 Install the needed tools, if you don't have them already. On Linux you can do that from command line, on Windows you can get the installation packages from web.
+
+**Windows:** It is probably easier to use Git bash shell as the npm commands are bash commands.
 
 ## Cloning
 
@@ -97,6 +99,9 @@ Clone the repository:
 
     $ git clone https://github.com/mkoskim/mawejs.git
     $ cd mawejs
+    mawejs$
+
+**Note:** If you want to contribute, you need to make a fork.
 
 ## Dependencies
 
@@ -110,9 +115,7 @@ Run application from sources:
 
     mawejs$ npm run dev
 
-## Ubuntu: SUID bit
-
-In newer Ubuntus, if you run the sources, you may need to set Chrome SUID bit on. You need to do this every time ElectronJS is updated. There is now npm run target to do that:
+**Ubuntu:** In newer Ubuntus, if you run the sources, you may need to set Chrome SUID bit on. You need to do this every time ElectronJS is updated. There is now npm run target to do that:
 
     mawejs$ npm run fix
 
@@ -131,6 +134,8 @@ Building produces platform-specific result file (AppImage for Linux). Remember t
 
     mawejs$ dist/mawejs-x.y.z.AppImage --no-sandbox
 
+**Windows:** At the moment, there are some problems with Windows builds: https://github.com/mkoskim/mawejs/issues/404
+
 ## Updating
 
 If you update the project with 'git pull', you may need to update the libraries, too:
@@ -138,11 +143,11 @@ If you update the project with 'git pull', you may need to update the libraries,
     mawejs$ git pull
     mawejs$ npm i
 
-Ubuntu: Remember to reapply SUID bit, if Electron package was updated.
+**Ubuntu:** Remember to reapply SUID bit, if Electron package was updated.
 
 ## Debugging
 
-React DevTools are currently not working: https://github.com/mkoskim/mawejs/issues/403
+React DevTools are currently not working (on Linux, don't know about Windows): https://github.com/mkoskim/mawejs/issues/403
 
 VS Code Electron debugging: https://github.com/Microsoft/vscode-recipes/tree/master/Electron
 
@@ -151,6 +156,14 @@ VS Code Electron debugging: https://github.com/Microsoft/vscode-recipes/tree/mas
 You can test MaweJS with example files located in examples/
 
 https://github.com/mkoskim/mawejs/tree/master/examples
+
+## Want to contribute?
+
+There are few articles in the Discussions tab which you might be interested:
+
+- Want to contribute? https://github.com/mkoskim/mawejs/discussions/86
+
+- Most wanted! https://github.com/mkoskim/mawejs/discussions/219
 
 # What is Mawe?
 
