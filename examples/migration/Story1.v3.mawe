@@ -7,10 +7,16 @@
 <body>
 <chapter name="Chapter">
 <scene name="Scene">
-<p>If loaded correctly, story title is "Story".</p>
+<p>If loaded correctly:</p>
+<p>- Story title is "Story".</p>
+<p>- Arc view shows chapters.</p>
+<p>- Export chapters are numbered.</p>
 <br/>
 </scene>
 </chapter>
 </body>
 
-<export type="long" chapters="numbered" scenes="separated"/>
+<export type="long" chapterelem="part" chaptertype="numbered" scenes="separated"/>
+<ui>
+<chart elements="parts"/>
+</ui>

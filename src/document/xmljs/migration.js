@@ -7,6 +7,7 @@
 //*****************************************************************************
 
 import { elemFind, elemFindall, elem2Text } from "./tree";
+import { produce } from "immer";
 
 //-----------------------------------------------------------------------------
 // File format version is set to top-level <story> element. It defaults to 1
@@ -50,6 +51,49 @@ export function migrate(root) {
 
 //*****************************************************************************
 //
+// Helper functions for element tree manipulation
+//
+//*****************************************************************************
+
+function removeElements(elements, ...names) {
+  return (elements ?? []).filter(e => !names.includes(e.name))
+}
+
+function replaceElements(elements, names, ...childs) {
+  return removeElements(elements, ...names).concat(childs)
+}
+
+function removeChilds(elem, ...names) {
+  const {elements = []} = elem
+  return {
+    ...elem,
+    elements: removeElements(elements, ...names)
+  }
+}
+
+function replaceChilds(elem, names, ...childs) {
+  const {elements = []} = elem
+  return {
+    ...elem,
+    elements: replaceElements(elements, names, ...childs)
+  }
+}
+
+function createElem(name, attributes = {}, elements = []) {
+  return {
+    type: "element",
+    name,
+    attributes,
+    elements
+  }
+}
+
+function getElem(elem, name) {
+  return elemFind(elem, name) ?? createElem(name)
+}
+
+//*****************************************************************************
+//
 // v1 --> v2
 //
 //*****************************************************************************
@@ -62,10 +106,9 @@ function v1_to_v2(story) {
   console.log("Migrate v1 -> v2")
   // Do something here
 
-  return {
-    ...story,
-    attributes: {...story.attributes, version: "2" }
-  }
+  return produce(story, story => {
+    story.attributes.version = "2"
+  })
 }
 
 //*****************************************************************************
@@ -85,34 +128,18 @@ function v2_fixes(story) {
 
   console.log("Fix v2")
 
-  const bodyElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}
-  const notesElem = elemFind(story, "notes") ?? {type: "element", name: "notes", elements: []}
-  const headElem  = elemFind(bodyElem, "head") ?? {type: "element", name: "head", elements: []}
+  const bodyElem  = getElem(story, "body")
+  const notesElem = getElem(story, "notes")
+  const headElem  = getElem(bodyElem, "head")
+  const exports = getElem(headElem, "export")
 
-  const exports = elemFind(headElem, "export") ?? {type: "element", name: "export", attributes: {}, elements: []}
+  const body  = removeChilds(bodyElem, "head")
+  const notes = removeChilds(notesElem, "head")
+  const head  = removeChilds(headElem, "export")
 
-  const body = {
-    ...bodyElem,
-    elements: bodyElem.elements?.filter(elem => elem.name !== "head") ?? []
-  }
-
-  const notes = {
-    ...notesElem,
-    elements: notesElem.elements?.filter(elem => elem.name !== "head") ?? []
-  }
-
-  const head = {
-    ...headElem,
-    elements: headElem.elements?.filter(elem => elem.name !== "export") ?? []
-  }
-
-  return {
-    ...story,
-    elements: (story.elements ?? [])
-      .filter(elem => elem.name !== "body")
-      .filter(elem => elem.name !== "notes")
-      .concat([head, exports, body, notes]),
-  }
+  return produce(story, story => {
+    story.elements = [head, exports, body, notes]
+  })
 }
 
 //*****************************************************************************
@@ -130,8 +157,8 @@ function v2_to_v3(story) {
   if(version !== "2") return story
   console.log("Migrate v2 -> v3")
 
-  const bodyElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}
-  const notesElem = elemFind(story, "notes") ?? {type: "element", name: "notes", elements: []}
+  const bodyElem  = getElem(story, "body")
+  const notesElem = getElem(story, "notes")
 
   const body = {
     ...bodyElem,
@@ -143,14 +170,13 @@ function v2_to_v3(story) {
     elements: notesElem.elements?.map(elem => ({...elem, name: "chapter"}))
   }
 
-  return {
-    ...story,
-    attributes: {...story.attributes, version: "3"},
-    elements: (story.elements ?? [])
-      .filter(elem => elem.name !== "body")
-      .filter(elem => elem.name !== "notes")
-      .concat([body, notes]),
-  }
+  return produce(story, story => {
+    story.attributes.version = "3"
+    story.elements = replaceElements(story.elements,
+      ["body", "notes"],
+      body,
+      notes)
+  })
 }
 
 //*****************************************************************************
@@ -165,62 +191,50 @@ function v3_fixes(story) {
 
   if(version !== "3") return story
 
-  const uiElem = elemFind(story, "ui")
-  const exportElem = elemFind(story, "export")
+  console.log("Fix v3")
 
   return {
     ...story,
-    elements: [
-      ...story.elements
-        .filter(elem => elem.name !== "ui")
-        .filter(elem => elem.name !== "export"),
-      v3_fix_chart(uiElem),
-      v3_fix_exports(exportElem),
-    ]
+    elements: replaceElements(story.elements,
+      ["ui", "export"],
+      v3_fix_chart(story),
+      v3_fix_exports(story)
+    )
   }
 }
 
-function v3_fix_chart(uiElem) {
+//-----------------------------------------------------------------------------
 
-  if(!uiElem) return {type: "element", name: "ui", attributes: {}, elements: []}
+function v3_fix_chart(story) {
 
-  const chartElem = elemFind(uiElem, "chart")
+  const uiElem = getElem(story, "ui")
+  const chartElem = getElem(uiElem, "chart")
+  const arcElem = produce(chartElem, chart => {
+    chart.name = "arc"
+    const {elements} = chart.attributes
+    if(elements === "parts") chart.attributes.elements = "chapter"
+  })
 
-  if(!chartElem) return uiElem;
-
-  const {attributes} = chartElem
-  const {elements} = attributes
-
-  return {
-    ...uiElem,
-    elements: [
-      ...uiElem.elements.filter(elem => elem.name !== "chart"),
-      {
-        ...chartElem,
-        name: "arc",
-        attributes: {
-          ...attributes,
-          elements: elements === "parts" ? "chapters" : elements
-        }
-      }
-    ]
-  }
+  return produce(uiElem, ui => {
+    const {elements} = ui
+    ui.elements = replaceElements(elements, ["chart"], arcElem)
+  })
 }
 
-function v3_fix_exports(exportElem) {
+//-----------------------------------------------------------------------------
 
-  if(!exportElem) return {type: "element", name: "export", attributes: {}, elements: []}
+function v3_fix_exports(story) {
 
-  const {attributes} = exportElem
-  const {chaptertype, chapters, ...rest} = attributes
+  const exportElem = getElem(story, "export")
 
-  return {
-    ...exportElem,
-    attributes: {
+  return produce(exportElem, exportElem => {
+    const {attributes} = exportElem
+    const {chaptertype, chapters, ...rest} = attributes
+    exportElem.attributes = {
       ...rest,
-      chapters: chapters ?? chaptertype,
+      chapters: chapters ?? chaptertype ?? "none",
     }
-  }
+  })
 }
 
 //*****************************************************************************
@@ -240,29 +254,23 @@ function v3_to_v4(story) {
   console.log("Migrate v3 -> v4")
 
   // Fix unnumbered --> numbered
-  const bodyElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}
-  const notesElem = elemFind(story, "notes") ?? {type: "element", name: "notes", elements: []}
+  const bodyElem  = wrap(getElem(story, "body"))
+  const notesElem = wrap(getElem(story, "notes"))
 
-  return {
-    ...story,
-    attributes: {...story.attributes, version: "4"},
-    elements: [
-      ...story.elements
-        .filter(elem => elem.name !== "body")
-        .filter(elem => elem.name !== "notes"),
-      wrap(bodyElem),
-      wrap(notesElem)
-    ]
-  }
+  return produce(story, story => {
+    story.attributes.version = "4"
+    story.elements = replaceElements(story.elements,
+      ["body", "notes"],
+      bodyElem,
+      notesElem
+    )
+  })
 
   function wrap(elem) {
     const {elements} = elem
     return {
       ...elem,
-      elements: [{
-        type: "element", name: "act",
-        elements
-      }]
+      elements: [createElem("act", {}, elements)]
     }
   }
 }
@@ -284,57 +292,43 @@ function v4_to_v5(story) {
   console.log("Migrate v4 -> v5")
 
   // Fix unnumbered --> numbered
-  const bodyElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}
-  const notesElem = elemFind(story, "notes") ?? {type: "element", name: "notes", elements: []}
+  const bodyElem  = getElem(story, "body")
+  const notesElem = getElem(story, "notes")
 
-  return {
-    ...story,
-    attributes: {...story.attributes, version: "5"},
-    elements: [
-      ...story.elements
-        .filter(elem => elem.name !== "body")
-        .filter(elem => elem.name !== "notes"),
+  return produce(story, story => {
+    story.attributes.version = "5"
+    story.elements = replaceElements(story.elements,
+      ["body", "notes"],
       fixSection(bodyElem),
-      fixSection(notesElem),
-    ]
-  }
+      fixSection(notesElem)
+    )
+  })
 
   function fixSection(elem) {
-    return {
-      ...elem,
-      elements: elem.elements.map(fixAct)
-    }
+    const {elements = []} = elem
+    return {...elem, elements: elements.map(fixAct) }
   }
 
   function fixAct(elem) {
-    return {
-      ...elem,
-      elements: elem.elements?.map(fixChapter)
-    }
+    const {elements = []} = elem
+    return {...elem, elements: elements.map(fixChapter) }
   }
 
   function fixChapter(elem) {
-    return {
-      ...elem,
-      elements: elem.elements?.map(fixScene)
-    }
+    const {elements = []} = elem
+    return {...elem, elements: elements.map(fixScene) }
   }
 
   function fixScene(elem) {
-    return {
-      ...elem,
-      elements: elem.elements?.map(fixParagraph).filter(e => e)
-    }
+    const {elements = []} = elem
+    return {...elem, elements: elements.map(fixParagraph) }
   }
 
   function fixParagraph(elem) {
-    if(elem.name === "synopsis") {
-      return {
-        ...elem,
-        name: "bookmark",
-      }
-    }
-    return elem
+    return produce(elem, elem => {
+      const {name} = elem
+      elem.name = name === "synopsis" ? "bookmark" : name
+    })
   }
 }
 
@@ -344,6 +338,8 @@ function v4_to_v5(story) {
 //
 // - Body --> Draft
 // - Added reference section
+// - Turn on numbering by default
+// - Change fill --> comment
 //
 //*****************************************************************************
 
@@ -355,57 +351,82 @@ function v5_to_v6(story) {
 
   console.log("Migrate v5 -> v6")
 
-  // Fix unnumbered --> numbered
-  const draftElem  = elemFind(story, "body") ?? {type: "element", name: "body", elements: []}
-  const uiElem = elemFind(story, "ui") ?? {type: "element", name: "ui", elements: []}
+  const bodyElem  = getElem(story, "body")
+  const notesElem = getElem(story, "notes")
+  const uiElem = getElem(story, "ui")
 
-  console.log("Fix:", fixSettings(uiElem))
-
-  const elements = story.elements
-    .filter(elem => elem.name !== "ui")
-    .concat(fixSettings(uiElem))
-    .filter(elem => elem.name !== "body")
-    .concat({
-      ...draftElem,
-      name: "draft",
-    })
-    .concat({
-      type: "element",
-      name: "storybook",
-      elements: []
-    })
-
-  return {
-    ...story,
-    attributes: {...story.attributes, version: "6"},
-    elements
-  }
+  return produce(story, story => {
+    story.attributes.version = "6"
+    story.elements = replaceElements(story.elements,
+      ["ui", "body", "notes"],
+      fixSettings(uiElem),
+      fixSection({ ...bodyElem, name: "draft"}),
+      fixSection(notesElem)
+    )
+  })
 
   function fixSettings(uiElem) {
-    const editorElem = elemFind(uiElem, "editor") ?? {type: "element", name: "editor", elements: []}
-    const elements = uiElem.elements
-      .filter(elem => elem.name !== "editor")
-      .concat(fixEditorElem(editorElem))
-
-    return {
-      ...uiElem,
-      elements
-    }
+    const editorElem = getElem(uiElem, "editor")
+    return produce(uiElem, ui => {
+      ui.elements = replaceElements(ui.elements, ["editor"], fixEditorElem(editorElem))
+    })
   }
 
   function fixEditorElem(editorElem) {
-    const draftElem  = elemFind(editorElem, "body") ?? {type: "element", name: "body", elements: []}
-    const elements = editorElem.elements
-      .filter(elem => elem.name !== "body")
-      .concat({
-        ...draftElem,
-        name: "draft",
-      })
+    const draftElem  = getElem(editorElem, "body")
+    return produce(editorElem, editor => {
+      editor.elements = replaceElements(editor.elements,
+        ["body"],
+        { ...draftElem, name: "draft" }
+      )
+    })
+  }
 
+  function fixSection(elem) {
+    const {elements = [], attributes = {}} = elem
+    const {numbered = "true"} = attributes
     return {
-      ...editorElem,
-      elements,
+      ...elem,
+      elements: elements.map(fixAct),
+      attributes: {...attributes, numbered}
     }
+  }
+
+  function fixAct(elem) {
+    const {elements = [], attributes = {}} = elem
+    const {numbered = "true"} = attributes
+    return {
+      ...elem,
+      elements: elements.map(fixChapter),
+      attributes: {...attributes, numbered}
+    }
+  }
+
+  function fixChapter(elem) {
+    const {elements = [], attributes = {}} = elem
+    const {numbered = "true"} = attributes
+    return {
+      ...elem,
+      elements: elements.map(fixScene),
+      attributes: {...attributes, numbered}
+    }
+  }
+
+  function fixScene(elem) {
+    const {elements = [], attributes = {}} = elem
+    const {numbered = "true"} = attributes
+    return {
+      ...elem,
+      elements: elements.map(fixParagraph),
+      attributes: {...attributes, numbered}
+    }
+  }
+
+  function fixParagraph(elem) {
+    return produce(elem, elem => {
+      const {name} = elem
+      elem.name = name === "fill" ? "comment" : name
+    })
   }
 }
 
@@ -415,21 +436,19 @@ function v6_fixes(story) {
 
   if(version !== "6") return story
 
+  console.log("Fix v6")
+
   const referenceElem  = elemFind(story, "reference")
 
   if(!referenceElem) return story;
 
   console.log("v6 rename")
 
-  const elements = story.elements
-    .filter(elem => elem.name !== "reference")
-    .concat({
+  return {
+    ...story,
+    elements: replaceElements(story.elements, ["reference"], {
       ...referenceElem,
       name: "storybook",
     })
-
-  return {
-    ...story,
-    elements
   }
 }
