@@ -51,8 +51,7 @@ async function createWindow()
     height: mainWindowState.height,
 
     webPreferences: {
-      //sandbox: false, // For electron-better-ipc
-      preload: path.join(__dirname, "../preload/index.js")
+      preload: path.join(__dirname, "../preload/index.js"),
     },
 
     /*
@@ -90,55 +89,28 @@ async function createWindow()
 }
 
 //-----------------------------------------------------------------------------
-// Chrome extensions
+// Extensions
 //-----------------------------------------------------------------------------
 
-//const reactDevToolsPath = path.resolve(".", "local/ReactDevTools")
+function enableExtensions() {
+  const extensions = [
+    {name: REACT_DEVELOPER_TOOLS, options: { loadExtensionOptions: { allowFileAccess: true } }},
+  ]
 
-/*
-const reactDevToolsPath = path.join(
-  os.homedir(),
-  //"/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.24.7_0"
-  // "/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.27.8_0"
-  //"/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.28.0_0"
-  "/.config/google-chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/7.0.1_0"
-  )
-/**/
-
-/*
-const reduxDevToolsPath = path.join(
-  os.homedir(),
-  "/.config/google-chrome/Default/Extensions/lmhkpmbekcpmknklioeibfkpmmfibljd/3.0.11_0"
-)
-*/
+  return Promise.all(extensions.map(({name, options}) => installExtension(name, options)))
+    .then(results => {
+      results.forEach(result => console.log(`Added:  ${result.name} / ${result.version}`))
+    })
+    .catch(err => console.log('Extension error: ', err))
+}
 
 //-----------------------------------------------------------------------------
 // Application
 //-----------------------------------------------------------------------------
 
 app.whenReady().then(async () => {
-
-  //*
-  installExtension(REACT_DEVELOPER_TOOLS, { loadExtensionOptions: { allowFileAccess: true } })
-    .then((ext) => console.log(`Extension added:  ${ext.name} / ${ext.version}`))
-    .catch((err) => console.log('Extension error: ', err));
-  /**/
-
-  /*
-  if(is.dev) try {
-    console.log("Loading extension:", reactDevToolsPath)
-    const result = await session.defaultSession.extensions.loadExtension(
-      reactDevToolsPath, {allowFileAccess: true}
-    )
-    console.log("Extension loaded:", result.name, "/", result.version)
-    //session.defaultSession.loadExtension(reduxDevToolsPath)
-  } catch(e) {
-    console.log("Error:", e)
-  }
-  */
-
+  await enableExtensions();
   initIpcDispatch();
-
   createWindow();
 });
 

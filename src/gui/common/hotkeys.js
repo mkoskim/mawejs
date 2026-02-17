@@ -58,13 +58,17 @@ export const IsKey = {
 export {isHotkey}
 
 export function addHotkeys(hotkeys) {
+
+  if(!hotkeys?.length) return
+
   const handler = event => {
     for(const [key, callback] of hotkeys) {
       //console.log(key)
       if(key(event)) {
-        //event.preventDefault();
+        event.preventDefault();
         event.stopPropagation();
         if(callback) callback(event);
+        return
       }
     }
   }

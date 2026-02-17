@@ -149,7 +149,9 @@ If you update the project with 'git pull', you may need to update the libraries,
 
 VS Code Electron debugging: https://github.com/Microsoft/vscode-recipes/tree/master/Electron
 
-React DevTools are installed by default (by electron-devtools-installer)
+React DevTools are installed by default (by electron-devtools-installer), but you need to reload the window before they are attached to devtools, see:
+
+https://github.com/electron/electron/issues/41613#issuecomment-2644018998
 
 ## Example files
 
