@@ -80,6 +80,7 @@ export function App(props) {
   const [app, setAppInfo] = useState()
 
   useEffect(() => {
+    console.clear()
     appInfo().then(info => {
       console.log("Application:", info)
       console.log("React:", React.version)

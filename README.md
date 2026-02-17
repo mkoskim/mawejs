@@ -147,9 +147,9 @@ If you update the project with 'git pull', you may need to update the libraries,
 
 ## Debugging
 
-React DevTools are currently not working (on Linux, don't know about Windows): https://github.com/mkoskim/mawejs/issues/403
-
 VS Code Electron debugging: https://github.com/Microsoft/vscode-recipes/tree/master/Electron
+
+React DevTools are installed by default (by electron-devtools-installer)
 
 ## Example files
 

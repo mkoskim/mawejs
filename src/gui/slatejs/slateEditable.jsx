@@ -145,14 +145,14 @@ function renderElement({element, attributes, ...props}) {
   return <p {...attributes} {...props}/>
 }
 
-function renderLeaf({ leaf, attributes, ...props}) {
+function renderLeaf({ leaf, attributes, children}) {
   const className = [
     leaf.highlight ? "highlight" : undefined,
     leaf.bold ? "bold" : undefined,
     leaf.italic ? "italic" : undefined,
   ].filter(e => e).join(" ")
 
-  return <span className={className} {...attributes} {...props}/>
+  return <span className={className} {...attributes} children={children}/>
 }
 
 //*****************************************************************************
