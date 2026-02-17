@@ -215,10 +215,10 @@ function v3_fix_chart(story) {
     if(elements === "parts") chart.attributes.elements = "chapter"
   })
 
-  return produce(uiElem, ui => {
-    const {elements} = ui
-    ui.elements = replaceElements(elements, ["chart"], arcElem)
-  })
+  return {
+    ...uiElem,
+    elements: replaceElements(uiElem.elements, ["chart"], arcElem)
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -367,19 +367,21 @@ function v5_to_v6(story) {
 
   function fixSettings(uiElem) {
     const editorElem = getElem(uiElem, "editor")
-    return produce(uiElem, ui => {
-      ui.elements = replaceElements(ui.elements, ["editor"], fixEditorElem(editorElem))
-    })
+    return {
+      ...uiElem,
+      elements: replaceElements(uiElem.elements, ["editor"], fixEditorElem(editorElem))
+    }
   }
 
   function fixEditorElem(editorElem) {
     const draftElem  = getElem(editorElem, "body")
-    return produce(editorElem, editor => {
-      editor.elements = replaceElements(editor.elements,
+    return {
+      ...editorElem,
+      elements: replaceElements(editorElem.elements,
         ["body"],
         { ...draftElem, name: "draft" }
       )
-    })
+    }
   }
 
   function fixSection(elem) {
