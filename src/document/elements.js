@@ -36,7 +36,6 @@ export const nodeTypes = {
   "bookmark":  {parent: "scene", },
   "comment":   {parent: "scene", },
   "missing":   {parent: "scene", },
-  "fill":      {parent: "scene", },
   "tags":      {parent: "scene", },
   "p":         {parent: "scene", },
   "quote":     {parent: "scene", },
@@ -92,7 +91,6 @@ export const paragraphTypes = {
   "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M",           bk: "p", reset: "p" },
   "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl-Alt-B", eol: "p", bk: "p", reset: "p" },
   "tags":      {name: "Tags",     markup: "@@",                         eol: "p", bk: "p", reset: "p" },
-  "fill":      {name: "Fill",     markup: "++",                         eol: "p", bk: "p", reset: "p" },
   "quote":     {name: "Quote",                  shortcut: "Ctrl-Alt-Q",           bk: "p", reset: "p" },
   "p":         {name: "Text",                   shortcut: "Ctrl-Alt-0"},
 }
@@ -129,7 +127,7 @@ export const MARKUP = {
   '!! ': {type: 'missing'},
   '// ': {type: 'comment'},
   '@@ ': {type: 'tags'},
-  '++ ': {type: 'fill'},
+  //'++ ': {type: 'fill'},
   //'-- ':
   //'<<':
   //'((':

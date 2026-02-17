@@ -15,7 +15,7 @@ STORY: Story.v4
 <act name="">
 <chapter name="">
 <scene name="V4 story">
-<p>Fillers come as they are:</p>
+<p>Fillers become comments:</p>
 <fill>500</fill>
 <p>V5 versions reset synopsis paragraphs to bookmark paragraphs:</p>
 <synopsis>Bookmark 1</synopsis>

@@ -48,14 +48,12 @@ const formatters = {
 }
 
 export function loadExportSettings(settings) {
-  // TODO: Check here that values are valid
-
   return {
     format: "rtf1",
     content: "draft",
     type: "short",
     acts: "none",
-    chapters: "numbered",
+    chapters: "none",
     scenes: "none",
     prefix_act: "",
     prefix_chapter: "",

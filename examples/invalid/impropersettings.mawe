@@ -1,0 +1,30 @@
+<story uuid="94bf33a5-6b43-4ba7-81c0-9d48967e732e" format="mawe" version="6">
+<!--/
+===============================================================================
+
+STORY: undefined
+
+===============================================================================
+/-->
+<head/>
+<export content="x" type="x" acts="x" chapters="x" scenes="x" prefix_act="" prefix_chapter="" prefix_scene=""/>
+<ui>
+<view/>
+<arc elements="x" template="x" mode="x"/>
+<editor>
+<draft words="numbers" indexed="x"/>
+</editor>
+</ui>
+<!--/
+===============================================================================
+/-->
+<draft>
+<act name="Act" numbered="true">
+<chapter name="Chapter" numbered="true">
+<scene name="Scene">
+<p>Lorem ipsum dolor sit amet...</p>
+</scene>
+</chapter>
+</act>
+</draft>
+</story>

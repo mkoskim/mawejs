@@ -238,11 +238,6 @@
     &::before {content: "!! ";}
   }
 
-  .fill {
-    color: var(--missing-fg);
-    &::before {content: "++ Fill: ";}
-  }
-
   .tags {
     color: var(--tags-fg);
     &::before {content: "@@ ";}

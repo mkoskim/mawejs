@@ -1,8 +1,8 @@
 {
   "name": "mawejs",
+  "version": "0.23.0",
   "description": "Editor for writers.",
   "author": "Markus Koskimies <mkoskim@gmail.com>",
-  "version": "0.22.0",
   "scripts": {
     "dev": "electron-vite -w dev",
     "build": "npm run vite-build && electron-builder",
@@ -20,6 +20,7 @@
     "@mdi/js": "^7.4.47",
     "@mui/icons-material": "^7.3.8",
     "@mui/material": "^7.3.8",
+    "electron-devtools-installer": "^4.0.0",
     "electron-localshortcut": "^3.2.1",
     "electron-window-state": "^5.0.3",
     "fs-extra": "^11.3.3",
@@ -39,6 +40,7 @@
     "slate-dom": "^0.123.0",
     "slate-history": "^0.113.1",
     "slate-react": "^0.123.0",
+    "stream": "^0.0.3",
     "use-immer": "^0.11.0",
     "uuid": "^13.0.0",
     "xml-js": "^1.6.11"
