@@ -48,28 +48,17 @@ const formatters = {
 }
 
 export function loadExportSettings(settings) {
-  const {format, content, type, acts, chapters, scenes, prefix_act, prefix_chapter, prefix_scene} = settings?.attributes || {}
-
-  const formats = ["rtf1", "rtf2", "tex1", "tex2", "md", "txt"]
-  const contents = ["draft", "synopsis", "storybook"]
-  const types = ["short", "long"]
-  const elemopts = ["none", "separated", "numbered", "named", "numbered&named"]
-
   return {
-    format: checkValue(format, formats, "rtf1"),
-    content: checkValue(content, contents, "draft"),
-    type: checkValue(type, types, "short"),
-    acts: checkValue(acts, elemopts, "none"),
-    chapters: checkValue(chapters, elemopts, "none"),
-    scenes: checkValue(scenes, elemopts, "none"),
-    prefix_act: prefix_act || "",
-    prefix_chapter: prefix_chapter || "",
-    prefix_scene: prefix_scene || "",
-  }
-
-  function checkValue(value, allowed, defaults) {
-    if(allowed.includes(value)) return value
-    return defaults
+    format: "rtf1",
+    content: "draft",
+    type: "short",
+    acts: "none",
+    chapters: "none",
+    scenes: "none",
+    prefix_act: "",
+    prefix_chapter: "",
+    prefix_scene: "",
+    ...(settings?.attributes ?? {})
   }
 }
 
