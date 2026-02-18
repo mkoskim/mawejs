@@ -113,7 +113,7 @@ export function loadEditorSettings(settings) {
     active: "draft",
     focusTo: undefined,
     left: {
-      style: {maxWidth: "400px", width: "400px", borderRight: "1px solid lightgray"},
+      style: {maxWidth: "350px", width: "350px", borderRight: "1px solid lightgray"},
       indexed: ["act", "chapter", "scene"],
       words: "numbers",
       ...getLeftSettings()
@@ -510,20 +510,6 @@ function RightPanel({settings}) {
 class ChooseRightPanel extends React.PureComponent {
 
   static buttons = {
-    /*
-    "draft": {
-      tooltip: "Draft Index",
-      icon: <Icon.View.Draft />
-    },
-    "notes": {
-      tooltip: "Notes Index",
-      icon: <Icon.View.Notes />
-    },
-    "storybook": {
-      tooltip: "Storybook Index",
-      icon: <Icon.View.StoryBook />
-    },
-    */
     "index": {
       tooltip: "Index",
       icon: <Icon.View.Index />
@@ -543,13 +529,9 @@ class ChooseRightPanel extends React.PureComponent {
   }
 
   static choices = [
-    //"draft",
-    //"storybook",
-    //"notes",
     "index",
     "wordtable",
     "tagtable",
-    //"trashcan"
   ]
 
   render() {
@@ -602,6 +584,7 @@ function RightPanelContent({settings, selected}) {
 //-----------------------------------------------------------------------------
 
 function ShowIndices({style, settings, side, indexed, words}) {
+  const sections = ["storybook", "draft", "notes"]
   const {
     doc,
     updateDoc,
@@ -612,49 +595,30 @@ function ShowIndices({style, settings, side, indexed, words}) {
   const updateIndexing = useCallback((sectID, value) => updateDoc(doc => {doc.ui.editor.indexing[sectID] = value}), [updateDoc])
 
   return <VBox style={style} className="TOC">
-    <SectionIndex
-      doc={doc}
-      sectID="storybook"
-      name="Storybook"
-      side={side}
-      indexing={indexing}
-      updateIndexing={updateIndexing}
-      indexed={indexed}
-      words={words}
-      setActive={setActive}
-      track={track}
-    />
-    <SectionIndex
-      doc={doc}
-      sectID="draft"
-      name="Draft"
-      side={side}
-      indexing={indexing}
-      updateIndexing={updateIndexing}
-      indexed={indexed}
-      words={words}
-      setActive={setActive}
-      track={track}
-    />
-    <SectionIndex
-      doc={doc}
-      sectID="notes"
-      name="Notes"
-      side={side}
-      indexing={indexing}
-      updateIndexing={updateIndexing}
-      indexed={indexed}
-      words={words}
-      setActive={setActive}
-      track={track}
-    />
+  {
+    sections.map(key =>
+      <SectionIndex
+        key={key}
+        sectID={key}
+        section={doc[key]}
+        side={side}
+        indexing={indexing}
+        updateIndexing={updateIndexing}
+        indexed={indexed}
+        words={words}
+        setActive={setActive}
+        track={track}
+      />
+    )
+  }
   </VBox>
 }
 
 class SectionIndex extends React.PureComponent {
 
   render() {
-    const {doc, sectID, name, side, indexing, updateIndexing, indexed, words, setActive, track} = this.props
+    const {section, sectID, side, indexing, updateIndexing, indexed, words, setActive, track} = this.props
+    const {name} = section
     const visible = indexing[sectID] === side
 
     return <div className="SectionZone">
@@ -668,7 +632,7 @@ class SectionIndex extends React.PureComponent {
       {visible && <DocIndex
         //style={style}
         sectID={sectID}
-        section={doc[sectID]}
+        section={section}
         include={indexed}
         wcFormat={words}
         setActive={setActive}
@@ -808,7 +772,7 @@ function EditorBox({style, settings}) {
     <div className="Board Editor" style={{...style}}>
     {
       Object.entries(editors).map(([key, editor]) =>
-        <Slate editor={editor} initialValue={editor.children}>
+        <Slate key={key} editor={editor} initialValue={editor.children}>
           <SlateEditable visible={active === key} className="Sheet Regular" highlight={highlightText}/>
         </Slate>
       )
