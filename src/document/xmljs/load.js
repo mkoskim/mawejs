@@ -82,9 +82,9 @@ export function fromXML(root) {
   const notesElem = elemFind(story, "notes")
   const refElem = elemFind(story, "storybook")
 
-  const draft     = parseSection(draftElem, "Draft")
-  const notes     = parseSection(notesElem, "Notes")
-  const storybook = parseSection(refElem, "Storybook")
+  const draft     = parseSection(draftElem)
+  const notes     = parseSection(notesElem)
+  const storybook = parseSection(refElem)
 
   const headElem  = elemFind(story, "head")
   const expElem   = elemFind(story, "export")
@@ -158,12 +158,10 @@ function parseHead(head, history) {
 //
 //*****************************************************************************
 
-function parseSection(section, name) {
-  function getActs() {
-    const acts = elemFindall(section, "act")
-    if(!acts.length) return [{type: "element", name: "act"}]
-    return acts
-  }
+function parseSection(section) {
+  //console.log("Parse section:", section)
+
+  const {name = "<Unnamed>"} = section?.attributes ?? {};
   const acts = getActs().map(parseAct)
   const words = wcChildren(acts)
   return {
@@ -171,6 +169,12 @@ function parseSection(section, name) {
     name,
     acts,
     words,
+  }
+
+  function getActs() {
+    const acts = elemFindall(section, "act")
+    if(!acts.length) return [{type: "element", name: "act"}]
+    return acts
   }
 }
 
