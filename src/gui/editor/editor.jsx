@@ -235,23 +235,30 @@ export function EditView({doc, updateDoc}) {
   // sections
   //---------------------------------------------------------------------------
 
-  const editors = useMemo(() => ({
-    draft: getUIEditor(),
-    notes: getUIEditor(),
-    storybook: getUIEditor(),
-    //trashcan: getUIEditor(),
-  }), [])
-
-  const updateSection = useCallback((key, buffer) => {
-    const editor = editors[key]
+  const updateSection = useCallback((editor, key) => {
     trackMarks(editor, key)
     if(isAstChange(editor)) {
       updateDoc(doc => {
-        doc[key].acts = buffer
-        doc[key].words = wcElem({type: "sect", children: buffer})
+        const {children} = editor
+        //console.log("Update:", key, children)
+        doc[key].acts = children
+        doc[key].words = wcElem({type: "sect", children})
       })
     }
-  }, [editors])
+  }, [trackMarks, updateDoc])
+
+  const getEditor = useCallback((key, section) => {
+    const editor = getUIEditor()
+    editor.children = section.acts
+    editor.onChange = () => updateSection(editor, key)
+    return editor
+  }, [updateSection])
+
+  const editors = useMemo(() => ({
+    draft: getEditor("draft", doc.draft),
+    notes: getEditor("notes", doc.notes),
+    storybook: getEditor("storybook", doc.storybook),
+  }), [getEditor])
 
   //---------------------------------------------------------------------------
   // Section selection + focusing + indexing
@@ -310,7 +317,6 @@ export function EditView({doc, updateDoc}) {
     focusTo,
     setFocusTo,
     track,
-    updateSection,
     editors,
   }
 
@@ -775,7 +781,7 @@ function EditorBox({style, settings}) {
   const {doc, track} = settings
   const {active} = doc.ui.editor
 
-  const {editors, updateSection} = settings
+  const {editors} = settings
   const editor = editors[active]
 
   const {searchBoxRef, searchText, setSearchText} = settings
@@ -783,11 +789,6 @@ function EditorBox({style, settings}) {
 
   const type = track?.node?.type
   const {bold, italic} = track?.marks ?? {}
-
-  const updateDraft = useCallback(buffer => updateSection("draft", buffer), [updateSection])
-  const updateNotes = useCallback(buffer => updateSection("notes", buffer), [updateSection])
-  const updateStorybook = useCallback(buffer => updateSection("storybook", buffer), [updateSection])
-  //const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [updateSection])
 
   return <VFiller>
     {/* Editor toolbar */}
@@ -806,15 +807,15 @@ function EditorBox({style, settings}) {
 
     <div className="Board Editor" style={{...style}}>
 
-      <Slate editor={editors.draft} initialValue={doc.draft.acts} onChange={updateDraft}>
+      <Slate editor={editors.draft} initialValue={editors.draft.children}>
         <SlateEditable visible={active === "draft"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
-      <Slate editor={editors.notes} initialValue={doc.notes.acts} onChange={updateNotes}>
+      <Slate editor={editors.notes} initialValue={editors.notes.children}>
         <SlateEditable visible={active === "notes"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
-      <Slate editor={editors.storybook} initialValue={doc.storybook.acts} onChange={updateStorybook}>
+      <Slate editor={editors.storybook} initialValue={editors.storybook.children}>
         <SlateEditable visible={active === "storybook"} className="Sheet Regular" highlight={highlightText}/>
       </Slate>
 
