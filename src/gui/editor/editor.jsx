@@ -806,24 +806,13 @@ function EditorBox({style, settings}) {
     {/* Editor board and sheet */}
 
     <div className="Board Editor" style={{...style}}>
-
-      <Slate editor={editors.draft} initialValue={editors.draft.children}>
-        <SlateEditable visible={active === "draft"} className="Sheet Regular" highlight={highlightText}/>
-      </Slate>
-
-      <Slate editor={editors.notes} initialValue={editors.notes.children}>
-        <SlateEditable visible={active === "notes"} className="Sheet Regular" highlight={highlightText}/>
-      </Slate>
-
-      <Slate editor={editors.storybook} initialValue={editors.storybook.children}>
-        <SlateEditable visible={active === "storybook"} className="Sheet Regular" highlight={highlightText}/>
-      </Slate>
-
-      {/*
-      <Slate editor={editors.trashcan} initialValue={doc.trashcan.acts} onChange={updateTrash}>
-        <SlateEditable visible={active === "trashcan"} className="Sheet Regular" highlight={highlightText}/>
-      </Slate>
-      */}
+    {
+      Object.entries(editors).map(([key, editor]) =>
+        <Slate editor={editor} initialValue={editor.children}>
+          <SlateEditable visible={active === key} className="Sheet Regular" highlight={highlightText}/>
+        </Slate>
+      )
+    }
     </div>
   </VFiller>
 }
