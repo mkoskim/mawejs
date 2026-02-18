@@ -137,9 +137,10 @@ function v2_fixes(story) {
   const notes = removeChilds(notesElem, "head")
   const head  = removeChilds(headElem, "export")
 
-  return produce(story, story => {
-    story.elements = [head, exports, body, notes]
-  })
+  return {
+    ...story,
+    elements: [head, exports, body, notes]
+  }
 }
 
 //*****************************************************************************
@@ -280,6 +281,7 @@ function v3_to_v4(story) {
 // v4 --> v5
 //
 // - Synopsis --> bookmark
+// - numbered attribute
 //
 //*****************************************************************************
 
@@ -310,13 +312,23 @@ function v4_to_v5(story) {
   }
 
   function fixAct(elem) {
-    const {elements = []} = elem
-    return {...elem, elements: elements.map(fixChapter) }
+    const {elements = [], attributes = {}} = elem
+    const {numbered = "true"} = attributes
+    return {
+      ...elem,
+      attributes: {...attributes, numbered},
+      elements: elements.map(fixChapter),
+    }
   }
 
   function fixChapter(elem) {
-    const {elements = []} = elem
-    return {...elem, elements: elements.map(fixScene) }
+    const {elements = [], attributes = {}} = elem
+    const {numbered = "true"} = attributes
+    return {
+      ...elem,
+      attributes: {...attributes, numbered},
+      elements: elements.map(fixScene),
+    }
   }
 
   function fixScene(elem) {
@@ -325,10 +337,11 @@ function v4_to_v5(story) {
   }
 
   function fixParagraph(elem) {
-    return produce(elem, elem => {
-      const {name} = elem
-      elem.name = name === "synopsis" ? "bookmark" : name
-    })
+    const {name} = elem
+    return {
+      ...elem,
+      name: name === "synopsis" ? "bookmark" : name
+    }
   }
 }
 
@@ -338,8 +351,7 @@ function v4_to_v5(story) {
 //
 // - Body --> Draft
 // - Added reference section
-// - Turn on numbering by default
-// - Change fill --> comment
+// - Change fill --> missing
 //
 //*****************************************************************************
 
@@ -385,52 +397,39 @@ function v5_to_v6(story) {
   }
 
   function fixSection(elem) {
-    const {elements = [], attributes = {}} = elem
-    const {numbered = "true"} = attributes
-    return {
-      ...elem,
-      elements: elements.map(fixAct),
-      attributes: {...attributes, numbered}
-    }
+    const {elements = []} = elem
+    return {...elem, elements: elements.map(fixAct) }
   }
 
   function fixAct(elem) {
-    const {elements = [], attributes = {}} = elem
-    const {numbered = "true"} = attributes
-    return {
-      ...elem,
-      elements: elements.map(fixChapter),
-      attributes: {...attributes, numbered}
-    }
+    const {elements = []} = elem
+    return {...elem, elements: elements.map(fixChapter) }
   }
 
   function fixChapter(elem) {
-    const {elements = [], attributes = {}} = elem
-    const {numbered = "true"} = attributes
-    return {
-      ...elem,
-      elements: elements.map(fixScene),
-      attributes: {...attributes, numbered}
-    }
+    const {elements = []} = elem
+    return {...elem, elements: elements.map(fixScene) }
   }
 
   function fixScene(elem) {
-    const {elements = [], attributes = {}} = elem
-    const {numbered = "true"} = attributes
-    return {
-      ...elem,
-      elements: elements.map(fixParagraph),
-      attributes: {...attributes, numbered}
-    }
+    const {elements = []} = elem
+    return {...elem, elements: elements.map(fixParagraph) }
   }
 
   function fixParagraph(elem) {
-    return produce(elem, elem => {
-      const {name} = elem
-      elem.name = name === "fill" ? "comment" : name
-    })
+    const {name} = elem
+    return {
+      ...elem,
+      name: name === "fill" ? "missing" : name
+    }
   }
 }
+
+//*****************************************************************************
+//
+// v6 fix: reference -> storybook
+//
+//*****************************************************************************
 
 function v6_fixes(story) {
 

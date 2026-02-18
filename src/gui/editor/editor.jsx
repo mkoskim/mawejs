@@ -83,6 +83,7 @@ import {elemFind} from "../../document/xmljs/tree";
 export function loadEditorSettings(settings) {
 
   function getLeftSettings() {
+
     const draft = elemFind(settings, "draft")
     if(!draft) return {}
 
@@ -92,18 +93,19 @@ export function loadEditorSettings(settings) {
 
     const {words, indexed} = attributes
 
-    const fixed = (indexed ?? ["scene"])
-      .split(",")
-      .filter(s => s !== "part")
-      .filter(s => s !== "chapter")
-      .filter(s => s !== "act")
-      .filter(s => s !== "synopsis")
-      .filter(s => s !== "fill")
-      .concat(["act", "chapter"])
-
     return {
       ...(words ? {words} : {}),
-      ...(indexed ? {indexed: fixed} : {})
+      ...(indexed ? {indexed: fixIndexed(indexed)} : {})
+    }
+
+    function fixIndexed(indexed) {
+      return indexed.split(",")
+        .filter(s => s !== "part")
+        .filter(s => s !== "chapter")
+        .filter(s => s !== "act")
+        .filter(s => s !== "synopsis")
+        .filter(s => s !== "fill")
+        .concat(["act", "chapter"])
     }
   }
 
@@ -112,14 +114,14 @@ export function loadEditorSettings(settings) {
     focusTo: undefined,
     left: {
       style: {maxWidth: "400px", width: "400px", borderRight: "1px solid lightgray"},
-      indexed: ["act", "chapter", "scene", "bookmark"],
+      indexed: ["act", "chapter", "scene"],
       words: "numbers",
       ...getLeftSettings()
     },
     right: {
       style: {maxWidth: "300px", width: "300px", borderLeft: "1px solid lightgray"},
       selected: "index",
-      indexed: ["act", "chapter", "scene", "bookmark"],
+      indexed: ["act", "chapter", "scene"],
       words: undefined,
     },
     indexing: {
