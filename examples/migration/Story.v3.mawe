@@ -1,6 +1,6 @@
 <story name="Story v3/1" format="mawe" version="3">
 
-<head><title>Story v3/1</title></head>
+<head><title>Title v3/1</title></head>
 
 <!-- Body is formed from chapters, wrapped to an act -->
 
@@ -8,7 +8,7 @@
 <chapter name="Chapter">
 <scene name="Scene">
 <p>If loaded correctly:</p>
-<p>- Story title is "Story".</p>
+<p>- Story title is "Title v3/1".</p>
 <p>- Arc view shows chapters.</p>
 <p>- Export chapters are numbered.</p>
 <br/>
