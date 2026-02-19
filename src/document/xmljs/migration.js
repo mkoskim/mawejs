@@ -443,7 +443,7 @@ function v6_fixes(story) {
   console.log("Fix v6")
 
   const draftElem  = withName(getElem(story, "draft"), "Draft")
-  const notesElem = withName(getElem(story, "notes"), "Notes")
+  const notesElem = withName(getElem(story, "notes"), "Cuts")
   const refElem   = withName(getRefElem(story), "Storybook")
 
   return {
