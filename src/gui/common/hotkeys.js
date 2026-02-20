@@ -5,7 +5,7 @@
 //
 //*****************************************************************************
 
-import isHotkey from 'is-hotkey';
+import isHotkey from "../../util/is-hotkey.js"
 
 export const IsKey = {
   Escape: isHotkey("Escape"),
@@ -20,6 +20,8 @@ export const IsKey = {
   AltDown: isHotkey("Alt+Down"),
 
   // Ctrl keys
+  Ctrl0: isHotkey("Mod+0"),
+
   CtrlB: isHotkey("Mod+B"),
   CtrlF: isHotkey("Mod+F"),
   CtrlG: isHotkey("Mod+G"),
@@ -53,6 +55,8 @@ export const IsKey = {
   CtrlAltS: isHotkey("Mod+Alt+S"),
   //CtrlAltT: isHotkey("Mod+Alt+T"), // Opens terminal
 
+  CtrlNumAdd: isHotkey("Mod+NumpadAdd"),
+  CtrlNumSub: isHotkey("Mod+NumpadSub"),
 }
 
 export {isHotkey}
@@ -78,6 +82,16 @@ export function addHotkeys(hotkeys) {
 
   return () => {
     //console.log("Removing hotkeys")
+    document.removeEventListener("keydown", handler)
+  }
+}
+
+export function peekKeys() {
+  const handler = event => console.log(event)
+
+  document.addEventListener("keydown", handler);
+
+  return () => {
     document.removeEventListener("keydown", handler)
   }
 }

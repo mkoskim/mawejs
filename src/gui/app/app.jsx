@@ -22,7 +22,7 @@ import {
   IsKey, addHotkeys,
   Separator,
   Menu, MenuItem,
-  Inform,
+  Inform, Snackbar,
 } from "../common/factory";
 
 import {
@@ -59,11 +59,12 @@ import { useImmer } from "use-immer"
 
 import { mawe } from "../../document"
 
-import { appQuit, appInfo } from "../../system/host"
+import { appQuit, appInfo, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
 
 import fs from "../../system/localfs"
+import { peekKeys } from "../common/hotkeys";
 
 //*****************************************************************************
 //
@@ -187,9 +188,17 @@ export function App(props) {
   // Add application hotkeys common to all views
   //---------------------------------------------------------------------------
 
+  const [zoom, setZoom] = useState({open: false})
+  const closeZoom = useCallback(() => setZoom(z => ({open: false})), [])
+
   useEffect(() => addHotkeys([
     //[IsKey.CtrlQ, (e) => appQuit()],
+    [IsKey.CtrlNumAdd, (e) => appZoomIn().then(factor => setZoom({factor, open: true}))],
+    [IsKey.CtrlNumSub, (e) => appZoomOut().then(factor => setZoom({factor, open: true}))],
+    [IsKey.Ctrl0, (e) => appZoomReset().then(factor => setZoom({factor, open: true}))],
   ]), []);
+
+  //useEffect(() => peekKeys(), []);
 
   //---------------------------------------------------------------------------
   // Render
@@ -198,7 +207,9 @@ export function App(props) {
   return (
     <SettingsContext value={settings}>
       <CmdContext value={setCommand}>
-        <View key={doc?.key} doc={doc} updateDoc={updateDoc} buffer={importing} setBuffer={setImporting} />
+        <View key={doc?.key} doc={doc} updateDoc={updateDoc}/>
+        <RenderImportDialog buffer={importing} setBuffer={setImporting} updateDoc={updateDoc}/>
+        <RenderZoomSnackbar zoom={zoom} closeZoom={closeZoom} />
       </CmdContext>
     </SettingsContext>
   )
@@ -296,7 +307,7 @@ export function App(props) {
 //
 //*****************************************************************************
 
-function View({ doc, updateDoc, buffer, setBuffer }) {
+function View({ doc, updateDoc }) {
 
   //const [view, setView] = useSetting(doc?.file?.id, getViewDefaults(null))
   //const [view, setView] = useState(() => getViewDefaults())
@@ -308,20 +319,41 @@ function View({ doc, updateDoc, buffer, setBuffer }) {
       <DocBar doc={doc} updateDoc={updateDoc} />
       /**/}
       <ViewSwitch doc={doc} updateDoc={updateDoc} />
-      <RenderDialogs doc={doc} updateDoc={updateDoc} buffer={buffer} setBuffer={setBuffer} />
     </VBox>
   )
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Dialogs and popups
+//
+//*****************************************************************************
 
-function RenderDialogs({ doc, updateDoc, buffer, setBuffer }) {
+function RenderImportDialog({ buffer, setBuffer, updateDoc }) {
   if (buffer) {
     return <ImportDialog
-      updateDoc={updateDoc}
       buffer={buffer}
       setBuffer={setBuffer}
+      updateDoc={updateDoc}
     ></ImportDialog>
+  }
+}
+
+//-----------------------------------------------------------------------------
+
+const zoomAnchor = { vertical: "top", horizontal: "right" }
+
+function RenderZoomSnackbar({ zoom, closeZoom }) {
+  const {open, factor} = zoom
+
+  if (open) {
+    return <Snackbar
+      open={open}
+      message={`Zoom: ${Math.round(factor * 100)}%`}
+      autoHideDuration={2000}
+      anchorOrigin={zoomAnchor}
+      onClose={closeZoom}
+    />
   }
 }
 

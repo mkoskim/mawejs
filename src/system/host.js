@@ -36,3 +36,25 @@ export function appBeep() {
 export function appInfo() {
   return syscall("info");
 }
+
+export function appZoomGet() {
+  return syscall("zoom");
+}
+
+export function appZoomTo(factor) {
+  return syscall("zoom", factor);
+}
+
+export async function appZoomIn() {
+  const zoom = await appZoomGet();
+  return appZoomTo(zoom + 0.101);
+}
+
+export async function appZoomOut() {
+  const zoom = await appZoomGet();
+  return appZoomTo(zoom - 0.099);
+}
+
+export function appZoomReset() {
+  return appZoomTo(1);
+}

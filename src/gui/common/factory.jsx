@@ -31,13 +31,13 @@ import {
 
   Breadcrumbs,
   Chip, Link,
-  TextField, InputAdornment, OutlinedInput,
-  Tooltip as MuiTooltip, tooltipClasses,
-  Divider, CircularProgress as Spinner,
+  TextField, OutlinedInput,
+  Tooltip as MuiTooltip,
+  CircularProgress as Spinner,
   Typography,
   List, ListItem, ListItemText, ListSubheader, ListItemIcon,
-  Select, InputLabel, FormControl,
   Accordion, AccordionSummary, AccordionDetails,
+  Snackbar,
 } from "@mui/material"
 
 import {Icon} from "./icons"
@@ -57,6 +57,7 @@ export {
   //Menu, MenuItem, MenuList,
   Accordion, AccordionSummary, AccordionDetails,
   Dialog,
+  Snackbar
 }
 
 export {
@@ -388,9 +389,12 @@ export const Inform = {
   warning: msg => {
     return enqueueSnackbar(String(msg), {variant: "warning"});
   },
-  error: err => {
-    console.log(err);
-    return enqueueSnackbar(String(err), {variant: "error"});
+  error: msg => {
+    console.log(msg);
+    return enqueueSnackbar(String(msg), {variant: "error"});
+  },
+  info: msg => {
+    return enqueueSnackbar(String(msg), {variant: "info"});
   },
   dismiss: key => {
     closeSnackbar(key)

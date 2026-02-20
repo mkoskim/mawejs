@@ -18,7 +18,9 @@ Sadly, neither Notepad nor Scrivener fully support plantsers. That's why I neede
 
 In short, MaweJS is externally unstructured editor (like Notepad, Word or Googledocs), and internally structured editor (like yWriter, Scrivener and Manuscript). MaweJS is a story editor that feels like Word, but works like Scrivener underneath.
 
-Write first. Structure later. Restructure freely.
+Interested? Want to give a try? If so, read my Wiki page about the subject: https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F
+
+But why? If there is a need, why there is no tool already on the market? It is an interesting question, and I have tried to answer it here: https://github.com/mkoskim/mawejs/wiki/If-this-approach-makes-sense,-why-isn%E2%80%99t-it-common%3F
 
 ## Status
 

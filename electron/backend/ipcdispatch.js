@@ -41,6 +41,7 @@ function dispatch(browserWindow, channel, cmd, ...args) {
         case "quit": return hostapp.quit(...args)
         case "log": return hostapp.log(...args)
         case "beep": return hostapp.beep(...args)
+        case "zoom": return hostapp.zoom(browserWindow, ...args)
         default: break;
       }
       throw Error(`IPC: ${channel}/${cmd}: Not implemented.`);
