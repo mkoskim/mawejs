@@ -13,8 +13,7 @@ export default {
   quit,
   log,
   beep,
-  zoomIn,
-  zoomOut,
+  zoom,
 }
 
 function info() {
@@ -37,14 +36,12 @@ function beep() {
   //shell.beep()
 }
 
-function zoomIn(window) {
-  console.log("Zoom in")
-  const currentZoom = window.webContents.getZoomFactor();
-  window.webContents.setZoomFactor(currentZoom + 0.1);
-}
-
-function zoomOut(window) {
-  console.log("Zoom out")
-  const currentZoom = window.webContents.getZoomFactor();
-  window.webContents.setZoomFactor(currentZoom - 0.1);
+function zoom(window, factor) {
+  if (factor !== undefined) {
+    const limit = Math.trunc(Math.max(80, Math.min(120, 100*factor)))/100
+    console.log("Zoom to", limit)
+    window.webContents.setZoomFactor(limit);
+  }
+  const zoom = Math.trunc(window.webContents.getZoomFactor() * 100) / 100;
+  return zoom;
 }

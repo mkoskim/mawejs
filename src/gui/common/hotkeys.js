@@ -20,6 +20,8 @@ export const IsKey = {
   AltDown: isHotkey("Alt+Down"),
 
   // Ctrl keys
+  Ctrl0: isHotkey("Mod+0"),
+
   CtrlB: isHotkey("Mod+B"),
   CtrlF: isHotkey("Mod+F"),
   CtrlG: isHotkey("Mod+G"),

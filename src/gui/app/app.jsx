@@ -59,7 +59,7 @@ import { useImmer } from "use-immer"
 
 import { mawe } from "../../document"
 
-import { appQuit, appInfo, appZoomIn, appZoomOut } from "../../system/host"
+import { appQuit, appInfo, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
 
@@ -192,6 +192,7 @@ export function App(props) {
     //[IsKey.CtrlQ, (e) => appQuit()],
     [IsKey.CtrlNumAdd, (e) => appZoomIn()],
     [IsKey.CtrlNumSub, (e) => appZoomOut()],
+    [IsKey.Ctrl0, (e) => appZoomReset()],
   ]), []);
 
   //useEffect(() => peekKeys(), []);

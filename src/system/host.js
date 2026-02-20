@@ -37,10 +37,25 @@ export function appInfo() {
   return syscall("info");
 }
 
-export function appZoomIn() {
-  return syscall("zoomin");
+export function appZoomGet() {
+  return syscall("zoom");
 }
 
-export function appZoomOut() {
-  return syscall("zoomout");
+export function appZoomTo(factor) {
+  console.log("Zoom to", factor)
+  return syscall("zoom", factor);
+}
+
+export async function appZoomIn() {
+  const zoom = await appZoomGet();
+  return appZoomTo(zoom + 0.1);
+}
+
+export async function appZoomOut() {
+  const zoom = await appZoomGet();
+  return appZoomTo(zoom - 0.1);
+}
+
+export function appZoomReset() {
+  return appZoomTo(1);
 }
