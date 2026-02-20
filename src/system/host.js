@@ -36,3 +36,11 @@ export function appBeep() {
 export function appInfo() {
   return syscall("info");
 }
+
+export function appZoomIn() {
+  return syscall("zoomin");
+}
+
+export function appZoomOut() {
+  return syscall("zoomout");
+}

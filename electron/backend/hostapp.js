@@ -12,7 +12,9 @@ export default {
   info,
   quit,
   log,
-  beep
+  beep,
+  zoomIn,
+  zoomOut,
 }
 
 function info() {
@@ -33,4 +35,16 @@ function log(message) {
 function beep() {
   console.log("Beep")
   //shell.beep()
+}
+
+function zoomIn(window) {
+  console.log("Zoom in")
+  const currentZoom = window.webContents.getZoomFactor();
+  window.webContents.setZoomFactor(currentZoom + 0.1);
+}
+
+function zoomOut(window) {
+  console.log("Zoom out")
+  const currentZoom = window.webContents.getZoomFactor();
+  window.webContents.setZoomFactor(currentZoom - 0.1);
 }

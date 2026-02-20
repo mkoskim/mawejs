@@ -59,11 +59,12 @@ import { useImmer } from "use-immer"
 
 import { mawe } from "../../document"
 
-import { appQuit, appInfo } from "../../system/host"
+import { appQuit, appInfo, appZoomIn, appZoomOut } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
 
 import fs from "../../system/localfs"
+import { peekKeys } from "../common/hotkeys";
 
 //*****************************************************************************
 //
@@ -189,7 +190,11 @@ export function App(props) {
 
   useEffect(() => addHotkeys([
     //[IsKey.CtrlQ, (e) => appQuit()],
+    [IsKey.CtrlNumAdd, (e) => appZoomIn()],
+    [IsKey.CtrlNumSub, (e) => appZoomOut()],
   ]), []);
+
+  //useEffect(() => peekKeys(), []);
 
   //---------------------------------------------------------------------------
   // Render
