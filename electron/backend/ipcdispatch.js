@@ -73,6 +73,7 @@ function dispatch(browserWindow, channel, cmd, ...args) {
       switch(cmd) {
         case "openfile": return dialog.openFile(browserWindow, ...args);
         case "savefile": return dialog.saveFile(browserWindow, ...args);
+        case "messagebox": return dialog.messageBox(browserWindow, ...args);
         default: break;
       }
       throw Error(`IPC: ${channel}/${cmd}: Not implemented.`);

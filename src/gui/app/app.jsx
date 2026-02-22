@@ -161,7 +161,7 @@ export function App(props) {
   //---------------------------------------------------------------------------
 
   useEffect(() => {
-    //*
+     //*
     //console.log("Recent:", recent)
     if (recent?.length) cmdLoadFile({ setCommand, filename: recent[0].id })
     //cmdLoadFile({ setCommand, filename: "./examples/import/Frankenstein.mawe.gz" })
@@ -200,6 +200,10 @@ export function App(props) {
     [IsKey.CtrlNumAdd, (e) => appZoomIn().then(factor => setZoom({factor, open: true}))],
     [IsKey.CtrlNumSub, (e) => appZoomOut().then(factor => setZoom({factor, open: true}))],
     [IsKey.Ctrl0, (e) => appZoomReset().then(factor => setZoom({factor, open: true}))],
+    [IsKey.AltX, (e) => confirmUnsaved(doc?.file)
+      .then(result => {
+        Inform.info(`Response: ${result.response}`)
+      })],
   ]), []);
 
   //useEffect(() => peekKeys(), []);
@@ -368,9 +372,6 @@ function RenderZoomSnackbar({ zoom, closeZoom }) {
 //*****************************************************************************
 
 function DocBar({ doc, updateDoc }) {
-  //console.log("Workspace:id=", id)
-  //console.log("Workspace:doc=", doc)
-
   const { recent } = useContext(SettingsContext)
   const setCommand = useContext(CmdContext)
   const file = doc?.file
