@@ -175,7 +175,7 @@ export function setFocusTo(updateDoc, id) {
 //
 //*****************************************************************************
 
-export function EditView({doc, updateDoc}) {
+export function EditView({doc, updateDoc, editors}) {
 
   //---------------------------------------------------------------------------
   // For development purposes:
@@ -183,6 +183,7 @@ export function EditView({doc, updateDoc}) {
 
   //console.log("Doc:", doc)
   //console.log("Draft:", doc.draft.acts)
+  //console.log("Editors:", editors)
 
   /*
   return <React.Fragment>
@@ -198,72 +199,10 @@ export function EditView({doc, updateDoc}) {
   /**/
 
   //---------------------------------------------------------------------------
-  // Cursor movement tracking
-  //---------------------------------------------------------------------------
-
-  const [track, setTrack] = useState(undefined)
-
-  const trackMarks = useCallback((editor, sectID) => {
-    try {
-      const {selection} = editor
-      if(selection) {
-        const {focus} = selection
-
-        const match = Editor.parent(editor,
-          focus,
-          {
-            match: n =>
-              !Editor.isEditor(n) &&
-              Element.isElement(n)
-          }
-        )
-        if(match) {
-          const [node, path] = match
-          //console.log(node, path)
-          const marks = Editor.marks(editor)
-          setTrack({marks, node, id: nodeID(sectID, path)})
-          return
-        }
-      }
-    } catch(e) {
-      //console.log("Track error:", e)
-    }
-    setTrack(undefined)
-  }, [setTrack])
-
-  //---------------------------------------------------------------------------
-  // sections
-  //---------------------------------------------------------------------------
-
-  const updateSection = useCallback((editor, key) => {
-    trackMarks(editor, key)
-    if(isAstChange(editor)) {
-      updateDoc(doc => {
-        const {children} = editor
-        //console.log("Update:", key, children)
-        doc[key].acts = children
-        doc[key].words = wcElem({type: "sect", children})
-      })
-    }
-  }, [trackMarks, updateDoc])
-
-  const getEditor = useCallback((key, section) => {
-    const editor = getUIEditor()
-    editor.children = section.acts
-    editor.onChange = () => updateSection(editor, key)
-    return editor
-  }, [updateSection])
-
-  const editors = useMemo(() => ({
-    draft: getEditor("draft", doc.draft),
-    notes: getEditor("notes", doc.notes),
-    storybook: getEditor("storybook", doc.storybook),
-  }), [getEditor])
-
-  //---------------------------------------------------------------------------
   // Section selection + focusing + indexing
   //---------------------------------------------------------------------------
 
+  const {track} = doc
   const {refocus, active, focusTo} = doc.ui.editor
 
   const getEditorBySectID = useCallback(sectID => {

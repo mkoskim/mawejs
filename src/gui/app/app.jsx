@@ -57,14 +57,18 @@ import {
 import { ViewSelectButtons, ViewSwitch } from "./views";
 import { useImmer } from "use-immer"
 
-import { mawe } from "../../document"
-
 import { appQuit, appInfo, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
 import { createDateStamp } from "../../document/util";
 import { ImportDialog } from "../import/import";
 
 import fs from "../../system/localfs"
 import { peekKeys } from "../common/hotkeys";
+import {
+  loadDocument, createDocument,
+  saveDocument, saveDocumentAs,
+  renameDocument,
+  decodeBuffer, documentInfo
+} from "../slatejs/slateDocument";
 
 //*****************************************************************************
 //
@@ -178,7 +182,7 @@ export function App(props) {
   useEffect(() => {
     const name = app ? `${app.name} (v${app.version})` : ""
     if (doc?.head) {
-      document.title = (dirty ? "* " : "") + mawe.info(doc.head).title + " - " + name
+      document.title = (dirty ? "* " : "") + documentInfo(doc.head).title + " - " + name
     } else {
       document.title = name
     }
@@ -217,7 +221,7 @@ export function App(props) {
   //---------------------------------------------------------------------------
 
   function docFromFile({ filename }) {
-    mawe.load(filename)
+    loadDocument(filename)
       .then(content => {
         updateDoc(content)
         setSaved(content)
@@ -240,14 +244,14 @@ export function App(props) {
   }
 
   function docFromBuffer({ buffer }) {
-    const content = mawe.create(buffer)
+    const content = createDocument(buffer)
     setSaved(content)
     updateDoc(content)
   }
 
   function docFromResource({ filename }) {
     fs.readResource(filename)
-      .then(buffer => docFromBuffer({ buffer: mawe.decodebuf(buffer) }))
+      .then(buffer => docFromBuffer({ buffer: decodeBuffer(buffer) }))
       .catch(err => Inform.error(err))
   }
 
@@ -266,7 +270,7 @@ export function App(props) {
   }
 
   function docSave() {
-    mawe.save(insertHistory(doc))
+    saveDocument(insertHistory(doc))
       .then(file => {
         setSaved(doc)
         Inform.success(`Saved ${file.name}`)
@@ -275,7 +279,7 @@ export function App(props) {
   }
 
   function docSaveAs({ filename }) {
-    mawe.saveas(insertHistory(doc), filename)
+    saveDocumentAs(insertHistory(doc), filename)
       .then(file => {
         setSaved(doc)
         updateDoc(doc => { doc.file = file })
@@ -286,7 +290,7 @@ export function App(props) {
   }
 
   function docRename({ filename }) {
-    mawe.rename(doc.file, filename)
+    renameDocument(doc.file, filename)
       .then(file => {
         //setSaved(doc)
         setRecent(recentAdd(recentRemove(recent, doc.file), file))

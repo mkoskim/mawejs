@@ -6,8 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import React, {
-} from "react"
+import React, { useMemo } from "react"
 
 import {
   Icon, MakeToggleGroup,
@@ -17,6 +16,7 @@ import { EditView } from "../editor/editor";
 import { StoryArcView } from "../arc/arc"
 import { StatsView } from "../stats/stats"
 import { ExportView } from "../export/export"
+import { bindEditors } from "../slatejs/slateDocument";
 
 //*****************************************************************************
 //
@@ -78,7 +78,9 @@ export function ViewSwitch({doc, updateDoc}) {
 
   if(!doc) return null
 
-  const props = { doc, updateDoc }
+  // Note: View is reset when doc key changes (new/reloaded file)
+  const editors = useMemo(() => bindEditors(doc, updateDoc), [])
+  const props = { doc, updateDoc, editors }
 
   switch (getViewMode(doc)) {
     case "editor": return <EditView {...props} />

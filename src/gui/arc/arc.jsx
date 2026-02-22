@@ -70,7 +70,7 @@ const indexStyle = {
   borderRight: "1px solid lightgray"
 }
 
-export function StoryArcView({doc, updateDoc}) {
+export function StoryArcView({doc, updateDoc, editors}) {
 
   const setElements = useCallback(value => updateDoc(doc => {doc.ui.arc.elements = value}), [updateDoc])
   const setTemplate = useCallback(value => updateDoc(doc => {doc.ui.arc.template = value}), [updateDoc])
@@ -87,20 +87,7 @@ export function StoryArcView({doc, updateDoc}) {
   // Slate editor for buffer manipulations
   //---------------------------------------------------------------------------
 
-  const drafteditor = useMemo(() => {
-    const editor = getCoreEditor()
-    editor.onChange = () => {
-      //console.log("Draft update")
-      if(isAstChange(editor)) {
-        updateDoc(doc => {
-          doc.draft.acts = editor.children;
-          doc.draft.words = wcElem({type: "sect", children: editor.children})
-        })
-      }
-    }
-    editor.children = doc.draft.acts
-    return editor
-  }, [])
+  const drafteditor = editors.draft
 
   //---------------------------------------------------------------------------
   // View
