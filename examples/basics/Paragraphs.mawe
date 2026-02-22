@@ -1,0 +1,75 @@
+<story uuid="aaef0551-ea5b-4a3e-a379-3b6ce6aea766" format="mawe" version="6" name="Paragraph styles">
+<!--/
+===============================================================================
+
+STORY: Paragraph styles
+
+===============================================================================
+/-->
+<head/>
+<export content="draft" type="short" acts="none" chapters="none" scenes="named" prefix_act="" prefix_chapter="" prefix_scene=""/>
+<!--/
+===============================================================================
+/-->
+<draft>
+<act>
+<chapter>
+<scene name="Paragraph styles">
+<p>This is regular text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</p>
+<missing>This is missing text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</missing>
+<comment>This is comment. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</comment>
+<br/>
+<br/>
+<br/>
+<br/>
+</scene>
+</chapter>
+</act>
+</draft>
+<!--/
+===============================================================================
+
+NOTES
+
+===============================================================================
+/-->
+<notes>
+<act numbered="true">
+<chapter>
+<scene>
+<br/>
+</scene>
+</chapter>
+</act>
+</notes>
+<!--/
+===============================================================================
+
+STORYBOOK
+
+===============================================================================
+/-->
+<storybook>
+<act>
+<chapter>
+<scene>
+<br/>
+</scene>
+</chapter>
+</act>
+</storybook>
+<!--/
+===============================================================================
+/-->
+<ui>
+<view/>
+<arc elements="scene" template="beatsheet" mode="topCCW"/>
+<editor>
+<draft words="numbers" indexed="act,chapter,scene"/>
+</editor>
+</ui>
+<history>
+<words date="2026-02-20" text="0" missing="0" chars="0"/>
+<words date="2026-02-21" text="41" missing="41" chars="280"/>
+</history>
+</story>

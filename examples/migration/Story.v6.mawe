@@ -14,6 +14,9 @@ STORY: Story v6
 <draft>
 <act name="ACT" target="2000">
 <chapter name="File Format v6">
+<scene name="Check!">
+<p>Check that conversion from reference to storybook worked.</p>
+</scene>
 <scene name="Features">
 <p>File format v6 paragraph styles:</p>
 <p>Regular text.</p>
@@ -105,15 +108,16 @@ STORYBOOK
 
 ===============================================================================
 /-->
-<storybook>
+<reference>
 <act>
 <chapter>
-<scene>
+<scene name="Check this!">
+<p>Check that conversion from reference to storybook worked.</p>
 <br/>
 </scene>
 </chapter>
 </act>
-</storybook>
+</reference>
 <!--/
 ===============================================================================
 /-->

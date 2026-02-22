@@ -113,7 +113,7 @@ export function loadEditorSettings(settings) {
     active: "draft",
     focusTo: undefined,
     left: {
-      style: {maxWidth: "400px", width: "400px", borderRight: "1px solid lightgray"},
+      style: {maxWidth: "350px", width: "350px", borderRight: "1px solid lightgray"},
       indexed: ["act", "chapter", "scene"],
       words: "numbers",
       ...getLeftSettings()
@@ -235,23 +235,30 @@ export function EditView({doc, updateDoc}) {
   // sections
   //---------------------------------------------------------------------------
 
-  const editors = useMemo(() => ({
-    draft: getUIEditor(),
-    notes: getUIEditor(),
-    storybook: getUIEditor(),
-    //trashcan: getUIEditor(),
-  }), [])
-
-  const updateSection = useCallback((key, buffer) => {
-    const editor = editors[key]
+  const updateSection = useCallback((editor, key) => {
     trackMarks(editor, key)
     if(isAstChange(editor)) {
       updateDoc(doc => {
-        doc[key].acts = buffer
-        doc[key].words = wcElem({type: "sect", children: buffer})
+        const {children} = editor
+        //console.log("Update:", key, children)
+        doc[key].acts = children
+        doc[key].words = wcElem({type: "sect", children})
       })
     }
-  }, [editors])
+  }, [trackMarks, updateDoc])
+
+  const getEditor = useCallback((key, section) => {
+    const editor = getUIEditor()
+    editor.children = section.acts
+    editor.onChange = () => updateSection(editor, key)
+    return editor
+  }, [updateSection])
+
+  const editors = useMemo(() => ({
+    draft: getEditor("draft", doc.draft),
+    notes: getEditor("notes", doc.notes),
+    storybook: getEditor("storybook", doc.storybook),
+  }), [getEditor])
 
   //---------------------------------------------------------------------------
   // Section selection + focusing + indexing
@@ -310,7 +317,6 @@ export function EditView({doc, updateDoc}) {
     focusTo,
     setFocusTo,
     track,
-    updateSection,
     editors,
   }
 
@@ -504,20 +510,6 @@ function RightPanel({settings}) {
 class ChooseRightPanel extends React.PureComponent {
 
   static buttons = {
-    /*
-    "draft": {
-      tooltip: "Draft Index",
-      icon: <Icon.View.Draft />
-    },
-    "notes": {
-      tooltip: "Notes Index",
-      icon: <Icon.View.Notes />
-    },
-    "storybook": {
-      tooltip: "Storybook Index",
-      icon: <Icon.View.StoryBook />
-    },
-    */
     "index": {
       tooltip: "Index",
       icon: <Icon.View.Index />
@@ -537,13 +529,9 @@ class ChooseRightPanel extends React.PureComponent {
   }
 
   static choices = [
-    //"draft",
-    //"storybook",
-    //"notes",
     "index",
     "wordtable",
     "tagtable",
-    //"trashcan"
   ]
 
   render() {
@@ -596,6 +584,7 @@ function RightPanelContent({settings, selected}) {
 //-----------------------------------------------------------------------------
 
 function ShowIndices({style, settings, side, indexed, words}) {
+  const sections = ["storybook", "draft", "notes"]
   const {
     doc,
     updateDoc,
@@ -606,49 +595,30 @@ function ShowIndices({style, settings, side, indexed, words}) {
   const updateIndexing = useCallback((sectID, value) => updateDoc(doc => {doc.ui.editor.indexing[sectID] = value}), [updateDoc])
 
   return <VBox style={style} className="TOC">
-    <SectionIndex
-      doc={doc}
-      sectID="storybook"
-      name="Storybook"
-      side={side}
-      indexing={indexing}
-      updateIndexing={updateIndexing}
-      indexed={indexed}
-      words={words}
-      setActive={setActive}
-      track={track}
-    />
-    <SectionIndex
-      doc={doc}
-      sectID="draft"
-      name="Draft"
-      side={side}
-      indexing={indexing}
-      updateIndexing={updateIndexing}
-      indexed={indexed}
-      words={words}
-      setActive={setActive}
-      track={track}
-    />
-    <SectionIndex
-      doc={doc}
-      sectID="notes"
-      name="Notes"
-      side={side}
-      indexing={indexing}
-      updateIndexing={updateIndexing}
-      indexed={indexed}
-      words={words}
-      setActive={setActive}
-      track={track}
-    />
+  {
+    sections.map(key =>
+      <SectionIndex
+        key={key}
+        sectID={key}
+        section={doc[key]}
+        side={side}
+        indexing={indexing}
+        updateIndexing={updateIndexing}
+        indexed={indexed}
+        words={words}
+        setActive={setActive}
+        track={track}
+      />
+    )
+  }
   </VBox>
 }
 
 class SectionIndex extends React.PureComponent {
 
   render() {
-    const {doc, sectID, name, side, indexing, updateIndexing, indexed, words, setActive, track} = this.props
+    const {section, sectID, side, indexing, updateIndexing, indexed, words, setActive, track} = this.props
+    const {name} = section
     const visible = indexing[sectID] === side
 
     return <div className="SectionZone">
@@ -662,7 +632,7 @@ class SectionIndex extends React.PureComponent {
       {visible && <DocIndex
         //style={style}
         sectID={sectID}
-        section={doc[sectID]}
+        section={section}
         include={indexed}
         wcFormat={words}
         setActive={setActive}
@@ -775,7 +745,7 @@ function EditorBox({style, settings}) {
   const {doc, track} = settings
   const {active} = doc.ui.editor
 
-  const {editors, updateSection} = settings
+  const {editors} = settings
   const editor = editors[active]
 
   const {searchBoxRef, searchText, setSearchText} = settings
@@ -783,11 +753,6 @@ function EditorBox({style, settings}) {
 
   const type = track?.node?.type
   const {bold, italic} = track?.marks ?? {}
-
-  const updateDraft = useCallback(buffer => updateSection("draft", buffer), [updateSection])
-  const updateNotes = useCallback(buffer => updateSection("notes", buffer), [updateSection])
-  const updateStorybook = useCallback(buffer => updateSection("storybook", buffer), [updateSection])
-  //const updateTrash = useCallback(buffer => updateSection("trashcan", buffer), [updateSection])
 
   return <VFiller>
     {/* Editor toolbar */}
@@ -805,24 +770,13 @@ function EditorBox({style, settings}) {
     {/* Editor board and sheet */}
 
     <div className="Board Editor" style={{...style}}>
-
-      <Slate editor={editors.draft} initialValue={doc.draft.acts} onChange={updateDraft}>
-        <SlateEditable visible={active === "draft"} className="Sheet Regular" highlight={highlightText}/>
-      </Slate>
-
-      <Slate editor={editors.notes} initialValue={doc.notes.acts} onChange={updateNotes}>
-        <SlateEditable visible={active === "notes"} className="Sheet Regular" highlight={highlightText}/>
-      </Slate>
-
-      <Slate editor={editors.storybook} initialValue={doc.storybook.acts} onChange={updateStorybook}>
-        <SlateEditable visible={active === "storybook"} className="Sheet Regular" highlight={highlightText}/>
-      </Slate>
-
-      {/*
-      <Slate editor={editors.trashcan} initialValue={doc.trashcan.acts} onChange={updateTrash}>
-        <SlateEditable visible={active === "trashcan"} className="Sheet Regular" highlight={highlightText}/>
-      </Slate>
-      */}
+    {
+      Object.entries(editors).map(([key, editor]) =>
+        <Slate key={key} editor={editor} initialValue={editor.children}>
+          <SlateEditable visible={active === key} className="Sheet Regular" highlight={highlightText}/>
+        </Slate>
+      )
+    }
     </div>
   </VFiller>
 }

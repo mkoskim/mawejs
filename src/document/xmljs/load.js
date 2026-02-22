@@ -159,17 +159,22 @@ function parseHead(head, history) {
 //*****************************************************************************
 
 function parseSection(section) {
-  function getActs() {
-    const acts = elemFindall(section, "act")
-    if(!acts.length) return [{type: "element", name: "act"}]
-    return acts
-  }
+  //console.log("Parse section:", section)
+
+  const {name = "<Unnamed>"} = section?.attributes ?? {};
   const acts = getActs().map(parseAct)
   const words = wcChildren(acts)
   return {
     type: "sect",
+    name,
     acts,
     words,
+  }
+
+  function getActs() {
+    const acts = elemFindall(section, "act")
+    if(!acts.length) return [{type: "element", name: "act"}]
+    return acts
   }
 }
 

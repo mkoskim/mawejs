@@ -66,6 +66,9 @@ export function elemsByRange(editor, anchor, focus) {
 
 export async function focusByPath(editor, path, collapse = true) {
   //console.log("FocusByPath", path)
+
+  if(!editor) return
+
   if(!ReactEditor.isFocused(editor)) {
     ReactEditor.focus(editor)
     //await sleep(20);
@@ -76,7 +79,7 @@ export async function focusByPath(editor, path, collapse = true) {
   } catch(e) {
     console.log("Focus: invalid path ignored.")
   }
-  const {focus} = editor.selection
+  const {focus} = editor?.selection || {}
   if(focus) {
     //console.log("Scroll to:", focus)
     scrollToPoint(editor, focus)

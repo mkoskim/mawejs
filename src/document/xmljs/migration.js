@@ -427,7 +427,10 @@ function v5_to_v6(story) {
 
 //*****************************************************************************
 //
-// v6 fix: reference -> storybook
+// v6 fix1:
+// - reference -> storybook: Few early v6 files may use reference section.
+// - Prepare for multisection files: add missing sections and give them names
+// - TODO: Add content type (text, comment, storybook)
 //
 //*****************************************************************************
 
@@ -439,17 +442,32 @@ function v6_fixes(story) {
 
   console.log("Fix v6")
 
-  const referenceElem  = elemFind(story, "reference")
-
-  if(!referenceElem) return story;
-
-  console.log("v6 rename")
+  const draftElem  = withName(getElem(story, "draft"), "Draft")
+  const notesElem = withName(getElem(story, "notes"), "Cuts")
+  const refElem   = withName(getRefElem(story), "Storybook")
 
   return {
     ...story,
-    elements: replaceElements(story.elements, ["reference"], {
-      ...referenceElem,
-      name: "storybook",
+    elements: replaceElements(story.elements,
+      ["draft", "notes", "storybook", "reference"],
+      draftElem,
+      notesElem,
+      refElem,
+    )
+  }
+
+  function withName(elem, name) {
+    return produce(elem, elem => {
+      if(!elem.attributes) elem.attributes = {}
+      elem.attributes.name = name
     })
+  }
+
+  function getRefElem(story) {
+    const refElem = elemFind(story, "storybook") ?? getElem(story, "reference")
+    return {
+      ...refElem,
+      name: "storybook"
+    }
   }
 }
