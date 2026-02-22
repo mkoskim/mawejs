@@ -63,7 +63,12 @@ import { ImportDialog } from "../import/import";
 
 import fs from "../../system/localfs"
 import { peekKeys } from "../common/hotkeys";
-import { createDocument, decodeBuffer, documentInfo, loadDocument, renameDocument, saveDocument, saveDocumentAs } from "../slatejs/slateDocument";
+import {
+  loadDocument, createDocument,
+  saveDocument, saveDocumentAs,
+  renameDocument,
+  decodeBuffer, documentInfo
+} from "../slatejs/slateDocument";
 
 //*****************************************************************************
 //
