@@ -14,6 +14,7 @@ import windowStateKeeper from "electron-window-state"
 import {initIpcDispatch} from "./backend/ipcdispatch.js";
 import localShortcut from "electron-localshortcut";
 import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
+import hostfs from "./backend/hostfs.js";
 
 const __dirname = import.meta.dirname;
 
@@ -30,6 +31,12 @@ console.log("Versions:")
 console.log("- Electron:", process.versions.electron)
 console.log("- Chrome..:", process.versions.chrome)
 console.log("- Node....:", process.versions.node)
+console.log("Directories:")
+console.log("- CWD.....:", hostfs.fsGetLocation("cwd"))
+console.log("- Exe.....:", hostfs.fsGetLocation("exe"))
+console.log("- Home....:", hostfs.fsGetLocation("home"))
+console.log("- AppData.:", hostfs.fsGetLocation("appData"))
+console.log("- userData:", hostfs.fsGetLocation("userData"))
 
 //-----------------------------------------------------------------------------
 // Main Window

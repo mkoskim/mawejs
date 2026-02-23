@@ -100,34 +100,30 @@ export async function cmdDispatch(command, args) {
     setCommand,
     setImporting,
   } = args;
-  
+
   const { action } = command
   switch (action) {
     // Higher level actions
-    case "req-new": { reqNew(command); break; }
-    case "req-open": { reqOpen(command); break; }
-    case "req-load": { reqLoad(command); break; }
-    case "req-resource": { reqResource(command); break; }
-    case "req-import-clipboard": { reqImportClipboard(command); break; }
-    case "req-import-file": { reqImportFile(command); break; }
-    case "req-save": { reqSave(command); break; }
-    case "req-saveas": { reqSaveAs(command); break; }
-    case "req-rename": { reqRename(command); break; }
-    case "req-close": { reqClose(command); break; }
-    case "req-quit": { reqQuit(command); break; }
+    case "req-new": return reqNew(command);
+    case "req-open": return reqOpen(command);
+    case "req-load": return reqLoad(command);
+    case "req-resource": return reqResource(command);
+    case "req-import-clipboard": return reqImportClipboard(command);
+    case "req-import-file": return reqImportFile(command);
+    case "req-save": return reqSave(command);
+    case "req-saveas": return reqSaveAs(command);
+    case "req-rename": return reqRename(command);
+    case "req-close": return reqClose(command);
+    case "req-quit": return reqQuit(command);
 
     // Low level actions
 
-    //case "do-set": { docFromBuffer(command); break; }
-    case "do-load": { docFromFile(command); break; }
-    //case "do-resource": { docFromResource(command); break; }
-    case "do-import": { docImportTree(command); break; }
-    //case "clipboard": { importFromClipboard(command); break; }
-    //case "do-save": { docSave(command); break; }
-    //case "do-saveas": { docSaveAs(command); break; }
-    case "do-rename": { docRename(command); break; }
-    //case "do-close": { docClose(command); break; }
+    case "do-load": return docFromFile(command);
+    case "do-import": return docImportTree(command);
+    case "do-rename": return docRename(command);
+    case "do-confirm": return confirmUnsaved();
   }
+  return
 
   //---------------------------------------------------------------------------
   // Saving files / confirming unsaved files before operations
@@ -136,7 +132,7 @@ export async function cmdDispatch(command, args) {
   async function confirmUnsaved() {
     if(!doc) return true;
     if(!dirty) return true;
-    
+
     const response = await confirmUnsavedDlg(doc.file)
     switch(response) {
       default: return false
