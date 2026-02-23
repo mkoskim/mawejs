@@ -441,7 +441,7 @@ class FileMenu extends React.PureComponent {
           <Separator />
           <MenuItem
             title="Quit" //endAdornment="Ctrl-Q"
-            onClick={e => { reqQuit(); popupState.close(e); }}
+            onClick={e => { reqQuit({setCommand}); popupState.close(e); }}
           />
         </Menu>
       </React.Fragment>
