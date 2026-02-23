@@ -142,19 +142,7 @@ export function App(props) {
 
   useEffect(() => {
     if (!command) return
-    const { action } = command
-    switch (action) {
-      case "load": { docFromFile(command); break; }
-      case "import": { importFromFile(command); break; }
-      case "clipboard": { importFromClipboard(command); break; }
-      case "save": { docSave(command); break; }
-      case "set": { docFromBuffer(command); break; }
-      case "resource": { docFromResource(command); break; }
-      case "saveas": { docSaveAs(command); break; }
-      case "rename": { docRename(command); break; }
-      case "close": { docClose(command); break; }
-      case "error": { Inform.error(command.message); break; }
-    }
+    actionDispatch(command, {dirty, doc, updateDoc, setSaved, recent, setRecent});
   }, [command])
 
   //---------------------------------------------------------------------------
@@ -202,8 +190,8 @@ export function App(props) {
     [IsKey.CtrlNumSub, (e) => appZoomOut().then(factor => setZoom({factor, open: true}))],
     [IsKey.Ctrl0, (e) => appZoomReset().then(factor => setZoom({factor, open: true}))],
     [IsKey.AltX, (e) => confirmUnsavedDlg(doc?.file)
-      .then(result => {
-        Inform.info(`Response: ${result.response}`)
+      .then(response => {
+        Inform.info(`Response: ${response}`)
       })],
   ]), []);
 
@@ -222,6 +210,35 @@ export function App(props) {
       </CmdContext>
     </SettingsContext>
   )
+}
+
+//*****************************************************************************
+//
+// Application action dispatcher
+//
+//*****************************************************************************
+
+function actionDispatch(command, args) {
+  const {
+    dirty,
+    doc, updateDoc,
+    setSaved,
+    recent, setRecent,
+  } = args;
+
+  const { action } = command
+  switch (action) {
+    case "load": { docFromFile(command); break; }
+    case "import": { importFromFile(command); break; }
+    case "clipboard": { importFromClipboard(command); break; }
+    case "save": { docSave(command); break; }
+    case "set": { docFromBuffer(command); break; }
+    case "resource": { docFromResource(command); break; }
+    case "saveas": { docSaveAs(command); break; }
+    case "rename": { docRename(command); break; }
+    case "close": { docClose(command); break; }
+    case "error": { Inform.error(command.message); break; }
+  }
 
   //---------------------------------------------------------------------------
 

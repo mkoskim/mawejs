@@ -33,9 +33,9 @@ export function messageBox(options) {
   return dlgcall("messagebox", options);
 }
 
-export function confirmUnsavedDlg(file) {
+export async function confirmUnsavedDlg(file) {
   const filename = file?.id ?? "<Untitled>";
-  return messageBox({
+  const {response} = await messageBox({
     type: "warning",
     title: "Unsaved changes",
     message: `The file "${filename}" has unsaved changes. Do you want to save them?`,
@@ -43,4 +43,9 @@ export function confirmUnsavedDlg(file) {
     defaultId: 0,
     cancelId: 2,
   });
+  switch(response) {
+    case 0: return "save";
+    case 1: return "skip";
+  }
+  return "cancel"
 }
