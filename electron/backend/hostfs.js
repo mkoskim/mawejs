@@ -103,10 +103,16 @@ function fsGetLocation(name)
   switch(name) {
     case "root": return "/";
     case "cwd": return process.cwd();
-    //case "home": return os.userInfo().homedir;
-    //case "exe": return app.getPath("exe");
-    //case "userData": return app.getPath("userData");
-    //case "appPath": return app.getAppPath();
+    case "resources": if(is.dev) {
+      return process.cwd();
+    } else {
+      return process.resourcesPath;
+    }
+    //case "home":
+    //case "exe":
+    //case "userData":
+    //case "appPath":
+    default: break;
   }
   return app.getPath(name);
 }
@@ -163,17 +169,10 @@ async function fsRename(fileid, name) {
 function fsOpenExternal(fileid) {
   console.log("open:", fileid);
   return shell.openPath(fileid)
-
-  //shell.showItemInFolder('filepath') // Show the given file in a file manager. If possible, select the file.
 }
 
 function fsReadResource(fileid) {
-  if(is.dev) {
-    return fsRead(path.join(fsGetLocation("cwd"), fileid))
-  }
-  else {
-    return fsRead(path.join(process.resourcesPath, fileid))
-  }
+  return fsRead(path.join(fsGetLocation("resources"), fileid))
 }
 
 //-----------------------------------------------------------------------------
