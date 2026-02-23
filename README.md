@@ -14,19 +14,11 @@ But there is third category: **plantsers**. These writers are something between 
 
 Sadly, neither Notepad nor Scrivener fully support plantsers. That's why I needed a tool for myself, that's why I wrote Mawe with Python/GTK, and now with ElectronJS, Javascript and React.
 
-## What MaweJS is?
+## Interested?
 
-In short, MaweJS is externally unstructured editor (like Notepad, Word or Googledocs), and internally structured editor (like yWriter, Scrivener and Manuscript). MaweJS is a story editor that feels like Word, but works like Scrivener underneath.
+Want to give a try? If so, read my Wiki page about the subject:
 
-Interested? Want to give a try? If so, read my Wiki page about the subject: https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F
-
-But why? If there is a need, why there is no tool already on the market? It is an interesting question, and I have tried to answer it here: https://github.com/mkoskim/mawejs/wiki/If-this-approach-makes-sense,-why-isn%E2%80%99t-it-common%3F
-
-## Status
-
-Check out Discussions tab: https://github.com/mkoskim/mawejs/discussions
-
-- Status, see: https://github.com/mkoskim/mawejs/discussions/88
+https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F
 
 ## Known Issues
 
@@ -35,6 +27,10 @@ Check out Discussions tab: https://github.com/mkoskim/mawejs/discussions
     $ mawejs-x.y.z.AppImage --no-sandbox
 
 # Writing with MaweJS
+
+## What MaweJS is?
+
+In short, MaweJS is externally unstructured editor (like Notepad, Word or Googledocs), and internally structured editor (like yWriter, Scrivener and Manuscript). MaweJS is a story editor that feels like Word, but works like Scrivener underneath.
 
 ## Just start writing
 
@@ -169,69 +165,17 @@ There are few articles in the Discussions tab which you might be interested:
 
 - Most wanted! https://github.com/mkoskim/mawejs/discussions/219
 
-# What is Mawe?
+# Read more
 
-Mawe is meant for writing stories - not press articles, blog posts, technical documents or anything else but stories. That means it has tools to split the text mass to somewhat manageable pieces, and keep "meta text" - plans, sketches and such - together with the final result (story itself).
+Read more about MaweJS from Wiki pages:
 
-## History
+https://github.com/mkoskim/mawejs/wiki
 
-See also: https://github.com/mkoskim/mawejs/wiki/Short-history-of-MaweJS
+Or check out discussion board:
 
-MaweJS is the third generation of my homebrew story editors:
+https://github.com/mkoskim/mawejs/discussions
 
-1. **moe** (Markus' / My Own Editor): Once I started writing stories, I wrote them in one text file. I started to split them to multiple pieces, and I wanted an editor to collect them together to form a draft. Repository: https://github.com/mkoskim/moe
-
-2. **mawe** (Markus' / My Advances Writer's Editor): Written with Python/GTK. The main feature between moe and mawe is that mawe not only joins story pieces, but it allows you to edit them as one big bunch. Repository: https://github.com/mkoskim/mawe
-
-3. **maweJS**: mawe written with ElectronJS, NodeJS and React. I realized that Python/GTK is not going anywhere, it is used to write firmware software to Linux, nothing else. The improvements in GUI are made in the JavaScript front.
-
-All these editors are backward compatible, that is, files made with older versions can be loaded to newer ones. Also, I have something like 200-300 stories on my disk, written with various editors, and I really want my new versions to load the older ones.
-
-## Design Principles
-
-Plantsers are something between pantsers and planners. So MaweJS - aimed for plantsers - is something between Word and Scrivener.
-
-Mawe's main design principle is *"Just start writing"* - you should be able to start writing your story right after starting the editor just like opening a notepad. Some structured editors need considerable work before you can start writing. Basically you need to structure your story beforehand, before starting to write it.
-
-All the tools that later help you to keep track with the text mass are taken into use just when you need it, without need for configuring them beforehand. Thus, you don't first create scene list, but you later split text to scenes. You don't need to write synopses or tag scenes, until you feel that you need them.
-
-## How Mawe differs from Word or Google Docs?
-
-Editors made for writers to write stories differ from regular word processing software by
-
-1) They keep metadata - comments and such - together with the story,
-
-2) They are meant to produce a manuscript.
-
-That is, they are not exactly meant to edit some files, but they are meant to edit file or files which are used to produce a manuscript. They are generally not exactly word processing software - they are more like text management software.
-
-## How Mawe differs from yWriter, Manuskript or similar software?
-
-One of the biggest paradigmatic difference between MaweJS and other structured editors is that with MaweJS, you **annotate text, not tree**. That is, you don't write comments or synopses to scenes or chapters, but you describe the following piece of **text** by writing synopses and comments. This way the tree can be fluid - you can restructure your story without any hassles, because all the metadata is related to text itself, not its structure.
-
-Most software meant for writers keep document as a tree, and let you edit the leafs (text blocks). Once you are fine with the result, you click a button to export a manuscript.
-
-My first story editor, Moe, worked exactly like that. The problem I felt is that you loose the track of big picture, when you are editing your story one scene or chapter at a time. I wanted an editor, which is somewhere in-between the two worlds:
-
-- Structured editors (yWriter, Scrivener)
-- Mawe
-- Unstructured editors (Notepad, Word, etc)
-
-What Mawe does is that it keeps the story internally as tree-like structure, but it "unfolds" the tree for editing. It keeps track of changes so that it can parse the text back to tree-like structure anytime needed (e.g. for organizing parts, analyses and so on).
-
-## Why Mawe with ElectronJS?
-
-There are certain things I would like to address in this version.
-
-First, the old Mawe is written with Python/GTK, and thus it mainly works off the shelf only in Linux machines. At the time it was written, it was still huge improvement compared to software written in C++ or similar, which would need porting and compiling them to all supported platforms.
-
-Even thought Python mawe was a huge improvement to older versions, the truth is that GTK is not going to improve anymore. That means that Python/GTK GUI will probably not get any big face-lifts anymore, instead it will probably only be used to develop Linux accessory software.
-
-Implementing the editor with ElectronJS should greatly improve this side. I have also planned integrating the editor to cloud storages (Dropbox, gDrive), so that you could access them wherever you have internet connection.
-
-In this editor version, I try really hard to concentrate on fluent user interface.
-
-## MIT License
+# MIT License
 
 Copyright (c) 2021 Markus Koskimies
 
