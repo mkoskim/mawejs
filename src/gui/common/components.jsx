@@ -24,7 +24,7 @@ import {
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
 import { mawe } from "../../document"
-import {cmdOpenFolder} from '../app/context';
+import {reqOpenFolder} from '../app/context';
 import {Popover} from '@mui/material';
 import {getHeader} from '../../document/head';
 import { numfmt } from '../../util';
@@ -93,7 +93,7 @@ export class OpenFolderButton extends React.PureComponent {
   render() {
     const {filename} = this.props
     //console.log("OpenFolderButton:", filename)
-    return <IconButton tooltip="Open Folder" onClick={e => cmdOpenFolder(filename)}>
+    return <IconButton tooltip="Open Folder" onClick={e => reqOpenFolder(filename)}>
       <Icon.Action.Folder />
       </IconButton>
   }
