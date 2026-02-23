@@ -31,6 +31,43 @@ const importFilters = [
 
 //-----------------------------------------------------------------------------
 
+export function askFileToLoad(defaultPath) {
+  return fileOpenDialog({
+    filters,
+    defaultPath,
+    properties: ["OpenFile"],
+  })
+}
+
+export function askFileToImport(defaultPath) {
+  return fileOpenDialog({
+    title: "Import File",
+    filters: importFilters,
+    defaultPath,
+    properties: ["OpenFile"],
+  })
+}
+
+export function askFileToSaveAs(file) {
+  return fileSaveDialog({
+    filters,
+    defaultPath: file?.id ?? "./NewDoc.mawe",
+    properties: ["createDirectory", "showOverwriteConfirmation"],
+  })
+}
+
+export function askFileToRename(file) {
+  return fileSaveDialog({
+    title: "Rename File",
+    buttonLabel: "Rename",
+    filters,
+    defaultPath: file.id,
+    properties: ["createDirectory", "showOverwriteConfirmation"],
+  })
+}
+
+//-----------------------------------------------------------------------------
+
 export async function cmdOpenFolder(filename) {
   const dirname = await fs.dirname(filename ?? ".")
   console.log("Open folder:", dirname)
@@ -63,11 +100,7 @@ function getDefaultPath(file) {
 export async function cmdOpenFile({ setCommand, file }) {
   const defaultPath = await getDefaultPath(file)
   console.log("Open path:", defaultPath)
-  const { canceled, filePaths } = await fileOpenDialog({
-    filters,
-    defaultPath,
-    properties: ["OpenFile"],
-  })
+  const { canceled, filePaths } = await askFileToLoad(defaultPath)
   if (!canceled) {
     const [filename] = filePaths
     cmdLoadFile({setCommand, filename})
@@ -89,12 +122,7 @@ export function cmdImportFile({setCommand, file, ext}) {
 export async function cmdOpenImportFile({setCommand, file}) {
   const defaultPath = await getDefaultPath(file)
   console.log("Import path:", defaultPath)
-  const { canceled, filePaths } = await fileOpenDialog({
-    title: "Import File",
-    filters: importFilters,
-    defaultPath,
-    properties: ["OpenFile"],
-  })
+  const { canceled, filePaths } = await askFileToImport(defaultPath)
   if (!canceled) {
     const [filename] = filePaths
     const file = await fs.fstat(filename)
@@ -114,24 +142,14 @@ export async function cmdSaveFile({ setCommand, file }) {
 }
 
 export async function cmdSaveFileAs({ setCommand, file }) {
-  const { canceled, filePath } = await fileSaveDialog({
-    filters,
-    defaultPath: file?.id ?? "./NewDoc.mawe",
-    properties: ["createDirectory", "showOverwriteConfirmation"],
-  })
+  const { canceled, filePath } = await askFileToSaveAs(file)
   if (!canceled) {
     setCommand({action: "saveas", filename: filePath})
   }
 }
 
 export async function cmdRenameFile({ setCommand, file }) {
-  const { canceled, filePath } = await fileSaveDialog({
-    title: "Rename File",
-    buttonLabel: "Rename",
-    filters,
-    defaultPath: file.id,
-    properties: ["createDirectory", "showOverwriteConfirmation"],
-  })
+  const { canceled, filePath } = await askFileToRename(file)
   if (!canceled) {
     //console.log("Rename:", file.id, "->", filePath)
     setCommand({action: "rename", filename: filePath})

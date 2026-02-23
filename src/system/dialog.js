@@ -33,7 +33,7 @@ export function messageBox(options) {
   return dlgcall("messagebox", options);
 }
 
-export function confirmUnsaved(file) {
+export function confirmUnsavedDlg(file) {
   const filename = file?.id ?? "<Untitled>";
   return messageBox({
     type: "warning",

@@ -69,6 +69,7 @@ import {
   renameDocument,
   decodeBuffer, documentInfo
 } from "../slatejs/slateDocument";
+import { confirmUnsavedDlg } from "../../system/dialog";
 
 //*****************************************************************************
 //
@@ -200,7 +201,7 @@ export function App(props) {
     [IsKey.CtrlNumAdd, (e) => appZoomIn().then(factor => setZoom({factor, open: true}))],
     [IsKey.CtrlNumSub, (e) => appZoomOut().then(factor => setZoom({factor, open: true}))],
     [IsKey.Ctrl0, (e) => appZoomReset().then(factor => setZoom({factor, open: true}))],
-    [IsKey.AltX, (e) => confirmUnsaved(doc?.file)
+    [IsKey.AltX, (e) => confirmUnsavedDlg(doc?.file)
       .then(result => {
         Inform.info(`Response: ${result.response}`)
       })],
