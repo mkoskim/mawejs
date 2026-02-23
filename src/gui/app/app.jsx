@@ -38,37 +38,29 @@ import PopupState, {
 } from 'material-ui-popup-state';
 
 import {
-  CmdContext,
-  cmdCloseFile,
-  cmdLoadFile,
-  cmdNewFile, cmdOpenFile,
-  cmdOpenImportFile,
-  cmdRenameFile,
-  cmdSaveFile, cmdSaveFileAs,
-  cmdImportClipboard,
-  cmdOpenResource
+  CmdContext, cmdDispatch,
+  reqNew,
+  reqOpenFile,
+  reqLoadFile, reqLoadResource,
+  reqImportFile, reqImportClipboard,
+  reqRenameFile,
+  reqSaveFile, reqSaveFileAs,
+  reqCloseFile, reqQuit,
+  doRename, doLoadFile,
 } from "./context"
 
 import {
-  SettingsContext,
-  useSetting, recentRemove, recentAdd
-} from "./settings"
+  documentInfo
+} from "../slatejs/slateDocument";
 
+import { SettingsContext, useSetting } from "./settings"
 import { ViewSelectButtons, ViewSwitch } from "./views";
 import { useImmer } from "use-immer"
 
-import { appQuit, appInfo, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
-import { createDateStamp } from "../../document/util";
+import { appInfo, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
 import { ImportDialog } from "../import/import";
 
-import fs from "../../system/localfs"
 import { peekKeys } from "../common/hotkeys";
-import {
-  loadDocument, createDocument,
-  saveDocument, saveDocumentAs,
-  renameDocument,
-  decodeBuffer, documentInfo
-} from "../slatejs/slateDocument";
 
 //*****************************************************************************
 //
@@ -141,18 +133,14 @@ export function App(props) {
 
   useEffect(() => {
     if (!command) return
-    const { action } = command
-    switch (action) {
-      case "load": { docFromFile(command); break; }
-      case "import": { importFromFile(command); break; }
-      case "clipboard": { importFromClipboard(command); break; }
-      case "save": { docSave(command); break; }
-      case "set": { docFromBuffer(command); break; }
-      case "resource": { docFromResource(command); break; }
-      case "saveas": { docSaveAs(command); break; }
-      case "rename": { docRename(command); break; }
-      case "close": { docClose(command); break; }
+    const {action} = command
+    switch(action) {
       case "error": { Inform.error(command.message); break; }
+      case "success": { Inform.success(command.message); break; }
+      default: {
+        cmdDispatch(command, {dirty, doc, updateDoc, setSaved, recent, setRecent, setImporting, setCommand});
+        break;
+      }
     }
   }, [command])
 
@@ -161,10 +149,10 @@ export function App(props) {
   //---------------------------------------------------------------------------
 
   useEffect(() => {
-    //*
+     //*
     //console.log("Recent:", recent)
-    if (recent?.length) cmdLoadFile({ setCommand, filename: recent[0].id })
-    //cmdLoadFile({ setCommand, filename: "./examples/import/Frankenstein.mawe.gz" })
+    if (recent?.length) doLoadFile({ setCommand, filename: recent[0].id })
+    //doLoadFile({ setCommand, filename: "./examples/import/Frankenstein.mawe.gz" })
     /*/
     setCommand({
       action: "import",
@@ -200,6 +188,10 @@ export function App(props) {
     [IsKey.CtrlNumAdd, (e) => appZoomIn().then(factor => setZoom({factor, open: true}))],
     [IsKey.CtrlNumSub, (e) => appZoomOut().then(factor => setZoom({factor, open: true}))],
     [IsKey.Ctrl0, (e) => appZoomReset().then(factor => setZoom({factor, open: true}))],
+    [IsKey.AltX, (e) => confirmUnsavedDlg(doc?.file)
+      .then(response => {
+        Inform.info(`Response: ${response}`)
+      })],
   ]), []);
 
   //useEffect(() => peekKeys(), []);
@@ -212,97 +204,11 @@ export function App(props) {
     <SettingsContext value={settings}>
       <CmdContext value={setCommand}>
         <View key={doc?.key} doc={doc} updateDoc={updateDoc}/>
-        <RenderImportDialog buffer={importing} setBuffer={setImporting} updateDoc={updateDoc}/>
+        <RenderImportDialog importing={importing} setImporting={setImporting}/>
         <RenderZoomSnackbar zoom={zoom} closeZoom={closeZoom} />
       </CmdContext>
     </SettingsContext>
   )
-
-  //---------------------------------------------------------------------------
-
-  function docFromFile({ filename }) {
-    loadDocument(filename)
-      .then(content => {
-        updateDoc(content)
-        setSaved(content)
-        setRecent(recentAdd(recent, content.file))
-        console.log("Loaded:", content.file)
-        Inform.success(`Loaded: ${content.file.name}`);
-      })
-      .catch(err => {
-        setRecent(recentRemove(recent, { id: filename }))
-        Inform.error(err)
-      })
-  }
-
-  function importFromFile({ file, ext }) {
-    setImporting({ file, ext })
-  }
-
-  function importFromClipboard() {
-    setImporting({ file: undefined, ext: undefined })
-  }
-
-  function docFromBuffer({ buffer }) {
-    const content = createDocument(buffer)
-    setSaved(content)
-    updateDoc(content)
-  }
-
-  function docFromResource({ filename }) {
-    fs.readResource(filename)
-      .then(buffer => docFromBuffer({ buffer: decodeBuffer(buffer) }))
-      .catch(err => Inform.error(err))
-  }
-
-  function insertHistory(doc) {
-    const date = createDateStamp()
-    const history = [
-      ...doc.history.filter(e => e.type === "words" && e.date !== date),
-      { type: "words", date, ...doc.draft.words },
-    ]
-    //console.log("History:", history)
-    updateDoc(doc => { doc.history = history })
-    return {
-      ...doc,
-      history
-    }
-  }
-
-  function docSave() {
-    saveDocument(insertHistory(doc))
-      .then(file => {
-        setSaved(doc)
-        Inform.success(`Saved ${file.name}`)
-      })
-      .catch(err => Inform.error(err))
-  }
-
-  function docSaveAs({ filename }) {
-    saveDocumentAs(insertHistory(doc), filename)
-      .then(file => {
-        setSaved(doc)
-        updateDoc(doc => { doc.file = file })
-        setRecent(recentAdd(recent, file))
-        Inform.success(`Saved ${file.name}`)
-      })
-      .catch(err => Inform.error(err))
-  }
-
-  function docRename({ filename }) {
-    renameDocument(doc.file, filename)
-      .then(file => {
-        //setSaved(doc)
-        setRecent(recentAdd(recentRemove(recent, doc.file), file))
-        updateDoc(doc => { doc.file = file })
-        Inform.success(`Renamed: ${file.name}`)
-      })
-      .catch(err => Inform.error(err))
-  }
-
-  function docClose() {
-    updateDoc(null)
-  }
 }
 
 //*****************************************************************************
@@ -333,12 +239,11 @@ function View({ doc, updateDoc }) {
 //
 //*****************************************************************************
 
-function RenderImportDialog({ buffer, setBuffer, updateDoc }) {
-  if (buffer) {
+function RenderImportDialog({ importing, setImporting }) {
+  if (importing) {
     return <ImportDialog
-      buffer={buffer}
-      setBuffer={setBuffer}
-      updateDoc={updateDoc}
+      importing={importing}
+      setImporting={setImporting}
     ></ImportDialog>
   }
 }
@@ -368,16 +273,13 @@ function RenderZoomSnackbar({ zoom, closeZoom }) {
 //*****************************************************************************
 
 function DocBar({ doc, updateDoc }) {
-  //console.log("Workspace:id=", id)
-  //console.log("Workspace:doc=", doc)
-
   const { recent } = useContext(SettingsContext)
   const setCommand = useContext(CmdContext)
   const file = doc?.file
 
   useEffect(() => addHotkeys([
-    [IsKey.CtrlN, (e) => cmdNewFile({ setCommand })],
-    [IsKey.CtrlO, (e) => cmdOpenFile({ setCommand, file })],
+    [IsKey.CtrlN, (e) => reqNew({ setCommand })],
+    [IsKey.CtrlO, (e) => reqOpenFile({ setCommand, file })],
   ]), [file]);
 
   //console.log("Recent:", recent)
@@ -409,7 +311,8 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
   })
 
   useEffect(() => addHotkeys([
-    [IsKey.CtrlS, (e) => cmdSaveFile({ setCommand, file })],
+    [IsKey.CtrlS, (e) => reqSaveFile({setCommand})],
+    [IsKey.CtrlW, (e) => reqCloseFile({setCommand})],
   ]), [file])
 
   return <ToolBox>
@@ -464,7 +367,8 @@ class FileOperations extends React.PureComponent {
   toggleCompress(file, setCommand) {
     const compressed = file.id.endsWith(".gz")
     const filename = compressed ? file.id.slice(0, -3) : (file.id + ".gz")
-    setCommand({action: "rename", filename})
+    //setCommand({action: "rename", filename})
+    doRename({setCommand, filename})
   }
 
   render() {
@@ -476,10 +380,6 @@ class FileOperations extends React.PureComponent {
     //const filename = file?.name ?? "<Unnamed>"
 
     return <>
-      {/*
-      <Label style={{paddingLeft: "4px", paddingRight: "4px"}} text={filename}/>
-      <IconButton tooltip="Rename" onClick={e => { cmdRenameFile({ setCommand, file }) }}><Icon.Action.File.Rename/></IconButton>
-      */}
       <Button disabled={!file} tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>&nbsp;gz&nbsp;</span></Button>
       <OpenFolderButton filename={file?.id} />
       </>
@@ -500,39 +400,39 @@ class FileMenu extends React.PureComponent {
         <Menu {...bindMenu(popupState)}>
           <MenuItem
             title="New" endAdornment="Ctrl-N"
-            onClick={e => { cmdNewFile({ setCommand }); popupState.close(e); }}
+            onClick={e => { reqNew({ setCommand }); popupState.close(e); }}
             />
           <MenuItem
             title="Open" endAdornment="Ctrl-O"
-            onClick={e => { cmdOpenFile({ setCommand, file }); popupState.close(e); }}
+            onClick={e => { reqOpenFile({ setCommand, file }); popupState.close(e); }}
             />
           <Separator />
           <RecentItems recent={recent} setCommand={setCommand} popupState={popupState} />
           <Separator />
           <MenuItem
             title="Import File..."
-            onClick={e => { cmdOpenImportFile({ setCommand, file }); popupState.close(e); }}
+            onClick={e => { reqImportFile({ setCommand, file }); popupState.close(e); }}
             />
           <MenuItem
             title="Import From Clipboard"
-            onClick={e => { cmdImportClipboard({ setCommand }); popupState.close(e); }}
+            onClick={e => { reqImportClipboard({ setCommand }); popupState.close(e); }}
             />
           <Separator />
           <MenuItem
             title="Save" endAdornment="Ctrl-S"
-            disabled={!file} onClick={e => { cmdSaveFile({ setCommand, file }); popupState.close(e); }}
+            disabled={!file} onClick={e => { reqSaveFile({ setCommand, file }); popupState.close(e); }}
             />
           <MenuItem
             title="Save as..."
-            disabled={!hasdoc} onClick={e => { cmdSaveFileAs({ setCommand, file }); popupState.close(e); }}
+            disabled={!hasdoc} onClick={e => { reqSaveFileAs({ setCommand, file }); popupState.close(e); }}
             />
           <MenuItem
             title="Rename..."
-            disabled={!file} onClick={e => { cmdRenameFile({ setCommand, file }); popupState.close(e); }}
+            disabled={!file} onClick={e => { reqRenameFile({ setCommand, file }); popupState.close(e); }}
             />
           <MenuItem
             title="Close" endAdornment="Ctrl-W"
-            disabled={!hasdoc} onClick={e => { cmdCloseFile({ setCommand, file }); popupState.close(e); }}
+            disabled={!hasdoc} onClick={e => { reqCloseFile({ setCommand, file }); popupState.close(e); }}
             />
           {/*
           <MenuItem onClick={popupState.close}>Revert</MenuItem>
@@ -541,7 +441,7 @@ class FileMenu extends React.PureComponent {
           <Separator />
           <MenuItem
             title="Quit" //endAdornment="Ctrl-Q"
-            onClick={e => { appQuit(); popupState.close(e); }}
+            onClick={e => { reqQuit(); popupState.close(e); }}
           />
         </Menu>
       </React.Fragment>
@@ -558,7 +458,7 @@ class RecentItems extends React.PureComponent {
       {recent.slice(0, 5).map(entry => <MenuItem
         key={entry.id}
         title={entry.name}
-        onClick={(e => { cmdLoadFile({ setCommand, filename: entry.id }); popupState.close(e); })}
+        onClick={(e => { reqLoadFile({ setCommand, filename: entry.id }); popupState.close(e); })}
         />
       )}
     </>
@@ -574,33 +474,13 @@ class HelpButton extends React.PureComponent {
       <IconButton tooltip="Help" {...bindTrigger(popupState)}><Icon.Help/></IconButton>
       <Menu {...bindMenu(popupState)}>
         <MenuItem title="Tutorial (English)"
-          onClick={e => { popupState.close(e); cmdOpenResource(setCommand, "examples/tutorial/Tutorial.en.mawe")}}
+          onClick={e => { popupState.close(e); reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.en.mawe"})}}
           />
         <MenuItem title="Tutorial (Finnish)"
-          onClick={e => { popupState.close(e); cmdOpenResource(setCommand, "examples/tutorial/Tutorial.fi.mawe")}}
+          onClick={e => { popupState.close(e); reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.fi.mawe"})}}
           />
       </Menu>
     </React.Fragment>}
     </PopupState>
-    /*
-    return <IconButton tooltip="Help" onClick={e => cmdOpenHelp(setCommand)}>
-      <Icon.Help />
-    </IconButton>
-    */
-  }
-}
-
-class SettingsButton extends React.PureComponent {
-  render() {
-    return <IconButton tooltip="Settings"><Icon.Settings /></IconButton>
-  }
-}
-
-class CloseButton extends React.PureComponent {
-  render() {
-    const { setCommand } = this.props
-    return <IconButton tooltip="Close" onClick={e => cmdCloseFile({ setCommand })}>
-      <Icon.Close />
-    </IconButton>
   }
 }

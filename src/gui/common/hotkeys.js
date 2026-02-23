@@ -16,6 +16,7 @@ export const IsKey = {
   AltF: isHotkey("Alt+F"),
   AltL: isHotkey("Alt+L"),
   AltS: isHotkey("Alt+S"),
+  AltX: isHotkey("Alt+X"),
   AltUp: isHotkey("Alt+Up"),
   AltDown: isHotkey("Alt+Down"),
 
@@ -30,6 +31,7 @@ export const IsKey = {
   CtrlN: isHotkey("Mod+N"),
   CtrlQ: isHotkey("Mod+Q"),
   CtrlS: isHotkey("Mod+S"),
+  CtrlW: isHotkey("Mod+W"),
 
   // Ctrl+Shift keys
   CtrlShiftG: isHotkey("Shift+Mod+G"),

@@ -10,6 +10,7 @@ import "./import.css"
 
 import React, {
   useState, useEffect,
+  useContext,
 } from 'react';
 
 import {
@@ -38,6 +39,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 import mammoth from "mammoth"
 import fs from "../../system/localfs"
+import { CmdContext, doImport } from "../app/context";
 
 //*****************************************************************************
 //
@@ -71,8 +73,9 @@ function getContent(file, ext) {
   }
 }
 
-export function ImportDialog({ updateDoc, buffer, setBuffer }) {
-  const { file, ext } = buffer
+export function ImportDialog({ importing, setImporting }) {
+  const { file, ext } = importing
+  const setCommand = useContext(CmdContext)
 
   //console.log("File:", file, "Ext:", ext)
 
@@ -93,13 +96,14 @@ export function ImportDialog({ updateDoc, buffer, setBuffer }) {
         ]
       }]
     })
-    updateDoc(story)
-    setBuffer(undefined)
+    // DOES NOT UPDATE SAVED!!!
+    doImport({setCommand, story})
+    setImporting(undefined)
   }
 
   function Cancel(e) {
     //console.log('Cancel function called'); // Debugging log
-    setBuffer(undefined); // Close the dialog by resetting the buffer
+    setImporting(undefined); // Close the dialog by resetting the buffer
   }
 
   useEffect(() => addHotkeys([
@@ -116,9 +120,9 @@ export function ImportDialog({ updateDoc, buffer, setBuffer }) {
       })
       .catch(err => {
         Inform.error(err);
-        setBuffer()
+        setImporting(undefined)
       })
-  }, [buffer, setContent, setFormat, setBuffer])
+  }, [importing, setImporting, setContent, setFormat])
 
   return <Dialog
       open={true}
@@ -130,7 +134,7 @@ export function ImportDialog({ updateDoc, buffer, setBuffer }) {
     <VBox style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
 
     <ToolBox>
-      <Label>Import from: {buffer.file?.name ?? "Clipboard"}</Label>
+      <Label>Import from: {importing.file?.name ?? "Clipboard"}</Label>
       <Separator />
       <Filler />
 
