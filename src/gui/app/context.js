@@ -43,33 +43,47 @@ const importFilters = [
 ]
 
 //-----------------------------------------------------------------------------
+// If we have file, give its path. Otherwise give CWD. System dialogs usually
+// have sidebar where you can choose directories like home, documents and so
+// on.
+//-----------------------------------------------------------------------------
 
-export function askFileToLoad(defaultPath) {
+async function getPathForOpen(file) {
+  return file?.id ? fs.dirname(file?.id) : fs.getlocation("cwd")
+}
+
+async function getPathForSave(file) {
+  return file?.id ?? await fs.makepath(await fs.getlocation("cwd"), "NewDoc.mawe")
+}
+
+//-----------------------------------------------------------------------------
+
+export async function askFileToLoad(file) {
   return fileOpenDialog({
     filters,
-    defaultPath,
+    defaultPath: await getPathForOpen(file),
     properties: ["OpenFile"],
   })
 }
 
-export function askFileToImport(defaultPath) {
+export async function askFileToImport(file) {
   return fileOpenDialog({
     title: "Import File",
     filters: importFilters,
-    defaultPath,
+    defaultPath: await getPathForOpen(file),
     properties: ["OpenFile"],
   })
 }
 
-export function askFileToSaveAs(file) {
+export async function askFileToSaveAs(file) {
   return fileSaveDialog({
     filters,
-    defaultPath: file?.id ?? "./NewDoc.mawe",
+    defaultPath: await getPathForSave(file),
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
 }
 
-export function askFileToRename(file) {
+export async function askFileToRename(file) {
   return fileSaveDialog({
     title: "Rename File",
     buttonLabel: "Rename",
@@ -77,12 +91,6 @@ export function askFileToRename(file) {
     defaultPath: file.id,
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
-}
-
-//-----------------------------------------------------------------------------
-
-function getDefaultPath(file) {
-  return fs.dirname(file?.id ?? ".")
 }
 
 //*****************************************************************************
@@ -186,9 +194,7 @@ export async function cmdDispatch(command, args) {
     if(!proceed) return
 
     const {file} = doc ?? {}
-    const defaultPath = await getDefaultPath(file)
-    console.log("Open path:", defaultPath)
-    const { canceled, filePaths } = await askFileToLoad(defaultPath)
+    const { canceled, filePaths } = await askFileToLoad(file)
     if (!canceled) {
       const [filename] = filePaths
       docFromFile({filename})
@@ -210,9 +216,7 @@ export async function cmdDispatch(command, args) {
 
     const {file} = doc ?? {}
 
-    const defaultPath = await getDefaultPath(file)
-    console.log("Import path:", defaultPath)
-    const { canceled, filePaths } = await askFileToImport(defaultPath)
+    const { canceled, filePaths } = await askFileToImport(file)
     if (!canceled) {
       const [filename] = filePaths
       const file = await fs.fstat(filename)
