@@ -11,9 +11,7 @@ import { DeferredRender } from "../common/factory"
 
 export class Preview extends React.PureComponent {
   render() {
-    const {imported} = this.props
-
-    if(!imported) return null
+    const {imported = []} = this.props
 
     return <>
       <ImportIndex

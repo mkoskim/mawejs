@@ -466,7 +466,7 @@ class RecentItems extends React.PureComponent {
   render() {
     const { recent, setCommand, popupState } = this.props
     if (!recent?.length) return null
-    console.log("Recent:", recent.length)
+    //console.log("Recent:", recent.length)
     const head = recent.slice(0, 4)
     return <>
       {head.map(entry => <MenuItem

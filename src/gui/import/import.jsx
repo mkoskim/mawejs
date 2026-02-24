@@ -99,7 +99,6 @@ export function ImportDialog({ filename, setDialogs }) {
         ]
       }]
     })
-    // DOES NOT UPDATE SAVED!!!
     doImport({setCommand, story})
     setDialogs(d => { delete d.importing; })
   }
