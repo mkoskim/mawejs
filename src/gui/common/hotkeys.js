@@ -60,8 +60,8 @@ export const IsKey = {
   CtrlAltS: isHotkey("Mod+Alt+S"), // Apply synopsis scene
   //CtrlAltT: isHotkey("Mod+Alt+T"), // Opens terminal
 
-  CtrlNumAdd: isHotkey("Mod+NumpadAdd"), // Apply zoom in
-  CtrlNumSub: isHotkey("Mod+NumpadSub"), // Apply zoom out
+  CtrlNumAdd: isHotkey("Mod+NumpadAdd"), // Zoom in
+  CtrlNumSub: isHotkey("Mod+NumpadSub"), // Zoom out
 }
 
 export {isHotkey}

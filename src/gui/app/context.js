@@ -53,7 +53,11 @@ async function getPathForOpen(file) {
 }
 
 async function getPathForSave(file) {
-  return file?.id ?? await fs.makepath(await fs.getlocation("cwd"), "NewDoc.mawe")
+  return file?.id ?? getPathForNew("NewDoc.mawe")
+}
+
+async function getPathForNew(filename) {
+  return await fs.makepath(await fs.getlocation("cwd"), filename)
 }
 
 //-----------------------------------------------------------------------------
@@ -219,9 +223,7 @@ export async function cmdDispatch(command, args) {
     const { canceled, filePaths } = await askFileToImport(file)
     if (!canceled) {
       const [filename] = filePaths
-      const file = await fs.fstat(filename)
-      const ext  = await fs.extname(file.id)
-      setImporting({ file, ext })
+      setImporting({ filename })
     }
   }
 

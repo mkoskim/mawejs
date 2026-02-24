@@ -51,13 +51,17 @@ const formats = {
   "text": { name: "Text", },
 }
 
-function getContent(file, ext) {
-  if (!file) {
+async function getContent(filename) {
+  if (!filename) {
     return {
       loader: navigator.clipboard.readText(),
       format: "text"
     }
   }
+
+  const file = await fs.fstat(filename)
+  const ext  = await fs.extname(file.id)
+
   switch (ext) {
     //case ".rtf":
     case ".docx": return {
@@ -74,7 +78,8 @@ function getContent(file, ext) {
 }
 
 export function ImportDialog({ importing, setImporting }) {
-  const { file, ext } = importing
+  const {filename} = importing
+
   const setCommand = useContext(CmdContext)
 
   //console.log("File:", file, "Ext:", ext)
@@ -111,17 +116,19 @@ export function ImportDialog({ importing, setImporting }) {
   ]), [])
 
   useEffect(() => {
-    const { loader, format } = getContent(file, ext)
-    loader
+    getContent(filename)
+    .then(({ loader, format }) => {
+      loader
       .then(content => {
         setContent(content)
         setFormat(format)
-        if (file) Inform.success(`Loaded: ${file.name}`);
+        if (filename) Inform.success(`Loaded: ${filename}`);
       })
       .catch(err => {
         Inform.error(err);
         setImporting(undefined)
       })
+    })
   }, [importing, setImporting, setContent, setFormat])
 
   return <Dialog
@@ -134,7 +141,7 @@ export function ImportDialog({ importing, setImporting }) {
     <VBox style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
 
     <ToolBox>
-      <Label>Import from: {importing.file?.name ?? "Clipboard"}</Label>
+      <Label>Import from: {importing.filename ?? "Clipboard"}</Label>
       <Separator />
       <Filler />
 
