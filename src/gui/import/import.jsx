@@ -77,9 +77,7 @@ async function getContent(filename) {
   }
 }
 
-export function ImportDialog({ importing, setImporting }) {
-  const {filename} = importing
-
+export function ImportDialog({ filename, setDialogs }) {
   const setCommand = useContext(CmdContext)
 
   //console.log("File:", file, "Ext:", ext)
@@ -103,12 +101,12 @@ export function ImportDialog({ importing, setImporting }) {
     })
     // DOES NOT UPDATE SAVED!!!
     doImport({setCommand, story})
-    setImporting(undefined)
+    setDialogs(d => { delete d.importing; })
   }
 
   function Cancel(e) {
     //console.log('Cancel function called'); // Debugging log
-    setImporting(undefined); // Close the dialog by resetting the buffer
+    setDialogs(d => { delete d.importing; })
   }
 
   useEffect(() => addHotkeys([
@@ -126,10 +124,10 @@ export function ImportDialog({ importing, setImporting }) {
       })
       .catch(err => {
         Inform.error(err);
-        setImporting(undefined)
+        setDialogs(d => { delete d.importing; })
       })
     })
-  }, [importing, setImporting, setContent, setFormat])
+  }, [filename, setDialogs])
 
   return <Dialog
       open={true}
@@ -141,7 +139,7 @@ export function ImportDialog({ importing, setImporting }) {
     <VBox style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
 
     <ToolBox>
-      <Label>Import from: {importing.filename ?? "Clipboard"}</Label>
+      <Label>Import from: {filename ?? "Clipboard"}</Label>
       <Separator />
       <Filler />
 
