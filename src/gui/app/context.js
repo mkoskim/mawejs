@@ -43,33 +43,51 @@ const importFilters = [
 ]
 
 //-----------------------------------------------------------------------------
+// If we have file, give its path. Otherwise give CWD. System dialogs usually
+// have sidebar where you can choose directories like home, documents and so
+// on.
+//-----------------------------------------------------------------------------
 
-export function askFileToLoad(defaultPath) {
+async function getPathForOpen(file) {
+  return file?.id ? fs.dirname(file?.id) : fs.getlocation("cwd")
+}
+
+async function getPathForSave(file) {
+  return file?.id ?? getPathForNew("NewDoc.mawe")
+}
+
+async function getPathForNew(filename) {
+  return await fs.makepath(await fs.getlocation("cwd"), filename)
+}
+
+//-----------------------------------------------------------------------------
+
+export async function askFileToLoad(file) {
   return fileOpenDialog({
     filters,
-    defaultPath,
+    defaultPath: await getPathForOpen(file),
     properties: ["OpenFile"],
   })
 }
 
-export function askFileToImport(defaultPath) {
+export async function askFileToImport(file) {
   return fileOpenDialog({
     title: "Import File",
     filters: importFilters,
-    defaultPath,
+    defaultPath: await getPathForOpen(file),
     properties: ["OpenFile"],
   })
 }
 
-export function askFileToSaveAs(file) {
+export async function askFileToSaveAs(file) {
   return fileSaveDialog({
     filters,
-    defaultPath: file?.id ?? "./NewDoc.mawe",
+    defaultPath: await getPathForSave(file),
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
 }
 
-export function askFileToRename(file) {
+export async function askFileToRename(file) {
   return fileSaveDialog({
     title: "Rename File",
     buttonLabel: "Rename",
@@ -77,12 +95,6 @@ export function askFileToRename(file) {
     defaultPath: file.id,
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
-}
-
-//-----------------------------------------------------------------------------
-
-function getDefaultPath(file) {
-  return fs.dirname(file?.id ?? ".")
 }
 
 //*****************************************************************************
@@ -100,34 +112,36 @@ export async function cmdDispatch(command, args) {
     setCommand,
     setImporting,
   } = args;
-  
+
   const { action } = command
   switch (action) {
     // Higher level actions
-    case "req-new": { reqNew(command); break; }
-    case "req-open": { reqOpen(command); break; }
-    case "req-load": { reqLoad(command); break; }
-    case "req-resource": { reqResource(command); break; }
-    case "req-import-clipboard": { reqImportClipboard(command); break; }
-    case "req-import-file": { reqImportFile(command); break; }
-    case "req-save": { reqSave(command); break; }
-    case "req-saveas": { reqSaveAs(command); break; }
-    case "req-rename": { reqRename(command); break; }
-    case "req-close": { reqClose(command); break; }
-    case "req-quit": { reqQuit(command); break; }
+
+    case "req-new": return reqNew(command);
+    case "req-open": return reqOpen(command);
+    case "req-load": return reqLoad(command);
+    case "req-resource": return reqResource(command);
+    case "req-import-clipboard": return reqImportClipboard(command);
+    case "req-import-file": return reqImportFile(command);
+    case "req-save": return reqSave(command);
+    case "req-saveas": return reqSaveAs(command);
+    case "req-rename": return reqRename(command);
+    case "req-close": return reqClose(command);
+    case "req-quit": return reqQuit(command);
 
     // Low level actions
 
-    //case "do-set": { docFromBuffer(command); break; }
-    case "do-load": { docFromFile(command); break; }
-    //case "do-resource": { docFromResource(command); break; }
-    case "do-import": { docImportTree(command); break; }
-    //case "clipboard": { importFromClipboard(command); break; }
-    //case "do-save": { docSave(command); break; }
-    //case "do-saveas": { docSaveAs(command); break; }
-    case "do-rename": { docRename(command); break; }
-    //case "do-close": { docClose(command); break; }
+    case "do-load": return docFromFile(command);
+    case "do-import": return docImportTree(command);
+    case "do-rename": return docRename(command);
+    case "do-confirm": return confirmUnsaved();
+
+    // User informing
+
+    // case "success": break; // Handled in App.jsx
+    // case "error": break; // Handled in App.jsx
   }
+  return
 
   //---------------------------------------------------------------------------
   // Saving files / confirming unsaved files before operations
@@ -136,7 +150,7 @@ export async function cmdDispatch(command, args) {
   async function confirmUnsaved() {
     if(!doc) return true;
     if(!dirty) return true;
-    
+
     const response = await confirmUnsavedDlg(doc.file)
     switch(response) {
       default: return false
@@ -190,9 +204,7 @@ export async function cmdDispatch(command, args) {
     if(!proceed) return
 
     const {file} = doc ?? {}
-    const defaultPath = await getDefaultPath(file)
-    console.log("Open path:", defaultPath)
-    const { canceled, filePaths } = await askFileToLoad(defaultPath)
+    const { canceled, filePaths } = await askFileToLoad(file)
     if (!canceled) {
       const [filename] = filePaths
       docFromFile({filename})
@@ -214,14 +226,10 @@ export async function cmdDispatch(command, args) {
 
     const {file} = doc ?? {}
 
-    const defaultPath = await getDefaultPath(file)
-    console.log("Import path:", defaultPath)
-    const { canceled, filePaths } = await askFileToImport(defaultPath)
+    const { canceled, filePaths } = await askFileToImport(file)
     if (!canceled) {
       const [filename] = filePaths
-      const file = await fs.fstat(filename)
-      const ext  = await fs.extname(file.id)
-      setImporting({ file, ext })
+      setImporting({ filename })
     }
   }
 

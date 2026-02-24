@@ -57,7 +57,7 @@ import { SettingsContext, useSetting } from "./settings"
 import { ViewSelectButtons, ViewSwitch } from "./views";
 import { useImmer } from "use-immer"
 
-import { appInfo, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
+import { appInfo, appLog, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
 import { ImportDialog } from "../import/import";
 
 import { peekKeys } from "../common/hotkeys";
@@ -128,8 +128,7 @@ export function App(props) {
   //---------------------------------------------------------------------------
 
   const [command, setCommand] = useState()
-  //console.log("Doc:", doc)
-  //console.log("Command:", command)
+  const dispatchArgs = {dirty, doc, updateDoc, setSaved, recent, setRecent, setImporting, setCommand}
 
   useEffect(() => {
     if (!command) return
@@ -138,11 +137,25 @@ export function App(props) {
       case "error": { Inform.error(command.message); break; }
       case "success": { Inform.success(command.message); break; }
       default: {
-        cmdDispatch(command, {dirty, doc, updateDoc, setSaved, recent, setRecent, setImporting, setCommand});
+        cmdDispatch(command, dispatchArgs);
         break;
       }
     }
   }, [command])
+
+  /*
+  //---------------------------------------------------------------------------
+  // Prevent window from closing when there are unsaved changes. We will ask
+  // user, if they want to save changes before closing.
+  //---------------------------------------------------------------------------
+
+  window.onbeforeunload = async (event) => {
+    appLog("onbeforeunload");
+    const response = await cmdDispatch({action: "do-confirm"}, dispatchArgs)
+    appLog(`Confirm response: ${response}`)
+    //if(!response) event.preventDefault();
+  }
+  */
 
   //---------------------------------------------------------------------------
   // Startup command

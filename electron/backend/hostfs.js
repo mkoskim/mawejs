@@ -100,11 +100,19 @@ function fsGetParentDir(fileid) {
 
 function fsGetLocation(name)
 {
-
   switch(name) {
     case "root": return "/";
-    case "home": return os.userInfo().homedir;
-    case "appPath": return app.getAppPath();
+    case "cwd": return process.cwd();
+    case "resources": if(is.dev) {
+      return process.cwd();
+    } else {
+      return process.resourcesPath;
+    }
+    //case "home":
+    //case "exe":
+    //case "userData":
+    //case "appPath":
+    default: break;
   }
   return app.getPath(name);
 }
@@ -134,13 +142,13 @@ async function fsReadDir(dirid)
 //-----------------------------------------------------------------------------
 
 async function fsSettingsRead(fileid, encoding) {
-  const settingsDir = await fsGetLocation("userData")
-  return fsRead(path.join(settingsDir, "/" + fileid), encoding)
+  const settingsDir = fsGetLocation("userData")
+  return fsRead(path.join(settingsDir, fileid), encoding)
 }
 
 async function fsSettingsWrite(fileid, content, encoding) {
-  const settingsDir = await fsGetLocation("userData")
-  return fsWrite(path.join(settingsDir, "/" + fileid), content, encoding)
+  const settingsDir = fsGetLocation("userData")
+  return fsWrite(path.join(settingsDir, fileid), content, encoding)
 }
 
 //-----------------------------------------------------------------------------
@@ -161,17 +169,10 @@ async function fsRename(fileid, name) {
 function fsOpenExternal(fileid) {
   console.log("open:", fileid);
   return shell.openPath(fileid)
-
-  //shell.showItemInFolder('filepath') // Show the given file in a file manager. If possible, select the file.
 }
 
 function fsReadResource(fileid) {
-  if(is.dev) {
-    return fsRead(path.join(fsGetLocation("appPath"), fileid))
-  }
-  else {
-    return fsRead(path.join(process.resourcesPath, fileid))
-  }
+  return fsRead(path.join(fsGetLocation("resources"), fileid))
 }
 
 //-----------------------------------------------------------------------------
