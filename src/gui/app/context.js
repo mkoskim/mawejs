@@ -177,7 +177,19 @@ export async function cmdDispatch(command, args) {
     const {file} = doc
     const { canceled, filePath } = await askFileToSaveAs(file)
     if(canceled) return false
+    //console.log("Save as:", filePath)
     return await docSaveAs({filename: filePath})
+  }
+
+  //---------------------------------------------------------------------------
+
+  async function reqRename() {
+    const {file} = doc
+    const { canceled, filePath } = await askFileToRename(file)
+    if (!canceled) {
+      //console.log("Renaming to:", filePath)
+      docRename({filename: filePath})
+    }
   }
 
   //---------------------------------------------------------------------------
@@ -202,18 +214,6 @@ export async function cmdDispatch(command, args) {
     docFromFile(command)
   }
 
-  async function reqOpen() {
-    const proceed = await confirmUnsaved()
-    if(!proceed) return
-
-    const {file} = doc ?? {}
-    const { canceled, filePaths } = await askFileToLoad(file)
-    if (!canceled) {
-      const [filename] = filePaths
-      docFromFile({filename})
-    }
-  }
-
   async function reqRecentDlg() {
     const proceed = await confirmUnsaved()
     if(!proceed) return
@@ -221,13 +221,26 @@ export async function cmdDispatch(command, args) {
     setDialogs(d => { d.recent = true; })
   }
 
-  //---------------------------------------------------------------------------
-
   async function reqImportClipboard() {
     const proceed = await confirmUnsaved()
     if(!proceed) return
 
     setDialogs(d => { d.importing = {filename: undefined}; })
+  }
+
+  //---------------------------------------------------------------------------
+
+  async function reqOpen() {
+    const proceed = await confirmUnsaved()
+    if(!proceed) return
+
+    const {file} = doc ?? {}
+    const { canceled, filePaths } = await askFileToLoad(file)
+    if (!canceled) {
+      //console.log("Selected file:", filePaths)
+      const [filename] = filePaths
+      docFromFile({filename})
+    }
   }
 
   async function reqImportFile() {
@@ -240,17 +253,6 @@ export async function cmdDispatch(command, args) {
     if (!canceled) {
       const [filename] = filePaths
       setDialogs(d => { d.importing = {filename}; })
-    }
-  }
-
-  //---------------------------------------------------------------------------
-
-  async function reqRename() {
-    const {file} = doc
-    const { canceled, filePath } = await askFileToRename(file)
-    if (!canceled) {
-      const [filename] = filePath
-      docRename({filename})
     }
   }
 
