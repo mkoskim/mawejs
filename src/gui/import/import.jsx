@@ -104,14 +104,10 @@ export function ImportDialog({ filename, setDialogs }) {
     setDialogs(d => { delete d.importing; })
   }
 
-  function Cancel(e) {
+  function cancel(e) {
     //console.log('Cancel function called'); // Debugging log
     setDialogs(d => { delete d.importing; })
   }
-
-  useEffect(() => addHotkeys([
-    [IsKey.Escape, Cancel],
-  ]), [])
 
   useEffect(() => {
     getContent(filename)
@@ -131,26 +127,31 @@ export function ImportDialog({ filename, setDialogs }) {
 
   return <Dialog
       open={true}
-      //fullScreen={true}
-      fullWidth={true}
+      fullScreen={true}
+      //fullWidth={true}
       maxWidth="xl"
-      disableEscapeKeyDown={true}
+      onClose={cancel}
     >
     <VBox style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
 
     <ToolBox>
       <Label>Import from: {filename ?? "Clipboard"}</Label>
       <Separator />
+      <Label>Format: {formats[format]?.name ?? format}</Label>
+      <Separator />
       <Filler />
 
-      <Separator />
-      <Label>Format: {formats[format]?.name ?? format}</Label>
+      {/*
+      */}
       {/*<SelectFormatButton value={format} setFormat={setFormat}/>*/}
 
-      <Separator />
-
-      <Separator />
-      <IconButton onClick={Cancel} aria-label="close"><CloseIcon /></IconButton>
+      {//*
+      <IconButton color="error" onClick={cancel}><CloseIcon /></IconButton>
+      /*/
+      <Button disableElevation variant="contained" color="error" onClick={cancel}>
+        Cancel
+      </Button>
+      /**/}
     </ToolBox>
 
     <HBox style={{ overflow: "auto" }}>

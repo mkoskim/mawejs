@@ -116,7 +116,7 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
         scrollThreshold={0.95}
         ref={infScrollRef}
       >
-        {visible.map(([word, count]) => <WordCountRow key={word} className={"Entry"} word={word} count={count} onSelect={onSelect}/>)}
+        {visible.map(([word, count]) => <WordCountRow key={word} word={word} count={count} onSelect={onSelect}/>)}
       </InfiniteScroll>
     </VBox>
   </VBox>
@@ -124,9 +124,9 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
 
 class WordCountRow extends React.PureComponent {
   render() {
-    const {word, count, onSelect, className} = this.props
+    const {word, count, onSelect} = this.props
 
-    return <HBox className={className} onClick={e => onSelect(word)}>
+    return <HBox className="Entry" onClick={e => onSelect(word)}>
       <Label text={word}/>
       <Filler/>
       <Label text={count}/>

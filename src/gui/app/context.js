@@ -119,6 +119,7 @@ export async function cmdDispatch(command, args) {
 
     case "req-new": return reqNew(command);
     case "req-open": return reqOpen(command);
+    case "req-recent-dlg": return reqRecentDlg(command);
     case "req-load": return reqLoad(command);
     case "req-resource": return reqResource(command);
     case "req-import-clipboard": return reqImportClipboard(command);
@@ -211,6 +212,13 @@ export async function cmdDispatch(command, args) {
       const [filename] = filePaths
       docFromFile({filename})
     }
+  }
+
+  async function reqRecentDlg() {
+    const proceed = await confirmUnsaved()
+    if(!proceed) return
+
+    setDialogs(d => { d.recent = true; })
   }
 
   //---------------------------------------------------------------------------
@@ -376,6 +384,10 @@ export function reqLoadFile({setCommand, filename}) {
 
 export function reqOpenFile({setCommand}) {
   setCommand({action: "req-open"})
+}
+
+export function reqOpenRecentDlg({setCommand}) {
+  setCommand({action: "req-recent-dlg"})
 }
 
 export function reqImportClipboard({setCommand}) {

@@ -47,6 +47,7 @@ import {
   reqSaveFile, reqSaveFileAs,
   reqCloseFile, reqQuit,
   doRename, doLoadFile,
+  reqOpenRecentDlg,
 } from "./context"
 
 import {
@@ -61,6 +62,7 @@ import { appInfo, appLog, appZoomIn, appZoomOut, appZoomReset } from "../../syst
 import { ImportDialog } from "../import/import";
 
 import { peekKeys } from "../common/hotkeys";
+import { RecentDialog } from "./recent";
 
 //*****************************************************************************
 //
@@ -212,7 +214,7 @@ export function App(props) {
     <SettingsContext value={settings}>
       <CmdContext value={setCommand}>
         <View key={doc?.key} doc={doc} updateDoc={updateDoc}/>
-        <RenderDialogs dialogs={dialogs} setDialogs={setDialogs}/>
+        <RenderDialogs dialogs={dialogs} setDialogs={setDialogs} setRecent={setRecent} />
       </CmdContext>
     </SettingsContext>
   )
@@ -246,25 +248,28 @@ function View({ doc, updateDoc }) {
 //
 //*****************************************************************************
 
-function RenderDialogs({ dialogs, setDialogs }) {
+function RenderDialogs({ dialogs, setDialogs, setRecent }) {
   return <>
     {dialogs.importing && <ImportDialog setDialogs={setDialogs} {...dialogs.importing}/>}
+    {dialogs.recent && <RecentDialog setDialogs={setDialogs} setRecent={setRecent} {...dialogs.recent}/>}
     {dialogs.zoom && <ZoomSnackbar setDialogs={setDialogs} {...dialogs.zoom} />}
   </>
+
+//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 
 function ZoomSnackbar({ factor, setDialogs }) {
 
   const zoomAnchor = useMemo(() => ({vertical: "top", horizontal: "right" }), [])
-  const closeZoom = useCallback(() => setDialogs(d => { delete d.zoom; }), [])
+  const close = useCallback(() => setDialogs(d => { delete d.zoom; }), [])
 
   return <Snackbar
     open={true}
     message={`Zoom: ${Math.round(factor * 100)}%`}
     autoHideDuration={1500}
     anchorOrigin={zoomAnchor}
-    onClose={closeZoom}
+    onClose={close}
   />
   }
 }
@@ -409,6 +414,10 @@ class FileMenu extends React.PureComponent {
             title="Open" endAdornment="Ctrl-O"
             onClick={e => { reqOpenFile({ setCommand, file }); popupState.close(e); }}
             />
+          <MenuItem
+            title="Open Recent..."
+            onClick={(e => { reqOpenRecentDlg({ setCommand }); popupState.close(e); })}
+            />
           <Separator />
           <RecentItems recent={recent} setCommand={setCommand} popupState={popupState} />
           <Separator />
@@ -457,8 +466,10 @@ class RecentItems extends React.PureComponent {
   render() {
     const { recent, setCommand, popupState } = this.props
     if (!recent?.length) return null
+    console.log("Recent:", recent.length)
+    const head = recent.slice(0, 4)
     return <>
-      {recent.slice(0, 5).map(entry => <MenuItem
+      {head.map(entry => <MenuItem
         key={entry.id}
         title={entry.name}
         onClick={(e => { reqLoadFile({ setCommand, filename: entry.id }); popupState.close(e); })}
