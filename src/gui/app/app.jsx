@@ -47,6 +47,7 @@ import {
   reqSaveFile, reqSaveFileAs,
   reqCloseFile, reqQuit,
   doRename, doLoadFile,
+  reqOpenRecentDlg,
 } from "./context"
 
 import {
@@ -61,6 +62,7 @@ import { appInfo, appLog, appZoomIn, appZoomOut, appZoomReset } from "../../syst
 import { ImportDialog } from "../import/import";
 
 import { peekKeys } from "../common/hotkeys";
+import { RecentDialog } from "./recent";
 
 //*****************************************************************************
 //
@@ -117,10 +119,10 @@ export function App(props) {
   )
 
   //---------------------------------------------------------------------------
-  // Data we are trying to import (open in a dialog)
+  // Dialog rendering
   //---------------------------------------------------------------------------
 
-  const [importing, setImporting] = useState()
+  const [dialogs, setDialogs] = useImmer({})
 
   //---------------------------------------------------------------------------
   // Simple command structure for deeper level components to ask Application
@@ -128,14 +130,16 @@ export function App(props) {
   //---------------------------------------------------------------------------
 
   const [command, setCommand] = useState()
-  const dispatchArgs = {dirty, doc, updateDoc, setSaved, recent, setRecent, setImporting, setCommand}
+  const dispatchArgs = {dirty, doc, updateDoc, setSaved, recent, setRecent, setCommand, setDialogs}
 
   useEffect(() => {
     if (!command) return
     const {action} = command
     switch(action) {
-      case "error": { Inform.error(command.message); break; }
       case "success": { Inform.success(command.message); break; }
+      case "info": { Inform.info(command.message); break; }
+      case "warning": { Inform.warning(command.message); break; }
+      case "error": { Inform.error(command.message); break; }
       default: {
         cmdDispatch(command, dispatchArgs);
         break;
@@ -177,6 +181,19 @@ export function App(props) {
   }, [])
 
   //---------------------------------------------------------------------------
+  // Add application hotkeys common to all views
+  //---------------------------------------------------------------------------
+
+  useEffect(() => addHotkeys([
+    //[IsKey.CtrlQ, (e) => appQuit()],
+    [IsKey.CtrlNumAdd, (e) => appZoomIn().then(factor => setDialogs(d => { d.zoom = {factor}; }))],
+    [IsKey.CtrlNumSub, (e) => appZoomOut().then(factor => setDialogs(d => { d.zoom = {factor}; }))],
+    [IsKey.Ctrl0, (e) => appZoomReset().then(factor => setDialogs(d => { d.zoom = {factor}; }))],
+  ]), []);
+
+  //useEffect(() => peekKeys(), []);
+
+  //---------------------------------------------------------------------------
   // Set window title
   //---------------------------------------------------------------------------
 
@@ -190,26 +207,6 @@ export function App(props) {
   }, [doc?.head, dirty, app])
 
   //---------------------------------------------------------------------------
-  // Add application hotkeys common to all views
-  //---------------------------------------------------------------------------
-
-  const [zoom, setZoom] = useState({open: false})
-  const closeZoom = useCallback(() => setZoom(z => ({open: false})), [])
-
-  useEffect(() => addHotkeys([
-    //[IsKey.CtrlQ, (e) => appQuit()],
-    [IsKey.CtrlNumAdd, (e) => appZoomIn().then(factor => setZoom({factor, open: true}))],
-    [IsKey.CtrlNumSub, (e) => appZoomOut().then(factor => setZoom({factor, open: true}))],
-    [IsKey.Ctrl0, (e) => appZoomReset().then(factor => setZoom({factor, open: true}))],
-    [IsKey.AltX, (e) => confirmUnsavedDlg(doc?.file)
-      .then(response => {
-        Inform.info(`Response: ${response}`)
-      })],
-  ]), []);
-
-  //useEffect(() => peekKeys(), []);
-
-  //---------------------------------------------------------------------------
   // Render
   //---------------------------------------------------------------------------
 
@@ -217,8 +214,7 @@ export function App(props) {
     <SettingsContext value={settings}>
       <CmdContext value={setCommand}>
         <View key={doc?.key} doc={doc} updateDoc={updateDoc}/>
-        <RenderImportDialog importing={importing} setImporting={setImporting}/>
-        <RenderZoomSnackbar zoom={zoom} closeZoom={closeZoom} />
+        <RenderDialogs dialogs={dialogs} setDialogs={setDialogs} setRecent={setRecent} />
       </CmdContext>
     </SettingsContext>
   )
@@ -252,30 +248,29 @@ function View({ doc, updateDoc }) {
 //
 //*****************************************************************************
 
-function RenderImportDialog({ importing, setImporting }) {
-  if (importing) {
-    return <ImportDialog
-      importing={importing}
-      setImporting={setImporting}
-    ></ImportDialog>
-  }
-}
+function RenderDialogs({ dialogs, setDialogs, setRecent }) {
+  return <>
+    {dialogs.importing && <ImportDialog setDialogs={setDialogs} {...dialogs.importing}/>}
+    {dialogs.recent && <RecentDialog setDialogs={setDialogs} setRecent={setRecent} {...dialogs.recent}/>}
+    {dialogs.zoom && <ZoomSnackbar setDialogs={setDialogs} {...dialogs.zoom} />}
+  </>
 
 //-----------------------------------------------------------------------------
 
-const zoomAnchor = { vertical: "top", horizontal: "right" }
+//-----------------------------------------------------------------------------
 
-function RenderZoomSnackbar({ zoom, closeZoom }) {
-  const {open, factor} = zoom
+function ZoomSnackbar({ factor, setDialogs }) {
 
-  if (open) {
-    return <Snackbar
-      open={open}
-      message={`Zoom: ${Math.round(factor * 100)}%`}
-      autoHideDuration={2000}
-      anchorOrigin={zoomAnchor}
-      onClose={closeZoom}
-    />
+  const zoomAnchor = useMemo(() => ({vertical: "top", horizontal: "right" }), [])
+  const close = useCallback(() => setDialogs(d => { delete d.zoom; }), [])
+
+  return <Snackbar
+    open={true}
+    message={`Zoom: ${Math.round(factor * 100)}%`}
+    autoHideDuration={1500}
+    anchorOrigin={zoomAnchor}
+    onClose={close}
+  />
   }
 }
 
@@ -419,6 +414,10 @@ class FileMenu extends React.PureComponent {
             title="Open" endAdornment="Ctrl-O"
             onClick={e => { reqOpenFile({ setCommand, file }); popupState.close(e); }}
             />
+          <MenuItem
+            title="Open Recent..."
+            onClick={(e => { reqOpenRecentDlg({ setCommand }); popupState.close(e); })}
+            />
           <Separator />
           <RecentItems recent={recent} setCommand={setCommand} popupState={popupState} />
           <Separator />
@@ -467,8 +466,10 @@ class RecentItems extends React.PureComponent {
   render() {
     const { recent, setCommand, popupState } = this.props
     if (!recent?.length) return null
+    //console.log("Recent:", recent.length)
+    const head = recent.slice(0, 4)
     return <>
-      {recent.slice(0, 5).map(entry => <MenuItem
+      {head.map(entry => <MenuItem
         key={entry.id}
         title={entry.name}
         onClick={(e => { reqLoadFile({ setCommand, filename: entry.id }); popupState.close(e); })}

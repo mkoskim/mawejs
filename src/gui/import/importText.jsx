@@ -113,7 +113,7 @@ function importText(content, settings) {
 
   const elements = acts.map(makeAct)
 
-  console.log("Elements:", elements)
+  //console.log("Elements:", elements)
 
   return elements
 

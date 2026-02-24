@@ -110,7 +110,7 @@ export async function cmdDispatch(command, args) {
     setSaved,
     recent, setRecent,
     setCommand,
-    setImporting,
+    setDialogs,
   } = args;
 
   const { action } = command
@@ -119,6 +119,7 @@ export async function cmdDispatch(command, args) {
 
     case "req-new": return reqNew(command);
     case "req-open": return reqOpen(command);
+    case "req-recent-dlg": return reqRecentDlg(command);
     case "req-load": return reqLoad(command);
     case "req-resource": return reqResource(command);
     case "req-import-clipboard": return reqImportClipboard(command);
@@ -139,6 +140,8 @@ export async function cmdDispatch(command, args) {
     // User informing
 
     // case "success": break; // Handled in App.jsx
+    // case "info": break; // Handled in App.jsx
+    // case "warning": break; // Handled in App.jsx
     // case "error": break; // Handled in App.jsx
   }
   return
@@ -211,13 +214,20 @@ export async function cmdDispatch(command, args) {
     }
   }
 
+  async function reqRecentDlg() {
+    const proceed = await confirmUnsaved()
+    if(!proceed) return
+
+    setDialogs(d => { d.recent = true; })
+  }
+
   //---------------------------------------------------------------------------
 
   async function reqImportClipboard() {
     const proceed = await confirmUnsaved()
     if(!proceed) return
 
-    setImporting({ file: undefined, ext: undefined })
+    setDialogs(d => { d.importing = {filename: undefined}; })
   }
 
   async function reqImportFile() {
@@ -229,7 +239,7 @@ export async function cmdDispatch(command, args) {
     const { canceled, filePaths } = await askFileToImport(file)
     if (!canceled) {
       const [filename] = filePaths
-      setImporting({ filename })
+      setDialogs(d => { d.importing = {filename}; })
     }
   }
 
@@ -284,7 +294,7 @@ export async function cmdDispatch(command, args) {
     })
     .catch(err => {
       setRecent(recentRemove(recent, { id: filename }))
-      Inform.error(err)
+      respError({setCommand, message: err})
     })
   }
 
@@ -374,6 +384,10 @@ export function reqLoadFile({setCommand, filename}) {
 
 export function reqOpenFile({setCommand}) {
   setCommand({action: "req-open"})
+}
+
+export function reqOpenRecentDlg({setCommand}) {
+  setCommand({action: "req-recent-dlg"})
 }
 
 export function reqImportClipboard({setCommand}) {
