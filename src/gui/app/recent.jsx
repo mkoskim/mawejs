@@ -5,7 +5,7 @@
 //
 //*****************************************************************************
 //*****************************************************************************
-
+// TODO: add file path under file name
 import React, { useCallback, useContext } from "react";
 import { Button, Dialog, Filler, HBox, Icon, Label, ToolBox, VBox } from "../common/factory";
 import { recentRemove, SettingsContext } from "./settings";
