@@ -177,13 +177,26 @@ export class Separator extends React.PureComponent {
 export {Divider as Separator}
 /**/
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Toolbar
+//
+//*****************************************************************************
 
 export class ToolBox extends React.PureComponent {
   render() {
     const {className, ...props} = this.props
     return <ThemeProvider theme={theme.toolbar}>
       <HBox className={addClass("ToolBox", className)} {...props}/>
+    </ThemeProvider>
+  }
+}
+
+export class SideBar extends React.PureComponent {
+  render() {
+    const {className, ...props} = this.props
+    return <ThemeProvider theme={theme.side}>
+      <VBox className={addClass("ToolBox", className)} {...props}/>
     </ThemeProvider>
   }
 }
