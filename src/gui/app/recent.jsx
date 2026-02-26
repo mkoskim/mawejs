@@ -39,18 +39,16 @@ export function RecentDialog({ setDialogs, setRecent }) {
 
   return <Dialog open={true} onClose={cancel}>
     <DialogTitle>
-      <Label>Open recent</Label>
+      <Label style={{fontWeight: "bold"}}>Open recent</Label>
       <Filler/>
       <IconButton color="error" onClick={cancel}><Icon.Close/></IconButton>
     </DialogTitle>
 
-    <DialogContent>
-      <VBox className="TOC">
-      {recent.map(entry => (
-        <FileEntry key={entry.id} name={entry.name} id={entry.id} onClick={onClick} onRemove={onRemove}/>
-      ))}
-      </VBox>
-    </DialogContent>
+    <VBox className="TOC" style={{paddingLeft: "16px"}}>
+    {recent.map(entry => (
+      <FileEntry key={entry.id} name={entry.name} id={entry.id} onClick={onClick} onRemove={onRemove}/>
+    ))}
+    </VBox>
 
     <DialogActions>
       <Filler/>

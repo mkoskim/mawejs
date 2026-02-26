@@ -14,7 +14,7 @@ import { createTheme } from '@mui/material/styles';
 //
 //*****************************************************************************
 
-const common  = createTheme({
+const common = createTheme({
   palette: {
     //primary: { main: "#222", },
   },
@@ -196,13 +196,13 @@ const common  = createTheme({
 //*****************************************************************************
 
 const toolbar = createTheme({
+  ...common,
   palette: {
+    ...common.palette,
     primary: { main: "#222", },
   },
-  typography: {
-    //fontSize: 14,
-  },
   components: {
+    ...common.components,
     MuiButtonBase: {
       styleOverrides: {
         root: {
@@ -287,6 +287,7 @@ const toolbar = createTheme({
 //*****************************************************************************
 
 const sidebar  = createTheme({
+  ...common,
   palette: {
     //primary: { main: "#222", },
   },
