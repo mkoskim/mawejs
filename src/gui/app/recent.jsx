@@ -6,12 +6,17 @@
 //*****************************************************************************
 //*****************************************************************************
 import React, { useCallback, useContext } from "react";
-import { Button, Dialog, Filler, HBox, Icon, Label, ToolBox, VBox } from "../common/factory";
+import {
+  Dialog, DialogActions, DialogContent, DialogTitle,
+  Button, IconButton,
+  Filler, HBox, VBox, HFiller,
+  Icon, Label, ToolBox,
+} from "../common/factory";
 import { recentRemove, SettingsContext } from "./settings";
 import { CmdContext, doLoadFile } from "./context";
 
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+//import IconButton from '@mui/material/IconButton';
+//import CloseIcon from '@mui/icons-material/Close';
 import fs from "../../system/localfs";
 import { reqOpenFile } from "./context"
 
@@ -28,35 +33,51 @@ export function RecentDialog({ setDialogs, setRecent }) {
     console.log("Remove:", filename)
     setRecent(recentRemove(recent, { id: filename }))
   }, [recent, setRecent])
+  const onOpenFiles = useCallback(() => {reqOpenFile({ setCommand }); cancel();}, [setCommand, cancel])
 
   //console.log("Recent files:", recent)
 
   return <Dialog open={true} onClose={cancel}>
-    <VBox style={{overflow: "hidden"}}>
-      <ToolBox>
-        <Label>Open file...</Label>
-        <Filler />
-        <IconButton color="error" onClick={cancel}>
-          <CloseIcon />
-        </IconButton>
-      </ToolBox>
+    {/*
+    <ToolBox>
+      <Label>Open file...</Label>
+      <Filler />
+      <IconButton color="error" onClick={cancel}>
+        <CloseIcon />
+      </IconButton>
+    </ToolBox>
+    /**/}
+    {//*
+    <DialogTitle>
+      <HBox>
+        Open recent
+        <Filler/>
+        <Button color="error" onClick={cancel}><Icon.Close/></Button>
+      </HBox>
+      </DialogTitle>
+    /**/}
 
-      <VBox className="TOC" style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
+    <DialogContent>
+      <VBox className="TOC">
       {recent.map(entry => (
         <FileEntry key={entry.id} name={entry.name} id={entry.id} onClick={onClick} onRemove={onRemove}/>
       ))}
       </VBox>
+    </DialogContent>
 
-      {/* fallback */}
-        <HBox style={{ justifyContent: "flex-end", marginTop: "12px" }}>
-          <button
-            style={{ borderRadius: "12px", padding: "6px 12px" }}
-            onClick={() => {reqOpenFile({ setCommand }); cancel();}}
-          >
-            Open File…
-          </button>
-        </HBox>
-    </VBox>
+    {/*
+      <HBox style={{ justifyContent: "flex-end", marginTop: "12px" }}>
+        <button
+          style={{ borderRadius: "12px", padding: "6px 12px" }}
+          onClick={() => {reqOpenFile({ setCommand }); cancel();}}
+        >
+          Open File…
+        </button>
+      </HBox>
+    */}
+    <DialogActions>
+      <Button onClick={onOpenFiles}>Open files...</Button>
+    </DialogActions>
   </Dialog>
 }
 
@@ -83,10 +104,10 @@ function FileEntry({name, id, onClick, onRemove}) {
 
   return (
    <HBox className="Entry" style={{color: color(), alignItems: "center"}}>
-    <VBox text={name} style={{flexGrow: 1, minWidth: 0}} onClick={e => exists && onClick(id)}>
+    <VBox text={name} onClick={e => exists && onClick(id)}>
       <Label text={name} style={{ fontWeight: 500 }} />
       <Label
-          text={squeezeDirPath(id, name, 4)}
+          text={squeezeDirPath(id, name, 8)}
           style={{
             fontSize: "9pt",
             opacity: 0.4,
@@ -96,8 +117,10 @@ function FileEntry({name, id, onClick, onRemove}) {
           }}
         />
       </VBox>
-
-    <Button sx={btn_sx} tooltip="Remove" onClick={() => onRemove(id)}><Icon.Close style={{color: color()}} fontSize="12pt"/></Button>
+    <Filler/>
+    <IconButton tooltip="Drop" size="small" sx={btn_sx} onClick={() => onRemove(id)}>
+      <Icon.Close style={{color: color()}} fontSize="12pt"/>
+      </IconButton>
   </HBox>
   )
 }
