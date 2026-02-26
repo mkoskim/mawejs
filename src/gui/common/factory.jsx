@@ -27,7 +27,7 @@ import {
   Menu as MuiMenu,
   MenuItem as MuiMenuItem,
   MenuList as MuiMenuList,
-  Dialog, DialogTitle, DialogContent, DialogActions,
+  Dialog,
 
   Breadcrumbs,
   Chip, Link,
@@ -56,7 +56,7 @@ export {
   List, ListItem, ListItemText, ListSubheader, ListItemIcon, Typography,
   //Menu, MenuItem, MenuList,
   Accordion, AccordionSummary, AccordionDetails,
-  Dialog, DialogTitle, DialogContent, DialogActions,
+  Dialog,
   Snackbar
 }
 
@@ -389,6 +389,27 @@ export function DropDown({variant = "popover", popupId, label, children}) {
   </PopupState>
 }
 */
+
+//*****************************************************************************
+//
+// Dialogs
+//
+//*****************************************************************************
+
+export function DialogTitle({children}) {
+  return <HFiller style={{alignItems: "center", padding: "8px 16px", borderBottom: "1px solid lightgray"}}>{children}</HFiller>
+}
+
+export function DialogContent({children}) {
+  // Double box so that scrollbar comes to the edge
+  return <VBox style={{overflow: "auto"}}>
+    <VBox style={{margin: "8px 16px"}}>{children}</VBox>
+  </VBox>
+}
+
+export function DialogActions({children}) {
+  return <HFiller style={{alignItems: "center", padding: "8px 16px", borderTop: "1px solid lightgray"}}>{children}</HFiller>
+}
 
 //*****************************************************************************
 //

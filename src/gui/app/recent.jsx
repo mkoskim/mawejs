@@ -9,7 +9,7 @@ import React, { useCallback, useContext } from "react";
 import {
   Dialog, DialogActions, DialogContent, DialogTitle,
   Button, IconButton,
-  Filler, HBox, VBox, HFiller,
+  Filler, HBox, VBox, HFiller, VFiller,
   Icon, Label, ToolBox,
 } from "../common/factory";
 import { recentRemove, SettingsContext } from "./settings";
@@ -38,24 +38,11 @@ export function RecentDialog({ setDialogs, setRecent }) {
   //console.log("Recent files:", recent)
 
   return <Dialog open={true} onClose={cancel}>
-    {/*
-    <ToolBox>
-      <Label>Open file...</Label>
-      <Filler />
-      <IconButton color="error" onClick={cancel}>
-        <CloseIcon />
-      </IconButton>
-    </ToolBox>
-    /**/}
-    {//*
     <DialogTitle>
-      <HBox>
-        Open recent
-        <Filler/>
-        <Button color="error" onClick={cancel}><Icon.Close/></Button>
-      </HBox>
-      </DialogTitle>
-    /**/}
+      <Label>Open recent</Label>
+      <Filler/>
+      <IconButton color="error" onClick={cancel}><Icon.Close/></IconButton>
+    </DialogTitle>
 
     <DialogContent>
       <VBox className="TOC">
@@ -65,17 +52,8 @@ export function RecentDialog({ setDialogs, setRecent }) {
       </VBox>
     </DialogContent>
 
-    {/*
-      <HBox style={{ justifyContent: "flex-end", marginTop: "12px" }}>
-        <button
-          style={{ borderRadius: "12px", padding: "6px 12px" }}
-          onClick={() => {reqOpenFile({ setCommand }); cancel();}}
-        >
-          Open File…
-        </button>
-      </HBox>
-    */}
     <DialogActions>
+      <Filler/>
       <Button onClick={onOpenFiles}>Open files...</Button>
     </DialogActions>
   </Dialog>
@@ -104,7 +82,7 @@ function FileEntry({name, id, onClick, onRemove}) {
 
   return (
    <HBox className="Entry" style={{color: color(), alignItems: "center"}}>
-    <VBox text={name} onClick={e => exists && onClick(id)}>
+    <VFiller text={name} onClick={e => exists && onClick(id)}>
       <Label text={name} style={{ fontWeight: 500 }} />
       <Label
           text={squeezeDirPath(id, name, 8)}
@@ -116,9 +94,8 @@ function FileEntry({name, id, onClick, onRemove}) {
             textOverflow: "ellipsis",
           }}
         />
-      </VBox>
-    <Filler/>
-    <IconButton tooltip="Drop" size="small" sx={btn_sx} onClick={() => onRemove(id)}>
+      </VFiller>
+    <IconButton size="small" sx={btn_sx} onClick={() => onRemove(id)}>
       <Icon.Close style={{color: color()}} fontSize="12pt"/>
       </IconButton>
   </HBox>
