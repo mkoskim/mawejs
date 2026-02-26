@@ -13,6 +13,7 @@ import { CmdContext, doLoadFile } from "./context";
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import fs from "../../system/localfs";
+import { reqOpenFile } from "./context"
 
 export function RecentDialog({ setDialogs, setRecent }) {
   const { recent } = useContext(SettingsContext)
@@ -43,6 +44,16 @@ export function RecentDialog({ setDialogs, setRecent }) {
       {recent.map(entry => (
         <FileEntry key={entry.id} name={entry.name} id={entry.id} onClick={onClick} onRemove={onRemove}/>
       ))}
+
+      {/* fallback */}
+        <HBox style={{ justifyContent: "flex-end", marginTop: "12px" }}>
+          <button
+            style={{ borderRadius: "12px", padding: "6px 12px" }}
+            onClick={() => reqOpenFile({ setCommand })}
+          >
+            Open File…
+          </button>
+        </HBox>
     </VBox>
   </Dialog>
 }
