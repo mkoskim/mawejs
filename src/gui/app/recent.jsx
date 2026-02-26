@@ -32,7 +32,7 @@ export function RecentDialog({ setDialogs, setRecent }) {
   //console.log("Recent files:", recent)
 
   return <Dialog open={true} onClose={cancel}>
-    <VBox className="TOC" style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
+    <VBox style={{overflow: "hidden"}}>
       <ToolBox>
         <Label>Open file...</Label>
         <Filler />
@@ -41,15 +41,17 @@ export function RecentDialog({ setDialogs, setRecent }) {
         </IconButton>
       </ToolBox>
 
+      <VBox className="TOC" style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
       {recent.map(entry => (
         <FileEntry key={entry.id} name={entry.name} id={entry.id} onClick={onClick} onRemove={onRemove}/>
       ))}
+      </VBox>
 
       {/* fallback */}
         <HBox style={{ justifyContent: "flex-end", marginTop: "12px" }}>
           <button
             style={{ borderRadius: "12px", padding: "6px 12px" }}
-            onClick={() => reqOpenFile({ setCommand })}
+            onClick={() => {reqOpenFile({ setCommand }); cancel();}}
           >
             Open File…
           </button>
