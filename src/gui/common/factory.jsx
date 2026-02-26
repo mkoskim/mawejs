@@ -15,7 +15,7 @@ import React, {
   useDeferredValue,
 } from "react"
 
-import { styled } from '@mui/material/styles';
+import { styled, ThemeProvider } from '@mui/material/styles';
 import { theme } from "./theme";
 
 import {
@@ -48,7 +48,7 @@ import { isNotEmpty } from "../../util";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
-export { theme }
+
 export {
   Spinner,
   Chip, Link,
@@ -182,7 +182,9 @@ export {Divider as Separator}
 export class ToolBox extends React.PureComponent {
   render() {
     const {className, ...props} = this.props
-    return <HBox className={addClass("ToolBox", className)} {...props}/>
+    return <ThemeProvider theme={theme.toolbar}>
+      <HBox className={addClass("ToolBox", className)} {...props}/>
+    </ThemeProvider>
   }
 }
 
