@@ -1,17 +1,208 @@
-//-----------------------------------------------------------------------------
-// Theme
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//*****************************************************************************
+//
+// MUI themes
+//
+//*****************************************************************************
+//*****************************************************************************
 
 import { createTheme } from '@mui/material/styles';
 
-export const theme = createTheme({
+//*****************************************************************************
+//
+// Common application theme
+//
+//*****************************************************************************
+
+const common = createTheme({
   palette: {
-    primary: { main: "#222", },
+    //primary: { main: "#222", },
   },
   typography: {
     //fontSize: 14,
   },
   components: {
+
+    //-------------------------------------------------------------------------
+
+    /*
+    MuiDialogTitle: {
+      defaultProps: {
+      },
+      styleOverrides: {
+        root: {
+          padding: "8px 16px",
+          borderBottom: "1px solid lightgray",
+        },
+      }
+    },
+
+    MuiDialogContent: {
+      defaultProps: {
+      },
+      styleOverrides: {
+        root: {
+          padding: "8px 16px"
+        },
+      }
+    },
+
+    MuiDialogActions: {
+      defaultProps: {
+      },
+      styleOverrides: {
+        root: {
+          padding: "8px 16px",
+          borderTop: "1px solid lightgray",
+        },
+      }
+    },
+    */
+
+    //-------------------------------------------------------------------------
+
+    MuiTextField: {
+      defaultProps: {
+        size: "small",
+        margin: 'dense',
+      },
+    },
+    MuiInputBase: {
+      defaultProps: {
+        spellCheck: false,
+        size: "small",
+        margin: 'dense',
+      },
+      styleOverrides: {
+        root: {
+          //paddingLeft: "5px",
+        },
+        input: {
+          //height: "24px",
+          //padding: "4px",
+        }
+      },
+    },
+
+    /*
+    MuiOutlinedInput: {
+      defaultProps: {
+        size: "small",
+        margin: 'dense',
+      },
+      styleOverrides: {
+        root: {
+          paddingLeft: "5px",
+        },
+        input: {
+          height: "24px",
+          padding: "4px",
+        }
+      },
+    },
+    */
+    /*
+    MuiFilledInput: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiFormControl: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiFormHelperText: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiInputLabel: {
+      defaultProps: {
+        margin: 'dense',
+      },
+    },
+    MuiListItem: {
+      defaultProps: {
+        dense: true,
+      },
+    },
+    */
+
+    //-------------------------------------------------------------------------
+    // Tooltip
+    //-------------------------------------------------------------------------
+
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          fontSize: "11pt",
+        }
+      }
+    },
+
+    //-------------------------------------------------------------------------
+    // Transitions
+    //-------------------------------------------------------------------------
+
+    MuiMenu: {
+      defaultProps: {
+        transitionDuration: 0,
+      }
+    },
+    MuiPopover: {
+      defaultProps: {
+        transitionDuration: 0,
+      }
+    },
+    MuiAccordion: {
+      defaultProps: {
+        slotProps: {transition: {timeout: {enter: 75, exit: 75}}},
+      }
+    },
+    MuiDialog: {
+      defaultProps: {
+        transitionDuration: 200,
+      }
+    },
+
+    //-------------------------------------------------------------------------
+    // Misc
+    //-------------------------------------------------------------------------
+
+    MuiFab: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
+    MuiTable: {
+      defaultProps: {
+        size: 'small',
+      },
+    },
+    MuiToolbar: {
+      defaultProps: {
+        variant: 'dense',
+      },
+    },
+
+  },
+})
+
+//*****************************************************************************
+//
+// Toolbar theme
+//
+//*****************************************************************************
+
+const toolbar = createTheme({
+  ...common,
+  palette: {
+    ...common.palette,
+    primary: { main: "#222", },
+  },
+  components: {
+    ...common.components,
     MuiButtonBase: {
       styleOverrides: {
         root: {
@@ -86,124 +277,35 @@ export const theme = createTheme({
         },
       },
     },
-    MuiTextField: {
-      defaultProps: {
-        size: "small",
-        margin: 'dense',
-      },
-    },
-    MuiInputBase: {
-      defaultProps: {
-        spellCheck: false,
-        size: "small",
-        margin: 'dense',
-      },
-      styleOverrides: {
-        root: {
-          //paddingLeft: "5px",
-        },
-        input: {
-          //height: "24px",
-          //padding: "4px",
-        }
-      },
-    },
-
-/*
-    MuiOutlinedInput: {
-      defaultProps: {
-        size: "small",
-        margin: 'dense',
-      },
-      styleOverrides: {
-        root: {
-          paddingLeft: "5px",
-        },
-        input: {
-          height: "24px",
-          padding: "4px",
-        }
-      },
-    },
-*/
-    /*
-    MuiFilledInput: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiFormControl: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiFormHelperText: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiInputLabel: {
-      defaultProps: {
-        margin: 'dense',
-      },
-    },
-    MuiListItem: {
-      defaultProps: {
-        dense: true,
-      },
-    },
-*/
-    MuiFab: {
-      defaultProps: {
-        size: 'small',
-      },
-    },
-    MuiTable: {
-      defaultProps: {
-        size: 'small',
-      },
-    },
-    MuiToolbar: {
-      defaultProps: {
-        variant: 'dense',
-      },
-    },
-
-    //-------------------------------------------------------------------------
-    // Tooltip
-    //-------------------------------------------------------------------------
-
-    MuiTooltip: {
-      styleOverrides: {
-        tooltip: {
-          fontSize: "11pt",
-        }
-      }
-    },
-
-    //-------------------------------------------------------------------------
-    // Transitions
-    //-------------------------------------------------------------------------
-
-    MuiMenu: {
-      defaultProps: {
-        transitionDuration: 0,
-      }
-    },
-    MuiPopover: {
-      defaultProps: {
-        transitionDuration: 0,
-      }
-    },
-    MuiAccordion: {
-      defaultProps: {
-        slotProps: {transition: {timeout: {enter: 75, exit: 75}}},
-      }
-    },
-    MuiDialog: {
-      defaultProps: {
-        transitionDuration: 200,
-      }
-    },
   },
 });
+
+//*****************************************************************************
+//
+// Sidebar theme
+//
+//*****************************************************************************
+
+const sidebar  = createTheme({
+  ...common,
+  palette: {
+    //primary: { main: "#222", },
+  },
+  typography: {
+    //fontSize: 14,
+  },
+  components: {
+  },
+})
+
+//*****************************************************************************
+//
+// Exporting
+//
+//*****************************************************************************
+
+export const theme = {
+  common,
+  toolbar,
+  sidebar,
+}

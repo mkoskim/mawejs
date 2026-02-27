@@ -15,7 +15,7 @@ import React, {
   useDeferredValue,
 } from "react"
 
-import { styled } from '@mui/material/styles';
+import { styled, ThemeProvider } from '@mui/material/styles';
 import { theme } from "./theme";
 
 import {
@@ -48,7 +48,7 @@ import { isNotEmpty } from "../../util";
 import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
-export { theme }
+
 export {
   Spinner,
   Chip, Link,
@@ -177,12 +177,27 @@ export class Separator extends React.PureComponent {
 export {Divider as Separator}
 /**/
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Toolbar
+//
+//*****************************************************************************
 
 export class ToolBox extends React.PureComponent {
   render() {
     const {className, ...props} = this.props
-    return <HBox className={addClass("ToolBox", className)} {...props}/>
+    return <ThemeProvider theme={theme.toolbar}>
+      <HBox className={addClass("ToolBox", className)} {...props}/>
+    </ThemeProvider>
+  }
+}
+
+export class SideBar extends React.PureComponent {
+  render() {
+    const {className, ...props} = this.props
+    return <ThemeProvider theme={theme.side}>
+      <VBox className={addClass("ToolBox", className)} {...props}/>
+    </ThemeProvider>
   }
 }
 
@@ -374,6 +389,27 @@ export function DropDown({variant = "popover", popupId, label, children}) {
   </PopupState>
 }
 */
+
+//*****************************************************************************
+//
+// Dialogs
+//
+//*****************************************************************************
+
+export function DialogTitle({children}) {
+  return <HFiller style={{alignItems: "center", padding: "8px 16px", borderBottom: "1px solid lightgray"}}>{children}</HFiller>
+}
+
+export function DialogContent({children}) {
+  // Double box so that scrollbar comes to the edge
+  return <VBox style={{overflow: "auto"}}>
+    <VBox style={{margin: "8px 16px"}}>{children}</VBox>
+  </VBox>
+}
+
+export function DialogActions({children}) {
+  return <HFiller style={{alignItems: "center", padding: "8px 16px", borderTop: "1px solid lightgray"}}>{children}</HFiller>
+}
 
 //*****************************************************************************
 //
