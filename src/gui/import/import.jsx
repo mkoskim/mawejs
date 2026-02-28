@@ -175,30 +175,20 @@ class SelectFormatButton extends React.PureComponent {
 
     //console.log("Block type:", type)
 
-    return <PopupState variant="popover" popupId="file-menu">
-      {(popupState) => <React.Fragment>
-        <Button tooltip="Paragraph style" style={{ justifyContent: "flex-start" }} {...bindTrigger(popupState)}>Format: {name}</Button>
-        <Menu {...bindMenu(popupState)}>
+    return <Button tooltip="Paragraph style">Format: {name}</Button>
+
+    /*
           {order.map(k => [k, choices[k]]).map(([k, v]) => (
-            <MenuItem key={k} value={k} onClick={e => { setFormat(k); popupState.close(e) }}>
+            <MenuItem key={k} value={k} onClick={e => { setFormat(k) }}>
               {v.name}
             </MenuItem>
           )
           )}
-          {/*
-          <ListSubheader>RTF</ListSubheader>
-          <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
-          <MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>
-          <ListSubheader>LaTeX</ListSubheader>
-          <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
-          <MenuItem value="tex2">LaTeX, A5 booklet</MenuItem>
-          <ListSubheader>Other</ListSubheader>
-          <MenuItem value="md">MD (Mark Down)</MenuItem>
-          */}
+
         </Menu>
       </React.Fragment>
       }
-    </PopupState>
+    */
   }
 }
 

@@ -18,6 +18,9 @@ button {
   padding-inline: 0;
   padding: 2px 6px;
 
+  &:disabled {
+    color: grey;
+  }
   &:hover, &[data-pressed] {
     background: #DDD;
   }
@@ -30,7 +33,7 @@ button {
 }
 
 .Toolbar {
-  button {
+  & > button, & > .ButtonGroup > button {
     border: none;
     background: transparent;
     min-width: 28px;
@@ -45,28 +48,23 @@ button {
     }
   }
 
-  .Icon {
+  & > .Icon, & > button .Icon, & > .ButtonGroup > button .Icon {
     width: 24px;
     height: 24px;
   }
 }
 
-.Tooltip {
-  background: var(--color-gray-900);
-  color: var(--color-gray-50);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 10pt;
+.Entry {
+  & > button {
+    border: none;
+    background: transparent;
 
-  .ArrowFill {
-    fill: var(--color-gray-900);
-  }
+    &:hover {
+      background: #DDD;
+    }
 
-  .ArrowOuterStroke {
-    /*fill: var(--color-gray-300);*/
-  }
-
-  .ArrowInnerStroke {
-    /*fill: var(--color-gray-200);*/
+    &.icon {
+      padding: 2px;
+    }
   }
 }

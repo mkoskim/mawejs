@@ -25,42 +25,6 @@ const common = createTheme({
 
     //-------------------------------------------------------------------------
 
-    /*
-    MuiDialogTitle: {
-      defaultProps: {
-      },
-      styleOverrides: {
-        root: {
-          padding: "8px 16px",
-          borderBottom: "1px solid lightgray",
-        },
-      }
-    },
-
-    MuiDialogContent: {
-      defaultProps: {
-      },
-      styleOverrides: {
-        root: {
-          padding: "8px 16px"
-        },
-      }
-    },
-
-    MuiDialogActions: {
-      defaultProps: {
-      },
-      styleOverrides: {
-        root: {
-          padding: "8px 16px",
-          borderTop: "1px solid lightgray",
-        },
-      }
-    },
-    */
-
-    //-------------------------------------------------------------------------
-
     MuiTextField: {
       defaultProps: {
         size: "small",

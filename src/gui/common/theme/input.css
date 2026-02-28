@@ -1,0 +1,47 @@
+/******************************************************************************
+*
+* Input
+*
+*******************************************************************************
+*/
+
+input {
+  margin: 0;
+  padding: 2px;
+  font-size: inherit;
+  border: none;
+  &:focus {
+    outline: none;
+  }
+}
+
+.TextField {
+  align-items: center;
+  border: 1px solid #AAA;
+  border-radius: 3px;
+  padding: 2pt;
+  margin: 2pt;
+  margin-top: 8pt;
+  padding-top: 4pt;
+  position: relative;
+
+  &[label] {
+    &:before {
+      background: canvas;
+      color: #555;
+      padding: 0pt 2pt;
+      font-size: 10pt;
+      position: absolute;
+      top: -6pt;
+      left: 3pt;
+      content: attr(label);
+    }
+  }
+
+  /*-------------------------------------------------------------------------*/
+  &:focus-within {
+    /*
+    outline: 2px solid lightblue;
+    */
+  }
+}

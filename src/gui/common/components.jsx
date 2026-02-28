@@ -17,6 +17,8 @@ import {
   TextField,
   Accordion, AccordionSummary, AccordionDetails,
   Separator,
+  Popover,
+  PopoverPopup,
 } from "./factory";
 
 import { mawe } from "../../document"
@@ -42,19 +44,19 @@ export class EditHead extends React.PureComponent {
     return <>
       <Accordion disableGutters defaultExpanded={expanded}>
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
-      <AccordionDetails><VBox>
+      <VBox>
       <TextField label="Name" value={head.name ?? ""} onChange={e => updateDocName(updateDoc, e.target.value)}/>
       <TextField label="Title" value={head.title ?? ""} onChange={e => updateDocTitle(updateDoc, e.target.value)}/>
       <TextField label="Subtitle" value={head.subtitle ?? ""} onChange={e => updateDocSubtitle(updateDoc, e.target.value)}/>
-      </VBox></AccordionDetails>
+      </VBox>
       </Accordion>
 
       <Accordion disableGutters defaultExpanded={expanded}>
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
-      <AccordionDetails><VBox>
+      <VBox>
       <TextField label="Author" value={head.author ?? ""} onChange={e => updateDocAuthor(updateDoc, e.target.value)}/>
       <TextField label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => updateDocPseudonym(updateDoc, e.target.value)}/>
-      </VBox></AccordionDetails>
+      </VBox>
       </Accordion>
     </>
   }
@@ -63,23 +65,12 @@ export class EditHead extends React.PureComponent {
 export class EditHeadButton extends React.PureComponent {
   render() {
     const {text, head, updateDoc, expanded} = this.props
-    return <Button>{text}</Button>
-    /*
-    return <PopupState variant="popover" popupId="head-edit">
-    {(popupState) => <React.Fragment>
-      <Button {...bindTrigger(popupState)} endIcon={<Icon.Arrow.DropDown/>} tooltip="Edit story info">{text}</Button>
-      <Popover {...bindMenu(popupState)}
-        //transitionDuration={0}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-      >
+    return <Popover.Root>
+      <Popover.Trigger render={<Button tooltip="Edit story info">{text}<Icon.Arrow.Head.Down/></Button>}/>
+      <PopoverPopup>
         <EditHead head={head} updateDoc={updateDoc} expanded={expanded}/>
-      </Popover>
-    </React.Fragment>
-    }</PopupState>
-    */
+      </PopoverPopup>
+    </Popover.Root>
   }
 }
 
@@ -213,14 +204,14 @@ export class ChooseWordFormat extends React.PureComponent {
     },
   }
 
-  menuItem(popupState, index, type, setSelected) {
+  menuItem(index, type, setSelected) {
     if(type === "|") return <Separator key={index}/>
     if(type in this.constructor.selections) {
       const style = this.constructor.selections[type]
       return <MenuItem
         title={style.name}
         key={type}
-        onClick={e => {setSelected(type); popupState.close(e);}}
+        onClick={e => {setSelected(type);}}
       />
     }
     return null;
@@ -234,22 +225,18 @@ export class ChooseWordFormat extends React.PureComponent {
 
     //console.log("Block type:", type)
 
+    return <Button
+      tooltip="Word count format"
+    >Words<Icon.Arrow.DropDown/></Button>
+
     /*
-    return <PopupState variant="popover" popupId="file-menu">
-      {(popupState) => <React.Fragment>
-        <Button
-          tooltip="Word count format"
-          endIcon={<Icon.Arrow.DropDown/>}
-          {...bindTrigger(popupState)}
-        >
-          {name}
-        </Button>
-        <Menu {...bindMenu(popupState)}>
-          {choices.map((type, index) => this.menuItem(popupState, index, type, setSelected))}
+    return
+      {
+        <Menu >
+          {choices.map((type, index) => this.menuItem(index, type, setSelected))}
         </Menu>
       </React.Fragment>
       }
-    </PopupState>
     */
   }
 }
@@ -302,7 +289,7 @@ export class FormatWords extends React.PureComponent {
     return <>
       {missing
         ? <><span style={style}>-{missing}</span>&nbsp;/&nbsp;</>
-        : <Icon.Starred sx={{...style, color: "#59F", marginRight: "4pt", fontSize: 14}}/>
+        : <Icon.Starred style={{...style, color: "#59F", marginRight: "4pt"}}/>
       }
       <span style={totstyle}>{target}</span>
       {/*<span style={{...style, display: "inline-block", width: "1cm"}}>{Number(100.0 * text / target).toFixed(0)}%</span>*/}

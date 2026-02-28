@@ -1,0 +1,103 @@
+/******************************************************************************
+*
+* Popups
+*
+*******************************************************************************
+*/
+
+/*-----------------------------------------------------------------------------
+* Popups
+*------------------------------------------------------------------------------
+*/
+
+.Popup {
+  box-sizing: border-box;
+  background-color: canvas;
+  transform-origin: var(--transform-origin);
+  padding: 4px;
+  border-radius: 0.375rem;
+  /*
+  padding-block: 0.25rem;
+  color: var(--color-gray-900);
+  transition:
+    transform 150ms,
+    opacity 150ms;
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  */
+
+  outline: 1px solid var(--color-gray-200);
+  box-shadow:
+    0 10px 15px -3px var(--color-gray-200),
+    0 4px 6px -4px var(--color-gray-200);
+
+  .ArrowFill {
+    fill: canvas;
+  }
+
+  .ArrowOuterStroke {
+    fill: var(--color-gray-300);
+  }
+
+  .ArrowInnerStroke {
+    /*fill: var(--color-gray-200);*/
+  }
+}
+
+/*-----------------------------------------------------------------------------
+* Tooltip popup
+*------------------------------------------------------------------------------
+*/
+
+.Tooltip {
+  background: var(--color-gray-900);
+  color: var(--color-gray-50);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10pt;
+
+  .ArrowFill {
+    fill: var(--color-gray-900);
+  }
+
+  .ArrowOuterStroke {
+    /*fill: var(--color-gray-300);*/
+  }
+
+  .ArrowInnerStroke {
+    /*fill: var(--color-gray-200);*/
+  }
+}
+
+/*-----------------------------------------------------------------------------
+* Popup arrow
+*------------------------------------------------------------------------------
+*/
+
+.Arrow {
+  display: flex;
+
+  &[data-side='top'] {
+    bottom: -8px;
+    rotate: 180deg;
+  }
+
+  &[data-side='bottom'] {
+    top: -8px;
+    rotate: 0deg;
+  }
+
+  &[data-side='left'] {
+    right: -13px;
+    rotate: 90deg;
+  }
+
+  &[data-side='right'] {
+    left: -13px;
+    rotate: -90deg;
+  }
+}

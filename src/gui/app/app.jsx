@@ -314,7 +314,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
     [IsKey.CtrlW, (e) => reqCloseFile({setCommand})],
   ]), [file])
 
-  return <ToolBox className="top">
+  return <ToolBox side="top">
     <FileMenu file={file} setCommand={setCommand} recent={recent} hasdoc={true}/>
     <FileOperations file={file} setCommand={setCommand}/>
     <Separator />
@@ -350,9 +350,9 @@ class FileOperations extends React.PureComponent {
   static gzip_style = {
     fontSize: "8pt",
     border: "2px solid",
-    //paddingLeft: "2px",
-    //paddingRight: "2px",
-    //paddingTop: "2px",
+    paddingLeft: "4px",
+    paddingRight: "4px",
+    //paddingTop: "0px",
     paddingBottom: "2px",
     borderRadius: "3px",
   }
@@ -379,7 +379,7 @@ class FileOperations extends React.PureComponent {
     //const filename = file?.name ?? "<Unnamed>"
 
     return <>
-      <IconButton disabled={!file} tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>&nbsp;gz&nbsp;</span></IconButton>
+      <IconButton disabled={!file} tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>gz</span></IconButton>
       <OpenFolderButton filename={file?.id} />
       </>
   }
@@ -440,10 +440,6 @@ class FileMenu extends React.PureComponent {
             title="Close" endAdornment="Ctrl-W"
             disabled={!hasdoc} onClick={e => { reqCloseFile({ setCommand, file }); }}
             />
-          {/*
-          <MenuItem onClick={popupState.close}>Revert</MenuItem>
-          <MenuItem onClick={e => { popupState.close(e); }}>Open Folder</MenuItem>
-          */}
           <Separator />
           <MenuItem
             title="Quit" //endAdornment="Ctrl-Q"
@@ -480,21 +476,18 @@ class HelpButton extends React.PureComponent {
   render() {
     const { setCommand } = this.props
 
-    return null;
-    /*
-    return <PopupState variant="popover" popupId="file-menu">
-    {(popupState) => <React.Fragment>
-      <IconButton tooltip="Help" {...bindTrigger(popupState)}><Icon.Help/></IconButton>
-      <Menu {...bindMenu(popupState)}>
-        <MenuItem title="Tutorial (English)"
-          onClick={e => { popupState.close(e); reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.en.mawe"})}}
-          />
-        <MenuItem title="Tutorial (Finnish)"
-          onClick={e => { popupState.close(e); reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.fi.mawe"})}}
-          />
-      </Menu>
-    </React.Fragment>}
-    </PopupState>
-    */
+    return <Menu.Root>
+      <Menu.Trigger render={<IconButton tooltip="Help"><Icon.Help/></IconButton>} />
+      <Menu.Portal>
+        <MenuPopup arrow={true}>
+          <MenuItem title="Tutorial (English)"
+            onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.en.mawe"})}}
+            />
+          <MenuItem title="Tutorial (Finnish)"
+            onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.fi.mawe"})}}
+            />
+        </MenuPopup>
+      </Menu.Portal>
+    </Menu.Root>
   }
 }

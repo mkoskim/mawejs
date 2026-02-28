@@ -23,6 +23,8 @@ import {
   ToggleGroup,
   Toggle,
   Tooltip as BUITooltip,
+  Popover,
+  Input,
 } from "@base-ui/react"
 
 //-----------------------------------------------------------------------------
@@ -39,50 +41,9 @@ export {
 //-----------------------------------------------------------------------------
 // Temporary export
 
-export function OutlinedInput({ children }) {
-  return <input {...children} />
-}
-
 export function ListSubheader({ children }) {
   return <div>{children}</div>
 }
-
-export function TextField({ children }) {
-  return <div>{children}</div>
-}
-
-export function Accordion({ children }) {
-  return <div>{children}</div>
-}
-
-export function AccordionDetails({ children }) {
-  return <div>{children}</div>
-}
-
-export function AccordionSummary({ children }) {
-  return <div>{children}</div>
-}
-
-export function Dialog({ children }) {
-  return null;
-}
-
-export function Snackbar({ children }) {
-  return null;
-}
-
-/*
-export {
-  Spinner,
-  Chip, Link,
-  TextField,
-  List, ListItem, ListItemText, ListSubheader, ListItemIcon, Typography,
-  //Menu, MenuItem, MenuList,
-  Accordion, AccordionSummary, AccordionDetails,
-  Dialog,
-  Snackbar
-}
-*/
 
 //*****************************************************************************
 //
@@ -173,46 +134,6 @@ export class Separator extends React.PureComponent {
 
 //*****************************************************************************
 //
-// Tooltip
-//
-//*****************************************************************************
-
-export function Tooltip({tooltip, children}) {
-  return <BUITooltip.Root>
-    <BUITooltip.Trigger render={children}/>
-    <BUITooltip.Portal>
-      <BUITooltip.Positioner sideOffset={10}>
-        <BUITooltip.Popup className="Tooltip">
-          <BUITooltip.Arrow className="Arrow"><PopupArrow /></BUITooltip.Arrow>
-          {tooltip}
-        </BUITooltip.Popup>
-      </BUITooltip.Positioner>
-    </BUITooltip.Portal>
-  </BUITooltip.Root>
-}
-
-//*****************************************************************************
-//
-// Toolbar
-//
-//*****************************************************************************
-
-export class ToolBox extends React.PureComponent {
-  render() {
-    const {className, ...props} = this.props
-    return <HBox className={addClass("Toolbar", className)} {...props}/>
-  }
-}
-
-export class SideBar extends React.PureComponent {
-  render() {
-    const {className, ...props} = this.props
-    return <VBox className={addClass("Sidebar", className)} {...props}/>
-  }
-}
-
-//*****************************************************************************
-//
 // Buttons & groups
 //
 //*****************************************************************************
@@ -245,7 +166,7 @@ export class MakeToggleGroup extends React.PureComponent {
 
     return <ToggleGroup
       {...props}
-      className="HBox"
+      className="HBox ButtonGroup"
       value={[selected]}
       onValueChange={(value, e) => { setSelected(value[0]); }}
     >
@@ -276,28 +197,117 @@ export class MakeToggleGroup extends React.PureComponent {
 
 //*****************************************************************************
 //
-// Menus
+// Input
 //
 //*****************************************************************************
 
-export { Menu }
+export {Input}
 
-export class MenuPopup extends React.PureComponent {
+export class TextField extends React.PureComponent {
   render() {
-    const { children, arrow, ...props } = this.props
-    return <Menu.Positioner className="Positioner" sideOffset={3}>
-      <Menu.Popup className="VBox Menu" {...props}>
-        {arrow && <Menu.Arrow className="Arrow"><PopupArrow /></Menu.Arrow>}
-        {children}
-      </Menu.Popup>
-    </Menu.Positioner>
+    const {label} = this.props
+    if(label) {
+      return <HBox className="TextField" label={label}>
+        {this.renderInput()}
+      </HBox>
+    }
+    return this.renderInput()
+  }
+
+  renderInput() {
+    const {label, startAdornment, endAdornment, inputRef, ...props} = this.props
+    return <HBox className="Entry">{startAdornment}<Input ref={inputRef} spellCheck={false} {...props}/>{endAdornment}</HBox>
   }
 }
 
-export function MenuItem({ title, endAdornment, children, ...props }) {
-  return <Menu.Item className="Item" {...props}>
-    {title}{children}<Filler />{endAdornment}
-  </Menu.Item>
+//-----------------------------------------------------------------------------
+
+function Radio({ style, choice, selected, setSelected }) {
+  const props = {
+    className: "RadioButton",
+    fontSize: "small",
+    style: { ...style },
+    onClick: e => setSelected && setSelected(choice),
+  }
+
+  if (selected === choice) {
+    return <Icon.RadioButton.Checked {...props} />
+  }
+  return <Icon.RadioButton.Unchecked {...props} />
+}
+
+//*****************************************************************************
+//
+// Labels
+//
+//*****************************************************************************
+
+export class Label extends React.PureComponent {
+  render() {
+    const { text, children, ...props } = this.props
+
+    return <span {...props}>{text}{children}</span>
+  }
+}
+
+//*****************************************************************************
+//
+// Containers: Toolbar
+//
+//*****************************************************************************
+
+export class ToolBox extends React.PureComponent {
+  render() {
+    const {className, side, ...props} = this.props
+    return <HBox side={side} className={addClass("Toolbar", className)} {...props}/>
+  }
+}
+
+export class SideBar extends React.PureComponent {
+  render() {
+    const {className, ...props} = this.props
+    return <VBox className={addClass("Sidebar", className)} {...props}/>
+  }
+}
+
+//*****************************************************************************
+//
+// Containers: Accordion
+//
+//*****************************************************************************
+
+export function Accordion({ children }) {
+  return children
+}
+
+export function AccordionDetails({ children }) {
+  return children
+}
+
+export function AccordionSummary({ children }) {
+  return children
+}
+
+//*****************************************************************************
+//
+// Popovers
+//
+//*****************************************************************************
+
+export {Popover}
+
+export class PopoverPopup extends React.PureComponent {
+  render() {
+    const {children} = this.props
+    return <Popover.Portal>
+      <Popover.Positioner sideOffset={3}>
+        <Popover.Popup className="VBox Popup">
+          <Popover.Arrow className="Arrow"><PopupArrow/></Popover.Arrow>
+          {children}
+        </Popover.Popup>
+      </Popover.Positioner>
+    </Popover.Portal>
+  }
 }
 
 class PopupArrow extends React.PureComponent {
@@ -319,64 +329,50 @@ class PopupArrow extends React.PureComponent {
   }
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
+// Menus
+//
+//*****************************************************************************
 
-export function Radio({ style, choice, selected, setSelected }) {
-  const props = {
-    className: "RadioButton",
-    fontSize: "small",
-    style: { ...style },
-    onClick: e => setSelected && setSelected(choice),
-  }
+export { Menu }
 
-  if (selected === choice) {
-    return <Icon.RadioButton.Checked {...props} />
+export class MenuPopup extends React.PureComponent {
+  render() {
+    const { children, arrow, ...props } = this.props
+    return <Menu.Positioner sideOffset={3}>
+      <Menu.Popup className="VBox Popup Menu" {...props}>
+        {arrow && <Menu.Arrow className="Arrow"><PopupArrow /></Menu.Arrow>}
+        {children}
+      </Menu.Popup>
+    </Menu.Positioner>
   }
-  return <Icon.RadioButton.Unchecked {...props} />
+}
+
+export function MenuItem({ title, endAdornment, children, ...props }) {
+  return <Menu.Item className="Item" {...props}>
+    {title}{children}<Filler />{endAdornment}
+  </Menu.Item>
 }
 
 //*****************************************************************************
 //
-// Input
+// Tooltip
 //
 //*****************************************************************************
 
-export class Input extends React.PureComponent {
-  render() {
-    return <OutlinedInput {...this.props}/>
-  }
-}
-
-export class SearchBox extends React.PureComponent {
-
-  static sx = {
-    height: "32px",
-    padding: "2px 2px 2px 4px",
-  }
-
-  render() {
-    return <OutlinedInput
-      sx={this.constructor.sx}
-      //spellCheck={false}
-      startAdornment={<Icon.Action.Search />}
-      //endAdornment={<Icon.Close/>}
-      {...this.props}
-    />
-  }
-}
-
-//*****************************************************************************
-//
-// Labels
-//
-//*****************************************************************************
-
-export class Label extends React.PureComponent {
-  render() {
-    const { text, children, ...props } = this.props
-
-    return <span {...props}>{text}{children}</span>
-  }
+export function Tooltip({tooltip, children}) {
+  return <BUITooltip.Root>
+    <BUITooltip.Trigger render={children}/>
+    <BUITooltip.Portal>
+      <BUITooltip.Positioner sideOffset={8}>
+        <BUITooltip.Popup className="Tooltip">
+          <BUITooltip.Arrow className="Arrow"><PopupArrow /></BUITooltip.Arrow>
+          {tooltip}
+        </BUITooltip.Popup>
+      </BUITooltip.Positioner>
+    </BUITooltip.Portal>
+  </BUITooltip.Root>
 }
 
 //*****************************************************************************
@@ -400,13 +396,16 @@ export function DialogActions({children}) {
   return <HFiller style={{alignItems: "center", padding: "8px 16px", borderTop: "1px solid lightgray"}}>{children}</HFiller>
 }
 
+export function Dialog({ children }) {
+  return null;
+}
+
 //*****************************************************************************
 //
 // Snackbar inform
 //
 //*****************************************************************************
 
-//*
 export const Inform = {
   success: msg => {
     return enqueueSnackbar(String(msg), {variant: "success"});
@@ -428,4 +427,7 @@ export const Inform = {
     return enqueueSnackbar(String(msg), {variant: "info", persist: true});
   },
 }
-/**/
+
+export function Snackbar({ children }) {
+  return null;
+}

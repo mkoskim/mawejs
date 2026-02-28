@@ -18,7 +18,6 @@ import {
   ToolBox, Button, Icon,
   Input,
   Label,
-  SearchBox,
   InfiniteScroll,
   Separator,
 } from "../common/factory";
@@ -97,7 +96,7 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
 
   return <VBox style={{overflow: "auto"}}>
     <ToolBox style={{background: "white"}}>
-      <SearchBox
+      <Input
         value={filterText}
         onChange={ev => setFilterText(ev.target.value)}
       />

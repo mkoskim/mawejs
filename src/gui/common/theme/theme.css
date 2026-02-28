@@ -5,7 +5,9 @@
 
 @import "app.css";
 @import "base.css";
+@import "popup.css";
 @import "menu.css";
+@import "input.css";
 
 .VBox {
   display: flex;
@@ -45,11 +47,11 @@
   //backgroundColor: "#F8F8F8",
   */
 
-  &.top {
+  &[side="top"] {
     border-bottom: 1pt solid lightgray;
   }
 
-  &.bottom {
+  &[side="bottom"] {
     border-top: 1pt solid lightgray;
   }
 }

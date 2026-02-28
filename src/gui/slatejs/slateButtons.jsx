@@ -122,7 +122,7 @@ class ParagraphStyleSelect extends React.PureComponent {
     "---": true,
   }
 
-  menuItem(popupState, editor, index, choices, type) {
+  menuItem(editor, index, choices, type) {
     if(type in this.constructor.separator_types) return <Separator key={index}/>
     if(type in choices) {
       const style = choices[type];
@@ -131,7 +131,7 @@ class ParagraphStyleSelect extends React.PureComponent {
           key={type}
           title={<div style={{width: "100px"}}>{style.name}</div>}
           startAdornment={style.markup ?? " "} endAdornment={style.shortcut}
-          onClick={e => {applyStyle(editor, type); popupState.close(e)}}
+          onClick={e => {applyStyle(editor, type);}}
         />
       )
     }
@@ -144,22 +144,18 @@ class ParagraphStyleSelect extends React.PureComponent {
     const {order} = this.constructor
     const name  = type in choices ? choices[type].name : "Text"
 
-    return <PopupState variant="popover" popupId="file-menu">
-      {(popupState) => <React.Fragment>
-        <Button
-          tooltip="Paragraph style"
-          style={{justifyContent: "flex-start"}}
-          endIcon={<Icon.Arrow.DropDown/>}
-          {...bindTrigger(popupState)}
-          >
-            <div style={{width: 70, textAlign: "left"}}>{name}</div>
-          </Button>
-        <Menu {...bindMenu(popupState)}>
-          {order.map((type, index) => this.menuItem(popupState, editor, index, choices, type))}
-        </Menu>
-      </React.Fragment>
-      }
-    </PopupState>
+    return  <Button
+      tooltip="Paragraph style"
+      style={{justifyContent: "flex-start"}}
+      >
+        <div style={{width: 70, textAlign: "left"}}>{name}</div><Icon.Arrow.DropDown/>
+    </Button>
+
+    {/*
+    <Menu>
+        {order.map((type, index) => this.menuItem(editor, index, choices, type))}
+      </Menu>
+    */}
   }
 }
 
@@ -202,37 +198,37 @@ export class FoldButtons extends React.PureComponent {
     function onUnfoldScenes(e) { foldByType(editor, FOLD.unfoldScenes); ReactEditor.focus(editor);}
     function onUnfoldSynopsis(e) { foldByType(editor, FOLD.unfoldSynopsis); ReactEditor.focus(editor);}
 
-    return <PopupState variant="popover" popupId="file-menu">
-      {(popupState) => <React.Fragment>
-        <Button tooltip="Folding" {...bindTrigger(popupState)} endIcon={<Icon.Arrow.DropDown/>}>Fold</Button>
-        <Menu {...bindMenu(popupState)}>
+    return <Button tooltip="Folding">
+      Fold <Icon.Arrow.DropDown/>
+      </Button>
 
+/*
         <MenuItem
           title="Fold All"
           endAdornment="Alt-A"
-          onClick={e => {onFoldAll(e); popupState.close(e)}}
+          onClick={e => {onFoldAll(e)}}
           />
 
         <Separator/>
 
         <MenuItem
           title="Fold Chapters"
-          onClick={e => {onFoldChapters(e); popupState.close(e)}}
+          onClick={e => {onFoldChapters(e)}}
           />
         <MenuItem
           title="Unfold Chapters"
-          onClick={e => {onUnfoldChapters(e); popupState.close(e)}}
+          onClick={e => {onUnfoldChapters(e)}}
           />
 
         <Separator/>
 
         <MenuItem
           title="Unfold Synopsis"
-          onClick={e => {onUnfoldSynopsis(e); popupState.close(e)}}
+          onClick={e => {onUnfoldSynopsis(e)}}
           />
         <MenuItem
           title="Unfold Draft"
-          onClick={e => {onUnfoldScenes(e); popupState.close(e)}}
+          onClick={e => {onUnfoldScenes(e)}}
           />
 
         <Separator/>
@@ -240,13 +236,13 @@ export class FoldButtons extends React.PureComponent {
         <MenuItem
           title="Unfold All"
           endAdornment="Alt-S"
-          onClick={e => {onUnfoldAll(e); popupState.close(e)}}
+          onClick={e => {onUnfoldAll(e)}}
           />
 
         </Menu>
       </React.Fragment>
       }
-    </PopupState>
+    */
 
     /*
     function onFoldToggle(e) { toggleFold(editor); ReactEditor.focus(editor); }

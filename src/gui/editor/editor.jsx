@@ -59,12 +59,10 @@ import {TagTable} from "./tagTable"
 
 import {
   VBox, HBox, Filler, VFiller, HFiller,
-  ToolBox, Icon, IconButton,
+  ToolBox, Icon, IconButton, Input,
   MakeToggleGroup,
-  SearchBox,
   IsKey, addHotkeys,
   Separator, addClass,
-  Button,
 } from "../common/factory";
 
 import {
@@ -403,7 +401,7 @@ function LeftPanelMenu({settings}) {
   const setIndexed = useCallback(value => updateDoc(doc => {doc.ui.editor.left.indexed = value}), [updateDoc])
   const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.left.words = value}), [updateDoc])
 
-  return <ToolBox style={doc.ui.editor.toolbox.left}>
+  return <ToolBox side="top" style={doc.ui.editor.toolbox.left}>
     {/* <ChooseLeftPanel disabled={disabled} selected={selected} setSelected={setSelected}/> */}
     <ChooseVisibleElements
       choices={LeftIndexChoices.visible}
@@ -438,7 +436,7 @@ function RightPanel({settings}) {
   const disabled = useMemo(() => [left.selected], [left.selected])
 
   return <VFiller style={style}>
-      <ToolBox style={doc.ui.editor.toolbox.right}>
+      <ToolBox side="top" style={doc.ui.editor.toolbox.right}>
         <ChooseRightPanel selected={selected} disabled={disabled} setSelected={setSelectRight}/>
         <Filler />
       </ToolBox>
@@ -632,20 +630,15 @@ class Searching extends React.PureComponent {
     searchBackward(this.props.editor, this.props.searchText, true);
   }
 
-
-  static btn_sx = {borderRadius: "12px"}
-  static input_style = {width: 250}
-
   render() {
     const { editor, searchText, setSearchText, searchBoxRef } = this.props;
-    const {input_style, btn_sx} = this.constructor
+    //const {input_style, btn_sx} = this.constructor
 
     // Render a search icon button if no search text is defined.
     if (typeof(searchText) !== "string") {
       return (
         <IconButton
           tooltip="Search text (Ctrl-F)"
-          size="small"
           onClick={ev => setSearchText("")}
         >
           <Icon.Action.Search/>
@@ -653,28 +646,31 @@ class Searching extends React.PureComponent {
       );
     }
 
-    return <SearchBox
-      inputRef={searchBoxRef}
-      style={input_style}
-      size="small"
-      value={searchText}
-      autoFocus
-      onChange={ev => setSearchText(ev.target.value)}
-      onBlur={ev => { if (!searchText) setSearchText(undefined) }}
-      onKeyDown={ev => {
-        if (IsKey.Enter(ev)) {
-          ev.preventDefault();
-          ev.stopPropagation();
-          if (searchText === "") setSearchText(undefined);
-          searchFirst(editor, searchText, true);
-        }
-      }}
-      endAdornment={<HBox style={{borderLeft: "1px solid lightgray", paddingLeft: "4px"}}>
-        <Button sx={btn_sx} tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up fontSize="12pt"/></Button>
-        <Button sx={btn_sx} tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down fontSize="12pt"/></Button>
-        <Button sx={btn_sx} tooltip="Clear" onClick={this.clearSearch}><Icon.Close fontSize="12pt"/></Button>
-      </HBox>}
-    />
+    return <>
+      <IconButton disabled><Icon.Action.Search/></IconButton>
+      <HBox className="Entry">
+        <Input
+          spellCheck={false}
+          ref={searchBoxRef}
+          value={searchText}
+          autoFocus
+          onChange={ev => setSearchText(ev.target.value)}
+          //onBlur={ev => { if (!searchText) setSearchText(undefined) }}
+          onKeyDown={ev => {
+            if (IsKey.Enter(ev)) {
+              ev.preventDefault();
+              ev.stopPropagation();
+              if (searchText === "") setSearchText(undefined);
+              searchFirst(editor, searchText, true);
+            }
+          }}
+        />
+        <Separator/>
+        <IconButton tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up/></IconButton>
+        <IconButton tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down/></IconButton>
+        <IconButton tooltip="Clear" onClick={this.clearSearch}><Icon.Close/></IconButton>
+      </HBox>
+    </>
   }
 }
 
@@ -696,7 +692,7 @@ function EditorBox({style, settings}) {
   return <VFiller>
     {/* Editor toolbar */}
 
-    <ToolBox style={doc.ui.editor.toolbox.mid}>
+    <ToolBox side="top" style={doc.ui.editor.toolbox.mid}>
       <FoldButtons editor={editor}/>
       <Separator/>
       <StyleButtons editor={editor} type={type} bold={bold} italic={italic}/>
