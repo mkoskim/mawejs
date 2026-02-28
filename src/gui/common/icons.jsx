@@ -1,27 +1,54 @@
-
 //-----------------------------------------------------------------------------
 // Icons
 //-----------------------------------------------------------------------------
 
-import {
-  LightbulbOutlined,
-  Close,
-  StarOutlineOutlined,
-  Star,
-  Circle,
-  HelpOutline,
-  Menu,
+function createSvgIcon({viewBox = "0 0 24 24", children}) {
+  return () => <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox}>
+    {children}
+    </svg>
+}
 
-  BarChartOutlined, BookmarksOutlined, ShowChart,
+const Placeholder = createSvgIcon({
+  children: <>
+    <path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+    </>
+})
+
+const Search = createSvgIcon({
+  children: <>
+    <path d="M0 0h24v24H0V0z" fill="none"/>
+    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5"/>
+  </>
+})
+
+/*
+const LightbulbOutlined = createSvgIcon(
+  children: <>
+    <path d="M0 0h24v24H0z" fill="none"/>
+    <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/>
+  </>
+})
+
+/*
+const Close = createSvgIcon({
+    viewBox: "0, -8, -8, -8",
+    children: <path d="M-8 -8h-8v-8H-8V-8z"/>
+})
+
+const StarOutlineOutlined = <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ffffff"><path d="M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3"/></svg>
+const Star = <svg xmlns="http://www.wfulfill.com/standalone/Star.svg#StarIcon" height="inherit" viewBox="-6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 " width="inherit"></svg>
+const Circle = <svg xmlns="http://www.wfulfill.com/standalone/Circle.svg#CircleIcon" height="inherit" viewBox="-8 -8 " width="inherit"></svg>
+const HelpOutline = <svg xmlns="http://www.wfulfill.com/standalone/HelpOutline.svg#HelpOutlineIcon" height="inherit" viewBox="-8 -8 " width="inherit"></svg>
+
+Menu,
+
+  BarChartOutlined, BookmarksOutlined,
   LooksOne, LooksTwo,
-  UnfoldMore, UnfoldMoreDouble,
-  UnfoldLess, UnfoldLessDouble,
   AddBoxOutlined,
 
   ArrowUpward, ArrowDownward,
   ArrowLeft,
   ArrowRight,
-  ArrowDropUp,
   ArrowDropDown,
 
   KeyboardArrowDown,
@@ -30,7 +57,7 @@ import {
   KeyboardArrowRight,
 
   IndeterminateCheckBoxOutlined,
-  Expand, ExpandMore,
+  ExpandMore,
 
   FormatBold, FormatItalic,
 
@@ -41,13 +68,11 @@ import {
   PrintOutlined,
   DonutLarge,
   FormatAlignJustifyOutlined,
-  FormatAlignRightOutlined,
 
-  Label, LabelOutlined, AlternateEmail,
+  AlternateEmail,
 
   SettingsOutlined,
 
-  Search,
   SwapHorizontalCircleOutlined,
   FolderOutlined,
   NoteAddOutlined,
@@ -68,14 +93,9 @@ import {
   Home,
   Favorite,
 
-  Folder,
   InsertDriveFileOutlined,
   BrokenImageOutlined,
   CheckBox,
-
-  Comment,
-  Report,
-  AddBox,
 
   VisibilityOff,
   Numbers,
@@ -92,39 +112,25 @@ import {
   CommentOutlined,
   ReportOutlined,
   AlternateEmailOutlined,
-  Sort,
-  DeleteForeverOutlined,
   DeleteOutlined,
   DriveFileRenameOutlineOutlined,
-  Biotech,
-} from '@mui/icons-material';
 
-import {
-  mdiSortAscending,
-  mdiSortDescending,
-  mdiSortReverseVariant,
-  mdiSortVariant,
-  mdiTextBoxEditOutline,
-  mdiBookAlphabet,
-  mdiBookOpenVariantOutline,
-} from '@mdi/js';
-
-import { createSvgIcon } from '@mui/material';
-import {BiotechOutlined} from '@mui/icons-material';
-import {ScienceOutlined} from '@mui/icons-material';
-import {NotesOutlined} from '@mui/icons-material';
+  NotesOutlined,
 
 //-----------------------------------------------------------------------------
 // Material Design Icons
 //-----------------------------------------------------------------------------
+
+  mdiTextBoxEditOutline,
+  mdiBookOpenVariantOutline,
 
 //const MdiSortAscending = createSvgIcon(<path d={mdiSortAscending}/>)
 //const MdiSortDescending = createSvgIcon(<path d={mdiSortDescending}/>)
 //const MdiSortAscending = createSvgIcon(<path d={mdiSortReverseVariant}/>)
 //const MdiSortDescending = createSvgIcon(<path d={mdiSortVariant}/>)
 const MdiTextBoxEditOutline = createSvgIcon(<path d={mdiTextBoxEditOutline}/>)
-const MdiBookAlphabet = createSvgIcon(<path d={mdiBookAlphabet}/>)
 const MdiBookOpenVariantOutline = createSvgIcon(<path d = {mdiBookOpenVariantOutline}/>)
+*/
 
 //-----------------------------------------------------------------------------
 // Custom made icons
@@ -140,7 +146,7 @@ const MdiBookOpenVariantOutline = createSvgIcon(<path d = {mdiBookOpenVariantOut
   <path d="M19 7H22L18 3L14 7H17V21H19M2 17H12V19H2M6 5V7H2V5M2 11H9V13H2V11Z" /></svg>
 */
 
-const elements = {
+const svgElements = {
   arrowDown:   ["M19 17", "H22", "L18 21", "L14 17", "H17", "V3",  "H19"].join(""),
   arrowUp:     ["M19 7",  "H22", "L18 3",  "L14 7",  "H17", "V21", "H19"].join(""),
   stackAscend: [
@@ -155,36 +161,36 @@ const elements = {
   ].join(""),
 }
 
-const SortAscending  = createSvgIcon(<path d={elements.arrowDown + elements.stackAscend}/>)
-const SortDescending = createSvgIcon(<path d={elements.arrowDown + elements.stackDescend} />)
+const SortAscending  = <svg viewBox="0 0 24 24"><path d={svgElements.arrowDown + svgElements.stackAscend}/></svg>
+const SortDescending = <svg viewBox="0 0 24 24"><path d={svgElements.arrowDown + svgElements.stackDescend}/></svg>
 
 //-----------------------------------------------------------------------------
 // Icons
 //-----------------------------------------------------------------------------
 
 export const Icon = {
-  Placeholder: LightbulbOutlined,
+  Placeholder,
 
-  Close: Close,
-  Star: StarOutlineOutlined,
-  Starred: Star,
-  Circle: Circle,
-  Help: HelpOutline,
-  Menu: Menu,
+  Close: Placeholder, //Close,
+  Star: Placeholder, //StarOutlineOutlined,
+  Starred: Placeholder, //Star,
+  Circle: Placeholder, //Circle,
+  Help: Placeholder, //HelpOutline,
+  Menu: Placeholder, //Menu,
 
-  ExpandMore: ExpandMore,
+  ExpandMore: Placeholder, //ExpandMore,
 
   Arrow: {
-    Left: ArrowLeft,
-    Right: ArrowRight,
-    Up: ArrowUpward,
-    Down: ArrowDownward,
-    DropDown: ArrowDropDown,
+    Left: Placeholder, //ArrowLeft,
+    Right: Placeholder, //ArrowRight,
+    Up: Placeholder, //ArrowUpward,
+    Down: Placeholder, //ArrowDownward,
+    DropDown: Placeholder, //ArrowDropDown,
     Head: {
-      Up: KeyboardArrowUp,
-      Down: KeyboardArrowDown,
-      Left: KeyboardArrowLeft,
-      Right: KeyboardArrowRight,
+      Up: Placeholder, //KeyboardArrowUp,
+      Down: Placeholder, //KeyboardArrowDown,
+      Left: Placeholder, //KeyboardArrowLeft,
+      Right: Placeholder, //KeyboardArrowRight,
     }
   },
 
@@ -194,109 +200,109 @@ export const Icon = {
   },
 
   View: {
-    Index: FormatAlignLeft,
-    List: FormatListNumberedRtl,
-    Edit: MdiTextBoxEditOutline,
-    Organize: GridViewOutlined,
-    Export: PrintOutlined,
-    Arc: DonutLarge,
-    Stats: BarChartOutlined,
-    Tags: AlternateEmail,
-    Draft: DescriptionOutlined,
-    Notes: NotesOutlined,
-    StoryBook: MdiBookOpenVariantOutline,
-    Trashcan: DeleteOutlined,
+    Index: Placeholder, //FormatAlignLeft,
+    List: Placeholder, //FormatListNumberedRtl,
+    Edit: Placeholder, //MdiTextBoxEditOutline,
+    Organize: Placeholder, //GridViewOutlined,
+    Export: Placeholder, //PrintOutlined,
+    Arc: Placeholder, //DonutLarge,
+    Stats: Placeholder, //BarChartOutlined,
+    Tags: Placeholder, //AlternateEmailOutlined,
+    Draft: Placeholder, //DescriptionOutlined,
+    Notes: Placeholder, //NotesOutlined,
+    StoryBook: Placeholder, //MdiBookOpenVariantOutline,
+    Trashcan: Placeholder, //DeleteOutlined,
   },
 
   //NewFile: NoteAddOutlined,
   //NewFolder: CreateNewFolderOutlined,
   //AddFiles: FolderOpenOutlined,
 
-  Settings: SettingsOutlined,
+  Settings: Placeholder, //SettingsOutlined,
 
   Action: {
-    Quit: Close,
-    Close: Close,
+    Quit: Placeholder, //Close,
+    Close: Placeholder, //Close,
     Search: Search,
-    Edit: ArticleOutlined,
-    Cards: GridViewOutlined,
-    Transfer: SwapHorizontalCircleOutlined,
-    Print: PrintOutlined,
-    Folder: FolderOutlined,
+    Edit: Placeholder, //ArticleOutlined,
+    Cards: Placeholder, //GridViewOutlined,
+    Transfer: Placeholder, //SwapHorizontalCircleOutlined,
+    Print: Placeholder, //PrintOutlined,
+    Folder: Placeholder, //FolderOutlined,
     File: {
-      New: NoteAddOutlined,
-      Open: FileOpenOutlined,
-      Save: SaveOutlined,
-      SaveAs: SaveAsOutlined,
-      Rename: DriveFileRenameOutlineOutlined,
+      New: Placeholder, //NoteAddOutlined,
+      Open: Placeholder, //FileOpenOutlined,
+      Save: Placeholder, //SaveOutlined,
+      SaveAs: Placeholder, //SaveAsOutlined,
+      Rename: Placeholder, //DriveFileRenameOutlineOutlined,
     },
-    Replay: Replay,
-    Cached: Cached,
-    Loop: Loop,
+    Replay: Placeholder, //Replay,
+    Cached: Placeholder, //Cached,
+    Loop: Placeholder, //Loop,
     Rotate: {
-      CW: RotateRight,
-      CCW: RotateLeft,
+      CW: Placeholder, //RotateRight,
+      CCW: Placeholder, //RotateLeft,
     },
     VerticalAlign: {
-      Top: VerticalAlignTop,
-      Bottom: VerticalAlignBottom,
+      Top: Placeholder, //VerticalAlignTop,
+      Bottom: Placeholder, //VerticalAlignBottom,
     },
-    HeadInfo: DescriptionOutlined,
+    HeadInfo: Placeholder, //DescriptionOutlined,
   },
 
   Location: {
-    Home: Home,
-    Favorites: Favorite,
+    Home: Placeholder, //Home,
+    Favorites: Placeholder, //Favorite,
   },
 
   FileType: {
-    Folder: FolderOutlined,
-    File: InsertDriveFileOutlined,
-    Unknown: BrokenImageOutlined,
-    Selected: CheckBox,
+    Folder: Placeholder, //FolderOutlined,
+    File: Placeholder, //InsertDriveFileOutlined,
+    Unknown: Placeholder, //BrokenImageOutlined,
+    Selected: Placeholder, //CheckBox,
   },
 
-  MoreHoriz: MoreHoriz,
-  PaperClipHoriz: Attachment,
-  PaperClipVert: AttachFile,
+  MoreHoriz: Placeholder, //MoreHoriz,
+  PaperClipHoriz: Placeholder, //Attachment,
+  PaperClipVert: Placeholder, //AttachFile,
 
   RadioButton: {
-    Unchecked: RadioButtonUnchecked,
-    Checked: RadioButtonChecked,
+    Unchecked: Placeholder, //RadioButtonUnchecked,
+    Checked: Placeholder, //RadioButtonChecked,
   },
 
   BlockType: {
-    Scene: FormatAlignJustifyOutlined,
-    Bookmark: BookmarksOutlined,
-    Comment: CommentOutlined,
-    Missing: ReportOutlined,
-    Filler: AddBoxOutlined,
-    Tags: AlternateEmailOutlined,
+    Scene: Placeholder, //FormatAlignJustifyOutlined,
+    Bookmark: Placeholder, //BookmarksOutlined,
+    Comment: Placeholder, //CommentOutlined,
+    Missing: Placeholder, //ReportOutlined,
+    Filler: Placeholder, //AddBoxOutlined,
+    Tags: Placeholder, //AlternateEmailOutlined,
   },
   StatType: {
-    Off: VisibilityOff,
-    Words: Numbers,
-    Compact: Compress,
-    Percent: Percent,
-    Cumulative: SignalCellularAlt,
+    Off: Placeholder, //VisibilityOff,
+    Words: Placeholder, //Numbers,
+    Compact: Placeholder, //Compress,
+    Percent: Placeholder, //Percent,
+    Cumulative: Placeholder, //SignalCellularAlt,
   },
 
   Style: {
-    Bold: FormatBold,
-    Italic: FormatItalic,
+    Bold: Placeholder, //FormatBold,
+    Italic: Placeholder, //FormatItalic,
 
-    Chapter: LooksOne,
-    Scene: LooksTwo,
+    Chapter: Placeholder, //LooksOne,
+    Scene: Placeholder, //LooksTwo,
 
-    Bookmark: BookmarksOutlined,
-    Comment: CommentOutlined,
-    Missing: ReportOutlined,
-    Filler: AddBoxOutlined,
-    Tags: AlternateEmailOutlined,
+    Bookmark: Placeholder, //BookmarksOutlined,
+    Comment: Placeholder, //CommentOutlined,
+    Missing: Placeholder, //ReportOutlined,
+    Filler: Placeholder, //AddBoxOutlined,
+    Tags: Placeholder, //AlternateEmailOutlined,
 
-    Folded: VisibilityOff,
-    FoldAll: IndeterminateCheckBoxOutlined,
-    UnfoldAll: AddBoxOutlined,
+    Folded: Placeholder, //VisibilityOff,
+    FoldAll: Placeholder, //IndeterminateCheckBoxOutlined,
+    UnfoldAll: Placeholder, //AddBoxOutlined,
   },
 }
 

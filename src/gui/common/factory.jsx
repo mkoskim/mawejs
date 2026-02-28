@@ -6,49 +6,81 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import "./factory.css"
+import "./theme/theme.css"
 
-/* eslint-disable no-unused-vars */
-
-//-----------------------------------------------------------------------------
 import React, {
   useDeferredValue,
 } from "react"
 
-import { styled, ThemeProvider } from '@mui/material/styles';
-import { theme } from "./theme";
-
-import {
-  Button as MuiButton,
-  ToggleButton as MuiToggleButton,
-  IconButton as MuiIconButton,
-  ToggleButtonGroup,  ButtonGroup,
-
-  Menu as MuiMenu,
-  MenuItem as MuiMenuItem,
-  MenuList as MuiMenuList,
-  Dialog,
-
-  Breadcrumbs,
-  Chip, Link,
-  TextField, OutlinedInput,
-  Tooltip as MuiTooltip,
-  CircularProgress as Spinner,
-  Typography,
-  List, ListItem, ListItemText, ListSubheader, ListItemIcon,
-  Accordion, AccordionSummary, AccordionDetails,
-  Snackbar,
-} from "@mui/material"
-
 import {Icon} from "./icons"
 import {IsKey, addHotkeys} from "./hotkeys"
+import {enqueueSnackbar, closeSnackbar} from "notistack";
+import {isNotEmpty} from "../../util";
 
-import { enqueueSnackbar, closeSnackbar } from "notistack";
-import { isNotEmpty } from "../../util";
-import PopupState, { bindMenu, bindTrigger } from "material-ui-popup-state";
+import {
+  Menu,
+  Button as MuiButton,
+} from "@base-ui/react"
+
+//-----------------------------------------------------------------------------
+// Exports
+//-----------------------------------------------------------------------------
 
 export {default as InfiniteScroll} from "react-infinite-scroll-component";
 
+export {
+  Icon,
+  IsKey, addHotkeys,
+}
+
+export {
+  Menu,
+}
+
+//-----------------------------------------------------------------------------
+// Temporary export
+
+export function ToggleButtonGroup({children}) {
+  return <div>{children}</div>
+}
+
+export function ListSubheader({children}) {
+  return <div>{children}</div>
+}
+
+export function MenuItem({children}) {
+  return <div>{children}</div>
+}
+
+export function TextField({children}) {
+  return <div>{children}</div>
+}
+
+export function Accordion({children}) {
+  return <div>{children}</div>
+}
+
+export function AccordionDetails({children}) {
+  return <div>{children}</div>
+}
+
+export function AccordionSummary({children}) {
+  return <div>{children}</div>
+}
+
+export function Dialog({children}) {
+  return null;
+}
+
+export function Snackbar({children}) {
+  return null;
+}
+
+export function Tooltip({children}) {
+  return <div>{children}</div>
+}
+
+/*
 export {
   Spinner,
   Chip, Link,
@@ -59,38 +91,13 @@ export {
   Dialog,
   Snackbar
 }
-
-export {
-  Icon,
-  IsKey, addHotkeys,
-}
+*/
 
 //*****************************************************************************
 //
 // General
 //
 //*****************************************************************************
-
-//-----------------------------------------------------------------------------
-// Tooltips
-//-----------------------------------------------------------------------------
-
-/*
-const Tooltip = styled(({ className, ...props }) => (
-  <muiTooltip {...props} arrow classes={{ popper: className }} />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.arrow}`]: {
-    color: theme.palette.common.black,
-  },
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.common.black,
-  },
-}));
-*/
-
-export function Tooltip(props) {
-  return <MuiTooltip arrow {...props}/>
-}
 
 //-----------------------------------------------------------------------------
 
@@ -166,16 +173,12 @@ export class HFiller extends React.PureComponent {
   }
 }
 
-//*
 export class Separator extends React.PureComponent {
   render() {
     const {className, fullWidth, ...props} = this.props
     return <div className={addClass("Separator", className)} {...props}/>;
   }
 }
-/*/
-export {Divider as Separator}
-/**/
 
 //*****************************************************************************
 //
@@ -186,18 +189,14 @@ export {Divider as Separator}
 export class ToolBox extends React.PureComponent {
   render() {
     const {className, ...props} = this.props
-    return <ThemeProvider theme={theme.toolbar}>
-      <HBox className={addClass("ToolBox", className)} {...props}/>
-    </ThemeProvider>
+    return <HBox className={addClass("ToolBox", className)} {...props}/>
   }
 }
 
 export class SideBar extends React.PureComponent {
   render() {
     const {className, ...props} = this.props
-    return <ThemeProvider theme={theme.side}>
-      <VBox className={addClass("ToolBox", className)} {...props}/>
-    </ThemeProvider>
+    return <VBox className={addClass("Sidebar", className)} {...props}/>
   }
 }
 
@@ -240,13 +239,6 @@ export class MakeToggleGroup extends React.PureComponent {
 
 //-----------------------------------------------------------------------------
 
-export {ButtonGroup}
-/*
-export function ButtonGroup(props) {
-  return <XButtonGroup {...props} />
-}
-*/
-
 /*
 export {Button, IconButton, ToggleButton}
 /*/
@@ -266,9 +258,9 @@ export class IconButton extends React.PureComponent {
   render() {
     const {tooltip, ...props} = this.props
     if(tooltip) {
-      return <Tooltip title={tooltip}><MuiIconButton {...props}/></Tooltip>
+      return <Tooltip title={tooltip}><MuiButton {...props}/></Tooltip>
     }
-    return <MuiIconButton {...props}/>
+    return <MuiButton {...props}/>
   }
 }
 
@@ -277,9 +269,9 @@ export class ToggleButton extends React.PureComponent {
   render() {
     const {tooltip, ...props} = this.props
     if(tooltip) {
-      return <Tooltip title={tooltip}><MuiToggleButton {...props}/></Tooltip>
+      return <Tooltip title={tooltip}><MuiButton {...props}/></Tooltip>
     }
-    return <MuiToggleButton {...props}/>
+    return <MuiButton {...props}/>
   }
 }
 /**/
@@ -330,10 +322,6 @@ export class SearchBox extends React.PureComponent {
   }
 }
 
-//-----------------------------------------------------------------------------
-
-export {Breadcrumbs}
-
 //*****************************************************************************
 //
 // Labels
@@ -361,12 +349,7 @@ export function Loading({className, style}) {
 //
 //*****************************************************************************
 
-export {
-  MuiMenu as Menu,
-  MuiMenuItem
-}
-//Menu, MenuItem, MenuList,
-
+/*
 export function MenuItem({onClick, value, disabled, title, startAdornment, endAdornment}) {
   return <MuiMenuItem value={value} disabled={disabled} onClick={onClick}>
     {startAdornment ? <ListItemIcon>{startAdornment}</ListItemIcon> : null}
@@ -374,6 +357,7 @@ export function MenuItem({onClick, value, disabled, title, startAdornment, endAd
     {endAdornment ? <Typography sx={{ color: 'text.secondary' }}>{endAdornment}</Typography> : null}
   </MuiMenuItem>
 }
+*/
 
 /*
 // Need to figure out how to close popup when clicking child item

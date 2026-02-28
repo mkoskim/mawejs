@@ -32,11 +32,6 @@ import {
 
 //import { WorkspaceBar } from "../sketches/workspacebar/workspacebar";
 
-import PopupState, {
-  bindTrigger,
-  bindMenu
-} from 'material-ui-popup-state';
-
 import {
   CmdContext, cmdDispatch,
   reqNew,
@@ -402,6 +397,8 @@ class FileMenu extends React.PureComponent {
     const filename = file?.name ?? "<Unnamed>"
     const name = hasdoc ? filename : <Icon.Menu />
 
+    return null;
+    /*
     return <PopupState variant="popover">
       {(popupState) => <React.Fragment>
         <Button tooltip="File menu" {...bindTrigger(popupState)}>{name}</Button>
@@ -448,8 +445,7 @@ class FileMenu extends React.PureComponent {
             />
           {/*
           <MenuItem onClick={popupState.close}>Revert</MenuItem>
-          <MenuItem onClick={e => { popupState.close(e); }}>Open Folder</MenuItem>
-          */}
+          <MenuItem onClick={e => { popupState.close(e); }}>Open Folder</MenuItem>}
           <Separator />
           <MenuItem
             title="Quit" //endAdornment="Ctrl-Q"
@@ -459,6 +455,7 @@ class FileMenu extends React.PureComponent {
       </React.Fragment>
       }
     </PopupState>
+    */
   }
 }
 
@@ -483,6 +480,8 @@ class HelpButton extends React.PureComponent {
   render() {
     const { setCommand } = this.props
 
+    return null;
+    /*
     return <PopupState variant="popover" popupId="file-menu">
     {(popupState) => <React.Fragment>
       <IconButton tooltip="Help" {...bindTrigger(popupState)}><Icon.Help/></IconButton>
@@ -496,5 +495,6 @@ class HelpButton extends React.PureComponent {
       </Menu>
     </React.Fragment>}
     </PopupState>
+    */
   }
 }

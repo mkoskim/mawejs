@@ -12,23 +12,18 @@ import React, {
 import {
   VBox, HBox, VFiller,
   Button,
-  ListSubheader,
+  ListSubheader, MenuItem,
   Separator,
   TextField,
-  MenuItem,
   DeferredRender,
   Inform,
   Label,
-  ToolBox,
-  Filler,
-  MuiMenuItem,
 } from "../common/factory";
 
-import { elemName, getSuffix, text2words } from "../../document/util";
+import { getSuffix, text2words } from "../../document/util";
 
 import { exportAs, flattedFormat, flattedToText, storyToFlatted } from "../../document/export"
 
-import { setFocusTo } from "../editor/editor";
 import { numfmt } from "../../util";
 import fs from "../../system/localfs"
 
@@ -145,13 +140,13 @@ class ChooseFormat extends React.PureComponent {
 
     return <TextField select label="Format" value={format} onChange={e => updateDocFormat(updateDoc, e.target.value)}>
       <ListSubheader>RTF</ListSubheader>
-      <MuiMenuItem value="rtf1">RTF, A4, 1-side</MuiMenuItem>
+      <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
       {/*<MuiMenuItem value="rtf2">RTF, A4, 2-side</MuiMenuItem>*/}
       <ListSubheader>LaTeX</ListSubheader>
-      <MuiMenuItem value="tex1">LaTeX, A5, 1-side</MuiMenuItem>
-      <MuiMenuItem value="tex2">LaTeX, A5 booklet</MuiMenuItem>
+      <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
+      <MenuItem value="tex2">LaTeX, A5 booklet</MenuItem>
       <ListSubheader>Other</ListSubheader>
-      <MuiMenuItem value="md">MD (Mark Down)</MuiMenuItem>
+      <MenuItem value="md">MD (Mark Down)</MenuItem>
       {/* <MuiMenuItem value="txt">Text (wrapped)</MuiMenuItem> */}
       </TextField>
   }

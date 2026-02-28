@@ -1,6 +1,4 @@
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider } from "@mui/material";
-import { theme } from "./gui/common/theme.js";
 import { SnackbarProvider } from "notistack";
 
 import {App} from "./gui/app/app.jsx"
@@ -14,9 +12,7 @@ import {App} from "./gui/app/app.jsx"
 //-----------------------------------------------------------------------------
 
 createRoot(document.getElementById('root')).render(
-  <ThemeProvider theme={theme.common}>
-    <SnackbarProvider>
-      <App />
-    </SnackbarProvider>
-  </ThemeProvider>
+  <SnackbarProvider>
+    <App />
+  </SnackbarProvider>
 );

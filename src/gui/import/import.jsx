@@ -26,16 +26,10 @@ import {
   Dialog,
 } from "../common/factory";
 
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
-
 import { maweFromTree } from "../../document/xmljs/load";
 
 import { Preview } from "./preview";
 import { ImportText } from "./importText";
-
-//import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 
 import mammoth from "mammoth"
 import fs from "../../system/localfs"

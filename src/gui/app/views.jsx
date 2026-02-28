@@ -78,6 +78,8 @@ export function ViewSwitch({doc, updateDoc}) {
 
   if(!doc) return null
 
+  return null
+
   // Note: View is reset when doc key changes (new/reloaded file)
   const editors = useMemo(() => bindEditors(doc, updateDoc), [])
   const props = { doc, updateDoc, editors }

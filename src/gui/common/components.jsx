@@ -14,18 +14,13 @@ import {
   Button, Icon, IconButton,
   MakeToggleGroup,
   Menu, MenuItem,
-  ListItemIcon, ListItemText, Typography,
   TextField,
-  Label,
   Accordion, AccordionSummary, AccordionDetails,
   Separator,
 } from "./factory";
 
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
-
 import { mawe } from "../../document"
 import {reqOpenFolder} from '../app/context';
-import {Popover} from '@mui/material';
 import {getHeader} from '../../document/head';
 import { numfmt } from '../../util';
 
@@ -68,6 +63,7 @@ export class EditHead extends React.PureComponent {
 export class EditHeadButton extends React.PureComponent {
   render() {
     const {text, head, updateDoc, expanded} = this.props
+    /*
     return <PopupState variant="popover" popupId="head-edit">
     {(popupState) => <React.Fragment>
       <Button {...bindTrigger(popupState)} endIcon={<Icon.Arrow.DropDown/>} tooltip="Edit story info">{text}</Button>
@@ -82,6 +78,7 @@ export class EditHeadButton extends React.PureComponent {
       </Popover>
     </React.Fragment>
     }</PopupState>
+    */
   }
 }
 
@@ -236,6 +233,7 @@ export class ChooseWordFormat extends React.PureComponent {
 
     //console.log("Block type:", type)
 
+    /*
     return <PopupState variant="popover" popupId="file-menu">
       {(popupState) => <React.Fragment>
         <Button
@@ -251,6 +249,7 @@ export class ChooseWordFormat extends React.PureComponent {
       </React.Fragment>
       }
     </PopupState>
+    */
   }
 }
 /**/
