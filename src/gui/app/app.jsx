@@ -6,10 +6,6 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import "./app.css"
-
-/* eslint-disable no-unused-vars */
-
 import React, {
   useEffect, useState, useCallback,
   useMemo, useContext,
@@ -318,7 +314,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
     [IsKey.CtrlW, (e) => reqCloseFile({setCommand})],
   ]), [file])
 
-  return <ToolBox>
+  return <ToolBox className="top">
     <FileMenu file={file} setCommand={setCommand} recent={recent} hasdoc={true}/>
     <FileOperations file={file} setCommand={setCommand}/>
     <Separator />
@@ -383,7 +379,7 @@ class FileOperations extends React.PureComponent {
     //const filename = file?.name ?? "<Unnamed>"
 
     return <>
-      <Button disabled={!file} tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>&nbsp;gz&nbsp;</span></Button>
+      <IconButton disabled={!file} tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>&nbsp;gz&nbsp;</span></IconButton>
       <OpenFolderButton filename={file?.id} />
       </>
   }
@@ -397,7 +393,7 @@ class FileMenu extends React.PureComponent {
     const filename = file?.name ?? "<Unnamed>"
     const name = hasdoc ? filename : <Icon.Menu />
 
-    return null;
+    return <Button>{name}</Button>
     /*
     return <PopupState variant="popover">
       {(popupState) => <React.Fragment>

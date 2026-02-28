@@ -19,7 +19,9 @@ import {isNotEmpty} from "../../util";
 
 import {
   Menu,
-  Button as MuiButton,
+  Button,
+  ToggleGroup,
+  Toggle,
 } from "@base-ui/react"
 
 //-----------------------------------------------------------------------------
@@ -40,8 +42,8 @@ export {
 //-----------------------------------------------------------------------------
 // Temporary export
 
-export function ToggleButtonGroup({children}) {
-  return <div>{children}</div>
+export function OutlinedInput({children}) {
+  return <input {...children}/>
 }
 
 export function ListSubheader({children}) {
@@ -189,7 +191,7 @@ export class Separator extends React.PureComponent {
 export class ToolBox extends React.PureComponent {
   render() {
     const {className, ...props} = this.props
-    return <HBox className={addClass("ToolBox", className)} {...props}/>
+    return <HBox className={addClass("Toolbar", className)} {...props}/>
   }
 }
 
@@ -206,6 +208,12 @@ export class SideBar extends React.PureComponent {
 //
 //*****************************************************************************
 
+export {Button}
+
+export function IconButton({children}) {
+  return <Button class="icon">{children}</Button>
+}
+
 export class MakeToggleGroup extends React.PureComponent {
 
   render() {
@@ -213,67 +221,44 @@ export class MakeToggleGroup extends React.PureComponent {
 
     if(!choices) return null;
 
-    return <ToggleButtonGroup
+    return <ToggleGroup
       {...props}
-      value={selected}
-      onChange={(e, value) => setSelected(value)}
+      value={[selected]}
+      onValueChange={(value, e) => setSelected(value[0])}
     >
       {choices.map(choice => this.constructor.makeButton(buttons, disabled, choice))}
-    </ToggleButtonGroup>
+    </ToggleGroup>
   }
 
   static makeButton(buttons, disabled, choice) {
     const isDisabled = disabled?.includes(choice) ?? false
 
-    if(!(choice in buttons)) return <ToggleButton key={choice} disabled={isDisabled} value={choice}>{choice}</ToggleButton>
+    if(!(choice in buttons)) return <Toggle key={choice} disabled={isDisabled} value={choice}>{choice}</Toggle>
 
     const {icon} = buttons[choice]
 
-    if(isDisabled) return <ToggleButton key={choice} disabled={isDisabled} value={choice}>{icon}</ToggleButton>
+    if(isDisabled) return <Toggle className="icon" key={choice} disabled={isDisabled} value={choice}>{icon}</Toggle>
 
     const {tooltip} = buttons[choice]
 
-    return <ToggleButton key={choice} disabled={isDisabled} value={choice} tooltip={tooltip}>{icon}</ToggleButton>
+    return <Toggle key={choice} className="icon" disabled={isDisabled} value={choice} tooltip={tooltip}>{icon}</Toggle>
   }
 }
 
 //-----------------------------------------------------------------------------
 
 /*
-export {Button, IconButton, ToggleButton}
-/*/
 export class Button extends React.PureComponent {
 
   render() {
     const {tooltip, ...props} = this.props
     if(tooltip) {
-      return <Tooltip title={tooltip}><MuiButton {...props}/></Tooltip>
+      return <Tooltip title={tooltip}><BaseButton {...props}/></Tooltip>
     }
-    return <MuiButton {...props}/>
+    return <BaseButton {...props}/>
   }
 }
-
-export class IconButton extends React.PureComponent {
-
-  render() {
-    const {tooltip, ...props} = this.props
-    if(tooltip) {
-      return <Tooltip title={tooltip}><MuiButton {...props}/></Tooltip>
-    }
-    return <MuiButton {...props}/>
-  }
-}
-
-export class ToggleButton extends React.PureComponent {
-
-  render() {
-    const {tooltip, ...props} = this.props
-    if(tooltip) {
-      return <Tooltip title={tooltip}><MuiButton {...props}/></Tooltip>
-    }
-    return <MuiButton {...props}/>
-  }
-}
+*/
 /**/
 
 //-----------------------------------------------------------------------------

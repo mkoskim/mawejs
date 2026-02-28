@@ -63,6 +63,7 @@ export class EditHead extends React.PureComponent {
 export class EditHeadButton extends React.PureComponent {
   render() {
     const {text, head, updateDoc, expanded} = this.props
+    return <Button>{text}</Button>
     /*
     return <PopupState variant="popover" popupId="head-edit">
     {(popupState) => <React.Fragment>

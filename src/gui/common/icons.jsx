@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------
 
 function createSvgIcon({viewBox = "0 0 24 24", children}) {
-  return () => <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox}>
+  return () => <svg xmlns="http://www.w3.org/2000/svg" className="Icon"viewBox={viewBox}>
     {children}
     </svg>
 }

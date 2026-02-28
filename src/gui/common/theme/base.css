@@ -1,0 +1,37 @@
+/* ----------------------------------------------------------------------------
+// UI base styles
+// ----------------------------------------------------------------------------
+*/
+
+.Icon {
+  width: 24px;
+  height: 24px;
+}
+
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12pt;
+  &:hover {
+    background-color: #AAA;
+  }
+}
+
+.Toolbar {
+  button {
+    min-width: 28px;
+    min-height: 28px;
+    border: none;
+
+    &.icon {
+      padding: 2px 2px;
+    }
+    &::not(.icon) {
+      padding: 2px 6px;
+    }
+    &[data-pressed] {
+      background-color: lightblue;
+    }
+  }
+}
