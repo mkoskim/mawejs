@@ -68,6 +68,18 @@
     }
       */
   }
+
+  .ArrowFill {
+    fill: canvas;
+  }
+
+  .ArrowOuterStroke {
+    fill: var(--color-gray-300);
+  }
+
+  .ArrowInnerStroke {
+    /*fill: var(--color-gray-200);*/
+  }
 }
 
 .Arrow {
@@ -92,16 +104,4 @@
     left: -13px;
     rotate: -90deg;
   }
-}
-
-.ArrowFill {
-  fill: canvas;
-}
-
-.ArrowOuterStroke {
-  fill: var(--color-gray-300);
-}
-
-.ArrowInnerStroke {
-  /*fill: var(--color-gray-200);*/
 }

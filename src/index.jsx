@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { SnackbarProvider } from "notistack";
+import {Tooltip} from "@base-ui/react/tooltip"
 
 import {App} from "./gui/app/app.jsx"
 
@@ -12,7 +13,9 @@ import {App} from "./gui/app/app.jsx"
 //-----------------------------------------------------------------------------
 
 createRoot(document.getElementById('root')).render(
+  <Tooltip.Provider>
   <SnackbarProvider>
     <App />
   </SnackbarProvider>
+  </Tooltip.Provider>
 );

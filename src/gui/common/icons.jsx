@@ -75,107 +75,41 @@ const FolderOutlined = createSvgIcon({
   </>
 })
 
+const MdiTextBoxEditOutline = createSvgIcon({
+  children: <>
+    <path d="M10 21H5C3.89 21 3 20.11 3 19V5C3 3.89 3.89 3 5 3H19C20.11 3 21 3.89 21 5V10.33C20.7 10.21 20.37 10.14 20.04 10.14C19.67 10.14 19.32 10.22 19 10.37V5H5V19H10.11L10 19.11V21M7 9H17V7H7V9M7 17H12.11L14 15.12V15H7V17M7 13H16.12L17 12.12V11H7V13M21.7 13.58L20.42 12.3C20.21 12.09 19.86 12.09 19.65 12.3L18.65 13.3L20.7 15.35L21.7 14.35C21.91 14.14 21.91 13.79 21.7 13.58M12 22H14.06L20.11 15.93L18.06 13.88L12 19.94V22Z" />
+  </>
+})
 
+const DonutLarge = createSvgIcon({
+  children: <>
+    <path d="M0 0h24v24H0V0z" fill="none"/>
+    <path d="M13 5.08c3.06.44 5.48 2.86 5.92 5.92h3.03c-.47-4.72-4.23-8.48-8.95-8.95v3.03zM18.92 13c-.44 3.06-2.86 5.48-5.92 5.92v3.03c4.72-.47 8.48-4.23 8.95-8.95h-3.03zM11 18.92c-3.39-.49-6-3.4-6-6.92s2.61-6.43 6-6.92V2.05c-5.05.5-9 4.76-9 9.95 0 5.19 3.95 9.45 9 9.95v-3.03z"/>
+  </>
+})
 
-/*
-const LightbulbOutlined = createSvgIcon(
+const BarChartOutlined = createSvgIcon({
+  children: <>
+    <rect fill="none" height="24" width="24"/>
+    <rect height="11" width="4" x="4" y="9"/>
+    <rect height="7" width="4" x="16" y="13"/>
+    <rect height="16" width="4" x="10" y="4"/>
+  </>
+})
+
+const LightbulbOutlined = createSvgIcon({
   children: <>
     <path d="M0 0h24v24H0z" fill="none"/>
     <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/>
   </>
 })
 
-/*
-const StarOutlineOutlined = <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ffffff"><path d="M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3"/></svg>
-const Star = <svg xmlns="http://www.wfulfill.com/standalone/Star.svg#StarIcon" height="inherit" viewBox="-6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 " width="inherit"></svg>
-const Circle = <svg xmlns="http://www.wfulfill.com/standalone/Circle.svg#CircleIcon" height="inherit" viewBox="-8 -8 " width="inherit"></svg>
-const HelpOutline = <svg xmlns="http://www.wfulfill.com/standalone/HelpOutline.svg#HelpOutlineIcon" height="inherit" viewBox="-8 -8 " width="inherit"></svg>
-
-Menu,
-
-  BarChartOutlined, BookmarksOutlined,
-  LooksOne, LooksTwo,
-  AddBoxOutlined,
-
-  ArrowUpward, ArrowDownward,
-  ArrowLeft,
-  ArrowRight,
-  ArrowDropDown,
-
-  IndeterminateCheckBoxOutlined,
-  ExpandMore,
-
-  FormatBold, FormatItalic,
-
-  FormatAlignLeft,
-  FormatListNumberedRtl,
-  ArticleOutlined,
-  GridViewOutlined,
-  PrintOutlined,
-  DonutLarge,
-  FormatAlignJustifyOutlined,
-
-  AlternateEmail,
-
-  SettingsOutlined,
-
-  SwapHorizontalCircleOutlined,
-  NoteAddOutlined,
-  FileOpenOutlined,
-  SaveOutlined,
-  SaveAsOutlined,
-
-  Replay,
-  Cached,
-  Loop,
-  RotateRight,
-  RotateLeft,
-
-  VerticalAlignTop,
-  VerticalAlignBottom,
-  DescriptionOutlined,
-
-  Home,
-  Favorite,
-
-  InsertDriveFileOutlined,
-  BrokenImageOutlined,
-  CheckBox,
-
-  VisibilityOff,
-  Numbers,
-  Compress,
-  Percent,
-  SignalCellularAlt,
-
-  MoreHoriz,
-  Attachment,
-  AttachFile,
-
-  RadioButtonUnchecked,
-  RadioButtonChecked,
-  CommentOutlined,
-  ReportOutlined,
-  AlternateEmailOutlined,
-  DeleteOutlined,
-  DriveFileRenameOutlineOutlined,
-
-  NotesOutlined,
-
-//-----------------------------------------------------------------------------
-// Material Design Icons
-//-----------------------------------------------------------------------------
-
-  mdiTextBoxEditOutline,
-  mdiBookOpenVariantOutline,
-
-//const MdiSortAscending = createSvgIcon(<path d={mdiSortAscending}/>)
-//const MdiSortDescending = createSvgIcon(<path d={mdiSortDescending}/>)
-//const MdiSortAscending = createSvgIcon(<path d={mdiSortReverseVariant}/>)
-//const MdiSortDescending = createSvgIcon(<path d={mdiSortVariant}/>)
-const MdiTextBoxEditOutline = createSvgIcon(<path d={mdiTextBoxEditOutline}/>)
-const MdiBookOpenVariantOutline = createSvgIcon(<path d = {mdiBookOpenVariantOutline}/>)
-*/
+const PrintOutlined = createSvgIcon({
+  children: <>
+  <path d="M0 0h24v24H0V0z" fill="none"/>
+  <path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12v2H8v-4h8v2zm2-2v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z"/><circle cx="18" cy="11.5" r="1"/>
+  </>
+})
 
 //-----------------------------------------------------------------------------
 // Custom made icons
@@ -245,13 +179,14 @@ export const Icon = {
   },
 
   View: {
+    Edit: MdiTextBoxEditOutline,
+    Arc: DonutLarge,
+    Stats: BarChartOutlined,
+    Export: PrintOutlined,
+
     Index: Placeholder, //FormatAlignLeft,
     List: Placeholder, //FormatListNumberedRtl,
-    Edit: Placeholder, //MdiTextBoxEditOutline,
     Organize: Placeholder, //GridViewOutlined,
-    Export: Placeholder, //PrintOutlined,
-    Arc: Placeholder, //DonutLarge,
-    Stats: Placeholder, //BarChartOutlined,
     Tags: Placeholder, //AlternateEmailOutlined,
     Draft: Placeholder, //DescriptionOutlined,
     Notes: Placeholder, //NotesOutlined,
