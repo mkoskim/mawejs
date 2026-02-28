@@ -55,7 +55,6 @@ export class ViewSelectButtons extends React.PureComponent {
     const {choices, viewbuttons} = this.constructor
 
     return <MakeToggleGroup
-      exclusive={true}
       choices={choices}
       selected={selected}
       setSelected={setSelected}

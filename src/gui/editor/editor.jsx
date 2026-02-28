@@ -481,7 +481,6 @@ class ChooseRightPanel extends React.PureComponent {
       disabled={disabled}
       selected={selected}
       setSelected={setSelected}
-      exclusive={true}
     />
   }
 }

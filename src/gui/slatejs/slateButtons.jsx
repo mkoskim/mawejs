@@ -81,7 +81,6 @@ class CharStyleButtons extends React.PureComponent {
       choices={choices}
       selected={active}
       setSelected={marks => applyMarks(editor, marks)}
-      exclusive={false}
     />
   }
 }

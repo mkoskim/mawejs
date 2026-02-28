@@ -99,7 +99,6 @@ export function StoryArcView({doc, updateDoc, editors}) {
       choices: ["act", "chapter", "scene"],
       selected: doc.ui.arc.elements,
       setSelected: setElements,
-      exclusive: true,
     },
     template: {
       buttons: tmplButtons,
@@ -107,14 +106,12 @@ export function StoryArcView({doc, updateDoc, editors}) {
       choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts"],
       selected: doc.ui.arc.template,
       setSelected: setTemplate,
-      exclusive: true,
     },
     mode: {
       buttons: modeButtons,
       choices: ["topCCW", "topCW", "bottomCCW", "bottomCW"],
       selected: doc.ui.arc.mode,
       setSelected: setMode,
-      exclusive: true,
     }
   }
 

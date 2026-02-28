@@ -169,7 +169,6 @@ export class ChooseWordFormat extends React.PureComponent {
       choices={choices}
       selected={selected}
       setSelected={setSelected}
-      exclusive={true}
     />
   }
 }
