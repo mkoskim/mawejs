@@ -10,11 +10,11 @@
 *------------------------------------------------------------------------------
 */
 
-.Popup {
+.Popup, .Menu {
   box-sizing: border-box;
   background-color: canvas;
   transform-origin: var(--transform-origin);
-  padding: 4px;
+  padding: 8px 8px;
   border-radius: 0.375rem;
   /*
   padding-block: 0.25rem;

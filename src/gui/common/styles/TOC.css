@@ -188,9 +188,11 @@
   }
 
   .WordCount {
+    display: flex;
+    align-items: center;
+    justify-content: right;
     margin-left: 6pt;
     min-width: 1.5cm;
-    text-align: right;
   }
 
   /*-------------------------------------------------------------------------*/

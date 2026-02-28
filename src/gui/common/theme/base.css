@@ -46,6 +46,12 @@ button {
     &.icon {
       padding: 2px;
     }
+
+    &.toggle {
+      &[data-pressed] {
+        background: lightblue;
+      }
+    }
   }
 
   & > .Icon, & > button .Icon, & > .ButtonGroup > button .Icon {
@@ -65,6 +71,12 @@ button {
 
     &.icon {
       padding: 2px;
+    }
+
+    &.toggle {
+      &[data-pressed] {
+        background: lightblue;
+      }
     }
   }
 }

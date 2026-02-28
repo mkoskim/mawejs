@@ -655,7 +655,7 @@ class Searching extends React.PureComponent {
           value={searchText}
           autoFocus
           onChange={ev => setSearchText(ev.target.value)}
-          //onBlur={ev => { if (!searchText) setSearchText(undefined) }}
+          onBlur={ev => { if (!searchText) setSearchText(undefined) }}
           onKeyDown={ev => {
             if (IsKey.Enter(ev)) {
               ev.preventDefault();
@@ -685,6 +685,8 @@ function EditorBox({style, settings}) {
 
   const {searchBoxRef, searchText, setSearchText} = settings
   const {highlightText} = settings
+
+  //console.log("Highlight:", highlightText)
 
   const type = track?.node?.type
   const {bold, italic} = track?.marks ?? {}

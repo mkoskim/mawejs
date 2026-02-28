@@ -19,6 +19,14 @@ const Placeholder = createSvgIcon({
   </>
 })
 
+const Empty = createSvgIcon({})
+
+const Checked = createSvgIcon({
+  children: <>
+    <path fill="currentColor" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+  </>
+})
+
 const Search = createSvgIcon({
   children: <>
     <path fill="currentColor" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
@@ -80,6 +88,22 @@ const KeyboardArrowRight = createSvgIcon({
 const ArrowDropDown = createSvgIcon({
   children: <>
     <path fill="currentColor" d="M7 10l5 5 5-5H7z"/>
+  </>
+})
+
+//-----------------------------------------------------------------------------
+// Styles
+//-----------------------------------------------------------------------------
+
+const FormatBold = createSvgIcon({
+  children: <>
+    <path fill="currentColor" d="M15.6 10.79c.97-.67 1.65-1.77 1.65-2.79 0-2.26-1.75-4-4-4H7v14h7.04c2.09 0 3.71-1.7 3.71-3.79 0-1.52-.86-2.82-2.15-3.42zM10 6.5h3c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-3v-3zm3.5 9H10v-3h3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5z"/>
+  </>
+})
+
+const FormatItalic = createSvgIcon({
+  children: <>
+    <path fill="currentColor" d="M10 4v3h2.21l-3.42 8H6v3h8v-3h-2.21l3.42-8H18V4h-8z"/>
   </>
 })
 
@@ -163,10 +187,11 @@ const SortDescending = createSvgIcon({children: <path fill="currentColor" d={svg
 
 export const Icon = {
   Placeholder,
-
+  Empty,
+  Checked,
+  Close,
+  Search,
   Quit: Close,
-  Close: Close,
-  Search: Search,
 
   Star: StarOutlined,
   Starred: Star,
@@ -285,8 +310,8 @@ export const Icon = {
   },
 
   Style: {
-    Bold: Placeholder, //FormatBold,
-    Italic: Placeholder, //FormatItalic,
+    Bold: FormatBold,
+    Italic: FormatItalic,
 
     Chapter: Placeholder, //LooksOne,
     Scene: Placeholder, //LooksTwo,

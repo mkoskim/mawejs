@@ -13,7 +13,7 @@ import {
   VBox,
   Button, Icon, IconButton,
   MakeToggleGroup,
-  Menu, MenuItem,
+  Menu, MenuPopup, MenuItem,
   TextField,
   Accordion, AccordionSummary, AccordionDetails,
   Separator,
@@ -204,7 +204,7 @@ export class ChooseWordFormat extends React.PureComponent {
     },
   }
 
-  menuItem(index, type, setSelected) {
+  menuItem(index, type, selected, setSelected) {
     if(type === "|") return <Separator key={index}/>
     if(type in this.constructor.selections) {
       const style = this.constructor.selections[type]
@@ -212,6 +212,7 @@ export class ChooseWordFormat extends React.PureComponent {
         title={style.name}
         key={type}
         onClick={e => {setSelected(type);}}
+        startIcon={selected === type ? <Icon.Checked/> : undefined}
       />
     }
     return null;
@@ -222,22 +223,16 @@ export class ChooseWordFormat extends React.PureComponent {
     const {name} = this.constructor.selections[selected]
 
     //const type = node?.type ?? undefined
-
     //console.log("Block type:", type)
 
-    return <Button
-      tooltip="Word count format"
-    >Words<Icon.Arrow.DropDown/></Button>
-
-    /*
-    return
-      {
-        <Menu >
-          {choices.map((type, index) => this.menuItem(index, type, setSelected))}
-        </Menu>
-      </React.Fragment>
-      }
-    */
+    return <Menu.Root>
+      <Menu.Trigger>{name} <Icon.Arrow.DropDown/></Menu.Trigger>
+      <Menu.Portal>
+        <MenuPopup>
+          {choices.map((type, index) => this.menuItem(index, type, selected, setSelected))}
+        </MenuPopup>
+      </Menu.Portal>
+    </Menu.Root>
   }
 }
 /**/

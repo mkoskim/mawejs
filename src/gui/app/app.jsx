@@ -407,7 +407,7 @@ class FileMenu extends React.PureComponent {
             onClick={e => { reqOpenFile({ setCommand, file }); }}
             />
           <Menu.SubmenuRoot>
-            <Menu.SubmenuTrigger render={<MenuItem title="Open Recent..." endAdornment={<Icon.Arrow.Head.Right/>}/>}/>
+            <Menu.SubmenuTrigger render={<MenuItem title="Open Recent..." endIcon={<Icon.Arrow.Head.Right/>}/>}/>
             <Menu.Portal>
               <MenuPopup>
                 <RecentItems recent={recent} setCommand={setCommand}/>

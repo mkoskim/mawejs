@@ -1,19 +1,37 @@
 /******************************************************************************
 *
-* Popups
+* Menus
 *
 *******************************************************************************
 */
 
 .Menu {
+  padding: 4px 4px;
+
   .Item {
     display: inline-flex;
     align-items: center;
     flex-grow: 1;
     cursor: default;
-    padding: 4px 12px;
+    padding: 5px 0px;
+    border-radius: 3px;
     &:hover {
-      background-color: #AAA;
+      background-color: #8BF;
+    }
+
+    .startIcon {
+      color: grey;
+      margin-right: 4px;
+      min-width: 12pt;
+    }
+
+    .endAdornment {
+      color: grey;
+    }
+
+    .endIcon {
+      min-width: 12pt;
+      color: grey;
     }
 
     /*

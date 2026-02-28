@@ -18,7 +18,7 @@ import { enqueueSnackbar, closeSnackbar } from "notistack";
 import { isNotEmpty } from "../../util";
 
 import {
-  Menu,
+  Menu, Select,
   Button as BUIButton,
   ToggleGroup,
   Toggle,
@@ -290,6 +290,14 @@ export function AccordionSummary({ children }) {
 
 //*****************************************************************************
 //
+// Selection
+//
+//*****************************************************************************
+
+export {Select}
+
+//*****************************************************************************
+//
 // Popovers
 //
 //*****************************************************************************
@@ -341,7 +349,7 @@ export class MenuPopup extends React.PureComponent {
   render() {
     const { children, arrow, ...props } = this.props
     return <Menu.Positioner sideOffset={3}>
-      <Menu.Popup className="VBox Popup Menu" {...props}>
+      <Menu.Popup className="VBox Menu" {...props}>
         {arrow && <Menu.Arrow className="Arrow"><PopupArrow /></Menu.Arrow>}
         {children}
       </Menu.Popup>
@@ -349,9 +357,12 @@ export class MenuPopup extends React.PureComponent {
   }
 }
 
-export function MenuItem({ title, endAdornment, children, ...props }) {
+export function MenuItem({ title, startIcon, endIcon, endAdornment, children, ...props }) {
   return <Menu.Item className="Item" {...props}>
-    {title}{children}<Filler />{endAdornment}
+    <span class="startIcon">{startIcon}</span>
+    {title}{children}<Filler />
+    <span class="endAdornment">{endAdornment}</span>
+    <span class="endIcon">{endIcon}</span>
   </Menu.Item>
 }
 
