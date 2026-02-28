@@ -226,7 +226,7 @@ export class ChooseWordFormat extends React.PureComponent {
     //console.log("Block type:", type)
 
     return <Menu.Root>
-      <Menu.Trigger>{name} <Icon.Arrow.DropDown/></Menu.Trigger>
+      <Menu.Trigger render={<Button tooltip="Word count format">{name} <Icon.Arrow.DropDown/></Button>}/>
       <Menu.Portal>
         <MenuPopup>
           {choices.map((type, index) => this.menuItem(index, type, selected, setSelected))}

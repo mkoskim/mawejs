@@ -357,12 +357,12 @@ export class MenuPopup extends React.PureComponent {
   }
 }
 
-export function MenuItem({ title, startIcon, endIcon, endAdornment, children, ...props }) {
+export function MenuItem({ title, startIcon, endAdornment, endIcon, children, ...props }) {
   return <Menu.Item className="Item" {...props}>
-    <span class="startIcon">{startIcon}</span>
+    <span className="startIcon">{startIcon}</span>
     {title}{children}<Filler />
-    <span class="endAdornment">{endAdornment}</span>
-    <span class="endIcon">{endIcon}</span>
+    <span className="endAdornment">{endAdornment}</span>
+    <span className="endIcon">{endIcon}</span>
   </Menu.Item>
 }
 

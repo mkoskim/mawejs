@@ -1,3 +1,14 @@
+//*****************************************************************************
+//
+// Icons are mainly from two sources:
+//
+// - Material UI: https://fonts.google.com/icons
+// - MDI (Material Design Icons): https://pictogrammers.com/library/mdi/
+//
+// There are few self-made ones, e.g. sort ascending/descending.
+//
+//*****************************************************************************
+
 //-----------------------------------------------------------------------------
 // Create SVG icons from JSX elements
 //-----------------------------------------------------------------------------
