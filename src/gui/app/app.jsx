@@ -17,7 +17,7 @@ import {
   ToolBox, Button, Icon, IconButton,
   IsKey, addHotkeys,
   Separator,
-  Menu, MenuItem,
+  Menu, MenuPopup, MenuItem,
   Inform, Snackbar,
 } from "../common/factory";
 
@@ -348,7 +348,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 
 class FileOperations extends React.PureComponent {
   static gzip_style = {
-    fontSize: "10pt",
+    fontSize: "8pt",
     border: "2px solid",
     //paddingLeft: "2px",
     //paddingRight: "2px",
@@ -393,81 +393,85 @@ class FileMenu extends React.PureComponent {
     const filename = file?.name ?? "<Unnamed>"
     const name = hasdoc ? filename : <Icon.Menu />
 
-    return <Button>{name}</Button>
-    /*
-    return <PopupState variant="popover">
-      {(popupState) => <React.Fragment>
-        <Button tooltip="File menu" {...bindTrigger(popupState)}>{name}</Button>
-        <Menu {...bindMenu(popupState)}>
+    //return <Button>{name}</Button>
+    return <Menu.Root>
+      <Menu.Trigger>{name}</Menu.Trigger>
+      <Menu.Portal>
+        <MenuPopup arrow={true}>
           <MenuItem
             title="New" endAdornment="Ctrl-N"
-            onClick={e => { reqNew({ setCommand }); popupState.close(e); }}
+            onClick={e => { reqNew({ setCommand }); }}
             />
           <MenuItem
             title="Open" endAdornment="Ctrl-O"
-            onClick={e => { reqOpenFile({ setCommand, file }); popupState.close(e); }}
+            onClick={e => { reqOpenFile({ setCommand, file }); }}
             />
-          <MenuItem
-            title="Open Recent..."
-            onClick={(e => { reqOpenRecentDlg({ setCommand }); popupState.close(e); })}
-            />
-          <Separator />
-          <RecentItems recent={recent} setCommand={setCommand} popupState={popupState} />
+          <Menu.SubmenuRoot>
+            <Menu.SubmenuTrigger render={<MenuItem title="Open Recent..." endAdornment={<Icon.Arrow.Head.Right/>}/>}/>
+            <Menu.Portal>
+              <MenuPopup>
+                <RecentItems recent={recent} setCommand={setCommand}/>
+              </MenuPopup>
+            </Menu.Portal>
+          </Menu.SubmenuRoot>
           <Separator />
           <MenuItem
             title="Import File..."
-            onClick={e => { reqImportFile({ setCommand, file }); popupState.close(e); }}
+            onClick={e => { reqImportFile({ setCommand, file }); }}
             />
           <MenuItem
             title="Import From Clipboard"
-            onClick={e => { reqImportClipboard({ setCommand }); popupState.close(e); }}
+            onClick={e => { reqImportClipboard({ setCommand }); }}
             />
           <Separator />
           <MenuItem
             title="Save" endAdornment="Ctrl-S"
-            disabled={!file} onClick={e => { reqSaveFile({ setCommand, file }); popupState.close(e); }}
+            disabled={!file} onClick={e => { reqSaveFile({ setCommand, file }); }}
             />
           <MenuItem
             title="Save as..."
-            disabled={!hasdoc} onClick={e => { reqSaveFileAs({ setCommand, file }); popupState.close(e); }}
+            disabled={!hasdoc} onClick={e => { reqSaveFileAs({ setCommand, file }); }}
             />
           <MenuItem
             title="Rename..."
-            disabled={!file} onClick={e => { reqRenameFile({ setCommand, file }); popupState.close(e); }}
+            disabled={!file} onClick={e => { reqRenameFile({ setCommand, file }); }}
             />
           <MenuItem
             title="Close" endAdornment="Ctrl-W"
-            disabled={!hasdoc} onClick={e => { reqCloseFile({ setCommand, file }); popupState.close(e); }}
+            disabled={!hasdoc} onClick={e => { reqCloseFile({ setCommand, file }); }}
             />
           {/*
           <MenuItem onClick={popupState.close}>Revert</MenuItem>
-          <MenuItem onClick={e => { popupState.close(e); }}>Open Folder</MenuItem>}
+          <MenuItem onClick={e => { popupState.close(e); }}>Open Folder</MenuItem>
+          */}
           <Separator />
           <MenuItem
             title="Quit" //endAdornment="Ctrl-Q"
-            onClick={e => { reqQuit({setCommand}); popupState.close(e); }}
+            onClick={e => { reqQuit({setCommand}); }}
           />
-        </Menu>
-      </React.Fragment>
-      }
-    </PopupState>
-    */
+        </MenuPopup>
+      </Menu.Portal>
+    </Menu.Root>
   }
 }
 
 class RecentItems extends React.PureComponent {
   render() {
-    const { recent, setCommand, popupState } = this.props
+    const { recent, setCommand } = this.props
     if (!recent?.length) return null
     //console.log("Recent:", recent.length)
-    const head = recent.slice(0, 4)
+    const head = recent.slice(0, 5)
     return <>
       {head.map(entry => <MenuItem
         key={entry.id}
         title={entry.name}
-        onClick={(e => { reqLoadFile({ setCommand, filename: entry.id }); popupState.close(e); })}
+        onClick={(e => { reqLoadFile({ setCommand, filename: entry.id }); })}
         />
       )}
+      <Separator />
+      <MenuItem title="More..."
+        onClick={(e => { reqOpenRecentDlg({ setCommand }); })}
+      />
     </>
   }
 }

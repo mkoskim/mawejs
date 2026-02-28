@@ -5,6 +5,7 @@
 
 @import "app.css";
 @import "base.css";
+@import "menu.css";
 
 .VBox {
   display: flex;
@@ -35,9 +36,9 @@
 }
 
 .Toolbar {
-  padding: 2px;
+  padding: 0px;
   align-items: center;
-
+  padding: 1px;
   /*
   paddingLeft: 4, paddingRight: 4,
   paddingTop: 4, paddingBottom: 4,

@@ -1,12 +1,16 @@
 //-----------------------------------------------------------------------------
-// Icons
+// Create SVG icons from JSX elements
 //-----------------------------------------------------------------------------
 
 function createSvgIcon({viewBox = "0 0 24 24", children}) {
-  return () => <svg xmlns="http://www.w3.org/2000/svg" className="Icon"viewBox={viewBox}>
+  return () => <svg xmlns="http://www.w3.org/2000/svg" className="Icon" viewBox={viewBox}>
     {children}
-    </svg>
+  </svg>
 }
+
+//-----------------------------------------------------------------------------
+// Icons
+//-----------------------------------------------------------------------------
 
 const Placeholder = createSvgIcon({
   children: <>
@@ -21,6 +25,58 @@ const Search = createSvgIcon({
   </>
 })
 
+const Close = createSvgIcon({
+  children: <>
+  <path d="M0 0h24v24H0V0z" fill="none"/>
+  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+  </>
+})
+
+//-----------------------------------------------------------------------------
+// Arrows
+//-----------------------------------------------------------------------------
+
+const KeyboardArrowDown = createSvgIcon({
+  children: <>
+    <path d="M0 0h24v24H0V0z" fill="none"/>
+    <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+  </>
+})
+
+const KeyboardArrowUp = createSvgIcon({
+  children: <>
+    <path d="M0 0h24v24H0V0z" fill="none"/>
+    <path d="M7.41 15.41 12 10.83l4.59 4.58L18 14l-6-6-6 6 1.41 1.41z"/>
+  </>
+})
+
+const KeyboardArrowLeft = createSvgIcon({
+  children: <>
+  <path d="M0 0h24v24H0V0z" fill="none"/>
+  <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+  </>
+})
+
+const KeyboardArrowRight = createSvgIcon({
+  children: <>
+    <path d="M0 0h24v24H0V0z" fill="none"/>
+    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+  </>
+})
+
+//-----------------------------------------------------------------------------
+// Icons
+//-----------------------------------------------------------------------------
+
+const FolderOutlined = createSvgIcon({
+  children: <>
+    <path d="M0 0h24v24H0V0z" fill="none"/>
+    <path d="M9.17 6l2 2H20v10H4V6h5.17M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+  </>
+})
+
+
+
 /*
 const LightbulbOutlined = createSvgIcon(
   children: <>
@@ -30,11 +86,6 @@ const LightbulbOutlined = createSvgIcon(
 })
 
 /*
-const Close = createSvgIcon({
-    viewBox: "0, -8, -8, -8",
-    children: <path d="M-8 -8h-8v-8H-8V-8z"/>
-})
-
 const StarOutlineOutlined = <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ffffff"><path d="M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3 M9,8.7l3,3l3,-3l-3,3l-3,-3"/></svg>
 const Star = <svg xmlns="http://www.wfulfill.com/standalone/Star.svg#StarIcon" height="inherit" viewBox="-6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 -6 " width="inherit"></svg>
 const Circle = <svg xmlns="http://www.wfulfill.com/standalone/Circle.svg#CircleIcon" height="inherit" viewBox="-8 -8 " width="inherit"></svg>
@@ -50,11 +101,6 @@ Menu,
   ArrowLeft,
   ArrowRight,
   ArrowDropDown,
-
-  KeyboardArrowDown,
-  KeyboardArrowUp,
-  KeyboardArrowLeft,
-  KeyboardArrowRight,
 
   IndeterminateCheckBoxOutlined,
   ExpandMore,
@@ -74,7 +120,6 @@ Menu,
   SettingsOutlined,
 
   SwapHorizontalCircleOutlined,
-  FolderOutlined,
   NoteAddOutlined,
   FileOpenOutlined,
   SaveOutlined,
@@ -171,7 +216,7 @@ const SortDescending = <svg viewBox="0 0 24 24"><path d={svgElements.arrowDown +
 export const Icon = {
   Placeholder,
 
-  Close: Placeholder, //Close,
+  Close: Close,
   Star: Placeholder, //StarOutlineOutlined,
   Starred: Placeholder, //Star,
   Circle: Placeholder, //Circle,
@@ -187,10 +232,10 @@ export const Icon = {
     Down: Placeholder, //ArrowDownward,
     DropDown: Placeholder, //ArrowDropDown,
     Head: {
-      Up: Placeholder, //KeyboardArrowUp,
-      Down: Placeholder, //KeyboardArrowDown,
-      Left: Placeholder, //KeyboardArrowLeft,
-      Right: Placeholder, //KeyboardArrowRight,
+      Up: KeyboardArrowUp,
+      Down: KeyboardArrowDown,
+      Left: KeyboardArrowLeft,
+      Right: KeyboardArrowRight,
     }
   },
 
@@ -221,14 +266,14 @@ export const Icon = {
   Settings: Placeholder, //SettingsOutlined,
 
   Action: {
-    Quit: Placeholder, //Close,
-    Close: Placeholder, //Close,
+    Quit: Close,
+    Close: Close,
     Search: Search,
     Edit: Placeholder, //ArticleOutlined,
     Cards: Placeholder, //GridViewOutlined,
     Transfer: Placeholder, //SwapHorizontalCircleOutlined,
     Print: Placeholder, //PrintOutlined,
-    Folder: Placeholder, //FolderOutlined,
+    Folder: FolderOutlined,
     File: {
       New: Placeholder, //NoteAddOutlined,
       Open: Placeholder, //FileOpenOutlined,
@@ -256,7 +301,7 @@ export const Icon = {
   },
 
   FileType: {
-    Folder: Placeholder, //FolderOutlined,
+    Folder: FolderOutlined,
     File: Placeholder, //InsertDriveFileOutlined,
     Unknown: Placeholder, //BrokenImageOutlined,
     Selected: Placeholder, //CheckBox,
