@@ -20,7 +20,6 @@ import { isNotEmpty } from "../../util";
 import {
   Menu,
   Button as BUIButton,
-  ToggleGroup,
   Toggle as BUIToggle,
   Tooltip as BUITooltip,
   Popover,
@@ -36,13 +35,6 @@ export { default as InfiniteScroll } from "react-infinite-scroll-component";
 export {
   Icon,
   IsKey, addHotkeys,
-}
-
-//-----------------------------------------------------------------------------
-// Temporary export
-
-export function ListSubheader({ children }) {
-  return <div>{children}</div>
 }
 
 //*****************************************************************************
@@ -233,7 +225,7 @@ export class MakeToggleGroup extends React.PureComponent {
 
 export class DropDown extends React.PureComponent {
   render() {
-    const {choices} = this.props
+    const {choices, as} = this.props
 
     return <Menu.Root>
       <Menu.Trigger render={this.makeButtonTrigger()}/>
@@ -245,11 +237,25 @@ export class DropDown extends React.PureComponent {
     </Menu.Root>
   }
 
-  makeButtonTrigger() {
-    const {label, selections, selected} = this.props
+  getTriggerProperties() {
+    const {as, label, selections, selected} = this.props
     const {name} = (selected in selections) ? selections[selected] : {name: selected}
+    switch(as) {
+      case "text": return {
+        className: "Outlined",
+        label,
+        name
+      }
+    }
+    return {
+      tooltip: label,
+      name
+    }
+  }
 
-    return <Button tooltip={label}>{name}<Icon.Arrow.DropDown/></Button>
+  makeButtonTrigger() {
+    const {name, ...props} = this.getTriggerProperties()
+    return <Button {...props}>{name}<Icon.Arrow.DropDown/></Button>
   }
 
   static separators = {
@@ -291,20 +297,35 @@ export class DropDown extends React.PureComponent {
 
 export {Input}
 
+// TODO: TextField --> InputField / OutlinedInput
+
 export class TextField extends React.PureComponent {
   render() {
-    const {label} = this.props
-    if(label) {
-      return <HBox className="TextField" label={label}>
-        {this.renderInput()}
-      </HBox>
-    }
-    return this.renderInput()
-  }
-
-  renderInput() {
     const {label, startAdornment, endAdornment, inputRef, ...props} = this.props
-    return <HBox className="Entry">{startAdornment}<Input ref={inputRef} spellCheck={false} {...props}/>{endAdornment}</HBox>
+    return <Outlined label={label}>
+      {startAdornment}
+      <Input ref={inputRef} spellCheck={false} {...props}/>
+      {endAdornment}
+    </Outlined>
+  }
+}
+
+export class OutlinedText extends React.PureComponent {
+  render() {
+    const {label, startAdornment, endAdornment, text} = this.props
+    return <Outlined label={label}>
+      {startAdornment}
+      {text}
+      <Filler/>
+      {endAdornment}
+    </Outlined>
+  }
+}
+
+export class Outlined extends React.PureComponent {
+  render() {
+    const {label, ...props} = this.props
+    return <HBox className="Outlined" label={label} {...props}/>
   }
 }
 

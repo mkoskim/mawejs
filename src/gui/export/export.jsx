@@ -6,18 +6,15 @@
 
 import "./export.css"
 
-import React, {
-} from 'react';
-
 import {
   VBox, HBox, VFiller,
   Button,
-  ListSubheader, MenuItem,
   Separator,
   TextField,
   DeferredRender,
   Inform,
   Label,
+  DropDown,
 } from "../common/factory";
 
 import { getSuffix, text2words } from "../../document/util";
@@ -27,20 +24,103 @@ import { exportAs, flattedFormat, flattedToText, storyToFlatted } from "../../do
 import { numfmt } from "../../util";
 import fs from "../../system/localfs"
 
+//*****************************************************************************
+//
+// Choices
+//
+//*****************************************************************************
+
+//-----------------------------------------------------------------------------
+// Export formats
+//-----------------------------------------------------------------------------
+
+const formatters = {
+  "rtf1": {
+    name: "RTF, A4, 1-side",
+    formatter: exportAs.RTF
+  },
+  /*
+  "rtf2": {
+    name: "RTF, A4, 2-side",
+    formatter: exportAs.RTF,
+  },
+  */
+  "tex1": {
+    name: "LaTeX, A5, 1-side",
+    formatter: exportAs.TEX1,
+  },
+  "tex2": {
+    name: "LaTeX, A5 booklet",
+    formatter: exportAs.TEX2,
+  },
+  "md": {
+    name: "MD (Mark Down)",
+    formatter: exportAs.MD,
+  },
+  "txt": {
+    name: "Text (wrapped)",
+    formatter: exportAs.TXT,
+  },
+  choices: [
+    //<ListSubheader>RTF</ListSubheader>
+    "rtf1",
+    "---", //<ListSubheader>LaTeX</ListSubheader>
+    "tex1",
+    "tex2",
+    "---", //<ListSubheader>LaTeX</ListSubheader>
+    "md",
+    //"txt",
+  ]
+}
+
+//-----------------------------------------------------------------------------
+// Content selection
+//-----------------------------------------------------------------------------
+
+const contenttype = {
+  "draft": {name: "Draft"},
+  "synopsis": {name: "Synopsis"},
+  "storybook": {name: "Storybook"},
+  choices: ["draft", "synopsis", "storybook"]
+}
+
+function getTypeSuffix(contentType) {
+  switch(contentType) {
+    case "synopsis": return ".synopsis"
+    case "storybook": return ".storybook"
+    default: break;
+  }
+  return ""
+}
+
+//-----------------------------------------------------------------------------
+// Story type selection
+//-----------------------------------------------------------------------------
+
+const storytype = {
+  "short": {name: "Short story"},
+  "long":  {name: "Long story"},
+  choices: ["short", "long"]
+}
+
+//-----------------------------------------------------------------------------
+// Header type selection
+//-----------------------------------------------------------------------------
+
+const headertype = {
+  "none": {name: "None"},
+  "separated": {name: "Separated"},
+  "numbered": {name: "Numbered"},
+  "named": {name: "Named"},
+  "numbered&named": {name: "Numbered & Named"},
+  choices: ["none", "separated", "numbered", "named", "numbered&named"]
+}
+
 // ****************************************************************************
 //
 // Export settings
 //
 // ****************************************************************************
-
-const formatters = {
-  "rtf1": exportAs.RTF,
-  "rtf2": exportAs.RTF,
-  "tex1": exportAs.TEX1,
-  "tex2": exportAs.TEX2,
-  "md": exportAs.MD,
-  "txt": exportAs.TXT,
-}
 
 export function loadExportSettings(settings) {
   return {
@@ -134,83 +214,72 @@ function ExportInfo({flatted}) {
 //
 //-----------------------------------------------------------------------------
 
-class ChooseFormat extends React.PureComponent {
-  render() {
-    const {format, updateDoc} = this.props;
-
-    return <TextField select label="Format" value={format} onChange={e => updateDocFormat(updateDoc, e.target.value)}>
-      <ListSubheader>RTF</ListSubheader>
-      <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
-      {/*<MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>*/}
-      <ListSubheader>LaTeX</ListSubheader>
-      <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
-      <MenuItem value="tex2">LaTeX, A5 booklet</MenuItem>
-      <ListSubheader>Other</ListSubheader>
-      <MenuItem value="md">MD (Mark Down)</MenuItem>
-      {/* <MenuItem value="txt">Text (wrapped)</MenuItem> */}
-      </TextField>
-  }
-}
-
-//-----------------------------------------------------------------------------
-// Export settings
-//-----------------------------------------------------------------------------
-
 function ExportSettings({ style, flatted, exports, updateDoc}) {
 
   const {format} = exports
-  const formatter = formatters[format]
+  const {formatter} = formatters[format]
 
   return <VBox style={style} className="ExportSettings">
     <ExportInfo flatted={flatted}/>
 
     <Separator/>
 
-    <ChooseFormat format={format} updateDoc={updateDoc}/>
+    <DropDown
+      as="text"
+      label="Format"
+      choices={formatters.choices}
+      selected={format}
+      selections={formatters}
+      setSelected={value => updateDocFormat(updateDoc, value)}
+    />
 
     <Button variant="contained" color="success" onClick={e => exportToFile(formatter, flatted)}>Export</Button>
 
     <Separator/>
-
-    <TextField select label="Content" value={exports.content} onChange={e => updateDocStoryContent(updateDoc, e.target.value)}>
-      <MenuItem value="draft">Draft</MenuItem>
-      <MenuItem value="synopsis">Synopsis</MenuItem>
-      <MenuItem value="storybook">Storybook</MenuItem>
-      </TextField>
-
-    <TextField select label="Story Class" value={exports.type} onChange={e => updateDocStoryType(updateDoc, e.target.value)}>
-      <MenuItem value="short">Short Story</MenuItem>
-      <MenuItem value="long">Long Story</MenuItem>
-      </TextField>
-
-    <Separator/>
-
-    <TextField select label="Acts" value={exports.acts} onChange={e => updateDocActElem(updateDoc, e.target.value)}>
-      <MenuItem value="none">None</MenuItem>
-      <MenuItem value="separated">Separated</MenuItem>
-      <MenuItem value="numbered">Numbered</MenuItem>
-      <MenuItem value="named">Named</MenuItem>
-      <MenuItem value="numbered&named">Numbered & Named</MenuItem>
-      </TextField>
-
-    <TextField select label="Chapters" value={exports.chapters} onChange={e => updateDocChapterElem(updateDoc, e.target.value)}>
-      <MenuItem value="none">None</MenuItem>
-      <MenuItem value="separated">Separated</MenuItem>
-      <MenuItem value="numbered">Numbered</MenuItem>
-      <MenuItem value="named">Named</MenuItem>
-      <MenuItem value="numbered&named">Numbered & Named</MenuItem>
-      </TextField>
-
-    <TextField select label="Scenes" value={exports.scenes} onChange={e => updateDocSceneElem(updateDoc, e.target.value)}>
-      <MenuItem value="none">None</MenuItem>
-      <MenuItem value="separated">Separated</MenuItem>
-      <MenuItem value="numbered">Numbered</MenuItem>
-      <MenuItem value="named">Named</MenuItem>
-      <MenuItem value="numbered&named">Numbered & Named</MenuItem>
-      </TextField>
+    <DropDown
+      as="text"
+      label="Content"
+      choices={contenttype.choices}
+      selected={exports.content}
+      selections={contenttype}
+      setSelected={value => updateDocStoryContent(updateDoc, value)}
+    />
+    <DropDown
+      as="text"
+      label="Story Class"
+      choices={storytype.choices}
+      selected={exports.type}
+      selections={storytype}
+      setSelected={value => updateDocStoryType(updateDoc, value)}
+    />
 
     <Separator/>
+    <DropDown
+      as="text"
+      label="Acts"
+      choices={headertype.choices}
+      selected={exports.acts}
+      selections={headertype}
+      setSelected={value => updateDocActElem(updateDoc, value)}
+    />
+    <DropDown
+      as="text"
+      label="Chapters"
+      choices={headertype.choices}
+      selected={exports.chapters}
+      selections={headertype}
+      setSelected={value => updateDocChapterElem(updateDoc, value)}
+    />
+    <DropDown
+      as="text"
+      label="Scenes"
+      choices={headertype.choices}
+      selected={exports.scenes}
+      selections={headertype}
+      setSelected={value => updateDocSceneElem(updateDoc, value)}
+    />
 
+    <Separator/>
     <TextField label="Act Prefix" value={exports.prefix_act} onChange={e => updateDocActPrefix(updateDoc, e.target.value)}/>
     <TextField label="Chapter Prefix" value={exports.prefix_chapter} onChange={e => updateDocChapterPrefix(updateDoc, e.target.value)}/>
     <TextField label="Scene Prefix" value={exports.prefix_scene} onChange={e => updateDocScenePrefix(updateDoc, e.target.value)}/>
@@ -221,15 +290,6 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
 //-----------------------------------------------------------------------------
 // Export to file
 //-----------------------------------------------------------------------------
-
-function getTypeSuffix(contentType) {
-  switch(contentType) {
-    case "synopsis": return ".synopsis"
-    case "storybook": return ".storybook"
-    default: break;
-  }
-  return ""
-}
 
 async function exportToFile(formatter, flatted) {
 
