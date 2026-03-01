@@ -71,6 +71,26 @@ const Menu = createSvgIcon({
 // Arrows
 //-----------------------------------------------------------------------------
 
+const ArrowLeft = createSvgIcon({
+  viewBox: "0 -960 960 960",
+  children: <path d="M400-240 160-480l240-240 56 58-142 142h486v80H314l142 142-56 58Z"/>
+})
+
+const ArrowRight = createSvgIcon({
+  viewBox: "0 -960 960 960",
+  children: <path d="m560-240-56-58 142-142H160v-80h486L504-662l56-58 240 240-240 240Z"/>
+})
+
+const ArrowUp = createSvgIcon({
+  viewBox: "0 -960 960 960",
+  children: <path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/>
+})
+
+const ArrowDown = createSvgIcon({
+  viewBox: "0 -960 960 960",
+  children: <path d="M440-800v487L216-537l-56 57 320 320 320-320-56-57-224 224v-487h-80Z"/>
+})
+
 // Solid Arrow heads
 
 const ArrowHeadLeft = createSvgIcon({
@@ -93,7 +113,7 @@ const ArrowHeadDown = createSvgIcon({
   children: <path d="M480-360 280-560h400L480-360Z"/>
 })
 
-// Open arrow heads
+// Chevrons
 
 const ChevronDown = createSvgIcon({
   children: <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
@@ -279,6 +299,10 @@ export const Icon = {
 
   Arrow: {
     DropDown: ArrowHeadDown,
+    Up: ArrowUp,
+    Down: ArrowDown,
+    Left: ArrowLeft,
+    Right: ArrowRight,
     Head: {
       Left: ArrowHeadLeft,
       Right: ArrowHeadRight,

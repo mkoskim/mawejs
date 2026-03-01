@@ -647,28 +647,25 @@ class Searching extends React.PureComponent {
 
     return <>
       <IconButton disabled><Icon.Action.Search/></IconButton>
-      <HBox className="Entry">
-        <Input
-          spellCheck={false}
-          ref={searchBoxRef}
-          value={searchText}
-          autoFocus
-          onChange={ev => setSearchText(ev.target.value)}
-          onBlur={ev => { if (!searchText) setSearchText(undefined) }}
-          onKeyDown={ev => {
-            if (IsKey.Enter(ev)) {
-              ev.preventDefault();
-              ev.stopPropagation();
-              if (searchText === "") setSearchText(undefined);
-              searchFirst(editor, searchText, true);
-            }
-          }}
-        />
-        <Separator/>
-        <IconButton tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up/></IconButton>
-        <IconButton tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down/></IconButton>
-        <IconButton tooltip="Clear" onClick={this.clearSearch}><Icon.Close/></IconButton>
-      </HBox>
+      <Input
+        spellCheck={false}
+        ref={searchBoxRef}
+        value={searchText}
+        autoFocus
+        onChange={ev => setSearchText(ev.target.value)}
+        onBlur={ev => { if (!searchText) setSearchText(undefined) }}
+        onKeyDown={ev => {
+          if (IsKey.Enter(ev)) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            if (searchText === "") setSearchText(undefined);
+            searchFirst(editor, searchText, true);
+          }
+        }}
+      />
+      <IconButton tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up/></IconButton>
+      <IconButton tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down/></IconButton>
+      <IconButton tooltip="Clear" onClick={this.clearSearch}><Icon.Close/></IconButton>
     </>
   }
 }

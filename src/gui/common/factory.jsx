@@ -302,10 +302,10 @@ export {Input}
 
 export class TextField extends React.PureComponent {
   render() {
-    const {label, startAdornment, endAdornment, inputRef, ...props} = this.props
+    const {label, startAdornment, endAdornment, ...props} = this.props
     return <Outlined label={label}>
       {startAdornment}
-      <Input ref={inputRef} spellCheck={false} {...props}/>
+      <Input spellCheck={false} {...props}/>
       {endAdornment}
     </Outlined>
   }

@@ -26,10 +26,14 @@ button {
     justify-content: left;
   }
 
-  &:disabled {
-    color: grey;
+  &.icon {
+    color: #444;
   }
-  &:hover, &[data-pressed] {
+
+  &:disabled {
+    color: #888;
+  }
+  &:hover {
     background: #DDD;
   }
 
@@ -41,7 +45,7 @@ button {
 }
 
 .Toolbar {
-  & > button, & > .ButtonGroup > button {
+  & > button {
     border: none;
     background: transparent;
     min-width: 28px;
@@ -62,7 +66,7 @@ button {
     }
   }
 
-  & > .Icon, & > button .Icon, & > .ButtonGroup > button .Icon {
+  & > .Icon, & > button .Icon {
     width: 24px;
     height: 24px;
   }
