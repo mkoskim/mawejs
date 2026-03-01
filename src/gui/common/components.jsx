@@ -128,6 +128,7 @@ export class ChooseVisibleElements extends React.PureComponent {
       choices={choices}
       selected={selected}
       setSelected={setSelected}
+      multiple={true}
     />
   }
 }

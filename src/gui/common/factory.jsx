@@ -18,10 +18,10 @@ import { enqueueSnackbar, closeSnackbar } from "notistack";
 import { isNotEmpty } from "../../util";
 
 import {
-  Menu, Select,
+  Menu,
   Button as BUIButton,
   ToggleGroup,
-  Toggle,
+  Toggle as BUIToggle,
   Tooltip as BUITooltip,
   Popover,
   Input,
@@ -134,7 +134,7 @@ export class Separator extends React.PureComponent {
 
 //*****************************************************************************
 //
-// Buttons & groups
+// Buttons
 //
 //*****************************************************************************
 
@@ -157,41 +157,71 @@ export function IconButton({ tooltip, className, ...props }) {
   return <Button className={cl} {...props}/>
 }
 
+//*****************************************************************************
+//
+// Toggle group
+//
+//*****************************************************************************
+
+function ToggleButton({tooltip, pressed, className, ...props}) {
+  const cl = addClass(className, "toggle")
+  if(tooltip) {
+    return <Tooltip tooltip={tooltip}>
+      <BUIToggle className={cl} pressed={pressed} {...props}/>
+    </Tooltip>
+  }
+  return <BUIToggle className={cl} pressed={pressed} {...props}/>
+}
+
 export class MakeToggleGroup extends React.PureComponent {
 
   render() {
-    const { buttons, choices, disabled, exclusive, selected, setSelected, ...props } = this.props
+    const {choices} = this.props
 
     if (!choices) return null;
 
-    return <ToggleGroup
-      {...props}
-      className="HBox ButtonGroup"
-      value={[selected]}
-      onValueChange={(value, e) => { setSelected(value[0]); }}
-    >
-      {choices.map(choice => this.constructor.makeButton(buttons, disabled, choice))}
-    </ToggleGroup>
+    //console.log("Selected:", selected)
+
+    return choices.map(choice => this.makeButton(choice))
   }
 
-  static makeButton(buttons, disabled, choice) {
+  makeButton(choice) {
+    const {multiple, buttons, disabled, selected} = this.props
+
     const isDisabled = disabled?.includes(choice) ?? false
+    const isPressed  = multiple ? selected.includes(choice) : selected === choice
 
-    if (!(choice in buttons)) return <Toggle key={choice} className="toggle" disabled={isDisabled} value={choice}>{choice}</Toggle>
+    //console.log("choice:", choice, "pressed:", isPressed)
 
-    const { icon } = buttons[choice]
+    const { icon, tooltip, text } = buttons[choice] ?? {text: choice}
 
-    if (isDisabled) return <Toggle className="toggle icon" key={choice} disabled={isDisabled} value={choice}>{icon}</Toggle>
+    return <ToggleButton
+      key={choice}
+      className="icon"
+      tooltip={tooltip}
+      disabled={isDisabled}
+      //value={choice}
+      pressed={isPressed}
+      onPressedChange={(value, e) => this.onTogglePress(choice)}
+    >
+      {icon}{text}
+    </ToggleButton>
+  }
 
-    const { tooltip } = buttons[choice]
-
-    if(tooltip) {
-      return <Tooltip key={choice} tooltip={tooltip}>
-        <Toggle className="toggle icon" value={choice}>{icon}</Toggle>
-      </Tooltip>
+  onTogglePress(choice) {
+    const {multiple, selected, setSelected} = this.props
+    //console.log("onTogglePress:", choice, value)
+    if(multiple) {
+      if(selected.includes(choice)) {
+        setSelected(selected.filter(e => e !== choice))
+      } else {
+        setSelected(selected.concat([choice]))
+      }
+    } else {
+      if(selected !== choice) {
+        setSelected(choice)
+      }
     }
-
-    return <Toggle key={choice} className="toggle icon" disabled={isDisabled} value={choice}>{icon}</Toggle>
   }
 }
 
@@ -287,14 +317,6 @@ export function AccordionDetails({ children }) {
 export function AccordionSummary({ children }) {
   return children
 }
-
-//*****************************************************************************
-//
-// Selection
-//
-//*****************************************************************************
-
-export {Select}
 
 //*****************************************************************************
 //

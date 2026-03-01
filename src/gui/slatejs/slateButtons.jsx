@@ -77,6 +77,7 @@ class CharStyleButtons extends React.PureComponent {
     //const active = Object.entries(marks).filter(([k, v]) => v).map(([k, v]) => k)
 
     return <MakeToggleGroup
+      multiple={true}
       buttons={buttons}
       choices={choices}
       selected={active}
