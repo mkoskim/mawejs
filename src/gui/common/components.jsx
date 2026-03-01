@@ -12,11 +12,9 @@ import React, {
 import {
   VBox,
   Button, Icon, IconButton,
-  MakeToggleGroup,
-  Menu, MenuPopup, MenuItem,
+  MakeToggleGroup, DropDown,
   TextField,
-  Accordion, AccordionSummary, AccordionDetails,
-  Separator,
+  Accordion, AccordionSummary,
   Popover,
   PopoverPopup,
 } from "./factory";
@@ -204,38 +202,21 @@ export class ChooseWordFormat extends React.PureComponent {
     },
   }
 
-  menuItem(index, type, selected, setSelected) {
-    if(type === "|") return <Separator key={index}/>
-    if(type in this.constructor.selections) {
-      const style = this.constructor.selections[type]
-      return <MenuItem
-        title={style.name}
-        key={type}
-        onClick={e => {setSelected(type);}}
-        startIcon={selected === type ? <Icon.Checked/> : undefined}
-      />
-    }
-    return null;
-  }
-
   render() {
     const {choices, selected, setSelected} = this.props
-    const {name} = this.constructor.selections[selected]
 
     //const type = node?.type ?? undefined
     //console.log("Block type:", type)
 
-    return <Menu.Root>
-      <Menu.Trigger render={<Button tooltip="Word count format">{name} <Icon.Arrow.DropDown/></Button>}/>
-      <Menu.Portal>
-        <MenuPopup>
-          {choices.map((type, index) => this.menuItem(index, type, selected, setSelected))}
-        </MenuPopup>
-      </Menu.Portal>
-    </Menu.Root>
+    return <DropDown
+      label="Word count format"
+      choices={choices}
+      selected={selected}
+      setSelected={setSelected}
+      selections={this.constructor.selections}
+    />
   }
 }
-/**/
 
 //-----------------------------------------------------------------------------
 // Word formatter

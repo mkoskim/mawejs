@@ -227,6 +227,64 @@ export class MakeToggleGroup extends React.PureComponent {
 
 //*****************************************************************************
 //
+// Dropdown selection
+//
+//*****************************************************************************
+
+export class DropDown extends React.PureComponent {
+  render() {
+    const {choices} = this.props
+
+    return <Menu.Root>
+      <Menu.Trigger render={this.makeButtonTrigger()}/>
+      <Menu.Portal>
+        <MenuPopup>
+          {choices.map((choice, index) => this.makeSelection(choice, index))}
+        </MenuPopup>
+      </Menu.Portal>
+    </Menu.Root>
+  }
+
+  makeButtonTrigger() {
+    const {label, selections, selected} = this.props
+    const {name} = (selected in selections) ? selections[selected] : {name: selected}
+
+    return <Button tooltip={label}>{name}<Icon.Arrow.DropDown/></Button>
+  }
+
+  static separators = {
+    "|": true,
+    "---": true,
+  }
+
+  makeSelection(choice, index) {
+    if(choice in this.constructor.separators) return <Separator key={index}/>
+
+    const {selections, selected, setSelected, afterSelect} = this.props
+
+    if(!(choice in selections)) {
+      return <MenuItem
+        key={choice}
+        title={choice}
+        style={{color: "red"}}
+        onClick={e => afterSelect && afterSelect(choice)}
+      />
+    }
+
+    const {name, shortcut} = selections[choice]
+
+    return <MenuItem
+      key={choice}
+      startIcon={selected === choice ? <Icon.Checked/> : undefined}
+      title={name}
+      endAdornment={shortcut}
+      onClick={e => {setSelected(choice); afterSelect && afterSelect(choice)}}
+    />
+  }
+}
+
+//*****************************************************************************
+//
 // Input
 //
 //*****************************************************************************
@@ -248,22 +306,6 @@ export class TextField extends React.PureComponent {
     const {label, startAdornment, endAdornment, inputRef, ...props} = this.props
     return <HBox className="Entry">{startAdornment}<Input ref={inputRef} spellCheck={false} {...props}/>{endAdornment}</HBox>
   }
-}
-
-//-----------------------------------------------------------------------------
-
-function Radio({ style, choice, selected, setSelected }) {
-  const props = {
-    className: "RadioButton",
-    fontSize: "small",
-    style: { ...style },
-    onClick: e => setSelected && setSelected(choice),
-  }
-
-  if (selected === choice) {
-    return <Icon.RadioButton.Checked {...props} />
-  }
-  return <Icon.RadioButton.Unchecked {...props} />
 }
 
 //*****************************************************************************
@@ -369,7 +411,7 @@ export { Menu }
 
 export class MenuPopup extends React.PureComponent {
   render() {
-    const { children, arrow, ...props } = this.props
+    const { children, arrow = true, ...props } = this.props
     return <Menu.Positioner sideOffset={3}>
       <Menu.Popup className="VBox Menu" {...props}>
         {arrow && <Menu.Arrow className="Arrow"><PopupArrow /></Menu.Arrow>}

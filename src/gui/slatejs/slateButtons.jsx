@@ -32,6 +32,7 @@ import {
   MakeToggleGroup, Button, Icon,
   Menu, MenuPopup, MenuItem,
   Separator,
+  DropDown,
 } from '../common/factory';
 
 //*****************************************************************************
@@ -113,49 +114,21 @@ class ParagraphStyleSelect extends React.PureComponent {
     "bookmark",
     "comment",
     "missing",
-    "fill",
     "tags"
   ]
 
-  static separator_types = {
-    "|": true,
-    "---": true,
-  }
-
-  menuItem(editor, index, choices, type) {
-    if(type in this.constructor.separator_types) return <Separator key={index}/>
-    if(type in choices) {
-      const style = choices[type];
-      return (
-        <MenuItem
-          key={type}
-          title={<span style={{width: "100px"}}>{style.name}</span>}
-          startIcon={style.markup}
-          endAdornment={style.shortcut}
-          onClick={e => {applyStyle(editor, type);}}
-        />
-      )
-    }
-    return null;
-  }
-
   render() {
     const {type, editor} = this.props;
-    const choices = paragraphTypes
-    const {order} = this.constructor
-    const name  = type in choices ? choices[type].name : "Text"
+    const selected = type ?? "p"
 
-    return <Menu.Root>
-      <Menu.Trigger render={
-        <Button tooltip="Paragraph style">
-          <div style={{width: 70, textAlign: "left"}}>{name}</div><Icon.Arrow.DropDown/>
-        </Button>}/>
-      <Menu.Portal>
-        <MenuPopup>
-          {order.map((type, index) => this.menuItem(editor, index, choices, type))}
-        </MenuPopup>
-      </Menu.Portal>
-    </Menu.Root>
+    return <DropDown
+      label="Paragraph style"
+      choices={this.constructor.order}
+      selected={selected}
+      setSelected={type => applyStyle(editor, type)}
+      selections={paragraphTypes}
+      afterSelect={selected => ReactEditor.focus(editor)}
+    />
   }
 }
 
@@ -173,7 +146,7 @@ export class StyleButtons extends React.PureComponent {
     return <>
       <ParagraphStyleSelect editor={editor} type={type}/>
       <Separator/>
-      <CharStyleButtons editor={editor} bold={bold} italic={italic}/>
+      <CharStyleButtons editor={editor} bold={bold} italic={italic}/>
     </>
   }
 }

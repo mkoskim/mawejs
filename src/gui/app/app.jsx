@@ -397,7 +397,7 @@ class FileMenu extends React.PureComponent {
     return <Menu.Root>
       <Menu.Trigger>{name}</Menu.Trigger>
       <Menu.Portal>
-        <MenuPopup arrow={true}>
+        <MenuPopup>
           <MenuItem
             title="New" endAdornment="Ctrl-N"
             onClick={e => { reqNew({ setCommand }); }}
@@ -479,7 +479,7 @@ class HelpButton extends React.PureComponent {
     return <Menu.Root>
       <Menu.Trigger render={<IconButton tooltip="Help"><Icon.Help/></IconButton>} />
       <Menu.Portal>
-        <MenuPopup arrow={true}>
+        <MenuPopup>
           <MenuItem title="Tutorial (English)"
             onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.en.mawe"})}}
             />
