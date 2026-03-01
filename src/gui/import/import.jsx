@@ -15,14 +15,12 @@ import React, {
 
 import {
   VBox, HBox,
-  ToolBox, Button,
-  Label,
+  ToolBox,
+  Button, IconButton,
+  Label, Icon,
   Separator,
-  Menu, MenuItem,
   Inform,
   Filler,
-  addHotkeys,
-  IsKey,
   Dialog,
 } from "../common/factory";
 
@@ -118,16 +116,8 @@ export function ImportDialog({ filename, setDialogs }) {
     })
   }, [filename, setDialogs])
 
-  return <Dialog
-      open={true}
-      fullScreen={true}
-      //fullWidth={true}
-      maxWidth="xl"
-      onClose={cancel}
-    >
-    <VBox style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
-
-    <ToolBox>
+  return <Dialog open={true} onOpenChange={cancel} className="Dialog xl">
+    <ToolBox side="top">
       <Label>Import from: {filename ?? "Clipboard"}</Label>
       <Separator />
       <Label>Format: {formats[format]?.name ?? format}</Label>
@@ -139,7 +129,7 @@ export function ImportDialog({ filename, setDialogs }) {
       {/*<SelectFormatButton value={format} setFormat={setFormat}/>*/}
 
       {//*
-      <IconButton color="error" onClick={cancel}><CloseIcon /></IconButton>
+      <IconButton color="error" onClick={cancel}><Icon.Close /></IconButton>
       /*/
       <Button disableElevation variant="contained" color="error" onClick={cancel}>
         Cancel
@@ -156,7 +146,7 @@ export function ImportDialog({ filename, setDialogs }) {
         </Button>
       </VBox>
     </HBox>
-  </VBox></Dialog>
+  </Dialog>
 }
 
 //-----------------------------------------------------------------------------

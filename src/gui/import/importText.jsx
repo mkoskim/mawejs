@@ -9,9 +9,8 @@ import React, {
 } from 'react';
 
 import {
-  Label,
-  TextField,
-  Menu, MenuItem,
+  DropDown,
+  Label, TextField,
 } from "../common/factory";
 
 import { text2lines} from "./util"
@@ -45,20 +44,29 @@ export class ImportText extends React.PureComponent {
     this.setState({sceneprefix})
   }
 
+  linebreaks = {
+    single: {name: "Single"},
+    double: {name: "Double"},
+    choices: ["single", "double"],
+  }
+
   render() {
     const {content, setImported} = this.props
-
     //console.log("Settings:", this.state)
 
     return <>
-      <Label>Text import</Label>
-      <TextField select label="Line break" value={this.state.linebreak} onChange={e => this.setLinebreak(e.target.value)}>
-        <MenuItem value="double">Double</MenuItem>
-        <MenuItem value="single">Single</MenuItem>
-      </TextField>
-      <TextField label="Act prefix" value={this.state.actprefix} onChange={e => this.setActPrefix(e.target.value)}/>
-      <TextField label="Chapter prefix" value={this.state.chapterprefix} onChange={e => this.setChapterPrefix(e.target.value)}/>
-      <TextField label="Scene prefix" value={this.state.sceneprefix} onChange={e => this.setScenePrefix(e.target.value)}/>
+      <DropDown
+        as="text"
+        label="Line Breaks"
+        choices={this.linebreaks.choices}
+        selected={this.state.linebreak}
+        selections={this.linebreaks}
+        setSelected={value => this.setLinebreak(value)}
+      />
+      <TextField label="Act Prefix" value={this.state.actprefix} onChange={e => this.setActPrefix(e.target.value)}/>
+      <TextField label="Chapter Prefix" value={this.state.chapterprefix} onChange={e => this.setChapterPrefix(e.target.value)}/>
+      <TextField label="Scene Prefix" value={this.state.sceneprefix} onChange={e => this.setScenePrefix(e.target.value)}/>
+
       <UpdateImported content={content} setImported={setImported} settings={this.state}/>
     </>
   }

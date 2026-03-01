@@ -24,6 +24,7 @@ import {
   Tooltip as BUITooltip,
   Popover,
   Input,
+  Dialog as BUIDialog,
 } from "@base-ui/react"
 
 //-----------------------------------------------------------------------------
@@ -477,6 +478,20 @@ export function Tooltip({tooltip, children}) {
 //
 //*****************************************************************************
 
+export function Dialog({children, className = "Dialog", ...props}) {
+  const cl = addClass("VBox", className)
+  return <BUIDialog.Root {...props}>
+    <BUIDialog.Portal>
+      <BUIDialog.Backdrop className="Backdrop"/>
+      <BUIDialog.Viewport>
+        <BUIDialog.Popup className={cl}>
+          {children}
+        </BUIDialog.Popup>
+      </BUIDialog.Viewport>
+    </BUIDialog.Portal>
+  </BUIDialog.Root>
+}
+
 export function DialogTitle({children}) {
   return <HFiller style={{alignItems: "center", padding: "8px 16px", borderBottom: "1px solid lightgray"}}>{children}</HFiller>
 }
@@ -490,10 +505,6 @@ export function DialogContent({children}) {
 
 export function DialogActions({children}) {
   return <HFiller style={{alignItems: "center", padding: "8px 16px", borderTop: "1px solid lightgray"}}>{children}</HFiller>
-}
-
-export function Dialog({ children }) {
-  return null;
 }
 
 //*****************************************************************************

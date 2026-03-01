@@ -8,6 +8,7 @@
 @import "popup.css";
 @import "menu.css";
 @import "input.css";
+@import "dialog.css";
 
 .VBox {
   display: flex;

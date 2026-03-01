@@ -33,11 +33,14 @@ export function RecentDialog({ setDialogs, setRecent }) {
     console.log("Remove:", filename)
     setRecent(recentRemove(recent, { id: filename }))
   }, [recent, setRecent])
-  const onOpenFiles = useCallback(() => {reqOpenFile({ setCommand }); cancel();}, [setCommand, cancel])
+  const onOpenFiles = useCallback(() => {
+    reqOpenFile({ setCommand });
+    cancel();
+  }, [setCommand, cancel])
 
   //console.log("Recent files:", recent)
 
-  return <Dialog open={true} onClose={cancel}>
+  return <Dialog open={true} onOpenChange={cancel}>
     <DialogTitle>
       <Label style={{fontWeight: "bold"}}>Open recent</Label>
       <Filler/>
