@@ -6,9 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import React, {
+import {
   useCallback,
-  useMemo,
 } from "react"
 
 import {
@@ -23,12 +22,10 @@ import {
   Separator, Icon,
 } from "../common/factory"
 
-import {DragDropContext, Droppable, Draggable} from "@hello-pangea/dnd";
+import {DragDropContext} from "@hello-pangea/dnd";
 import {DocIndex} from "../common/docIndex";
-import {elemName, filterCtrlElems, mawe} from "../../document";
-import { IDtoPath, wcElem } from "../../document/util";
-import { getCoreEditor } from "../slatejs/slateEditor";
-import { isAstChange } from "../slatejs/slateHelpers";
+import {elemName, filterCtrlElems} from "../../document";
+import { IDtoPath } from "../../document/util";
 import { dndDrop } from "../slatejs/slateDnD";
 
 //*****************************************************************************
@@ -195,7 +192,7 @@ const styles = {
 //-----------------------------------------------------------------------------
 
 function IndexToolbar({settings}) {
-  return <ToolBox style={styles.toolbar}>
+  return <ToolBox side="top" style={styles.toolbar}>
     <MakeToggleGroup {...settings.elements}/>
     <Separator />
   </ToolBox>
@@ -255,7 +252,7 @@ function ChartView({settings, doc, updateDoc}) {
 //-----------------------------------------------------------------------------
 
 function ChartToolbar({settings}) {
-  return <ToolBox style={styles.toolbar}>
+  return <ToolBox side="top" style={styles.toolbar}>
     {/*
     <HFiller/>
     <Separator/>

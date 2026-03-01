@@ -95,27 +95,27 @@ export class ChooseVisibleElements extends React.PureComponent {
   static buttons = {
     "scene": {
       tooltip: "Show scenes",
-      icon: <Icon.BlockType.Scene/>
+      icon: <Icon.Paragraph.Scene/>
     },
     "bookmark": {
       tooltip: "Show bookmarks",
-      icon: <Icon.BlockType.Bookmark />
+      icon: <Icon.Paragraph.Bookmark />
     },
     "missing": {
       tooltip: "Show missing",
-      icon: <Icon.BlockType.Missing />
+      icon: <Icon.Paragraph.Missing />
     },
     "fill": {
       tooltip: "Show fillers",
-      icon: <Icon.BlockType.Filler />
+      icon: <Icon.Paragraph.Filler />
     },
     "comment": {
       tooltip: "Show comments",
-      icon: <Icon.BlockType.Comment />
+      icon: <Icon.Paragraph.Comment />
     },
     "tags": {
       tooltip: "Show tags",
-      icon: <Icon.BlockType.Tags />
+      icon: <Icon.Paragraph.Tags />
     },
   }
 
@@ -178,27 +178,27 @@ export class ChooseWordFormat extends React.PureComponent {
     "off": {
       name: "Off",
       tooltip: "Don't show words",
-      icon: <Icon.StatType.Off />
+      //icon: <Icon.StatType.Off />
     },
     "numbers": {
       name: "Numbers",
       tooltip: "Words as numbers",
-      icon: <Icon.StatType.Words />,
+      //icon: <Icon.StatType.Words />,
     },
     "compact": {
       name: "Compact",
       tooltip: "Compact word count",
-      icon: <Icon.StatType.Compact style={{transform: "rotate(90deg)"}}/>
+      //icon: <Icon.StatType.Compact style={{transform: "rotate(90deg)"}}/>
     },
     "cumulative": {
       name: "Cumulative",
       tooltip: "Words as cumulative",
-      icon: <Icon.StatType.Cumulative />
+      //icon: <Icon.StatType.Cumulative />
     },
     "percent": {
       name: "Percent",
       tooltip: "Words as cumulative percent",
-      icon: <Icon.StatType.Percent />
+      //icon: <Icon.StatType.Percent />
     },
   }
 

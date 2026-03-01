@@ -16,6 +16,8 @@ import { EditView } from "../editor/editor";
 import { StoryArcView } from "../arc/arc"
 import { StatsView } from "../stats/stats"
 import { ExportView } from "../export/export"
+import { UITestView } from "../test/uitest";
+
 import { bindEditors } from "../slatejs/slateDocument";
 
 //*****************************************************************************
@@ -27,6 +29,7 @@ import { bindEditors } from "../slatejs/slateDocument";
 export function loadViewSettings(settings) {
   return {
     selected: "editor",
+    //selected: "uitest",
     ...(settings?.attributes ?? {})
   }
 }
@@ -87,6 +90,7 @@ export function ViewSwitch({doc, updateDoc}) {
     case "stats": return <StatsView {...props} />
     case "arc": return <StoryArcView {...props} />
     case "export": return <ExportView {...props} />
+    case "uitest": return <UITestView {...props} />
     default: break;
   }
   return null;
