@@ -145,6 +145,17 @@ export function IconButton({ tooltip, className, ...props }) {
 
 //*****************************************************************************
 //
+// Separators for groups
+//
+//*****************************************************************************
+
+const separators = {
+  "|": true,
+  "---": true,
+}
+
+//*****************************************************************************
+//
 // Toggle group
 //
 //*****************************************************************************
@@ -168,10 +179,12 @@ export class MakeToggleGroup extends React.PureComponent {
 
     //console.log("Selected:", selected)
 
-    return choices.map(choice => this.makeButton(choice))
+    return choices.map((choice, index) => this.makeButton(choice, index))
   }
 
-  makeButton(choice) {
+  makeButton(choice, index) {
+    if(choice in separators) return <Separator key={index}/>
+
     const {multiple, buttons, disabled, selected} = this.props
 
     const isDisabled = disabled?.includes(choice) ?? false
@@ -252,13 +265,8 @@ export class DropDown extends React.PureComponent {
     return <Button {...props}>{name}<Icon.Arrow.DropDown/></Button>
   }
 
-  static separators = {
-    "|": true,
-    "---": true,
-  }
-
   makeSelection(choice, index) {
-    if(choice in this.constructor.separators) return <Separator key={index}/>
+    if(choice in separators) return <Separator key={index}/>
 
     const {selections, selected, setSelected, afterSelect} = this.props
 

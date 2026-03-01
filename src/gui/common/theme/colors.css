@@ -6,6 +6,16 @@
 
 :root {
   /* Colors for UI */
+  --error-fg: #E00;
+  --error-bg: #F33;
+
+  --success-fg: #080;
+  --success-bg: #4F4;
+
+  --checked-bg: #ACF;
+
+  --hover-bg: #DDD;
+
   --popup-border: #BBB;
 
   --tooltip-fg: white;

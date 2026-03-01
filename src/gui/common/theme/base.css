@@ -23,26 +23,34 @@ button {
   padding: 2px 6px;
   background: none;
 
+  /* Selectors for non-icon buttons */
+  &:not(.icon) {
+    &.error   {background: var(--error-bg)}
+    &.success {background: var(--success-bg)}
+  }
+
+  /* Selectors for icon buttons */
+  &.icon {
+    opacity: 80%;
+    &.error   {color: var(--error-fg)}
+    &.success {color: var(--success-fg)}
+  }
+
   &:disabled {
     opacity: 40%;
   }
 
-  &:hover {
-    background: #DDD;
-  }
+  &:hover {background: var(--hover-bg);}
 
   &.Outlined {
     justify-content: left;
   }
 
+  /* Toggled items */
   &.toggle {
     &[data-pressed] {
-      background: lightblue;
+      background: var(--checked-bg);
     }
-  }
-
-  &.icon {
-    opacity: 80%;
   }
 }
 

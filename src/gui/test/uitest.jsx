@@ -24,8 +24,6 @@ export function UITestView({doc, updateDoc}) {
     <Separator/>
     <HBox>
       <VBox>VBox: <Buttons/></VBox>
-      <Separator/>
-      <Separator/>
       <Padder/>
     </HBox>
   </VBox>
@@ -35,12 +33,12 @@ function Buttons() {
   return <>
     <Separator/>
     <IconButton><Icon.Help/></IconButton>
-    <IconButton style={{color: "red"}}><Icon.Help/></IconButton>
-    <IconButton style={{color: "green"}}><Icon.Help/></IconButton>
+    <IconButton className="error"><Icon.Help/></IconButton>
+    <IconButton className="success"><Icon.Help/></IconButton>
     <Separator/>
     <Button>Button</Button>
-    <Button style={{color: "red"}}>Button</Button>
-    <Button style={{color: "green"}}>Button</Button>
+    <Button className="error">Button</Button>
+    <Button className="success">Button</Button>
   </>
 }
 
@@ -89,5 +87,8 @@ function TestMenu1() {
 }
 
 function Padder() {
-  return <Filler style={{background: "magenta"}}/>
+  return <>
+    <Separator/>
+    <Filler style={{background: "#FAF"}}/>
+  </>
 }
