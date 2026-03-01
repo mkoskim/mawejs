@@ -30,17 +30,12 @@ import {
 import { DragDropContext } from "@hello-pangea/dnd";
 
 import {
-  isAstChange,
   focusByPath,
 } from "../slatejs/slateHelpers"
 
 import {
   searchFirst, searchForward, searchBackward,
 } from '../slatejs/slateSearch';
-
-import {
-  getUIEditor,
-} from "../slatejs/slateEditor"
 
 import {
   SlateEditable,
@@ -128,9 +123,9 @@ export function loadEditorSettings(settings) {
       notes: "right",
     },
     toolbox: {
-      left: {background: "white"},
-      mid: {background: "white"},
-      right: {background: "white"},
+      left: {background: "#FBFBFB"},
+      mid: {background: "#FBFBFB"},
+      right: {background: "#FBFBFB"},
     }
   }
 }

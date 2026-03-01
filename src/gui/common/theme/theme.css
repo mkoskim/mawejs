@@ -39,14 +39,8 @@
 }
 
 .Toolbar {
-  padding: 0px;
+  padding: 2px;
   align-items: center;
-  padding: 1px;
-  /*
-  paddingLeft: 4, paddingRight: 4,
-  paddingTop: 4, paddingBottom: 4,
-  //backgroundColor: "#F8F8F8",
-  */
 
   &[side="top"] {
     border-bottom: 1pt solid lightgray;

@@ -409,7 +409,7 @@ class FileMenu extends React.PureComponent {
           <Menu.SubmenuRoot>
             <Menu.SubmenuTrigger render={<MenuItem title="Open Recent..." endIcon={<Icon.Arrow.Head.Right/>}/>}/>
             <Menu.Portal>
-              <MenuPopup>
+              <MenuPopup arrow={false}>
                 <RecentItems recent={recent} setCommand={setCommand}/>
               </MenuPopup>
             </Menu.Portal>
