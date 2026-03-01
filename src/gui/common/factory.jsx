@@ -74,13 +74,6 @@ export class Box extends React.PureComponent {
   }
 }
 
-export class FlexBox extends React.PureComponent {
-  render() {
-    const {style, ...props} = this.props
-    return <div style={{display: "flex", ...style}} {...props} />;
-  }
-}
-
 export class VBox extends React.PureComponent {
   render() {
     const {className, ...props} = this.props
@@ -394,7 +387,7 @@ export class PopoverPopup extends React.PureComponent {
   render() {
     const {children} = this.props
     return <Popover.Portal>
-      <Popover.Positioner sideOffset={3}>
+      <Popover.Positioner className="Positioner" sideOffset={3} align="start">
         <Popover.Popup className="VBox Popup">
           <Popover.Arrow className="Arrow"><PopupArrow/></Popover.Arrow>
           {children}
@@ -406,7 +399,7 @@ export class PopoverPopup extends React.PureComponent {
 
 class PopupArrow extends React.PureComponent {
   render() {
-    return <svg width="20" height="10" viewBox="0 0 20 10" fill="none">
+    return <svg width="20" height="10" viewBox="0 0 20 10">
       <path
         d="M9.66437 2.60207L4.80758 6.97318C4.07308 7.63423 3.11989 8 2.13172 8H0V10H20V8H18.5349C17.5468 8 16.5936 7.63423 15.8591 6.97318L11.0023 2.60207C10.622 2.2598 10.0447 2.25979 9.66437 2.60207Z"
         className="ArrowFill"
@@ -434,7 +427,7 @@ export { Menu }
 export class MenuPopup extends React.PureComponent {
   render() {
     const { children, arrow = true, ...props } = this.props
-    return <Menu.Positioner sideOffset={3}>
+    return <Menu.Positioner className="Positioner" align="start" sideOffset={3}>
       <Menu.Popup className="VBox Menu" {...props}>
         {arrow && <Menu.Arrow className="Arrow"><PopupArrow /></Menu.Arrow>}
         {children}

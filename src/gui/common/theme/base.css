@@ -8,9 +8,6 @@
   height: 12pt;
 }
 
-*:focus {
-}
-
 button {
   padding-block: 0;
   padding-inline: 0;
