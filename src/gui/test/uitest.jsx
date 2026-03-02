@@ -10,7 +10,7 @@ import {
   Button, IconButton, Icon,
   Input,
   ToolBox,
-  Menu, MenuPopup, MenuItem,
+  Menu, Submenu, MenuItem,
   DialogActions,
 } from "../common/factory"
 
@@ -56,34 +56,24 @@ function MenuTest() {
 }
 
 function TestMenu1() {
-  return <Menu.Root>
-    <Menu.Trigger>Menu</Menu.Trigger>
-    <Menu.Portal>
-      <MenuPopup>
-        <MenuItem title="New" endAdornment="Ctrl-N"/>
-        <MenuItem title="Open" endAdornment="Ctrl-O"/>
-        <Menu.SubmenuRoot>
-          <Menu.SubmenuTrigger render={<MenuItem title="Open Recent..." endIcon={<Icon.Arrow.Head.Right/>}/>}/>
-          <Menu.Portal>
-            <MenuPopup arrow={false}>
-              <MenuItem title="Test"/>
-            </MenuPopup>
-          </Menu.Portal>
-        </Menu.SubmenuRoot>
-        <Separator />
-        <MenuItem title="Import File..."/>
-        <MenuItem title="Import From Clipboard"/>
-        <Separator />
-        <MenuItem
-          title="Save" endAdornment="Ctrl-S" disabled={true}/>
-        <MenuItem title="Save as..." disabled={true}/>
-        <MenuItem title="Rename..." disabled={true}/>
-        <MenuItem title="Close" endAdornment="Ctrl-W" disabled={true}/>
-        <Separator />
-        <MenuItem title="Quit"/>
-      </MenuPopup>
-    </Menu.Portal>
-  </Menu.Root>
+  return <Menu trigger={<Button>Menu</Button>}>
+    <MenuItem title="New" endAdornment="Ctrl-N"/>
+    <MenuItem title="Open" endAdornment="Ctrl-O"/>
+    <Submenu trigger={<MenuItem title="Open Recent..." endIcon={<Icon.Arrow.Head.Right/>}/>}>
+      <MenuItem title="Test"/>
+    </Submenu>
+    <Separator />
+    <MenuItem title="Import File..."/>
+    <MenuItem title="Import From Clipboard"/>
+    <Separator />
+    <MenuItem
+      title="Save" endAdornment="Ctrl-S" disabled={true}/>
+    <MenuItem title="Save as..." disabled={true}/>
+    <MenuItem title="Rename..." disabled={true}/>
+    <MenuItem title="Close" endAdornment="Ctrl-W" disabled={true}/>
+    <Separator />
+    <MenuItem title="Quit"/>
+  </Menu>
 }
 
 function Padder() {

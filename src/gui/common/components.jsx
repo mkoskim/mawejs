@@ -15,8 +15,7 @@ import {
   MakeToggleGroup, DropDown,
   TextField,
   Accordion, AccordionSummary,
-  Popover,
-  PopoverPopup,
+  Popup,
 } from "./factory";
 
 import { mawe } from "../../document"
@@ -63,12 +62,10 @@ export class EditHead extends React.PureComponent {
 export class EditHeadButton extends React.PureComponent {
   render() {
     const {text, head, updateDoc, expanded} = this.props
-    return <Popover.Root>
-      <Popover.Trigger render={<Button tooltip="Edit story info">{text}<Icon.Arrow.Head.Down/></Button>}/>
-      <PopoverPopup>
-        <EditHead head={head} updateDoc={updateDoc} expanded={expanded}/>
-      </PopoverPopup>
-    </Popover.Root>
+
+    return <Popup trigger={<Button tooltip="Edit story info">{text}<Icon.Arrow.Head.Down/></Button>}>
+      <EditHead head={head} updateDoc={updateDoc} expanded={expanded}/>
+    </Popup>
   }
 }
 

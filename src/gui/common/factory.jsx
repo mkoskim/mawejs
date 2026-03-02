@@ -18,11 +18,11 @@ import { enqueueSnackbar, closeSnackbar } from "notistack";
 import { isNotEmpty } from "../../util";
 
 import {
-  Menu,
+  Menu as BUIMenu,
   Button as BUIButton,
   Toggle as BUIToggle,
   Tooltip as BUITooltip,
-  Popover,
+  Popover as BUIPopover,
   Input,
   Dialog as BUIDialog,
 } from "@base-ui/react"
@@ -234,14 +234,9 @@ export class DropDown extends React.PureComponent {
   render() {
     const {choices, as} = this.props
 
-    return <Menu.Root>
-      <Menu.Trigger render={this.makeButtonTrigger()}/>
-      <Menu.Portal>
-        <MenuPopup>
-          {choices.map((choice, index) => this.makeSelection(choice, index))}
-        </MenuPopup>
-      </Menu.Portal>
-    </Menu.Root>
+    return <Menu trigger={this.makeButtonTrigger()}>
+      {choices.map((choice, index) => this.makeSelection(choice, index))}
+    </Menu>
   }
 
   getTriggerProperties() {
@@ -385,25 +380,9 @@ export function AccordionSummary({ children }) {
 
 //*****************************************************************************
 //
-// Popovers
+// Popups, Menus
 //
 //*****************************************************************************
-
-export {Popover}
-
-export class PopoverPopup extends React.PureComponent {
-  render() {
-    const {children} = this.props
-    return <Popover.Portal>
-      <Popover.Positioner className="Positioner" sideOffset={3} align="start">
-        <Popover.Popup className="VBox Popup">
-          <Popover.Arrow className="Arrow"><PopupArrow/></Popover.Arrow>
-          {children}
-        </Popover.Popup>
-      </Popover.Positioner>
-    </Popover.Portal>
-  }
-}
 
 class PopupArrow extends React.PureComponent {
   render() {
@@ -420,33 +399,66 @@ class PopupArrow extends React.PureComponent {
   }
 }
 
-//*****************************************************************************
-//
-// Menus
-//
-//*****************************************************************************
-
-export { Menu }
-
-export class MenuPopup extends React.PureComponent {
+export class Popup extends React.PureComponent {
   render() {
-    const { children, arrow = true, ...props } = this.props
-    return <Menu.Positioner className="Positioner" align="start" sideOffset={3}>
-      <Menu.Popup className="VBox Menu" {...props}>
-        {arrow && <Menu.Arrow className="Arrow"><PopupArrow /></Menu.Arrow>}
-        {children}
-      </Menu.Popup>
-    </Menu.Positioner>
+    const {trigger, children} = this.props
+
+    return <BUIPopover.Root>
+      <BUIPopover.Trigger render={trigger}/>
+      <BUIPopover.Portal>
+        <BUIPopover.Positioner className="Positioner" sideOffset={3} align="start">
+          <BUIPopover.Popup className="VBox Popup">
+            <BUIPopover.Arrow className="Arrow"><PopupArrow/></BUIPopover.Arrow>
+            {children}
+          </BUIPopover.Popup>
+        </BUIPopover.Positioner>
+      </BUIPopover.Portal>
+    </BUIPopover.Root>
   }
 }
 
-export function MenuItem({ title, startIcon, endAdornment, endIcon, children, ...props }) {
-  return <Menu.Item className="Item" {...props}>
+export class Menu extends React.PureComponent {
+  render() {
+    const {trigger, arrow=true, className, children, ...props} = this.props;
+    return <BUIMenu.Root>
+      <BUIMenu.Trigger render={trigger}/>
+      <BUIMenu.Portal>
+        <BUIMenu.Positioner className="Positioner" align="start" sideOffset={3}>
+          <BUIMenu.Popup className={addClass("VBox Menu", className)} {...props}>
+            {arrow && <BUIMenu.Arrow className="Arrow"><PopupArrow /></BUIMenu.Arrow>}
+            {children}
+          </BUIMenu.Popup>
+        </BUIMenu.Positioner>
+      </BUIMenu.Portal>
+    </BUIMenu.Root>
+  }
+}
+
+export class Submenu extends React.PureComponent {
+  render() {
+    const {trigger, arrow=false, className, children, ...props} = this.props;
+
+    return <BUIMenu.SubmenuRoot>
+      <BUIMenu.SubmenuTrigger render={trigger}/>
+      <BUIMenu.Portal>
+        <BUIMenu.Positioner className="Positioner" align="start" sideOffset={3}>
+          <BUIMenu.Popup className={addClass("VBox Menu", className)} {...props}>
+            {/*arrow && <BUIMenu.Arrow className="Arrow"><PopupArrow /></BUIMenu.Arrow>*/}
+            {children}
+          </BUIMenu.Popup>
+        </BUIMenu.Positioner>
+      </BUIMenu.Portal>
+    </BUIMenu.SubmenuRoot>
+  }
+}
+
+export function MenuItem({ title, startIcon, endAdornment, endIcon, className, children, ...props }) {
+  return <BUIMenu.Item className={addClass("Item", className)} {...props}>
     <span className="startIcon">{startIcon}</span>
     {title}{children}<Filler />
     <span className="endAdornment">{endAdornment}</span>
     <span className="endIcon">{endIcon}</span>
-  </Menu.Item>
+  </BUIMenu.Item>
 }
 
 //*****************************************************************************

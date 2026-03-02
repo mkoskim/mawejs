@@ -17,7 +17,7 @@ import {
   ToolBox, Button, Icon, IconButton,
   IsKey, addHotkeys,
   Separator,
-  Menu, MenuPopup, MenuItem,
+  Menu, Submenu, MenuItem,
   Inform, Snackbar,
 } from "../common/factory";
 
@@ -394,60 +394,50 @@ class FileMenu extends React.PureComponent {
     const name = hasdoc ? filename : <Icon.Menu />
 
     //return <Button>{name}</Button>
-    return <Menu.Root>
-      <Menu.Trigger>{name}</Menu.Trigger>
-      <Menu.Portal>
-        <MenuPopup>
-          <MenuItem
-            title="New" endAdornment="Ctrl-N"
-            onClick={e => { reqNew({ setCommand }); }}
-            />
-          <MenuItem
-            title="Open" endAdornment="Ctrl-O"
-            onClick={e => { reqOpenFile({ setCommand, file }); }}
-            />
-          <Menu.SubmenuRoot>
-            <Menu.SubmenuTrigger render={<MenuItem title="Open Recent..." endIcon={<Icon.Arrow.Head.Right/>}/>}/>
-            <Menu.Portal>
-              <MenuPopup arrow={false}>
-                <RecentItems recent={recent} setCommand={setCommand}/>
-              </MenuPopup>
-            </Menu.Portal>
-          </Menu.SubmenuRoot>
-          <Separator />
-          <MenuItem
-            title="Import File..."
-            onClick={e => { reqImportFile({ setCommand, file }); }}
-            />
-          <MenuItem
-            title="Import From Clipboard"
-            onClick={e => { reqImportClipboard({ setCommand }); }}
-            />
-          <Separator />
-          <MenuItem
-            title="Save" endAdornment="Ctrl-S"
-            disabled={!file} onClick={e => { reqSaveFile({ setCommand, file }); }}
-            />
-          <MenuItem
-            title="Save as..."
-            disabled={!hasdoc} onClick={e => { reqSaveFileAs({ setCommand, file }); }}
-            />
-          <MenuItem
-            title="Rename..."
-            disabled={!file} onClick={e => { reqRenameFile({ setCommand, file }); }}
-            />
-          <MenuItem
-            title="Close" endAdornment="Ctrl-W"
-            disabled={!hasdoc} onClick={e => { reqCloseFile({ setCommand, file }); }}
-            />
-          <Separator />
-          <MenuItem
-            title="Quit" //endAdornment="Ctrl-Q"
-            onClick={e => { reqQuit({setCommand}); }}
-          />
-        </MenuPopup>
-      </Menu.Portal>
-    </Menu.Root>
+    return <Menu trigger={<Button>{name}</Button>}>
+      <MenuItem
+        title="New" endAdornment="Ctrl-N"
+        onClick={e => { reqNew({ setCommand }); }}
+        />
+      <MenuItem
+        title="Open" endAdornment="Ctrl-O"
+        onClick={e => { reqOpenFile({ setCommand, file }); }}
+        />
+      <Submenu trigger={<MenuItem title="Open Recent..." endIcon={<Icon.Arrow.Head.Right/>}/>}>
+        <RecentItems recent={recent} setCommand={setCommand}/>
+      </Submenu>
+      <Separator />
+      <MenuItem
+        title="Import File..."
+        onClick={e => { reqImportFile({ setCommand, file }); }}
+        />
+      <MenuItem
+        title="Import From Clipboard"
+        onClick={e => { reqImportClipboard({ setCommand }); }}
+        />
+      <Separator />
+      <MenuItem
+        title="Save" endAdornment="Ctrl-S"
+        disabled={!file} onClick={e => { reqSaveFile({ setCommand, file }); }}
+        />
+      <MenuItem
+        title="Save as..."
+        disabled={!hasdoc} onClick={e => { reqSaveFileAs({ setCommand, file }); }}
+        />
+      <MenuItem
+        title="Rename..."
+        disabled={!file} onClick={e => { reqRenameFile({ setCommand, file }); }}
+        />
+      <MenuItem
+        title="Close" endAdornment="Ctrl-W"
+        disabled={!hasdoc} onClick={e => { reqCloseFile({ setCommand, file }); }}
+        />
+      <Separator />
+      <MenuItem
+        title="Quit" //endAdornment="Ctrl-Q"
+        onClick={e => { reqQuit({setCommand}); }}
+      />
+    </Menu>
   }
 }
 
@@ -476,18 +466,13 @@ class HelpButton extends React.PureComponent {
   render() {
     const { setCommand } = this.props
 
-    return <Menu.Root>
-      <Menu.Trigger render={<IconButton tooltip="Help"><Icon.Help/></IconButton>} />
-      <Menu.Portal>
-        <MenuPopup>
-          <MenuItem title="Tutorial (English)"
-            onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.en.mawe"})}}
-            />
-          <MenuItem title="Tutorial (Finnish)"
-            onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.fi.mawe"})}}
-            />
-        </MenuPopup>
-      </Menu.Portal>
-    </Menu.Root>
+    return <Menu trigger={<IconButton tooltip="Help"><Icon.Help/></IconButton>}>
+      <MenuItem title="Tutorial (English)"
+        onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.en.mawe"})}}
+        />
+      <MenuItem title="Tutorial (Finnish)"
+        onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.fi.mawe"})}}
+        />
+    </Menu>
   }
 }
