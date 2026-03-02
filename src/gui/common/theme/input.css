@@ -5,12 +5,14 @@
 *******************************************************************************
 */
 
+/* Reset default values */
+
 input {
-  margin: 0;
-  padding: 2px;
   font-size: inherit;
+  padding: 2px;
+  margin: 0;
+  /*border: 1px solid lightgrey;*/
   border: none;
-  &:focus {
-    outline: none;
-  }
+  &:focus {outline: none;}
+  background: lightgoldenrodyellow;
 }

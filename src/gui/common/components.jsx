@@ -13,7 +13,7 @@ import {
   VBox,
   Button, Icon, IconButton,
   MakeToggleGroup, DropDown,
-  TextField,
+  OutlinedInput,
   Accordion, AccordionSummary,
   Popup,
 } from "./factory";
@@ -42,17 +42,17 @@ export class EditHead extends React.PureComponent {
       <Accordion disableGutters defaultExpanded={expanded}>
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
       <VBox>
-      <TextField label="Name" value={head.name ?? ""} onChange={e => updateDocName(updateDoc, e.target.value)}/>
-      <TextField label="Title" value={head.title ?? ""} onChange={e => updateDocTitle(updateDoc, e.target.value)}/>
-      <TextField label="Subtitle" value={head.subtitle ?? ""} onChange={e => updateDocSubtitle(updateDoc, e.target.value)}/>
+      <OutlinedInput label="Name" value={head.name ?? ""} onChange={e => updateDocName(updateDoc, e.target.value)}/>
+      <OutlinedInput label="Title" value={head.title ?? ""} onChange={e => updateDocTitle(updateDoc, e.target.value)}/>
+      <OutlinedInput label="Subtitle" value={head.subtitle ?? ""} onChange={e => updateDocSubtitle(updateDoc, e.target.value)}/>
       </VBox>
       </Accordion>
 
       <Accordion disableGutters defaultExpanded={expanded}>
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
       <VBox>
-      <TextField label="Author" value={head.author ?? ""} onChange={e => updateDocAuthor(updateDoc, e.target.value)}/>
-      <TextField label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => updateDocPseudonym(updateDoc, e.target.value)}/>
+      <OutlinedInput label="Author" value={head.author ?? ""} onChange={e => updateDocAuthor(updateDoc, e.target.value)}/>
+      <OutlinedInput label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => updateDocPseudonym(updateDoc, e.target.value)}/>
       </VBox>
       </Accordion>
     </>

@@ -18,12 +18,12 @@ import { enqueueSnackbar, closeSnackbar } from "notistack";
 import { isNotEmpty } from "../../util";
 
 import {
-  Menu as BUIMenu,
-  Button as BUIButton,
-  Toggle as BUIToggle,
   Tooltip as BUITooltip,
+  //Button as BUIButton,
+  //Toggle as BUIToggle,
+  //Input,
+  Menu as BUIMenu,
   Popover as BUIPopover,
-  Input,
   Dialog as BUIDialog,
 } from "@base-ui/react"
 
@@ -127,20 +127,20 @@ export class Separator extends React.PureComponent {
 export function Button({tooltip, ...props}) {
   if(tooltip) {
     return <Tooltip tooltip={tooltip}>
-      <BUIButton {...props}/>
+      <button {...props}/>
     </Tooltip>
   }
-  return <BUIButton {...props}/>
+  return <button {...props}/>
 }
 
 export function IconButton({ tooltip, className, ...props }) {
   const cl = addClass(className, "icon")
   if(tooltip) {
     return <Tooltip tooltip={tooltip}>
-      <Button className={cl} {...props}/>
+      <button className={cl} {...props}/>
     </Tooltip>
   }
-  return <Button className={cl} {...props}/>
+  return <button className={cl} {...props}/>
 }
 
 //*****************************************************************************
@@ -160,14 +160,17 @@ const separators = {
 //
 //*****************************************************************************
 
-function ToggleButton({tooltip, pressed, className, ...props}) {
-  const cl = addClass(className, "toggle")
+function ToggleButton({tooltip, checked, className, ...props}) {
+  const btnprops = {
+    ...props,
+    className: addClass(className, checked && "checked"),
+  }
   if(tooltip) {
     return <Tooltip tooltip={tooltip}>
-      <BUIToggle className={cl} pressed={pressed} {...props}/>
+      <button checked {...btnprops}/>
     </Tooltip>
   }
-  return <BUIToggle className={cl} pressed={pressed} {...props}/>
+  return <button {...btnprops}/>
 }
 
 export class MakeToggleGroup extends React.PureComponent {
@@ -188,7 +191,7 @@ export class MakeToggleGroup extends React.PureComponent {
     const {multiple, buttons, disabled, selected} = this.props
 
     const isDisabled = disabled?.includes(choice) ?? false
-    const isPressed  = multiple ? selected.includes(choice) : selected === choice
+    const isChecked  = multiple ? selected.includes(choice) : selected === choice
 
     //console.log("choice:", choice, "pressed:", isPressed)
 
@@ -200,8 +203,8 @@ export class MakeToggleGroup extends React.PureComponent {
       tooltip={tooltip}
       disabled={isDisabled}
       //value={choice}
-      pressed={isPressed}
-      onPressedChange={(value, e) => this.onTogglePress(choice)}
+      checked={isChecked}
+      onClick={e => this.onTogglePress(choice)}
     >
       {icon}{text}
     </ToggleButton>
@@ -292,16 +295,25 @@ export class DropDown extends React.PureComponent {
 //
 //*****************************************************************************
 
-export {Input}
+export class Input extends React.PureComponent {
+  render() {
+    return <input spellCheck={false} {...this.props}/>
+  }
+}
 
-// TODO: TextField --> InputField / OutlinedInput
+export class Outlined extends React.PureComponent {
+  render() {
+    const {label, className, ...props} = this.props
+    return <div className={addClass("Outlined", className)} label={label} {...props}/>
+  }
+}
 
-export class TextField extends React.PureComponent {
+export class OutlinedInput extends React.PureComponent {
   render() {
     const {label, startAdornment, endAdornment, ...props} = this.props
     return <Outlined label={label}>
       {startAdornment}
-      <Input spellCheck={false} {...props}/>
+      <Input {...props}/>
       {endAdornment}
     </Outlined>
   }
@@ -316,13 +328,6 @@ export class OutlinedText extends React.PureComponent {
       <Filler/>
       {endAdornment}
     </Outlined>
-  }
-}
-
-export class Outlined extends React.PureComponent {
-  render() {
-    const {label, ...props} = this.props
-    return <HBox className="Outlined" label={label} {...props}/>
   }
 }
 
@@ -420,6 +425,7 @@ export class Popup extends React.PureComponent {
 export class Menu extends React.PureComponent {
   render() {
     const {trigger, arrow=true, className, children, ...props} = this.props;
+
     return <BUIMenu.Root>
       <BUIMenu.Trigger render={trigger}/>
       <BUIMenu.Portal>

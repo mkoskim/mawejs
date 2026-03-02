@@ -1,0 +1,288 @@
+/******************************************************************************
+ *
+ * Settings for different containers
+ *
+ ******************************************************************************/
+
+.VBox {
+  display: flex;
+  flex-direction: column;
+
+  > .Separator {
+    width:  100%;
+    border-bottom: 1pt solid lightgrey;
+    margin-top: 4pt;
+    margin-bottom: 4pt;
+  }
+}
+
+.HBox {
+  display: flex;
+  flex-direction: row;
+
+  > .Separator {
+    height: 100%;
+    border-right: 1pt solid lightgrey;
+    margin-left: 4pt;
+    margin-right: 4pt;
+  }
+}
+
+.Filler {
+  flex-grow: attr(weight number, 1);
+  &.debug {background: var(--filler-bg);}
+}
+
+/******************************************************************************
+ *
+ * Toolbar
+ *
+ ******************************************************************************/
+
+.Toolbar {
+  padding: 2px;
+  align-items: center;
+
+  &[side="top"] {
+    border-bottom: 1pt solid lightgray;
+  }
+
+  &[side="bottom"] {
+    border-top: 1pt solid lightgray;
+  }
+}
+
+/******************************************************************************
+ *
+ * Panel
+ *
+ ******************************************************************************/
+
+.Panel {
+  background: #EEE;
+}
+
+/******************************************************************************
+*
+* Popups
+*
+*******************************************************************************
+*/
+
+/*-----------------------------------------------------------------------------
+* Popup positioner & arrow
+*------------------------------------------------------------------------------
+*/
+
+.Positioner {
+  /*outline: 2px solid red;*/
+}
+
+.Arrow {
+  display: flex;
+
+  &[data-side='top'] {
+    bottom: -8px;
+    rotate: 180deg;
+  }
+
+  &[data-side='bottom'] {
+    top: -8px;
+    rotate: 0deg;
+  }
+
+  &[data-side='left'] {
+    right: -13px;
+    rotate: 90deg;
+  }
+
+  &[data-side='right'] {
+    left: -13px;
+    rotate: -90deg;
+  }
+}
+
+/*-----------------------------------------------------------------------------
+* General settings
+*------------------------------------------------------------------------------
+*/
+
+.Popup, .Menu, .Dialog {
+
+  /* Popup background */
+  background: white;
+  .ArrowFill { fill: white; }
+
+  /* Popup border */
+  border: 1px solid var(--popup-border);
+  .ArrowBorder { fill: var(--popup-border); }
+  border-radius: 3px;
+  padding: 3px;
+
+  /* Popup shadow */
+  box-shadow: 5px 5px 10px var(--popup-border);
+}
+
+/*-----------------------------------------------------------------------------
+* Tooltip popup
+*------------------------------------------------------------------------------
+*/
+
+.Tooltip {
+  background: var(--tooltip-bg);
+  color: var(--tooltip-fg);
+  border: 1px solid var(--tooltip-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 10pt;
+
+  .ArrowFill {
+    fill: var(--tooltip-bg);
+  }
+
+  .ArrowBorder {
+    fill: var(--tooltip-border);
+  }
+}
+
+/******************************************************************************
+*
+* Menus
+*
+*******************************************************************************
+*/
+
+.Menu {
+  padding: 4px 4px;
+
+  .Item {
+    display: inline-flex;
+    align-items: center;
+    flex-grow: 1;
+    cursor: default;
+    padding: 5px 0px;
+    border-radius: 3px;
+    &:hover {
+      background-color: #8BF;
+    }
+
+    .startIcon {
+      color: grey;
+      margin-right: 4px;
+      min-width: 12pt;
+    }
+
+    .endAdornment {
+      color: grey;
+    }
+
+    .endIcon {
+      min-width: 12pt;
+      color: grey;
+    }
+
+    /*
+    padding-left: 1rem;
+    padding-right: 2rem;
+    outline: 0;
+    user-select: none;
+    padding-block: 0.5rem;
+    display: flex;
+    font-size: 0.875rem;
+    line-height: 1rem;
+    */
+
+    /*
+    &[data-highlighted] {
+      z-index: 0;
+      position: relative;
+      color: var(--color-gray-50);
+    }
+    */
+
+    /*
+    &[data-highlighted]::before {
+      content: '';
+      z-index: -1;
+      position: absolute;
+      inset-block: 0;
+      inset-inline: 0.25rem;
+      border-radius: 0.25rem;
+      background-color: var(--color-gray-900);
+    }
+      */
+  }
+}
+
+/******************************************************************************
+*
+* Dialogs
+*
+*******************************************************************************/
+
+.Dialog {
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  min-width: 50dvw;
+  min-height: 20dvh;
+  max-width: 80dvw;
+  max-height: 80dvh;
+
+  &.xl {
+    min-width: 90dvw;
+    min-height: 90dvh;
+    max-width: 95dvw;
+    max-height: 95dvh;
+  }
+
+  /*
+  box-sizing: border-box;
+  width: 24rem;
+  margin-top: -2rem;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+*/
+
+  /*
+
+  @media (prefers-color-scheme: dark) {
+    outline: 1px solid var(--color-gray-300);
+  }
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  */
+}
+
+.Backdrop {
+  position: fixed;
+  min-height: 100dvh;
+  inset: 0;
+  background-color: black;
+  opacity: 0.2;
+
+  /* iOS 26+: Ensure the backdrop covers the entire visible viewport. */
+  @supports (-webkit-touch-callout: none) {
+    position: absolute;
+  }
+
+  /*
+  touch-action: none;
+  transition: opacity 150ms cubic-bezier(0.45, 1.005, 0, 1.005);
+  @media (prefers-color-scheme: dark) {
+    opacity: 0.7;
+  }
+
+  &[data-starting-style],
+  &[data-ending-style] {
+    opacity: 0;
+  }
+  */
+}

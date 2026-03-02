@@ -8,22 +8,31 @@ import {
   VBox, HBox, Filler,
   Separator,
   Button, IconButton, Icon,
-  Input,
+  Input, OutlinedInput,
   ToolBox,
   Menu, Submenu, MenuItem,
-  DialogActions,
+  Outlined,
 } from "../common/factory"
+
+const toolbarStyle = {
+  //background: "#F0F0FF",
+  borderTop: "1px solid gray",
+  borderBottom: "1px solid gray",
+}
 
 export function UITestView({doc, updateDoc}) {
   return <VBox>
-    <MenuTest/>
-    <ToolBox side="top">Toolbar: <Buttons/><Inputs/><Padder/></ToolBox>
-    <HBox>HBox: <Buttons/><Inputs/><Padder/></HBox>
-    <DialogActions>Dialog actions: <Buttons/><Inputs/><Padder/></DialogActions>
+    {/*<MenuTest/>*/}
+    <HBox>HBox/Default: <Buttons/><Inputs/><Padder/></HBox>
     <Separator/>
+    <ToolBox style={toolbarStyle}>Toolbar: <Buttons/><Inputs/><Padder/></ToolBox>
+    <Separator/>
+    <HBox className="Panel">HBox/Panel: <Buttons/><Inputs/><Padder/></HBox>
     <Separator/>
     <HBox>
-      <VBox>VBox: <Buttons/></VBox>
+      <VBox>VBox/Default: <Buttons/><Inputs/></VBox>
+      <Separator/>
+      <VBox className="Panel">VBox/Panel: <Buttons/><Inputs/></VBox>
       <Padder/>
     </HBox>
   </VBox>
@@ -39,13 +48,18 @@ function Buttons() {
     <Button tooltip="Button">Button</Button>
     <Button tooltip="Button" className="error">Button</Button>
     <Button tooltip="Button" className="success">Button</Button>
+    <Separator/>
+    <Button className="Outlined" label="Example" tooltip="Button">Button</Button>
+    <Button className="Outlined error" label="Example" tooltip="Button">Button</Button>
+    <Button className="Outlined success" label="Example" tooltip="Button">Button</Button>
   </>
 }
 
 function Inputs() {
   return  <>
     <Separator/>
-    <Input/>
+    Plain: <Input value="Some text..."/>
+    Outlined: <OutlinedInput label="Example" value="Some text..."/>
   </>
 }
 
@@ -56,7 +70,9 @@ function MenuTest() {
 }
 
 function TestMenu1() {
-  return <Menu trigger={<Button>Menu</Button>}>
+  const trigger = <Button>Menu</Button>
+
+  return <Menu trigger={trigger}>
     <MenuItem title="New" endAdornment="Ctrl-N"/>
     <MenuItem title="Open" endAdornment="Ctrl-O"/>
     <Submenu trigger={<MenuItem title="Open Recent..." endIcon={<Icon.Arrow.Head.Right/>}/>}>

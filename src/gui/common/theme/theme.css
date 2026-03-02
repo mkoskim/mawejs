@@ -3,53 +3,39 @@
 // ----------------------------------------------------------------------------
 */
 
-@import "./colors.css";
 @import "./app.css";
-@import "./base.css";
+@import "./container.css";
+@import "./button.css";
 @import "./input.css";
-@import "./popup.css";
-@import "./menu.css";
-@import "./dialog.css";
-@import "./tooltip.css";
+@import "./decorations.css";
 
-.VBox {
-  display: flex;
-  flex-direction: column;
+/******************************************************************************
+*
+* Colors for UI
+*
+*******************************************************************************/
 
-  > .Separator {
-    width:  100%;
-    border-bottom: 1pt solid lightgrey;
-    margin-top: 4pt;
-    margin-bottom: 4pt;
-  }
-}
+:root {
+  --error-bg: rgb(255, 171, 171);
+  --error-fg: #800;
+  --error-border: #A00;
 
-.HBox {
-  display: flex;
-  flex-direction: row;
+  --success-bg: #d6efe3;
+  --success-fg: #050;
+  --success-border: #6B6;
 
-  > .Separator {
-    height: 100%;
-    border-right: 1pt solid lightgrey;
-    margin-left: 4pt;
-    margin-right: 4pt;
-  }
-}
+  --checked-bg: #ACF;
 
-.Filler {
-  flex-grow: attr(weight number, 1);
-  &.debug {background: var(--filler-bg);}
-}
+  --hover-bg: #0002;
 
-.Toolbar {
-  padding: 2px;
-  align-items: center;
+  --popup-border: #BBB;
 
-  &[side="top"] {
-    border-bottom: 1pt solid lightgray;
-  }
+  --tooltip-fg: white;
+  --tooltip-bg: #222;
+  --tooltip-border: none;
 
-  &[side="bottom"] {
-    border-top: 1pt solid lightgray;
-  }
+  --filler-bg: #FAF;
+
+  --font-size: 12pt;
+  --font-size-small: 10pt;
 }

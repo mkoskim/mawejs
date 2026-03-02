@@ -10,7 +10,7 @@ import {
   VBox, HBox, VFiller,
   Button,
   Separator,
-  TextField,
+  OutlinedInput,
   DeferredRender,
   Inform,
   Label,
@@ -219,7 +219,7 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
   const {format} = exports
   const {formatter} = formatters[format]
 
-  return <VBox style={style} className="ExportSettings">
+  return <VBox style={style} className="Panel">
     <ExportInfo flatted={flatted}/>
 
     <Separator/>
@@ -233,7 +233,7 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
       setSelected={value => updateDocFormat(updateDoc, value)}
     />
 
-    <Button variant="contained" color="success" onClick={e => exportToFile(formatter, flatted)}>Export</Button>
+    <Button className="success" onClick={e => exportToFile(formatter, flatted)}>Export</Button>
 
     <Separator/>
     <DropDown
@@ -280,9 +280,9 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
     />
 
     <Separator/>
-    <TextField label="Act Prefix" value={exports.prefix_act} onChange={e => updateDocActPrefix(updateDoc, e.target.value)}/>
-    <TextField label="Chapter Prefix" value={exports.prefix_chapter} onChange={e => updateDocChapterPrefix(updateDoc, e.target.value)}/>
-    <TextField label="Scene Prefix" value={exports.prefix_scene} onChange={e => updateDocScenePrefix(updateDoc, e.target.value)}/>
+    <OutlinedInput label="Act Prefix" value={exports.prefix_act} onChange={e => updateDocActPrefix(updateDoc, e.target.value)}/>
+    <OutlinedInput label="Chapter Prefix" value={exports.prefix_chapter} onChange={e => updateDocChapterPrefix(updateDoc, e.target.value)}/>
+    <OutlinedInput label="Scene Prefix" value={exports.prefix_scene} onChange={e => updateDocScenePrefix(updateDoc, e.target.value)}/>
 
   </VBox>
 }

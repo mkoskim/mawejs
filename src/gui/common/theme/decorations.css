@@ -1,0 +1,54 @@
+/* ----------------------------------------------------------------------------
+// Outlined elements
+// ----------------------------------------------------------------------------
+*/
+
+.Outlined {
+  border: 1px solid #AAA;
+  border-radius: 3px;
+
+  /*
+  &[label] {
+    &:before {
+      content: attr(label);
+    }
+  }
+*/
+}
+
+/* ----------------------------------------------------------------------------
+// In panels, we can use more space.
+// ----------------------------------------------------------------------------
+*/
+
+.Panel .Outlined {
+  /* Give some space to the content.*/
+  padding: 4px;
+  padding-top: calc(var(--font-size-small) + 6px);
+
+  /*
+  align-items: center;
+  padding: 2pt;
+  margin-top: 8pt;
+  padding-top: 4pt;
+  */
+
+  position: relative;
+
+  &[label] {
+    &:before {
+      content: attr(label);
+
+      color: inherit;
+      opacity: 80%;
+      font-size: var(--font-size-small);
+
+      position: absolute;
+      top: 0;
+      /*
+      padding: 0pt 2pt;
+      left: 3pt;
+      */
+    }
+  }
+}
