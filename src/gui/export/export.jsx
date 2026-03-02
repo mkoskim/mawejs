@@ -8,9 +8,8 @@ import "./export.css"
 
 import {
   VBox, HBox, VFiller,
-  Button,
+  Button, Input,
   Separator,
-  OutlinedInput,
   DeferredRender,
   Inform,
   Label,
@@ -280,9 +279,9 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
     />
 
     <Separator/>
-    <OutlinedInput label="Act Prefix" value={exports.prefix_act} onChange={e => updateDocActPrefix(updateDoc, e.target.value)}/>
-    <OutlinedInput label="Chapter Prefix" value={exports.prefix_chapter} onChange={e => updateDocChapterPrefix(updateDoc, e.target.value)}/>
-    <OutlinedInput label="Scene Prefix" value={exports.prefix_scene} onChange={e => updateDocScenePrefix(updateDoc, e.target.value)}/>
+    <Input variant="outlined" label="Act Prefix" value={exports.prefix_act} onChange={e => updateDocActPrefix(updateDoc, e.target.value)}/>
+    <Input variant="outlined" label="Chapter Prefix" value={exports.prefix_chapter} onChange={e => updateDocChapterPrefix(updateDoc, e.target.value)}/>
+    <Input variant="outlined" label="Scene Prefix" value={exports.prefix_scene} onChange={e => updateDocScenePrefix(updateDoc, e.target.value)}/>
 
   </VBox>
 }

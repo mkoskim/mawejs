@@ -297,14 +297,15 @@ export class DropDown extends React.PureComponent {
 
 export class Input extends React.PureComponent {
   render() {
-    return <input spellCheck={false} {...this.props}/>
-  }
-}
-
-export class Outlined extends React.PureComponent {
-  render() {
-    const {label, className, ...props} = this.props
-    return <div className={addClass("Outlined", className)} label={label} {...props}/>
+    const {label, variant, color, spellCheck=false, ...rest} = this.props;
+    const props = {
+      ...rest,
+      spellCheck,
+    }
+    if(label) {
+      return <div label={label} variant={variant} color={color}><input {...props}/></div>
+    }
+    return <input variant={variant} color={color} {...props}/>
   }
 }
 

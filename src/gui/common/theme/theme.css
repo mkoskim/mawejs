@@ -8,6 +8,7 @@
 @import "./button.css";
 @import "./input.css";
 @import "./decorations.css";
+@import "./tooltip.css";
 
 /******************************************************************************
 *
@@ -16,6 +17,7 @@
 *******************************************************************************/
 
 :root {
+  --border-color: grey;
   --error-bg: rgb(255, 171, 171);
   --error-fg: #800;
   --error-border: #A00;

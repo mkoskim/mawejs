@@ -7,7 +7,7 @@
 /* For all elements, measure widths and heights with padding and border */
 * {
   box-sizing: border-box;
-
+  border-color: var(--border-color);
   /*
   &:focus { outline: 2px solid red; }
   /*/

@@ -8,10 +8,9 @@ import {
   VBox, HBox, Filler,
   Separator,
   Button, IconButton, Icon,
-  Input, OutlinedInput,
+  Input,
   ToolBox,
   Menu, Submenu, MenuItem,
-  Outlined,
 } from "../common/factory"
 
 const toolbarStyle = {
@@ -23,16 +22,16 @@ const toolbarStyle = {
 export function UITestView({doc, updateDoc}) {
   return <VBox>
     {/*<MenuTest/>*/}
-    <HBox>HBox/Default: <Buttons/><Inputs/><Padder/></HBox>
+    <HBox>HBox/Default: <Buttons/><Padder/></HBox>
     <Separator/>
-    <ToolBox style={toolbarStyle}>Toolbar: <Buttons/><Inputs/><Padder/></ToolBox>
+    <ToolBox style={toolbarStyle}>Toolbar: <Buttons/><Padder/></ToolBox>
     <Separator/>
-    <HBox className="Panel">HBox/Panel: <Buttons/><Inputs/><Padder/></HBox>
+    <HBox className="Panel">HBox/Panel: <Buttons/><Padder/></HBox>
     <Separator/>
     <HBox>
-      <VBox>VBox/Default: <Buttons/><Inputs/></VBox>
+      <VBox>VBox/Default: <Buttons/></VBox>
       <Separator/>
-      <VBox className="Panel">VBox/Panel: <Buttons/><Inputs/></VBox>
+      <VBox className="Panel">VBox/Panel: <Buttons/></VBox>
       <Padder/>
     </HBox>
   </VBox>
@@ -46,20 +45,14 @@ function Buttons() {
     <IconButton tooltip="Button" className="success"><Icon.Help/></IconButton>
     <Separator/>
     <Button tooltip="Button">Button</Button>
-    <Button tooltip="Button" className="error">Button</Button>
-    <Button tooltip="Button" className="success">Button</Button>
+    <Button tooltip="Button" color="error">Button</Button>
+    <Button tooltip="Button" color="success">Button</Button>
+    <Input value="Some text..." onChange={e => e}/>
     <Separator/>
-    <Button className="Outlined" label="Example" tooltip="Button">Button</Button>
-    <Button className="Outlined error" label="Example" tooltip="Button">Button</Button>
-    <Button className="Outlined success" label="Example" tooltip="Button">Button</Button>
-  </>
-}
-
-function Inputs() {
-  return  <>
-    <Separator/>
-    Plain: <Input value="Some text..."/>
-    Outlined: <OutlinedInput label="Example" value="Some text..."/>
+    <Button variant="filled"                 label="Example" tooltip="Button">Button</Button>
+    <Button variant="filled" color="error"   label="Example" tooltip="Button">Button</Button>
+    <Button variant="filled" color="success" label="Example" tooltip="Button">Button</Button>
+    <Input variant="outlined" label="Example" value="Some text..." onChange={e => e}/>
   </>
 }
 

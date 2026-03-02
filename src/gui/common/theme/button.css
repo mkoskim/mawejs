@@ -12,7 +12,7 @@ button {
   padding-block: 0;
   padding-inline: 0;
   font-size: inherit;
-  border: 1px solid;
+  border-width: 1px;
   border-radius: 3px;
 }
 
@@ -45,17 +45,13 @@ button {
   &.checked {
     background: var(--checked-bg);
   }
-
-  &.Outlined {
-    justify-content: left;
-  }
 }
 
 .Toolbar {
   & > button {
     min-width: 28px;
     min-height: 28px;
-    border: none;
+    border-width: 0;
     border-radius: 0;
 
     &.icon {

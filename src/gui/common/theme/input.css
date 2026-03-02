@@ -9,10 +9,9 @@
 
 input {
   font-size: inherit;
-  padding: 2px;
+  padding: 0px;
   margin: 0;
-  /*border: 1px solid lightgrey;*/
-  border: none;
+  border-width: 0px;
   &:focus {outline: none;}
   background: lightgoldenrodyellow;
 }

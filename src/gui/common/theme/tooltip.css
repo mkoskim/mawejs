@@ -1,0 +1,47 @@
+/*-----------------------------------------------------------------------------
+* Tooltip popup
+*------------------------------------------------------------------------------
+*/
+
+/* Base UI tooltip */
+
+.Tooltip {
+  background: var(--tooltip-bg);
+  color: var(--tooltip-fg);
+  border: 1px solid var(--tooltip-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 10pt;
+
+  .ArrowFill {
+    fill: var(--tooltip-bg);
+  }
+
+  .ArrowBorder {
+    fill: var(--tooltip-border);
+  }
+}
+
+/* CSS tooltip */
+/*
+[tooltip] {
+  position: relative;
+
+  &:hover {
+    &:after {
+      position: absolute;
+      top: 110%;
+      z-index: 1;
+
+      content: attr(tooltip);
+      opacity: 100%;
+      background: var(--tooltip-bg);
+      color: var(--tooltip-fg);
+      border: 1px solid var(--tooltip-border);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: var(--font-size-small);
+    }
+  }
+}
+*/

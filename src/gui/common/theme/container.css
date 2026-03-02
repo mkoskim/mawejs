@@ -7,6 +7,7 @@
 .VBox {
   display: flex;
   flex-direction: column;
+  /* Default align-items: stretch; */
 
   > .Separator {
     width:  100%;
@@ -19,6 +20,7 @@
 .HBox {
   display: flex;
   flex-direction: row;
+  /* Default align-items: stretch; */
 
   > .Separator {
     height: 100%;
@@ -31,6 +33,27 @@
 .Filler {
   flex-grow: attr(weight number, 1);
   &.debug {background: var(--filler-bg);}
+}
+
+/* Boxes accept attributes to control the flexbox */
+
+.VBox, .HBox {
+  /* Item justifying */
+  [justify="start"] {justify-content: flex-start;}
+  [justify="center"] {justify-content: center;}
+  [justify="end"] {justify-content: flex-end;}
+  [justify="space-between"] {justify-content: space-between;}
+  [justify="space-around"] {justify-content: space-around;}
+  [justify="space-evenly"] {justify-content: space-evenly;}
+
+  /* Item alignment */
+  [align="start"] {align-items: flex-start;}
+  [align="center"] {align-items: center;}
+  [align="end"] {align-items: flex-end;}
+  [align="stretch"] {align-items: stretch;}
+  [align="baseline"] {align-items: baseline;}
+
+  /* Gap */
 }
 
 /******************************************************************************
@@ -59,7 +82,20 @@
  ******************************************************************************/
 
 .Panel {
-  background: #EEE;
+  gap: 4px;
+  padding: 4px;
+
+  .Icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  button {
+    padding: 8px 12px;
+    &.icon {
+      padding: 2px;
+    }
+  }
 }
 
 /******************************************************************************
@@ -121,28 +157,6 @@
 
   /* Popup shadow */
   box-shadow: 5px 5px 10px var(--popup-border);
-}
-
-/*-----------------------------------------------------------------------------
-* Tooltip popup
-*------------------------------------------------------------------------------
-*/
-
-.Tooltip {
-  background: var(--tooltip-bg);
-  color: var(--tooltip-fg);
-  border: 1px solid var(--tooltip-border);
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 10pt;
-
-  .ArrowFill {
-    fill: var(--tooltip-bg);
-  }
-
-  .ArrowBorder {
-    fill: var(--tooltip-border);
-  }
 }
 
 /******************************************************************************
