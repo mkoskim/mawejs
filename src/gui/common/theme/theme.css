@@ -6,10 +6,11 @@
 @import "./colors.css";
 @import "./app.css";
 @import "./base.css";
+@import "./input.css";
 @import "./popup.css";
 @import "./menu.css";
-@import "./input.css";
 @import "./dialog.css";
+@import "./tooltip.css";
 
 .VBox {
   display: flex;
@@ -36,7 +37,8 @@
 }
 
 .Filler {
-  flex-grow: 1;
+  flex-grow: attr(weight number, 1);
+  &.debug {background: var(--filler-bg);}
 }
 
 .Toolbar {

@@ -12,7 +12,7 @@ button {
   padding-block: 0;
   padding-inline: 0;
   font-size: inherit;
-  border: 1px solid gray;
+  border: 1px solid;
   border-radius: 3px;
 }
 
@@ -25,8 +25,8 @@ button {
 
   /* Selectors for non-icon buttons */
   &:not(.icon) {
-    &.error   {background: var(--error-bg)}
-    &.success {background: var(--success-bg)}
+    &.error   {background: var(--error-bg); border-color: var(--error-border); }
+    &.success {background: var(--success-bg); border-color: var(--success-border);}
   }
 
   /* Selectors for icon buttons */

@@ -16,33 +16,13 @@
   .ArrowFill { fill: white; }
 
   /* Popup border */
-  outline: 1px solid var(--popup-border);
-  .ArrowOuterStroke { fill: var(--popup-border); }
-  .ArrowInnerStroke {
-    fill: none;
-  }
+  border: 1px solid var(--popup-border);
+  .ArrowBorder { fill: var(--popup-border); }
   border-radius: 3px;
   padding: 3px;
 
   /* Popup shadow */
   box-shadow: 5px 5px 10px var(--popup-border);
-}
-
-/*-----------------------------------------------------------------------------
-* Tooltip popup
-*------------------------------------------------------------------------------
-*/
-
-.Tooltip {
-  background: var(--tooltip-bg);
-  color: var(--tooltip-fg);
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 10pt;
-
-  .ArrowFill {
-    fill: var(--tooltip-bg);
-  }
 }
 
 /*-----------------------------------------------------------------------------

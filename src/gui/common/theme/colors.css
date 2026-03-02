@@ -1,16 +1,17 @@
 /******************************************************************************
 *
-* Theme colors
+* Colors for UI
 *
 *******************************************************************************/
 
 :root {
-  /* Colors for UI */
-  --error-fg: #E00;
-  --error-bg: #F33;
+  --error-fg: #B00;
+  --error-bg: #F22;
+  --error-border: #B00;
 
-  --success-fg: #080;
-  --success-bg: #4F4;
+  --success-fg: #050;
+  --success-bg: #d6efe3;
+  --success-border: #6B6;
 
   --checked-bg: #ACF;
 
@@ -19,5 +20,8 @@
   --popup-border: #BBB;
 
   --tooltip-fg: white;
-  --tooltip-bg: grey;
+  --tooltip-bg: #222;
+  --tooltip-border: none;
+
+  --filler-bg: #FAF;
 }

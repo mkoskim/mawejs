@@ -16,11 +16,11 @@ import {
 
 export function UITestView({doc, updateDoc}) {
   return <VBox>
+    <MenuTest/>
     <ToolBox side="top">Toolbar: <Buttons/><Inputs/><Padder/></ToolBox>
     <HBox>HBox: <Buttons/><Inputs/><Padder/></HBox>
-    <DialogActions>Dialog actions: <Buttons/><Inputs/></DialogActions>
+    <DialogActions>Dialog actions: <Buttons/><Inputs/><Padder/></DialogActions>
     <Separator/>
-    <MenuTest/>
     <Separator/>
     <HBox>
       <VBox>VBox: <Buttons/></VBox>
@@ -32,13 +32,13 @@ export function UITestView({doc, updateDoc}) {
 function Buttons() {
   return <>
     <Separator/>
-    <IconButton><Icon.Help/></IconButton>
-    <IconButton className="error"><Icon.Help/></IconButton>
-    <IconButton className="success"><Icon.Help/></IconButton>
+    <IconButton tooltip="Button"><Icon.Help/></IconButton>
+    <IconButton tooltip="Button" className="error"><Icon.Help/></IconButton>
+    <IconButton tooltip="Button" className="success"><Icon.Help/></IconButton>
     <Separator/>
-    <Button>Button</Button>
-    <Button className="error">Button</Button>
-    <Button className="success">Button</Button>
+    <Button tooltip="Button">Button</Button>
+    <Button tooltip="Button" className="error">Button</Button>
+    <Button tooltip="Button" className="success">Button</Button>
   </>
 }
 
@@ -89,6 +89,6 @@ function TestMenu1() {
 function Padder() {
   return <>
     <Separator/>
-    <Filler style={{background: "#FAF"}}/>
+    <Filler className="debug"/>
   </>
 }
