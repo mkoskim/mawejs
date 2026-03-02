@@ -139,9 +139,9 @@ export function ImportDialog({ filename, setDialogs }) {
 
     <HBox style={{ overflow: "auto" }}>
       <Preview imported={imported} />
-      <VBox className="ImportSettings">
+      <VBox className="Panel">
         <SelectFormat format={format} content={content} setImported={setImported} />
-        <Button variant="contained" color="success" onClick={Import}>
+        <Button variant="filled" color="success" onClick={Import}>
           Import
         </Button>
       </VBox>

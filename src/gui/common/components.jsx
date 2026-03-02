@@ -11,11 +11,12 @@ import React, {
 
 import {
   VBox,
-  Button, Icon, IconButton,
+  Button, Input,
+  Icon, IconButton,
   MakeToggleGroup, DropDown,
-  OutlinedInput,
-  Accordion, AccordionSummary,
+  AccordionSummary,
   Popup,
+  Separator,
 } from "./factory";
 
 import { mawe } from "../../document"
@@ -38,24 +39,17 @@ export class EditHead extends React.PureComponent {
     const {head, updateDoc, expanded} = this.props
     const info = mawe.info(head)
 
-    return <>
-      <Accordion disableGutters defaultExpanded={expanded}>
+    return <VBox className="Panel">
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
-      <VBox>
-      <OutlinedInput label="Name" value={head.name ?? ""} onChange={e => updateDocName(updateDoc, e.target.value)}/>
-      <OutlinedInput label="Title" value={head.title ?? ""} onChange={e => updateDocTitle(updateDoc, e.target.value)}/>
-      <OutlinedInput label="Subtitle" value={head.subtitle ?? ""} onChange={e => updateDocSubtitle(updateDoc, e.target.value)}/>
-      </VBox>
-      </Accordion>
+      <Input variant="outlined" label="Name" value={head.name ?? ""} onChange={e => updateDocName(updateDoc, e.target.value)}/>
+      <Input variant="outlined" label="Title" value={head.title ?? ""} onChange={e => updateDocTitle(updateDoc, e.target.value)}/>
+      <Input variant="outlined" label="Subtitle" value={head.subtitle ?? ""} onChange={e => updateDocSubtitle(updateDoc, e.target.value)}/>
 
-      <Accordion disableGutters defaultExpanded={expanded}>
+      <Separator/>
       <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
-      <VBox>
-      <OutlinedInput label="Author" value={head.author ?? ""} onChange={e => updateDocAuthor(updateDoc, e.target.value)}/>
-      <OutlinedInput label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => updateDocPseudonym(updateDoc, e.target.value)}/>
-      </VBox>
-      </Accordion>
-    </>
+      <Input variant="outlined" label="Author" value={head.author ?? ""} onChange={e => updateDocAuthor(updateDoc, e.target.value)}/>
+      <Input variant="outlined" label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => updateDocPseudonym(updateDoc, e.target.value)}/>
+    </VBox>
   }
 }
 

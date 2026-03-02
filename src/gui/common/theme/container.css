@@ -32,7 +32,7 @@
 
 .Filler {
   flex-grow: attr(weight number, 1);
-  &.debug {background: var(--filler-bg);}
+  .debug & {background: var(--filler-bg);}
 }
 
 /* Boxes accept attributes to control the flexbox */
@@ -63,16 +63,9 @@
  ******************************************************************************/
 
 .Toolbar {
-  padding: 2px;
+  height: 32px;
+  padding: 2px 4px;
   align-items: center;
-
-  &[side="top"] {
-    border-bottom: 1pt solid lightgray;
-  }
-
-  &[side="bottom"] {
-    border-top: 1pt solid lightgray;
-  }
 }
 
 /******************************************************************************

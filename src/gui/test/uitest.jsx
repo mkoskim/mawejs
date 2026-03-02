@@ -20,7 +20,7 @@ const toolbarStyle = {
 }
 
 export function UITestView({doc, updateDoc}) {
-  return <VBox>
+  return <VBox className="debug">
     {/*<MenuTest/>*/}
     <HBox>HBox/Default: <Buttons/><Padder/></HBox>
     <Separator/>
@@ -47,12 +47,12 @@ function Buttons() {
     <Button tooltip="Button">Button</Button>
     <Button tooltip="Button" color="error">Button</Button>
     <Button tooltip="Button" color="success">Button</Button>
-    <Input value="Some text..." onChange={e => e}/>
+    <Input defaultValue="Some text..."/>
     <Separator/>
     <Button variant="filled"                 label="Example" tooltip="Button">Button</Button>
     <Button variant="filled" color="error"   label="Example" tooltip="Button">Button</Button>
     <Button variant="filled" color="success" label="Example" tooltip="Button">Button</Button>
-    <Input variant="outlined" label="Example" value="Some text..." onChange={e => e}/>
+    <Input variant="outlined" label="Example" defaultValue="Some text..."/>
   </>
 }
 
@@ -86,8 +86,5 @@ function TestMenu1() {
 }
 
 function Padder() {
-  return <>
-    <Separator/>
-    <Filler className="debug"/>
-  </>
+  return <Filler/>
 }

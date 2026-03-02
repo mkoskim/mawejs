@@ -302,33 +302,16 @@ export class Input extends React.PureComponent {
       ...rest,
       spellCheck,
     }
-    if(label) {
-      return <div label={label} variant={variant} color={color}><input {...props}/></div>
+    const wrapprops = {
+      label,
+      variant,
+      color,
     }
-    return <input variant={variant} color={color} {...props}/>
-  }
-}
 
-export class OutlinedInput extends React.PureComponent {
-  render() {
-    const {label, startAdornment, endAdornment, ...props} = this.props
-    return <Outlined label={label}>
-      {startAdornment}
-      <Input {...props}/>
-      {endAdornment}
-    </Outlined>
-  }
-}
-
-export class OutlinedText extends React.PureComponent {
-  render() {
-    const {label, startAdornment, endAdornment, text} = this.props
-    return <Outlined label={label}>
-      {startAdornment}
-      {text}
-      <Filler/>
-      {endAdornment}
-    </Outlined>
+    if(label) {
+      return <div className="InputWrap" {...wrapprops}><input {...props}/></div>
+    }
+    return <input {...wrapprops} {...props}/>
   }
 }
 

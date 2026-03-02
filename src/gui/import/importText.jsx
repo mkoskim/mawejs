@@ -10,7 +10,7 @@ import React, {
 
 import {
   DropDown,
-  OutlinedInput,
+  Input,
 } from "../common/factory";
 
 import { text2lines} from "./util"
@@ -63,9 +63,9 @@ export class ImportText extends React.PureComponent {
         selections={this.linebreaks}
         setSelected={value => this.setLinebreak(value)}
       />
-      <OutlinedInput label="Act Prefix" value={this.state.actprefix} onChange={e => this.setActPrefix(e.target.value)}/>
-      <OutlinedInput label="Chapter Prefix" value={this.state.chapterprefix} onChange={e => this.setChapterPrefix(e.target.value)}/>
-      <OutlinedInput label="Scene Prefix" value={this.state.sceneprefix} onChange={e => this.setScenePrefix(e.target.value)}/>
+      <Input variant="outlined" label="Act Prefix" value={this.state.actprefix} onChange={e => this.setActPrefix(e.target.value)}/>
+      <Input variant="outlined" label="Chapter Prefix" value={this.state.chapterprefix} onChange={e => this.setChapterPrefix(e.target.value)}/>
+      <Input variant="outlined" label="Scene Prefix" value={this.state.sceneprefix} onChange={e => this.setScenePrefix(e.target.value)}/>
 
       <UpdateImported content={content} setImported={setImported} settings={this.state}/>
     </>

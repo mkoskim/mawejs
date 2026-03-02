@@ -218,7 +218,7 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
   const {format} = exports
   const {formatter} = formatters[format]
 
-  return <VBox style={style} className="Panel">
+  return <VBox style={style} side="right" className="Panel">
     <ExportInfo flatted={flatted}/>
 
     <Separator/>

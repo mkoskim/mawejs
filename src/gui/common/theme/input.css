@@ -8,10 +8,22 @@
 /* Reset default values */
 
 input {
+  width: 4cm;
+  min-width: 2cm;
+
   font-size: inherit;
   padding: 0px;
   margin: 0;
   border-width: 0px;
   &:focus {outline: none;}
-  background: lightgoldenrodyellow;
+  /*background: yellow;*/
+}
+
+/* This is a div needed to wrap inputs with labels */
+.InputWrap {
+  display: flex;
+
+  input {
+    flex-grow: 1;
+  }
 }
