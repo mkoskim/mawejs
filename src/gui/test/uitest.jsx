@@ -47,12 +47,12 @@ function Buttons() {
     <Button tooltip="Button">Button</Button>
     <Button tooltip="Button" color="error">Button</Button>
     <Button tooltip="Button" color="success">Button</Button>
-    <Input defaultValue="Some text..."/>
+    <Input placeholder="Some text..."/>
     <Separator/>
     <Button variant="filled"                 label="Example" tooltip="Button">Button</Button>
     <Button variant="filled" color="error"   label="Example" tooltip="Button">Button</Button>
     <Button variant="filled" color="success" label="Example" tooltip="Button">Button</Button>
-    <Input variant="outlined" label="Example" defaultValue="Some text..."/>
+    <Input variant="outlined" label="Example"/>
   </>
 }
 

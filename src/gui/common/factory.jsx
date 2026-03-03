@@ -297,10 +297,11 @@ export class DropDown extends React.PureComponent {
 
 export class Input extends React.PureComponent {
   render() {
-    const {label, variant, color, spellCheck=false, ...rest} = this.props;
+    const {label, placeholder, variant, color, spellCheck=false, ...rest} = this.props;
     const props = {
       ...rest,
       spellCheck,
+      placeholder: placeholder ?? label,
     }
     const wrapprops = {
       label,
