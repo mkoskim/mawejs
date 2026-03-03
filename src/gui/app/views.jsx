@@ -28,8 +28,8 @@ import { bindEditors } from "../slatejs/slateDocument";
 
 export function loadViewSettings(settings) {
   return {
-    //selected: "editor",
-    selected: "uitest",
+    selected: "editor",
+    //selected: "uitest",
     ...(settings?.attributes ?? {})
   }
 }

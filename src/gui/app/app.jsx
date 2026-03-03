@@ -169,6 +169,7 @@ export function App(props) {
       //file: {id: "./examples/import/Frankenstein.md", name: "Frankenstein.md" }, ext: ".md",
     })
     /**/
+    //setDialogs(d => { d.recent = true; }) // Open recent dialog at startup
   }, [])
 
   //---------------------------------------------------------------------------

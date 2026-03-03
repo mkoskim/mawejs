@@ -7,9 +7,10 @@
 //*****************************************************************************
 import React, { useCallback, useContext } from "react";
 import {
-  Dialog, DialogActions, DialogContent, DialogTitle,
+  Dialog,
   Button, IconButton,
   Filler, HBox, VBox, HFiller, VFiller,
+  Separator,
   Icon, Label, ToolBox,
 } from "../common/factory";
 import { recentRemove, SettingsContext } from "./settings";
@@ -41,11 +42,12 @@ export function RecentDialog({ setDialogs, setRecent }) {
   //console.log("Recent files:", recent)
 
   return <Dialog open={true} onOpenChange={cancel}>
-    <DialogTitle>
+    <ToolBox side="top">
       <Label style={{fontWeight: "bold"}}>Open recent</Label>
       <Filler/>
+      <Separator/>
       <IconButton color="error" onClick={cancel}><Icon.Close/></IconButton>
-    </DialogTitle>
+    </ToolBox>
 
     <VBox className="TOC" style={{paddingLeft: "16px"}}>
     {recent.map(entry => (
@@ -53,10 +55,9 @@ export function RecentDialog({ setDialogs, setRecent }) {
     ))}
     </VBox>
 
-    <DialogActions>
-      <Filler/>
-      <Button onClick={onOpenFiles}>Open files...</Button>
-    </DialogActions>
+    <HBox className="Panel" justify="end" side="bottom">
+      <Button color="success" variant="filled" onClick={onOpenFiles}>Open files...</Button>
+    </HBox>
   </Dialog>
 }
 

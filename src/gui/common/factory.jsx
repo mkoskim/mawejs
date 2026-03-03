@@ -338,34 +338,9 @@ export class Label extends React.PureComponent {
 
 export class ToolBox extends React.PureComponent {
   render() {
-    const {className, side, ...props} = this.props
-    return <HBox side={side} className={addClass("Toolbar", className)} {...props}/>
-  }
-}
-
-export class SideBar extends React.PureComponent {
-  render() {
     const {className, ...props} = this.props
-    return <VBox className={addClass("Sidebar", className)} {...props}/>
+    return <HBox className={addClass("Toolbar", className)} {...props}/>
   }
-}
-
-//*****************************************************************************
-//
-// Containers: Accordion
-//
-//*****************************************************************************
-
-export function Accordion({ children }) {
-  return children
-}
-
-export function AccordionDetails({ children }) {
-  return children
-}
-
-export function AccordionSummary({ children }) {
-  return children
 }
 
 //*****************************************************************************
@@ -490,21 +465,6 @@ export function Dialog({children, className = "Dialog", ...props}) {
       </BUIDialog.Viewport>
     </BUIDialog.Portal>
   </BUIDialog.Root>
-}
-
-export function DialogTitle({children}) {
-  return <HFiller style={{alignItems: "center", padding: "8px 16px", borderBottom: "1px solid lightgray"}}>{children}</HFiller>
-}
-
-export function DialogContent({children}) {
-  // Double box so that scrollbar comes to the edge
-  return <VBox style={{overflow: "auto"}}>
-    <VBox style={{margin: "8px 16px"}}>{children}</VBox>
-  </VBox>
-}
-
-export function DialogActions({children}) {
-  return <HFiller style={{alignItems: "center", padding: "8px 16px", borderTop: "1px solid lightgray"}}>{children}</HFiller>
 }
 
 //*****************************************************************************

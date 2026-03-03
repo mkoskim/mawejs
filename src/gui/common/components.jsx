@@ -14,7 +14,6 @@ import {
   Button, Input,
   Icon, IconButton,
   MakeToggleGroup, DropDown,
-  AccordionSummary,
   Popup,
   Separator,
 } from "./factory";
@@ -40,13 +39,13 @@ export class EditHead extends React.PureComponent {
     const info = mawe.info(head)
 
     return <VBox className="Panel">
-      <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
+      Title: {info.title}
       <Input variant="outlined" label="Name" value={head.name ?? ""} onChange={e => updateDocName(updateDoc, e.target.value)}/>
       <Input variant="outlined" label="Title" value={head.title ?? ""} onChange={e => updateDocTitle(updateDoc, e.target.value)}/>
       <Input variant="outlined" label="Subtitle" value={head.subtitle ?? ""} onChange={e => updateDocSubtitle(updateDoc, e.target.value)}/>
 
       <Separator/>
-      <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
+      Author: {info.author}
       <Input variant="outlined" label="Author" value={head.author ?? ""} onChange={e => updateDocAuthor(updateDoc, e.target.value)}/>
       <Input variant="outlined" label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => updateDocPseudonym(updateDoc, e.target.value)}/>
     </VBox>
