@@ -20,6 +20,12 @@ Want to give a try? If so, read my Wiki page about the subject:
 
 https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F
 
+## News
+
+**Major change:** Material UI as an UI library was replaced by Base-UI. See the discussion about the change:
+
+https://github.com/mkoskim/mawejs/discussions/440
+
 ## Known Issues
 
 **AppImage:** In newer Ubuntus you may encounter errors due to changed permissions. You may need to run AppImage without sandboxing:
