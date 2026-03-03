@@ -123,18 +123,7 @@ export function ImportDialog({ filename, setDialogs }) {
       <Label>Format: {formats[format]?.name ?? format}</Label>
       <Separator />
       <Filler />
-
-      {/*
-      */}
-      {/*<SelectFormatButton value={format} setFormat={setFormat}/>*/}
-
-      {//*
-      <IconButton color="error" onClick={cancel}><Icon.Close /></IconButton>
-      /*/
-      <Button disableElevation variant="contained" color="error" onClick={cancel}>
-        Cancel
-      </Button>
-      /**/}
+      <IconButton onClick={cancel}><Icon.Close /></IconButton>
     </ToolBox>
 
     <HBox style={{ overflow: "auto" }}>

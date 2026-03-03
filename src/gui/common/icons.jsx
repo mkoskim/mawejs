@@ -304,7 +304,6 @@ export const Icon = {
   //ExpandMore: Placeholder, //ExpandMore,
 
   Arrow: {
-    DropDown: ArrowHeadDown,
     Up: ArrowUp,
     Down: ArrowDown,
     Left: ArrowLeft,
@@ -315,13 +314,16 @@ export const Icon = {
       Up: ArrowHeadUp,
       Down: ArrowHeadDown,
     },
-    Chevron: {
-      Up: ChevronUp,
-      Down: ChevronDown,
-      Left: ChevronLeft,
-      Right: ChevronRight,
-    }
   },
+
+  Chevron: {
+    Up: ChevronUp,
+    Down: ChevronDown,
+    Left: ChevronLeft,
+    Right: ChevronRight,
+  },
+
+  DropDown: ArrowHeadDown,
 
   Sort: {
     Ascending: SortAscending,

@@ -119,7 +119,7 @@ class ParagraphStyleSelect extends React.PureComponent {
 
   render() {
     const {type, editor} = this.props;
-    const selected = type ?? "p"
+    const selected = (type === "br" ? "p" : type) ?? "p"
 
     return <DropDown
       label="Paragraph style"
@@ -171,7 +171,7 @@ export class FoldButtons extends React.PureComponent {
     function onUnfoldScenes(e) { foldByType(editor, FOLD.unfoldScenes); ReactEditor.focus(editor);}
     function onUnfoldSynopsis(e) { foldByType(editor, FOLD.unfoldSynopsis); ReactEditor.focus(editor);}
 
-    return <Menu trigger={<Button tooltip="Folding">Fold <Icon.Arrow.DropDown/></Button>}>
+    return <Menu trigger={<Button tooltip="Folding">Fold <Icon.DropDown/></Button>}>
       <MenuItem title="Fold All" endAdornment="Alt-A" onClick={e => {onFoldAll(e)}}/>
       <Separator/>
       <MenuItem title="Fold Chapters" onClick={e => {onFoldChapters(e)}}/>

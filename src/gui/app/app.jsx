@@ -290,7 +290,7 @@ function DocBar({ doc, updateDoc }) {
 }
 
 function WithoutDoc({ setCommand, recent }) {
-  return <ToolBox>
+  return <ToolBox side="top">
     <FileMenu setCommand={setCommand} recent={recent} />
     <Separator />
     <Filler />
@@ -393,11 +393,10 @@ class FileOperations extends React.PureComponent {
 class FileMenu extends React.PureComponent {
   render() {
     const { setCommand, file, recent, hasdoc } = this.props
-    const filename = file?.name ?? "<Unnamed>"
-    const name = hasdoc ? filename : <Icon.Menu />
+    const filename = hasdoc ? (file?.name ?? "<Unnamed>") : undefined
 
     //return <Button>{name}</Button>
-    return <Menu trigger={<Button>{name}</Button>}>
+    return <Menu trigger={<IconButton tooltip="File menu"><Icon.Menu /> {filename}</IconButton>}>
       <MenuItem
         title="New" endAdornment="Ctrl-N"
         onClick={e => { reqNew({ setCommand }); }}

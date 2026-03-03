@@ -106,13 +106,16 @@ export function loadEditorSettings(settings) {
     active: "draft",
     focusTo: undefined,
     left: {
-      style: {maxWidth: "350px", width: "350px", borderRight: "1px solid lightgray"},
+      style: {width: "350px", maxWidth: "350px", minWidth: "200px"},
       indexed: ["act", "chapter", "scene"],
       words: "numbers",
       ...getLeftSettings()
     },
+    middle: {
+      style: {flexGrow: 1},
+    },
     right: {
-      style: {maxWidth: "300px", width: "300px", borderLeft: "1px solid lightgray"},
+      style: {width: "300px", maxWidth: "300px", minWidth: "200px"},
       selected: "index",
       indexed: ["act", "chapter", "scene"],
       words: undefined,
@@ -313,7 +316,7 @@ export function EditView({doc, updateDoc, editors}) {
 
   //console.log("Editor update")
 
-  return <HBox style={{overflow: "auto"}}>
+  return <HBox style={{overflow: "hidden"}}>
     <DragDropContext onDragEnd={onDragEnd}>
     {//*
       <LeftPanel settings={settings}/>
@@ -382,7 +385,7 @@ function LeftPanel({settings}) {
 
   const {style, indexed, words} = left
 
-  return <VBox style={style}>
+  return <VBox side="left" style={style}>
     <LeftPanelMenu settings={settings}/>
     <ShowIndices settings={settings} side="left" indexed={indexed} words={words}/>
   </VBox>
@@ -430,13 +433,13 @@ function RightPanel({settings}) {
   const setSelectRight = useCallback(value => updateDoc(doc => {doc.ui.editor.right.selected = value}), [updateDoc])
   const disabled = useMemo(() => [left.selected], [left.selected])
 
-  return <VFiller style={style}>
+  return <VBox side="right" style={style}>
       <ToolBox side="top" style={doc.ui.editor.toolbox.right}>
         <ChooseRightPanel selected={selected} disabled={disabled} setSelected={setSelectRight}/>
         <Filler />
       </ToolBox>
       <RightPanelContent settings={settings} selected={selected}/>
-    </VFiller>
+    </VBox>
 }
 
 class ChooseRightPanel extends React.PureComponent {
@@ -582,7 +585,7 @@ class SectionName extends React.PureComponent {
     return <div className={className} onClick={e => toggleIndexing(indexing, updateIndexing, sectID, side)}>
       <div className="Name">{name}</div>
       <Filler/>
-      {visible ? <Icon.Arrow.Head.Down/> : <Icon.Arrow.Head.Right/>}
+      {visible ? <Icon.Chevron.Down/> : <Icon.Chevron.Right/>}
     </div>
   }
 }
@@ -682,7 +685,7 @@ function EditorBox({style, settings}) {
   const type = track?.node?.type
   const {bold, italic} = track?.marks ?? {}
 
-  return <VFiller>
+  return <VBox style={doc.ui.editor.middle.style}>
     {/* Editor toolbar */}
 
     <ToolBox side="top" style={doc.ui.editor.toolbox.mid}>
@@ -706,7 +709,7 @@ function EditorBox({style, settings}) {
       )
     }
     </div>
-  </VFiller>
+  </VBox>
 }
 
 //*****************************************************************************

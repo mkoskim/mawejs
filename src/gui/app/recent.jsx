@@ -45,8 +45,7 @@ export function RecentDialog({ setDialogs, setRecent }) {
     <ToolBox side="top">
       <Label style={{fontWeight: "bold"}}>Open recent</Label>
       <Filler/>
-      <Separator/>
-      <IconButton color="error" onClick={cancel}><Icon.Close/></IconButton>
+      <IconButton onClick={cancel}><Icon.Close/></IconButton>
     </ToolBox>
 
     <VBox className="TOC" style={{paddingLeft: "16px"}}>

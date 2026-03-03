@@ -64,8 +64,8 @@
  ******************************************************************************/
 
 .Toolbar {
-  height: 34px;
-  padding: 2px 4px;
+  height: 32px;
+  padding: 2px;
   align-items: center;
   gap: 2px;
 }

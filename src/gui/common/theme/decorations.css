@@ -1,7 +1,11 @@
 /* ----------------------------------------------------------------------------
-// Outlined & filled elements
+// Disabled elements
 // ----------------------------------------------------------------------------
 */
+
+:disabled, [data-disabled] {
+  opacity: 40%;
+}
 
 /* ----------------------------------------------------------------------------
 // Outlined elements
@@ -26,10 +30,10 @@
 
 .VBox, .HBox {
   border-color: lightgray;
-  [side="top"]    { border-bottom-width: 1pt; }
-  [side="bottom"] { border-top-width: 1pt; }
-  [side="right"]  { border-left-width: 1pt; }
-  [side="left"]   { border-right-width: 1pt; }
+  &[side="top"]    { border-bottom-width: 1px; }
+  &[side="bottom"] { border-top-width: 1px; }
+  &[side="right"]  { border-left-width: 1px; }
+  &[side="left"]   { border-right-width: 1px; }
 }
 
 /* ----------------------------------------------------------------------------

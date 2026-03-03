@@ -47,10 +47,6 @@ button {
     padding: 2px;
   }
 
-  &:disabled {
-    opacity: 40%;
-  }
-
   &:hover {background: var(--hover-bg);}
 
   &.checked {

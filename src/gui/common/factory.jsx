@@ -228,35 +228,22 @@ export class DropDown extends React.PureComponent {
   render() {
     const {choices, as} = this.props
 
-    return <Menu trigger={this.makeButtonTrigger()}>
+    return <Menu nativeButton={as !== "text"} trigger={this.makeTrigger()}>
       {choices.map((choice, index) => this.makeSelection(choice, index))}
     </Menu>
   }
 
-  getTriggerProperties() {
+  makeTrigger() {
     const {as, label, selections, selected} = this.props
-    switch(as) {
-      case "text": return {
-        variant: "outlined",
-        label,
-        name
-      }
-    }
-    return {
-      tooltip: label,
-      name
-    }
-  }
-
-  makeButtonTrigger() {
-    const {as, label, selections, selected, ...props} = this.props
     const {name} = (selected in selections) ? selections[selected] : {name: selected}
 
     switch(as) {
-      case "text": return <div variant="outlined" label={label} {...props}>{name} <Icon.Arrow.DropDown/></div>
+      case "text": return <div variant="outlined" label={label}>
+        <span style={{cursor: "default"}}>{name}</span> <Icon.DropDown/>
+      </div>
     }
 
-    return <Button tooltip={label} {...props}>{name}<Icon.Arrow.DropDown/></Button>
+    return <Button tooltip={label}>{name}<Icon.DropDown/></Button>
   }
 
   makeSelection(choice, index) {
@@ -362,10 +349,10 @@ class PopupArrow extends React.PureComponent {
 
 export class Popup extends React.PureComponent {
   render() {
-    const {trigger, children} = this.props
+    const {trigger, nativeButton, children} = this.props
 
     return <BUIPopover.Root>
-      <BUIPopover.Trigger render={trigger}/>
+      <BUIPopover.Trigger nativeButton={nativeButton} render={trigger}/>
       <BUIPopover.Portal>
         <BUIPopover.Positioner className="Positioner" sideOffset={3} align="start">
           <BUIPopover.Popup className="VBox Popup">
@@ -380,10 +367,10 @@ export class Popup extends React.PureComponent {
 
 export class Menu extends React.PureComponent {
   render() {
-    const {trigger, arrow=true, className, children, ...props} = this.props;
+    const {trigger, nativeButton, arrow=true, className, children, ...props} = this.props;
 
     return <BUIMenu.Root>
-      <BUIMenu.Trigger render={trigger}/>
+      <BUIMenu.Trigger nativeButton={nativeButton} render={trigger}/>
       <BUIMenu.Portal>
         <BUIMenu.Positioner className="Positioner" align="start" sideOffset={3}>
           <BUIMenu.Popup className={addClass("VBox Menu", className)} {...props}>
@@ -398,10 +385,10 @@ export class Menu extends React.PureComponent {
 
 export class Submenu extends React.PureComponent {
   render() {
-    const {trigger, arrow=false, className, children, ...props} = this.props;
+    const {trigger, nativeButton, arrow=false, className, children, ...props} = this.props;
 
     return <BUIMenu.SubmenuRoot>
-      <BUIMenu.SubmenuTrigger render={trigger}/>
+      <BUIMenu.SubmenuTrigger nativeButton={nativeButton} render={trigger}/>
       <BUIMenu.Portal>
         <BUIMenu.Positioner className="Positioner" align="start" sideOffset={3}>
           <BUIMenu.Popup className={addClass("VBox Menu", className)} {...props}>
