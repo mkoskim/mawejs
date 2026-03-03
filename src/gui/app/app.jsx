@@ -393,10 +393,13 @@ class FileOperations extends React.PureComponent {
 class FileMenu extends React.PureComponent {
   render() {
     const { setCommand, file, recent, hasdoc } = this.props
-    const filename = hasdoc ? (file?.name ?? "<Unnamed>") : undefined
+    const filename = file?.name ?? "<Unnamed>"
+    const trigger = hasdoc
+      ? <Button tooltip="File menu">{filename}</Button>
+      : <IconButton tooltip="File menu"><Icon.Menu/></IconButton>;
 
     //return <Button>{name}</Button>
-    return <Menu trigger={<IconButton tooltip="File menu"><Icon.Menu /> {filename}</IconButton>}>
+    return <Menu trigger={trigger}>
       <MenuItem
         title="New" endAdornment="Ctrl-N"
         onClick={e => { reqNew({ setCommand }); }}
