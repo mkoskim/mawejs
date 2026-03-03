@@ -15,27 +15,19 @@ import React, {
 
 import {
   VBox, HBox,
-  ToolBox, Button,
-  Label,
+  ToolBox,
+  Button, IconButton,
+  Label, Icon,
   Separator,
-  Menu, MenuItem,
   Inform,
   Filler,
-  addHotkeys,
-  IsKey,
   Dialog,
 } from "../common/factory";
-
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 
 import { maweFromTree } from "../../document/xmljs/load";
 
 import { Preview } from "./preview";
 import { ImportText } from "./importText";
-
-//import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 
 import mammoth from "mammoth"
 import fs from "../../system/localfs"
@@ -124,45 +116,26 @@ export function ImportDialog({ filename, setDialogs }) {
     })
   }, [filename, setDialogs])
 
-  return <Dialog
-      open={true}
-      fullScreen={true}
-      //fullWidth={true}
-      maxWidth="xl"
-      onClose={cancel}
-    >
-    <VBox style={{ overflow: "auto", padding: "4pt", background: "#F5F7F9" }}>
-
-    <ToolBox>
+  return <Dialog open={true} onOpenChange={cancel} size="xl">
+    <ToolBox side="top">
       <Label>Import from: {filename ?? "Clipboard"}</Label>
       <Separator />
       <Label>Format: {formats[format]?.name ?? format}</Label>
       <Separator />
       <Filler />
-
-      {/*
-      */}
-      {/*<SelectFormatButton value={format} setFormat={setFormat}/>*/}
-
-      {//*
-      <IconButton color="error" onClick={cancel}><CloseIcon /></IconButton>
-      /*/
-      <Button disableElevation variant="contained" color="error" onClick={cancel}>
-        Cancel
-      </Button>
-      /**/}
+      <IconButton onClick={cancel}><Icon.Close /></IconButton>
     </ToolBox>
 
-    <HBox style={{ overflow: "auto" }}>
+    <HBox overflow="auto">
       <Preview imported={imported} />
-      <VBox className="ImportSettings">
+      <VBox className="Panel">
         <SelectFormat format={format} content={content} setImported={setImported} />
-        <Button variant="contained" color="success" onClick={Import}>
+        <Button variant="filled" color="success" onClick={Import}>
           Import
         </Button>
       </VBox>
     </HBox>
-  </VBox></Dialog>
+  </Dialog>
 }
 
 //-----------------------------------------------------------------------------
@@ -181,30 +154,20 @@ class SelectFormatButton extends React.PureComponent {
 
     //console.log("Block type:", type)
 
-    return <PopupState variant="popover" popupId="file-menu">
-      {(popupState) => <React.Fragment>
-        <Button tooltip="Paragraph style" style={{ justifyContent: "flex-start" }} {...bindTrigger(popupState)}>Format: {name}</Button>
-        <Menu {...bindMenu(popupState)}>
+    return <Button tooltip="Paragraph style">Format: {name}</Button>
+
+    /*
           {order.map(k => [k, choices[k]]).map(([k, v]) => (
-            <MenuItem key={k} value={k} onClick={e => { setFormat(k); popupState.close(e) }}>
+            <MenuItem key={k} value={k} onClick={e => { setFormat(k) }}>
               {v.name}
             </MenuItem>
           )
           )}
-          {/*
-          <ListSubheader>RTF</ListSubheader>
-          <MenuItem value="rtf1">RTF, A4, 1-side</MenuItem>
-          <MenuItem value="rtf2">RTF, A4, 2-side</MenuItem>
-          <ListSubheader>LaTeX</ListSubheader>
-          <MenuItem value="tex1">LaTeX, A5, 1-side</MenuItem>
-          <MenuItem value="tex2">LaTeX, A5 booklet</MenuItem>
-          <ListSubheader>Other</ListSubheader>
-          <MenuItem value="md">MD (Mark Down)</MenuItem>
-          */}
+
         </Menu>
       </React.Fragment>
       }
-    </PopupState>
+    */
   }
 }
 

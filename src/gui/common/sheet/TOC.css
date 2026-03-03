@@ -2,7 +2,7 @@
 /* Document outlining (table of content) */
 /*---------------------------------------------------------------------------*/
 
-@import "colors.css";
+@import "./sheet.colors.css";
 
 /*---------------------------------------------------------------------------*/
 /* TOC div */
@@ -41,6 +41,7 @@
 /*---------------------------------------------------------------------------*/
 
 .TOC {
+  counter-reset: act chapter scene;
   .SectionZone {
     counter-reset: act chapter scene;
     border-bottom: 1px solid lightgray;
@@ -101,12 +102,13 @@
     padding-bottom: 4pt !important;
     */
 
+    &.Numbered {counter-increment: act;}
+
     /*
     &.Numbered .Name::before {
-      counter-increment: act;
-      content: "ACT " counter(act, upper-roman) ": ";
+      content: counter(act, upper-roman) ": ";
     }
-    */
+    /**/
 
     .Name {
       text-transform: uppercase;
@@ -122,8 +124,8 @@
     padding-bottom: 4pt !important;
     */
 
+    &.Numbered {counter-increment: chapter;}
     &.Numbered .Name::before {
-      counter-increment: chapter;
       content: counter(chapter) ". ";
     /*
       content: counter(chapter, upper-roman) "\00a0-\00a0";
@@ -188,9 +190,11 @@
   }
 
   .WordCount {
+    display: flex;
+    align-items: center;
+    justify-content: right;
     margin-left: 6pt;
     min-width: 1.5cm;
-    text-align: right;
   }
 
   /*-------------------------------------------------------------------------*/

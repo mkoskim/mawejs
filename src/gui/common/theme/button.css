@@ -1,0 +1,100 @@
+/* ----------------------------------------------------------------------------
+// UI base styles
+// ----------------------------------------------------------------------------
+*/
+
+.Icon {
+  width: var(--font-size);
+  height: var(--font-size);
+
+  /* Icons in toolbars */
+  .Toolbar > &, .Toolbar > button.icon > & {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Icons in panels */
+  .Panel > &, .Panel > button.icon > & {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Reset styles */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  color: inherit;
+  font-size: inherit;
+
+  padding-block: 0;
+  padding-inline: 0;
+  border-radius: 4px;
+}
+
+/* Buttons */
+button {
+  background: none;
+
+  &:not(.icon) {
+    padding: 2px 6px;
+  }
+
+  &.icon {
+    opacity: 80%;
+    padding: 2px;
+  }
+
+  &:hover {background: var(--hover-bg);}
+
+  &.checked {
+    background: var(--checked-bg);
+  }
+
+  /* Buttons in toolbars */
+
+  .Toolbar > & {
+    min-width: 28px;
+    min-height: 28px;
+    border-width: 0;
+    border-radius: 0;
+  }
+
+  /* Buttons in panels */
+  .Panel > & {
+    padding: 8px 12px;
+  }
+
+  /* Colors + Fills */
+  &[color="success"] {
+    color: var(--success-fg);
+    border-color: var(--success-fg);
+    &[variant="filled"] {
+      color: var(--color);
+      background-color: var(--success-bg);
+      border-color: var(--success-fg);
+
+      &:hover {
+        background-color: var(--success-fg);
+        color: white;
+      }
+    }
+  }
+
+  &[color="error"] {
+    color: var(--error-fg);
+    border-color: var(--error-fg);
+    &[variant="filled"] {
+      color: var(--color);
+      background-color: var(--error-bg);
+      border-color: var(--error-fg);
+
+      &:hover {
+        background-color: var(--error-fg);
+        color: white;
+      }
+    }
+  }
+}

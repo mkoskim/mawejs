@@ -51,11 +51,6 @@ export function StatsView({doc, updateDoc}) {
     .concat([{date: today, ...doc.draft.words}])
 
   return <HistoryChart history={history}/>
-  /*
-  return <HBox style={{overflow: "auto"}}>
-    <HistoryChart history={history}/>
-  </HBox>
-  */
 }
 
 //-----------------------------------------------------------------------------

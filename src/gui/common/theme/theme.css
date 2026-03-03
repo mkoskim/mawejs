@@ -1,0 +1,50 @@
+/* ----------------------------------------------------------------------------
+// Styles for Separator depending if it is horizontal or vertical box.
+// ----------------------------------------------------------------------------
+*/
+
+@import "./app.css";
+@import "./container.css";
+@import "./button.css";
+@import "./input.css";
+@import "./decorations.css";
+@import "./tooltip.css";
+
+@import "../sheet/sheet.colors.css";
+@import "../sheet/sheet.css";
+@import "../sheet/sheet.editor.css";
+@import "../sheet/sheet.preview.css";
+@import "../sheet/TOC.css";
+
+/******************************************************************************
+*
+* Colors for UI
+*
+*******************************************************************************/
+
+:root {
+  --color: black;
+  --border-color: #AAA;
+
+  --error-fg: #9f1a16;
+  --error-bg: #eedad9;
+
+  --success-fg: #00a857;
+  --success-bg: #d6efe3;
+
+  --checked-bg: #ACF;
+
+  --hover-bg: #0002;
+
+  --popup-border: #BBB;
+
+  --tooltip-fg: white;
+  --tooltip-bg: #222;
+  --tooltip-border: none;
+
+  --filler-bg: #FAF;
+
+  --font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  --font-size: 12pt;
+  --font-size-small: 10pt;
+}

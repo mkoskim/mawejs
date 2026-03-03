@@ -6,9 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import "./app.css"
-
-/* eslint-disable no-unused-vars */
+import "../common/theme/theme.css"
 
 import React, {
   useEffect, useState, useCallback,
@@ -21,7 +19,7 @@ import {
   ToolBox, Button, Icon, IconButton,
   IsKey, addHotkeys,
   Separator,
-  Menu, MenuItem,
+  Menu, Submenu, MenuItem,
   Inform, Snackbar,
 } from "../common/factory";
 
@@ -31,11 +29,6 @@ import {
 } from "../common/components";
 
 //import { WorkspaceBar } from "../sketches/workspacebar/workspacebar";
-
-import PopupState, {
-  bindTrigger,
-  bindMenu
-} from 'material-ui-popup-state';
 
 import {
   CmdContext, cmdDispatch,
@@ -178,6 +171,7 @@ export function App(props) {
       //file: {id: "./examples/import/Frankenstein.md", name: "Frankenstein.md" }, ext: ".md",
     })
     /**/
+    //setDialogs(d => { d.recent = true; }) // Open recent dialog at startup
   }, [])
 
   //---------------------------------------------------------------------------
@@ -296,7 +290,7 @@ function DocBar({ doc, updateDoc }) {
 }
 
 function WithoutDoc({ setCommand, recent }) {
-  return <ToolBox>
+  return <ToolBox side="top">
     <FileMenu setCommand={setCommand} recent={recent} />
     <Separator />
     <Filler />
@@ -323,7 +317,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
     [IsKey.CtrlW, (e) => reqCloseFile({setCommand})],
   ]), [file])
 
-  return <ToolBox>
+  return <ToolBox side="top">
     <FileMenu file={file} setCommand={setCommand} recent={recent} hasdoc={true}/>
     <FileOperations file={file} setCommand={setCommand}/>
     <Separator />
@@ -356,12 +350,13 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 //-----------------------------------------------------------------------------
 
 class FileOperations extends React.PureComponent {
+  /*
   static gzip_style = {
-    fontSize: "10pt",
+    fontSize: "8pt",
     border: "2px solid",
-    //paddingLeft: "2px",
-    //paddingRight: "2px",
-    //paddingTop: "2px",
+    paddingLeft: "4px",
+    paddingRight: "4px",
+    //paddingTop: "0px",
     paddingBottom: "2px",
     borderRadius: "3px",
   }
@@ -371,24 +366,20 @@ class FileOperations extends React.PureComponent {
     textDecorationThickness: "2px",
     textDecorationColor: "rgb(240, 80, 40)",
   }
-
-  toggleCompress(file, setCommand) {
-    const compressed = file.id.endsWith(".gz")
-    const filename = compressed ? file.id.slice(0, -3) : (file.id + ".gz")
-    //setCommand({action: "rename", filename})
-    doRename({setCommand, filename})
-  }
+  */
 
   render() {
     const {file, setCommand} = this.props
+    /*
     const compressed = file?.id.endsWith(".gz") ?? false
     const {gzip_style, gunzip_style} = this.constructor
     const compress_style = compressed ? gunzip_style : gzip_style
     const compress_tooltip = compressed ? "Uncompress" : "Compress"
     //const filename = file?.name ?? "<Unnamed>"
+    */
 
     return <>
-      <Button disabled={!file} tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>&nbsp;gz&nbsp;</span></Button>
+      {/*<IconButton disabled={!file} tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>gz</span></IconButton>*/}
       <OpenFolderButton filename={file?.id} />
       </>
   }
@@ -400,81 +391,88 @@ class FileMenu extends React.PureComponent {
   render() {
     const { setCommand, file, recent, hasdoc } = this.props
     const filename = file?.name ?? "<Unnamed>"
-    const name = hasdoc ? filename : <Icon.Menu />
+    const compressed = file?.id.endsWith(".gz") ?? false
+    const trigger = hasdoc
+      ? <Button tooltip="File menu">{filename}</Button>
+      : <IconButton tooltip="File menu"><Icon.Menu/></IconButton>;
 
-    return <PopupState variant="popover">
-      {(popupState) => <React.Fragment>
-        <Button tooltip="File menu" {...bindTrigger(popupState)}>{name}</Button>
-        <Menu {...bindMenu(popupState)}>
-          <MenuItem
-            title="New" endAdornment="Ctrl-N"
-            onClick={e => { reqNew({ setCommand }); popupState.close(e); }}
-            />
-          <MenuItem
-            title="Open" endAdornment="Ctrl-O"
-            onClick={e => { reqOpenFile({ setCommand, file }); popupState.close(e); }}
-            />
-          <MenuItem
-            title="Open Recent..."
-            onClick={(e => { reqOpenRecentDlg({ setCommand }); popupState.close(e); })}
-            />
-          <Separator />
-          <RecentItems recent={recent} setCommand={setCommand} popupState={popupState} />
-          <Separator />
-          <MenuItem
-            title="Import File..."
-            onClick={e => { reqImportFile({ setCommand, file }); popupState.close(e); }}
-            />
-          <MenuItem
-            title="Import From Clipboard"
-            onClick={e => { reqImportClipboard({ setCommand }); popupState.close(e); }}
-            />
-          <Separator />
-          <MenuItem
-            title="Save" endAdornment="Ctrl-S"
-            disabled={!file} onClick={e => { reqSaveFile({ setCommand, file }); popupState.close(e); }}
-            />
-          <MenuItem
-            title="Save as..."
-            disabled={!hasdoc} onClick={e => { reqSaveFileAs({ setCommand, file }); popupState.close(e); }}
-            />
-          <MenuItem
-            title="Rename..."
-            disabled={!file} onClick={e => { reqRenameFile({ setCommand, file }); popupState.close(e); }}
-            />
-          <MenuItem
-            title="Close" endAdornment="Ctrl-W"
-            disabled={!hasdoc} onClick={e => { reqCloseFile({ setCommand, file }); popupState.close(e); }}
-            />
-          {/*
-          <MenuItem onClick={popupState.close}>Revert</MenuItem>
-          <MenuItem onClick={e => { popupState.close(e); }}>Open Folder</MenuItem>
-          */}
-          <Separator />
-          <MenuItem
-            title="Quit" //endAdornment="Ctrl-Q"
-            onClick={e => { reqQuit({setCommand}); popupState.close(e); }}
-          />
-        </Menu>
-      </React.Fragment>
-      }
-    </PopupState>
+    //return <Button>{name}</Button>
+    return <Menu trigger={trigger}>
+      <MenuItem
+        title="New" endAdornment="Ctrl-N"
+        onClick={e => { reqNew({ setCommand }); }}
+        />
+      <MenuItem
+        title="Open" endAdornment="Ctrl-O"
+        onClick={e => { reqOpenFile({ setCommand, file }); }}
+        />
+      <Submenu trigger={<MenuItem title="Open Recent..." endIcon={<Icon.Arrow.Head.Right/>}/>}>
+        <RecentItems recent={recent} setCommand={setCommand}/>
+      </Submenu>
+      <Separator />
+      <MenuItem
+        title="Import File..."
+        onClick={e => { reqImportFile({ setCommand, file }); }}
+        />
+      <MenuItem
+        title="Import From Clipboard"
+        onClick={e => { reqImportClipboard({ setCommand }); }}
+        />
+      <Separator />
+      <MenuItem
+        title="Save" endAdornment="Ctrl-S"
+        disabled={!file} onClick={e => { reqSaveFile({ setCommand, file }); }}
+        />
+      <MenuItem
+        title="Save as..."
+        disabled={!hasdoc} onClick={e => { reqSaveFileAs({ setCommand, file }); }}
+        />
+      <MenuItem
+        title="Rename..."
+        disabled={!file} onClick={e => { reqRenameFile({ setCommand, file }); }}
+        />
+      <MenuItem
+        title={compressed ? "Uncompress" : "Compress (gzip)"}
+        startIcon={compressed && <Icon.Checked/>}
+        disabled={!file} onClick={e => { this.toggleCompress(setCommand, file); }}
+        />
+      <MenuItem
+        title="Close" endAdornment="Ctrl-W"
+        disabled={!hasdoc} onClick={e => { reqCloseFile({ setCommand, file }); }}
+        />
+      <Separator />
+      <MenuItem
+        title="Quit" //endAdornment="Ctrl-Q"
+        onClick={e => { reqQuit({setCommand}); }}
+      />
+    </Menu>
+  }
+
+  toggleCompress(setCommand, file) {
+    const compressed = file.id.endsWith(".gz")
+    const filename = compressed ? file.id.slice(0, -3) : (file.id + ".gz")
+    //setCommand({action: "rename", filename})
+    doRename({setCommand, filename})
   }
 }
 
 class RecentItems extends React.PureComponent {
   render() {
-    const { recent, setCommand, popupState } = this.props
+    const { recent, setCommand } = this.props
     if (!recent?.length) return null
     //console.log("Recent:", recent.length)
-    const head = recent.slice(0, 4)
+    const head = recent.slice(0, 5)
     return <>
       {head.map(entry => <MenuItem
         key={entry.id}
         title={entry.name}
-        onClick={(e => { reqLoadFile({ setCommand, filename: entry.id }); popupState.close(e); })}
+        onClick={(e => { reqLoadFile({ setCommand, filename: entry.id }); })}
         />
       )}
+      <Separator />
+      <MenuItem title="More..."
+        onClick={(e => { reqOpenRecentDlg({ setCommand }); })}
+      />
     </>
   }
 }
@@ -483,18 +481,13 @@ class HelpButton extends React.PureComponent {
   render() {
     const { setCommand } = this.props
 
-    return <PopupState variant="popover" popupId="file-menu">
-    {(popupState) => <React.Fragment>
-      <IconButton tooltip="Help" {...bindTrigger(popupState)}><Icon.Help/></IconButton>
-      <Menu {...bindMenu(popupState)}>
-        <MenuItem title="Tutorial (English)"
-          onClick={e => { popupState.close(e); reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.en.mawe"})}}
-          />
-        <MenuItem title="Tutorial (Finnish)"
-          onClick={e => { popupState.close(e); reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.fi.mawe"})}}
-          />
-      </Menu>
-    </React.Fragment>}
-    </PopupState>
+    return <Menu trigger={<IconButton tooltip="Help"><Icon.Help/></IconButton>}>
+      <MenuItem title="Tutorial (English)"
+        onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.en.mawe"})}}
+        />
+      <MenuItem title="Tutorial (Finnish)"
+        onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.fi.mawe"})}}
+        />
+    </Menu>
   }
 }

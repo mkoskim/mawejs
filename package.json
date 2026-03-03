@@ -13,13 +13,9 @@
     "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox"
   },
   "dependencies": {
+    "@base-ui/react": "^1.2.0",
     "@electron-toolkit/utils": "^4.0.0",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
     "@hello-pangea/dnd": "^18.0.1",
-    "@mdi/js": "^7.4.47",
-    "@mui/icons-material": "^7.3.8",
-    "@mui/material": "^7.3.8",
     "electron-devtools-installer": "^4.0.0",
     "electron-localshortcut": "^3.2.1",
     "electron-window-state": "^5.0.3",
@@ -27,7 +23,6 @@
     "immer": "^11.1.4",
     "is-gzip": "^2.0.0",
     "mammoth": "^1.11.0",
-    "material-ui-popup-state": "^5.3.6",
     "nanoid": "^5.1.6",
     "notistack": "^3.0.2",
     "pako": "^2.1.0",

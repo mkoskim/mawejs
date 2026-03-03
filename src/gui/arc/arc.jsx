@@ -6,9 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import React, {
+import {
   useCallback,
-  useMemo,
 } from "react"
 
 import {
@@ -23,12 +22,10 @@ import {
   Separator, Icon,
 } from "../common/factory"
 
-import {DragDropContext, Droppable, Draggable} from "@hello-pangea/dnd";
+import {DragDropContext} from "@hello-pangea/dnd";
 import {DocIndex} from "../common/docIndex";
-import {elemName, filterCtrlElems, mawe} from "../../document";
-import { IDtoPath, wcElem } from "../../document/util";
-import { getCoreEditor } from "../slatejs/slateEditor";
-import { isAstChange } from "../slatejs/slateHelpers";
+import {elemName, filterCtrlElems} from "../../document";
+import { IDtoPath } from "../../document/util";
 import { dndDrop } from "../slatejs/slateDnD";
 
 //*****************************************************************************
@@ -99,7 +96,6 @@ export function StoryArcView({doc, updateDoc, editors}) {
       choices: ["act", "chapter", "scene"],
       selected: doc.ui.arc.elements,
       setSelected: setElements,
-      exclusive: true,
     },
     template: {
       buttons: tmplButtons,
@@ -107,14 +103,12 @@ export function StoryArcView({doc, updateDoc, editors}) {
       choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts"],
       selected: doc.ui.arc.template,
       setSelected: setTemplate,
-      exclusive: true,
     },
     mode: {
       buttons: modeButtons,
       choices: ["topCCW", "topCW", "bottomCCW", "bottomCW"],
       selected: doc.ui.arc.mode,
       setSelected: setMode,
-      exclusive: true,
     }
   }
 
@@ -127,7 +121,7 @@ export function StoryArcView({doc, updateDoc, editors}) {
   }
 
   return <DragDropContext onDragEnd={onDragEnd}>
-    <HBox style={{overflow: "auto", height: "100%"}}>
+    <HBox overflow="auto" style={{height: "100%"}}>
       <VBox style={indexStyle}>
         <IndexToolbar settings={settings}/>
         <VBox className="TOC">
@@ -198,7 +192,7 @@ const styles = {
 //-----------------------------------------------------------------------------
 
 function IndexToolbar({settings}) {
-  return <ToolBox style={styles.toolbar}>
+  return <ToolBox side="top" style={styles.toolbar}>
     <MakeToggleGroup {...settings.elements}/>
     <Separator />
   </ToolBox>
@@ -241,7 +235,7 @@ function ChartView({settings, doc, updateDoc}) {
   // Chart
   //---------------------------------------------------------------------------
 
-  return <VFiller style={{overflow: "auto"}}>
+  return <VFiller>
     <ChartToolbar settings={settings} />
     <StoryChart
       startAngle={selectStart + selectRotate * 1}
@@ -258,7 +252,7 @@ function ChartView({settings, doc, updateDoc}) {
 //-----------------------------------------------------------------------------
 
 function ChartToolbar({settings}) {
-  return <ToolBox style={styles.toolbar}>
+  return <ToolBox side="top" style={styles.toolbar}>
     {/*
     <HFiller/>
     <Separator/>
@@ -280,9 +274,9 @@ function ChartToolbar({settings}) {
 //-----------------------------------------------------------------------------
 
 const elemButtons = {
-  act: {icon: "Acts"},
-  chapter: {icon: "Chapters"},
-  scene: {icon: "Scenes"},
+  act: {text: "Acts"},
+  chapter: {text: "Chapters"},
+  scene: {text: "Scenes"},
 }
 
 //-----------------------------------------------------------------------------
@@ -391,7 +385,7 @@ function elemData(elem) {
 const tmplButtons = {
   plotpoints: {
     tooltip: "K.M. Weiland's Plot Points",
-    icon: "Plot Points",
+    text: "Plot Points",
     data: [
       {size: 12.5, fill: "lightgreen", name: "Hook"}, {name: "Inciting Event"},
       {size: 12.5, fill: "lightgreen", name: null}, {name: "1st Plot Point"},
@@ -407,7 +401,7 @@ const tmplButtons = {
 
   beatsheet: {
     tooltip: "Snyder's Beatsheet",
-    icon: "Beat Sheet",
+    text: "Beat Sheet",
     data: [
       {size: 1, name: null, fill: "lightgreen"}, // Opening Image
       {size: 10, name: "Set-up", fill: "lightgreen"},
@@ -428,7 +422,7 @@ const tmplButtons = {
 
   herosjourney: {
     //tooltip: "Hero's Journey",
-    icon: "Hero's Journey",
+    text: "Hero's Journey",
     data: [
       {size: 20, name: "Ordinary World", fill: "lightgreen"},
       {size: 10, name: "Call to Adventure", fill: "lightyellow"},
@@ -448,7 +442,7 @@ const tmplButtons = {
   },
 
   heroacts: {
-    icon: "Three Act",
+    text: "Three Act",
     data: [
       {size: 25, name: "I: Separation", fill: "lightgreen"},
       {size: 25, name: "II/A: Descent", fill: "yellow"},
@@ -458,7 +452,7 @@ const tmplButtons = {
   },
 
   fiveact: {
-    icon: <span style={{color: "orchid"}}>Five Act</span>,
+    text: <span style={{color: "orchid"}}>Five Act</span>,
     tooltip: "Experimental",
     data: [
       {size: 20, name: "Exposition", fill: "lightgreen"},
@@ -470,7 +464,7 @@ const tmplButtons = {
   },
 
   "7": {
-    icon: <span style={{color: "orchid"}}>7</span>,
+    text: <span style={{color: "orchid"}}>7</span>,
     tooltip: "Experimental",
     data: [
       {size: 2,  name: null, fill: "lightgreen"},
@@ -486,7 +480,7 @@ const tmplButtons = {
   },
 
   "11": {
-    icon: <span style={{color: "orchid"}}>11</span>,
+    text: <span style={{color: "orchid"}}>11</span>,
     tooltip: "Experimental",
     data: [
       {size: 2,  name: null, fill: "lightgreen"},
@@ -509,7 +503,7 @@ const tmplButtons = {
 
   /*
   vogler: {
-    icon: "Vogler",
+    text: "Vogler",
     data: [
       {name: "Prologi"},
       {size: 3.1, name: "Normaalitila", fill: "lightgreen"},
@@ -681,29 +675,31 @@ function StoryChart({startAngle, endAngle, innerData, outerData, outerLabels}) {
   //---------------------------------------------------------------------------
 
   //*
-  return <ResponsiveContainer aspect={1.6}>
-    <PieChart>
-      <Pie
-        data={innerData}
-        dataKey="size"
-        {...innerRing}
-        isAnimationActive={false}
-      />
-      <Pie
-        data={outerData}
-        dataKey="size"
-        {...outerRing}
-        isAnimationActive={false}
-      />
-      <Pie
-        data={outerLabels}
-        dataKey="size"
-        {...outerRing}
-        fill="none"
-        stroke="grey"
-        isAnimationActive={false}
-      />
-    </PieChart>
-  </ResponsiveContainer>
+  return <VFiller overflow="auto">
+    <ResponsiveContainer aspect={1.6}>
+      <PieChart>
+        <Pie
+          data={innerData}
+          dataKey="size"
+          {...innerRing}
+          isAnimationActive={false}
+        />
+        <Pie
+          data={outerData}
+          dataKey="size"
+          {...outerRing}
+          isAnimationActive={false}
+        />
+        <Pie
+          data={outerLabels}
+          dataKey="size"
+          {...outerRing}
+          fill="none"
+          stroke="grey"
+          isAnimationActive={false}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  </VFiller>
   /**/
 }

@@ -18,7 +18,6 @@ import {
   ToolBox, Button, Icon,
   Input,
   Label,
-  SearchBox,
   InfiniteScroll,
   Separator,
 } from "../common/factory";
@@ -95,18 +94,26 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
 
   //---------------------------------------------------------------------------
 
-  return <VBox style={{overflow: "auto"}}>
-    <ToolBox style={{background: "white"}}>
-      <SearchBox
+  return <VBox overflow="auto">
+    <ToolBox side="top">
+      <Icon.Search style={{color: "grey"}}/>
+      <Input
         value={filterText}
         onChange={ev => setFilterText(ev.target.value)}
       />
+      <Filler/>
       <Separator />
       <Button tooltip="Sort order" onClick={ev => setSortAscending(!sortAscending)}>
         {sortAscending ? <Icon.Sort.Ascending/>: <Icon.Sort.Descending/>}
       </Button>
     </ToolBox>
-    <Label style={{padding: "4px", borderBottom: "1px solid lightgray"}} text={`Total: ${total}`}/>
+    <HBox side="top" style={{padding: "4px"}}>
+      <Filler/>
+      <Separator/>
+      Unique: {filtered.length}
+      <Separator/>
+      Total: {total}
+    </HBox>
     <VBox id="wordlist" className="TOC">
       <InfiniteScroll
         scrollableTarget="wordlist"
