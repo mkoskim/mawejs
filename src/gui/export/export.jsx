@@ -232,7 +232,7 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
       setSelected={value => updateDocFormat(updateDoc, value)}
     />
 
-    <Button className="success" onClick={e => exportToFile(formatter, flatted)}>Export</Button>
+    <Button variant="filled" color="success" onClick={e => exportToFile(formatter, flatted)}>Export</Button>
 
     <Separator/>
     <DropDown

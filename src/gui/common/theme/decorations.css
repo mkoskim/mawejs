@@ -3,27 +3,12 @@
 // ----------------------------------------------------------------------------
 */
 
-[variant="outlined"], [variant="filled"] {
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 3px;
-}
+/* ----------------------------------------------------------------------------
+// Outlined elements
+// ----------------------------------------------------------------------------
+*/
 
-[color="success"] {
-  color: var(--success-fg);
-  border-color: var(--success-border);
-  &[variant="filled"] {
-    background-color: var(--success-bg);
-  }
-}
-
-[color="error"] {
-  color: var(--error-fg);
-  border-color: var(--error-border);
-  &[variant="filled"] {
-    background-color: var(--error-bg);
-  }
-}
+[variant="outlined"] { border-width: 1px; }
 
 /* ----------------------------------------------------------------------------
 // Side borders

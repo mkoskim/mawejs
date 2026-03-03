@@ -6,34 +6,67 @@
 .Icon {
   width: var(--font-size);
   height: var(--font-size);
+
+  /* Icons in toolbars */
+  .Toolbar &, .Toolbar > button > & {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Icons in panels */
+  .Panel > &, .Panel > button > & {
+    width: 24px;
+    height: 24px;
+  }
 }
 
-button {
-  padding-block: 0;
-  padding-inline: 0;
-  font-size: inherit;
-  border-width: 1px;
-  border-radius: 3px;
-}
-
+/* Reset styles */
 button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 2px 6px;
+
+  color: inherit;
+  font-size: inherit;
+  font-weight: 500;
+
+  padding-block: 0;
+  padding-inline: 0;
+  border-radius: 4px;
+}
+
+/* Buttons */
+button {
   background: none;
 
-  /* Selectors for non-icon buttons */
   &:not(.icon) {
-    &.error   {background: var(--error-bg); border-color: var(--error-border); color: var(--error-fg); }
-    &.success {background: var(--success-bg); border-color: var(--success-border); color: var(--success-fg);}
+    padding: 2px 6px;
   }
 
-  /* Selectors for icon buttons */
   &.icon {
     opacity: 80%;
-    &.error   {color: var(--error-fg)}
-    &.success {color: var(--success-fg)}
+    padding: 2px;
+  }
+
+  /* Colors */
+  &[color="success"] {
+    color: var(--success-outlined-fg);
+    border-color: var(--success-outlined-fg);
+    &[variant="filled"] {
+      color: var(--success-filled-fg);
+      background-color: var(--success-filled-bg);
+      border-color: var(--success-filled-bg);
+    }
+  }
+
+  &[color="error"] {
+    color: var(--error-outlined-fg);
+    border-color: var(--error-outlined-fg);
+    &[variant="filled"] {
+      color: var(--error-filled-fg);
+      background-color: var(--error-filled-bg);
+      border-color: var(--error-filled-bg);
+    }
   }
 
   &:disabled {
@@ -45,22 +78,21 @@ button {
   &.checked {
     background: var(--checked-bg);
   }
-}
 
-.Toolbar {
-  & > button {
+  /* Buttons in toolbars */
+
+  .Toolbar > & {
     min-width: 28px;
     min-height: 28px;
     border-width: 0;
     border-radius: 0;
+  }
 
+  /* Buttons in panels */
+  .Panel > & {
+    padding: 8px 12px;
     &.icon {
       padding: 2px;
     }
-  }
-
-  & > .Icon, & > button .Icon {
-    width: 24px;
-    height: 24px;
   }
 }

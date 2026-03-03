@@ -247,7 +247,7 @@ export class DropDown extends React.PureComponent {
     const {name} = (selected in selections) ? selections[selected] : {name: selected}
     switch(as) {
       case "text": return {
-        className: "Outlined",
+        variant: "outlined",
         label,
         name
       }

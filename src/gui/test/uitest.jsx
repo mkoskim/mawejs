@@ -22,16 +22,16 @@ const toolbarStyle = {
 export function UITestView({doc, updateDoc}) {
   return <VBox className="debug">
     {/*<MenuTest/>*/}
-    <HBox>HBox/Default: <Buttons/><Padder/></HBox>
+    <HBox>HBox/Unstyled: <Buttons/><Padder/></HBox>
     <Separator/>
     <ToolBox style={toolbarStyle}>Toolbar: <Buttons/><Padder/></ToolBox>
     <Separator/>
     <HBox className="Panel">HBox/Panel: <Buttons/><Padder/></HBox>
     <Separator/>
     <HBox>
-      <VBox>VBox/Default: <Buttons/></VBox>
+      <VBox>VBox/Unstyled: <Buttons/><Padder/></VBox>
       <Separator/>
-      <VBox className="Panel">VBox/Panel: <Buttons/></VBox>
+      <VBox className="Panel">VBox/Panel: <Buttons/><Padder/></VBox>
       <Padder/>
     </HBox>
   </VBox>

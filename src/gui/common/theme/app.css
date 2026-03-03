@@ -7,6 +7,10 @@
 /* For all elements, measure widths and heights with padding and border */
 * {
   box-sizing: border-box;
+
+  font-size: inherit;
+  font-family: inherit;
+
   border-color: var(--border-color);
   border-style: solid;
   border-width: 0;
@@ -19,11 +23,12 @@
 }
 
 html {
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-family: var(--font-family);
   font-size: var(--font-size);
 }
 
 body {
+  color: var(--color);
   margin: 0;
   padding: 0;
   /*

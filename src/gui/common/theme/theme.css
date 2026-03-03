@@ -17,14 +17,16 @@
 *******************************************************************************/
 
 :root {
-  --border-color: grey;
-  --error-bg: rgb(255, 171, 171);
-  --error-fg: #800;
-  --error-border: #A00;
+  --color: black;
+  --border-color: #AAA;
 
-  --success-bg: #d6efe3;
-  --success-fg: #050;
-  --success-border: #6B6;
+  --error-outlined-fg: #d32f2f;
+  --error-filled-fg: #FEE;
+  --error-filled-bg: #f03939;
+
+  --success-outlined-fg: green;
+  --success-filled-fg: #EFE;
+  --success-filled-bg: #2e7d32;
 
   --checked-bg: #ACF;
 
@@ -38,6 +40,7 @@
 
   --filler-bg: #FAF;
 
+  --font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   --font-size: 12pt;
   --font-size-small: 10pt;
 }
