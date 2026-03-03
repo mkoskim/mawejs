@@ -350,6 +350,7 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 //-----------------------------------------------------------------------------
 
 class FileOperations extends React.PureComponent {
+  /*
   static gzip_style = {
     fontSize: "8pt",
     border: "2px solid",
@@ -365,24 +366,20 @@ class FileOperations extends React.PureComponent {
     textDecorationThickness: "2px",
     textDecorationColor: "rgb(240, 80, 40)",
   }
-
-  toggleCompress(file, setCommand) {
-    const compressed = file.id.endsWith(".gz")
-    const filename = compressed ? file.id.slice(0, -3) : (file.id + ".gz")
-    //setCommand({action: "rename", filename})
-    doRename({setCommand, filename})
-  }
+  */
 
   render() {
     const {file, setCommand} = this.props
+    /*
     const compressed = file?.id.endsWith(".gz") ?? false
     const {gzip_style, gunzip_style} = this.constructor
     const compress_style = compressed ? gunzip_style : gzip_style
     const compress_tooltip = compressed ? "Uncompress" : "Compress"
     //const filename = file?.name ?? "<Unnamed>"
+    */
 
     return <>
-      <IconButton disabled={!file} tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>gz</span></IconButton>
+      {/*<IconButton disabled={!file} tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>gz</span></IconButton>*/}
       <OpenFolderButton filename={file?.id} />
       </>
   }
@@ -394,6 +391,7 @@ class FileMenu extends React.PureComponent {
   render() {
     const { setCommand, file, recent, hasdoc } = this.props
     const filename = file?.name ?? "<Unnamed>"
+    const compressed = file?.id.endsWith(".gz") ?? false
     const trigger = hasdoc
       ? <Button tooltip="File menu">{filename}</Button>
       : <IconButton tooltip="File menu"><Icon.Menu/></IconButton>;
@@ -434,6 +432,11 @@ class FileMenu extends React.PureComponent {
         disabled={!file} onClick={e => { reqRenameFile({ setCommand, file }); }}
         />
       <MenuItem
+        title={compressed ? "Uncompress" : "Compress (gzip)"}
+        startIcon={compressed && <Icon.Checked/>}
+        disabled={!file} onClick={e => { this.toggleCompress(setCommand, file); }}
+        />
+      <MenuItem
         title="Close" endAdornment="Ctrl-W"
         disabled={!hasdoc} onClick={e => { reqCloseFile({ setCommand, file }); }}
         />
@@ -443,6 +446,13 @@ class FileMenu extends React.PureComponent {
         onClick={e => { reqQuit({setCommand}); }}
       />
     </Menu>
+  }
+
+  toggleCompress(setCommand, file) {
+    const compressed = file.id.endsWith(".gz")
+    const filename = compressed ? file.id.slice(0, -3) : (file.id + ".gz")
+    //setCommand({action: "rename", filename})
+    doRename({setCommand, filename})
   }
 }
 
