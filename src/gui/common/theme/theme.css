@@ -10,6 +10,12 @@
 @import "./decorations.css";
 @import "./tooltip.css";
 
+@import "../sheet/sheet.colors.css";
+@import "../sheet/sheet.css";
+@import "../sheet/sheet.editor.css";
+@import "../sheet/sheet.preview.css";
+@import "../sheet/TOC.css";
+
 /******************************************************************************
 *
 * Colors for UI
@@ -20,13 +26,11 @@
   --color: black;
   --border-color: #AAA;
 
-  --error-outlined-fg: #d32f2f;
-  --error-filled-fg: #FEE;
-  --error-filled-bg: #f03939;
+  --error-fg: #9f1a16;
+  --error-bg: #eedad9;
 
-  --success-outlined-fg: green;
-  --success-filled-fg: #EFE;
-  --success-filled-bg: #2e7d32;
+  --success-fg: #00a857;
+  --success-bg: #d6efe3;
 
   --checked-bg: #ACF;
 

@@ -6,6 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
+import "../common/theme/theme.css"
+
 import React, {
   useEffect, useState, useCallback,
   useMemo, useContext,

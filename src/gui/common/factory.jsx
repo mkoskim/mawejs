@@ -6,8 +6,6 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import "./theme/theme.css"
-
 import React, {
   useDeferredValue,
 } from "react"
@@ -18,13 +16,13 @@ import { enqueueSnackbar, closeSnackbar } from "notistack";
 import { isNotEmpty } from "../../util";
 
 import {
-  Tooltip as BUITooltip,
   //Button as BUIButton,
   //Toggle as BUIToggle,
   //Input,
   Menu as BUIMenu,
   Popover as BUIPopover,
   Dialog as BUIDialog,
+  Tooltip as BUITooltip,
 } from "@base-ui/react"
 
 //-----------------------------------------------------------------------------
@@ -66,13 +64,6 @@ export function addClass(...classNames) {
 //-----------------------------------------------------------------------------
 // Nice guide: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 //-----------------------------------------------------------------------------
-
-export class Box extends React.PureComponent {
-  render() {
-    const {...props} = this.props
-    return <div {...props}/>
-  }
-}
 
 export class VBox extends React.PureComponent {
   render() {
@@ -143,6 +134,19 @@ export function IconButton({ tooltip, className, ...props }) {
   return <button className={cl} {...props}/>
 }
 
+function ToggleButton({tooltip, checked, className, ...props}) {
+  const btnprops = {
+    ...props,
+    className: addClass(className, checked && "checked"),
+  }
+  if(tooltip) {
+    return <Tooltip tooltip={tooltip}>
+      <button checked {...btnprops}/>
+    </Tooltip>
+  }
+  return <button {...btnprops}/>
+}
+
 //*****************************************************************************
 //
 // Separators for groups
@@ -159,19 +163,6 @@ const separators = {
 // Toggle group
 //
 //*****************************************************************************
-
-function ToggleButton({tooltip, checked, className, ...props}) {
-  const btnprops = {
-    ...props,
-    className: addClass(className, checked && "checked"),
-  }
-  if(tooltip) {
-    return <Tooltip tooltip={tooltip}>
-      <button checked {...btnprops}/>
-    </Tooltip>
-  }
-  return <button {...btnprops}/>
-}
 
 export class MakeToggleGroup extends React.PureComponent {
 
@@ -199,7 +190,7 @@ export class MakeToggleGroup extends React.PureComponent {
 
     return <ToggleButton
       key={choice}
-      className="icon"
+      className={!text && "icon"}
       tooltip={tooltip}
       disabled={isDisabled}
       //value={choice}
@@ -244,7 +235,6 @@ export class DropDown extends React.PureComponent {
 
   getTriggerProperties() {
     const {as, label, selections, selected} = this.props
-    const {name} = (selected in selections) ? selections[selected] : {name: selected}
     switch(as) {
       case "text": return {
         variant: "outlined",
@@ -259,8 +249,14 @@ export class DropDown extends React.PureComponent {
   }
 
   makeButtonTrigger() {
-    const {name, ...props} = this.getTriggerProperties()
-    return <Button {...props}>{name}<Icon.Arrow.DropDown/></Button>
+    const {as, label, selections, selected, ...props} = this.props
+    const {name} = (selected in selections) ? selections[selected] : {name: selected}
+
+    switch(as) {
+      case "text": return <div variant="outlined" label={label} {...props}>{name} <Icon.Arrow.DropDown/></div>
+    }
+
+    return <Button tooltip={label} {...props}>{name}<Icon.Arrow.DropDown/></Button>
   }
 
   makeSelection(choice, index) {

@@ -41,17 +41,17 @@ function Buttons() {
   return <>
     <Separator/>
     <IconButton tooltip="Button"><Icon.Help/></IconButton>
-    <IconButton tooltip="Button" className="error"><Icon.Help/></IconButton>
-    <IconButton tooltip="Button" className="success"><Icon.Help/></IconButton>
+    <IconButton tooltip="Button" color="success"><Icon.Help/></IconButton>
+    <IconButton tooltip="Button" color="error"><Icon.Help/></IconButton>
     <Separator/>
     <Button tooltip="Button">Button</Button>
-    <Button tooltip="Button" color="error">Button</Button>
-    <Button tooltip="Button" color="success">Button</Button>
+    <Button tooltip="Button" color="success"><Icon.Checked/> Button</Button>
+    <Button tooltip="Button" color="error">Button <Icon.Close/></Button>
     <Input placeholder="Some text..."/>
     <Separator/>
     <Button variant="filled"                 label="Example" tooltip="Button">Button</Button>
-    <Button variant="filled" color="error"   label="Example" tooltip="Button">Button</Button>
-    <Button variant="filled" color="success" label="Example" tooltip="Button">Button</Button>
+    <Button variant="filled" color="success" label="Example" tooltip="Button"><Icon.Checked/> Button</Button>
+    <Button variant="filled" color="error"   label="Example" tooltip="Button">Button <Icon.Close/></Button>
     <Input variant="outlined" label="Example"/>
   </>
 }

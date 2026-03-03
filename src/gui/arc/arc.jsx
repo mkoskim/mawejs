@@ -274,9 +274,9 @@ function ChartToolbar({settings}) {
 //-----------------------------------------------------------------------------
 
 const elemButtons = {
-  act: {icon: "Acts"},
-  chapter: {icon: "Chapters"},
-  scene: {icon: "Scenes"},
+  act: {text: "Acts"},
+  chapter: {text: "Chapters"},
+  scene: {text: "Scenes"},
 }
 
 //-----------------------------------------------------------------------------
@@ -385,7 +385,7 @@ function elemData(elem) {
 const tmplButtons = {
   plotpoints: {
     tooltip: "K.M. Weiland's Plot Points",
-    icon: "Plot Points",
+    text: "Plot Points",
     data: [
       {size: 12.5, fill: "lightgreen", name: "Hook"}, {name: "Inciting Event"},
       {size: 12.5, fill: "lightgreen", name: null}, {name: "1st Plot Point"},
@@ -401,7 +401,7 @@ const tmplButtons = {
 
   beatsheet: {
     tooltip: "Snyder's Beatsheet",
-    icon: "Beat Sheet",
+    text: "Beat Sheet",
     data: [
       {size: 1, name: null, fill: "lightgreen"}, // Opening Image
       {size: 10, name: "Set-up", fill: "lightgreen"},
@@ -422,7 +422,7 @@ const tmplButtons = {
 
   herosjourney: {
     //tooltip: "Hero's Journey",
-    icon: "Hero's Journey",
+    text: "Hero's Journey",
     data: [
       {size: 20, name: "Ordinary World", fill: "lightgreen"},
       {size: 10, name: "Call to Adventure", fill: "lightyellow"},
@@ -442,7 +442,7 @@ const tmplButtons = {
   },
 
   heroacts: {
-    icon: "Three Act",
+    text: "Three Act",
     data: [
       {size: 25, name: "I: Separation", fill: "lightgreen"},
       {size: 25, name: "II/A: Descent", fill: "yellow"},
@@ -452,7 +452,7 @@ const tmplButtons = {
   },
 
   fiveact: {
-    icon: <span style={{color: "orchid"}}>Five Act</span>,
+    text: <span style={{color: "orchid"}}>Five Act</span>,
     tooltip: "Experimental",
     data: [
       {size: 20, name: "Exposition", fill: "lightgreen"},
@@ -464,7 +464,7 @@ const tmplButtons = {
   },
 
   "7": {
-    icon: <span style={{color: "orchid"}}>7</span>,
+    text: <span style={{color: "orchid"}}>7</span>,
     tooltip: "Experimental",
     data: [
       {size: 2,  name: null, fill: "lightgreen"},
@@ -480,7 +480,7 @@ const tmplButtons = {
   },
 
   "11": {
-    icon: <span style={{color: "orchid"}}>11</span>,
+    text: <span style={{color: "orchid"}}>11</span>,
     tooltip: "Experimental",
     data: [
       {size: 2,  name: null, fill: "lightgreen"},
@@ -503,7 +503,7 @@ const tmplButtons = {
 
   /*
   vogler: {
-    icon: "Vogler",
+    text: "Vogler",
     data: [
       {name: "Prologi"},
       {size: 3.1, name: "Normaalitila", fill: "lightgreen"},

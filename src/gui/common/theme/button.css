@@ -8,13 +8,13 @@
   height: var(--font-size);
 
   /* Icons in toolbars */
-  .Toolbar &, .Toolbar > button > & {
+  .Toolbar > &, .Toolbar > button.icon > & {
     width: 24px;
     height: 24px;
   }
 
   /* Icons in panels */
-  .Panel > &, .Panel > button > & {
+  .Panel > &, .Panel > button.icon > & {
     width: 24px;
     height: 24px;
   }
@@ -28,7 +28,6 @@ button {
 
   color: inherit;
   font-size: inherit;
-  font-weight: 500;
 
   padding-block: 0;
   padding-inline: 0;
@@ -48,32 +47,11 @@ button {
     padding: 2px;
   }
 
-  /* Colors */
-  &[color="success"] {
-    color: var(--success-outlined-fg);
-    border-color: var(--success-outlined-fg);
-    &[variant="filled"] {
-      color: var(--success-filled-fg);
-      background-color: var(--success-filled-bg);
-      border-color: var(--success-filled-bg);
-    }
-  }
-
-  &[color="error"] {
-    color: var(--error-outlined-fg);
-    border-color: var(--error-outlined-fg);
-    &[variant="filled"] {
-      color: var(--error-filled-fg);
-      background-color: var(--error-filled-bg);
-      border-color: var(--error-filled-bg);
-    }
-  }
-
   &:disabled {
     opacity: 40%;
   }
 
-  &:hover {background: var(--hover-bg) !important;}
+  &:hover {background: var(--hover-bg);}
 
   &.checked {
     background: var(--checked-bg);
@@ -91,5 +69,36 @@ button {
   /* Buttons in panels */
   .Panel > & {
     padding: 8px 12px;
+  }
+
+  /* Colors + Fills */
+  &[color="success"] {
+    color: var(--success-fg);
+    border-color: var(--success-fg);
+    &[variant="filled"] {
+      color: var(--color);
+      background-color: var(--success-bg);
+      border-color: var(--success-fg);
+
+      &:hover {
+        background-color: var(--success-fg);
+        color: white;
+      }
+    }
+  }
+
+  &[color="error"] {
+    color: var(--error-fg);
+    border-color: var(--error-fg);
+    &[variant="filled"] {
+      color: var(--color);
+      background-color: var(--error-bg);
+      border-color: var(--error-fg);
+
+      &:hover {
+        background-color: var(--error-fg);
+        color: white;
+      }
+    }
   }
 }
