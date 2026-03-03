@@ -31,7 +31,7 @@ export function TagTable({editor, section}) {
     foldByTags(editor, [tag]);
   }, [editor])
 
-  return <VBox style={{overflow: "auto"}}>
+  return <VBox overflow="auto">
     <div className="VBox TOC">
       {tags.map(tag => <TagRow key={tag} className={"Entry"} tag={tag} onSelect={onSelect}/>)}
     </div>

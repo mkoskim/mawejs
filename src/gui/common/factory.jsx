@@ -55,6 +55,14 @@ export function addClass(...classNames) {
   return classNames.filter(isNotEmpty).join(" ");
 }
 
+//-----------------------------------------------------------------------------
+// Base-UI components eat extra attributes, so this converts them to class names
+//-----------------------------------------------------------------------------
+
+function attribute2class(attrs) {
+  return Object.entries(attrs).map(([key, value]) => key + "-" + value)
+}
+
 //*****************************************************************************
 //
 // Boxes
@@ -436,8 +444,8 @@ export function Tooltip({tooltip, children}) {
 //
 //*****************************************************************************
 
-export function Dialog({children, className = "Dialog", ...props}) {
-  const cl = addClass("VBox", className)
+export function Dialog({children, size, className = "Dialog", ...props}) {
+  const cl = addClass("VBox", className, attribute2class({size}))
   return <BUIDialog.Root {...props}>
     <BUIDialog.Portal>
       <BUIDialog.Backdrop className="Backdrop"/>

@@ -116,7 +116,7 @@ export function ImportDialog({ filename, setDialogs }) {
     })
   }, [filename, setDialogs])
 
-  return <Dialog open={true} onOpenChange={cancel} className="Dialog xl">
+  return <Dialog open={true} onOpenChange={cancel} size="xl">
     <ToolBox side="top">
       <Label>Import from: {filename ?? "Clipboard"}</Label>
       <Separator />
@@ -126,7 +126,7 @@ export function ImportDialog({ filename, setDialogs }) {
       <IconButton onClick={cancel}><Icon.Close /></IconButton>
     </ToolBox>
 
-    <HBox style={{ overflow: "auto" }}>
+    <HBox overflow="auto">
       <Preview imported={imported} />
       <VBox className="Panel">
         <SelectFormat format={format} content={content} setImported={setImported} />

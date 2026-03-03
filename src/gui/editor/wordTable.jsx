@@ -94,7 +94,7 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
 
   //---------------------------------------------------------------------------
 
-  return <VBox style={{overflow: "auto"}}>
+  return <VBox overflow="auto">
     <ToolBox side="top">
       <Icon.Search style={{color: "grey"}}/>
       <Input

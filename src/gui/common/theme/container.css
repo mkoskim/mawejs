@@ -54,6 +54,10 @@
   [align="stretch"] {align-items: stretch;}
   [align="baseline"] {align-items: baseline;}
 
+  /* Overflow control */
+  [overflow="auto"]   { overflow: auto; }
+  [overflow="hidden"] { overflow: hidden; }
+
   /* Gap */
 }
 
@@ -224,12 +228,14 @@
   left: 50%;
   transform: translate(-50%, -50%);
 
-  min-width: 50dvw;
-  min-height: 20dvh;
-  max-width: 80dvw;
-  max-height: 80dvh;
+  &.size-undefined {
+    min-width: 50dvw;
+    min-height: 20dvh;
+    max-width: 80dvw;
+    max-height: 80dvh;
+  }
 
-  &.xl {
+  &.size-xl {
     min-width: 90dvw;
     min-height: 90dvh;
     max-width: 95dvw;

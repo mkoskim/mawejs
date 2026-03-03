@@ -179,7 +179,7 @@ export function ExportView({ doc, updateDoc }) {
   const flatted = storyToFlatted(doc)
   //console.log("Flatted:", flatted)
 
-  return <HBox style={{overflow: "hidden"}}>
+  return <HBox overflow="hidden">
     <ExportIndex style={{overflow: "auto", maxWidth: "300px", width: "300px", borderRight: "1px solid lightgray" }} flatted={flatted}/>
     <Preview flatted={flatted}/>
     <ExportSettings style={{overflow: "auto", minWidth: "300px"}} flatted={flatted} exports={exports} updateDoc={updateDoc}/>

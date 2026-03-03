@@ -121,7 +121,7 @@ export function StoryArcView({doc, updateDoc, editors}) {
   }
 
   return <DragDropContext onDragEnd={onDragEnd}>
-    <HBox style={{overflow: "auto", height: "100%"}}>
+    <HBox overflow="auto" style={{height: "100%"}}>
       <VBox style={indexStyle}>
         <IndexToolbar settings={settings}/>
         <VBox className="TOC">
@@ -235,7 +235,7 @@ function ChartView({settings, doc, updateDoc}) {
   // Chart
   //---------------------------------------------------------------------------
 
-  return <VFiller style={{overflow: "auto"}}>
+  return <VFiller>
     <ChartToolbar settings={settings} />
     <StoryChart
       startAngle={selectStart + selectRotate * 1}
@@ -675,29 +675,31 @@ function StoryChart({startAngle, endAngle, innerData, outerData, outerLabels}) {
   //---------------------------------------------------------------------------
 
   //*
-  return <ResponsiveContainer aspect={1.6}>
-    <PieChart>
-      <Pie
-        data={innerData}
-        dataKey="size"
-        {...innerRing}
-        isAnimationActive={false}
-      />
-      <Pie
-        data={outerData}
-        dataKey="size"
-        {...outerRing}
-        isAnimationActive={false}
-      />
-      <Pie
-        data={outerLabels}
-        dataKey="size"
-        {...outerRing}
-        fill="none"
-        stroke="grey"
-        isAnimationActive={false}
-      />
-    </PieChart>
-  </ResponsiveContainer>
+  return <VFiller overflow="auto">
+    <ResponsiveContainer aspect={1.6}>
+      <PieChart>
+        <Pie
+          data={innerData}
+          dataKey="size"
+          {...innerRing}
+          isAnimationActive={false}
+        />
+        <Pie
+          data={outerData}
+          dataKey="size"
+          {...outerRing}
+          isAnimationActive={false}
+        />
+        <Pie
+          data={outerLabels}
+          dataKey="size"
+          {...outerRing}
+          fill="none"
+          stroke="grey"
+          isAnimationActive={false}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  </VFiller>
   /**/
 }
