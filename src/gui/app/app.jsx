@@ -20,7 +20,7 @@ import {
   IsKey, addHotkeys,
   Separator,
   Menu, Submenu, MenuItem,
-  Inform, Snackbar,
+  Inform,
 } from "../common/factory";
 
 import {
@@ -248,13 +248,14 @@ function RenderDialogs({ dialogs, setDialogs, setRecent }) {
     {dialogs.recent && <RecentDialog setDialogs={setDialogs} setRecent={setRecent} {...dialogs.recent}/>}
     {dialogs.zoom && <ZoomSnackbar setDialogs={setDialogs} {...dialogs.zoom} />}
   </>
-
-//-----------------------------------------------------------------------------
+}
 
 //-----------------------------------------------------------------------------
 
 function ZoomSnackbar({ factor, setDialogs }) {
-
+  useEffect(() => setDialogs(d => { delete d.zoom; }), []);
+  return
+  /*
   const zoomAnchor = useMemo(() => ({vertical: "top", horizontal: "right" }), [])
   const close = useCallback(() => setDialogs(d => { delete d.zoom; }), [])
 
@@ -266,6 +267,7 @@ function ZoomSnackbar({ factor, setDialogs }) {
     onClose={close}
   />
   }
+  */
 }
 
 //*****************************************************************************

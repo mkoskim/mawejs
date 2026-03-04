@@ -119,51 +119,49 @@ export class Separator extends React.PureComponent {
 
 //*****************************************************************************
 //
+// Tooltip wrapper
+//
+//*****************************************************************************
+
+export function Tooltip({tooltip, children}) {
+  if(!tooltip) return children
+  return <BUITooltip.Root>
+    <BUITooltip.Trigger render={children}/>
+    <BUITooltip.Portal>
+      <BUITooltip.Positioner sideOffset={8}>
+        <BUITooltip.Popup className="Tooltip">
+          <BUITooltip.Arrow className="Arrow"><PopupArrow /></BUITooltip.Arrow>
+          {tooltip}
+        </BUITooltip.Popup>
+      </BUITooltip.Positioner>
+    </BUITooltip.Portal>
+  </BUITooltip.Root>
+}
+
+//*****************************************************************************
+//
 // Buttons
 //
 //*****************************************************************************
 
 export function Button({tooltip, ...props}) {
-  if(tooltip) {
-    return <Tooltip tooltip={tooltip}>
-      <button {...props}/>
-    </Tooltip>
-  }
-  return <button {...props}/>
+  return <Tooltip tooltip={tooltip}>
+    <button {...props}/>
+  </Tooltip>
 }
 
 export function IconButton({ tooltip, className, ...props }) {
   const cl = addClass(className, "icon")
-  if(tooltip) {
-    return <Tooltip tooltip={tooltip}>
-      <button className={cl} {...props}/>
-    </Tooltip>
-  }
-  return <button className={cl} {...props}/>
+  return <Tooltip tooltip={tooltip}>
+    <button className={cl} {...props}/>
+  </Tooltip>
 }
 
 function ToggleButton({tooltip, checked, className, ...props}) {
-  const btnprops = {
-    ...props,
-    className: addClass(className, checked && "checked"),
-  }
-  if(tooltip) {
-    return <Tooltip tooltip={tooltip}>
-      <button checked {...btnprops}/>
-    </Tooltip>
-  }
-  return <button {...btnprops}/>
-}
-
-//*****************************************************************************
-//
-// Separators for groups
-//
-//*****************************************************************************
-
-const separators = {
-  "|": true,
-  "---": true,
+  const cl = addClass(className, checked && "checked")
+  return <Tooltip tooltip={tooltip}>
+    <button className={cl} {...props}/>
+  </Tooltip>
 }
 
 //*****************************************************************************
@@ -171,6 +169,11 @@ const separators = {
 // Toggle group
 //
 //*****************************************************************************
+
+const separators = {
+  "|": true,
+  "---": true,
+}
 
 export class MakeToggleGroup extends React.PureComponent {
 
@@ -246,8 +249,8 @@ export class DropDown extends React.PureComponent {
     const {name} = (selected in selections) ? selections[selected] : {name: selected}
 
     switch(as) {
-      case "text": return <div variant="outlined" label={label}>
-        <span style={{cursor: "default"}}>{name}</span> <Icon.DropDown/>
+      case "text": return <div className="HBox" variant="outlined" label={label}>
+        <span style={{cursor: "default"}}>{name}</span><Filler/><Icon.DropDown/>
       </div>
     }
 
@@ -323,7 +326,7 @@ export class Label extends React.PureComponent {
 
 //*****************************************************************************
 //
-// Containers: Toolbar
+// Containers: Toolbar, Popups, Menus, ...
 //
 //*****************************************************************************
 
@@ -333,12 +336,6 @@ export class ToolBox extends React.PureComponent {
     return <HBox className={addClass("Toolbar", className)} {...props}/>
   }
 }
-
-//*****************************************************************************
-//
-// Popups, Menus
-//
-//*****************************************************************************
 
 class PopupArrow extends React.PureComponent {
   render() {
@@ -420,26 +417,6 @@ export function MenuItem({ title, startIcon, endAdornment, endIcon, className, c
 
 //*****************************************************************************
 //
-// Tooltip
-//
-//*****************************************************************************
-
-export function Tooltip({tooltip, children}) {
-  return <BUITooltip.Root>
-    <BUITooltip.Trigger render={children}/>
-    <BUITooltip.Portal>
-      <BUITooltip.Positioner sideOffset={8}>
-        <BUITooltip.Popup className="Tooltip">
-          <BUITooltip.Arrow className="Arrow"><PopupArrow /></BUITooltip.Arrow>
-          {tooltip}
-        </BUITooltip.Popup>
-      </BUITooltip.Positioner>
-    </BUITooltip.Portal>
-  </BUITooltip.Root>
-}
-
-//*****************************************************************************
-//
 // Dialogs
 //
 //*****************************************************************************
@@ -484,8 +461,4 @@ export const Inform = {
   process: msg => {
     return enqueueSnackbar(String(msg), {variant: "info", persist: true});
   },
-}
-
-export function Snackbar({ children }) {
-  return null;
 }

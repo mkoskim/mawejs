@@ -8,6 +8,22 @@
 }
 
 /* ----------------------------------------------------------------------------
+// Elements shown / hidden on hover
+// ----------------------------------------------------------------------------
+*/
+
+div, button {
+  &:hover {
+    & > .showOnHover { visibility: visible;}
+    & > .hideOnHover { visibility: hidden;}
+  }
+  &:not(:hover) {
+    & > .showOnHover { visibility: hidden;}
+    & > .hideOnHover { visibility: visible;}
+  }
+}
+
+/* ----------------------------------------------------------------------------
 // Outlined elements
 // ----------------------------------------------------------------------------
 */
