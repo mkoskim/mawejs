@@ -48,7 +48,7 @@ export function RecentDialog({ setDialogs, setRecent }) {
       <IconButton onClick={cancel}><Icon.Close/></IconButton>
     </ToolBox>
 
-    <VBox className="TOC" style={{paddingLeft: "16px"}}>
+    <VBox className="TOC">
     {recent.map(entry => (
       <FileEntry key={entry.id} name={entry.name} id={entry.id} onClick={onClick} onRemove={onRemove}/>
     ))}
@@ -62,7 +62,6 @@ export function RecentDialog({ setDialogs, setRecent }) {
 
 function FileEntry({name, id, onClick, onRemove}) {
   const[exists, setExists] = React.useState()
-  const btn_sx = {borderRadius: "12px"}
 
   React.useEffect(() => {
     fs.fstat(id)
@@ -96,9 +95,7 @@ function FileEntry({name, id, onClick, onRemove}) {
           }}
         />
       </VFiller>
-    <IconButton size="small" sx={btn_sx} onClick={() => onRemove(id)}>
-      <Icon.Close style={{color: color()}} fontSize="12pt"/>
-      </IconButton>
+    <IconButton className="showOnHover" style={{color: color()}} onClick={() => onRemove(id)}><Icon.Close /></IconButton>
   </HBox>
   )
 }
