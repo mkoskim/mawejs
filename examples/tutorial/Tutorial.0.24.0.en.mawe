@@ -1,0 +1,310 @@
+<story uuid="0feec3fb-217c-4ba8-ab48-84b8dfc56ad3" format="mawe" version="6" name="Tutorial (v0.24.0)">
+<!--/
+===============================================================================
+
+STORY: Tutorial (v0.24.0)
+
+===============================================================================
+/-->
+<head/>
+<export content="draft" type="short" acts="named" chapters="numbered&amp;named" scenes="named" prefix_act="" prefix_chapter="" prefix_scene=""/>
+<!--/
+===============================================================================
+/-->
+<draft>
+<act name="Tutorial" numbered="true">
+<chapter>
+<scene>
+<p>This is a tutorial for MaweJS version v0.24.0. The document is editable, so it also functions as a tutorial or workbook. While reading, you can try different things yourself, and restore the document to its original state from the menu.</p>
+<p>Try writing something here to continue --&gt;</p>
+</scene>
+<scene name="Overview">
+<p>MaweJS is an editor for writing manuscripts and managing their structure. Its purpose is not to format the layout or typography of a manuscript, but to write the content and organize the structure of the story.</p>
+<p>The manuscript can be exported in the following formats for further processing:</p>
+<p><b>RTF</b> – A simple, single-sided (1-sided) RTF is the primary export format. This is the format most commonly used when you want to share your story with colleagues or publishers, or submit it to a writing competition.</p>
+<p><b>LaTeX</b> – LaTeX is included for cases where you want to create a small home-made booklet or a PDF version of your story. You can export either a single-sided or double-sided TEX file and use tools such as pdflatex and pdfbook to turn it into a booklet.</p>
+<p><b>ASCII</b> – The story can also be exported as a plain text file.</p>
+</scene>
+</chapter>
+<chapter name="Text Types" numbered="true">
+<scene>
+<p>MaweJS primarily recognizes three different types of text:</p>
+<p>1. <b>Normal text</b> is the body text of the manuscript — the actual story.</p>
+<missing>2. <b>Missing text</b> is something that is intended to become part of the manuscript later, but is not yet in its final form. Missing text is included in the draft, because it allows you to share unfinished work with colleagues or an editor.</missing>
+<comment>3. <b>Comment</b> is text intended only for the author. In practice, a comment is text that you want to keep for yourself but do not want to include in the draft.</comment>
+<p><b>Try it yourself:</b> Open the export view and look at this section. You will notice that normal text and missing text are included in the draft, but comments are not.</p>
+</scene>
+<scene name="Changing the Text Type">
+<p>There are three main ways to change the type of a text block (a paragraph):</p>
+<p><b>1. Markup:</b> By writing a markup marker at the beginning of a paragraph and pressing space, the paragraph type changes. Markup commands exist so that you do not have to take your hands off the keyboard when changing the text type.</p>
+<p><b>2. Keyboard shortcuts:</b> Each text type has its own keyboard shortcut. Shortcuts can sometimes be harder to reach (for example, Ctrl+Alt+C to change a paragraph into a comment). However, they have the advantage that you can select text and change its type directly. The shortcuts generally follow the conventions used in Google Docs where applicable.</p>
+<p><b>3. Menu ("Paragraph style"):</b> You can also select the desired text type from the menu. The menu exists so that you do not need to remember the keyboard shortcuts.</p>
+</scene>
+<scene name="Try It Yourself">
+<p>Below are a few paragraphs you can use to experiment with different text types.</p>
+<p><b>Markup:</b></p>
+<p>&lt;-- Type "!!" at the beginning of the line and press space to change this paragraph into missing text.</p>
+<p>&lt;-- Type "//" at the beginning of the line and press space to change this paragraph into a comment.</p>
+<p>&lt;-- Type "=&gt;" at the beginning of the line and press space to turn this paragraph into a bookmark.</p>
+<missing>&lt;-- Type "//" at the beginning of this line and press space to turn it into a comment.</missing>
+<comment>&lt;-- Type "!!" at the beginning of this line and press space to turn it into missing text.</comment>
+<p><b>Menu or keyboard shortcuts:</b></p>
+<p>&lt;-- Try changing this line using the menu or keyboard shortcuts.</p>
+<p><b>Removing a paragraph style:</b></p>
+<comment>&lt;-- You can turn this paragraph back into normal text by pressing Backspace at the beginning of the line.</comment>
+<comment>If the line is empty, pressing Enter will also change the paragraph back to normal text. Press Enter on the next line:</comment>
+<comment/>
+</scene>
+<scene name="Text Types in the Index">
+<p>At the top of the index on the left side, there are buttons that let you choose which text types are shown in the index. For example, by selecting missing text, the index will display clickable entries for all places where missing text appears.</p>
+<p>This can be helpful when the manuscript is already mostly complete but there are still sections that need to be filled in.</p>
+</scene>
+<scene name="Character Styles">
+<p>MaweJS currently supports two character styles:</p>
+<p>1. <b>Bold</b></p>
+<p>2. <i>Italic</i>, which is commonly used, for example, to mark foreign phrases: “<i>C'est la vie, ma chéri.</i>”</p>
+<p>Other styles could be added as well, such as underline, if there is a real need for them. In general, however, different text styles should be used sparingly in prose, so that the text remains easy to read.</p>
+</scene>
+<scene name="Quote Style">
+<p>There is one text style whose purpose is purely visual: quotes.</p>
+<br/>
+<quote>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</quote>
+<br/>
+<p>The quote style is included because otherwise typesetting software may ignore or collapse long quotations. It is intended for writing longer direct quotations, such as song lyrics, poems, or extended quotes from either fictional or real texts.</p>
+<br/>
+</scene>
+</chapter>
+</act>
+<act name="Splitting the Text" numbered="true">
+<chapter name="Splitting the Text" numbered="true">
+<scene>
+<p>As the amount of text grows, you may eventually want to start organizing it. For some writers this threshold comes sooner, for others later—some can write entire novel manuscripts without much planning or structuring. I cannot, and that is why MaweJS exists.</p>
+<p>The text is divided into scenes. A scene does not have a strict definition, but it can be thought of as a piece of text that can no longer be divided into smaller parts without losing its meaning.</p>
+<p>Ultimately, a story is a carefully constructed sequence of scenes. MaweJS is designed specifically for this: (1) writing scenes and (2) arranging them into the correct order to form a complete story.</p>
+<br/>
+<p>Text can be split into scenes using a scene break. This can be done in three ways:</p>
+<p>1. Type "##" at the beginning of a line and press space.</p>
+<p>2. Use the keyboard shortcut Ctrl-Alt-3.</p>
+<p>3. Select the scene break from the style menu.</p>
+</scene>
+<scene name="Example Scene">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</p>
+<bookmark>&lt;-- Type ## at the beginning of the line and press space.</bookmark>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</p>
+<missing>&lt;-- Type ## at the beginning of the line and press space.</missing>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</p>
+<br/>
+<br/>
+</scene>
+<scene name="Merging Scenes">
+<p>Scenes can be merged by removing the scene break. One method I often use is to change the scene break into a bookmark:</p>
+<bookmark>Bookmark</bookmark>
+<p>Bookmarks are clickable points within the text that appear in the index. They move with the surrounding text just like scenes do. You can try different ways of removing the scene break below:</p>
+</scene>
+<scene name="<-- Press Backspace at the beginning of the line">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</p>
+</scene>
+<scene name="<-- Type &quot;//&quot; at the beginning of the line and press space (comment).">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</p>
+</scene>
+<scene name="<-- Type &quot;=>&quot; at the beginning of the line and press space (bookmark)">
+<p>In other words, you can remove the scene break by changing it into another text type (normal text, comment, or missing text).</p>
+</scene>
+</chapter>
+<chapter name="Scene Types" numbered="true">
+<scene>
+<p>There are three types of scenes:</p>
+<p>1. Scene: A regular scene where the story itself is told.</p>
+<p>2. Synopsis: A synopsis or description can be written in its own block. The synopsis can also be exported separately (in the Export view, select “synopsis” as the content type).</p>
+<p>3. Comments: Comments can also be written in their own block. This can be useful when you want to discuss or explain something in more detail.</p>
+<p>Synopsis and comment blocks function somewhat like Post-it notes attached to the manuscript. They can be moved around just like scenes.</p>
+</scene>
+<scene name="Scene (Regular)">
+<p>This is a regular scene (markup "##").</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</p>
+</scene>
+<scene name="Synopsis" content="synopsis">
+<p>This is a synopsis block (markup "&gt;&gt;").</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</p>
+</scene>
+<scene name="Comments" content="notes">
+<p>This is a comment block (markup "%%").</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor.</p>
+</scene>
+</chapter>
+<chapter name="Grouping the Text" numbered="true">
+<scene name="Drag and Drop">
+<p>Once the text has been split into scenes, the scenes can be rearranged in the index by dragging them with the mouse (drag and drop). Scenes can be moved not only within the manuscript itself, but also within the index on the right side.</p>
+<p><b>Try it yourself:</b> Drag elements in the index with the mouse. You will notice that scenes move individually, while chapters move together with the scenes they contain. Try rearranging this document into a different order.</p>
+</scene>
+<scene name="Chapters and Acts">
+<p>Scenes can be grouped into larger units:</p>
+<p>* Chapter: A chapter is a group of scenes that move together.</p>
+<p>* Act: An act is a group of chapters that move together.</p>
+<p>The length of scenes, chapters, and acts depends on the writer. I personally use these quite freely. In my own work, typically:</p>
+<p>* Scenes are fairly short, around 300–500 words.</p>
+<p>* Chapters are often about 2000–2500 words, which is roughly five scenes.</p>
+<p>* The length and number of acts depend on the story. Shorter stories may not use acts at all, while longer ones often have 4–8 acts.</p>
+</scene>
+</chapter>
+<chapter name="Unnumbered Chapters and Acts">
+<scene>
+<p>You can create an unnumbered chapter or act by adding an asterisk (*) as the last character of the title (see above). These are intended for labeling sections such as a prologue or epilogue in the draft.</p>
+<p>In a typical novel manuscript, chapters are usually numbered but not named, while the prologue and epilogue are named.</p>
+</scene>
+</chapter>
+</act>
+<act name="Target Word Counts" numbered="true" target="2000">
+<chapter name="Word Counts" numbered="true">
+<scene name="Word Counts">
+<p>MaweJS uses word counts as the main indicator of text length. Page count depends on the layout of the text: the font and its size, line spacing, page size, and margins.</p>
+<p>In the index on the left side, you can choose different ways to display word counts:</p>
+<p><b>OFF:</b> No word counts are shown.</p>
+<p><b>NUMBERS:</b> Word counts are shown in the format Missing / Total words. Word counts are calculated for individual scenes as well as for chapters and acts.</p>
+<p><b>COMPACT:</b> In compact mode only the total word count is shown, and the color indicates whether the scene contains missing text.</p>
+<p><b>CUMULATIVE:</b> The cumulative word count shows the total number of words up to that point. This can be useful when adjusting the structure of the story.</p>
+<p><b>PERCENT:</b> The cumulative percentage is intended for working with story structure. It can be very useful if you follow a structural model such as Blake Snyder’s Beat Sheet or K. M. Weiland’s character arc model. For example, Weiland divides the character arc into three parts:</p>
+<p>* Act I: 0–25%</p>
+<p>* Act II: 25–75%</p>
+<p>* Act III: 75–100%</p>
+</scene>
+</chapter>
+<chapter name="Target Word Count" numbered="true">
+<scene>
+<p>When outlining the structure of an unfinished story, it is often necessary to pad the structure where parts of the text are still missing. You can assign a target word count to scenes, chapters, and acts. This is done by writing "::" + the word count after the title.</p>
+</scene>
+</chapter>
+<chapter name="Example: Target 1000 words" numbered="true" target="1000">
+<scene>
+<p>This chapter has a target of 1000 words. You can continue writing text here and notice in the index how the number of missing words decreases as you add more words. Write here:</p>
+</scene>
+<scene name="Example: Target 200 words" target="200">
+<p>This scene has a target of 200 words. You can also continue writing text here and see how the number of missing words decreases as you add more words. Write here:</p>
+</scene>
+</chapter>
+<chapter name="Usage" numbered="true">
+<scene name="Target Word Counts vs “Fillers”">
+<p>It is also possible to pad the structure by using "fillers", meaning that you insert enough words and mark them as missing text.</p>
+<missing>This block contains 100 words and is marked as missing text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer.</missing>
+<p>However, target word counts are usually a more convenient solution. With fillers, the problem is that as the story progresses you constantly need to remove words from the filler text in order to keep the planned structure intact.</p>
+</scene>
+<scene name="Story Arc">
+<p>The most important use of target word counts is in the Story Arc view. Select the Story Arc display from the top toolbar.</p>
+<p>By assigning target word counts to unfinished parts, you can examine the structure of an incomplete story and see where different events are intended to fall within the overall narrative.</p>
+<br/>
+</scene>
+</chapter>
+</act>
+<act name="Folding" numbered="true">
+<chapter>
+<scene>
+<p>Folding is a term borrowed from code editors. It means hiding a section so that it is “folded” out of view. In MaweJS, you can fold blocks such as scenes, chapters, and acts. This allows you to keep only the parts of the text you are currently working on visible and editable.</p>
+<p>A scene, chapter, or act can be folded by pressing Alt-F (toggle fold). Pressing the same key combination again will unfold it. Folded sections are also shown as folded in the index.</p>
+<p>The section below is folded. Try pressing Alt-F on the title line to unfold it. Any modification inside a folded section will also make it visible again—for example, pressing Enter on the title line will reveal it.</p>
+</scene>
+</chapter>
+<chapter name="Folded Chapter" folded="true" numbered="true">
+<scene name="Folded scene/1" folded="true">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+<scene name="Folded scene/2" folded="true">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+</scene>
+<scene name="Folded scene/3">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan. Nam ex velit, dictum eget porttitor vitae, aliquet at tortor. Vivamus dictum mauris ut dolor mattis, ut pulvinar ligula scelerisque. Vivamus luctus neque nec urna sodales fringilla. Ut gravida nibh risus, ac tempus mauris scelerisque nec. Vivamus semper erat eget placerat imperdiet. Fusce non lorem eu diam vulputate porta non eu nibh. Mauris egestas est tellus, id placerat libero tempus et. Integer eget ultrices ante. Vestibulum est arcu, elementum a ornare convallis, fringilla.</p>
+<br/>
+</scene>
+</chapter>
+</act>
+</draft>
+<!--/
+===============================================================================
+
+NOTES
+
+===============================================================================
+/-->
+<notes>
+<act>
+<chapter name="Keyboard Shortcuts" numbered="true">
+<scene>
+<p>This is a quick guide to keyboard shortcuts. Note that many buttons and menus now display either a tooltip or other information about the available shortcuts. Because of this, you do not need to memorize everything.</p>
+<br/>
+<p><b>Character styles:</b></p>
+<p>Ctrl-B - Bold</p>
+<p>Ctrl-I - Italic</p>
+<br/>
+<p><b>Paragraph styles</b> (markups &amp; shortcut):</p>
+<p>Ctrl-Alt-0 | Regular text</p>
+<p>=&gt; | Ctrl-Alt-B | Bookmark</p>
+<p>// | Ctrl-Alt-C | Comment</p>
+<p>!! | Ctrl-Alt-M | Missing text</p>
+<p>@@  | Tag element</p>
+<br/>
+<p><b>Scene styles:</b></p>
+<p>## | Ctrl-Alt-3 | Regular scene</p>
+<p>&gt;&gt; | Ctrl-Alt-S | Synopsis</p>
+<p>%% | Ctrl-Alt-N | Notes</p>
+<br/>
+<p><b>Chapters and Acts:</b></p>
+<p>** | Ctrl-Alt-1 | Act</p>
+<p># | Ctrl-Alt-2 | Chapter</p>
+<br/>
+<p><b>Other shortcuts:</b></p>
+<br/>
+<p>Folding:</p>
+<p>Alt-F - Toggle fold</p>
+<p>Alt-A - Fold all</p>
+<p>Alt-S - Unfold (show) all</p>
+<br/>
+<p>Search:</p>
+<p>Ctrl-F - Search</p>
+<p>Ctrl-G - Find next</p>
+<p>Ctrl-Shift-G - Find previous</p>
+<br/>
+<p>Other:</p>
+<p>Ctrl-O - Open file</p>
+<p>Ctrl-N - New file</p>
+<p>Ctrl-S - Save file</p>
+<p>Ctrl-W - Close file</p>
+<br/>
+</scene>
+</chapter>
+</act>
+</notes>
+<!--/
+===============================================================================
+
+STORYBOOK
+
+===============================================================================
+/-->
+<storybook>
+<act>
+<chapter>
+<scene>
+<br/>
+</scene>
+</chapter>
+</act>
+</storybook>
+<!--/
+===============================================================================
+/-->
+<ui>
+<view/>
+<arc elements="chapter" template="beatsheet" mode="topCCW"/>
+<editor>
+<draft words="numbers" indexed="scene,bookmark,act,chapter"/>
+</editor>
+</ui>
+<history>
+<words date="2024-12-04" text="4687" missing="1046" chars="27422"/>
+<words date="2024-12-05" text="3513" missing="2194" chars="29203"/>
+<words date="2024-12-10" text="3513" missing="2194" chars="29203"/>
+<words date="2025-03-29" text="3513" missing="2194" chars="27422"/>
+<words date="2026-03-06" text="3017" missing="778" chars="23706"/>
+<words date="2026-03-07" text="363" missing="59" chars="3015"/>
+<words date="2026-03-08" text="2310" missing="1660" chars="13746"/>
+</history>
+</story>

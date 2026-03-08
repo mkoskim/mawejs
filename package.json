@@ -19,7 +19,7 @@
     "electron-devtools-installer": "^4.0.0",
     "electron-localshortcut": "^3.2.1",
     "electron-window-state": "^5.0.3",
-    "fs-extra": "^11.3.3",
+    "fs-extra": "^11.3.4",
     "immer": "^11.1.4",
     "is-gzip": "^2.0.0",
     "mammoth": "^1.11.0",
@@ -29,7 +29,7 @@
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-infinite-scroll-component": "^6.1.1",
-    "recharts": "^3.7.0",
+    "recharts": "^3.8.0",
     "slate": "^0.123.0",
     "slate-dom": "^0.123.0",
     "slate-history": "^0.113.1",
@@ -41,10 +41,10 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.4",
-    "electron": "^40.6.1",
+    "electron": "^40.8.0",
     "electron-builder": "^26.8.1",
     "electron-vite": "^5.0.0",
-    "node": "^25.7.0"
+    "node": "^22.22.1"
   },
   "main": "./out/main/index.js",
   "build": {

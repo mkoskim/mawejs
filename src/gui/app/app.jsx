@@ -485,10 +485,10 @@ class HelpButton extends React.PureComponent {
 
     return <Menu trigger={<IconButton tooltip="Help"><Icon.Help/></IconButton>}>
       <MenuItem title="Tutorial (English)"
-        onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.en.mawe"})}}
+        onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.0.24.0.en.mawe"})}}
         />
       <MenuItem title="Tutorial (Finnish)"
-        onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.fi.mawe"})}}
+        onClick={e => { reqLoadResource({setCommand, filename: "examples/tutorial/Tutorial.0.24.0.fi.mawe"})}}
         />
     </Menu>
   }

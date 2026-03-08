@@ -65,7 +65,8 @@ export class ViewSelectButtons extends React.PureComponent {
     />
   }
 
-  static choices = ["editor", "arc", "stats", "export", "|", "uitest"]
+  static choices = ["editor", "arc", "stats", "export"]
+  //static choices = ["editor", "arc", "stats", "export", "|", "uitest"]
 
   static viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
