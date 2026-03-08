@@ -20,6 +20,15 @@ At the same time, it remains a true *just start writing* tool: you can begin wit
 
 MaweJS is not meant to replace planning tools like Scrivener. **MaweJS is what you use when Word stops working**. When your manuscript grows too large to manage with copy-paste and scrolling, you can simply move your text from Word into MaweJS and continue working on it there.
 
+## Used in real writing
+
+MaweJS is actively used for writing fiction and has already been used to write hundreds of stories in various lenghts. MaweJS is the latest editor in a series of writing tools developed and used for real fiction writing since the mid-2000s.
+
+Examples of stories written with MaweJS:
+
+- My Archive of Our Own account: https://archiveofourown.org/users/MaKo71/works
+- A collection of other works written with MaweJS: https://github.com/mkoskim/mawejs/discussions/236
+
 ## Interested?
 
 Want to give a try? If so, read my Wiki page about the subject:
