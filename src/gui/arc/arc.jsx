@@ -100,7 +100,9 @@ export function StoryArcView({doc, updateDoc, editors}) {
     template: {
       buttons: tmplButtons,
       //choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts", "fiveact", "7", "11"],
-      choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts"],
+      //choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts", "hybrid"],
+      choices: ["beatsheet", "plotpoints", "herosjourney", "|", "threeact", "hybrid",],
+      //choices: ["beatsheet", "plotpoints", "herosjourney", "|", "threeact", "hybrid", "|", "novellette"],
       selected: doc.ui.arc.template,
       setSelected: setTemplate,
     },
@@ -441,6 +443,31 @@ const tmplButtons = {
     ]
   },
 
+  hybrid: {
+    text: <span style={{color: "orchid"}}>Hybrid</span>,
+    tooltip: "Hybrid",
+    data: [
+      {size:  2.5, name: null, fill: "lightgreen"},
+      {size:  9, name: "Setup", fill: "lightgreen"},
+      {size:  2, name: "Call to Adventure", fill: "yellow"},
+      {         name: "Reject the Call"},
+      {size:  9, name: "Stakes Revealed", fill: "lightgreen"},
+      {         name: "Accept the Call"},
+      {size:  5, name: "Crossing the Threshold", fill: "lightyellow"},
+      {size: 10, name: "Road of Trials", fill: "yellow"},
+      {size: 10, name: "Approach", fill: "orange"},
+      {size:  5, name: "Midpoint", fill: "red"},
+      {size: 13, name: "Bad Guys Close In", fill: "orange"},
+      {         name: "All Is Lost"},
+      {size:  7, name: "Dark Night of the Soul", fill: "orange"},
+      {size: 5, name: "Rallying", fill: "orchid"},
+      {         name: "Choosing the Battle"},
+      {size: 10, name: "The Battle", fill: "red"},
+      {size: 10, name: "The Duel", fill: "red"},
+      {size: 2.5, name: "Resolution", fill: "orchid"},
+    ]
+  },
+
   heroacts: {
     text: "Three Act",
     data: [
@@ -448,6 +475,29 @@ const tmplButtons = {
       {size: 25, name: "II/A: Descent", fill: "yellow"},
       {size: 25, name: "II/B: Initiation", fill: "orange"},
       {size: 25, name: "III: Return", fill: "red"},
+    ]
+  },
+
+  novellette: {
+    text: <span style={{color: "orchid"}}>Novellette</span>,
+    data: [
+      {size: 30, name: "View Point A", fill: "lightgreen"},
+      {size: 30, name: "View Point B", fill: "yellow"},
+      {size: 20, name: "Synthesis", fill: "orange"},
+      {size: 10, name: "Resolution", fill: "red"},
+    ]
+  },
+
+  threeact: {
+    text: <span style={{color: "orchid"}}>Three Act</span>,
+    data: [
+      {size: 25, name: "I: Call", fill: "lightgreen"},
+      {          name: "Accept the Call"},
+      {size: 25, name: "II/A: Exploration", fill: "yellow"},
+      {          name: "Midpoint"},
+      {size: 25, name: "II/B: Escalation", fill: "orange"},
+      {          name: "Rallying", fill: "orchid"},
+      {size: 25, name: "III: Finale", fill: "red"},
     ]
   },
 
