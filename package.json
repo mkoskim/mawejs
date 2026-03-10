@@ -8,6 +8,10 @@
     "build": "npm run vite-build && electron-builder",
     "vite-build": "electron-vite build",
     "preview": "electron-vite preview",
+    "test": "node test/run.mjs",
+    "test:update": "node test/run.mjs --update",
+    "test:load": "node test/run.mjs test/test_load.js",
+    "test:roundtrip": "node test/run.mjs test/test_roundtrip.js",
     "audit": "npm audit --omit=dev",
     "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
     "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox"

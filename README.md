@@ -1,3 +1,5 @@
+[![CI](https://github.com/mkoskim/mawejs/actions/workflows/ci.yml/badge.svg)](https://github.com/mkoskim/mawejs/actions/workflows/ci.yml)
+
 # MaweJS
 
 Looking for an editor for your story? Notepad, Word and Google Docs are too simple. Scrivener, Manuskript and yWriter are too complex. You like Word-style editors for writing stories, but once the manuscript grows large it becomes difficult to restructure. You may have tried Scrivener-style tools, but dislike how much setup they require before you can even begin writing, and editing scene-by-scene feels restrictive when you just want to add things here and there.
