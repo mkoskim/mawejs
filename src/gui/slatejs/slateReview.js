@@ -28,7 +28,7 @@ export function toggleReview(editor) {
     match: n => !Editor.isEditor(n) && Element.isElement(n),
   })
 
-  console.log("Toggle review", path, node)
+  //console.log("Toggle review", path, node)
   const review = !node.review
   reviewNode(editor, node, path, review)
 }

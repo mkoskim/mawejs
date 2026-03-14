@@ -239,7 +239,7 @@
     /*
     background-color: var(--review-bg);
     */
-    border-left: 2px dotted var(--missing-fg);
+    border-left: 2px solid var(--review-fg);
     padding-left: 6pt;
   }
 
