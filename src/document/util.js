@@ -272,7 +272,8 @@ function wcParagraph(elem) {
     //case "p": return { chars, text: wc, map: words2map(words) }
     case "p":
     case "quote":
-      return { chars, text: wc }
+      if(!elem.review) return { chars, text: wc }
+      // Fall-through
     case "missing": return { missing: wc }
     case "fill": {
       const fill = Math.max(0, parseInt(text))

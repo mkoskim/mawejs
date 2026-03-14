@@ -4,9 +4,6 @@
 //
 //*****************************************************************************/
 
-@import "sheet.colors.css";
-@import "sheet.css";
-
 .Editor .Sheet {
 
   /*-------------------------------------------------------------------------*/
@@ -236,6 +233,14 @@
   .missing {
     color: var(--missing-fg);
     &::before {content: "!! ";}
+  }
+
+  .Review {
+    /*
+    background-color: var(--review-bg);
+    */
+    border-left: 2px dotted var(--missing-fg);
+    padding-left: 6pt;
   }
 
   .tags {

@@ -34,6 +34,7 @@ import {
   Separator,
   DropDown,
 } from '../common/factory';
+import { setReview } from './slateReview';
 
 //*****************************************************************************
 //
@@ -194,5 +195,16 @@ export class FoldButtons extends React.PureComponent {
       <IconButton tooltip="Unfold all (Alt-S)" onClick={onUnfoldAll}><Icon.Style.UnfoldAll/></IconButton>
       </>
     */
+  }
+}
+
+export class ReviewButtons extends React.PureComponent {
+  render() {
+    const {editor} = this.props;
+
+    return <Menu trigger={<Button tooltip="Reviewing">Review <Icon.DropDown/></Button>}>
+      <MenuItem title="Start Review" onClick={e => {setReview(editor, true)}}/>
+      <MenuItem title="Cancel Review" onClick={e => {setReview(editor, false)}}/>
+    </Menu>
   }
 }

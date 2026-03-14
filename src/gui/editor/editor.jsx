@@ -44,6 +44,7 @@ import {
 import {
   StyleButtons,
   FoldButtons,
+  ReviewButtons,
 } from "../slatejs/slateButtons"
 
 import {dndDrop} from "../slatejs/slateDnD"
@@ -66,6 +67,7 @@ import {
 
 import {wcElem, nodeID, IDtoPath, nanoid} from "../../document/util";
 import {elemFind} from "../../document/xmljs/tree";
+import { toggleReview } from "../slatejs/slateReview";
 
 //*****************************************************************************
 //
@@ -240,23 +242,7 @@ export function EditView({doc, updateDoc, editors}) {
   }, [getActiveEdit])
 
   //---------------------------------------------------------------------------
-
-  const settings = {
-    doc,
-    updateDoc,
-    searchBoxRef,
-    searchText,
-    highlightText,
-    setSearchText,
-    setActive,
-    focusTo,
-    setFocusTo,
-    track,
-    editors,
-  }
-
-  //---------------------------------------------------------------------------
-  // Search hotkeys
+  // Hotkeys
   //---------------------------------------------------------------------------
 
   useEffect(() => addHotkeys([
@@ -288,8 +274,26 @@ export function EditView({doc, updateDoc, editors}) {
       }
     }],
     [IsKey.CtrlG,  ev => searchForward(getActiveEdit(), searchText, true)],
-    [IsKey.CtrlShiftG, ev => searchBackward(getActiveEdit(), searchText, true)]
+    [IsKey.CtrlShiftG, ev => searchBackward(getActiveEdit(), searchText, true)],
+
+    [IsKey.AltR, ev => toggleReview(getActiveEdit())]
   ]), [getActiveEdit, searchText]);
+
+  //---------------------------------------------------------------------------
+
+  const settings = {
+    doc,
+    updateDoc,
+    searchBoxRef,
+    searchText,
+    highlightText,
+    setSearchText,
+    setActive,
+    focusTo,
+    setFocusTo,
+    track,
+    editors,
+  }
 
   //---------------------------------------------------------------------------
   // Debug/development view
@@ -696,6 +700,8 @@ function EditorBox({style, settings}) {
       <Searching editor={editor} searchText={searchText} setSearchText={setSearchText} searchBoxRef={searchBoxRef}/>
       <Separator/>
       <Filler />
+      <Separator/>
+      <ReviewButtons editor={editor}/>
     </ToolBox>
 
     {/* Editor board and sheet */}
