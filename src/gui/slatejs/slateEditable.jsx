@@ -135,6 +135,7 @@ function renderElement({element, attributes, children}) {
       return <p className={type} {...attributes}>{children}</p>
 
     case "quote":
+      return <blockquote className={revClass} {...attributes}>{children}</blockquote>
     case "br":
       return <div className={addClass(type, revClass)} {...attributes}>{children}</div>
 

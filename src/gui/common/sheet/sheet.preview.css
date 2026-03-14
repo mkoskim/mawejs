@@ -12,10 +12,11 @@
 
 .Preview .Sheet {
 
-  div, span, p, h1, h2, h3, h4, h5, h6 {
+  div, span, p, blockquote, h1, h2, h3, h4, h5, h6 {
     scroll-margin-top: 2cm;
     scroll-margin-bottom: 2cm;
   }
+
   h1 { /* Title */
     font-size: 17pt;
     font-weight: bold;
@@ -137,7 +138,7 @@
     background: var(--comment-bg);
   }
 
-  div.quote {
+  blockquote {
     margin-left: 2cm;
     margin-right: 2cm;
   }
