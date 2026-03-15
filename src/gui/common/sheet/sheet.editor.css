@@ -237,11 +237,11 @@
 
   .Review {
     /*
-    background-color: var(--review-bg);
     */
-    border-left: 2px solid var(--review-fg);
-    padding-left: 6px;
-    margin-left: -8px;
+    background-color: var(--review-bg);
+    margin-left: -10px;
+    border-left:   2px solid var(--review-fg);
+    padding-left:  8px;
   }
 
   .tags {
