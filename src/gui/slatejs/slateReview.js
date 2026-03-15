@@ -8,11 +8,19 @@
 
 import { Editor, Transforms, Range, Element } from "slate"
 
+//-----------------------------------------------------------------------------
+
 export function reviewNode(editor, node, path, review) {
   //console.log("Review =", review)
   if((node.review ?? false) === (review ?? false)) return;
-  Transforms.setNodes(editor, {review}, {at: path})
+  if(review) {
+    Transforms.setNodes(editor, {review}, {at: path})
+  } else {
+    Transforms.unsetNodes(editor, "review", {at: path})
+  }
 }
+
+//-----------------------------------------------------------------------------
 
 export function toggleReview(editor) {
   const { selection } = editor
@@ -33,8 +41,10 @@ export function toggleReview(editor) {
   reviewNode(editor, node, path, review)
 }
 
-export function setReview(editor, review) {
-  const matches = Editor.nodes(editor, {
+//-----------------------------------------------------------------------------
+
+function reviewableNodes(editor) {
+  return Editor.nodes(editor, {
     at: [],
     match: (n, p) => {
       if(Editor.isEditor(n)) return false;
@@ -48,6 +58,21 @@ export function setReview(editor, review) {
       return false
     }
   })
+}
+
+function nodesWithReview(editor) {
+  return Editor.nodes(editor, {
+    at: [],
+    match: (n, p) => {
+      if(Editor.isEditor(n)) return false;
+      if(!Element.isElement(n)) return false;
+      return n.review
+    }
+  })
+}
+
+export function setReview(editor, review) {
+  const matches = review ? reviewableNodes(editor) : nodesWithReview(editor)
 
   Editor.withoutNormalizing(editor, () => {
     for(const [node, path] of matches) {
