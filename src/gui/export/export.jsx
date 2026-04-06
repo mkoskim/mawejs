@@ -250,7 +250,7 @@ async function exportToFile(formatter, flatted) {
   const basename = await fs.basename(name, suffix);
   const filename = await fs.makepath(dirname, basename + typesuffix + formatter.suffix)
   console.log("Export to:", filename)
-
+  // TODO: open exported file with external application
   fs.write(filename, content)
     .then(file => Inform.success(`Exported: ${file.name}`))
     .catch(err => Inform.error(err))
