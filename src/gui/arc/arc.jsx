@@ -6,9 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import React, {
+import {
   useCallback,
-  useMemo,
 } from "react"
 
 import {
@@ -23,12 +22,10 @@ import {
   Separator, Icon,
 } from "../common/factory"
 
-import {DragDropContext, Droppable, Draggable} from "@hello-pangea/dnd";
+import {DragDropContext} from "@hello-pangea/dnd";
 import {DocIndex} from "../common/docIndex";
-import {elemName, filterCtrlElems, mawe} from "../../document";
-import { IDtoPath, wcElem } from "../../document/util";
-import { getCoreEditor } from "../slatejs/slateEditor";
-import { isAstChange } from "../slatejs/slateHelpers";
+import {elemName, filterCtrlElems} from "../../document";
+import { IDtoPath } from "../../document/util";
 import { dndDrop } from "../slatejs/slateDnD";
 
 //*****************************************************************************
@@ -99,22 +96,21 @@ export function StoryArcView({doc, updateDoc, editors}) {
       choices: ["act", "chapter", "scene"],
       selected: doc.ui.arc.elements,
       setSelected: setElements,
-      exclusive: true,
     },
     template: {
       buttons: tmplButtons,
       //choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts", "fiveact", "7", "11"],
-      choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts"],
+      //choices: ["beatsheet", "plotpoints", "herosjourney", "heroacts", "hybrid"],
+      choices: ["beatsheet", "plotpoints", "herosjourney", "|", "threeact", "hybrid",],
+      //choices: ["beatsheet", "plotpoints", "herosjourney", "|", "threeact", "hybrid", "|", "novellette"],
       selected: doc.ui.arc.template,
       setSelected: setTemplate,
-      exclusive: true,
     },
     mode: {
       buttons: modeButtons,
       choices: ["topCCW", "topCW", "bottomCCW", "bottomCW"],
       selected: doc.ui.arc.mode,
       setSelected: setMode,
-      exclusive: true,
     }
   }
 
@@ -127,7 +123,7 @@ export function StoryArcView({doc, updateDoc, editors}) {
   }
 
   return <DragDropContext onDragEnd={onDragEnd}>
-    <HBox style={{overflow: "auto", height: "100%"}}>
+    <HBox overflow="auto" style={{height: "100%"}}>
       <VBox style={indexStyle}>
         <IndexToolbar settings={settings}/>
         <VBox className="TOC">
@@ -198,7 +194,7 @@ const styles = {
 //-----------------------------------------------------------------------------
 
 function IndexToolbar({settings}) {
-  return <ToolBox style={styles.toolbar}>
+  return <ToolBox side="top" style={styles.toolbar}>
     <MakeToggleGroup {...settings.elements}/>
     <Separator />
   </ToolBox>
@@ -241,7 +237,7 @@ function ChartView({settings, doc, updateDoc}) {
   // Chart
   //---------------------------------------------------------------------------
 
-  return <VFiller style={{overflow: "auto"}}>
+  return <VFiller>
     <ChartToolbar settings={settings} />
     <StoryChart
       startAngle={selectStart + selectRotate * 1}
@@ -258,7 +254,7 @@ function ChartView({settings, doc, updateDoc}) {
 //-----------------------------------------------------------------------------
 
 function ChartToolbar({settings}) {
-  return <ToolBox style={styles.toolbar}>
+  return <ToolBox side="top" style={styles.toolbar}>
     {/*
     <HFiller/>
     <Separator/>
@@ -280,9 +276,9 @@ function ChartToolbar({settings}) {
 //-----------------------------------------------------------------------------
 
 const elemButtons = {
-  act: {icon: "Acts"},
-  chapter: {icon: "Chapters"},
-  scene: {icon: "Scenes"},
+  act: {text: "Acts"},
+  chapter: {text: "Chapters"},
+  scene: {text: "Scenes"},
 }
 
 //-----------------------------------------------------------------------------
@@ -391,7 +387,7 @@ function elemData(elem) {
 const tmplButtons = {
   plotpoints: {
     tooltip: "K.M. Weiland's Plot Points",
-    icon: "Plot Points",
+    text: "Plot Points",
     data: [
       {size: 12.5, fill: "lightgreen", name: "Hook"}, {name: "Inciting Event"},
       {size: 12.5, fill: "lightgreen", name: null}, {name: "1st Plot Point"},
@@ -407,7 +403,7 @@ const tmplButtons = {
 
   beatsheet: {
     tooltip: "Snyder's Beatsheet",
-    icon: "Beat Sheet",
+    text: "Beat Sheet",
     data: [
       {size: 1, name: null, fill: "lightgreen"}, // Opening Image
       {size: 10, name: "Set-up", fill: "lightgreen"},
@@ -428,7 +424,7 @@ const tmplButtons = {
 
   herosjourney: {
     //tooltip: "Hero's Journey",
-    icon: "Hero's Journey",
+    text: "Hero's Journey",
     data: [
       {size: 20, name: "Ordinary World", fill: "lightgreen"},
       {size: 10, name: "Call to Adventure", fill: "lightyellow"},
@@ -447,8 +443,33 @@ const tmplButtons = {
     ]
   },
 
+  hybrid: {
+    text: <span style={{color: "orchid"}}>Hybrid</span>,
+    tooltip: "Hybrid",
+    data: [
+      {size:  2.5, name: null, fill: "lightgreen"},
+      {size:  9, name: "Setup", fill: "lightgreen"},
+      {size:  2, name: "Call to Adventure", fill: "yellow"},
+      {         name: "Reject the Call"},
+      {size:  9, name: "Stakes Revealed", fill: "lightgreen"},
+      {         name: "Accept the Call"},
+      {size:  5, name: "Crossing the Threshold", fill: "lightyellow"},
+      {size: 10, name: "Road of Trials", fill: "yellow"},
+      {size: 10, name: "Approach", fill: "orange"},
+      {size:  5, name: "Midpoint", fill: "red"},
+      {size: 13, name: "Bad Guys Close In", fill: "orange"},
+      {         name: "All Is Lost"},
+      {size:  7, name: "Dark Night of the Soul", fill: "orange"},
+      {size: 5, name: "Rallying", fill: "orchid"},
+      {         name: "Choosing the Battle"},
+      {size: 10, name: "The Battle", fill: "red"},
+      {size: 10, name: "The Duel", fill: "red"},
+      {size: 2.5, name: "Resolution", fill: "orchid"},
+    ]
+  },
+
   heroacts: {
-    icon: "Three Act",
+    text: "Three Act",
     data: [
       {size: 25, name: "I: Separation", fill: "lightgreen"},
       {size: 25, name: "II/A: Descent", fill: "yellow"},
@@ -457,8 +478,31 @@ const tmplButtons = {
     ]
   },
 
+  novellette: {
+    text: <span style={{color: "orchid"}}>Novellette</span>,
+    data: [
+      {size: 30, name: "View Point A", fill: "lightgreen"},
+      {size: 30, name: "View Point B", fill: "yellow"},
+      {size: 20, name: "Synthesis", fill: "orange"},
+      {size: 10, name: "Resolution", fill: "red"},
+    ]
+  },
+
+  threeact: {
+    text: <span style={{color: "orchid"}}>Three Act</span>,
+    data: [
+      {size: 25, name: "I: Call", fill: "lightgreen"},
+      {          name: "Accept the Call"},
+      {size: 25, name: "II/A: Exploration", fill: "yellow"},
+      {          name: "Midpoint"},
+      {size: 25, name: "II/B: Escalation", fill: "orange"},
+      {          name: "Rallying", fill: "orchid"},
+      {size: 25, name: "III: Finale", fill: "red"},
+    ]
+  },
+
   fiveact: {
-    icon: <span style={{color: "orchid"}}>Five Act</span>,
+    text: <span style={{color: "orchid"}}>Five Act</span>,
     tooltip: "Experimental",
     data: [
       {size: 20, name: "Exposition", fill: "lightgreen"},
@@ -470,7 +514,7 @@ const tmplButtons = {
   },
 
   "7": {
-    icon: <span style={{color: "orchid"}}>7</span>,
+    text: <span style={{color: "orchid"}}>7</span>,
     tooltip: "Experimental",
     data: [
       {size: 2,  name: null, fill: "lightgreen"},
@@ -486,7 +530,7 @@ const tmplButtons = {
   },
 
   "11": {
-    icon: <span style={{color: "orchid"}}>11</span>,
+    text: <span style={{color: "orchid"}}>11</span>,
     tooltip: "Experimental",
     data: [
       {size: 2,  name: null, fill: "lightgreen"},
@@ -509,7 +553,7 @@ const tmplButtons = {
 
   /*
   vogler: {
-    icon: "Vogler",
+    text: "Vogler",
     data: [
       {name: "Prologi"},
       {size: 3.1, name: "Normaalitila", fill: "lightgreen"},
@@ -681,29 +725,31 @@ function StoryChart({startAngle, endAngle, innerData, outerData, outerLabels}) {
   //---------------------------------------------------------------------------
 
   //*
-  return <ResponsiveContainer aspect={1.6}>
-    <PieChart>
-      <Pie
-        data={innerData}
-        dataKey="size"
-        {...innerRing}
-        isAnimationActive={false}
-      />
-      <Pie
-        data={outerData}
-        dataKey="size"
-        {...outerRing}
-        isAnimationActive={false}
-      />
-      <Pie
-        data={outerLabels}
-        dataKey="size"
-        {...outerRing}
-        fill="none"
-        stroke="grey"
-        isAnimationActive={false}
-      />
-    </PieChart>
-  </ResponsiveContainer>
+  return <VFiller overflow="auto">
+    <ResponsiveContainer aspect={1.6}>
+      <PieChart>
+        <Pie
+          data={innerData}
+          dataKey="size"
+          {...innerRing}
+          isAnimationActive={false}
+        />
+        <Pie
+          data={outerData}
+          dataKey="size"
+          {...outerRing}
+          isAnimationActive={false}
+        />
+        <Pie
+          data={outerLabels}
+          dataKey="size"
+          {...outerRing}
+          fill="none"
+          stroke="grey"
+          isAnimationActive={false}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  </VFiller>
   /**/
 }

@@ -116,7 +116,9 @@ function enableExtensions() {
 //-----------------------------------------------------------------------------
 
 app.whenReady().then(async () => {
-  await enableExtensions();
+  if(is.dev) {
+    await enableExtensions();
+  }
   initIpcDispatch();
   createWindow();
 });

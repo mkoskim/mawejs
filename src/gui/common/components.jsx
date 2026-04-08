@@ -11,21 +11,15 @@ import React, {
 
 import {
   VBox,
-  Button, Icon, IconButton,
-  MakeToggleGroup,
-  Menu, MenuItem,
-  ListItemIcon, ListItemText, Typography,
-  TextField,
-  Label,
-  Accordion, AccordionSummary, AccordionDetails,
+  Button, Input,
+  Icon, IconButton,
+  MakeToggleGroup, DropDown,
+  Popup,
   Separator,
 } from "./factory";
 
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
-
 import { mawe } from "../../document"
 import {reqOpenFolder} from '../app/context';
-import {Popover} from '@mui/material';
 import {getHeader} from '../../document/head';
 import { numfmt } from '../../util';
 
@@ -44,44 +38,27 @@ export class EditHead extends React.PureComponent {
     const {head, updateDoc, expanded} = this.props
     const info = mawe.info(head)
 
-    return <>
-      <Accordion disableGutters defaultExpanded={expanded}>
-      <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Title: {info.title}</AccordionSummary>
-      <AccordionDetails><VBox>
-      <TextField label="Name" value={head.name ?? ""} onChange={e => updateDocName(updateDoc, e.target.value)}/>
-      <TextField label="Title" value={head.title ?? ""} onChange={e => updateDocTitle(updateDoc, e.target.value)}/>
-      <TextField label="Subtitle" value={head.subtitle ?? ""} onChange={e => updateDocSubtitle(updateDoc, e.target.value)}/>
-      </VBox></AccordionDetails>
-      </Accordion>
+    return <VBox className="Panel">
+      Title: {info.title}
+      <Input variant="outlined" label="Name" value={head.name ?? ""} onChange={e => updateDocName(updateDoc, e.target.value)}/>
+      <Input variant="outlined" label="Title" value={head.title ?? ""} onChange={e => updateDocTitle(updateDoc, e.target.value)}/>
+      <Input variant="outlined" label="Subtitle" value={head.subtitle ?? ""} onChange={e => updateDocSubtitle(updateDoc, e.target.value)}/>
 
-      <Accordion disableGutters defaultExpanded={expanded}>
-      <AccordionSummary expandIcon={<Icon.ExpandMore/>}>Author: {info.author}</AccordionSummary>
-      <AccordionDetails><VBox>
-      <TextField label="Author" value={head.author ?? ""} onChange={e => updateDocAuthor(updateDoc, e.target.value)}/>
-      <TextField label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => updateDocPseudonym(updateDoc, e.target.value)}/>
-      </VBox></AccordionDetails>
-      </Accordion>
-    </>
+      <Separator/>
+      Author: {info.author}
+      <Input variant="outlined" label="Author" value={head.author ?? ""} onChange={e => updateDocAuthor(updateDoc, e.target.value)}/>
+      <Input variant="outlined" label="Pseudonym" value={head.pseudonym ?? ""} onChange={e => updateDocPseudonym(updateDoc, e.target.value)}/>
+    </VBox>
   }
 }
 
 export class EditHeadButton extends React.PureComponent {
   render() {
     const {text, head, updateDoc, expanded} = this.props
-    return <PopupState variant="popover" popupId="head-edit">
-    {(popupState) => <React.Fragment>
-      <Button {...bindTrigger(popupState)} endIcon={<Icon.Arrow.DropDown/>} tooltip="Edit story info">{text}</Button>
-      <Popover {...bindMenu(popupState)}
-        //transitionDuration={0}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-      >
-        <EditHead head={head} updateDoc={updateDoc} expanded={expanded}/>
-      </Popover>
-    </React.Fragment>
-    }</PopupState>
+
+    return <Popup trigger={<Button tooltip="Edit story info">{text}<Icon.Arrow.Head.Down/></Button>}>
+      <EditHead head={head} updateDoc={updateDoc} expanded={expanded}/>
+    </Popup>
   }
 }
 
@@ -108,27 +85,27 @@ export class ChooseVisibleElements extends React.PureComponent {
   static buttons = {
     "scene": {
       tooltip: "Show scenes",
-      icon: <Icon.BlockType.Scene/>
+      icon: <Icon.Paragraph.Scene/>
     },
     "bookmark": {
       tooltip: "Show bookmarks",
-      icon: <Icon.BlockType.Bookmark />
+      icon: <Icon.Paragraph.Bookmark />
     },
     "missing": {
       tooltip: "Show missing",
-      icon: <Icon.BlockType.Missing />
+      icon: <Icon.Paragraph.Missing />
     },
     "fill": {
       tooltip: "Show fillers",
-      icon: <Icon.BlockType.Filler />
+      icon: <Icon.Paragraph.Filler />
     },
     "comment": {
       tooltip: "Show comments",
-      icon: <Icon.BlockType.Comment />
+      icon: <Icon.Paragraph.Comment />
     },
     "tags": {
       tooltip: "Show tags",
-      icon: <Icon.BlockType.Tags />
+      icon: <Icon.Paragraph.Tags />
     },
   }
 
@@ -139,6 +116,7 @@ export class ChooseVisibleElements extends React.PureComponent {
       choices={choices}
       selected={selected}
       setSelected={setSelected}
+      multiple={true}
     />
   }
 }
@@ -180,7 +158,6 @@ export class ChooseWordFormat extends React.PureComponent {
       choices={choices}
       selected={selected}
       setSelected={setSelected}
-      exclusive={true}
     />
   }
 }
@@ -191,69 +168,45 @@ export class ChooseWordFormat extends React.PureComponent {
     "off": {
       name: "Off",
       tooltip: "Don't show words",
-      icon: <Icon.StatType.Off />
+      //icon: <Icon.StatType.Off />
     },
     "numbers": {
       name: "Numbers",
       tooltip: "Words as numbers",
-      icon: <Icon.StatType.Words />,
+      //icon: <Icon.StatType.Words />,
     },
     "compact": {
       name: "Compact",
       tooltip: "Compact word count",
-      icon: <Icon.StatType.Compact style={{transform: "rotate(90deg)"}}/>
+      //icon: <Icon.StatType.Compact style={{transform: "rotate(90deg)"}}/>
     },
     "cumulative": {
       name: "Cumulative",
       tooltip: "Words as cumulative",
-      icon: <Icon.StatType.Cumulative />
+      //icon: <Icon.StatType.Cumulative />
     },
     "percent": {
       name: "Percent",
       tooltip: "Words as cumulative percent",
-      icon: <Icon.StatType.Percent />
+      //icon: <Icon.StatType.Percent />
     },
-  }
-
-  menuItem(popupState, index, type, setSelected) {
-    if(type === "|") return <Separator key={index}/>
-    if(type in this.constructor.selections) {
-      const style = this.constructor.selections[type]
-      return <MenuItem
-        title={style.name}
-        key={type}
-        onClick={e => {setSelected(type); popupState.close(e);}}
-      />
-    }
-    return null;
   }
 
   render() {
     const {choices, selected, setSelected} = this.props
-    const {name} = this.constructor.selections[selected]
 
     //const type = node?.type ?? undefined
-
     //console.log("Block type:", type)
 
-    return <PopupState variant="popover" popupId="file-menu">
-      {(popupState) => <React.Fragment>
-        <Button
-          tooltip="Word count format"
-          endIcon={<Icon.Arrow.DropDown/>}
-          {...bindTrigger(popupState)}
-        >
-          {name}
-        </Button>
-        <Menu {...bindMenu(popupState)}>
-          {choices.map((type, index) => this.menuItem(popupState, index, type, setSelected))}
-        </Menu>
-      </React.Fragment>
-      }
-    </PopupState>
+    return <DropDown
+      label="Word count format"
+      choices={choices}
+      selected={selected}
+      setSelected={setSelected}
+      selections={this.constructor.selections}
+    />
   }
 }
-/**/
 
 //-----------------------------------------------------------------------------
 // Word formatter
@@ -302,7 +255,7 @@ export class FormatWords extends React.PureComponent {
     return <>
       {missing
         ? <><span style={style}>-{missing}</span>&nbsp;/&nbsp;</>
-        : <Icon.Starred sx={{...style, color: "#59F", marginRight: "4pt", fontSize: 14}}/>
+        : <Icon.Starred style={{...style, color: "#59F", marginRight: "4pt"}}/>
       }
       <span style={totstyle}>{target}</span>
       {/*<span style={{...style, display: "inline-block", width: "1cm"}}>{Number(100.0 * text / target).toFixed(0)}%</span>*/}

@@ -1,24 +1,47 @@
+[![CI](https://github.com/mkoskim/mawejs/actions/workflows/ci.yml/badge.svg)](https://github.com/mkoskim/mawejs/actions/workflows/ci.yml)
+
 # MaweJS
 
-Looking for an editor for your story? Notepad, Word and Googledocs are too little, and Scrivener, Manuskript and yWriter are too much? You like Word-style text editors to write stories, but with larger stories it becomes difficult to restructure it. You have tried Scrivener-style editors, but you hate how you need to set up so many things before starting to write, and you feel uncomfortable editing your story scene-by-scene, you'd like to add things here and there.
+Looking for an editor for your story? Notepad, Word and Google Docs are too simple. Scrivener, Manuskript and yWriter are too complex. You like Word-style editors for writing stories, but once the manuscript grows large it becomes difficult to restructure. You may have tried Scrivener-style tools, but dislike how much setup they require before you can even begin writing, and editing scene-by-scene feels restrictive when you just want to add things here and there.
 
 How about trying MaweJS?
 
 ## MaweJS, Story Editor for Plantsers
 
-Writers can be coarsely divided to two types: pantsers and planners. **Pantsers** start writing the story and let the flow take them anywhere it goes. **Planners** (or sometimes called plotters) first make plans and outlines before writing the story.
+Writers can roughly be divided into two types: pantsers and planners. Pantsers start writing the story and let the flow take them wherever it goes. Planners (sometimes called plotters) first make plans and outlines before they start writing.
 
-Pantsers are fine with Notepad or Word. Planners are catered with dedicated tools like Scrivener and its alikes like Manuskript and yWriter.
+Pantsers are usually fine with tools like Notepad or Word. Planners are catered to by dedicated writing tools such as Scrivener and its counterparts like Manuskript and yWriter.
 
-But there is third category: **plantsers**. These writers are something between pantsers and planners, and I happen to be one. I just start writing the story like a pantser, but at some point I start making plans and restructuring the story like a planner.
+But there is a third category: **plantsers**. These writers fall somewhere between pantsers and planners, and I happen to be one of them. I start writing like a pantser, but at some point I begin to plan, reorganize, and restructure the story like a planner.
 
-Sadly, neither Notepad nor Scrivener fully support plantsers. That's why I needed a tool for myself, that's why I wrote Mawe with Python/GTK, and now with ElectronJS, Javascript and React.
+Sadly, neither Notepad nor Scrivener supports plantsers particularly well. That is why I needed a tool for myself, and why I wrote Mawe. **MaweJS is a story editor for plantsers: writers who start writing first and structure their story later**.
+
+MaweJS follows a simple principle: **write first, structure later**. It focuses on structuring existing text rather than planning it beforehand. It is the kind of tool you reach for when you already have a large manuscript — perhaps 100,000 words — and you are no longer sure how to shape it into a finished novel. Instead of imposing a predefined outline, MaweJS helps writers analyze, reorganize, and understand the structure of the text they have already written.
+
+At the same time, it remains a true *just start writing* tool: you can begin with nothing but text, and only use the structural tools if and when you need them. If you do not need them, you can simply keep writing.
+
+MaweJS is not meant to replace planning tools like Scrivener. **MaweJS is what you use when Word stops working**. When your manuscript grows too large to manage with copy-paste and scrolling, you can simply move your text from Word into MaweJS and continue working on it there.
+
+## Used in real writing
+
+MaweJS is actively used for writing fiction and has already been used to write hundreds of stories in various lenghts. MaweJS is the latest editor in a series of writing tools developed and used for real fiction writing since the mid-2000s.
+
+Examples of stories written with MaweJS:
+
+- My Archive of Our Own account: https://archiveofourown.org/users/MaKo71/works
+- A collection of other works written with MaweJS: https://github.com/mkoskim/mawejs/discussions/236
 
 ## Interested?
 
 Want to give a try? If so, read my Wiki page about the subject:
 
 https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F
+
+## News
+
+**Major change:** Material UI as an UI library was replaced by Base-UI. See the discussion about the change:
+
+https://github.com/mkoskim/mawejs/discussions/440
 
 ## Known Issues
 
@@ -30,11 +53,11 @@ https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F
 
 ## What MaweJS is?
 
-In short, MaweJS is externally unstructured editor (like Notepad, Word or Googledocs), and internally structured editor (like yWriter, Scrivener and Manuscript). MaweJS is a story editor that feels like Word, but works like Scrivener underneath.
+In short, MaweJS is an externally unstructured editor (like Notepad, Word or Googledocs), and internally a structured editor (like yWriter, Scrivener and Manuscript). MaweJS is a story editor that feels like Word, but works like Scrivener underneath.
 
 ## Just start writing
 
-When you create a new file, you can just start writing your story, just like opening Notepad or Word. There is absolutely no any kind of setups to do, just start writing.
+When you create a new file, you can just start writing your story, just like opening Notepad or Word. There is absolutely no setup required — just start writing.
 
 ![image](https://github.com/user-attachments/assets/c52dea46-c157-498d-9d0c-1b5ef8c88201)
 
@@ -44,7 +67,7 @@ When you create a new file, you can just start writing your story, just like ope
 
 ![image](https://github.com/user-attachments/assets/3cb93599-c2bf-44b4-8d1d-b8da2eea5173)
 
-**Moving stuff around:** Splitting your text to scenes allows you to move them around with drag-and-drop. Putting them in the same group allows you to move bunch of related scenes at once. There are two "sections": your draft and notes. I am pretty sure that if you don't want to use anything else, you will love drag'n'droppable story index! It can really make your life much easier.
+**Moving stuff around:** Splitting your text to scenes allows you to move them around with drag-and-drop. Putting them in the same group allows you to move a bunch of related scenes at once. There are two "sections": your draft and notes. I am pretty sure that if you don't want to use anything else, you will love drag'n'droppable story index! It can really make your life much easier.
 
 **Folding:** Furthermore, a very powerful tool for writing is **folding**, you can hide parts of your text when working with other parts:
 
@@ -56,7 +79,7 @@ Folding makes the editor to resemble a bit more conventional structured editor, 
 
 **Missing text, fillers & target counts:** You can write descriptions of story pieces still missing. So, you don't have to complete a scene at once, but you can leave there a mark, and come back to those issues later. You can also give scenes, chapters and acts target word counts, and see how much you are still missing.
 
-**Story structure:** You can view your a pie diagram of the story, and compare it to selected template:
+**Story structure:** You can view a pie diagram of your story, and compare it to selected template:
 
 ![image](https://user-images.githubusercontent.com/10298548/224184109-1d1e4dc6-afb7-462f-9798-cff04fa2eade.png)
 

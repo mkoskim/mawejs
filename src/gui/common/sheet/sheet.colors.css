@@ -6,6 +6,8 @@
 */
 
 :root {
+  /* Colors for canvas */
+
   --synopsis-fg: rgb(0, 0, 0);
   --synopsis-bg: rgb(255, 255, 245);
   --synopsis-border: 1pt solid lightgray;

@@ -16,6 +16,8 @@ import { EditView } from "../editor/editor";
 import { StoryArcView } from "../arc/arc"
 import { StatsView } from "../stats/stats"
 import { ExportView } from "../export/export"
+import { UITestView } from "../test/uitest";
+
 import { bindEditors } from "../slatejs/slateDocument";
 
 //*****************************************************************************
@@ -27,6 +29,7 @@ import { bindEditors } from "../slatejs/slateDocument";
 export function loadViewSettings(settings) {
   return {
     selected: "editor",
+    //selected: "uitest",
     ...(settings?.attributes ?? {})
   }
 }
@@ -55,7 +58,6 @@ export class ViewSelectButtons extends React.PureComponent {
     const {choices, viewbuttons} = this.constructor
 
     return <MakeToggleGroup
-      exclusive={true}
       choices={choices}
       selected={selected}
       setSelected={setSelected}
@@ -64,6 +66,7 @@ export class ViewSelectButtons extends React.PureComponent {
   }
 
   static choices = ["editor", "arc", "stats", "export"]
+  //static choices = ["editor", "arc", "stats", "export", "|", "uitest"]
 
   static viewbuttons = {
     "editor": { tooltip: "Editor", icon: <Icon.View.Edit /> },
@@ -71,6 +74,7 @@ export class ViewSelectButtons extends React.PureComponent {
     "arc": { tooltip: "Story Arc", icon: <Icon.View.Arc /> },
     "stats": { tooltip: "Statistics", icon: <Icon.View.Stats /> },
     "export": { tooltip: "Export", icon: <Icon.View.Export /> },
+    "uitest": { tooltip: "UI Test", icon: <Icon.Debug style={{color: "#C6C"}}/>}
   }
 }
 
@@ -88,6 +92,7 @@ export function ViewSwitch({doc, updateDoc}) {
     case "stats": return <StatsView {...props} />
     case "arc": return <StoryArcView {...props} />
     case "export": return <ExportView {...props} />
+    case "uitest": return <UITestView {...props} />
     default: break;
   }
   return null;
