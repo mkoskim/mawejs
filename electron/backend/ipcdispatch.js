@@ -12,13 +12,11 @@ import dialog from "./hostdialog.js";
 
 export async function ipcDispatch(browserWindow, channel, cmd, ...args) {
   try {
+
     return {result: await dispatch(browserWindow, channel, cmd, ...args)}
   } catch(e) {
-    return {error: {
-      name: e.name,
-      message: e.message,
-      extra: {...e}
-    }}
+    const {name, message, ...extra} = e
+    return {error: { name, message, extra }}
   }
 }
 
