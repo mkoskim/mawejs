@@ -4,7 +4,6 @@ import path from "node:path";
 import { installFakeIpc } from "./support/fakeIpc.js";
 import { canonicalDocumentText } from "./support/canonicalDocument.js";
 import { mawe } from "../src/document/index.js";
-import fs from "../src/system/localfs"
 
 installFakeIpc();
 
@@ -69,15 +68,8 @@ async function updateReferenceFiles() {
 //-----------------------------------------------------------------------------
 
 async function loadFixture(relativePath) {
-  const file = await fs.fstat(relativePath);
-  const content = await fs.read(file.id);
-
-  assert.equal(typeof content, "string", `${relativePath}: expected fs.read() to return text`);
-  assert.ok(content.length > 0, `${relativePath}: expected fs.read() to return content`);
-
-  return mawe.load(file);
+  return mawe.load(relativePath);
 }
-
 
 function expectedFilename(sourceFile) {
   const flattened = sourceFile
