@@ -9,10 +9,10 @@
 //-----------------------------------------------------------------------------
 
 import {is} from '@electron-toolkit/utils'
-import fs from "fs-extra";
+import { constants } from "node:fs";
+import { access, lstat, readFile, readdir, realpath, rename, stat, writeFile } from "node:fs/promises";
 import path from "path";
 import { app, shell } from "electron";
-import os from "os";
 
 export default {
   fsGetFileEntry, fsGetParentDir,
@@ -42,7 +42,7 @@ async function fsGetFileEntry(fileid)
 
   async function resolvetype(fileid)
   {
-    const dirent = await fs.promises.lstat(fileid);
+    const dirent = await lstat(fileid);
 
     if(!dirent.isSymbolicLink()) {
       return {
@@ -51,11 +51,11 @@ async function fsGetFileEntry(fileid)
         ...getfields(dirent),
       }
     } else try {
-      const realid = await fs.promises.realpath(fileid);
+      const realid = await realpath(fileid);
       return {
         symlink: true,
         access: await hasaccess(realid),
-        ...getfields(await fs.promises.stat(realid)),
+        ...getfields(await stat(realid)),
       }
     } catch(error) {
       // Broken link
@@ -82,7 +82,7 @@ async function fsGetFileEntry(fileid)
   }
 
   function hasaccess(fileid) {
-    return fs.promises.access(fileid, fs.constants.R_OK)
+    return access(fileid, constants.R_OK)
       .then(r => true)
       .catch(e => false)
     ;
@@ -121,19 +121,19 @@ function fsGetLocation(name)
 
 async function fsRead(fileid, encoding) {
   console.log("fsRead:", fileid)
-  return fs.promises.readFile(fileid, {encoding: encoding});
+  return readFile(fileid, {encoding: encoding});
 }
 
 async function fsWrite(fileid, content, encoding) {
   console.log("fsWrite:", fileid)
-  await fs.promises.writeFile(fileid, content, {encoding: encoding});
+  await writeFile(fileid, content, {encoding: encoding});
   return fsGetFileEntry(fileid);
 }
 
 async function fsReadDir(dirid)
 {
   return Promise.all(
-    (await fs.promises.readdir(dirid))
+    (await readdir(dirid))
     .map(file => path.resolve(dirid, file))
     .map(file => fsGetFileEntry(file))
   )
@@ -156,11 +156,11 @@ async function fsSettingsWrite(fileid, content, encoding) {
 async function fsRename(fileid, name) {
   console.log("Rename:", fileid, "=>", name)
 
-  if(await fs.pathExists(name)) {
+  if(await pathExists(name)) {
     throw new Error(`Rename failed: ${name} already exists.`)
   }
 
-  await fs.promises.rename(fileid, name)
+  await rename(fileid, name)
   return fsGetFileEntry(name);
 }
 
@@ -195,4 +195,8 @@ function fsExtname(filename) {
 
 function fsMakepath(...parts) {
   return path.join(...parts)
+}
+
+function pathExists(fileid) {
+  return access(fileid).then(() => true).catch(() => false);
 }

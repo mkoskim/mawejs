@@ -1,29 +1,13 @@
-export function installFakeIpc(hostfs) {
+import { ipcDispatch } from "../../electron/backend/ipcdispatch.js";
+
+export function installFakeIpc() {
   globalThis.window = {
     navigator: {
       platform: "Linux x86_64",
     },
     ipc: {
       invoke: async (channel, cmd, ...args) => {
-        try {
-          if (channel !== "hostfs") {
-            throw new Error(`Unsupported IPC channel: ${channel}`);
-          }
-
-          if (typeof hostfs[cmd] !== "function") {
-            throw new Error(`Unsupported hostfs command: ${cmd}`);
-          }
-
-          return { result: await hostfs[cmd](...args) };
-        } catch (error) {
-          return {
-            error: {
-              name: error.name,
-              message: error.message,
-              extra: { ...error },
-            },
-          };
-        }
+        return ipcDispatch(createFakeBrowserWindow(), channel, cmd, ...args);
       },
     },
   };
@@ -34,6 +18,21 @@ export function installFakeIpc(hostfs) {
     removeEventListener() {},
     getElementById() {
       return null;
+    },
+  };
+}
+
+function createFakeBrowserWindow() {
+  let zoomFactor = 1;
+
+  return {
+    webContents: {
+      getZoomFactor() {
+        return zoomFactor;
+      },
+      setZoomFactor(value) {
+        zoomFactor = value;
+      },
     },
   };
 }

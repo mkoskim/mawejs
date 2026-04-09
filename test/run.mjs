@@ -30,6 +30,7 @@ const stubMap = new Map([
   [path.resolve(workdir, "src/gui/common/hotkeys.js"), path.resolve(workdir, "test/support/stubs.js")],
   [path.resolve(workdir, "src/gui/common/hotkeys"), path.resolve(workdir, "test/support/stubs.js")],
 ]);
+const fakeElectronModule = path.resolve(workdir, "test/support/fakeElectron.js");
 
 //-----------------------------------------------------------------------------
 
@@ -67,6 +68,10 @@ async function runTest(testFile, args) {
         {
           name: "mawe-test-stubs",
           setup(build) {
+            build.onResolve({ filter: /^electron$/ }, () => {
+              return { path: fakeElectronModule };
+            });
+
             build.onResolve({ filter: /.*/ }, args => {
               const resolved = path.resolve(args.resolveDir, args.path);
               const replacement = stubMap.get(resolved);

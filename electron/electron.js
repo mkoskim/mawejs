@@ -11,7 +11,7 @@ import {is} from '@electron-toolkit/utils'
 import path from "path"
 import os from "os"
 import windowStateKeeper from "electron-window-state"
-import {initIpcDispatch} from "./backend/ipcdispatch.js";
+import {initIpcDispatch} from "./backend/ipcmain.js";
 import localShortcut from "electron-localshortcut";
 import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import hostfs from "./backend/hostfs.js";

@@ -6,21 +6,12 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import { ipcMain, BrowserWindow } from "electron";
-
 import hostapp from "./hostapp.js";
 import hostfs from "./hostfs.js";
 import dialog from "./hostdialog.js";
 
-export function initIpcDispatch() {
-  ipcMain.handle("app", async (event, cmd, ...args) => { return await ipcDispatch(event.sender, "app", cmd, ...args) })
-  ipcMain.handle("hostfs", async (event, cmd, ...args) => { return await ipcDispatch(event.sender, "hostfs", cmd, ...args) })
-  ipcMain.handle("dialog", async (event, cmd, ...args) => { return await ipcDispatch(event.sender, "dialog", cmd, ...args) })
-}
-
-async function ipcDispatch(sender, channel, cmd, ...args) {
+export async function ipcDispatch(browserWindow, channel, cmd, ...args) {
   try {
-    const browserWindow = BrowserWindow.fromWebContents(sender);
     return {result: await dispatch(browserWindow, channel, cmd, ...args)}
   } catch(e) {
     return {error: {

@@ -2,12 +2,11 @@ import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { installFakeIpc } from "./support/fakeIpc.js";
-import { createFakeHostfs } from "./support/fakeHostfs.js";
 import { canonicalDocumentText } from "./support/canonicalDocument.js";
+import { mawe } from "../src/document/index.js";
+import fs from "../src/system/localfs"
 
-installFakeIpc(createFakeHostfs());
-
-const { mawe } = await import("../src/document/index.js");
+installFakeIpc();
 
 const migrationExamples = [
   "examples/migration/Story.v1.mawe",
@@ -70,7 +69,13 @@ async function updateReferenceFiles() {
 //-----------------------------------------------------------------------------
 
 async function loadFixture(relativePath) {
-  return mawe.load(relativePath);
+  const file = await fs.fstat(relativePath);
+  const content = await fs.read(file.id);
+
+  assert.equal(typeof content, "string", `${relativePath}: expected fs.read() to return text`);
+  assert.ok(content.length > 0, `${relativePath}: expected fs.read() to return content`);
+
+  return mawe.load(file);
 }
 
 
