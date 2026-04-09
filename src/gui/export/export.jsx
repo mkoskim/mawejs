@@ -23,6 +23,8 @@ import { exportAs, flattedFormat, flattedToText, storyToFlatted } from "../../do
 import { numfmt } from "../../util";
 import fs from "../../system/localfs"
 
+import { useState } from "react";
+
 //*****************************************************************************
 //
 // Choices
@@ -214,6 +216,7 @@ function ExportInfo({flatted}) {
 //-----------------------------------------------------------------------------
 
 function ExportSettings({ style, flatted, exports, updateDoc}) {
+  const [exportedFile, setExportedFile] = useState(null);
 
   const {format} = exports
   const {formatter} = formatters[format]
@@ -232,7 +235,8 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
       setSelected={value => updateDocFormat(updateDoc, value)}
     />
 
-    <Button variant="filled" color="success" onClick={e => exportToFile(formatter, flatted)}>Export</Button>
+    <Button variant="filled" color="success" onClick={e => exportToFile(formatter, flatted, setExportedFile)}>Export</Button>
+    {exportedFile && (<Button variant="outlined" onClick={() => fs.openexternal(exportedFile)}>Open exported file</Button>)}
 
     <Separator/>
     <DropDown
@@ -290,7 +294,7 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
 // Export to file
 //-----------------------------------------------------------------------------
 
-async function exportToFile(formatter, flatted) {
+async function exportToFile(formatter, flatted, setExportedFile) {
 
   const {options, file} = flatted
 
@@ -304,9 +308,11 @@ async function exportToFile(formatter, flatted) {
   const basename = await fs.basename(name, suffix);
   const filename = await fs.makepath(dirname, basename + typesuffix + formatter.suffix)
   console.log("Export to:", filename)
-
   fs.write(filename, content)
-    .then(file => Inform.success(`Exported: ${file.name}`))
+    .then(file => {
+      setExportedFile(filename);
+      Inform.success(`Exported: ${file.name}`);
+    })
     .catch(err => Inform.error(err))
 }
 

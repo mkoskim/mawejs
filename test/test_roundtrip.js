@@ -1,9 +1,8 @@
 import assert from "node:assert/strict";
 import { installFakeIpc } from "./support/fakeIpc.js";
-import { createFakeHostfs } from "./support/fakeHostfs.js";
 import { canonicalDocumentText } from "./support/canonicalDocument.js";
 
-installFakeIpc(createFakeHostfs());
+installFakeIpc();
 
 const { mawe } = await import("../src/document/index.js");
 
