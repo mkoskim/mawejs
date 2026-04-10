@@ -6,10 +6,6 @@
 
 import {
   Editor,
-  Node, Text,
-  Transforms,
-  Range, Point, Path,
-  Element,
 } from 'slate'
 
 export function isMarkActive(editor, format) {

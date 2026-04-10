@@ -99,8 +99,9 @@ function renderContainer(type, content, folded, attributes, children) {
 
 function renderElement({element, attributes, children}) {
 
-  const {type, folded, numbered, content} = element
+  const {type, folded, numbered, content, review} = element
   const numClass = numbered ? "Numbered" : ""
+  const revClass = review ? "Review" : ""
 
   switch (type) {
     //-------------------------------------------------------------------------
@@ -134,14 +135,15 @@ function renderElement({element, attributes, children}) {
       return <p className={type} {...attributes}>{children}</p>
 
     case "quote":
+      return <blockquote className={revClass} {...attributes}>{children}</blockquote>
     case "br":
-      return <div className={type} {...attributes}>{children}</div>
+      return <div className={addClass(type, revClass)} {...attributes}>{children}</div>
 
     case "p":
     default: break;
   }
 
-  return <p {...attributes}>{children}</p>
+  return <p className={revClass} {...attributes}>{children}</p>
 }
 
 function renderLeaf({ leaf, attributes, children}) {

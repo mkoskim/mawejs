@@ -1,13 +1,7 @@
 export const app = {
-  getName() {
-    return "mawe-test";
-  },
-  getVersion() {
-    return "0.0.0";
-  },
-  getPath(name) {
-    return `/tmp/${name}`;
-  },
+  getName() { return "mawe-test";},
+  getVersion() { return "0.0.0"; },
+  getPath(name) { return `/tmp/${name}`;},
   quit() {},
 };
 
@@ -19,16 +13,16 @@ export const ipcMain = {
   handle() {},
 };
 
-export class BrowserWindow {
-  static getAllWindows() {
-    return [];
-  }
+export const BrowserWindow = {
+  getAllWindows() { return []; },
+  webContents: {
+    getZoomFactor() { return 1; },
+    setZoomFactor(value) {},
+  },
 }
 
 export const shell = {
-  openPath() {
-    return "";
-  },
+  openPath() { return;},
 };
 
 export const dialog = {

@@ -37,7 +37,7 @@ export function toXML(doc) {
       attributes: {
         uuid: doc.uuid ?? getUUID(),
         format: "mawe",
-        version: "6",
+        version: "7",
         name: doc.head?.name
       }
     },
@@ -116,28 +116,43 @@ function toExport(exports) {
 
 
 function toDraft(draft) {
-  const {acts} = draft;
+  const {acts, name} = draft;
 
   return xmlLines(
-    {type: "draft"},
+    {
+      type: "draft",
+      attributes: {
+        name: name ?? "Draft"
+      }
+    },
     ...acts.map(toAct),
   )
 }
 
 function toNotes(notes) {
-  const {acts} = notes;
+  const {acts, name} = notes;
 
   return xmlLines(
-    {type: "notes"},
+    {
+      type: "notes",
+      attributes: {
+        name: name ?? "Notes"
+      }
+    },
     ...acts.map(toAct)
   )
 }
 
 function toStorybook(storybook) {
-  const {acts} = storybook;
+  const {acts, name} = storybook;
 
   return xmlLines(
-    {type: "storybook"},
+    {
+      type: "storybook",
+      attributes: {
+        name: name ?? "Storybook"
+      }
+    },
     ...acts.map(toAct)
   )
 }
@@ -210,9 +225,16 @@ function toScene(scene) {
 //-----------------------------------------------------------------------------
 
 function toParagraph(elem) {
-  const {type, children} = elem
+  const {type, review, children} = elem
 
-  return xmlElem({type}, ...children?.map(toMarks) ?? [])
+  return xmlElem(
+    {
+      type,
+      attributes: {
+        review: review ? true : undefined
+      }
+    }, ...children?.map(toMarks) ?? []
+  )
 }
 
 function isBold(elem, text) {

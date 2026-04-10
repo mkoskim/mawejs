@@ -302,6 +302,8 @@ function parseParagraph(elem, index) {
   //console.log(elem)
 
   const {name} = elem
+  const {review: reviewStr} = elem?.attributes ?? {}
+  const review = reviewStr === "true"
 
   const empty = [{
     type: "element",
@@ -319,6 +321,7 @@ function parseParagraph(elem, index) {
 
   return {
     type: (name === "p" && !text) ? "br" : name,
+    review,
     children
   }
 }

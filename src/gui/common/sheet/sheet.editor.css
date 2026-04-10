@@ -4,16 +4,13 @@
 //
 //*****************************************************************************/
 
-@import "sheet.colors.css";
-@import "sheet.css";
-
 .Editor .Sheet {
 
   /*-------------------------------------------------------------------------*/
   /* Sheet Subelements */
   /*-------------------------------------------------------------------------*/
 
-  div, span, p, h1, h2, h3, h4, h5, h6 {
+  div, span, p, blockquote, h1, h2, h3, h4, h5, h6 {
     scroll-margin-top: 16pt;
     scroll-margin-bottom: 16pt;
   }
@@ -238,6 +235,15 @@
     &::before {content: "!! ";}
   }
 
+  .Review {
+    /*
+    */
+    background-color: var(--review-bg);
+    margin-left: -10px;
+    border-left:   2px solid var(--review-fg);
+    padding-left:  8px;
+  }
+
   .tags {
     color: var(--tags-fg);
     &::before {content: "@@ ";}
@@ -258,7 +264,7 @@
     &::before {content: "=> ";}
   }
 
-  .quote {
+  blockquote {
     margin-left: 2cm;
     margin-right: 2cm;
   }

@@ -24,7 +24,7 @@ import { produce } from "immer";
 //
 //-----------------------------------------------------------------------------
 
-const supported = ["1", "2", "3", "4", "5", "6"]
+const supported = ["1", "2", "3", "4", "5", "6", "7"]
 
 export function migrate(root) {
 
@@ -45,7 +45,7 @@ export function migrate(root) {
     v3_to_v4,
     v4_to_v5,
     v5_to_v6,
-    v6_fixes,
+    v6_to_v7,
   ].reduce((story, func) => func(story), story)
 }
 
@@ -434,27 +434,27 @@ function v5_to_v6(story) {
 //
 //*****************************************************************************
 
-function v6_fixes(story) {
+function v6_to_v7(story) {
 
   const {version} = story.attributes ?? {}
 
   if(version !== "6") return story
 
-  console.log("Fix v6")
+  console.log("Migrate v6 -> v7")
 
   const draftElem  = withName(getElem(story, "draft"), "Draft")
   const notesElem = withName(getElem(story, "notes"), "Cuts")
   const refElem   = withName(getRefElem(story), "Storybook")
 
-  return {
-    ...story,
-    elements: replaceElements(story.elements,
+  return produce(story, story => {
+    story.attributes.version = "7"
+    story.elements = replaceElements(story.elements,
       ["draft", "notes", "storybook", "reference"],
       draftElem,
       notesElem,
       refElem,
     )
-  }
+  })
 
   function withName(elem, name) {
     return produce(elem, elem => {

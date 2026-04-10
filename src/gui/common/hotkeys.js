@@ -15,6 +15,7 @@ export const IsKey = {
   AltA: isHotkey("Alt+A"), // Fold All
   AltF: isHotkey("Alt+F"), // Toggle fold
   AltL: isHotkey("Alt+L"), // Add lorem
+  AltR: isHotkey("Alt+R"), // Toggle review
   AltS: isHotkey("Alt+S"), // Show all
   AltX: isHotkey("Alt+X"), // ???
   AltUp: isHotkey("Alt+Up"), // Previous scene
@@ -57,6 +58,7 @@ export const IsKey = {
   CtrlAltM: isHotkey("Mod+Alt+M"), // Apply missing
   CtrlAltN: isHotkey("Mod+Alt+N"), // Apply notes scene
   CtrlAltQ: isHotkey("Mod+Alt+Q"), // Apply quote
+  CtrlAltR: isHotkey("Mod+Alt+R"), // ???
   CtrlAltS: isHotkey("Mod+Alt+S"), // Apply synopsis scene
   //CtrlAltT: isHotkey("Mod+Alt+T"), // Opens terminal
 

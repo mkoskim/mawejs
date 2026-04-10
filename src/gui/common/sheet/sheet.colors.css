@@ -22,6 +22,9 @@
   --missing-fg: rgb(190, 3, 3);
   --missing-bg: ;
 
+  --review-fg: rgb(220, 63, 63);
+  --review-bg: rgb(250, 235, 235);
+
   /*
   --target-fg: rgb(190, 3, 170);
   --fill-bg: #f8e7e7;

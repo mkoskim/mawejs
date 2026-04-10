@@ -1,3 +1,4 @@
+import { BrowserWindow } from "./fakeElectron.js";
 import { ipcDispatch } from "../../electron/backend/ipcdispatch.js";
 
 export function installFakeIpc() {
@@ -7,7 +8,7 @@ export function installFakeIpc() {
     },
     ipc: {
       invoke: async (channel, cmd, ...args) => {
-        return ipcDispatch(createFakeBrowserWindow(), channel, cmd, ...args);
+        return ipcDispatch(BrowserWindow, channel, cmd, ...args);
       },
     },
   };
@@ -18,21 +19,6 @@ export function installFakeIpc() {
     removeEventListener() {},
     getElementById() {
       return null;
-    },
-  };
-}
-
-function createFakeBrowserWindow() {
-  let zoomFactor = 1;
-
-  return {
-    webContents: {
-      getZoomFactor() {
-        return zoomFactor;
-      },
-      setZoomFactor(value) {
-        zoomFactor = value;
-      },
     },
   };
 }
