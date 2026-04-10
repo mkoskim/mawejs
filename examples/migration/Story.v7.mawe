@@ -1,8 +1,8 @@
-<story uuid="8da4241e-a45f-4f6b-938e-7d703372ded4" format="mawe" version="6" name="Story v6">
+<story uuid="8da4241e-a45f-4f6b-938e-7d703372ded4" format="mawe" version="7" name="Story v7">
 <!--/
 ===============================================================================
 
-STORY: Story v6
+STORY: Story v7
 
 ===============================================================================
 /-->
@@ -11,9 +11,9 @@ STORY: Story v6
 <!--/
 ===============================================================================
 /-->
-<draft>
+<draft name="Draft">
 <act name="ACT" target="2000">
-<chapter name="File Format v6">
+<chapter name="File Format v7">
 <scene name="Check!">
 <p>Check that conversion from reference to storybook worked.</p>
 </scene>
@@ -49,6 +49,11 @@ STORY: Story v6
 <p>Notes scenes contain different notes for the writer. Like with scene blocks, notes can have regular paragraph styles.</p>
 <br/>
 <p><b>Notes:</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.</p>
+</scene>
+<scene name="Review aid">
+<p>Paragraphs can be marked for review:</p>
+<p review="true">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.</p>
+<p>Text with review mark is counted as missing text. There is a menu at right hand, where you can mark the entire story to be reviewed, or cancel the review (remove review attribute).</p>
 </scene>
 </chapter>
 <chapter name="Prologue">
@@ -92,7 +97,7 @@ NOTES
 
 ===============================================================================
 /-->
-<notes>
+<notes name="Cuts">
 <act>
 <chapter>
 <scene>
@@ -108,7 +113,7 @@ STORYBOOK
 
 ===============================================================================
 /-->
-<storybook>
+<storybook name="Storybook">
 <act>
 <chapter>
 <scene name="Check this!">
@@ -129,10 +134,6 @@ STORYBOOK
 </editor>
 </ui>
 <history>
-<words date="2024-11-30" text="0" missing="0" chars="0"/>
-<words date="2024-12-01" text="800" missing="1200" chars="5440"/>
-<words date="2024-12-04" text="897" missing="1103" chars="6034"/>
-<words date="2026-02-18" text="603" missing="1397" chars="4024"/>
-<words date="2026-03-15" text="285" missing="1715" chars="1877"/>
+<words date="2026-04-10" text="285" missing="1715" chars="1877"/>
 </history>
 </story>
