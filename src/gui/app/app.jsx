@@ -321,9 +321,9 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
 
   return <ToolBox side="top">
     <FileMenu file={file} setCommand={setCommand} recent={recent} hasdoc={true}/>
-    <FileOperations file={file} setCommand={setCommand}/>
     <Separator />
     <ViewSelectButtons selected={doc.ui.view.selected} setSelected={setSelected} />
+    <OpenFolderButton filename={file?.id} />
     <Separator />
 
     <HeadInfo head={head} updateDoc={updateDoc} />
@@ -347,44 +347,6 @@ function WithDoc({ setCommand, doc, updateDoc, recent }) {
     <HelpButton setCommand={setCommand} />
     {/* <SettingsButton /> */}
   </ToolBox>
-}
-
-//-----------------------------------------------------------------------------
-
-class FileOperations extends React.PureComponent {
-  /*
-  static gzip_style = {
-    fontSize: "8pt",
-    border: "2px solid",
-    paddingLeft: "4px",
-    paddingRight: "4px",
-    //paddingTop: "0px",
-    paddingBottom: "2px",
-    borderRadius: "3px",
-  }
-  static gunzip_style = {
-    ...this.gzip_style,
-    textDecorationLine: "line-through",
-    textDecorationThickness: "2px",
-    textDecorationColor: "rgb(240, 80, 40)",
-  }
-  */
-
-  render() {
-    const {file, setCommand} = this.props
-    /*
-    const compressed = file?.id.endsWith(".gz") ?? false
-    const {gzip_style, gunzip_style} = this.constructor
-    const compress_style = compressed ? gunzip_style : gzip_style
-    const compress_tooltip = compressed ? "Uncompress" : "Compress"
-    //const filename = file?.name ?? "<Unnamed>"
-    */
-
-    return <>
-      {/*<IconButton disabled={!file} tooltip={compress_tooltip} onClick={e => this.toggleCompress(file, setCommand) }><span style={compress_style}>gz</span></IconButton>*/}
-      <OpenFolderButton filename={file?.id} />
-      </>
-  }
 }
 
 //-----------------------------------------------------------------------------
