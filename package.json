@@ -31,7 +31,7 @@
     "pako": "^2.1.0",
     "react": "19.2.5",
     "react-dom": "19.2.5",
-    "react-infinite-scroll-component": "^7.0.1",
+    "react-infinite-scroll-component": "7.1.0",
     "recharts": "^3.8.1",
     "slate": "^0.124.1",
     "slate-dom": "^0.124.1",
