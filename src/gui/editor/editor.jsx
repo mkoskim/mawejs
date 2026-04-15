@@ -265,7 +265,10 @@ export function EditView({doc, updateDoc, editors}) {
       else {
         if(typeof(searchText) !== "string") setSearchText("")
       }
-      if(searchBoxRef.current) searchBoxRef.current.focus()
+      if(searchBoxRef.current) {
+        //console.log("Focus search box", searchBoxRef.current)
+        searchBoxRef.current.focus()
+      }
     }],
     [IsKey.Escape, ev => {
       if(typeof(searchText) === "string") {
@@ -651,7 +654,7 @@ class Searching extends React.PureComponent {
       <IconButton disabled><Icon.Action.Search/></IconButton>
       <Input
         spellCheck={false}
-        ref={searchBoxRef}
+        inputref={searchBoxRef}
         value={searchText}
         autoFocus
         onChange={ev => setSearchText(ev.target.value)}

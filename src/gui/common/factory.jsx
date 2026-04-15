@@ -291,7 +291,7 @@ export class DropDown extends React.PureComponent {
 
 export class Input extends React.PureComponent {
   render() {
-    const {label, placeholder, variant, color, spellCheck=false, ...rest} = this.props;
+    const {label, placeholder, variant, color, inputref, spellCheck=false, ...rest} = this.props;
     const props = {
       ...rest,
       spellCheck,
@@ -304,9 +304,9 @@ export class Input extends React.PureComponent {
     }
 
     if(label) {
-      return <div className="InputWrap" {...wrapprops}><input {...props}/></div>
+      return <div className="InputWrap" {...wrapprops}><input ref={inputref} {...props}/></div>
     }
-    return <input {...wrapprops} {...props}/>
+    return <input ref={inputref} {...wrapprops} {...props}/>
   }
 }
 
