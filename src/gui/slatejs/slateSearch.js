@@ -27,8 +27,11 @@ export function text2Regexp(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
 }
 
+const MIN_SEARCH_LENGTH = 2
+
 export function searchPattern(text, opts = "gi") {
-  if(!text) return undefined
+  if(typeof(text) !== "string") return undefined
+  if(text.length < MIN_SEARCH_LENGTH) return undefined
   return new RegExp(text2Regexp(text), opts)
 }
 
@@ -62,8 +65,8 @@ function searchMatchPrev(re, leaf, path, offset) {
 //-----------------------------------------------------------------------------
 // Search text from another node
 
-function searchTextForward(editor, text, path, offset) {
-  const re = searchPattern(text)
+function searchTextForward(editor, re, path, offset) {
+  //const re = searchPattern(text)
   const [leaf] = Editor.leaf(editor, path)
   const match = searchMatchNext(re, leaf, path, offset)
   if(match) return match
@@ -77,8 +80,8 @@ function searchTextForward(editor, text, path, offset) {
   return searchMatchNext(re, next[0], next[1])
 }
 
-function searchTextBackward(editor, text, path, offset) {
-  const re = searchPattern(text)
+function searchTextBackward(editor, re, path, offset) {
+  //const re = searchPattern(text)
 
   const [leaf] = Editor.leaf(editor, path)
   const match = searchMatchPrev(re, leaf, path, offset)
@@ -120,9 +123,11 @@ export function searchBackward(editor, text, doFocus=false) {
 }
 
 function searchWithScroll(editor, text, path, offset, forward=true, doFocus=false) {
-  if(!text) return
+  const re = searchPattern(text)
+  //const activeText = activeSearchText(text)
+  if(!re) return
 
-  const match = (forward ? searchTextForward : searchTextBackward)(editor, text, path, offset)
+  const match = (forward ? searchTextForward : searchTextBackward)(editor, re, path, offset)
 
   if(match) {
     const {path, offset} = match

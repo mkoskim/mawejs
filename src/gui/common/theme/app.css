@@ -20,6 +20,10 @@
   /*/
   &:focus, &focus-within {}
   /**/
+
+  &:disabled {
+    opacity: 50% !important;
+  }
 }
 
 html {
