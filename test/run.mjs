@@ -9,6 +9,7 @@ import { pathToFileURL } from "node:url";
 const defaultTests = [
   "test/test_load.js",
   "test/test_roundtrip.js",
+  "test/test_export_empty.js",
 ];
 
 //-----------------------------------------------------------------------------

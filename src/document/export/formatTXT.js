@@ -22,7 +22,7 @@ export const formatTXT = {
     return `\
 ${center(author ?? "")}
 
-${center(title.toUpperCase()) ?? ""}
+${title ? center(title.toUpperCase()) : ""}
 ${subtitle ? "\n" + center(subtitle) + "\n" : ""}
 
 ${content}
@@ -65,7 +65,7 @@ export const formatMD = {
     return `\
 ${author ?? ""}
 
-# ${title.toUpperCase() ?? ""}
+${title ? "# " + title.toUpperCase() : ""}
 
 ${subtitle ? "\n## " + subtitle + "\n" : ""}
 
