@@ -99,10 +99,10 @@ ${content}
 
 function formatHeading(p, tag)
 {
-  const {title, number} = p
+  const {title, number, prefix} = p
   if(!title && !number) return
 
-  const numbering = number ? [`${number}`] : []
+  const numbering = number ? [`${prefix ? (prefix + " ") : ""}${number}`] : []
   const text = title ? [title] : []
   const head = [ ...numbering, ...text].join(". ")
 
