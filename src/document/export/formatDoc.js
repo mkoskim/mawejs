@@ -119,7 +119,7 @@ export function storyToFlatted(story) {
       .map(flatChapter)
       .filter(isNotEmpty)
 
-    if(!content?.length) return undefined
+    if(!content?.length) return []
 
     if(options.chapter.type === "separated") {
       return separate(content)
@@ -148,7 +148,7 @@ export function storyToFlatted(story) {
       .map(flatScene)
       .filter(isNotEmpty)
 
-    if(!content.length) return
+    if(!content.length) return []
 
     switch(options.scene.type) {
       case "none": return separate(content, {type: "br"})
