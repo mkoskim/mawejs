@@ -1,50 +1,56 @@
 import {
   Editor,
-  Range, Node,
+  Range, Node, Path,
   Transforms,
   Element,
 } from 'slate'
 
-import { elemHeading, elemTags } from '../../document/util';
+import { elemHeading, elemTags } from '../document/util';
 
 import {
   nodeTypes,
-} from '../../document/elements';
-import { focusByPath } from './slateHelpers';
+} from '../document/elements';
 
 //-----------------------------------------------------------------------------
 // Check, if element is inside folded block
 
-export function elemIsFolded(editor, path) {
+export function topmostFoldedBlock(editor, path) {
   for(const np of Node.levels(editor, path)) {
     const [node, path] = np
     if(Editor.isEditor(node)) continue
     const {foldable} = nodeTypes[node.type]
     if(!foldable) break
-    if(node.folded) return true;
+    if(node.folded) return np;
   }
-  return false;
+  return undefined;
 }
 
-function setCursor(editor) {
+export function elemIsFolded(editor, path) {
+  return !!topmostFoldedBlock(editor, path);
+}
+
+export function elemIsVisible(editor, path) {
+  const folded = topmostFoldedBlock(editor, path);
+  if(!folded) return true;
+
+  const [, foldedPath] = folded;
+  const visiblePath = [...foldedPath, 0];
+  return Path.equals(visiblePath, path) || Path.isAncestor(visiblePath, path);
+}
+
+function fixCursor(editor) {
   Transforms.collapse(editor)
   const {selection} = editor;
   if(!selection) return
   const {focus} = selection;
   if(!focus) return;
+  if(elemIsVisible(editor, focus.path)) return;
 
-  for(const np of Node.levels(editor, focus.path)) {
-    const [node, path] = np
-    if(Editor.isEditor(node)) continue
+  const folded = topmostFoldedBlock(editor, focus.path)
+  if(!folded) return
 
-    const {foldable} = nodeTypes[node.type]
-    if(!foldable) break
-    if(node.folded) {
-      Transforms.select(editor, Editor.start(editor, path))
-      //focusByPath(editor, path)
-      return
-    }
-  }
+  const [, path] = folded
+  Transforms.select(editor, Editor.start(editor, path))
 }
 
 //*****************************************************************************
@@ -58,6 +64,9 @@ function setCursor(editor) {
 //-----------------------------------------------------------------------------
 
 export function foldNode(editor, node, path, fold) {
+  if(!node) {
+    [node] = Editor.node(editor, path)
+  }
 
   if((node.folded ?? false) === (fold ?? false)) return;
 
@@ -98,7 +107,7 @@ export function toggleFold(editor) {
 
   const folded = !node.folded
   foldNode(editor, node, path, folded)
-  setCursor(editor)
+  fixCursor(editor)
 }
 
 //-----------------------------------------------------------------------------
@@ -170,7 +179,7 @@ export function foldByType(editor, types) {
     }
   })
 
-  setCursor(editor)
+  fixCursor(editor)
 }
 
 //-----------------------------------------------------------------------------

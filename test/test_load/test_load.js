@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { installFakeIpc } from "./support/fakeIpc.js";
-import { canonicalDocumentText } from "./support/canonicalDocument.js";
-import { mawe } from "../src/document/index.js";
+import { installFakeIpc } from "../support/fakeIpc.js";
+import { canonicalDocumentText } from "../support/canonicalDocument.js";
+import { mawe } from "../../src/document/index.js";
 
 installFakeIpc();
 
@@ -18,7 +18,7 @@ const migrationExamples = [
 ];
 
 const updateSnapshots = process.argv.includes("--update");
-const expectedDir = path.join("test", "load", "expected");
+const expectedDir = path.join("test", "test_load", "expected");
 
 if (updateSnapshots) {
   console.log("Load test: updating reference files...")

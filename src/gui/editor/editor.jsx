@@ -31,23 +31,24 @@ import { DragDropContext } from "@hello-pangea/dnd";
 
 import {
   focusByPath,
-} from "../slatejs/slateHelpers"
+} from "../../slatejs/slateHelpers"
 
 import {
   searchFirst, searchForward, searchBackward,
-} from '../slatejs/slateSearch';
+} from '../../slatejs/slateSearch';
 
 import {
   SlateEditable,
-} from "../slatejs/slateEditable"
+} from "../../slatejs/slateEditable"
 
 import {
   StyleButtons,
   FoldButtons,
   ReviewButtons,
-} from "../slatejs/slateButtons"
+} from "../../slatejs/slateButtons"
 
-import {dndDrop} from "../slatejs/slateDnD"
+import {handlePangeaDragEnd} from "../../slatejs/slateDnD"
+import { getEditorBySectID } from "../../slatejs/slateDocument";
 
 import {DocIndex} from "../common/docIndex"
 import {WordTable} from "./wordTable"
@@ -65,9 +66,9 @@ import {
   ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
 
-import {wcElem, nodeID, IDtoPath, nanoid} from "../../document/util";
+import {wcElem, IDtoPath, nanoid} from "../../document/util";
 import {elemFind} from "../../document/xmljs/tree";
-import { toggleReview } from "../slatejs/slateReview";
+import { toggleReview } from "../../slatejs/slateReview";
 
 //*****************************************************************************
 //
@@ -106,7 +107,6 @@ export function loadEditorSettings(settings) {
 
   return {
     active: "draft",
-    focusTo: undefined,
     left: {
       style: {width: "350px", maxWidth: "350px", minWidth: "200px"},
       indexed: ["act", "chapter", "scene"],
@@ -155,15 +155,26 @@ export function saveEditorSettings(settings) {
 
 //-----------------------------------------------------------------------------
 
-export function getFocusTo(doc) { return doc.ui.editor.focusTo.id; }
-export function setFocusTo(updateDoc, id) {
+function setFocusTo(updateDoc, editors, id) {
+  const {sectID, path} = IDtoPath(id)
+
+  //console.log("setFocusTo:", sectID, path)
+
+  const editor = getEditorBySectID(editors, sectID)
+
+  if(!editor) return
+
+  if(path) {
+    try {
+      Transforms.select(editor, path);
+      Transforms.collapse(editor);
+    } catch(e) {
+      console.log("Focus: invalid path ignored.")
+    }
+  }
+
   updateDoc(doc => {
-    doc.ui.view.selected = "editor"
-    const {sectID, path} = IDtoPath(id)
-    doc.ui.editor.refocus = nanoid()
     doc.ui.editor.active = sectID
-    doc.ui.editor.focusTo = path
-    //console.log("setFocusTo:", sectID, path)
   })
 }
 
@@ -201,32 +212,32 @@ export function EditView({doc, updateDoc, editors}) {
   //---------------------------------------------------------------------------
 
   const {track} = doc
-  const {refocus, active, focusTo} = doc.ui.editor
 
-  const getEditorBySectID = useCallback(sectID => {
-    if(sectID in editors) return editors[sectID]
-    return null
-  }, [editors])
+  const {active, refocus} = doc.ui.editor
 
   const getActiveEdit = useCallback(() => {
-    return getEditorBySectID(active)
-  }, [getEditorBySectID, active])
+    return getEditorBySectID(editors, active)
+  }, [editors, active])
 
   const setActive = useCallback(id => {
     //console.log("setActive:", id)
-    setFocusTo(updateDoc, id)
+    setFocusTo(updateDoc, editors, id)
+  }, [updateDoc, editors])
+
+  const onDragEnd = useCallback(result => {
+    const droppedID = handlePangeaDragEnd(editors, result)
+    if(droppedID) setActive(droppedID)
+  }, [editors, setActive])
+
+  const doRefocus = useCallback(() => {
+    updateDoc(doc => {
+      doc.ui.editor.refocus = (doc.ui.editor.refocus ?? 0) + 1
+    })
   }, [updateDoc])
 
   useEffect(() => {
-    //console.log("Focus to:", focusTo)
-    const editor = getActiveEdit()
-    focusByPath(editor, focusTo)
-  }, [refocus, active, focusTo])
-
-  // Initially focus editor
-  useEffect(() => {
-    ReactEditor.focus(getActiveEdit())
-  }, [])
+    focusByPath(getActiveEdit())
+  }, [getActiveEdit, refocus])
 
   //---------------------------------------------------------------------------
   // Search
@@ -280,7 +291,7 @@ export function EditView({doc, updateDoc, editors}) {
     [IsKey.CtrlShiftG, ev => searchBackward(getActiveEdit(), searchText, true)],
 
     [IsKey.AltR, ev => toggleReview(getActiveEdit())]
-  ]), [getActiveEdit, searchText]);
+  ]), [getActiveEdit, setSearchText, searchText]);
 
   //---------------------------------------------------------------------------
 
@@ -292,8 +303,7 @@ export function EditView({doc, updateDoc, editors}) {
     highlightText,
     setSearchText,
     setActive,
-    focusTo,
-    setFocusTo,
+    doRefocus,
     track,
     editors,
   }
@@ -337,43 +347,6 @@ export function EditView({doc, updateDoc, editors}) {
     </DragDropContext>
   </HBox>
 
-  //---------------------------------------------------------------------------
-  // Index DnD
-  //---------------------------------------------------------------------------
-
-  function onDragEnd(result) {
-
-    console.log("onDragEnd:", result)
-
-    const {type, draggableId, source, destination} = result;
-
-    if(!destination) return;
-
-    if(source.droppableId === destination.droppableId) {
-      if(source.index === destination.index) return;
-    }
-
-    //console.log(type, source, "-->", destination)
-
-    switch(type) {
-      case "act":
-      case "chapter":
-      case "scene": {
-        const {sectID: srcSectID, path: srcPath} = IDtoPath(draggableId)
-        const {sectID: dstSectID, path: dstPath} = IDtoPath(destination.droppableId)
-        const srcEdit = getEditorBySectID(srcSectID)
-        const dstEdit = getEditorBySectID(dstSectID)
-
-        dndDrop(srcEdit, srcPath, dstEdit, dstPath ?? [], destination.index)
-        setActive(nodeID(dstSectID))
-        break;
-      }
-
-      default:
-        console.log("Unknown draggable type:", type, result)
-        break;
-    }
-  }
 }
 
 //---------------------------------------------------------------------------
@@ -681,7 +654,7 @@ function EditorBox({style, settings}) {
   const {doc, track} = settings
   const {active} = doc.ui.editor
 
-  const {editors} = settings
+  const {editors, doRefocus} = settings
   const editor = editors[active]
 
   const {searchBoxRef, searchText, setSearchText} = settings
@@ -696,7 +669,7 @@ function EditorBox({style, settings}) {
     {/* Editor toolbar */}
 
     <ToolBox side="top" style={doc.ui.editor.toolbox.mid}>
-      <FoldButtons editor={editor}/>
+      <FoldButtons editor={editor} doRefocus={doRefocus}/>
       <Separator/>
       <StyleButtons editor={editor} type={type} bold={bold} italic={italic}/>
       <Separator/>

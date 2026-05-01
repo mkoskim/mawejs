@@ -16,7 +16,7 @@ import { useSlate, Editable } from 'slate-react'
 import {
   nodeShortcuts,
   markShortcuts,
-} from '../../document/elements';
+} from '../document/elements';
 
 import { toggleMark } from './slateMarks';
 
@@ -30,7 +30,7 @@ import {
   FOLD,
 } from "./slateFolding"
 
-import { addClass, IsKey } from '../common/factory';
+import { addClass, IsKey } from '../gui/common/factory';
 
 //-----------------------------------------------------------------------------
 

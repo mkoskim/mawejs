@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
-import { installFakeIpc } from "./support/fakeIpc.js";
-import { canonicalDocumentText } from "./support/canonicalDocument.js";
+import { installFakeIpc } from "../support/fakeIpc.js";
+import { canonicalDocumentText } from "../support/canonicalDocument.js";
 
 installFakeIpc();
 
-const { mawe } = await import("../src/document/index.js");
+const { mawe } = await import("../../src/document/index.js");
 
 const migrationExamples = [
   "examples/migration/Story.v1.mawe",

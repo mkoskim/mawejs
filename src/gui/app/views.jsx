@@ -18,7 +18,7 @@ import { StatsView } from "../stats/stats"
 import { ExportView } from "../export/export"
 import { UITestView } from "../test/uitest";
 
-import { bindEditors } from "../slatejs/slateDocument";
+import { bindEditors } from "../../slatejs/slateDocument";
 
 //*****************************************************************************
 //

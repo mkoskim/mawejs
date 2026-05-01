@@ -16,8 +16,10 @@ import {
   saveDocument, saveDocumentAs,
   renameDocument,
   decodeBuffer, documentInfo
-} from "../slatejs/slateDocument";
-import { createDateStamp } from "../../document/util";
+} from "../../slatejs/slateDocument";
+import {
+  referenceWords, updateWordsHistory
+} from "../../document/history";
 import { confirmUnsavedDlg } from "../../system/dialog";
 import { appQuit } from "../../system/host"
 import { recentRemove, recentAdd } from "./settings"
@@ -306,24 +308,26 @@ export async function cmdDispatch(command, args) {
     .catch(err => respError({setCommand, message: err}))
   }
 
-  function insertHistory(doc) {
-    const date = createDateStamp()
-    const history = [
-      ...doc.history.filter(e => e.type === "words" && e.date !== date),
-      { type: "words", date, ...doc.draft.words },
-    ]
-    //console.log("History:", history)
-    updateDoc(doc => { doc.history = history })
+  function withUpdatedHistory(doc) {
+    const history = updateWordsHistory(doc.history, undefined, doc.draft.words)
+    const last = referenceWords(history)
+
     return {
       ...doc,
+      head: {
+        ...doc.head,
+        last,
+      },
       history
     }
   }
 
   async function docSave() {
     try {
-      const file = await saveDocument(insertHistory(doc))
-      setSaved(doc)
+      const updated = withUpdatedHistory(doc)
+      const file = await saveDocument(updated)
+      updateDoc(updated)
+      setSaved(updated)
       respSuccess({setCommand, message: `Saved ${file.name}`})
       return true
     } catch(err) {
@@ -334,9 +338,14 @@ export async function cmdDispatch(command, args) {
 
   async function docSaveAs({ filename }) {
     try {
-      const file = await saveDocumentAs(insertHistory(doc), filename)
-      setSaved(doc)
-      updateDoc(doc => { doc.file = file })
+      const updated = withUpdatedHistory(doc)
+      const file = await saveDocumentAs(updated, filename)
+      const saved = {
+        ...updated,
+        file,
+      }
+      updateDoc(saved)
+      setSaved(saved)
       setRecent(recentAdd(recent, file))
       respSuccess({setCommand, message: `Saved ${file.name}`})
       return true

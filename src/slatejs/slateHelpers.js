@@ -12,6 +12,7 @@ import {
   Element,
 } from 'slate'
 import { ReactEditor } from 'slate-react'
+import { elemIsVisible, topmostFoldedBlock } from './slateFolding';
 
 //*****************************************************************************
 //
@@ -69,20 +70,37 @@ export async function focusByPath(editor, path, collapse = true) {
 
   if(!editor) return
 
-  if(!ReactEditor.isFocused(editor)) {
-    ReactEditor.focus(editor)
-    //await sleep(20);
-  }
-  if(path) try {
-    Transforms.select(editor, path);
-    if(collapse) Transforms.collapse(editor);
+  try {
+    if(path) {
+      Transforms.select(editor, path);
+    }
+    selectNearestVisible()
+    if(collapse) {
+      Transforms.collapse(editor);
+    }
+
+    if(!ReactEditor.isFocused(editor)) {
+      ReactEditor.focus(editor)
+      //await sleep(20);
+    }
+
+    const {focus} = editor.selection || {}
+    if(focus) {
+      //console.log("Scroll to:", focus)
+      scrollToPoint(editor, focus)
+    }
   } catch(e) {
     console.log("Focus: invalid path ignored.")
   }
-  const {focus} = editor?.selection || {}
-  if(focus) {
-    //console.log("Scroll to:", focus)
-    scrollToPoint(editor, focus)
+
+  function selectNearestVisible() {
+    const {focus} = editor.selection || {}
+    if(!focus) return
+    if(elemIsVisible(editor, focus.path)) return
+    const folded = topmostFoldedBlock(editor, focus.path)
+    if(!folded) return
+    const [, path] = folded
+    Transforms.select(editor, Editor.start(editor, path))
   }
 }
 

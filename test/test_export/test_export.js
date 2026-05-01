@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import { installFakeIpc } from "./support/fakeIpc.js";
-import { mawe } from "../src/document/index.js";
-import { storyToFlatted, flattedFormat, exportAs } from "../src/document/export/index.js";
+import { installFakeIpc } from "../support/fakeIpc.js";
+import { mawe } from "../../src/document/index.js";
+import { storyToFlatted, flattedFormat, exportAs } from "../../src/document/export/index.js";
 
 installFakeIpc();
 

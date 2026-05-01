@@ -25,8 +25,7 @@ import {
 import {DragDropContext} from "@hello-pangea/dnd";
 import {DocIndex} from "../common/docIndex";
 import {elemName, filterCtrlElems} from "../../document";
-import { IDtoPath } from "../../document/util";
-import { dndDrop } from "../slatejs/slateDnD";
+import { handlePangeaDragEnd } from "../../slatejs/slateDnD";
 
 //*****************************************************************************
 //
@@ -72,6 +71,7 @@ export function StoryArcView({doc, updateDoc, editors}) {
   const setElements = useCallback(value => updateDoc(doc => {doc.ui.arc.elements = value}), [updateDoc])
   const setTemplate = useCallback(value => updateDoc(doc => {doc.ui.arc.template = value}), [updateDoc])
   const setMode     = useCallback((mode) => {updateDoc(doc => {doc.ui.arc.mode = mode})}, [updateDoc])
+  const onDragEnd   = useCallback(result => {handlePangeaDragEnd(editors, result)}, [editors])
 
   /*
   console.log("Beat sheet length=", tmplButtons.beatsheet.data
@@ -79,12 +79,6 @@ export function StoryArcView({doc, updateDoc, editors}) {
     .reduce((a, b) => a + b, 0)
   )
   */
-
-  //---------------------------------------------------------------------------
-  // Slate editor for buffer manipulations
-  //---------------------------------------------------------------------------
-
-  const drafteditor = editors.draft
 
   //---------------------------------------------------------------------------
   // View
@@ -140,43 +134,6 @@ export function StoryArcView({doc, updateDoc, editors}) {
     </HBox>
   </DragDropContext>
 
-  //---------------------------------------------------------------------------
-  // Index DnD
-  //---------------------------------------------------------------------------
-
-  function onDragEnd(result) {
-
-    console.log("onDragEnd:", result)
-
-    const {type, draggableId, source, destination} = result;
-
-    if(!destination) return;
-
-    if(source.droppableId === destination.droppableId) {
-      if(source.index === destination.index) return;
-    }
-
-    //console.log(type, source, "-->", destination)
-
-    switch(type) {
-      case "act":
-      case "chapter":
-      case "scene": {
-        const {path: srcPath} = IDtoPath(draggableId)
-        const {path: dstPath} = IDtoPath(destination.droppableId)
-        //const srcEdit = getEditorBySectID(srcSectID)
-        //const dstEdit = getEditorBySectID(dstSectID)
-
-        dndDrop(drafteditor, srcPath, drafteditor, dstPath ?? [], destination.index)
-        //setActive(nodeID(dstSectID, dropped))
-        break;
-      }
-
-      default:
-        console.log("Unknown draggable type:", type, result)
-        break;
-    }
-  }
 }
 
 //-----------------------------------------------------------------------------

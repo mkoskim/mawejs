@@ -17,7 +17,7 @@ import {
 import { withHistory } from "slate-history"
 import { withReact } from 'slate-react'
 
-import { wcElem, wcCompare, elemHeading, elemHeadParse, elemHeadAttrs} from '../../document/util';
+import { wcElem, wcCompare, elemHeading, elemHeadParse, elemHeadAttrs} from '../document/util';
 
 import {
   nodeTypes,
@@ -25,7 +25,7 @@ import {
   nodeIsContainer,
   nodeIsBreak,
   nodeBreaks,
-} from '../../document/elements';
+} from '../document/elements';
 
 import {foldNode} from "./slateFolding"
 
@@ -33,7 +33,7 @@ import {
   elemIsBlock,
 } from "./slateHelpers"
 
-import {text2lines} from '../import/util';
+import {text2lines} from '../gui/import/util';
 
 //-----------------------------------------------------------------------------
 //

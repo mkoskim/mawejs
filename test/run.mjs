@@ -7,18 +7,22 @@ import { pathToFileURL } from "node:url";
 //-----------------------------------------------------------------------------
 
 const defaultTests = [
-  "test/test_load.js",
-  "test/test_roundtrip.js",
-  "test/test_export.js",
+  "test/test_load/test_load.js",
+  "test/test_load/test_roundtrip.js",
+  "test/test_export/test_export.js",
+  "test/test_slate/test_folding.js",
+  "test/test_slate/test_dnd.js",
+  "test/test_slate/test_search.js",
+  "test/test_misc/test_history.js",
 ];
 
 //-----------------------------------------------------------------------------
 
 const workdir = process.cwd();
 const [, , ...argv] = process.argv;
-const testEntry = argv.find(arg => !arg.startsWith("-"));
-const passthroughArgs = argv.filter(arg => arg !== testEntry);
-const testsToRun = testEntry ? [testEntry] : defaultTests;
+const testEntries = argv.filter(arg => !arg.startsWith("-"));
+const passthroughArgs = argv.filter(arg => arg.startsWith("-"));
+const testsToRun = testEntries.length ? testEntries : defaultTests;
 const stubMap = new Map([
   [path.resolve(workdir, "src/gui/app/views.jsx"), path.resolve(workdir, "test/support/stubs.js")],
   [path.resolve(workdir, "src/gui/app/views"), path.resolve(workdir, "test/support/stubs.js")],

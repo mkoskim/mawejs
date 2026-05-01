@@ -11,11 +11,12 @@ import {
   Transforms,
 } from 'slate'
 
-import {elemHeading} from '../../document/util';
+import {elemHeading, IDtoPath, nodeID} from '../document/util';
 
 import {
   nodeTypes,
-} from '../../document/elements';
+} from '../document/elements';
+import { getEditorBySectID } from './slateDocument';
 
 //-----------------------------------------------------------------------------
 // Drag'n'drop pop and push
@@ -24,15 +25,48 @@ export function dndDrop(srcEdit, srcPath, dstEdit, dstPath, dstIndex) {
   //console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
 
   if(srcEdit === dstEdit) {
+    let droppedPath
     srcEdit.withoutNormalizing(() => {
       const node = dndElemPop(srcEdit, srcPath)
-      const path = dndElemPushTo(srcEdit, node, dstPath, dstIndex)
-      setSelection(srcEdit, path)
+      droppedPath = dndElemPushTo(srcEdit, node, dstPath, dstIndex)
+      setSelection(srcEdit, droppedPath)
     })
+    return droppedPath
   } else {
     const node = dndElemPop(srcEdit, srcPath)
     const path = dndElemPushTo(dstEdit, node, dstPath, dstIndex)
     setSelection(dstEdit, path)
+    return path
+  }
+}
+
+export function handlePangeaDragEnd(editors, result) {
+  const {type, draggableId, source, destination} = result;
+
+  if(!destination) return;
+
+  if(source.droppableId === destination.droppableId) {
+    if(source.index === destination.index) return;
+  }
+
+  switch(type) {
+    case "act":
+    case "chapter":
+    case "scene": {
+      const {sectID: srcSectID, path: srcPath} = IDtoPath(draggableId)
+      const {sectID: dstSectID, path: dstPath} = IDtoPath(destination.droppableId)
+      const srcEdit = getEditorBySectID(editors, srcSectID)
+      const dstEdit = getEditorBySectID(editors, dstSectID)
+
+      if(!srcEdit || !dstEdit) return;
+
+      const droppedPath = dndDrop(srcEdit, srcPath, dstEdit, dstPath ?? [], destination.index)
+      return droppedPath ? nodeID(dstSectID, droppedPath) : undefined;
+    }
+
+    default:
+      console.log("Unknown draggable type:", type, result)
+      break;
   }
 }
 
@@ -108,4 +142,3 @@ function dndElemPushTo(editor, node, path, index) {
   Transforms.insertNodes(editor, node, {at: childpath})
   return childpath
 }
-

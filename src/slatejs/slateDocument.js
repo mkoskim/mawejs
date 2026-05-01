@@ -4,9 +4,9 @@
 //
 //*****************************************************************************
 
-import { Editor } from "slate";
-import { mawe } from "../../document"
-import { nodeID, wcElem } from "../../document/util";
+import { Editor, Element } from "slate";
+import { mawe } from "../document"
+import { nodeID, wcElem } from "../document/util";
 import { getUIEditor } from "./slateEditor";
 import { isAstChange } from "./slateHelpers";
 
@@ -95,7 +95,7 @@ function updateSection(editor, key, updateDoc) {
   }
 }
 
-function getEditor(key, section, updateDoc) {
+function bindEditor(key, section, updateDoc) {
   const editor = getUIEditor()
   editor.children = section.acts
   editor.onChange = () => updateSection(editor, key, updateDoc)
@@ -108,11 +108,15 @@ function getEditor(key, section, updateDoc) {
 
 export function bindEditors(doc, updateDoc) {
   const editors = {
-    draft: getEditor("draft", doc.draft, updateDoc),
-    notes: getEditor("notes", doc.notes, updateDoc),
-    storybook: getEditor("storybook", doc.storybook, updateDoc),
+    draft: bindEditor("draft", doc.draft, updateDoc),
+    notes: bindEditor("notes", doc.notes, updateDoc),
+    storybook: bindEditor("storybook", doc.storybook, updateDoc),
   }
   //console.log("Editors bound:", editors)
   return editors
 }
 
+export function getEditorBySectID(editors, sectID) {
+  if(sectID in editors) return editors[sectID]
+  return null
+}

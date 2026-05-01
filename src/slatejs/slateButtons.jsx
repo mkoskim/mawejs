@@ -18,7 +18,7 @@ import { ReactEditor } from 'slate-react'
 
 import {
   paragraphTypes,
-} from '../../document/elements';
+} from '../document/elements';
 
 import { setMark } from './slateMarks';
 
@@ -33,8 +33,9 @@ import {
   Menu, MenuItem,
   Separator,
   DropDown,
-} from '../common/factory';
+} from '../gui/common/factory';
 import { setReview } from './slateReview';
+import { focusByPath } from './slateHelpers';
 
 //*****************************************************************************
 //
@@ -161,16 +162,16 @@ export class StyleButtons extends React.PureComponent {
 export class FoldButtons extends React.PureComponent {
 
   render() {
-    const {editor} = this.props
+    const {editor, doRefocus} = this.props
 
-    function onFoldAll(e) { foldByType(editor, FOLD.foldAll); ReactEditor.focus(editor);}
-    function onUnfoldAll(e) { foldByType(editor, FOLD.unfoldAll); ReactEditor.focus(editor); }
+    function onFoldAll(e) { foldByType(editor, FOLD.foldAll); doRefocus();}
+    function onUnfoldAll(e) { foldByType(editor, FOLD.unfoldAll); doRefocus(); }
 
-    function onFoldChapters(e) { foldByType(editor, FOLD.foldChapters); ReactEditor.focus(editor);}
-    function onUnfoldChapters(e) { foldByType(editor, FOLD.unfoldChapters); ReactEditor.focus(editor);}
+    function onFoldChapters(e) { foldByType(editor, FOLD.foldChapters); doRefocus();}
+    function onUnfoldChapters(e) { foldByType(editor, FOLD.unfoldChapters); doRefocus();}
 
-    function onUnfoldScenes(e) { foldByType(editor, FOLD.unfoldScenes); ReactEditor.focus(editor);}
-    function onUnfoldSynopsis(e) { foldByType(editor, FOLD.unfoldSynopsis); ReactEditor.focus(editor);}
+    function onUnfoldScenes(e) { foldByType(editor, FOLD.unfoldScenes); doRefocus();}
+    function onUnfoldSynopsis(e) { foldByType(editor, FOLD.unfoldSynopsis); doRefocus();}
 
     return <Menu trigger={<Button tooltip="Folding">Fold <Icon.DropDown/></Button>}>
       <MenuItem title="Fold All" endAdornment="Alt-A" onClick={e => {onFoldAll(e)}}/>
@@ -183,18 +184,6 @@ export class FoldButtons extends React.PureComponent {
       <Separator/>
       <MenuItem title="Unfold All" endAdornment="Alt-S" onClick={e => {onUnfoldAll(e)}}/>
     </Menu>
-
-    /*
-    function onFoldToggle(e) { toggleFold(editor); ReactEditor.focus(editor); }
-    function onFoldAll(e) { foldAll(editor, true); ReactEditor.focus(editor);}
-    function onUnfoldAll(e) { foldAll(editor, false); ReactEditor.focus(editor); }
-
-    return <>
-      <IconButton selected={folded} tooltip="Toggle fold (Alt-F)" onClick={onFoldToggle}><Icon.Style.Folded/></IconButton>
-      <IconButton tooltip="Fold all (Alt-A)" onClick={onFoldAll}><Icon.Style.FoldAll/></IconButton>
-      <IconButton tooltip="Unfold all (Alt-S)" onClick={onUnfoldAll}><Icon.Style.UnfoldAll/></IconButton>
-      </>
-    */
   }
 }
 

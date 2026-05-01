@@ -22,5 +22,5 @@ jobs:
       - name: Run Tests
         run: npm test
 
-      - name: Run Build
-        run: npm run vite-build
+      - name: Run VITE Build
+        run: npm run build:vite

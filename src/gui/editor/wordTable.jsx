@@ -23,7 +23,7 @@ import {
 } from "../common/factory";
 
 import {createWordTable} from "../../document/util";
-import {text2Regexp} from "../slatejs/slateSearch"
+import {text2Regexp} from "../../slatejs/slateSearch"
 
 //-----------------------------------------------------------------------------
 // Wordtable

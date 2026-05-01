@@ -5,14 +5,14 @@ import {
 } from 'slate'
 
 import {
-  elemIsFolded,
+  elemIsVisible,
 } from "./slateFolding"
 
 import {
   scrollToRange,
 } from "./slateHelpers"
 
-import { appBeep } from '../../system/host';
+import { appBeep } from '../system/host';
 import {Range} from 'slate/dist';
 
 //-----------------------------------------------------------------------------
@@ -72,7 +72,8 @@ function searchTextForward(editor, re, path, offset) {
   if(match) return match
 
   const next = Editor.next(editor, {
-    match: (n, p) => !Path.equals(path, p) && !elemIsFolded(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
+    at: path,
+    match: (n, p) => !Path.equals(path, p) && elemIsVisible(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
   })
   if(!next) return undefined
 
@@ -88,11 +89,26 @@ function searchTextBackward(editor, re, path, offset) {
   if(match) return match
 
   const prev = Editor.previous(editor, {
-    match: (n, p) => !Path.equals(path, p) && !elemIsFolded(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
+    at: path,
+    match: (n, p) => !Path.equals(path, p) && elemIsVisible(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
   })
   if(!prev) return undefined
   //console.log(next)
   return searchMatchPrev(re, prev[0], prev[1], prev[0].text.length)
+}
+
+export function searchNextMatch(editor, text, path, offset) {
+  const re = searchPattern(text)
+  if(!re) return
+
+  return searchTextForward(editor, re, path, offset)
+}
+
+export function searchPrevMatch(editor, text, path, offset) {
+  const re = searchPattern(text)
+  if(!re) return
+
+  return searchTextBackward(editor, re, path, offset)
 }
 
 //-----------------------------------------------------------------------------
@@ -123,11 +139,9 @@ export function searchBackward(editor, text, doFocus=false) {
 }
 
 function searchWithScroll(editor, text, path, offset, forward=true, doFocus=false) {
-  const re = searchPattern(text)
-  //const activeText = activeSearchText(text)
-  if(!re) return
-
-  const match = (forward ? searchTextForward : searchTextBackward)(editor, re, path, offset)
+  const match = forward
+    ? searchNextMatch(editor, text, path, offset)
+    : searchPrevMatch(editor, text, path, offset)
 
   if(match) {
     const {path, offset} = match

@@ -12,8 +12,8 @@ import { xml2js } from "xml-js";
 import { loadArcSettings } from "../../gui/arc/arc";
 import { loadViewSettings } from "../../gui/app/views";
 import { loadEditorSettings } from "../../gui/editor/editor";
-import {loadExportSettings} from "../../gui/export/export";
-import { createDateStamp } from "../util";
+import { loadExportSettings } from "../../gui/export/export";
+import { referenceWords } from "../history";
 
 import { migrate } from "./migration";
 import { elemFind, elemFindall, elem2Text } from "./tree";
@@ -92,7 +92,10 @@ export function fromXML(root) {
 
   const history = parseHistory(elemFind(story, "history"), draft)
 
-  const head  = parseHead(headElem, history)
+  const head  = {
+    ...parseHead(headElem),
+    last: referenceWords(history),
+  }
 
   const exports = loadExportSettings(expElem)
   const ui = {
@@ -129,12 +132,7 @@ function optional(elem, name, parse) {
   return field ? parse(field) : undefined
 }
 
-function parseHead(head, history) {
-  //const date = strftime("%Y-%m-%d")
-  const date = createDateStamp()
-  const [last] = history.filter(e => e.type === "words" && e.date !== date).sort().slice(-1)
-  //console.log("Last time:", last)
-
+function parseHead(head) {
   return {
     title: optional(head, "title", elem2Text),
     subtitle: optional(head, "subtitle", elem2Text),
@@ -147,8 +145,6 @@ function parseHead(head, history) {
     //deadline: optional(head, "deadline", elem2Text),
     //covertext: optional(head, "covertext", elem2Text),
     //version: optional(head, "version", elem2Text),
-
-    last
   }
 }
 
@@ -352,15 +348,7 @@ function parseMarks(elem, marks) {
 
 function parseHistory(history, draft) {
   //console.log("History:", history)
-  if(!history?.elements) {
-    var yesterday = new Date()
-    yesterday.setDate(yesterday.getDate()-1)
-    return [{
-      type: "words",
-      date: createDateStamp(yesterday),
-      ...draft.words
-    }]
-  }
+  if(!history?.elements) return []
   return history.elements.map(parseHistoryEntry).filter(e => e)
 }
 

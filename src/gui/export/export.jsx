@@ -236,7 +236,9 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
     />
 
     <Button variant="filled" color="success" onClick={e => exportToFile(formatter, flatted, setExportedFile)}>Export</Button>
-    {exportedFile && (<Button variant="outlined" onClick={() => fs.openexternal(exportedFile)}>Open exported file</Button>)}
+    <Button variant="filled" disabled={!exportedFile} color={exportedFile ? "success" : "default"} onClick={() => fs.openexternal(exportedFile)}>
+      Open exported file
+    </Button>
 
     <Separator/>
     <DropDown

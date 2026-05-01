@@ -45,7 +45,7 @@ import {
 
 import {
   documentInfo
-} from "../slatejs/slateDocument";
+} from "../../slatejs/slateDocument";
 
 import { SettingsContext, useSetting } from "./settings"
 import { ViewSelectButtons, ViewSwitch } from "./views";

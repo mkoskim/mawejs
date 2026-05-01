@@ -31,7 +31,7 @@ import {
   MakeToggleGroup,
   MenuItem, Separator, Icon,
 } from "../common/factory"
-import { createDateStamp } from "../../document/util"
+import { updateWordsHistory } from "../../document/history"
 
 //*****************************************************************************
 //
@@ -41,14 +41,10 @@ import { createDateStamp } from "../../document/util"
 
 export function StatsView({doc, updateDoc}) {
 
-  const today = createDateStamp()
+  const history = updateWordsHistory(doc.history, undefined, doc.draft.words)
 
-  // Filter word count entries, and use current count for today
-  const history = doc.history
-    .filter(e => e.type === "words")
-    .filter(e => e.date !== today)
-    .sort((a, b) => a.date - b.date)
-    .concat([{date: today, ...doc.draft.words}])
+  //console.log("History:", doc.history);
+  //console.log("History:", history);
 
   return <HistoryChart history={history}/>
 }
