@@ -46,7 +46,7 @@ export function migrate(root) {
     v4_to_v5,
     v5_to_v6,
     v6_to_v7,
-    v7_fix_numbering,
+    v7_to_v8,
   ].reduce((story, func) => func(story), story)
 }
 
@@ -494,7 +494,7 @@ function v6_to_v7(story) {
 //
 //*****************************************************************************
 
-function v7_fix_numbering(story) {
+function v7_to_v8(story) {
   const {version} = story.attributes ?? {}
 
   if(version !== "7") return story
@@ -513,18 +513,6 @@ function v7_fix_numbering(story) {
       fixSection(refElem)
     )
   })
-
-  /*
-  function createSect(type, numbered = "false") {
-    return createElem("storybook", {}, [
-      createElem("act", {numbered}, [
-        createElem("chapter", {numbered}, [
-          createElem("scene", {}, [])
-        ])
-      ])
-    ])
-  }
-  */
 
   function fixSection(elem) {
     const {elements = [createElem("act")]} = elem

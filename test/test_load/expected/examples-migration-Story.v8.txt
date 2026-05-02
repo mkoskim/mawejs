@@ -4,7 +4,7 @@ subtitle=
 author=
 pseudonym=
 [section:draft]
-act|numbered=false|target=2000|name=ACT
+act|numbered=false|target=2000|name=Frontmatter
 chapter|numbered=false|name=File Format v7
 scene|content=scene|name=Check!
 p|text=Check that conversion from reference to storybook worked.
@@ -41,6 +41,7 @@ scene|content=scene|name=Review aid
 p|text=Paragraphs can be marked for review:
 p|review=true|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
 p|text=Text with review mark is counted as missing text. There is a menu at right hand, where you can mark the entire story to be reviewed, or cancel the review (remove review attribute).
+act|numbered=true|name=Mainmatter
 chapter|numbered=false|name=Prologue
 scene|content=scene|name=Unnumbered chapters and acts
 p|text=Adding "*" after the act or chapter name turns off numbering.
@@ -61,14 +62,18 @@ chapter|numbered=false|name=Epilogue
 scene|content=scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
 br|text=
+act|numbered=false|name=Backmatter
+chapter|numbered=true|name=
+scene|content=scene|name=
+br|text=
 [section:notes]
-act|numbered=false|name=
-chapter|numbered=false|name=
+act|numbered=true|name=
+chapter|numbered=true|name=
 scene|content=scene|name=
 br|text=
 [section:storybook]
-act|numbered=false|name=
-chapter|numbered=false|name=
+act|numbered=true|name=
+chapter|numbered=true|name=
 scene|content=scene|name=Check this!
 p|text=Check that conversion from reference to storybook worked.
 br|text=
