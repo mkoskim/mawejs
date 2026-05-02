@@ -179,7 +179,7 @@ function parseAct(act, index) {
     console.log("Invalid act:", act)
     throw new Error("Invalid act", act)
   }
-  const {name, folded: foldedStr, numbered: numberedStr, target: targetStr} = act.attributes ?? {};
+  const {name, folded: foldedStr, numbered: numberedStr = "true", target: targetStr} = act.attributes ?? {};
   const target = textToInt(targetStr)
   const folded = foldedStr === "true"
   const numbered = numberedStr === "true"
@@ -214,7 +214,7 @@ function parseChapter(chapter, index) {
     console.log("Invalid chapter:", chapter)
     throw new Error("Invalid chapter:", chapter)
   }
-  const {name, folded: foldedStr, numbered: numberedStr, target: targetStr} = chapter.attributes ?? {};
+  const {name, folded: foldedStr, numbered: numberedStr = "true", target: targetStr} = chapter.attributes ?? {};
   const target = textToInt(targetStr)
   const folded = foldedStr === "true"
   const numbered = numberedStr === "true"

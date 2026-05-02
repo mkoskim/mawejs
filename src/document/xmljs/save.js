@@ -37,7 +37,7 @@ export function toXML(doc) {
       attributes: {
         uuid: doc.uuid ?? getUUID(),
         format: "mawe",
-        version: "7",
+        version: "8",
         name: doc.head?.name
       }
     },
@@ -170,7 +170,7 @@ function toAct(act) {
       attributes: {
         name: name ? name : undefined,
         folded: folded ? true : undefined,
-        numbered: numbered ? true : undefined,
+        numbered: numbered ? undefined : false,
         target: target ? target : undefined,
       },
     },
@@ -191,7 +191,7 @@ function toChapter(chapter) {
       attributes: {
         name: name ? name : undefined,
         folded: folded ? true : undefined,
-        numbered: numbered ? true : undefined,
+        numbered: numbered ? undefined : false,
         target: target ? target : undefined,
       },
     },
