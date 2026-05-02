@@ -6,23 +6,121 @@ import { pathToFileURL } from "node:url";
 
 //-----------------------------------------------------------------------------
 
-const defaultTests = [
-  "test/test_load/test_load.js",
-  "test/test_load/test_roundtrip.js",
-  "test/test_export/test_export.js",
-  "test/test_slate/test_folding.js",
-  "test/test_slate/test_dnd.js",
-  "test/test_slate/test_search.js",
-  "test/test_misc/test_history.js",
-];
+console.log("Node version:", process.versions.node)
 
 //-----------------------------------------------------------------------------
 
-const workdir = process.cwd();
+const testGroups = {
+  load: [
+    "test/test_load/test_load.js",
+    "test/test_load/test_roundtrip.js",
+  ],
+  export: [
+    "test/test_export/test_export.js",
+  ],
+  slate: [
+    "test/test_slate/test_folding.js",
+    "test/test_slate/test_dnd.js",
+    "test/test_slate/test_search.js",
+  ],
+  misc: [
+    "test/test_misc/test_history.js",
+  ],
+  // Test cases which have reference files, that can be updated
+  update: [
+    "test/test_load/test_load.js",
+  ],
+};
+
+testGroups.all = [
+  ...testGroups.load,
+  ...testGroups.export,
+  ...testGroups.slate,
+  ...testGroups.misc,
+];
+
+//-----------------------------------------------------------------------------
+// Argument parsing for test runner. Usage:
+//
+//   node test/run.mjs
+//   node test/run.mjs --group slate --group misc
+//   node test/run.mjs test/test_misc/test_history.js
+//   node test/run.mjs --group slate test/test_misc/test_history.js
+//   node test/run.mjs --update
+//
+// Default command runs tests. Test targets can be selected by group, by test
+// file, or by combining both. If no targets are given, all tests are run.
+// The --update command runs the update group and passes --update to the test.
+//
+//-----------------------------------------------------------------------------
+
 const [, , ...argv] = process.argv;
-const testEntries = argv.filter(arg => !arg.startsWith("-"));
-const passthroughArgs = argv.filter(arg => arg.startsWith("-"));
-const testsToRun = testEntries.length ? testEntries : defaultTests;
+const command = argv.includes("--update") ? "update" : "run";
+const { testsToRun, passthroughArgs } = parseCommand(command, argv);
+
+function parseCommand(command, argv) {
+  if(command === "update") {
+    return {
+      testsToRun: getTestGroup("update"),
+      passthroughArgs: ["--update"],
+    };
+  }
+
+  const { groups, files } = parseRunTargets(argv);
+
+  return {
+    testsToRun: resolveTests(groups, files),
+    passthroughArgs: [],
+  };
+}
+
+function parseRunTargets(argv) {
+  const groups = [];
+  const files = [];
+
+  for(let index = 0; index < argv.length; index++) {
+    const arg = argv[index];
+
+    if(arg === "--group") {
+      const group = argv[++index];
+      if(!group) {
+        throw new Error("--group requires a group name");
+      }
+      groups.push(group);
+      continue;
+    }
+
+    if(arg.startsWith("-")) {
+      throw new Error(`Unknown option: ${arg}`);
+    }
+
+    files.push(arg);
+  }
+
+  return { groups, files };
+}
+
+function resolveTests(groups, files) {
+  if(!groups.length && !files.length) {
+    groups = ["all"];
+  }
+
+  return [
+    ...new Set([
+      ...groups.flatMap(group => getTestGroup(group)),
+      ...files,
+    ]),
+  ];
+}
+
+//*****************************************************************************
+//
+// Stub map for replacing modules with test doubles
+//
+//*****************************************************************************
+
+const workdir = process.cwd();
+
 const stubMap = new Map([
   [path.resolve(workdir, "src/gui/app/views.jsx"), path.resolve(workdir, "test/support/stubs.js")],
   [path.resolve(workdir, "src/gui/app/views"), path.resolve(workdir, "test/support/stubs.js")],
@@ -37,18 +135,29 @@ const stubMap = new Map([
 ]);
 const fakeElectronModule = path.resolve(workdir, "test/support/fakeElectron.js");
 
-//-----------------------------------------------------------------------------
-
-console.log("Node version:", process.versions.node)
+//*****************************************************************************
+//
+// Run tests
+//
+//*****************************************************************************
 
 for (const testFile of testsToRun) {
   await runTest(testFile, passthroughArgs);
+}
+
+function getTestGroup(group) {
+  const tests = testGroups[group];
+  if(!tests) {
+    throw new Error(`Unknown test group: ${group}`);
+  }
+  return tests;
 }
 
 //-----------------------------------------------------------------------------
 // If you need to inspect the generated bundle manually, temporarily replace
 // `outdir` with a fixed directory such as "out-test" and comment out the
 // cleanup in the finally block.
+//-----------------------------------------------------------------------------
 
 async function runTest(testFile, args) {
   const absEntry = path.resolve(workdir, testFile);

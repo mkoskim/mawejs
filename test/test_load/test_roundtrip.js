@@ -16,15 +16,9 @@ const migrationExamples = [
   "examples/migration/Story.v7.mawe",
 ];
 
-const updateSnapshots = process.argv.includes("--update");
-
-if(updateSnapshots) {
-  // Nothing to do
-} else {
-  console.log("Roundtrip test...");
-  await testRoundtripExamples();
-  console.log("Roundtrip test passed");
-}
+console.log("Roundtrip test...");
+await testRoundtripExamples();
+console.log("Roundtrip test passed");
 
 async function testRoundtripExamples() {
   for (const filename of migrationExamples) {
