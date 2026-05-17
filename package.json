@@ -38,7 +38,7 @@
     "slate": "^0.124.1",
     "slate-dom": "^0.124.1",
     "slate-history": "^0.113.1",
-    "slate-react": "^0.124.0",
+    "slate-react": "^0.124.2",
     "stream": "^0.0.3",
     "use-immer": "^0.11.0",
     "uuid": "^14.0.0",
@@ -49,7 +49,7 @@
     "electron": "^40.8.5",
     "electron-builder": "^26.8.1",
     "electron-vite": "^5.0.0",
-    "node": "^22.22.2"
+    "node": "^22.22.3"
   },
   "main": "./out/main/index.js",
   "build": {
