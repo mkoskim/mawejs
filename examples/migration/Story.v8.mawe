@@ -1,8 +1,8 @@
-<story uuid="8da4241e-a45f-4f6b-938e-7d703372ded4" format="mawe" version="7" name="Story v7">
+<story uuid="8da4241e-a45f-4f6b-938e-7d703372ded4" format="mawe" version="8" name="Story v8">
 <!--/
 ===============================================================================
 
-STORY: Story v7
+STORY: Story v8
 
 ===============================================================================
 /-->
@@ -12,8 +12,8 @@ STORY: Story v7
 ===============================================================================
 /-->
 <draft name="Draft">
-<act name="ACT" target="2000">
-<chapter name="File Format v7">
+<act name="Frontmatter" numbered="false" target="2000">
+<chapter name="File Format v7" numbered="false">
 <scene name="Check!">
 <p>Check that conversion from reference to storybook worked.</p>
 </scene>
@@ -56,17 +56,19 @@ STORY: Story v7
 <p>Text with review mark is counted as missing text. There is a menu at right hand, where you can mark the entire story to be reviewed, or cancel the review (remove review attribute).</p>
 </scene>
 </chapter>
-<chapter name="Prologue">
+</act>
+<act name="Mainmatter">
+<chapter name="Prologue" numbered="false">
 <scene name="Unnumbered chapters and acts">
 <p>Adding "*" after the act or chapter name turns off numbering.</p>
 </scene>
 </chapter>
-<chapter name="Ch1" numbered="true" target="500">
+<chapter name="Ch1" target="500">
 <scene name="Target word counts">
 <p>Another new feature are target word counts for containers (scene, chapter, act). It is possible to set target word count by inserting double colon (::) and giving a number after that. The length of the container is padded to the target count, if the word count is less than the target.</p>
 </scene>
 </chapter>
-<chapter name="Ch2" folded="true" numbered="true" target="500">
+<chapter name="Ch2" folded="true" target="500">
 <scene>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.</p>
 </scene>
@@ -74,7 +76,7 @@ STORY: Story v7
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.</p>
 </scene>
 </chapter>
-<chapter name="Ch3" numbered="true" target="500">
+<chapter name="Ch3" target="500">
 <scene>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.</p>
 </scene>
@@ -82,9 +84,16 @@ STORY: Story v7
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.</p>
 </scene>
 </chapter>
-<chapter name="Epilogue">
+<chapter name="Epilogue" numbered="false">
 <scene>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.</p>
+<br/>
+</scene>
+</chapter>
+</act>
+<act name="Backmatter" numbered="false">
+<chapter>
+<scene>
 <br/>
 </scene>
 </chapter>
@@ -134,7 +143,6 @@ STORYBOOK
 </editor>
 </ui>
 <history>
-<words date="2026-04-10" text="285" missing="1715" chars="1877"/>
-<words date="2026-05-02" text="285" missing="1715" chars="1877"/>
+<words date="2026-05-02" text="285" missing="3252" chars="1877"/>
 </history>
 </story>

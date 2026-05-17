@@ -1,3 +1,5 @@
+import { nodeIsBreak, nodeIsContainer } from "../../src/document/elements";
+
 export function canonicalDocumentText(doc) {
   return [
     headToText(doc?.head),
@@ -28,10 +30,9 @@ function sectionToText(name, section) {
 }
 
 function appendNode(lines, node) {
-  if (!node || isCtrlNode(node)) {
+  if (!node?.type || nodeIsBreak(node)) {
     return;
   }
-
   lines.push(nodeToLine(node));
 
   for (const child of node.children ?? []) {
@@ -42,18 +43,31 @@ function appendNode(lines, node) {
 function nodeToLine(node) {
   const parts = [node.type];
 
-  if (isContainer(node)) {
-    parts.push(`name=${escapeText(node.name)}`);
-    if (node.type === "scene" && node.content && node.content !== "scene") {
-      parts.push(`content=${escapeText(node.content)}`);
-    }
-    return parts.join("|");
-  }
+  const {numbered, content, folded, name, target, review} = node;
 
-  parts.push(`text=${escapeText(blockText(node))}`);
+  if (nodeIsContainer(node)) {
+    switch(node.type) {
+      case "act":
+      case "chapter":
+        parts.push(`numbered=${numbered}`);
+        break;
+
+      case "scene":
+        if(content) parts.push(`content=${escapeText(content)}`);
+        break;
+    }
+
+    if(folded) parts.push(`folded=${folded}`);
+    if(target) parts.push(`target=${target}`);
+    parts.push(`name=${escapeText(name)}`);
+  } else {
+    if(review) parts.push(`review=${review}`);
+    parts.push(`text=${escapeText(blockText(node))}`);
+  }
   return parts.join("|");
 }
 
+/*
 function isContainer(node) {
   return node.type === "act" || node.type === "chapter" || node.type === "scene";
 }
@@ -67,6 +81,7 @@ function isCtrlNode(node) {
     || node.type === "hnotes"
   );
 }
+*/
 
 function blockText(node) {
   return (node.children ?? [])

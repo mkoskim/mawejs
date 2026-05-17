@@ -122,7 +122,7 @@ export function elemHeading(elem) {
 }
 
 export function elemHeadAttrs(elem) {
-  const {type, name, numbered, target} = elemHeading(elem) ?? {type: nodeTypes[elem.type].header}
+  const {type, name, numbered, target} = elemHeading(elem) ?? {type: nodeTypes[elem.type].header, numbered: true}
   const ctrl = {
     ...nodeTypes[type].ctrl ?? {},
     name,

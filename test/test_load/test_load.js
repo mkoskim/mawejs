@@ -15,6 +15,7 @@ const migrationExamples = [
   "examples/migration/Story.v5.mawe",
   "examples/migration/Story.v6.mawe",
   "examples/migration/Story.v7.mawe",
+  "examples/migration/Story.v8.mawe",
 ];
 
 const updateSnapshots = process.argv.includes("--update");

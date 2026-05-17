@@ -24,7 +24,7 @@ import { produce } from "immer";
 //
 //-----------------------------------------------------------------------------
 
-const supported = ["1", "2", "3", "4", "5", "6", "7"]
+const supported = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
 export function migrate(root) {
 
@@ -46,6 +46,7 @@ export function migrate(root) {
     v4_to_v5,
     v5_to_v6,
     v6_to_v7,
+    v7_to_v8,
   ].reduce((story, func) => func(story), story)
 }
 
@@ -254,9 +255,10 @@ function v3_to_v4(story) {
 
   console.log("Migrate v3 -> v4")
 
-  // Fix unnumbered --> numbered
-  const bodyElem  = wrap(getElem(story, "body"))
-  const notesElem = wrap(getElem(story, "notes"))
+  // Wrap section content to act.
+
+  const bodyElem  = wrapAct(getElem(story, "body"))
+  const notesElem = wrapAct(getElem(story, "notes"))
 
   return produce(story, story => {
     story.attributes.version = "4"
@@ -267,7 +269,7 @@ function v3_to_v4(story) {
     )
   })
 
-  function wrap(elem) {
+  function wrapAct(elem) {
     const {elements} = elem
     return {
       ...elem,
@@ -293,16 +295,18 @@ function v4_to_v5(story) {
 
   console.log("Migrate v4 -> v5")
 
-  // Fix unnumbered --> numbered
+  // Fix synopsis --> bookmark
   const bodyElem  = getElem(story, "body")
   const notesElem = getElem(story, "notes")
+  const refElem = getElem(story, "storybook")
 
   return produce(story, story => {
     story.attributes.version = "5"
     story.elements = replaceElements(story.elements,
       ["body", "notes"],
       fixSection(bodyElem),
-      fixSection(notesElem)
+      fixSection(notesElem),
+      fixSection(refElem)
     )
   })
 
@@ -310,6 +314,7 @@ function v4_to_v5(story) {
     const {elements = []} = elem
     return {...elem, elements: elements.map(fixAct) }
   }
+
 
   function fixAct(elem) {
     const {elements = [], attributes = {}} = elem
@@ -373,7 +378,8 @@ function v5_to_v6(story) {
       ["ui", "body", "notes"],
       fixSettings(uiElem),
       fixSection({ ...bodyElem, name: "draft"}),
-      fixSection(notesElem)
+      fixSection(notesElem),
+      createRefElem()
     )
   })
 
@@ -397,12 +403,12 @@ function v5_to_v6(story) {
   }
 
   function fixSection(elem) {
-    const {elements = []} = elem
+    const {elements = [createElem("act")]} = elem
     return {...elem, elements: elements.map(fixAct) }
   }
 
   function fixAct(elem) {
-    const {elements = []} = elem
+    const {elements = [createElem("chapter")]} = elem
     return {...elem, elements: elements.map(fixChapter) }
   }
 
@@ -422,6 +428,16 @@ function v5_to_v6(story) {
       ...elem,
       name: name === "fill" ? "missing" : name
     }
+  }
+
+  function createRefElem() {
+    return createElem("storybook", {}, [
+      createElem("act", {numbered: "true"}, [
+        createElem("chapter", {numbered: "true"}, [
+          createElem("scene", {}, [])
+        ])
+      ])
+    ])
   }
 }
 
@@ -468,6 +484,59 @@ function v6_to_v7(story) {
     return {
       ...refElem,
       name: "storybook"
+    }
+  }
+}
+
+//*****************************************************************************
+//
+// v7-fix: Numbered attribute defaults to true
+//
+//*****************************************************************************
+
+function v7_to_v8(story) {
+  const {version} = story.attributes ?? {}
+
+  if(version !== "7") return story
+
+  console.log("Fix v7")
+
+  const bodyElem  = getElem(story, "draft")
+  const notesElem = getElem(story, "notes")
+  const refElem   = getElem(story, "storybook")
+
+  return produce(story, story => {
+    story.elements = replaceElements(story.elements,
+      ["draft", "notes", "storybook"],
+      fixSection(bodyElem),
+      fixSection(notesElem),
+      fixSection(refElem)
+    )
+  })
+
+  function fixSection(elem) {
+    const {elements = [createElem("act")]} = elem
+    return {...elem, elements: elements.map(fixAct) }
+  }
+
+  function fixAct(elem) {
+    const {elements = [createElem("chapter")], attributes = {}} = elem
+    const {numbered = "false"} = attributes
+    //console.log("Act Numbered:", numbered)
+    return {
+      ...elem,
+      attributes: {...attributes, numbered},
+      elements: elements.map(fixChapter),
+    }
+  }
+
+  function fixChapter(elem) {
+    const {elements = [], attributes = {}} = elem
+    const {numbered = "false"} = attributes
+    //console.log("Chapter Numbered:", numbered)
+    return {
+      ...elem,
+      attributes: {...attributes, numbered},
     }
   }
 }

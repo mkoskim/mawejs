@@ -13,10 +13,10 @@
     "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox",
     "test": "node test/run.mjs",
     "test:update": "node test/run.mjs --update",
-    "test:load": "node test/run.mjs test/test_load/test_load.js",
-    "test:roundtrip": "node test/run.mjs test/test_load/test_roundtrip.js",
-    "test:export": "node test/run.mjs test/test_export/test_export.js",
-    "test:slate": "node test/run.mjs test/test_slate/test_folding.js test/test_slate/test_dnd.js test/test_slate/test_search.js test/test_misc/test_history.js"
+    "test:load": "node test/run.mjs --group load",
+    "test:export": "node test/run.mjs --group export",
+    "test:slate": "node test/run.mjs --group slate",
+    "test:misc": "node test/run.mjs --group misc"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -38,7 +38,7 @@
     "slate": "^0.124.1",
     "slate-dom": "^0.124.1",
     "slate-history": "^0.113.1",
-    "slate-react": "^0.124.0",
+    "slate-react": "^0.124.2",
     "stream": "^0.0.3",
     "use-immer": "^0.11.0",
     "uuid": "^14.0.0",
@@ -49,7 +49,7 @@
     "electron": "^40.8.5",
     "electron-builder": "^26.8.1",
     "electron-vite": "^5.0.0",
-    "node": "^22.22.2"
+    "node": "^22.22.3"
   },
   "main": "./out/main/index.js",
   "build": {

@@ -4,119 +4,71 @@ subtitle=
 author=
 pseudonym=
 [section:draft]
-act|name=ACT
-chapter|name=File Format v7
-scene|name=Check!
+act|numbered=false|target=2000|name=ACT
+chapter|numbered=false|name=File Format v7
+scene|content=scene|name=Check!
 p|text=Check that conversion from reference to storybook worked.
-|text=
-scene|name=Features
+scene|content=scene|name=Features
 p|text=File format v6 paragraph styles:
-|text=
 p|text=Regular text.
-|text=
 bookmark|text=Bookmarks
-|text=
 comment|text=Comments
-|text=
 missing|text=Missing text
-|text=
 tags|text=tags
-|text=
 br|text=
-|text=
 p|text=Two character styles are supported: bold and italic.
-|text=
-|text=
-|text=
-|text=
-|text=
 br|text=
-|text=
 p|text=Scenes: File format v6 has three scene content types: regular scene, synopsis and notes.
-|text=
-|text=
 br|text=
-|text=
 p|text=Sections: v6 files have three sections: draft, notes and storybook.
-|text=
-|text=
-scene|name=Scene
+scene|content=scene|name=Scene
 p|text=Scenes building the story.
-|text=
-scene|name=Synopsis scene|content=synopsis
+scene|content=synopsis|name=Synopsis scene
 p|text=Synopsis scenes can be used to write story synopses. They are excluded from draft export, but can be exported as a synopsis document. See Export view, and content type selection.
-|text=
 p|text=As a scene, synopsis blocks can have all the regular paragraph styles, like:
-|text=
 bookmark|text=Bookmarks
-|text=
 comment|text=Comments
-|text=
 missing|text=Missing text
-|text=
 comment|text=Filler elements
-|text=
 tags|text=tags
-|text=
 br|text=
-|text=
 p|text=Synopsis: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
-|text=
-|text=
-scene|name=Notes scene|content=notes
+scene|content=notes|name=Notes scene
 p|text=Notes scenes contain different notes for the writer. Like with scene blocks, notes can have regular paragraph styles.
-|text=
 br|text=
-|text=
 p|text=Notes: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
-|text=
-|text=
-scene|name=Review aid
+scene|content=scene|name=Review aid
 p|text=Paragraphs can be marked for review:
-|text=
-p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
-|text=
+p|review=true|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
 p|text=Text with review mark is counted as missing text. There is a menu at right hand, where you can mark the entire story to be reviewed, or cancel the review (remove review attribute).
-|text=
-chapter|name=Prologue
-scene|name=Unnumbered chapters and acts
+chapter|numbered=false|name=Prologue
+scene|content=scene|name=Unnumbered chapters and acts
 p|text=Adding "*" after the act or chapter name turns off numbering.
-|text=
-chapter|name=Ch1
-scene|name=Target word counts
+chapter|numbered=true|target=500|name=Ch1
+scene|content=scene|name=Target word counts
 p|text=Another new feature are target word counts for containers (scene, chapter, act). It is possible to set target word count by inserting double colon (::) and giving a number after that. The length of the container is padded to the target count, if the word count is less than the target.
-|text=
-chapter|name=Ch2
-scene|name=
+chapter|numbered=true|folded=true|target=500|name=Ch2
+scene|content=scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
-|text=
-scene|name=
+scene|content=scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
-|text=
-chapter|name=Ch3
-scene|name=
+chapter|numbered=true|target=500|name=Ch3
+scene|content=scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
-|text=
-scene|name=
+scene|content=scene|folded=true|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
-|text=
-chapter|name=Epilogue
-scene|name=
+chapter|numbered=false|name=Epilogue
+scene|content=scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
-|text=
 br|text=
-|text=
 [section:notes]
-act|name=
-chapter|name=
-scene|name=
+act|numbered=false|name=
+chapter|numbered=false|name=
+scene|content=scene|name=
 br|text=
-|text=
 [section:storybook]
-act|name=
-chapter|name=
-scene|name=Check this!
+act|numbered=false|name=
+chapter|numbered=false|name=
+scene|content=scene|name=Check this!
 p|text=Check that conversion from reference to storybook worked.
-|text=
 br|text=
-|text=
