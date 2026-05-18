@@ -105,6 +105,17 @@ const storytype = {
 }
 
 //-----------------------------------------------------------------------------
+// Split type selection
+//-----------------------------------------------------------------------------
+
+const splittype = {
+  "none":    {name: "None"},
+  "act":     {name: "By acts"},
+  "chapter": {name: "By chapters"},
+  choices: ["none", "act", "chapter"]
+}
+
+//-----------------------------------------------------------------------------
 // Header type selection
 //-----------------------------------------------------------------------------
 
@@ -160,6 +171,7 @@ function updateDocFormat(updateDoc, value) { updateDoc(doc => { doc.exports.form
 function updateDocStoryContent(updateDoc, value) { updateDoc(doc => {doc.exports.content = value})}
 function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
 
+function updateDocSplit(updateDoc, value) { updateDoc(doc => {doc.exports.split = value === "none" ? undefined : value})}
 function updateDocActElem(updateDoc, value) { updateDoc(doc => {doc.exports.acts = value})}
 function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapters = value})}
 function updateDocSceneElem(updateDoc, value) { updateDoc(doc => {doc.exports.scenes = value})}
@@ -234,9 +246,21 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
     />
 
     <Button variant="filled" color="success" onClick={e => exportToFile(formatter, batches, setExportedFile)}>Export</Button>
+    {/*
     <Button variant="filled" disabled={!exportedFile} color={exportedFile ? "success" : "default"} onClick={() => fs.openexternal(exportedFile)}>
       Open exported file
     </Button>
+    */}
+
+    <Separator/>
+    <DropDown
+      as="text"
+      label="Split"
+      choices={splittype.choices}
+      selected={exports.split ?? "none"}
+      selections={splittype}
+      setSelected={value => updateDocSplit(updateDoc, value)}
+    />
 
     <Separator/>
     <DropDown
@@ -350,49 +374,43 @@ function ExportIndex({ style, batches }) {
   function indexItem(node, index) {
 
     switch(node.type) {
-      case "hact": return <ActItem key={index} node={node} index={index}/>
-      case "hchapter": return <ChapterItem key={index} node={node} index={index}/>
-      case "hscene": return <SceneItem key={index} node={node} index={index}/>
-      case "hsynopsis": return <SceneItem key={index} node={node} index={index}/>
-      case "hnotes": return <SceneItem key={index} node={node} index={index}/>
+      case "hact": return <ActItem key={index} node={node}/>
+      case "hchapter": return <ChapterItem key={index} node={node}/>
+      case "hscene": return <SceneItem key={index} node={node}/>
+      case "hsynopsis": return <SceneItem key={index} node={node}/>
+      case "hnotes": return <SceneItem key={index} node={node}/>
     }
   }
 }
 
-function ActItem({node, index}) {
-  const { name, number } = node;
+function ActItem({node}) {
+  const { name, number, anchor } = node;
 
   return <div
       className="Entry Act"
-      /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
-      onClick={() => scrollToId(index)}
-      //style={{ cursor: "pointer" }}
+      onClick={() => scrollToId(anchor)}
     >
       <span className="Name">{number ? number + ". " + name : name}</span>
     </div>
 }
 
-function ChapterItem({node, index}) {
-  const { name, number } = node;
+function ChapterItem({node}) {
+  const { name, number, anchor } = node;
 
   return <div
       className="Entry Chapter"
-      /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
-      onClick={() => scrollToId(index)}
-      //style={{ cursor: "pointer" }}
+      onClick={() => scrollToId(anchor)}
     >
       <span className="Name">{number ? number + ". " + name : name}</span>
       </div>
 }
 
-function SceneItem({node, index}) {
-  const { name, number} = node;
+function SceneItem({node}) {
+  const { name, number, anchor } = node;
 
   return <div
     className="Entry Scene"
-    /*FUTURE DOUBLE CLICK FUNCTIONALITY HERE*/
-    onClick={() => scrollToId(index)}
-    //style={{ cursor: "pointer" }}
+    onClick={() => scrollToId(anchor)}
     >
       <span className="Name">{number ? number + ". " + name : name}</span>
     </div>

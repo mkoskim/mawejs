@@ -42,14 +42,9 @@ function getSceneOptions(scenes, prefix) {
 
 function splitBatches(section, split) {
   switch(split) {
-    case "act":
-      return withSuffixes(flatActs(section), "a")
-
-    case "chapter":
-      return withSuffixes(flatChapters(section), "c")
-
-    default:
-      return [{suffix: "", content: section}]
+    case "act":     return {prefix: "a", items: flatActs(section)}
+    case "chapter": return {prefix: "c", items: flatChapters(section)}
+    default:        return {prefix: "",  items: [section]}
   }
 }
 
@@ -60,13 +55,6 @@ function flatActs(section) {
 function flatChapters(section) {
   return flatActs(section)
     .flatMap(act => act.children.filter(ch => ch.type === "chapter"))
-}
-
-function withSuffixes(items, prefix) {
-  return items.map((content, i) => ({
-    suffix: `${prefix}${String(i + 1).padStart(2, "0")}`,
-    content,
-  }))
 }
 
 //*****************************************************************************
@@ -83,12 +71,29 @@ function getSection(story, contentType) {
 
 export function storyToBatches(story) {
   const section = getSection(story, story.exports.content)
-  return splitBatches(section, story.exports.split)
-    .map(({suffix, content}) => ({suffix, flatted: batchToFlatted(content, story)}))
-    .filter(({flatted}) => flatted.content.length > 0)
+  const {prefix, items} = splitBatches(section, story.exports.split)
+
+  let actOffset = 0, chapterOffset = 0, sceneOffset = 0
+
+  const nonEmpty = items
+    .map(content => {
+      const flatted = batchToFlatted(content, story, { actOffset, chapterOffset, sceneOffset })
+      for (const node of flatted.content) {
+        if (node.type === "hact"     && node.number) actOffset     = node.number
+        if (node.type === "hchapter" && node.number) chapterOffset = node.number
+        if (node.type === "hscene"   && node.number) sceneOffset   = node.number
+      }
+      return flatted
+    })
+    .filter(flatted => flatted.content.length > 0)
+
+  return nonEmpty.map((flatted, i) => ({
+    suffix: prefix ? `.${prefix}${String(i + 1).padStart(2, "0")}` : "",
+    flatted,
+  }))
 }
 
-export function batchToFlatted(content, story) {
+export function batchToFlatted(content, story, { actOffset = 0, chapterOffset = 0, sceneOffset = 0 } = {}) {
 
   const { file, exports, head} = story
   const { content: contentType, prefix_act, prefix_chapter, prefix_scene } = exports
@@ -104,9 +109,9 @@ export function batchToFlatted(content, story) {
 
   const {author, title, subtitle} = mawe.info(head)
 
-  var actnum = 0
-  var chapternum = 0
-  var scenenum = 0
+  var actnum = actOffset
+  var chapternum = chapterOffset
+  var scenenum = sceneOffset
 
   return {
     file,
@@ -149,6 +154,7 @@ export function batchToFlatted(content, story) {
 
     const head = makeHeader(elemHeading(act), actnum, options.act)
     if(head?.number) actnum = head.number
+    else if(head) actnum++
 
     return [head, ...content].filter(isNotEmpty)
   }
@@ -183,6 +189,7 @@ export function batchToFlatted(content, story) {
 
     const head = makeHeader(elemHeading(chapter), chapternum, options.chapter)
     if(head?.number) chapternum = head.number
+    else if(head) chapternum++
 
     return [head, ...content].filter(isNotEmpty)
   }
@@ -226,6 +233,7 @@ export function batchToFlatted(content, story) {
     const content = separate(splits, {type: "br"})
     const head = makeHeader(elemHeading(scene), scenenum, options.scene)
     if(head?.number) scenenum = head.number
+    else if(head) scenenum++
 
     return [head, ...content].filter(isNotEmpty)
   }
@@ -248,10 +256,11 @@ export function batchToFlatted(content, story) {
     const number = numbered ? num + 1 : undefined
     const title = name
 
+    const anchor = `${type}-${num + 1}`
     switch(options.type) {
-      case "named": return {pgbreak, prefix, type, name, title}
-      case "numbered": return numbered ? {pgbreak, prefix, type, name, number} : {pgbreak, prefix, type, name, title}
-      case "numbered&named": return {pgbreak, prefix, type, name, number, title}
+      case "named": return {pgbreak, prefix, type, name, title, anchor}
+      case "numbered": return numbered ? {pgbreak, prefix, type, name, number, anchor} : {pgbreak, prefix, type, name, title, anchor}
+      case "numbered&named": return {pgbreak, prefix, type, name, number, title, anchor}
       //case "separated": return {type, name}
       default: break;
     }
