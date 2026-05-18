@@ -24,20 +24,10 @@ import { getEditorBySectID } from './slateDocument';
 export function dndDrop(srcEdit, srcPath, dstEdit, dstPath, dstIndex) {
   //console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
 
-  if(srcEdit === dstEdit) {
-    let droppedPath
-    srcEdit.withoutNormalizing(() => {
-      const node = dndElemPop(srcEdit, srcPath)
-      droppedPath = dndElemPushTo(srcEdit, node, dstPath, dstIndex)
-      setSelection(srcEdit, droppedPath)
-    })
-    return droppedPath
-  } else {
-    const node = dndElemPop(srcEdit, srcPath)
-    const path = dndElemPushTo(dstEdit, node, dstPath, dstIndex)
-    setSelection(dstEdit, path)
-    return path
-  }
+  const node = dndElemPop(srcEdit, srcPath)
+  const path = dndElemPushTo(dstEdit, node, dstPath, dstIndex)
+  setSelection(dstEdit, path)
+  return path
 }
 
 export function handlePangeaDragEnd(editors, result) {

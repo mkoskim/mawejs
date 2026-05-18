@@ -59,7 +59,7 @@ export function SlateEditable({className, visible, highlight, ...props}) {
     }
     :
     undefined,
-    [re]
+    [re, highlight]
   )
 
   return <Editable
