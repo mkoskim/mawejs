@@ -37,6 +37,39 @@ function getSceneOptions(scenes, prefix) {
 }
 
 //*****************************************************************************
+// Split section into batches
+//*****************************************************************************
+
+export function splitBatches(section, split) {
+  switch(split) {
+    case "act":
+      return withSuffixes(flatActs(section), "a")
+
+    case "chapter":
+      return withSuffixes(flatChapters(section), "c")
+
+    default:
+      return [{suffix: "", content: section}]
+  }
+}
+
+function flatActs(section) {
+  return section.acts.filter(act => act.type === "act")
+}
+
+function flatChapters(section) {
+  return flatActs(section)
+    .flatMap(act => act.children.filter(ch => ch.type === "chapter"))
+}
+
+function withSuffixes(items, prefix) {
+  return items.map((content, i) => ({
+    suffix: `${prefix}${String(i + 1).padStart(2, "0")}`,
+    content,
+  }))
+}
+
+//*****************************************************************************
 // Make story a sequence of paragraphs
 //*****************************************************************************
 
