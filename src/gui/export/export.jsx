@@ -329,17 +329,20 @@ async function exportToFile(formatter, batches, setExportedFile) {
   const filesuffix = getSuffix(name, [".mawe", ".mawe.gz"])
   const basename = await fs.basename(name, filesuffix)
 
-  for (const {suffix, flatted} of batches) {
+  Promise.all(batches.map(async ({suffix, flatted}) => {
     const content = flattedFormat(formatter, flatted)
     const filename = await fs.makepath(dirname, basename + typesuffix + suffix + formatter.suffix)
     console.log("Export to:", filename)
-    fs.write(filename, content)
-      .then(file => {
-        setExportedFile(filename)
-        Inform.success(`Exported: ${file.name}`)
-      })
-      .catch(err => Inform.error(err))
-  }
+    return fs.write(filename, content)
+  }))
+  .then(files => {
+    setExportedFile(files[0]?.id)
+    const msg = files.length === 1
+      ? `Exported: ${files[0].name}`
+      : `Exported: ${files[0].name} (+${files.length - 1})`
+    Inform.success(msg)
+  })
+  .catch(err => Inform.error(err))
 }
 
 //-----------------------------------------------------------------------------
