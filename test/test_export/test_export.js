@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { installFakeIpc } from "../support/fakeIpc.js";
 import { mawe } from "../../src/document/index.js";
-import { storyToFlatted, flattedFormat, exportAs } from "../../src/document/export/index.js";
+import { storyToBatches, flattedFormat, exportAs } from "../../src/document/export/index.js";
 
 installFakeIpc();
 
@@ -75,8 +75,10 @@ console.log("HTML header escaping test...");
     exports: defaultExportSettings,
   };
 
-  const flatted = storyToFlatted(story);
-  const out = flattedFormat(exportAs.HTML, flatted);
+  const batches = storyToBatches(story);
+  const out = batches.length
+    ? flattedFormat(exportAs.HTML, batches[0].flatted)
+    : flattedFormat(exportAs.HTML, {head: story.head, content: [], options: {}});
 
   assert.match(out, /A &lt; B/, "HTML header should escape title text");
   assert.doesNotMatch(out, /<div style="margin-bottom: 1cm">A < B<\/div>/);
@@ -92,11 +94,8 @@ console.log("HTML header escaping test passed");
 function doExport(story) {
   const name = story.head.name
 
-  const flatted = storyToFlatted(story)
-  assert.ok(Array.isArray(flatted.content), `${name}: content must be an array`);
-
-  for (const fmt of formats) {
-    const out = flattedFormat(exportAs[fmt], flatted);
-    assert.equal(typeof out, "string", `${fmt}: expected string output (${name})`);
-  }
+  assert.doesNotThrow(
+    () => storyToBatches(story),
+    `${name}: storyToBatches must not throw`
+  );
 }

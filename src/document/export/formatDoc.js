@@ -40,7 +40,7 @@ function getSceneOptions(scenes, prefix) {
 // Split section into batches
 //*****************************************************************************
 
-export function splitBatches(section, split) {
+function splitBatches(section, split) {
   switch(split) {
     case "act":
       return withSuffixes(flatActs(section), "a")
@@ -81,15 +81,21 @@ function getSection(story, contentType) {
   return story.draft
 }
 
-export function storyToFlatted(story) {
+export function storyToBatches(story) {
+  const section = getSection(story, story.exports.content)
+  return splitBatches(section, story.exports.split)
+    .map(({suffix, content}) => ({suffix, flatted: batchToFlatted(content, story)}))
+    .filter(({flatted}) => flatted.content.length > 0)
+}
+
+export function batchToFlatted(content, story) {
 
   const { file, exports, head} = story
-  const { content, prefix_act, prefix_chapter, prefix_scene } = exports
-  const section = getSection(story, content)
+  const { content: contentType, prefix_act, prefix_chapter, prefix_scene } = exports
   const pgbreak = exports.type === "long"
 
   const options = {
-    content,
+    content: contentType,
     long: exports.type === "long",
     act: getActOptions(exports.acts, prefix_act, pgbreak),
     chapter: getChapterOptions(exports.chapters, prefix_chapter, pgbreak),
@@ -106,7 +112,15 @@ export function storyToFlatted(story) {
     file,
     options,
     head: {author, title, subtitle},
-    content: processDraft(section.acts).filter(isNotEmpty)
+    content: processContent(content).filter(isNotEmpty)
+  }
+
+  function processContent(item) {
+    switch(item?.type) {
+      case "act":     return processDraft([item])
+      case "chapter": return processChapters([item])
+      default:        return processDraft(item?.acts ?? [])
+    }
   }
 
   //---------------------------------------------------------------------------

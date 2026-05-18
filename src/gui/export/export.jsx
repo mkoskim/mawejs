@@ -18,7 +18,7 @@ import {
 
 import { getSuffix, text2words } from "../../document/util";
 
-import { exportAs, flattedFormat, flattedToText, storyToFlatted } from "../../document/export"
+import { exportAs, flattedFormat, flattedToText, storyToBatches } from "../../document/export"
 
 import { numfmt } from "../../util";
 import fs from "../../system/localfs"
@@ -177,14 +177,12 @@ function updateDocScenePrefix(updateDoc, value) { updateDoc(doc => {doc.exports.
 export function ExportView({ doc, updateDoc }) {
 
   const {exports} = doc
-
-  const flatted = storyToFlatted(doc)
-  //console.log("Flatted:", flatted)
+  const batches = storyToBatches(doc)
 
   return <HBox overflow="hidden">
-    <ExportIndex style={{overflow: "auto", maxWidth: "300px", width: "300px", borderRight: "1px solid lightgray" }} flatted={flatted}/>
-    <Preview flatted={flatted}/>
-    <ExportSettings style={{overflow: "auto", minWidth: "300px"}} flatted={flatted} exports={exports} updateDoc={updateDoc}/>
+    <ExportIndex style={{overflow: "auto", maxWidth: "300px", width: "300px", borderRight: "1px solid lightgray" }} batches={batches}/>
+    <Preview batches={batches}/>
+    <ExportSettings style={{overflow: "auto", minWidth: "300px"}} batches={batches} exports={exports} updateDoc={updateDoc}/>
   </HBox>
 }
 
@@ -192,8 +190,8 @@ export function ExportView({ doc, updateDoc }) {
 // Export settings
 //-----------------------------------------------------------------------------
 
-function ExportInfo({flatted}) {
-  const text = flattedToText(flatted)
+function ExportInfo({batches}) {
+  const text = batches.map(b => flattedToText(b.flatted)).join("\n")
 
   const words = text2words(text)
   const wc = words.length
@@ -215,14 +213,14 @@ function ExportInfo({flatted}) {
 //
 //-----------------------------------------------------------------------------
 
-function ExportSettings({ style, flatted, exports, updateDoc}) {
+function ExportSettings({ style, batches, exports, updateDoc}) {
   const [exportedFile, setExportedFile] = useState(null);
 
   const {format} = exports
   const {formatter} = formatters[format]
 
   return <VBox style={style} side="right" className="Panel">
-    <ExportInfo flatted={flatted}/>
+    <ExportInfo batches={batches}/>
 
     <Separator/>
 
@@ -235,7 +233,7 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
       setSelected={value => updateDocFormat(updateDoc, value)}
     />
 
-    <Button variant="filled" color="success" onClick={e => exportToFile(formatter, flatted, setExportedFile)}>Export</Button>
+    <Button variant="filled" color="success" onClick={e => exportToFile(formatter, batches, setExportedFile)}>Export</Button>
     <Button variant="filled" disabled={!exportedFile} color={exportedFile ? "success" : "default"} onClick={() => fs.openexternal(exportedFile)}>
       Open exported file
     </Button>
@@ -296,39 +294,45 @@ function ExportSettings({ style, flatted, exports, updateDoc}) {
 // Export to file
 //-----------------------------------------------------------------------------
 
-async function exportToFile(formatter, flatted, setExportedFile) {
+async function exportToFile(formatter, batches, setExportedFile) {
 
-  const {options, file} = flatted
+  if (!batches.length) return
 
-  const content = flattedFormat(formatter, flatted)
-
+  const {file, options} = batches[0].flatted
   const typesuffix = getTypeSuffix(options.content)
-
   const dirname = await fs.dirname(file.id)
   const name = await fs.basename(file.id)
-  const suffix = getSuffix(name, [".mawe", ".mawe.gz"]);
-  const basename = await fs.basename(name, suffix);
-  const filename = await fs.makepath(dirname, basename + typesuffix + formatter.suffix)
-  console.log("Export to:", filename)
-  fs.write(filename, content)
-    .then(file => {
-      setExportedFile(filename);
-      Inform.success(`Exported: ${file.name}`);
-    })
-    .catch(err => Inform.error(err))
+  const filesuffix = getSuffix(name, [".mawe", ".mawe.gz"])
+  const basename = await fs.basename(name, filesuffix)
+
+  for (const {suffix, flatted} of batches) {
+    const content = flattedFormat(formatter, flatted)
+    const filename = await fs.makepath(dirname, basename + typesuffix + suffix + formatter.suffix)
+    console.log("Export to:", filename)
+    fs.write(filename, content)
+      .then(file => {
+        setExportedFile(filename)
+        Inform.success(`Exported: ${file.name}`)
+      })
+      .catch(err => Inform.error(err))
+  }
 }
 
 //-----------------------------------------------------------------------------
 // Export preview
 //-----------------------------------------------------------------------------
 
-function Preview({ flatted }) {
+function Preview({ batches }) {
 
   return <div className="Filler Board Preview">
-    <DeferredRender><div
-      className="Sheet Regular"
-      dangerouslySetInnerHTML={{ __html: flattedFormat(exportAs.HTML, flatted) }}
-    /></DeferredRender>
+    <DeferredRender>
+      {batches.map(({suffix, flatted}) =>
+        <div key={suffix}
+          className="Sheet Regular"
+          dangerouslySetInnerHTML={{ __html: flattedFormat(exportAs.HTML, flatted) }}
+        />
+      )}
+    </DeferredRender>
   </div>
 }
 
@@ -336,8 +340,8 @@ function Preview({ flatted }) {
 // Export index
 //-----------------------------------------------------------------------------
 
-function ExportIndex({ style, flatted }) {
-  const { content } = flatted
+function ExportIndex({ style, batches }) {
+  const content = batches.flatMap(b => b.flatted.content)
 
   return <VFiller className="TOC" style={style}>
     {content.map((node, index) => indexItem(node, index))}
