@@ -6,7 +6,15 @@ import { storyToBatches, flattedFormat, exportAs } from "../../src/document/expo
 installFakeIpc();
 
 //-----------------------------------------------------------------------------
-// Test story: 2 acts x 2 chapters x 1 scene each
+// Test story:
+//   Act 1:        Chapter 1, Chapter 2, [Empty Chapter]
+//   [Empty Act 1]
+//   Act 2:        Chapter 3, [Empty Chapter 2], Chapter 4
+//   [Empty Act 2]
+//   Act 3:        Chapter 5
+//
+// Non-empty: 3 acts, 5 chapters, 5 scenes
+// Empty:     2 acts, 2 chapters
 //-----------------------------------------------------------------------------
 
 const storyXml = `
@@ -44,134 +52,165 @@ function headings(batches, type) {
   return batches.flatMap(b => b.flatted.content.filter(n => n.type === type))
 }
 
-//-----------------------------------------------------------------------------
+//=============================================================================
+// Phase 1: Splitting — how many batches, what suffixes
+//=============================================================================
 
-console.log("Split export tests...");
+console.log("Phase 1: Splitting...");
 
-// none / undefined: single batch, empty suffix
+// No split (undefined or "none"): everything in one batch, empty suffix
 for (const split of [undefined, "none"]) {
   const batches = storyToBatches(makeStory(split))
-  assert.equal(batches.length, 1, `split=${split}: expected 1 batch`)
+  assert.equal(batches.length, 1,  `split=${split}: expected 1 batch`)
   assert.equal(batches[0].suffix, "", `split=${split}: expected empty suffix`)
-  assert.ok(Array.isArray(batches[0].flatted.content), `split=${split}: flatted.content must be array`)
 }
 
-// split by act: empty acts filtered out, numbered from remaining
+// Split by act: 2 empty acts filtered out → 3 batches, suffixes .a01-.a03
 {
   const batches = storyToBatches(makeStory("act"))
-  assert.equal(batches.length, 3, "act: expected 3 non-empty batches (2 empty acts filtered)")
+  assert.equal(batches.length, 3, "act: 3 non-empty batches (2 empty acts filtered)")
   assert.equal(batches[0].suffix, ".a01")
   assert.equal(batches[2].suffix, ".a03")
-  assert.ok(batches.every(b => Array.isArray(b.flatted.content)), "act: all flatted.content must be arrays")
 }
 
-// split by chapter: empty chapters filtered out, numbered from remaining
+// Split by chapter: 2 empty chapters filtered out → 5 batches, suffixes .c01-.c05
 {
   const batches = storyToBatches(makeStory("chapter"))
-  assert.equal(batches.length, 5, "chapter: expected 5 non-empty batches (2 empty chapters filtered)")
+  assert.equal(batches.length, 5, "chapter: 5 non-empty batches (2 empty chapters filtered)")
   assert.equal(batches[0].suffix, ".c01")
   assert.equal(batches[4].suffix, ".c05")
-  assert.ok(batches.every(b => Array.isArray(b.flatted.content)), "chapter: all flatted.content must be arrays")
 }
 
-// each batch can be formatted without throwing
+// Empty story: always 0 batches regardless of split
 {
+  const empty = { ...mawe.create('<story format="mawe"/>'), exports: {...defaultExports} }
   for (const split of [undefined, "act", "chapter"]) {
-    const batches = storyToBatches(makeStory(split))
-    for (const {flatted} of batches) {
-      for (const fmt of Object.keys(exportAs)) {
-        assert.doesNotThrow(
-          () => flattedFormat(exportAs[fmt], flatted),
-          `split=${split} fmt=${fmt}: flattedFormat must not throw`
-        )
-      }
-    }
+    assert.equal(storyToBatches({...empty, exports: {...defaultExports, split}}).length, 0,
+      `empty story split=${split}: expected 0 batches`)
   }
 }
 
-// split=chapter: chapter numbers and anchors are globally sequential across batches
-// (2 empty chapters and 2 empty acts must not consume numbers)
+console.log("Phase 1 passed");
+
+//=============================================================================
+// Phase 2: Numbering — globally sequential across batches
+//
+// Empty acts and empty chapters must NOT consume numbers.
+// Numbers and anchors must continue where the previous batch left off.
+//=============================================================================
+
+console.log("Phase 2: Numbering...");
+
+// No split, chapters=numbered: single batch, numbers 1-5
+{
+  const batches = storyToBatches(makeStory(undefined, { chapters: "numbered" }))
+  const heads = headings(batches, "hchapter")
+  assert.equal(batches.length, 1)
+  assert.deepEqual(heads.map(h => h.number), [1, 2, 3, 4, 5], "no-split: chapter numbers 1-5")
+  assert.deepEqual(heads.map(h => h.anchor),
+    ["hchapter-1", "hchapter-2", "hchapter-3", "hchapter-4", "hchapter-5"],
+    "no-split: chapter anchors")
+}
+
+// Split by chapter, chapters=numbered: numbers continue across batches
 {
   const batches = storyToBatches(makeStory("chapter", { chapters: "numbered" }))
   const heads = headings(batches, "hchapter")
-  assert.equal(heads.length, 5, "chapter/numbered: 5 chapter headings total")
-  assert.deepEqual(heads.map(h => h.number), [1, 2, 3, 4, 5], "chapter/numbered: numbers 1-5")
-  assert.deepEqual(heads.map(h => h.anchor), ["hchapter-1", "hchapter-2", "hchapter-3", "hchapter-4", "hchapter-5"], "chapter/numbered: anchors")
-
-  // HTML ids match anchors
-  assert.match(flattedFormat(exportAs.HTML, batches[0].flatted), /id="hchapter-1"/, "chapter/numbered: HTML id 1")
-  assert.match(flattedFormat(exportAs.HTML, batches[4].flatted), /id="hchapter-5"/, "chapter/numbered: HTML id 5")
+  assert.deepEqual(heads.map(h => h.number), [1, 2, 3, 4, 5], "split/chapter: numbers 1-5 across batches")
+  assert.deepEqual(heads.map(h => h.anchor),
+    ["hchapter-1", "hchapter-2", "hchapter-3", "hchapter-4", "hchapter-5"],
+    "split/chapter: anchors across batches")
+  // HTML ids must match anchors
+  assert.match(flattedFormat(exportAs.HTML, batches[0].flatted), /id="hchapter-1"/)
+  assert.match(flattedFormat(exportAs.HTML, batches[4].flatted), /id="hchapter-5"/)
 }
 
-// split=act: act and chapter numbers are globally sequential across batches
-// (2 empty acts and 2 empty chapters must not consume numbers)
+// Split by act, acts+chapters=numbered: both sequences continue across batches
 {
   const batches = storyToBatches(makeStory("act", { acts: "numbered", chapters: "numbered" }))
 
   const actHeads = headings(batches, "hact")
-  assert.deepEqual(actHeads.map(h => h.number), [1, 2, 3], "act/numbered: act numbers 1-3")
-  assert.deepEqual(actHeads.map(h => h.anchor), ["hact-1", "hact-2", "hact-3"], "act/numbered: act anchors")
+  assert.deepEqual(actHeads.map(h => h.number), [1, 2, 3], "split/act: act numbers 1-3")
+  assert.deepEqual(actHeads.map(h => h.anchor), ["hact-1", "hact-2", "hact-3"], "split/act: act anchors")
 
   const chHeads = headings(batches, "hchapter")
-  assert.equal(chHeads.length, 5, "act/numbered: 5 chapter headings total")
-  assert.deepEqual(chHeads.map(h => h.number), [1, 2, 3, 4, 5], "act/numbered: chapter numbers 1-5 across acts")
-  assert.deepEqual(chHeads.map(h => h.anchor), ["hchapter-1", "hchapter-2", "hchapter-3", "hchapter-4", "hchapter-5"], "act/numbered: chapter anchors")
+  assert.deepEqual(chHeads.map(h => h.number), [1, 2, 3, 4, 5], "split/act: chapter numbers 1-5 across acts")
+  assert.deepEqual(chHeads.map(h => h.anchor),
+    ["hchapter-1", "hchapter-2", "hchapter-3", "hchapter-4", "hchapter-5"],
+    "split/act: chapter anchors")
 }
 
-// split=chapter, chapters=named: anchors must still be globally sequential (no number field to rely on)
+// Split by chapter, chapters=named: no number field, but anchors still sequential
 {
   const batches = storyToBatches(makeStory("chapter", { chapters: "named" }))
   const heads = headings(batches, "hchapter")
-  assert.equal(heads.length, 5, "chapter/named: 5 chapter headings total")
-  assert.deepEqual(heads.map(h => h.anchor), ["hchapter-1", "hchapter-2", "hchapter-3", "hchapter-4", "hchapter-5"], "chapter/named: anchors sequential")
-  assert.ok(heads.every(h => h.number === undefined), "chapter/named: no number field")
+  assert.ok(heads.every(h => h.number === undefined), "split/chapter named: no number field")
+  assert.deepEqual(heads.map(h => h.anchor),
+    ["hchapter-1", "hchapter-2", "hchapter-3", "hchapter-4", "hchapter-5"],
+    "split/chapter named: anchors sequential despite no number")
 }
 
-// split=none: all headings in one batch, sequential
-{
-  const batches = storyToBatches(makeStory(undefined, { chapters: "numbered" }))
-  assert.equal(batches.length, 1, "none/numbered: single batch")
-  const chHeads = headings(batches, "hchapter")
-  assert.equal(chHeads.length, 5, "none/numbered: 5 chapter headings")
-  assert.deepEqual(chHeads.map(h => h.number), [1, 2, 3, 4, 5], "none/numbered: numbers 1-5")
-  assert.deepEqual(chHeads.map(h => h.anchor), ["hchapter-1", "hchapter-2", "hchapter-3", "hchapter-4", "hchapter-5"], "none/numbered: anchors")
-}
+console.log("Phase 2 passed");
 
-// none and separated produce no index entries ("squashing")
-// acts=none: acts are invisible markers, chapters go directly to index
+//=============================================================================
+// Phase 3: Index visibility — none and separated produce no index entries
+//
+// none:     element disappears completely (invisible marker)
+// separated: element exists only as visual glue between content blocks;
+//            first element has no separator before it
+//=============================================================================
+
+console.log("Phase 3: Index visibility...");
+
+// acts=none: acts are invisible, chapters go directly to index
 {
   const content = storyToBatches(makeStory(undefined, { acts: "none", chapters: "numbered" }))
     .flatMap(b => b.flatted.content)
-  assert.ok(!content.some(n => n.type === "hact"), "acts=none: no hact nodes in content")
+  assert.ok(!content.some(n => n.type === "hact"),     "acts=none: no hact nodes")
   assert.equal(content.filter(n => n.type === "hchapter").length, 5, "acts=none: chapters still present")
 }
 
-// chapters=separated: no heading nodes, only visual separators between chapters
-// (first chapter has no separator before it)
+// chapters=separated: no chapter heading nodes, only separators between chapters
 {
   const content = storyToBatches(makeStory(undefined, { chapters: "separated" }))
     .flatMap(b => b.flatted.content)
-  assert.ok(!content.some(n => n.type === "hchapter"), "chapters=separated: no hchapter nodes")
-  assert.ok(content.some(n => n.type === "separator"), "chapters=separated: separator nodes between chapters")
-  assert.notEqual(content[0]?.type, "separator", "chapters=separated: no separator before first chapter")
+  assert.ok(!content.some(n => n.type === "hchapter"),  "chapters=separated: no hchapter nodes")
+  assert.ok(content.some(n => n.type === "separator"),  "chapters=separated: separators present")
+  assert.notEqual(content[0]?.type, "separator",        "chapters=separated: no separator before first chapter")
 }
 
-// acts=separated: no hact nodes, separators between acts
+// acts=separated: no act heading nodes, only separators between acts
 {
   const content = storyToBatches(makeStory(undefined, { acts: "separated", chapters: "numbered" }))
     .flatMap(b => b.flatted.content)
-  assert.ok(!content.some(n => n.type === "hact"), "acts=separated: no hact nodes")
-  assert.ok(content.some(n => n.type === "separator"), "acts=separated: separator nodes between acts")
-  assert.notEqual(content[0]?.type, "separator", "acts=separated: no separator before first act")
+  assert.ok(!content.some(n => n.type === "hact"),      "acts=separated: no hact nodes")
+  assert.ok(content.some(n => n.type === "separator"),  "acts=separated: separators present")
+  assert.notEqual(content[0]?.type, "separator",        "acts=separated: no separator before first act")
   assert.equal(content.filter(n => n.type === "hchapter").length, 5, "acts=separated: chapters still present")
 }
 
-// empty story: none gives 1 empty batch (filtered out), act/chapter give 0
-{
-  const empty = { ...mawe.create('<story format="mawe"/>'), exports: {...defaultExports} }
-  assert.equal(storyToBatches({...empty, exports: {...defaultExports, split: undefined}}).length, 0)
-  assert.equal(storyToBatches({...empty, exports: {...defaultExports, split: "act"}}).length, 0)
-  assert.equal(storyToBatches({...empty, exports: {...defaultExports, split: "chapter"}}).length, 0)
+console.log("Phase 3 passed");
+
+//=============================================================================
+// Phase 4: Formatting — every formatter handles every split without throwing
+//=============================================================================
+
+console.log("Phase 4: Formatting...");
+
+for (const split of [undefined, "act", "chapter"]) {
+  const batches = storyToBatches(makeStory(split))
+  for (const {flatted} of batches) {
+    for (const fmt of Object.keys(exportAs)) {
+      assert.doesNotThrow(
+        () => flattedFormat(exportAs[fmt], flatted),
+        `split=${split} fmt=${fmt}: must not throw`
+      )
+    }
+  }
 }
+
+console.log("Phase 4 passed");
+
+//-----------------------------------------------------------------------------
 
 console.log("Split export tests passed");
