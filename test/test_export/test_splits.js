@@ -118,6 +118,15 @@ for (const split of [undefined, "none"]) {
   assert.deepEqual(chHeads.map(h => h.anchor), ["hchapter-1", "hchapter-2", "hchapter-3", "hchapter-4", "hchapter-5"], "act/numbered: chapter anchors")
 }
 
+// split=chapter, chapters=named: anchors must still be globally sequential (no number field to rely on)
+{
+  const batches = storyToBatches(makeStory("chapter", { chapters: "named" }))
+  const heads = headings(batches, "hchapter")
+  assert.equal(heads.length, 5, "chapter/named: 5 chapter headings total")
+  assert.deepEqual(heads.map(h => h.anchor), ["hchapter-1", "hchapter-2", "hchapter-3", "hchapter-4", "hchapter-5"], "chapter/named: anchors sequential")
+  assert.ok(heads.every(h => h.number === undefined), "chapter/named: no number field")
+}
+
 // split=none: all headings in one batch, sequential
 {
   const batches = storyToBatches(makeStory(undefined, { chapters: "numbered" }))
@@ -126,6 +135,35 @@ for (const split of [undefined, "none"]) {
   assert.equal(chHeads.length, 5, "none/numbered: 5 chapter headings")
   assert.deepEqual(chHeads.map(h => h.number), [1, 2, 3, 4, 5], "none/numbered: numbers 1-5")
   assert.deepEqual(chHeads.map(h => h.anchor), ["hchapter-1", "hchapter-2", "hchapter-3", "hchapter-4", "hchapter-5"], "none/numbered: anchors")
+}
+
+// none and separated produce no index entries ("squashing")
+// acts=none: acts are invisible markers, chapters go directly to index
+{
+  const content = storyToBatches(makeStory(undefined, { acts: "none", chapters: "numbered" }))
+    .flatMap(b => b.flatted.content)
+  assert.ok(!content.some(n => n.type === "hact"), "acts=none: no hact nodes in content")
+  assert.equal(content.filter(n => n.type === "hchapter").length, 5, "acts=none: chapters still present")
+}
+
+// chapters=separated: no heading nodes, only visual separators between chapters
+// (first chapter has no separator before it)
+{
+  const content = storyToBatches(makeStory(undefined, { chapters: "separated" }))
+    .flatMap(b => b.flatted.content)
+  assert.ok(!content.some(n => n.type === "hchapter"), "chapters=separated: no hchapter nodes")
+  assert.ok(content.some(n => n.type === "separator"), "chapters=separated: separator nodes between chapters")
+  assert.notEqual(content[0]?.type, "separator", "chapters=separated: no separator before first chapter")
+}
+
+// acts=separated: no hact nodes, separators between acts
+{
+  const content = storyToBatches(makeStory(undefined, { acts: "separated", chapters: "numbered" }))
+    .flatMap(b => b.flatted.content)
+  assert.ok(!content.some(n => n.type === "hact"), "acts=separated: no hact nodes")
+  assert.ok(content.some(n => n.type === "separator"), "acts=separated: separator nodes between acts")
+  assert.notEqual(content[0]?.type, "separator", "acts=separated: no separator before first act")
+  assert.equal(content.filter(n => n.type === "hchapter").length, 5, "acts=separated: chapters still present")
 }
 
 // empty story: none gives 1 empty batch (filtered out), act/chapter give 0

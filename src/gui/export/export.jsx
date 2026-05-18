@@ -110,8 +110,8 @@ const storytype = {
 
 const splittype = {
   "none":    {name: "None"},
-  "act":     {name: "By acts"},
-  "chapter": {name: "By chapters"},
+  "act":     {name: "Acts"},
+  "chapter": {name: "Chapters"},
   choices: ["none", "act", "chapter"]
 }
 
@@ -245,6 +245,15 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
       setSelected={value => updateDocFormat(updateDoc, value)}
     />
 
+    <DropDown
+      as="text"
+      label="Split by"
+      choices={splittype.choices}
+      selected={exports.split ?? "none"}
+      selections={splittype}
+      setSelected={value => updateDocSplit(updateDoc, value)}
+    />
+
     <Button variant="filled" color="success" onClick={e => exportToFile(formatter, batches, setExportedFile)}>Export</Button>
     {/*
     <Button variant="filled" disabled={!exportedFile} color={exportedFile ? "success" : "default"} onClick={() => fs.openexternal(exportedFile)}>
@@ -253,15 +262,6 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
     */}
 
     <Separator/>
-    <DropDown
-      as="text"
-      label="Split"
-      choices={splittype.choices}
-      selected={exports.split ?? "none"}
-      selections={splittype}
-      setSelected={value => updateDocSplit(updateDoc, value)}
-    />
-
     <Separator/>
     <DropDown
       as="text"

@@ -79,9 +79,9 @@ export function storyToBatches(story) {
     .map(content => {
       const flatted = batchToFlatted(content, story, { actOffset, chapterOffset, sceneOffset })
       for (const node of flatted.content) {
-        if (node.type === "hact"     && node.number) actOffset     = node.number
-        if (node.type === "hchapter" && node.number) chapterOffset = node.number
-        if (node.type === "hscene"   && node.number) sceneOffset   = node.number
+        if (node.type === "hact")     actOffset++
+        if (node.type === "hchapter") chapterOffset++
+        if (node.type === "hscene")   sceneOffset++
       }
       return flatted
     })
