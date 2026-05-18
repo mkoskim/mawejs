@@ -66,6 +66,25 @@ for (const exporting of stories) {
 console.log("Empty document export test passed");
 
 //-----------------------------------------------------------------------------
+
+console.log("HTML header escaping test...");
+
+{
+  const story = {
+    ...mawe.create('<story name="A &lt; B" format="mawe"/>'),
+    exports: defaultExportSettings,
+  };
+
+  const flatted = storyToFlatted(story);
+  const out = flattedFormat(exportAs.HTML, flatted);
+
+  assert.match(out, /A &lt; B/, "HTML header should escape title text");
+  assert.doesNotMatch(out, /<div style="margin-bottom: 1cm">A < B<\/div>/);
+}
+
+console.log("HTML header escaping test passed");
+
+//-----------------------------------------------------------------------------
 // We run the exporters and check that they run w/o throwing errors and
 // produce strings. No further validation is done at this moment.
 //-----------------------------------------------------------------------------

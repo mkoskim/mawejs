@@ -60,7 +60,7 @@ function formatFile(head, content, options) {
   const {author, title, subtitle} = head
   const headinfo = getHeader(head)
   return `\
-<div style="margin-bottom: 1cm">${headinfo}</div>\n
+<div style="margin-bottom: 1cm">${escape(headinfo)}</div>\n
 <center>${escape(author ?? "")}</center>
 <div style="margin-bottom: 0.5in">
 <h1>${escape(title ?? "<New Story>")}</h1>
