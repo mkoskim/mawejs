@@ -17,6 +17,7 @@ const testGroups = {
   ],
   export: [
     "test/test_export/test_export.js",
+    "test/test_export/test_splits.js",
   ],
   slate: [
     "test/test_slate/test_folding.js",

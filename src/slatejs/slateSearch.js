@@ -1,7 +1,7 @@
 
 import {
   Editor,
-  Text, Path,
+  Text, Path, Range,
 } from 'slate'
 
 import {
@@ -13,7 +13,6 @@ import {
 } from "./slateHelpers"
 
 import { appBeep } from '../system/host';
-import {Range} from 'slate/dist';
 
 //-----------------------------------------------------------------------------
 // Search pattern

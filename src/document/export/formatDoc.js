@@ -37,6 +37,27 @@ function getSceneOptions(scenes, prefix) {
 }
 
 //*****************************************************************************
+// Split section into batches
+//*****************************************************************************
+
+function splitBatches(section, split) {
+  switch(split) {
+    case "act":     return {prefix: "a", items: flatActs(section)}
+    case "chapter": return {prefix: "c", items: flatChapters(section)}
+    default:        return {prefix: "",  items: [section]}
+  }
+}
+
+function flatActs(section) {
+  return section.acts.filter(act => act.type === "act")
+}
+
+function flatChapters(section) {
+  return flatActs(section)
+    .flatMap(act => act.children.filter(ch => ch.type === "chapter"))
+}
+
+//*****************************************************************************
 // Make story a sequence of paragraphs
 //*****************************************************************************
 
@@ -48,15 +69,38 @@ function getSection(story, contentType) {
   return story.draft
 }
 
-export function storyToFlatted(story) {
+export function storyToBatches(story) {
+  const section = getSection(story, story.exports.content)
+  const {prefix, items} = splitBatches(section, story.exports.split)
+
+  let actOffset = 0, chapterOffset = 0, sceneOffset = 0
+
+  const nonEmpty = items
+    .map(content => {
+      const flatted = batchToFlatted(content, story, { actOffset, chapterOffset, sceneOffset })
+      for (const node of flatted.content) {
+        if (node.type === "hact")     actOffset++
+        if (node.type === "hchapter") chapterOffset++
+        if (node.type === "hscene")   sceneOffset++
+      }
+      return flatted
+    })
+    .filter(flatted => flatted.content.length > 0)
+
+  return nonEmpty.map((flatted, i) => ({
+    suffix: prefix ? `.${prefix}${String(i + 1).padStart(2, "0")}` : "",
+    flatted,
+  }))
+}
+
+export function batchToFlatted(content, story, { actOffset = 0, chapterOffset = 0, sceneOffset = 0 } = {}) {
 
   const { file, exports, head} = story
-  const { content, prefix_act, prefix_chapter, prefix_scene } = exports
-  const section = getSection(story, content)
+  const { content: contentType, prefix_act, prefix_chapter, prefix_scene } = exports
   const pgbreak = exports.type === "long"
 
   const options = {
-    content,
+    content: contentType,
     long: exports.type === "long",
     act: getActOptions(exports.acts, prefix_act, pgbreak),
     chapter: getChapterOptions(exports.chapters, prefix_chapter, pgbreak),
@@ -65,15 +109,23 @@ export function storyToFlatted(story) {
 
   const {author, title, subtitle} = mawe.info(head)
 
-  var actnum = 0
-  var chapternum = 0
-  var scenenum = 0
+  var actnum = actOffset
+  var chapternum = chapterOffset
+  var scenenum = sceneOffset
 
   return {
     file,
     options,
     head: {author, title, subtitle},
-    content: processDraft(section.acts).filter(isNotEmpty)
+    content: processContent(content).filter(isNotEmpty)
+  }
+
+  function processContent(item) {
+    switch(item?.type) {
+      case "act":     return processDraft([item])
+      case "chapter": return processChapters([item])
+      default:        return processDraft(item?.acts ?? [])
+    }
   }
 
   //---------------------------------------------------------------------------
@@ -102,6 +154,7 @@ export function storyToFlatted(story) {
 
     const head = makeHeader(elemHeading(act), actnum, options.act)
     if(head?.number) actnum = head.number
+    else if(head) actnum++
 
     return [head, ...content].filter(isNotEmpty)
   }
@@ -136,6 +189,7 @@ export function storyToFlatted(story) {
 
     const head = makeHeader(elemHeading(chapter), chapternum, options.chapter)
     if(head?.number) chapternum = head.number
+    else if(head) chapternum++
 
     return [head, ...content].filter(isNotEmpty)
   }
@@ -179,6 +233,7 @@ export function storyToFlatted(story) {
     const content = separate(splits, {type: "br"})
     const head = makeHeader(elemHeading(scene), scenenum, options.scene)
     if(head?.number) scenenum = head.number
+    else if(head) scenenum++
 
     return [head, ...content].filter(isNotEmpty)
   }
@@ -201,10 +256,11 @@ export function storyToFlatted(story) {
     const number = numbered ? num + 1 : undefined
     const title = name
 
+    const anchor = `${type}-${num + 1}`
     switch(options.type) {
-      case "named": return {pgbreak, prefix, type, name, title}
-      case "numbered": return numbered ? {pgbreak, prefix, type, name, number} : {pgbreak, prefix, type, name, title}
-      case "numbered&named": return {pgbreak, prefix, type, name, number, title}
+      case "named": return {pgbreak, prefix, type, name, title, anchor}
+      case "numbered": return numbered ? {pgbreak, prefix, type, name, number, anchor} : {pgbreak, prefix, type, name, title, anchor}
+      case "numbered&named": return {pgbreak, prefix, type, name, number, title, anchor}
       //case "separated": return {type, name}
       default: break;
     }
