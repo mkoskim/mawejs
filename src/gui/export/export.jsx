@@ -368,14 +368,19 @@ function Preview({ batches }) {
 //-----------------------------------------------------------------------------
 
 function ExportIndex({ style, batches }) {
-  const content = batches.flatMap(b => b.flatted.content)
+  //const content = batches.flatMap(b => b.flatted.content)
 
   return <VFiller className="TOC" style={style}>
-    {content.map((node, index) => indexItem(node, index))}
+    {batches.map((batch, index) => indexBatch(batch, index))}
   </VFiller>
 
-  function indexItem(node, index) {
+  function indexBatch(batch, index) {
+    return <div key={index} className="Batch">
+      {batch.flatted.content.map((node, index) => indexItem(node, index))}
+    </div>
+  }
 
+  function indexItem(node, index) {
     switch(node.type) {
       case "hact": return <ActItem key={index} node={node}/>
       case "hchapter": return <ChapterItem key={index} node={node}/>

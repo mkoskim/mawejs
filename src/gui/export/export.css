@@ -3,3 +3,8 @@
   padding: 6px;
   border-left: 1px solid lightgray;
 }
+
+.TOC .Batch {
+  /* min-height: 12pt; */
+  border-bottom: 1px dashed lightgrey;
+}
