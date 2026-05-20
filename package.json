@@ -19,7 +19,7 @@
     "test:misc": "node test/run.mjs --group misc"
   },
   "dependencies": {
-    "@base-ui/react": "^1.4.1",
+    "@base-ui/react": "^1.5.0",
     "@electron-toolkit/utils": "^4.0.0",
     "@hello-pangea/dnd": "^18.0.1",
     "electron-devtools-installer": "^4.0.0",
