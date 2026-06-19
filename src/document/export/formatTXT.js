@@ -30,7 +30,7 @@ ${content}
 
   hact: (p) => formatHeading(p, ""),
   hchapter: (p) => formatHeading(p, ""),
-  hscene: undefined,
+  hscene: (p) => formatHeading(p, ""),
 
   separator: () => "* * *\n",
   br: () => "\n",
@@ -75,7 +75,7 @@ ${content}
 
   hact: (p) => formatHeading(p, "#"),
   hchapter: (p) => formatHeading(p, "##"),
-  hscene: undefined,
+  hscene: (p) => formatHeading(p, "###"),
 
   separator: () => "* * *\n",
   br: () => "\n",
