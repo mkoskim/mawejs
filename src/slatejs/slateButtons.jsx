@@ -44,7 +44,7 @@ import { focusByPath } from './slateHelpers';
 //*****************************************************************************
 
 function applyMarks(editor, marks) {
-  const current = Object.keys(Editor.marks(editor))
+  const current = Object.keys(Editor.marks(editor) ?? {})
   for(const key of current) {
     if(!marks.includes(key)) removeMark(editor, key)
   }

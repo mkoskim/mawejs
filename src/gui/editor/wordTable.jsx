@@ -29,6 +29,9 @@ import {text2Regexp} from "../../slatejs/slateSearch"
 // Wordtable
 //-----------------------------------------------------------------------------
 
+function fSortAscending(a, b) { return (a[1] > b[1]) ? 1 : (a[1] < b[1]) ? -1 : 0 }
+function fSortDescending(a, b) { return (a[1] < b[1]) ? 1 : (a[1] > b[1]) ? -1 : 0 }
+
 function filterWordTable(wt, filterText) {
   if(!filterText) return Array.from(wt)
 
@@ -60,9 +63,6 @@ export function WordTable({section, setSearchText, searchBoxRef}) {
   //---------------------------------------------------------------------------
   // Sort table
   const [sortAscending, setSortAscending] = useState(false)
-
-  const fSortAscending  = useCallback((a, b) => (a[1] > b[1]) ? 1 : (a[1] < b[1]) ? -1 : 0)
-  const fSortDescending = useCallback((a, b) => (a[1] < b[1]) ? 1 : (a[1] > b[1]) ? -1 : 0)
 
   const sorted = useMemo(() => filtered.toSorted(sortAscending ? fSortAscending : fSortDescending), [filtered, sortAscending])
 

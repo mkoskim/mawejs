@@ -5,7 +5,7 @@
 //*****************************************************************************
 
 import {
-  storyToFlatted, flattedFormat, flattedToText
+  batchToFlatted, storyToBatches, flattedFormat, flattedToText,
 } from "./formatDoc"
 
 import { formatRTF } from "./formatRTF"
@@ -14,7 +14,7 @@ import { formatTEX1, formatTEX2 } from "./formatTEX"
 import { formatTXT, formatMD } from "./formatTXT"
 
 export {
-  storyToFlatted, flattedFormat, flattedToText,
+  batchToFlatted, storyToBatches, flattedFormat, flattedToText,
 }
 
 export const exportAs = {

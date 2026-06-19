@@ -1,6 +1,6 @@
 {
   "name": "mawejs",
-  "version": "0.25.0",
+  "version": "0.26.0",
   "description": "Editor for writers.",
   "author": "Markus Koskimies <mkoskim@gmail.com>",
   "scripts": {
@@ -19,7 +19,7 @@
     "test:misc": "node test/run.mjs --group misc"
   },
   "dependencies": {
-    "@base-ui/react": "^1.4.1",
+    "@base-ui/react": "^1.6.0",
     "@electron-toolkit/utils": "^4.0.0",
     "@hello-pangea/dnd": "^18.0.1",
     "electron-devtools-installer": "^4.0.0",
@@ -28,12 +28,12 @@
     "immer": "^11.1.8",
     "is-gzip": "^2.0.0",
     "mammoth": "^1.12.0",
-    "nanoid": "^5.1.11",
+    "nanoid": "^5.1.14",
     "notistack": "^3.0.2",
     "pako": "^2.1.0",
-    "react": "19.2.6",
-    "react-dom": "19.2.6",
-    "react-infinite-scroll-component": "7.2.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-infinite-scroll-component": "7.2.1",
     "recharts": "^3.8.1",
     "slate": "^0.124.1",
     "slate-dom": "^0.124.1",
@@ -46,10 +46,10 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.2.0",
-    "electron": "^40.8.5",
-    "electron-builder": "^26.8.1",
+    "electron": "^40.10.2",
+    "electron-builder": "^26.15.3",
     "electron-vite": "^5.0.0",
-    "node": "^22.22.3"
+    "node": "^22.23.0"
   },
   "main": "./out/main/index.js",
   "build": {
