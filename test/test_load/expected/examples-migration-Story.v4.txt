@@ -1,3 +1,5 @@
+[story]
+name=Story.v4
 [head]
 title=
 subtitle=

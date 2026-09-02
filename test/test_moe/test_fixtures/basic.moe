@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story>
+  <TitleItem opt_toplevel="chapters" opt_chapters="named" type="shortstory">
+    <title>Basic MOE Fixture</title>
+    <subtitle>Title, groups, and scenes</subtitle>
+    <author>Writer</author>
+    <coverpage>Cover page note.</coverpage>
+    <deadline>Tomorrow</deadline>
+    <published>False</published>
+    <publisher>Publisher Name</publisher>
+    <status>Draft</status>
+    <status></status>
+    <synopsis>Story-level synopsis.</synopsis>
+    <translated>Translator Name</translated>
+    <version>1.0</version>
+    <website>https://example.test/basic</website>
+    <year>2026</year>
+  </TitleItem>
+  <SceneItem included="False" formatting="normal">
+    <name>Root Notes Scene</name>
+    <content>Root-level excluded scene.</content>
+  </SceneItem>
+  <SceneItem included="True" formatting="normal">
+    <name>Root Draft Scene</name>
+    <content>Root-level draft scene.</content>
+  </SceneItem>
+  <GroupItem included="True">
+    <name>Draft Group</name>
+    <synopsis>Draft group synopsis.</synopsis>
+    <comments>Draft group comment.</comments>
+    <description>Draft group description.</description>
+    <description></description>
+    <sketch>Draft group sketch.</sketch>
+    <sketch></sketch>
+    <childs>
+      <SceneItem included="True" formatting="normal">
+        <name>Draft Scene</name>
+        <name>Ignored Draft Scene Name</name>
+        <synopsis>Scene _synopsis_.
+
+Second synopsis paragraph.</synopsis>
+        <description>Scene description.</description>
+        <comments>Scene *comment*.</comments>
+        <content>First paragraph with _italic_ and *bold* text.
+
+Second paragraph.</content>
+        <sketch>Scene sketch.</sketch>
+        <conflict>Scene conflict.</conflict>
+      </SceneItem>
+      <SceneItem included="False" formatting="italic">
+        <name>Excluded Draft Scene</name>
+        <content>Scene include becomes notes content.</content>
+      </SceneItem>
+      <GroupItem included="True">
+        <name>Nested Draft Group</name>
+        <synopsis>Nested group synopsis.</synopsis>
+        <childs>
+          <SceneItem included="True" formatting="normal">
+            <name>Nested Draft Scene</name>
+            <content>Nested draft scene.</content>
+          </SceneItem>
+        </childs>
+      </GroupItem>
+    </childs>
+  </GroupItem>
+  <GroupItem included="False">
+    <name>Notes Group</name>
+    <synopsis>Notes group synopsis.</synopsis>
+    <comments>Notes group comment.</comments>
+    <childs>
+      <SceneItem included="True" formatting="bold">
+        <name>Notes Scene</name>
+        <content>Bold notes content.</content>
+      </SceneItem>
+    </childs>
+  </GroupItem>
+</story>

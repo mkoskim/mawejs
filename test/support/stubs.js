@@ -21,6 +21,7 @@ export function saveEditorSettings(settings) {
 
 export function loadExportSettings(settings) {
   return {
+    ...(settings?.attributes ?? {})
   };
 }
 

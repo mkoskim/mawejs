@@ -303,11 +303,18 @@ export async function cmdDispatch(command, args) {
   function docFromFile({ filename }) {
     loadDocument(filename)
     .then(content => {
-      setSaved(content)
       updateDoc(content)
-      setRecent(recentAdd(recent, content.file))
-      console.log("Loaded:", content.file)
-      respSuccess({setCommand, message: `Loaded: ${content.file.name}`});
+
+      if(content.file) {
+        setSaved(content)
+        setRecent(recentAdd(recent, content.file))
+        console.log("Loaded:", content.file)
+        respSuccess({setCommand, message: `Loaded: ${content.file.name}`});
+      } else {
+        setSaved(null)
+        console.log("Imported:", filename)
+        respSuccess({setCommand, message: `Imported: ${filename}`});
+      }
     })
     .catch(err => {
       setRecent(recentRemove(recent, { id: filename }))

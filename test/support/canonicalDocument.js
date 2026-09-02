@@ -2,10 +2,18 @@ import { nodeIsBreak, nodeIsContainer } from "../../src/document/elements";
 
 export function canonicalDocumentText(doc) {
   return [
+    storyToText(doc),
     headToText(doc?.head),
     sectionToText("draft", doc?.draft),
     sectionToText("notes", doc?.notes),
     sectionToText("storybook", doc?.storybook),
+  ].join("\n");
+}
+
+function storyToText(doc = {}) {
+  return [
+    "[story]",
+    `name=${escapeText(doc.head?.name)}`,
   ].join("\n");
 }
 
