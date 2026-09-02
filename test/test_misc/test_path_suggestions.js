@@ -14,6 +14,8 @@ console.log("Path suggestion tests...");
 
 const cwd = process.cwd();
 const file = { id: path.join(cwd, "examples", "Story.mawe") };
+const doc = { file };
+const docWithoutFile = {};
 const fileDir = path.join(cwd, "examples");
 
 assert.equal(
@@ -23,15 +25,21 @@ assert.equal(
 );
 
 assert.equal(
-  await askFileToLoad(file),
+  await askFileToLoad(doc),
   fileDir,
-  "load with file should suggest the file directory",
+  "load with doc.file should suggest the file directory",
 );
 
 assert.equal(
-  await askFileToImport(file),
+  await askFileToImport(doc),
   fileDir,
-  "import with file should suggest the file directory",
+  "import with doc.file should suggest the file directory",
+);
+
+assert.equal(
+  await askFileToImport(docWithoutFile),
+  cwd,
+  "import with document without file should suggest cwd",
 );
 
 assert.equal(
@@ -41,15 +49,21 @@ assert.equal(
 );
 
 assert.equal(
-  await askFileToSaveAs(file),
+  await askFileToSaveAs(doc),
   file.id,
-  "save-as with file should suggest the current file path",
+  "save-as with doc.file should suggest the current file path",
 );
 
 assert.equal(
-  await askFileToRename(file),
+  await askFileToSaveAs(docWithoutFile),
+  path.join(cwd, "NewDoc.mawe"),
+  "save-as with document without file should suggest NewDoc.mawe in cwd",
+);
+
+assert.equal(
+  await askFileToRename(doc),
   file.id,
-  "rename should suggest the current file path",
+  "rename with doc.file should suggest the current file path",
 );
 
 console.log("Path suggestion tests passed");

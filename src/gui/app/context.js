@@ -50,11 +50,13 @@ const importFilters = [
 // on.
 //-----------------------------------------------------------------------------
 
-async function getPathForOpen(file) {
+async function getPathForOpen(doc) {
+  const {file} = doc ?? {}
   return file?.id ? fs.dirname(file?.id) : fs.getlocation("cwd")
 }
 
-async function getPathForSave(file) {
+async function getPathForSave(doc) {
+  const {file} = doc ?? {}
   return file?.id ?? getPathForNew("NewDoc.mawe")
 }
 
@@ -64,32 +66,33 @@ async function getPathForNew(filename) {
 
 //-----------------------------------------------------------------------------
 
-export async function askFileToLoad(file) {
+export async function askFileToLoad(doc) {
   return fileOpenDialog({
     filters,
-    defaultPath: await getPathForOpen(file),
+    defaultPath: await getPathForOpen(doc),
     properties: ["OpenFile"],
   })
 }
 
-export async function askFileToImport(file) {
+export async function askFileToImport(doc) {
   return fileOpenDialog({
     title: "Import File",
     filters: importFilters,
-    defaultPath: await getPathForOpen(file),
+    defaultPath: await getPathForOpen(doc),
     properties: ["OpenFile"],
   })
 }
 
-export async function askFileToSaveAs(file) {
+export async function askFileToSaveAs(doc) {
   return fileSaveDialog({
     filters,
-    defaultPath: await getPathForSave(file),
+    defaultPath: await getPathForSave(doc),
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
 }
 
-export async function askFileToRename(file) {
+export async function askFileToRename(doc) {
+  const {file} = doc
   return fileSaveDialog({
     title: "Rename File",
     buttonLabel: "Rename",
@@ -176,8 +179,7 @@ export async function cmdDispatch(command, args) {
 
   async function reqSaveAs() {
     if(!doc) return
-    const {file} = doc
-    const { canceled, filePath } = await askFileToSaveAs(file)
+    const { canceled, filePath } = await askFileToSaveAs(doc)
     if(canceled) return false
     //console.log("Save as:", filePath)
     return await docSaveAs({filename: filePath})
@@ -186,8 +188,7 @@ export async function cmdDispatch(command, args) {
   //---------------------------------------------------------------------------
 
   async function reqRename() {
-    const {file} = doc
-    const { canceled, filePath } = await askFileToRename(file)
+    const { canceled, filePath } = await askFileToRename(doc)
     if (!canceled) {
       //console.log("Renaming to:", filePath)
       docRename({filename: filePath})
@@ -236,8 +237,7 @@ export async function cmdDispatch(command, args) {
     const proceed = await confirmUnsaved()
     if(!proceed) return
 
-    const {file} = doc ?? {}
-    const { canceled, filePaths } = await askFileToLoad(file)
+    const { canceled, filePaths } = await askFileToLoad(doc)
     if (!canceled) {
       //console.log("Selected file:", filePaths)
       const [filename] = filePaths
@@ -249,9 +249,7 @@ export async function cmdDispatch(command, args) {
     const proceed = await confirmUnsaved()
     if(!proceed) return
 
-    const {file} = doc ?? {}
-
-    const { canceled, filePaths } = await askFileToImport(file)
+    const { canceled, filePaths } = await askFileToImport(doc)
     if (!canceled) {
       const [filename] = filePaths
       setDialogs(d => { d.importing = {filename}; })
