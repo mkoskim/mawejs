@@ -6,14 +6,15 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {loadmawe, createmawe, buf2tree, fromXML} from "./xmljs/load"
+import {createmawe, buf2tree, fromXML, maweFromTree} from "./xmljs/load"
+import {importMoe} from "./xmljs/importMoe"
 import {savemawe, toXML} from "./xmljs/save"
 import fs from "../system/localfs"
 
 import {info} from "./head"
 
 import {
-  getSuffix, suffix2format,
+  suffix2format,
   elemAsText, elemName, filterCtrlElems,
   file2buf, decodebuf,
 } from "./util";
@@ -39,21 +40,50 @@ export {elemAsText, elemName, filterCtrlElems}
 async function load(file) {
   if (typeof file === "string") file = await fs.fstat(file);
 
-  //console.log("Load file:", file)
-  const format = suffix2format(file.id);
+  const guessed = suffix2format(file.id);
+  if(!guessed) throw new Error(`${file.name}: Unknown type.`);
 
-  if (format === "mawe") {
-    //const suffix = getSuffix(file, [".mawe", ".mawe.gz"]);
-    //const basename = await fs.basename(file.name, suffix);
-    const doc = await loadmawe(file);
+  const tree = await loadTree(file);
+  const story = getStoryRoot(file, tree);
+  const format = getFormat(story, guessed);
 
-    return {
-      file,
-      ...doc
-    }
+  switch(format) {
+    case "mawe": return loadMaweTree(file, tree);
+    case "moe": return loadMoeTree(file, tree);
+    default: throw new Error(`${file.name}: Unknown type.`);
   }
+}
 
-  throw new Error(`${file.name}: Unknown type.`);
+async function loadTree(file) {
+  return buf2tree(await file2buf(file));
+}
+
+function getStoryRoot(file, tree) {
+  const story = tree.elements?.find(elem => elem.type === "element");
+
+  if(story?.name !== "story") throw new Error(`${file.name}: File has no story.`);
+
+  return story;
+}
+
+function getFormat(story, guessed) {
+  return story.attributes?.format ?? guessed;
+}
+
+function loadMaweTree(file, tree) {
+  const doc = maweFromTree(tree);
+
+  return {
+    file,
+    ...doc
+  }
+}
+
+function loadMoeTree(file, tree) {
+  return {
+    ...maweFromTree(importMoe(tree)),
+    origin: file,
+  }
 }
 
 function create(buffer) {

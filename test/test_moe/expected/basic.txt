@@ -1,0 +1,78 @@
+[story]
+name=Basic MOE Fixture
+[head]
+title=Basic MOE Fixture
+subtitle=Title, groups, and scenes
+author=Writer
+pseudonym=
+[section:draft]
+act|numbered=false|name=TitleItem
+chapter|numbered=false|name=
+scene|content=synopsis|name=synopsis
+p|text=Story-level synopsis.
+scene|content=notes|name=coverpage
+p|text=Cover page note.
+scene|content=notes|name=deadline
+p|text=Tomorrow
+scene|content=notes|name=published
+p|text=False
+scene|content=notes|name=publisher
+p|text=Publisher Name
+scene|content=notes|name=status
+p|text=Draft
+scene|content=notes|name=translated
+p|text=Translator Name
+scene|content=notes|name=version
+p|text=1.0
+scene|content=notes|name=website
+p|text=https://example.test/basic
+scene|content=notes|name=year
+p|text=2026
+act|numbered=true|name=
+chapter|numbered=true|name=Root Draft Scene
+scene|content=scene|name=Root Draft Scene
+p|text=Root-level draft scene.
+chapter|numbered=true|name=Draft Group
+scene|content=synopsis|name=synopsis
+p|text=Draft group synopsis.
+scene|content=notes|name=comments
+p|text=Draft group comment.
+scene|content=notes|name=description
+p|text=Draft group description.
+scene|content=notes|name=sketch
+p|text=Draft group sketch.
+scene|content=scene|name=Draft Scene
+bookmark|text=Scene synopsis.
+bookmark|text=Second synopsis paragraph.
+comment|text=Scene description.
+comment|text=Scene comment.
+p|text=First paragraph with italic and bold text.
+p|text=Second paragraph.
+comment|text=Scene sketch.
+comment|text=Scene conflict.
+scene|content=notes|name=name
+p|text=Nested Draft Group
+scene|content=synopsis|name=synopsis
+p|text=Nested group synopsis.
+scene|content=scene|name=Nested Draft Scene
+p|text=Nested draft scene.
+[section:notes]
+act|numbered=true|name=
+chapter|numbered=true|name=Root Notes Scene
+scene|content=notes|name=Root Notes Scene
+p|text=Root-level excluded scene.
+chapter|numbered=true|name=Draft Group
+scene|content=notes|name=Excluded Draft Scene
+p|text=Scene include becomes notes content.
+chapter|numbered=true|name=Notes Group
+scene|content=synopsis|name=synopsis
+p|text=Notes group synopsis.
+scene|content=notes|name=comments
+p|text=Notes group comment.
+scene|content=notes|name=Notes Scene
+p|text=Bold notes content.
+[section:storybook]
+act|numbered=true|name=
+chapter|numbered=true|name=
+scene|content=scene|name=
+br|text=

@@ -1,0 +1,22 @@
+[story]
+name=MOE Hidden Parts Fixture
+[head]
+title=MOE Hidden Parts Fixture
+subtitle=Hidden parts become unexported acts
+author=Writer
+pseudonym=
+[section:draft]
+act|numbered=true|name=
+chapter|numbered=true|name=Hidden Root Scene Part
+scene|content=scene|name=Hidden Root Scene Part
+p|text=Hidden root scene part content.
+[section:notes]
+act|numbered=true|name=
+chapter|numbered=true|name=Hidden Group Part
+scene|content=notes|name=Hidden Group Notes Scene
+p|text=Hidden group notes scene content.
+[section:storybook]
+act|numbered=true|name=
+chapter|numbered=true|name=
+scene|content=scene|name=
+br|text=

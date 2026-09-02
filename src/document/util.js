@@ -23,12 +23,15 @@ export function getSuffix(filename, suffixes) {
   return suffixes.find(suffix => filename.endsWith(suffix))
 }
 
-export function suffix2format(f, suffixes = [".mawe", ".mawe.gz", ".moe"]) {
+export function suffix2format(f, suffixes = [".mawe", ".mawe.gz", ".moe", ".moe.gz", ".moex", ".moex.gz"]) {
   const suffix = getSuffix(f, suffixes)
   return {
     ".mawe": "mawe",
     ".mawe.gz": "mawe",
     ".moe": "moe",
+    ".moe.gz": "moe",
+    ".moex": "moe",
+    ".moex.gz": "moe",
   }[suffix]
 }
 

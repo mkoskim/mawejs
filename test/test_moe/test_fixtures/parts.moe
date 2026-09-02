@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story>
+  <TitleItem opt_toplevel="parts" opt_chapters="named" type="shortstory">
+    <title>MOE Parts Fixture</title>
+    <subtitle>Parts become acts</subtitle>
+    <author>Writer</author>
+  </TitleItem>
+  <SceneItem included="True" formatting="normal">
+    <name>Root Scene Part</name>
+    <content>Root scene part content.</content>
+  </SceneItem>
+  <GroupItem included="True">
+    <name>Group Part</name>
+    <childs>
+      <SceneItem included="True" formatting="normal">
+        <name>Grouped Scene</name>
+        <content>Grouped scene content.</content>
+      </SceneItem>
+    </childs>
+  </GroupItem>
+</story>

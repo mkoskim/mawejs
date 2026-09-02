@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story>
+  <TitleItem opt_toplevel="hiddenparts" opt_chapters="numbered" type="longstory">
+    <title>MOE Hidden Parts Fixture</title>
+    <subtitle>Hidden parts become unexported acts</subtitle>
+    <author>Writer</author>
+  </TitleItem>
+  <SceneItem included="True" formatting="normal">
+    <name>Hidden Root Scene Part</name>
+    <content>Hidden root scene part content.</content>
+  </SceneItem>
+  <GroupItem included="True">
+    <name>Hidden Group Part</name>
+    <childs>
+      <SceneItem included="False" formatting="normal">
+        <name>Hidden Group Notes Scene</name>
+        <content>Hidden group notes scene content.</content>
+      </SceneItem>
+    </childs>
+  </GroupItem>
+</story>

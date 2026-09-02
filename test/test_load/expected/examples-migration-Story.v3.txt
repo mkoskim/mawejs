@@ -1,3 +1,5 @@
+[story]
+name=Story v3/1
 [head]
 title=Title v3/1
 subtitle=

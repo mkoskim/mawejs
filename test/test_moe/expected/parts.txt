@@ -1,0 +1,25 @@
+[story]
+name=MOE Parts Fixture
+[head]
+title=MOE Parts Fixture
+subtitle=Parts become acts
+author=Writer
+pseudonym=
+[section:draft]
+act|numbered=true|name=
+chapter|numbered=true|name=Root Scene Part
+scene|content=scene|name=Root Scene Part
+p|text=Root scene part content.
+chapter|numbered=true|name=Group Part
+scene|content=scene|name=Grouped Scene
+p|text=Grouped scene content.
+[section:notes]
+act|numbered=true|name=
+chapter|numbered=true|name=
+scene|content=scene|name=
+br|text=
+[section:storybook]
+act|numbered=true|name=
+chapter|numbered=true|name=
+scene|content=scene|name=
+br|text=

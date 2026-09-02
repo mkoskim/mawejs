@@ -45,51 +45,69 @@ const importFilters = [
 ]
 
 //-----------------------------------------------------------------------------
-// If we have file, give its path. Otherwise give CWD. System dialogs usually
-// have sidebar where you can choose directories like home, documents and so
-// on.
+// Prefer the current Mawe file for path suggestions. Imported documents may
+// have an origin file, which can suggest a directory or save-as filename
+// without becoming the actual save target. Otherwise fall back to CWD.
 //-----------------------------------------------------------------------------
 
-async function getPathForOpen(file) {
-  return file?.id ? fs.dirname(file?.id) : fs.getlocation("cwd")
+async function getPathForOpen(doc) {
+  const {file, origin} = doc ?? {}
+  const source = file ?? origin
+  return source?.id ? fs.dirname(source.id) : fs.getlocation("cwd")
 }
 
-async function getPathForSave(file) {
-  return file?.id ?? getPathForNew("NewDoc.mawe")
+async function getPathForOrigin(origin) {
+  const dirname = await fs.dirname(origin.id)
+  const extname = await fs.extname(origin.id)
+  const basename = await fs.basename(origin.id, extname)
+  return await fs.makepath(dirname, basename + ".mawe")
 }
 
-async function getPathForNew(filename) {
-  return await fs.makepath(await fs.getlocation("cwd"), filename)
+function getNameForNew(doc) {
+  const title = doc?.head ? documentInfo(doc.head).title : undefined
+  return title ? title + ".mawe" : "NewDoc.mawe"
+}
+
+async function getPathForNew(doc) {
+  return await fs.makepath(await fs.getlocation("cwd"), getNameForNew(doc))
+}
+
+async function getPathForSave(doc) {
+  const {file, origin} = doc ?? {}
+  if(file?.id) return file.id
+  if(origin?.id) return await getPathForOrigin(origin)
+  return await getPathForNew(doc)
 }
 
 //-----------------------------------------------------------------------------
 
-export async function askFileToLoad(file) {
+export async function askFileToLoad(doc) {
   return fileOpenDialog({
     filters,
-    defaultPath: await getPathForOpen(file),
+    defaultPath: await getPathForOpen(doc),
     properties: ["OpenFile"],
   })
 }
 
-export async function askFileToImport(file) {
+export async function askFileToImport(doc) {
   return fileOpenDialog({
     title: "Import File",
     filters: importFilters,
-    defaultPath: await getPathForOpen(file),
+    defaultPath: await getPathForOpen(doc),
     properties: ["OpenFile"],
   })
 }
 
-export async function askFileToSaveAs(file) {
+export async function askFileToSaveAs(doc) {
   return fileSaveDialog({
     filters,
-    defaultPath: await getPathForSave(file),
+    defaultPath: await getPathForSave(doc),
     properties: ["createDirectory", "showOverwriteConfirmation"],
   })
 }
 
-export async function askFileToRename(file) {
+export async function askFileToRename(doc) {
+  const {file} = doc
   return fileSaveDialog({
     title: "Rename File",
     buttonLabel: "Rename",
@@ -176,8 +194,7 @@ export async function cmdDispatch(command, args) {
 
   async function reqSaveAs() {
     if(!doc) return
-    const {file} = doc
-    const { canceled, filePath } = await askFileToSaveAs(file)
+    const { canceled, filePath } = await askFileToSaveAs(doc)
     if(canceled) return false
     //console.log("Save as:", filePath)
     return await docSaveAs({filename: filePath})
@@ -186,8 +203,7 @@ export async function cmdDispatch(command, args) {
   //---------------------------------------------------------------------------
 
   async function reqRename() {
-    const {file} = doc
-    const { canceled, filePath } = await askFileToRename(file)
+    const { canceled, filePath } = await askFileToRename(doc)
     if (!canceled) {
       //console.log("Renaming to:", filePath)
       docRename({filename: filePath})
@@ -236,8 +252,7 @@ export async function cmdDispatch(command, args) {
     const proceed = await confirmUnsaved()
     if(!proceed) return
 
-    const {file} = doc ?? {}
-    const { canceled, filePaths } = await askFileToLoad(file)
+    const { canceled, filePaths } = await askFileToLoad(doc)
     if (!canceled) {
       //console.log("Selected file:", filePaths)
       const [filename] = filePaths
@@ -249,9 +264,7 @@ export async function cmdDispatch(command, args) {
     const proceed = await confirmUnsaved()
     if(!proceed) return
 
-    const {file} = doc ?? {}
-
-    const { canceled, filePaths } = await askFileToImport(file)
+    const { canceled, filePaths } = await askFileToImport(doc)
     if (!canceled) {
       const [filename] = filePaths
       setDialogs(d => { d.importing = {filename}; })
@@ -290,11 +303,18 @@ export async function cmdDispatch(command, args) {
   function docFromFile({ filename }) {
     loadDocument(filename)
     .then(content => {
-      setSaved(content)
       updateDoc(content)
-      setRecent(recentAdd(recent, content.file))
-      console.log("Loaded:", content.file)
-      respSuccess({setCommand, message: `Loaded: ${content.file.name}`});
+
+      if(content.file) {
+        setSaved(content)
+        setRecent(recentAdd(recent, content.file))
+        console.log("Loaded:", content.file)
+        respSuccess({setCommand, message: `Loaded: ${content.file.name}`});
+      } else {
+        setSaved(null)
+        console.log("Imported:", filename)
+        respSuccess({setCommand, message: `Imported: ${filename}`});
+      }
     })
     .catch(err => {
       setRecent(recentRemove(recent, { id: filename }))

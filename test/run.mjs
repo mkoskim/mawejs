@@ -14,10 +14,14 @@ const testGroups = {
   load: [
     "test/test_load/test_load.js",
     "test/test_load/test_roundtrip.js",
+    "test/test_load/test_format_detection.js",
   ],
   export: [
     "test/test_export/test_export.js",
     "test/test_export/test_splits.js",
+  ],
+  gzip: [
+    "test/test_gzip/test_gzip.js",
   ],
   slate: [
     "test/test_slate/test_folding.js",
@@ -26,16 +30,23 @@ const testGroups = {
   ],
   misc: [
     "test/test_misc/test_history.js",
+    "test/test_misc/test_path_suggestions.js",
+  ],
+  moe: [
+    "test/test_moe/test_import_moe.js",
   ],
   // Test cases which have reference files, that can be updated
   update: [
     "test/test_load/test_load.js",
+    "test/test_moe/test_import_moe.js",
   ],
 };
 
 testGroups.all = [
   ...testGroups.load,
   ...testGroups.export,
+  ...testGroups.gzip,
+  ...testGroups.moe,
   ...testGroups.slate,
   ...testGroups.misc,
 ];
@@ -133,6 +144,8 @@ const stubMap = new Map([
   [path.resolve(workdir, "src/gui/export/export"), path.resolve(workdir, "test/support/stubs.js")],
   [path.resolve(workdir, "src/gui/common/hotkeys.js"), path.resolve(workdir, "test/support/stubs.js")],
   [path.resolve(workdir, "src/gui/common/hotkeys"), path.resolve(workdir, "test/support/stubs.js")],
+  [path.resolve(workdir, "src/system/dialog.js"), path.resolve(workdir, "test/support/dialogStub.js")],
+  [path.resolve(workdir, "src/system/dialog"), path.resolve(workdir, "test/support/dialogStub.js")],
 ]);
 const fakeElectronModule = path.resolve(workdir, "test/support/fakeElectron.js");
 
