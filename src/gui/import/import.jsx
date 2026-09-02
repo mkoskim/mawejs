@@ -47,7 +47,7 @@ async function getContent(filename) {
   if (!filename) {
     return {
       loader: navigator.clipboard.readText(),
-      format: "text"
+      format: "text",
     }
   }
 
@@ -60,12 +60,14 @@ async function getContent(filename) {
       loader: fs.read(file.id, null)
         .then(buffer => mammoth.extractRawText({ arrayBuffer: buffer }))
         .then(result => result.value),
-      format: "text"
+      format: "text",
+      origin: file,
     }
   }
   return {
     loader: fs.read(file.id),
-    format: "text"
+    format: "text",
+    origin: file,
   }
 }
 
@@ -77,20 +79,24 @@ export function ImportDialog({ filename, setDialogs }) {
   const [content, setContent] = useState()
   const [format, setFormat] = useState()
   const [imported, setImported] = useState()
+  const [origin, setOrigin] = useState()
 
   function Import(e) {
-    const story = maweFromTree({
-      elements: [{
-        type: "element", name: "story",
-        attributes: { format: "mawe", version: "4" },
-        elements: [
-          {
-            type: "element", name: "body",
-            elements: imported,
-          }
-        ]
-      }]
-    })
+    const story = {
+      ...maweFromTree({
+        elements: [{
+          type: "element", name: "story",
+          attributes: { format: "mawe", version: "4" },
+          elements: [
+            {
+              type: "element", name: "body",
+              elements: imported,
+            }
+          ]
+        }]
+      }),
+      ...(origin ? { origin } : {}),
+    }
     doImport({setCommand, story})
     setDialogs(d => { delete d.importing; })
   }
@@ -102,11 +108,12 @@ export function ImportDialog({ filename, setDialogs }) {
 
   useEffect(() => {
     getContent(filename)
-    .then(({ loader, format }) => {
+    .then(({ loader, format, origin }) => {
       loader
       .then(content => {
         setContent(content)
         setFormat(format)
+        setOrigin(origin)
         if (filename) Inform.success(`Loaded: ${filename}`);
       })
       .catch(err => {
