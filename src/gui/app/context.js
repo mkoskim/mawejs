@@ -45,23 +45,38 @@ const importFilters = [
 ]
 
 //-----------------------------------------------------------------------------
-// If we have file, give its path. Otherwise give CWD. System dialogs usually
-// have sidebar where you can choose directories like home, documents and so
-// on.
+// Prefer the current Mawe file for path suggestions. Imported documents may
+// have an origin file, which can suggest a directory or save-as filename
+// without becoming the actual save target. Otherwise fall back to CWD.
 //-----------------------------------------------------------------------------
 
 async function getPathForOpen(doc) {
-  const {file} = doc ?? {}
-  return file?.id ? fs.dirname(file?.id) : fs.getlocation("cwd")
+  const {file, origin} = doc ?? {}
+  const source = file ?? origin
+  return source?.id ? fs.dirname(source.id) : fs.getlocation("cwd")
+}
+
+async function getPathForOrigin(origin) {
+  const dirname = await fs.dirname(origin.id)
+  const extname = await fs.extname(origin.id)
+  const basename = await fs.basename(origin.id, extname)
+  return await fs.makepath(dirname, basename + ".mawe")
+}
+
+function getNameForNew(doc) {
+  const title = doc?.head ? documentInfo(doc.head).title : undefined
+  return title ? title + ".mawe" : "NewDoc.mawe"
+}
+
+async function getPathForNew(doc) {
+  return await fs.makepath(await fs.getlocation("cwd"), getNameForNew(doc))
 }
 
 async function getPathForSave(doc) {
-  const {file} = doc ?? {}
-  return file?.id ?? getPathForNew("NewDoc.mawe")
-}
-
-async function getPathForNew(filename) {
-  return await fs.makepath(await fs.getlocation("cwd"), filename)
+  const {file, origin} = doc ?? {}
+  if(file?.id) return file.id
+  if(origin?.id) return await getPathForOrigin(origin)
+  return await getPathForNew(doc)
 }
 
 //-----------------------------------------------------------------------------

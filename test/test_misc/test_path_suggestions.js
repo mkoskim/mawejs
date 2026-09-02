@@ -13,10 +13,16 @@ installFakeIpc();
 console.log("Path suggestion tests...");
 
 const cwd = process.cwd();
-const file = { id: path.join(cwd, "examples", "Story.mawe") };
-const doc = { file };
-const docWithoutFile = {};
 const fileDir = path.join(cwd, "examples");
+const originDir = path.join(cwd, "examples", "import");
+const file = { id: path.join(fileDir, "Story.mawe") };
+const origin = { id: path.join(originDir, "Imported.docx") };
+const doc = { file };
+const docWithFileAndOrigin = { file, origin };
+const docWithOrigin = { origin };
+const docWithTitle = { head: { title: "Story Title" } };
+const docWithName = { head: { name: "Story Name" } };
+const docWithoutFile = {};
 
 assert.equal(
   await askFileToLoad(undefined),
@@ -31,15 +37,33 @@ assert.equal(
 );
 
 assert.equal(
+  await askFileToLoad(docWithOrigin),
+  originDir,
+  "load with doc.origin should suggest the origin directory",
+);
+
+assert.equal(
+  await askFileToLoad(docWithFileAndOrigin),
+  fileDir,
+  "load with doc.file and doc.origin should prefer the file directory",
+);
+
+assert.equal(
   await askFileToImport(doc),
   fileDir,
   "import with doc.file should suggest the file directory",
 );
 
 assert.equal(
+  await askFileToImport(docWithOrigin),
+  originDir,
+  "import with doc.origin should suggest the origin directory",
+);
+
+assert.equal(
   await askFileToImport(docWithoutFile),
   cwd,
-  "import with document without file should suggest cwd",
+  "import with document without file or origin should suggest cwd",
 );
 
 assert.equal(
@@ -55,9 +79,33 @@ assert.equal(
 );
 
 assert.equal(
+  await askFileToSaveAs(docWithFileAndOrigin),
+  file.id,
+  "save-as with doc.file and doc.origin should prefer the current file path",
+);
+
+assert.equal(
+  await askFileToSaveAs(docWithOrigin),
+  path.join(originDir, "Imported.mawe"),
+  "save-as with doc.origin should suggest origin basename with mawe suffix",
+);
+
+assert.equal(
+  await askFileToSaveAs(docWithTitle),
+  path.join(cwd, "Story Title.mawe"),
+  "save-as with doc.head title should suggest title with mawe suffix in cwd",
+);
+
+assert.equal(
+  await askFileToSaveAs(docWithName),
+  path.join(cwd, "Story Name.mawe"),
+  "save-as with doc.head name should suggest name with mawe suffix in cwd",
+);
+
+assert.equal(
   await askFileToSaveAs(docWithoutFile),
   path.join(cwd, "NewDoc.mawe"),
-  "save-as with document without file should suggest NewDoc.mawe in cwd",
+  "save-as with document without file, origin, or title should suggest NewDoc.mawe in cwd",
 );
 
 assert.equal(
