@@ -26,6 +26,7 @@ const testGroups = {
   ],
   misc: [
     "test/test_misc/test_history.js",
+    "test/test_misc/test_path_suggestions.js",
   ],
   // Test cases which have reference files, that can be updated
   update: [
@@ -133,6 +134,8 @@ const stubMap = new Map([
   [path.resolve(workdir, "src/gui/export/export"), path.resolve(workdir, "test/support/stubs.js")],
   [path.resolve(workdir, "src/gui/common/hotkeys.js"), path.resolve(workdir, "test/support/stubs.js")],
   [path.resolve(workdir, "src/gui/common/hotkeys"), path.resolve(workdir, "test/support/stubs.js")],
+  [path.resolve(workdir, "src/system/dialog.js"), path.resolve(workdir, "test/support/dialogStub.js")],
+  [path.resolve(workdir, "src/system/dialog"), path.resolve(workdir, "test/support/dialogStub.js")],
 ]);
 const fakeElectronModule = path.resolve(workdir, "test/support/fakeElectron.js");
 
