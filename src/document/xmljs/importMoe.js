@@ -175,7 +175,7 @@ function flattenScene(scene, parentIncluded) {
   const included = parentIncluded && sceneIncluded(scene)
 
   return [{
-    scene: parseScene(scene, included),
+    scene: parseScene(scene),
     included,
   }]
 }
@@ -214,12 +214,11 @@ function fieldScene(field, content, included) {
   }]
 }
 
-function parseScene(scene, included) {
+function parseScene(scene) {
   const paragraphs = sceneContent(scene)
 
   return elem("scene", {
     name: optional(scene, "name"),
-    content: included ? undefined : "notes",
   }, paragraphs.length ? paragraphs : [elem("br")])
 }
 
