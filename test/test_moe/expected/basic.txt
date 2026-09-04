@@ -59,17 +59,17 @@ p|text=Nested draft scene.
 [section:notes]
 act|numbered=true|name=
 chapter|numbered=true|name=Root Notes Scene
-scene|content=notes|name=Root Notes Scene
+scene|content=scene|name=Root Notes Scene
 p|text=Root-level excluded scene.
 chapter|numbered=true|name=Draft Group
-scene|content=notes|name=Excluded Draft Scene
+scene|content=scene|name=Excluded Draft Scene
 p|text=Scene include becomes notes content.
 chapter|numbered=true|name=Notes Group
 scene|content=synopsis|name=synopsis
 p|text=Notes group synopsis.
 scene|content=notes|name=comments
 p|text=Notes group comment.
-scene|content=notes|name=Notes Scene
+scene|content=scene|name=Notes Scene
 p|text=Bold notes content.
 [section:storybook]
 act|numbered=true|name=
