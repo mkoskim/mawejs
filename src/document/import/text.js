@@ -10,8 +10,6 @@ import { splitByLeadingElem, text2lines } from "../../util";
 
 export function importText(content, settings = {}) {
 
-  if(!content) return undefined
-
   const linebreak = getLinebreak(settings.linebreak)
   const {
     actprefix = "",
@@ -19,28 +17,40 @@ export function importText(content, settings = {}) {
     sceneprefix = "",
   } = settings
 
-  function isActBreak(line) {
-    if(!actprefix.length) return false
-    if(!line) return false
-    return line.toLowerCase().startsWith(actprefix.toLowerCase())
-  }
-
-  function isChapterBreak(line) {
-    if(!chapterprefix) return false
-    if(!line) return false
-    return line.toLowerCase().startsWith(chapterprefix.toLowerCase())
-  }
-
-  function isSceneBreak(line) {
-    if(!sceneprefix) return false
-    if(!line) return false
-    return line.toLowerCase().startsWith(sceneprefix.toLowerCase())
-  }
-
   const lines = text2lines(content, linebreak)
   const acts = splitByLeadingElem(lines, isActBreak).filter(e => e.length)
 
-  return acts.map(makeAct)
+  // Return as mawe XML tree version 4
+  return {
+    elements: [{
+      type: "element", name: "story",
+      attributes: { format: "mawe", version: "4" },
+      elements: [
+        {
+          type: "element", name: "body",
+          elements: acts.map(makeAct),
+        }
+      ]
+    }]
+  }
+
+  function isBreak(prefix, line) {
+    if(!prefix.length) return false
+    if(!line) return false
+    return line.toLowerCase().startsWith(prefix.toLowerCase())
+  }
+
+  function isActBreak(line) {
+    return isBreak(actprefix, line)
+  }
+
+  function isChapterBreak(line) {
+    return isBreak(chapterprefix, line)
+  }
+
+  function isSceneBreak(line) {
+    return isBreak(sceneprefix, line)
+  }
 
   //---------------------------------------------------------------------------
 

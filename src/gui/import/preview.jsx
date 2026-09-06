@@ -6,12 +6,13 @@
 
 import React from "react"
 import { InfiniteScroll } from "../common/factory"
+import { elemFind } from "../../document/xmljs/tree.js"
 
 const previewChunk = 100
 
 //-----------------------------------------------------------------------------
 
-export function Preview({imported = []}) {
+export function Preview({imported = undefined}) {
   const flatted = React.useMemo(() => flatImported(imported), [imported])
 
   return <>
@@ -24,8 +25,13 @@ export function Preview({imported = []}) {
 }
 
 function flatImported(imported) {
+  if(!imported) return []
+
+  const root = imported.elements[0]
+  const body = elemFind(root, "body")
   const result = []
-  for(const act of imported) {
+
+  for(const act of body.elements) {
     result.push(act)
     for(const chapter of act.elements) {
       result.push(chapter)

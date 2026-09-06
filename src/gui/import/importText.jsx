@@ -15,7 +15,7 @@ import {
 
 import { importText } from "../../document/import/text";
 
-export class ImportText extends React.PureComponent {
+export class ImportText extends React.Component {
 
   constructor(props) {
     super(props);

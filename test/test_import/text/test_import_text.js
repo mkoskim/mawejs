@@ -1,21 +1,25 @@
 import assert from "node:assert/strict";
 import { importText } from "../../../src/document/import/text.js";
+import { elemFind } from "../../../src/document/xmljs/tree.js";
 
 console.log("Text import tests...");
 
-testEmptyContent();
 testPlainText();
 testPrefixes();
 testSingleLinebreak();
 
 console.log("Text import tests passed");
 
-function testEmptyContent() {
-  assert.equal(importText("", {}), undefined);
+function doImport(content, settings) {
+  const tree = importText(content, settings);
+  //console.log("Imported tree:", JSON.stringify(tree, null, 2));
+  const root = tree.elements[0];
+  const body = elemFind(root, "body");
+  return body.elements;
 }
 
 function testPlainText() {
-  const acts = importText("First paragraph.\n\nSecond paragraph.", {
+  const acts = doImport("First paragraph.\n\nSecond paragraph.", {
     linebreak: "double",
   });
 
@@ -30,7 +34,7 @@ function testPlainText() {
 }
 
 function testPrefixes() {
-  const acts = importText([
+  const acts = doImport([
     "ACT One",
     "Chapter One",
     "Scene One",
@@ -60,7 +64,7 @@ function testPrefixes() {
 }
 
 function testSingleLinebreak() {
-  const acts = importText("Scene One\nFirst paragraph.\nSecond paragraph.", {
+  const acts = doImport("Scene One\nFirst paragraph.\nSecond paragraph.", {
     linebreak: "single",
     sceneprefix: "scene",
   });

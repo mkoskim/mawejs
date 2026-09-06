@@ -54,19 +54,9 @@ export function ImportDialog({ filename, setDialogs }) {
   const [origin, setOrigin] = useState()
 
   function Import(e) {
+    //console.log("Importing:", imported)
     const story = {
-      ...maweFromTree({
-        elements: [{
-          type: "element", name: "story",
-          attributes: { format: "mawe", version: "4" },
-          elements: [
-            {
-              type: "element", name: "body",
-              elements: imported,
-            }
-          ]
-        }]
-      }),
+      ...maweFromTree(imported),
       ...(origin ? { origin } : {}),
     }
     doImport({setCommand, story})

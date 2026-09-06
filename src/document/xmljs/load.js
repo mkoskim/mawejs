@@ -24,18 +24,20 @@ import { elemFind, elemFindall, elem2Text } from "./tree";
 // <story format="mawe" version="x" uuid="xxx">
 //    <head> ... </head>
 //    <draft name="xxx">
-//      <chapter> ... </chapter>
-//      <chapter> ... </chapter>
+//      <act>
+//        <chapter> ... </chapter>
+//        <chapter> ... </chapter>
+//      </act>
 //      ...
 //    </draft>
 //    <notes>
-//      <chapter> ... </chapter>
-//      <chapter> ... </chapter>
+//      <act> ... </act>
+//      <act> ... </act>
 //      ...
 //    </notes>
 //    <storybook>
-//      <chapter> ... </chapter>
-//      <chapter> ... </chapter>
+//      <act> ... </act>
+//      <act> ... </act>
 //      ...
 //    </storybook>
 //
@@ -54,6 +56,7 @@ export function maweFromBuffer(buffer) {
 }
 
 export function maweFromTree(tree) {
+  //console.log("Tree", tree)
   const story = fromXML(tree)
   //console.log("Story:", story)
   return {
