@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { Editor } from "slate";
-import { elemHeadParse, elemHeading } from "../../src/document/util.js";
+import { nodeHeadParse, nodeHeading } from "../../src/document/nodeutil.js";
 import { getCoreEditor } from "../../src/slatejs/slateEditor.js";
 import { dndDrop } from "../../src/slatejs/slateDnD.js";
 
@@ -278,8 +278,8 @@ function containerNames(editor) {
 }
 
 function containerName(container) {
-  const head = elemHeading(container);
-  const { name } = elemHeadParse(head);
+  const head = nodeHeading(container);
+  const { name } = nodeHeadParse(head);
   return name || "<Unnamed>";
 }
 

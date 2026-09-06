@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { Editor } from "slate";
-import { nodeID } from "../../src/document/util.js";
+import { nodeID } from "../../src/document/nodeutil.js";
 import { getCoreEditor } from "../../src/slatejs/slateEditor.js";
 import { foldNode } from "../../src/slatejs/slateFolding.js";
 import {

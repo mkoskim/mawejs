@@ -12,23 +12,13 @@ import {
   Element,
 } from 'slate'
 import { ReactEditor } from 'slate-react'
-import { elemIsVisible, topmostFoldedBlock } from './slateFolding';
+import { nodeIsVisible, topmostFoldedNode } from './slateFolding';
 
 //*****************************************************************************
 //
 // Helper functions
 //
 //*****************************************************************************
-
-//-----------------------------------------------------------------------------
-
-export function elemIsBlock(editor, elem) {
-  return elem && !Editor.isEditor(elem) && Element.isElement(elem);
-}
-
-function elemIsType(editor, elem, type) {
-  return elemIsBlock(editor, elem) && elem.type === type
-}
 
 //-----------------------------------------------------------------------------
 
@@ -41,7 +31,17 @@ export function isAstChange(editor) {
 
 //-----------------------------------------------------------------------------
 
-export function elemByTypes(editor, types, anchor, focus) {
+export function nodeIsBlock(editor, node) {
+  return node && !Editor.isEditor(node) && Element.isElement(node);
+}
+
+function nodeIsType(editor, node, type) {
+  return nodeIsBlock(editor, node) && node.type === type
+}
+
+//-----------------------------------------------------------------------------
+
+export function nodesByTypes(editor, types, anchor, focus) {
   if(!anchor) anchor = Editor.start(editor, [])
   if(!focus) focus = Editor.end(editor, [])
 
@@ -53,7 +53,7 @@ export function elemByTypes(editor, types, anchor, focus) {
   )
 }
 
-export function elemsByRange(editor, anchor, focus) {
+export function nodesByRange(editor, anchor, focus) {
   return Array.from(
     Editor.nodes(editor, {
       at: {anchor, focus},
@@ -63,7 +63,7 @@ export function elemsByRange(editor, anchor, focus) {
 }
 
 //-----------------------------------------------------------------------------
-// Focusing elements
+// Focusing nodes
 
 export async function focusByPath(editor, path, collapse = true) {
   //console.log("FocusByPath", path)
@@ -96,8 +96,8 @@ export async function focusByPath(editor, path, collapse = true) {
   function selectNearestVisible() {
     const {focus} = editor.selection || {}
     if(!focus) return
-    if(elemIsVisible(editor, focus.path)) return
-    const folded = topmostFoldedBlock(editor, focus.path)
+    if(nodeIsVisible(editor, focus.path)) return
+    const folded = topmostFoldedNode(editor, focus.path)
     if(!folded) return
     const [, path] = folded
     Transforms.select(editor, Editor.start(editor, path))

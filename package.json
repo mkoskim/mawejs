@@ -12,6 +12,8 @@
     "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
     "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox",
     "test": "node test/run.mjs",
+    "test:dev": "node --watch test/run.mjs",
+    "test:xml": "node test/run.mjs --group xml",
     "test:load": "node test/run.mjs --group load",
     "test:import": "node test/run.mjs --group import",
     "test:export": "node test/run.mjs --group export",

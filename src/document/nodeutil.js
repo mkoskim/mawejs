@@ -1,79 +1,13 @@
 //*****************************************************************************
-//*****************************************************************************
-//
-// Document utilities
-//
-//*****************************************************************************
-//*****************************************************************************
-
-import {isGzip, gzip, gunzip} from "../util/compress"
-import {uuid, nanoid} from "../util"
-import { nodeBreaks, nodeIsBreak, nodeTypes } from "./elements";
-import fs from "../system/localfs"
-
-export {uuid, nanoid}
-
-const utf8decoder = new TextDecoder();
-
-//-----------------------------------------------------------------------------
-// Determine file type by extension
-//-----------------------------------------------------------------------------
-
-export function getSuffix(filename, suffixes) {
-  return suffixes.find(suffix => filename.endsWith(suffix))
-}
-
-export function suffix2format(f, suffixes = [".mawe", ".mawe.gz", ".moe", ".moe.gz", ".moex", ".moex.gz"]) {
-  const suffix = getSuffix(f, suffixes)
-  return {
-    ".mawe": "mawe",
-    ".mawe.gz": "mawe",
-    ".moe": "moe",
-    ".moe.gz": "moe",
-    ".moex": "moe",
-    ".moex.gz": "moe",
-  }[suffix]
-}
-
-//-----------------------------------------------------------------------------
-// Loading & generating buffers and trees.
-//-----------------------------------------------------------------------------
-
-export async function file2buf(file) {
-  const buffer = await fs.read(file.id, null);
-  const compressed = isGzip(buffer)
-  //console.log("Buffer:", buffer)
-  //console.log("isGzip:", compressed)
-  return decodebuf(compressed ? gunzip(buffer) : buffer);
-}
-
-export function decodebuf(buffer) {
-  return utf8decoder.decode(buffer)
-}
-
-export async function buf2file(doc, buffer) {
-  const file = doc.file;
-
-  // Sanity check here: make sure that buffer is extracted to the same doc as
-  // sent for saving.
-  //console.log(file)
-
-  /*
-  return await fs.write("savetest.mawe", buffer);
-  /*/
-  if(file.id.endsWith(".gz")) {
-    return await fs.write(file.id, gzip(buffer, {level: 9}));
-  } else {
-    return await fs.write(file.id, buffer);
-  }
-  /**/
-}
-
-//*****************************************************************************
 //
 // Node ID generation (for indices, DnD and so on)
 //
 //*****************************************************************************
+
+import {text2words, textToInt} from "../util"
+import {nodeBreaks, nodeIsBreak, nodeTypes} from "./elements";
+
+//-----------------------------------------------------------------------------
 
 export function nodeID(sectID, path) {
   if(!path) return sectID
@@ -94,38 +28,35 @@ export function IDtoPath(ID) {
 
 //-----------------------------------------------------------------------------
 
-export function nodeIsCtrl(elem) {
-  return nodeIsBreak(elem)
+export function nodeIsCtrl(node) {
+  return nodeIsBreak(node)
 }
 
-//*
-export function filterCtrlElems(blocks) {
-  //const ctrltypes = ["hact", "hchapter", "hscene", "hsynopsis", "hnotes"]
-  return blocks.filter(elem => !nodeIsCtrl(elem))
+export function filterCtrlNodes(nodes) {
+  return nodes.filter(node => !nodeIsCtrl(node))
 }
-/**/
 
-export function elemAsText(elem) {
-  if(!elem?.children) return ""
+export function nodeAsText(node) {
+  if(!node?.children) return ""
   return (
-    elem.children
-    .map(elem => elem.text)
+    node.children
+    .map(node => node.text)
     .join("")
   )
 }
 
-export function elemHeading(elem) {
+export function nodeHeading(node) {
 
-  if(elem.children.length) {
-    const [first] = elem.children
-    if(nodeIsBreak(first) && nodeBreaks(first) === elem.type) return first
+  if(node.children.length) {
+    const [first] = node.children
+    if(nodeIsBreak(first) && nodeBreaks(first) === node.type) return first
   }
 
   return undefined
 }
 
-export function elemHeadAttrs(elem) {
-  const {type, name, numbered, target} = elemHeading(elem) ?? {type: nodeTypes[elem.type].header, numbered: true}
+export function nodeHeadAttrs(node) {
+  const {type, name, numbered, target} = nodeHeading(node) ?? {type: nodeTypes[node.type].header, numbered: true}
   const ctrl = {
     ...nodeTypes[type].ctrl ?? {},
     name,
@@ -135,7 +66,7 @@ export function elemHeadAttrs(elem) {
   return ctrl;
 }
 
-export function makeHeader(type, name, numbered, target) {
+export function createHeaderNode(type, name, numbered, target) {
   return {
     type,
     name,
@@ -149,15 +80,9 @@ export function makeHeader(type, name, numbered, target) {
   }
 }
 
-export function textToInt(text) {
-  if(!text) return undefined
-  const number = parseInt(text.trim())
-  return isNaN(number) ? undefined : number
-}
-
-export function elemHeadParse(head) {
+export function nodeHeadParse(head) {
   if(!head) return {}
-  const all = elemAsText(head)
+  const all = nodeAsText(head)
   const [textStr, targetStr] = all.split("::")
   const text = textStr.trim()
   const target = textToInt(targetStr)
@@ -169,26 +94,22 @@ export function elemHeadParse(head) {
   }
 }
 
-export function elemName(elem) {
-  return elem.name
-  //const head = elemHeading(elem)
-  //return elemHeadParse(head).name
+export function nodeName(node) {
+  return node.name
 }
 
-export function elemNumbered(elem) {
-  //const head = elemHeading(elem)
-  //return elemHeadParse(head).numbered
-  return elem.numbered
+export function nodeNumbered(node) {
+  return node.numbered
 }
 
 //-----------------------------------------------------------------------------
-// Element tags
+// Node tags
 //-----------------------------------------------------------------------------
 
-export function elemTags(elem) {
-  if(!elem?.children) return []
-  if(elem.type !== "tags") return []
-  return elemAsText(elem).split(",").map(s => s.trim().toLowerCase()).filter(s => s)
+export function nodeTags(node) {
+  if(!node?.children) return []
+  if(node.type !== "tags") return []
+  return nodeAsText(node).split(",").map(s => s.trim().toLowerCase()).filter(s => s)
 }
 
 //-----------------------------------------------------------------------------
@@ -196,27 +117,16 @@ export function elemTags(elem) {
 // comments, synopses, chapter & section headers and so on.
 //-----------------------------------------------------------------------------
 
-const reSplit2Words = new RegExp(/[^\p{L}\p{N}]+/, "iu")
-
-export function text2words(text) {
-  //return text.split(/[^\wåäö]+/i).filter(word => word.length)
-  return text.split(reSplit2Words).filter(word => word.length)
-}
-
-export function wordcount(text) {
-  return text2words(text).length
-}
-
 export function createWordTable(section) {
   const wt = new Map()
 
   for(const act of section.acts) {
-    for(const chapter of filterCtrlElems(act.children)) {
-      for(const scene of filterCtrlElems(chapter.children)) {
+    for(const chapter of filterCtrlNodes(act.children)) {
+      for(const scene of filterCtrlNodes(chapter.children)) {
         if(scene.content !== "scene") continue
         for(const p of scene.children) {
           if(p.type !== "p" && p.type !== "quote") continue
-          for(const word of text2words(elemAsText(p))) {
+          for(const word of text2words(nodeAsText(p))) {
             const lowcase = word.toLowerCase()
             const count = wt.has(lowcase) ? wt.get(lowcase) : 0
             wt.set(lowcase, count + 1)
@@ -237,10 +147,10 @@ export function createTagTable(section) {
   const tags = new Set()
 
   for(const act of section.acts) {
-    for(const chapter of filterCtrlElems(act.children)) {
-      for(const scene of filterCtrlElems(chapter.children)) {
+    for(const chapter of filterCtrlNodes(act.children)) {
+      for(const scene of filterCtrlNodes(chapter.children)) {
         for(const p of scene.children) {
-          const keys = elemTags(p)
+          const keys = nodeTags(p)
           for(const key of keys) {
             tags.add(key);
           }
@@ -256,17 +166,17 @@ export function createTagTable(section) {
 // Count words
 //-----------------------------------------------------------------------------
 
-function wcParagraph(elem) {
-  const text = elemAsText(elem)
+function wcParagraph(node) {
+  const text = nodeAsText(node)
   const chars = text.length
   const words = text2words(text)
   const wc = words.length
 
-  switch(elem.type) {
+  switch(node.type) {
     //case "p": return { chars, text: wc, map: words2map(words) }
     case "p":
     case "quote":
-      if(!elem.review) return { chars, text: wc }
+      if(!node.review) return { chars, text: wc }
       // Fall-through
     case "missing": return { missing: wc }
     case "fill": {
@@ -281,10 +191,10 @@ function wcParagraph(elem) {
 export function wcChildren(children, target) {
 
   let words = {chars: 0, text: 0, missing: 0}
-  for(const elem of children) if(elem.words) {
-    words.chars += elem.words.chars ?? 0
-    words.text += elem.words.text ?? 0
-    words.missing += elem.words.missing ?? 0
+  for(const node of children) if(node.words) {
+    words.chars += node.words.chars ?? 0
+    words.text += node.words.text ?? 0
+    words.missing += node.words.missing ?? 0
   }
 
   if(target) {
@@ -304,23 +214,23 @@ export function wcChildren(children, target) {
   return words
 }
 
-export function wcElem(elem) {
+export function wcNode(node) {
 
-  switch(elem.type) {
+  switch(node.type) {
     case "sect":
     case "act":
     case "chapter":
-      return wcChildren(elem.children, elem.target)
+      return wcChildren(node.children, node.target)
 
     case "scene":
-      if(elem.content === "scene") return wcChildren(elem.children, elem.target)
+      if(node.content === "scene") return wcChildren(node.children, node.target)
       return undefined
 
     case "p":
     case "missing":
     case "fill":
     case "quote":
-      return wcParagraph(elem)
+      return wcParagraph(node)
 
     default:
     //case "bookmark":

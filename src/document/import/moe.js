@@ -6,19 +6,18 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import { elemFind, elem2Text } from "../xmljs/tree";
+import { elemFind, elem2Text } from "../xmljs/elemutil";
 
 //-----------------------------------------------------------------------------
 
 const headFields = new Set(["author", "subtitle", "title"]);
 
-export function importMoe(root) {
-  const story = root.elements[0]
+export function importMoe(story) {
+  if(!story) throw Error("File has no story.");
   const title = elemFind(story, "TitleItem")
   const {body, notes} = parseSections(story, title)
 
   return {
-    ...root,
     elements: [
       elem("story", {format: "mawe", version: "4", name: optional(title, "title")}, [
         parseHead(title),

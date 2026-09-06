@@ -5,7 +5,7 @@ import {
   Element,
 } from 'slate'
 
-import { elemHeading, elemTags } from '../document/util';
+import { nodeHeading, nodeTags } from '../document/nodeutil';
 
 import {
   nodeTypes,
@@ -14,7 +14,7 @@ import {
 //-----------------------------------------------------------------------------
 // Check, if element is inside folded block
 
-export function topmostFoldedBlock(editor, path) {
+export function topmostFoldedNode(editor, path) {
   for(const np of Node.levels(editor, path)) {
     const [node, path] = np
     if(Editor.isEditor(node)) continue
@@ -25,12 +25,12 @@ export function topmostFoldedBlock(editor, path) {
   return undefined;
 }
 
-export function elemIsFolded(editor, path) {
-  return !!topmostFoldedBlock(editor, path);
+export function nodeIsFolded(editor, path) {
+  return !!topmostFoldedNode(editor, path);
 }
 
-export function elemIsVisible(editor, path) {
-  const folded = topmostFoldedBlock(editor, path);
+export function nodeIsVisible(editor, path) {
+  const folded = topmostFoldedNode(editor, path);
   if(!folded) return true;
 
   const [, foldedPath] = folded;
@@ -44,9 +44,9 @@ function fixCursor(editor) {
   if(!selection) return
   const {focus} = selection;
   if(!focus) return;
-  if(elemIsVisible(editor, focus.path)) return;
+  if(nodeIsVisible(editor, focus.path)) return;
 
-  const folded = topmostFoldedBlock(editor, focus.path)
+  const folded = topmostFoldedNode(editor, focus.path)
   if(!folded) return
 
   const [, path] = folded
@@ -71,7 +71,7 @@ export function foldNode(editor, node, path, fold) {
   if((node.folded ?? false) === (fold ?? false)) return;
 
   if(fold) {
-    const head = elemHeading(node)
+    const head = nodeHeading(node)
     if(!head) {
       Transforms.insertNodes(editor,
         {
@@ -217,7 +217,7 @@ export function foldByTags(editor, tags) {
         for(const elem of Node.children(editor, path)) {
           const [node, path] = elem
 
-          for(const key of elemTags(node)) {
+          for(const key of nodeTags(node)) {
             scenetags.add(key)
           }
         }

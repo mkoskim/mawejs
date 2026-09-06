@@ -16,11 +16,11 @@ import {
   DropDown,
 } from "../common/factory";
 
-import { getSuffix, text2words } from "../../document/util";
+import { getSuffix } from "../../document/fileutil";
 
 import { exportAs, flattedFormat, flattedToText, storyToBatches } from "../../document/export"
 
-import { numfmt } from "../../util";
+import { numfmt, text2words } from "../../util";
 import fs from "../../system/localfs"
 
 import { useState } from "react";
@@ -172,9 +172,9 @@ function updateDocStoryContent(updateDoc, value) { updateDoc(doc => {doc.exports
 function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
 
 function updateDocSplit(updateDoc, value) { updateDoc(doc => {doc.exports.split = value === "none" ? undefined : value})}
-function updateDocActElem(updateDoc, value) { updateDoc(doc => {doc.exports.acts = value})}
-function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapters = value})}
-function updateDocSceneElem(updateDoc, value) { updateDoc(doc => {doc.exports.scenes = value})}
+function updateDocActNode(updateDoc, value) { updateDoc(doc => {doc.exports.acts = value})}
+function updateDocChapterNode(updateDoc, value) { updateDoc(doc => {doc.exports.chapters = value})}
+function updateDocSceneNode(updateDoc, value) { updateDoc(doc => {doc.exports.scenes = value})}
 
 function updateDocActPrefix(updateDoc, value) { updateDoc(doc => {doc.exports.prefix_act = value})}
 function updateDocChapterPrefix(updateDoc, value) { updateDoc(doc => {doc.exports.prefix_chapter = value})}
@@ -287,7 +287,7 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
       choices={headertype.choices}
       selected={exports.acts}
       selections={headertype}
-      setSelected={value => updateDocActElem(updateDoc, value)}
+      setSelected={value => updateDocActNode(updateDoc, value)}
     />
     <DropDown
       as="text"
@@ -295,7 +295,7 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
       choices={headertype.choices}
       selected={exports.chapters}
       selections={headertype}
-      setSelected={value => updateDocChapterElem(updateDoc, value)}
+      setSelected={value => updateDocChapterNode(updateDoc, value)}
     />
     <DropDown
       as="text"
@@ -303,7 +303,7 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
       choices={headertype.choices}
       selected={exports.scenes}
       selections={headertype}
-      setSelected={value => updateDocSceneElem(updateDoc, value)}
+      setSelected={value => updateDocSceneNode(updateDoc, value)}
     />
 
     <Separator/>

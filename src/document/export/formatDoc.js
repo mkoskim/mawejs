@@ -7,7 +7,7 @@
 import { mawe } from ".."
 import { splitByTrailingElem, isNotEmpty } from "../../util";
 import { nodeIsBreak, nodeIsNotBreak } from "../elements";
-import {elemAsText, elemHeading} from "../util";
+import {nodeAsText, nodeHeading} from "../nodeutil.js";
 
 //*****************************************************************************
 // Settings
@@ -152,7 +152,7 @@ export function batchToFlatted(content, story, { actOffset = 0, chapterOffset = 
     const content = processChapters(act.children)
     if(!content?.length) return undefined
 
-    const head = makeHeader(elemHeading(act), actnum, options.act)
+    const head = makeHead(nodeHeading(act), actnum, options.act)
     if(head?.number) actnum = head.number
     else if(head) actnum++
 
@@ -187,7 +187,7 @@ export function batchToFlatted(content, story, { actOffset = 0, chapterOffset = 
     const content = processScenes(chapter.children)
     if(!content?.length) return undefined
 
-    const head = makeHeader(elemHeading(chapter), chapternum, options.chapter)
+    const head = makeHead(nodeHeading(chapter), chapternum, options.chapter)
     if(head?.number) chapternum = head.number
     else if(head) chapternum++
 
@@ -231,7 +231,7 @@ export function batchToFlatted(content, story, { actOffset = 0, chapterOffset = 
     if(!splits.length) return undefined
 
     const content = separate(splits, {type: "br"})
-    const head = makeHeader(elemHeading(scene), scenenum, options.scene)
+    const head = makeHead(nodeHeading(scene), scenenum, options.scene)
     if(head?.number) scenenum = head.number
     else if(head) scenenum++
 
@@ -249,7 +249,7 @@ export function batchToFlatted(content, story, { actOffset = 0, chapterOffset = 
 
   //---------------------------------------------------------------------------
 
-  function makeHeader(hdr, num, options) {
+  function makeHead(hdr, num, options) {
     if(!hdr) return undefined
     const {prefix, pgbreak} = options
     const {type, name, numbered} = hdr
@@ -269,8 +269,8 @@ export function batchToFlatted(content, story, { actOffset = 0, chapterOffset = 
 
   //---------------------------------------------------------------------------
 
-  function skip(elems) {
-    return elems.map(elem => elem.children.filter(nodeIsNotBreak)).flat()
+  function skip(nodes) {
+    return nodes.map(node => node.children.filter(nodeIsNotBreak)).flat()
   }
 
   //---------------------------------------------------------------------------
@@ -286,9 +286,9 @@ export function batchToFlatted(content, story, { actOffset = 0, chapterOffset = 
 
   //---------------------------------------------------------------------------
 
-  function separate(elems, separator = {type: "separator"}) {
-    const [first, ...rest] = elems
-    const separated = rest.map(e => [separator, ...e]).flat()
+  function separate(nodes, separator = {type: "separator"}) {
+    const [first, ...rest] = nodes
+    const separated = rest.map(node => [separator, ...node]).flat()
     return [first, ...separated].flat()
   }
 
@@ -317,7 +317,7 @@ export function flattedToText(flatted) {
 
       default: break;
     }
-    return elemAsText(p)
+    return nodeAsText(p)
   }
 }
 

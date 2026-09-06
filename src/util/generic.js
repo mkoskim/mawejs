@@ -21,6 +21,12 @@ export const numfmt = {
   gsign: Intl.NumberFormat(undefined, {signDisplay: "always", useGrouping: true}),
 }
 
+export function textToInt(text) {
+  if(!text) return undefined
+  const number = parseInt(text.trim())
+  return isNaN(number) ? undefined : number
+}
+
 //-----------------------------------------------------------------------------
 // sleep
 //-----------------------------------------------------------------------------
@@ -38,6 +44,17 @@ export function text2lines(content, linebreak = "\n\n") {
     .replaceAll("\r", "")
     .split(linebreak)
     .map(line => line.replaceAll(/\s+/g, " ").trim())
+}
+
+const reSplit2Words = new RegExp(/[^\p{L}\p{N}]+/, "iu")
+
+export function text2words(text) {
+  //return text.split(/[^\wåäö]+/i).filter(word => word.length)
+  return text.split(reSplit2Words).filter(word => word.length)
+}
+
+export function wordcount(text) {
+  return text2words(text).length
 }
 
 //-----------------------------------------------------------------------------

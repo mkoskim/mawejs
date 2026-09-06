@@ -5,7 +5,7 @@ import {
 } from 'slate'
 
 import {
-  elemIsVisible,
+  nodeIsVisible,
 } from "./slateFolding"
 
 import {
@@ -72,7 +72,7 @@ function searchTextForward(editor, re, path, offset) {
 
   const next = Editor.next(editor, {
     at: path,
-    match: (n, p) => !Path.equals(path, p) && elemIsVisible(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
+    match: (n, p) => !Path.equals(path, p) && nodeIsVisible(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
   })
   if(!next) return undefined
 
@@ -89,7 +89,7 @@ function searchTextBackward(editor, re, path, offset) {
 
   const prev = Editor.previous(editor, {
     at: path,
-    match: (n, p) => !Path.equals(path, p) && elemIsVisible(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
+    match: (n, p) => !Path.equals(path, p) && nodeIsVisible(editor, p) && Text.isText(n) && searchOffsets(n.text, re).length
   })
   if(!prev) return undefined
   //console.log(next)

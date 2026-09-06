@@ -24,7 +24,7 @@ import {
 
 import {DragDropContext} from "@hello-pangea/dnd";
 import {DocIndex} from "../common/docIndex";
-import {elemName, filterCtrlElems} from "../../document";
+import {nodeName, filterCtrlNodes} from "../../document/nodeutil";
 import { handlePangeaDragEnd } from "../../slatejs/slateDnD";
 
 //*****************************************************************************
@@ -257,7 +257,7 @@ function createData(section, elements) {
       }
     }
     return [
-      ...filterCtrlElems(act.children).map(flatChapter).flat(),
+      ...filterCtrlNodes(act.children).map(flatChapter).flat(),
       pad(act.words.padding)
     ]
   }
@@ -272,7 +272,7 @@ function createData(section, elements) {
     }
 
     return [
-      ...filterCtrlElems(chapter.children).filter(s => s.content === "scene").map(flatScene),
+      ...filterCtrlNodes(chapter.children).filter(s => s.content === "scene").map(flatScene),
       pad(chapter.words.padding)
     ]
   }
@@ -306,7 +306,7 @@ function elemSize(elem) {
 
 function elemLabel(elem) {
   const {words} = elem
-  const name = elemName(elem)
+  const name = nodeName(elem)
   return {
     name,
     size: words.text + words.missing,

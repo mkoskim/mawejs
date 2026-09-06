@@ -11,11 +11,17 @@ console.log("Node version:", process.versions.node)
 //-----------------------------------------------------------------------------
 
 const testGroups = {
+  xml: [
+    "test/test_xml/test_xml_tree.js",
+    "test/test_xml/test_elemutil.js",
+    "test/test_xml/test_elem_manipulation.js",
+  ],
   load: [
     "test/test_gzip/test_gzip.js",
+    "test/test_load/test_format_detection.js",
     "test/test_load/test_load.js",
     "test/test_load/test_roundtrip.js",
-    "test/test_load/test_format_detection.js",
+    "test/test_load/test_save.js",
   ],
   import: [
     "test/test_import/text/test_import_text.js",
@@ -43,6 +49,7 @@ const testGroups = {
 };
 
 testGroups.all = [
+  ...testGroups.xml,
   ...testGroups.load,
   ...testGroups.import,
   ...testGroups.export,
@@ -204,7 +211,7 @@ async function runTest(testFile, args) {
       },
       outfile,
       platform: "node",
-      target: "node22",
+      target: "node24",
       plugins: [
         {
           name: "mawe-test-stubs",

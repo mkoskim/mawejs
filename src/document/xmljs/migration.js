@@ -6,8 +6,14 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import { elemFind, elemFindall, elem2Text } from "./tree";
 import { produce } from "immer";
+import {
+  createElem,
+  elemFind, getElem,
+  replaceElements, removeElements,
+  removeChilds, replaceChilds, mapChilds,
+  elemMap, elemFilter, elemDiscard,
+} from "./elemutil";
 
 //-----------------------------------------------------------------------------
 // File format version is set to top-level <story> element. It defaults to 1
@@ -26,14 +32,13 @@ import { produce } from "immer";
 
 const supported = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
-export function migrate(root) {
+export function migrate(story) {
 
-  const story = root.elements[0]
+  if (!story) throw Error("File has no story.");
   const {format, version = "1"} = story.attributes ?? {};
 
   console.log("Doc version:", version)
 
-  if (story.name !== "story") throw Error("File has no story.");
   if (format !== "mawe") throw Error("Story is not mawe story.");
   if (!supported.includes(version)) throw Error(`File version ${version} not supported.`)
 
@@ -48,49 +53,6 @@ export function migrate(root) {
     v6_to_v7,
     v7_to_v8,
   ].reduce((story, func) => func(story), story)
-}
-
-//*****************************************************************************
-//
-// Helper functions for element tree manipulation
-//
-//*****************************************************************************
-
-function removeElements(elements, ...names) {
-  return (elements ?? []).filter(e => !names.includes(e.name))
-}
-
-function replaceElements(elements, names, ...childs) {
-  return removeElements(elements, ...names).concat(childs)
-}
-
-function removeChilds(elem, ...names) {
-  const {elements = []} = elem
-  return {
-    ...elem,
-    elements: removeElements(elements, ...names)
-  }
-}
-
-function replaceChilds(elem, names, ...childs) {
-  const {elements = []} = elem
-  return {
-    ...elem,
-    elements: replaceElements(elements, names, ...childs)
-  }
-}
-
-function createElem(name, attributes = {}, elements = []) {
-  return {
-    type: "element",
-    name,
-    attributes,
-    elements
-  }
-}
-
-function getElem(elem, name) {
-  return elemFind(elem, name) ?? createElem(name)
 }
 
 //*****************************************************************************
@@ -162,15 +124,8 @@ function v2_to_v3(story) {
   const bodyElem  = getElem(story, "body")
   const notesElem = getElem(story, "notes")
 
-  const body = {
-    ...bodyElem,
-    elements: bodyElem.elements?.map(elem => ({...elem, name: "chapter"}))
-  }
-
-  const notes = {
-    ...notesElem,
-    elements: notesElem.elements?.map(elem => ({...elem, name: "chapter"}))
-  }
+  const body = mapChilds(bodyElem, elem => ({...elem, name: "chapter"}))
+  const notes = mapChilds(notesElem, elem => ({...elem, name: "chapter"}))
 
   return produce(story, story => {
     story.attributes.version = "3"
@@ -311,34 +266,26 @@ function v4_to_v5(story) {
   })
 
   function fixSection(elem) {
-    const {elements = []} = elem
-    return {...elem, elements: elements.map(fixAct) }
+    return mapChilds(elem, fixAct)
   }
 
 
   function fixAct(elem) {
-    const {elements = [], attributes = {}} = elem
+    const {attributes = {}} = elem
     const {numbered = "true"} = attributes
-    return {
-      ...elem,
-      attributes: {...attributes, numbered},
-      elements: elements.map(fixChapter),
-    }
+    const fixed = { ...elem, attributes: {...attributes, numbered} }
+    return mapChilds(fixed, fixChapter)
   }
 
   function fixChapter(elem) {
-    const {elements = [], attributes = {}} = elem
+    const {attributes = {}} = elem
     const {numbered = "true"} = attributes
-    return {
-      ...elem,
-      attributes: {...attributes, numbered},
-      elements: elements.map(fixScene),
-    }
+    const fixed = { ...elem, attributes: {...attributes, numbered} }
+    return mapChilds(fixed, fixScene)
   }
 
   function fixScene(elem) {
-    const {elements = []} = elem
-    return {...elem, elements: elements.map(fixParagraph) }
+    return mapChilds(elem, fixParagraph)
   }
 
   function fixParagraph(elem) {
@@ -385,21 +332,12 @@ function v5_to_v6(story) {
 
   function fixSettings(uiElem) {
     const editorElem = getElem(uiElem, "editor")
-    return {
-      ...uiElem,
-      elements: replaceElements(uiElem.elements, ["editor"], fixEditorElem(editorElem))
-    }
+    return replaceChilds(uiElem, ["editor"], fixEditorElem(editorElem))
   }
 
   function fixEditorElem(editorElem) {
     const draftElem  = getElem(editorElem, "body")
-    return {
-      ...editorElem,
-      elements: replaceElements(editorElem.elements,
-        ["body"],
-        { ...draftElem, name: "draft" }
-      )
-    }
+    return replaceChilds(editorElem, ["body"], { ...draftElem, name: "draft" })
   }
 
   function fixSection(elem) {
@@ -418,8 +356,7 @@ function v5_to_v6(story) {
   }
 
   function fixScene(elem) {
-    const {elements = []} = elem
-    return {...elem, elements: elements.map(fixParagraph) }
+    return mapChilds(elem, fixParagraph)
   }
 
   function fixParagraph(elem) {

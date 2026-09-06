@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { importText } from "../../../src/document/import/text.js";
-import { elemFind } from "../../../src/document/xmljs/tree.js";
+import { elemFind } from "../../../src/document/xmljs/elemutil.js";
+import { getStoryRoot } from "../../../src/document/xmljs/load.js";
 
 console.log("Text import tests...");
 
@@ -13,7 +14,7 @@ console.log("Text import tests passed");
 function doImport(content, settings) {
   const tree = importText(content, settings);
   //console.log("Imported tree:", JSON.stringify(tree, null, 2));
-  const root = tree.elements[0];
+  const root = getStoryRoot(tree);
   const body = elemFind(root, "body");
   return body.elements;
 }

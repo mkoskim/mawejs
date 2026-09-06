@@ -8,19 +8,13 @@
 
 //-----------------------------------------------------------------------------
 
-import {v4 as uuid} from "uuid"
-import {nanoid} from "nanoid"
-
-import {
-  splitByLeadingElem, splitByTrailingElem,
-  isEmpty, isNotEmpty,
-  sleep, numfmt, text2lines,
-} from "./generic"
+export {v4 as uuid} from "uuid"
+export {nanoid} from "nanoid"
 
 export {
-  uuid, nanoid,
   splitByLeadingElem, splitByTrailingElem,
   isEmpty, isNotEmpty,
   sleep,
-  numfmt, text2lines,
-}
+  numfmt, textToInt,
+  text2lines, text2words, wordcount
+} from "./generic"

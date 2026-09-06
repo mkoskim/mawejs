@@ -5,7 +5,8 @@ import path from "node:path";
 import { gzipSync } from "node:zlib";
 import { installFakeIpc } from "../support/fakeIpc.js";
 import { mawe } from "../../src/document/index.js";
-import { suffix2format } from "../../src/document/util.js";
+import { suffix2format } from "../../src/document/fileutil.js";
+import { canonicalDocumentText } from "../support/canonicalDocument.js";
 
 installFakeIpc();
 
@@ -67,5 +68,33 @@ await assert.rejects(
   /File has no story/,
   "known XML suffix should still require story root",
 );
+
+// The story element need not be the first XML node, even if a preceding
+// processing instruction has the same name.
+for (const [suffix, xml] of [["mawe", maweXml], ["moe", moeXml]]) {
+  const plainPath = path.join(tmpdir, `Plain.${suffix}`);
+  await writeFile(plainPath, xml);
+  const expected = canonicalDocumentText(await mawe.load(plainPath));
+
+  for (const [label, prefix] of [
+    ["Doctype", "<!DOCTYPE story>"],
+    ["Instruction", "<?story ignore?>"],
+    ["Both", '<?xml version="1.0"?><!DOCTYPE story><?story ignore?>'],
+  ]) {
+    const filename = path.join(tmpdir, `${label}.${suffix}`);
+    await writeFile(filename, prefix + xml);
+    assert.equal(
+      canonicalDocumentText(await mawe.load(filename)), expected,
+      `${suffix} loading should ignore ${label} before the story element`,
+    );
+  }
+}
+
+const instructionOnly = mawe.buf2tree("<?story ignore?>");
+assert.throws(() => mawe.loadFromTree(null, instructionOnly, "mawe"), /File has no story/);
+assert.throws(() => mawe.loadFromTree(null, instructionOnly, "moe"), /File has no story/);
+const instructionPath = path.join(tmpdir, "InstructionOnly.mawe");
+await writeFile(instructionPath, "<?story ignore?>");
+await assert.rejects(() => mawe.load(instructionPath), /File has no story/);
 
 console.log("Format detection tests passed");

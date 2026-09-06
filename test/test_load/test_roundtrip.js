@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { installFakeIpc } from "../support/fakeIpc.js";
 import { canonicalDocumentText } from "../support/canonicalDocument.js";
+import {mawe} from "../../src/document/index.js";
+import {maweFromBuffer} from "../../src/document/xmljs/load.js";
 
 installFakeIpc();
-
-const { mawe } = await import("../../src/document/index.js");
 
 const migrationExamples = [
   "examples/migration/Story.v1.mawe",
@@ -29,7 +29,7 @@ async function testRoundtripExamples() {
     const originalText = canonicalDocumentText(original);
 
     const xml = mawe.toXML(original);
-    const roundtripped = mawe.fromXML(mawe.buf2tree(xml));
+    const roundtripped = maweFromBuffer(xml);
     const roundtripText = canonicalDocumentText(roundtripped);
 
     assert.equal(roundtripText, originalText, `${filename}: roundtrip canonical text mismatch`);

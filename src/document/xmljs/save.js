@@ -6,7 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid as getUUID, buf2file, filterCtrlElems} from "../util";
+import {uuid as getUUID, buf2file} from "../fileutil.js";
+import {filterCtrlNodes} from "../nodeutil.js";
 
 import {saveViewSettings} from "../../gui/app/views";
 import {saveArcSettings} from "../../gui/arc/arc";
@@ -174,7 +175,7 @@ function toAct(act) {
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(act.children).map(toChapter),
+    ...filterCtrlNodes(act.children).map(toChapter),
   )
 }
 
@@ -195,7 +196,7 @@ function toChapter(chapter) {
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(chapter.children).map(toScene),
+    ...filterCtrlNodes(chapter.children).map(toScene),
   )
 }
 
@@ -216,7 +217,7 @@ function toScene(scene) {
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(scene.children).map(toParagraph),
+    ...filterCtrlNodes(scene.children).map(toParagraph),
   )
 }
 

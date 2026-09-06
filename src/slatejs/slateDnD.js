@@ -11,7 +11,7 @@ import {
   Transforms,
 } from 'slate'
 
-import {elemHeading, IDtoPath, nodeID} from '../document/util';
+import {nodeHeading, IDtoPath, nodeID} from '../document/nodeutil';
 
 import {
   nodeTypes,
@@ -22,10 +22,10 @@ import { getEditorBySectID } from './slateDocument';
 // Drag'n'drop pop and push
 
 export function dndDrop(srcEdit, srcPath, dstEdit, dstPath, dstIndex) {
-  //console.log("moveElem: SRC=", srcId, "DST=", dstId, dstIndex)
+  //console.log("dndDrop: SRC=", srcId, "DST=", dstId, dstIndex)
 
-  const node = dndElemPop(srcEdit, srcPath)
-  const path = dndElemPushTo(dstEdit, node, dstPath, dstIndex)
+  const node = dndNodePop(srcEdit, srcPath)
+  const path = dndNodePushTo(dstEdit, node, dstPath, dstIndex)
   setSelection(dstEdit, path)
   return path
 }
@@ -65,7 +65,7 @@ function setSelection(editor, path) {
   Transforms.collapse(editor)
 }
 
-function dndElemPop(editor, path) {
+function dndNodePop(editor, path) {
 
   const [node] = Editor.node(editor, path)
 
@@ -73,7 +73,7 @@ function dndElemPop(editor, path) {
 
   Transforms.removeNodes(editor, {at: path, hanging: true})
 
-  if(!elemHeading(node)) {
+  if(!nodeHeading(node)) {
     const htype = nodeTypes[node.type].header
     return {
       ...node,
@@ -87,7 +87,7 @@ function dndElemPop(editor, path) {
   return node
 }
 
-function dndElemPushTo(editor, node, path, index) {
+function dndNodePushTo(editor, node, path, index) {
   //console.log("Push", node, path, index)
 
   if(!node) return
@@ -97,11 +97,11 @@ function dndElemPushTo(editor, node, path, index) {
   //console.log("Container:", container)
 
   //---------------------------------------------------------------------------
-  // Check if container has head element. If so, add +1 to index
+  // Check if container has head node. If so, add +1 to index
   //---------------------------------------------------------------------------
 
   function getChildIndex(container) {
-    if(!index && elemHeading(container)) return 1
+    if(!index && nodeHeading(container)) return 1
     return index
   }
 
@@ -109,13 +109,13 @@ function dndElemPushTo(editor, node, path, index) {
   const childpath = [...path, childindex]
 
   //---------------------------------------------------------------------------
-  // Check that elem at drop point has header (prevent merge)
+  // Check that node at drop point has header (prevent merge)
   //---------------------------------------------------------------------------
 
   if(container.children.length > childindex) {
     const next = container.children[childindex]
 
-    if(!elemHeading(next)) {
+    if(!nodeHeading(next)) {
       const htype = nodeTypes[next.type].header
       Transforms.insertNodes(editor,
         {

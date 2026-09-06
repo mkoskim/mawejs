@@ -17,7 +17,7 @@ import {
 import { withHistory } from "slate-history"
 import { withReact } from 'slate-react'
 
-import { wcElem, wcCompare, elemHeading, elemHeadParse, elemHeadAttrs} from '../document/util';
+import { wcNode, wcCompare, nodeHeading, nodeHeadParse, nodeHeadAttrs} from '../document/nodeutil';
 
 import {
   nodeTypes,
@@ -30,7 +30,7 @@ import {
 import {foldNode} from "./slateFolding"
 
 import {
-  elemIsBlock,
+  nodeIsBlock,
 } from "./slateHelpers"
 
 import {text2lines} from '../util';
@@ -259,7 +259,7 @@ function withMarkup(editor) {
 
     // Which block we are:
     const match = Editor.above(editor, {
-      match: n => elemIsBlock(editor, n),
+      match: n => nodeIsBlock(editor, n),
     })
     if(!match) return deleteBackward(...args)
 
@@ -299,7 +299,7 @@ function withWordCount(editor) {
     if(Editor.isEditor(node)) return normalizeNode(entry)
     if(!Element.isElement(node)) return normalizeNode(entry)
 
-    const words = wcElem(node)
+    const words = wcNode(node)
     if(!wcCompare(words, node.words)) {
       Transforms.setNodes(editor, {words}, {at: path})
       return;
@@ -578,7 +578,7 @@ function withFixNesting(editor) {
   //---------------------------------------------------------------------------
 
   function updateHeadAttributes(node, path) {
-    const {name, numbered, target} = elemHeadParse(node)
+    const {name, numbered, target} = nodeHeadParse(node)
 
     modifyAttributes(node, path, {name, numbered, target})
   }
@@ -588,7 +588,7 @@ function withFixNesting(editor) {
   //---------------------------------------------------------------------------
 
   function updateBlockAttributes(node, path) {
-    const attrs = elemHeadAttrs(node)
+    const attrs = nodeHeadAttrs(node)
     //console.log("Copy attrs:", node.type, "Attrs:", attrs)
     return modifyAttributes(node, path, attrs)
   }
@@ -603,7 +603,7 @@ function withFixNesting(editor) {
       const [node, path] = child
 
       if(!nodeIsContainer(node)) continue
-      if(nodeBreaks(elemHeading(node)) === node.type) continue
+      if(nodeBreaks(nodeHeading(node)) === node.type) continue
 
       const prev = Editor.previous(editor, {at: path})
 

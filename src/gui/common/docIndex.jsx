@@ -21,11 +21,11 @@ import {
 } from "./factory";
 
 import {FormatWords} from "./components";
-import {elemAsText, elemName} from "../../document";
 import {
-  elemNumbered, nodeIsCtrl, wcCumulative,
+  nodeAsText, nodeName,
+  nodeNumbered, nodeIsCtrl, wcCumulative,
   nodeID, childID, IDtoPath,
-} from "../../document/util";
+} from "../../document/nodeutil";
 
 //*****************************************************************************
 //
@@ -108,7 +108,7 @@ export function DocIndex({style, sectID, section, wcFormat, include, setActive, 
   // Single unnamed act -> don't show
   //---------------------------------------------------------------------------
 
-  //const skipActName = (section.acts.length === 1 && !elemName(section.acts[0]))
+  //const skipActName = (section.acts.length === 1 && !nodeName(section.acts[0]))
 
   //---------------------------------------------------------------------------
   // Index
@@ -157,11 +157,11 @@ class ActDropZone extends React.PureComponent {
       ref={innerRef}
       {...droppableProps}
     >
-    {acts.map((elem, index) => !nodeIsCtrl(elem) && <ActItem
+    {acts.map((node, index) => !nodeIsCtrl(node) && <ActItem
       key={index}
       id={childID(id, index)}
       index={index}
-      elem={elem}
+      node={node}
       include={include}
       wcFormat={wcFormat}
       onActivate={onActivate}
@@ -196,15 +196,15 @@ class ActItem extends React.PureComponent {
   }
 
   Draggable(provided, snapshot) {
-    const {elem, wcFormat, id, index, include, onActivate, unfold, atAct, atChapter, atScene, refCurrent} = this.props
+    const {node, wcFormat, id, index, include, onActivate, unfold, atAct, atChapter, atScene, refCurrent} = this.props
     const {innerRef, draggableProps, dragHandleProps} = provided
 
-    const hasDropzone = (include.includes("chapter")) && (unfold || !elem.folded)
-    //const hasDropzone = (unfold || !elem.folded)
+    const hasDropzone = (include.includes("chapter")) && (unfold || !node.folded)
+    //const hasDropzone = (unfold || !node.folded)
 
     const isCurrent = (
       atAct &&
-      (!hasDropzone || atChapter === undefined || elem.children[atChapter].type === "hact")
+      (!hasDropzone || atChapter === undefined || node.children[atChapter].type === "hact")
     )
 
     return <div
@@ -213,11 +213,11 @@ class ActItem extends React.PureComponent {
       >
       <IndexItem
         id={id}
-        type={elem.type}
-        name={elem.name}
-        words={elem.words}
-        folded={!unfold && elem.folded}
-        numbered={elem.numbered}
+        type={node.type}
+        name={node.name}
+        words={node.words}
+        folded={!unfold && node.folded}
+        numbered={node.numbered}
         wcFormat={wcFormat}
         onActivate={onActivate}
         isCurrent={isCurrent}
@@ -226,8 +226,8 @@ class ActItem extends React.PureComponent {
       />
       {hasDropzone && <ChapterDropZone
         id={id}
-        folded={!unfold && elem.folded}
-        chapters={elem.children}
+        folded={!unfold && node.folded}
+        chapters={node.children}
         wcFormat={wcFormat}
         include={include}
         onActivate={onActivate}
@@ -264,11 +264,11 @@ class ChapterDropZone extends React.PureComponent {
       ref={innerRef}
       {...droppableProps}
     >
-    {chapters.map((elem, index) => !nodeIsCtrl(elem) && <ChapterItem
+    {chapters.map((node, index) => !nodeIsCtrl(node) && <ChapterItem
       key={index}
       id={id}
       index={index}
-      elem={elem}
+      node={node}
       include={include}
       wcFormat={wcFormat}
       onActivate={onActivate}
@@ -302,15 +302,15 @@ class ChapterItem extends React.PureComponent {
   }
 
   Draggable(provided, snapshot) {
-    const {elem, id, index, include, wcFormat, onActivate, unfold, atChapter, atScene, refCurrent} = this.props
+    const {node, id, index, include, wcFormat, onActivate, unfold, atChapter, atScene, refCurrent} = this.props
     const {innerRef, draggableProps, dragHandleProps} = provided
 
     const ID = childID(id, index)
-    const hasDropzone = (include.includes("scene")) && (unfold || !elem.folded)
+    const hasDropzone = (include.includes("scene")) && (unfold || !node.folded)
 
     const isCurrent = (
       atChapter &&
-      (!hasDropzone || atScene === undefined || elem.children[atScene].type === "hchapter")
+      (!hasDropzone || atScene === undefined || node.children[atScene].type === "hchapter")
     )
 
     //console.log(include)
@@ -321,11 +321,11 @@ class ChapterItem extends React.PureComponent {
       >
       <IndexItem
         id={ID}
-        type={elem.type}
-        name={elemName(elem)}
-        words={elem.words}
-        folded={!unfold && elem.folded}
-        numbered={elemNumbered(elem)}
+        type={node.type}
+        name={node.name}
+        words={node.words}
+        folded={!unfold && node.folded}
+        numbered={nodeNumbered(node)}
         wcFormat={wcFormat}
         onActivate={onActivate}
         isCurrent={isCurrent}
@@ -334,7 +334,7 @@ class ChapterItem extends React.PureComponent {
       />
       {hasDropzone && <SceneDropZone
         id={ID}
-        scenes={elem.children}
+        scenes={node.children}
         include={include}
         wcFormat={wcFormat}
         onActivate={onActivate}
@@ -367,11 +367,11 @@ class SceneDropZone extends React.PureComponent {
       ref={innerRef}
       {...droppableProps}
     >
-    {scenes.map((elem, index) => !nodeIsCtrl(elem) && <SceneItem
+    {scenes.map((node, index) => !nodeIsCtrl(node) && <SceneItem
       key={index}
       id={childID(id, index)}
       index={index}
-      elem={elem}
+      node={node}
       include={include}
       wcFormat={wcFormat}
       onActivate={onActivate}
@@ -408,11 +408,11 @@ class SceneItem extends React.PureComponent {
 
   Draggable(provided, snapshot) {
     const {innerRef, draggableProps, dragHandleProps} = provided
-    const {elem, id, include, wcFormat, onActivate, isCurrent, refCurrent} = this.props
+    const {node, id, include, wcFormat, onActivate, isCurrent, refCurrent} = this.props
 
-    const bookmarks = elem.children
-      .map((elem, index) => [index, elem])
-      .filter(([index, elem]) => include.includes(elem.type))
+    const bookmarks = node.children
+      .map((node, index) => [index, node])
+      .filter(([index, node]) => include.includes(node.type))
 
     return <div
       className="VBox Scene"
@@ -422,20 +422,20 @@ class SceneItem extends React.PureComponent {
     >
     <IndexItem
       id={id}
-      type={elem.content}
-      name={elemName(elem)}
-      folded={elem.folded}
-      words={elem.words}
+      type={node.content}
+      name={node.name}
+      folded={node.folded}
+      words={node.words}
       wcFormat={wcFormat}
       onActivate={onActivate}
       isCurrent={isCurrent}
       refCurrent={refCurrent}
     />
-    {!elem.folded && bookmarks.map(([index, elem]) => <IndexItem
+    {!node.folded && bookmarks.map(([index, node]) => <IndexItem
       key={index}
       id={childID(id, index)}
-      type={elem.type}
-      name={elemAsText(elem)}
+      type={node.type}
+      name={nodeAsText(node)}
       wcFormat={wcFormat}
       onActivate={onActivate}
     />)}

@@ -6,17 +6,18 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid as getUUID, nanoid, file2buf, wcElem, wcChildren, makeHeader, textToInt} from "../util";
-import { xml2js } from "xml-js";
+import {uuid as getUUID, nanoid, file2buf, buf2tree} from "../fileutil.js";
+import {elemFind, elemFindall, elem2Text} from "./elemutil";
+import {wcNode, wcChildren, createHeaderNode} from "../nodeutil.js";
+import {textToInt} from "../../util";
 
-import { loadArcSettings } from "../../gui/arc/arc";
-import { loadViewSettings } from "../../gui/app/views";
-import { loadEditorSettings } from "../../gui/editor/editor";
-import { loadExportSettings } from "../../gui/export/export";
-import { referenceWords } from "../history";
+import {loadArcSettings} from "../../gui/arc/arc";
+import {loadViewSettings} from "../../gui/app/views";
+import {loadEditorSettings} from "../../gui/editor/editor";
+import {loadExportSettings} from "../../gui/export/export";
+import {referenceWords} from "../history";
 
-import { migrate } from "./migration";
-import { elemFind, elemFindall, elem2Text } from "./tree";
+import {migrate} from "./migration";
 
 //-----------------------------------------------------------------------------
 // File structure:
@@ -57,22 +58,20 @@ export function maweFromBuffer(buffer) {
 
 export function maweFromTree(tree) {
   //console.log("Tree", tree)
-  const story = fromXML(tree)
+  const root = getStoryRoot(tree)
+  return maweFromRoot(root)
   //console.log("Story:", story)
-  return {
-    key: nanoid(),
-    ...story
-  }
 }
 
-export function buf2tree(buffer) {
-  return xml2js(buffer, {
-    compact: false,
-    ignoreComment: true,
-  });
+export function getStoryRoot(tree) {
+  const story = elemFind(tree, "story");
+
+  if(!story) throw new Error(`File has no story.`);
+
+  return story;
 }
 
-export function fromXML(root) {
+export function maweFromRoot(root) {
   const story = migrate(root)
 
   //console.log("Migrated:", story)
@@ -110,6 +109,7 @@ export function fromXML(root) {
   return {
     // format - generated at save
     // format version - generated at save
+    key: nanoid(),
     uuid: uuid ?? getUUID(),
     head: {
       ...head,
@@ -186,7 +186,7 @@ function parseAct(act, index) {
   const target = textToInt(targetStr)
   const folded = foldedStr === "true"
   const numbered = numberedStr === "true"
-  const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
+  const header = (!index && !name && !folded && !target) ? [] : [createHeaderNode(
     "hact",
     name,
     numbered,
@@ -222,7 +222,7 @@ function parseChapter(chapter, index) {
   const folded = foldedStr === "true"
   const numbered = numberedStr === "true"
 
-  const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
+  const header = (!index && !name && !folded && !target) ? [] : [createHeaderNode(
     "hchapter",
     name,
     numbered,
@@ -264,7 +264,7 @@ function parseScene(scene, index) {
     "notes": "hnotes",
   }[content]
 
-  const header = (!index && !name && !folded && content == "scene") ? [] : [makeHeader(
+  const header = (!index && !name && !folded && content == "scene") ? [] : [createHeaderNode(
     htype,
     name,
     true,
@@ -274,7 +274,7 @@ function parseScene(scene, index) {
   const empty = [{type: "element", name: "p", children: []}]
   const elements = scene.elements?.length ? scene.elements : empty
 
-  const children = elements.map(parseParagraph).filter(e => e).map(elem => ({...elem, words: wcElem(elem)}))
+  const children = elements.map(parseParagraph).filter(e => e).map(elem => ({...elem, words: wcNode(elem)}))
   const words = (content === "scene") ? wcChildren(children, target) : undefined
 
   return {

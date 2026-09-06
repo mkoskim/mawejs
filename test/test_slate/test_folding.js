@@ -2,22 +2,22 @@ import assert from "node:assert/strict";
 import { Editor, Transforms } from "slate";
 import { getCoreEditor } from "../../src/slatejs/slateEditor.js";
 import {
-  elemIsFolded,
+  nodeIsFolded,
   FOLD,
   foldByType,
   foldNode,
   toggleFold,
-  topmostFoldedBlock,
+  topmostFoldedNode,
 } from "../../src/slatejs/slateFolding.js";
-import { elemHeading } from "../../src/document/util.js";
+import { nodeHeading } from "../../src/document/nodeutil.js";
 import { nodeTypes } from "../../src/document/elements.js";
 
 console.log("Slate folding test...");
 
 await testCreateCoreEditorWithChildren();
-await testElemIsFolded();
+await testNodeIsFolded();
 await testFoldNodeAddsMissingHeader();
-await testElemFolding();
+await testNodeFolding();
 
 console.log("Slate folding test passed");
 
@@ -87,7 +87,7 @@ function testCreateCoreEditorWithChildren() {
 //
 //*****************************************************************************
 
-function testElemIsFolded() {
+function testNodeIsFolded() {
   const paragraphPath = [0, 1, 1, 1, 0];
   const cases = [
     {
@@ -172,7 +172,7 @@ function testFoldNodeAddsMissingHeader() {
 
     assert.equal(node.folded, true);
 
-    const heading = elemHeading(node)
+    const heading = nodeHeading(node)
     assert.ok(heading, `Heading should be created at ${path.join(",")}`);
     assert.equal(node.children[0].type, nodeTypes[node.type].header, `First child should be header at ${path.join(",")}`);
   }
@@ -191,7 +191,7 @@ function testFoldNodeAddsMissingHeader() {
 //
 //*****************************************************************************
 
-function testElemFolding() {
+function testNodeFolding() {
   console.log("Test folding functions...");
   const focus = {
     path: [0, 1, 1, 1, 0],
@@ -262,14 +262,14 @@ function testElemFolding() {
 
 function assertIsFolded(name, editor, path, expected) {
   assert.equal(
-    elemIsFolded(editor, path),
+    nodeIsFolded(editor, path),
     expected,
     `${name}: element should be ${expected ? "folded" : "unfolded"}`
   );
 }
 
 function assertTopmostFoldedBlock(name, editor, path, expectedPath) {
-  const topmost = topmostFoldedBlock(editor, path) ?? [undefined, undefined]
+  const topmost = topmostFoldedNode(editor, path) ?? [undefined, undefined]
   const [, toppath] = topmost
 
   assert.deepEqual(
