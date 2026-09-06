@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { installFakeIpc } from "../support/fakeIpc.js";
-import { canonicalDocumentText } from "../support/canonicalDocument.js";
-import { mawe } from "../../src/document/index.js";
+import { installFakeIpc } from "../../support/fakeIpc.js";
+import { canonicalDocumentText } from "../../support/canonicalDocument.js";
+import { mawe } from "../../../src/document/index.js";
 
 installFakeIpc();
 
@@ -68,11 +68,11 @@ async function updateReferenceFiles() {
 }
 
 function sourceFilename(fixture) {
-  return path.join("test", "test_moe", "test_fixtures", `${fixture}.moe`);
+  return path.join("test", "test_import", "moe", "test_fixtures", `${fixture}.moe`);
 }
 
 function expectedFilename(fixture) {
-  return path.join("test", "test_moe", "expected", `${fixture}.txt`);
+  return path.join("test", "test_import", "moe", "expected", `${fixture}.txt`);
 }
 
 async function writeExpected(filename, text) {

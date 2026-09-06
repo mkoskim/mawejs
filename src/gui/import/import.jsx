@@ -43,34 +43,6 @@ const formats = {
   "text": { name: "Text", },
 }
 
-async function getContent(filename) {
-  if (!filename) {
-    return {
-      loader: navigator.clipboard.readText(),
-      format: "text",
-    }
-  }
-
-  const file = await fs.fstat(filename)
-  const ext  = await fs.extname(file.id)
-
-  switch (ext) {
-    //case ".rtf":
-    case ".docx": return {
-      loader: fs.read(file.id, null)
-        .then(buffer => mammoth.extractRawText({ arrayBuffer: buffer }))
-        .then(result => result.value),
-      format: "text",
-      origin: file,
-    }
-  }
-  return {
-    loader: fs.read(file.id),
-    format: "text",
-    origin: file,
-  }
-}
-
 export function ImportDialog({ filename, setDialogs }) {
   const setCommand = useContext(CmdContext)
 
@@ -108,14 +80,14 @@ export function ImportDialog({ filename, setDialogs }) {
 
   useEffect(() => {
     getContent(filename)
-    .then(({ loader, format, origin }) => {
-      loader
+    .then(({ content, format, origin }) => {
+      content
       .then(content => {
         setContent(content)
         setFormat(format)
         setOrigin(origin)
-        if (filename) Inform.success(`Loaded: ${filename}`);
-      })
+          if (filename) Inform.success(`Loaded: ${filename}`);
+        })
       .catch(err => {
         Inform.error(err);
         setDialogs(d => { delete d.importing; })
@@ -143,6 +115,40 @@ export function ImportDialog({ filename, setDialogs }) {
       </VBox>
     </HBox>
   </Dialog>
+}
+
+//-----------------------------------------------------------------------------
+
+async function getContent(filename) {
+  if (!filename) {
+    return {
+      content: navigator.clipboard.readText(),
+      format: "text",
+    }
+  }
+
+  const file = await fs.fstat(filename)
+  const ext  = await fs.extname(file.id)
+
+  switch (ext) {
+    //case ".rtf":
+    case ".docx": return {
+      content: docxToText(file),
+      format: "text",
+      origin: file,
+    }
+  }
+  return {
+    content: fs.read(file.id),
+    format: "text",
+    origin: file,
+  }
+}
+
+async function docxToText(file) {
+  const buffer = await fs.read(file.id, null)
+  const result = await mammoth.extractRawText({ arrayBuffer: buffer })
+  return result.value
 }
 
 //-----------------------------------------------------------------------------

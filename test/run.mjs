@@ -12,16 +12,18 @@ console.log("Node version:", process.versions.node)
 
 const testGroups = {
   load: [
+    "test/test_gzip/test_gzip.js",
     "test/test_load/test_load.js",
     "test/test_load/test_roundtrip.js",
     "test/test_load/test_format_detection.js",
   ],
+  import: [
+    "test/test_import/text/test_import_text.js",
+    "test/test_import/moe/test_import_moe.js",
+  ],
   export: [
     "test/test_export/test_export.js",
     "test/test_export/test_splits.js",
-  ],
-  gzip: [
-    "test/test_gzip/test_gzip.js",
   ],
   slate: [
     "test/test_slate/test_folding.js",
@@ -30,23 +32,20 @@ const testGroups = {
   ],
   misc: [
     "test/test_misc/test_history.js",
+    "test/test_misc/test_split.js",
     "test/test_misc/test_path_suggestions.js",
-  ],
-  moe: [
-    "test/test_moe/test_import_moe.js",
   ],
   // Test cases which have reference files, that can be updated
   update: [
     "test/test_load/test_load.js",
-    "test/test_moe/test_import_moe.js",
+    "test/test_import/moe/test_import_moe.js",
   ],
 };
 
 testGroups.all = [
   ...testGroups.load,
+  ...testGroups.import,
   ...testGroups.export,
-  ...testGroups.gzip,
-  ...testGroups.moe,
   ...testGroups.slate,
   ...testGroups.misc,
 ];
@@ -54,11 +53,25 @@ testGroups.all = [
 //-----------------------------------------------------------------------------
 // Argument parsing for test runner. Usage:
 //
-//   node test/run.mjs
-//   node test/run.mjs --group slate --group misc
-//   node test/run.mjs test/test_misc/test_history.js
-//   node test/run.mjs --group slate test/test_misc/test_history.js
-//   node test/run.mjs --update
+//   1) Run all tests:
+//
+//      $ node test/run.mjs
+//
+//   2) Run tests for specific groups:
+//
+//      $ node test/run.mjs --group slate --group misc
+//
+//   3) Run specific test files:
+//
+//      $ node test/run.mjs test/test_misc/test_history.js
+//
+//   4) Run tests for a specific group and file:
+//
+//      $ node test/run.mjs --group slate test/test_misc/test_history.js
+//
+//   5) Run update tests:
+//
+//      $ node test/run.mjs --update
 //
 // Default command runs tests. Test targets can be selected by group, by test
 // file, or by combining both. If no targets are given, all tests are run.

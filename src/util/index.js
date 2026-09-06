@@ -14,7 +14,7 @@ import {nanoid} from "nanoid"
 import {
   splitByLeadingElem, splitByTrailingElem,
   isEmpty, isNotEmpty,
-  sleep, numfmt,
+  sleep, numfmt, text2lines,
 } from "./generic"
 
 export {
@@ -22,5 +22,5 @@ export {
   splitByLeadingElem, splitByTrailingElem,
   isEmpty, isNotEmpty,
   sleep,
-  numfmt,
+  numfmt, text2lines,
 }

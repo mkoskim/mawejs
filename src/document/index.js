@@ -7,7 +7,7 @@
 //*****************************************************************************
 
 import {createmawe, buf2tree, fromXML, maweFromTree} from "./xmljs/load"
-import {importMoe} from "./xmljs/importMoe"
+import {importMoe} from "./import/moe"
 import {savemawe, toXML} from "./xmljs/save"
 import fs from "../system/localfs"
 

@@ -15,10 +15,10 @@ console.log("Path suggestion tests...");
 const cwd = process.cwd();
 const fileDir = path.join(cwd, "examples");
 const originDir = path.join(cwd, "examples", "import");
-const moeDir = path.join(cwd, "test", "test_moe", "test_fixtures");
+const moeDir = path.join(cwd, "test", "test_import", "moe", "test_fixtures");
 const file = { id: path.join(fileDir, "Story.mawe") };
 const origin = { id: path.join(originDir, "Imported.docx") };
-const moeOrigin = { id: path.join(moeDir, "title_item.moe") };
+const moeOrigin = { id: path.join(moeDir, "basic.moe") };
 const doc = { file };
 const docWithFileAndOrigin = { file, origin };
 const docWithOrigin = { origin };
@@ -95,7 +95,7 @@ assert.equal(
 
 assert.equal(
   await askFileToSaveAs(docWithMoeOrigin),
-  path.join(moeDir, "title_item.mawe"),
+  path.join(moeDir, "basic.mawe"),
   "save-as with moe doc.origin should suggest origin directory and mawe suffix",
 );
 

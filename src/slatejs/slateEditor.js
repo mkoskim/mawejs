@@ -33,7 +33,7 @@ import {
   elemIsBlock,
 } from "./slateHelpers"
 
-import {text2lines} from '../gui/import/util';
+import {text2lines} from '../util';
 
 //-----------------------------------------------------------------------------
 //

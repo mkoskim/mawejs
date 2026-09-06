@@ -30,47 +30,53 @@ export function sleep(ms) {
 }
 
 //-----------------------------------------------------------------------------
-// Split list to groups starting by a specific element
+// Text splitting
 //-----------------------------------------------------------------------------
 
-export function splitByLeadingElem(list, match) {
-  return list.reduce(
-    (grouped, elem) => {
-      const head = grouped.length > 1 ? grouped.slice(0, -1) : [];
-      const tail = grouped.slice(-1).flat();
-
-      //logger.debug(`Grouped: ${JSON.stringify(grouped)}`);
-      //logger.debug(`Head: ${JSON.stringify(head)}`);
-      //logger.debug(`Tail: ${JSON.stringify(head)}`);
-
-      if (match(elem)) {
-        return [...head, tail, [elem]];
-      }
-      return [...head, tail.concat(elem)];
-    },
-    [[]]
-  )
+export function text2lines(content, linebreak = "\n\n") {
+  return content
+    .replaceAll("\r", "")
+    .split(linebreak)
+    .map(line => line.replaceAll(/\s+/g, " ").trim())
 }
 
 //-----------------------------------------------------------------------------
 // Split list to groups starting by a specific element
 //-----------------------------------------------------------------------------
 
+export function splitByLeadingElem(list, match) {
+  const groups = [];
+  let group = [];
+
+  for(const elem of list) {
+    if(match(elem) && group.length) {
+      groups.push(group);
+      group = [];
+    }
+    group.push(elem);
+  }
+
+  if(group.length) groups.push(group);
+  return groups;
+}
+
+//-----------------------------------------------------------------------------
+// Split list to groups ending with a specific element
+//-----------------------------------------------------------------------------
+
 export function splitByTrailingElem(list, match) {
-  return list.reduce(
-    (grouped, elem) => {
-      const head = grouped.length > 1 ? grouped.slice(0, -1) : [];
-      const tail = grouped.slice(-1).flat();
+  const groups = [];
+  let group = [];
 
-      //logger.debug(`Grouped: ${JSON.stringify(grouped)}`);
-      //logger.debug(`Head: ${JSON.stringify(head)}`);
-      //logger.debug(`Tail: ${JSON.stringify(head)}`);
+  for(const elem of list) {
+    group.push(elem);
 
-      if (match(elem)) {
-        return [...head, tail.concat(elem), []];
-      }
-      return [...head, tail.concat(elem)];
-    },
-    []
-  )
+    if(match(elem)) {
+      groups.push(group);
+      group = [];
+    }
+  }
+
+  if(group.length) groups.push(group);
+  return groups;
 }

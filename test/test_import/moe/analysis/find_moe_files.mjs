@@ -22,7 +22,7 @@ const ignore = {
 const mergeElements = new Set(["TitleItem", "GroupItem", "SceneItem"]);
 
 if(!root) {
-  console.error("Usage: node test/test_moe/analysis/find_moe_files.mjs <path>");
+  console.error("Usage: node test/test_import/moe/analysis/find_moe_files.mjs <path>");
   process.exit(1);
 }
 
