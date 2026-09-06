@@ -20,7 +20,7 @@
     "test:update": "node test/run.mjs --update"
   },
   "dependencies": {
-    "@base-ui/react": "^1.7.0",
+    "@base-ui/react": "^1.8.0",
     "@electron-toolkit/utils": "^4.0.0",
     "@hello-pangea/dnd": "^18.0.1",
     "electron-devtools-installer": "^4.0.0",
@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.2.0",
-    "electron": "^41.10.3",
+    "electron": "^41.10.7",
     "electron-builder": "^26.15.3",
     "electron-vite": "^5.0.0",
     "node": "^24.20.0"
