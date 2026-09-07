@@ -150,14 +150,11 @@ function v3_fixes(story) {
 
   console.log("Fix v3")
 
-  return {
-    ...story,
-    elements: replaceElements(story.elements,
-      ["ui", "export"],
-      v3_fix_chart(story),
-      v3_fix_exports(story)
-    )
-  }
+  return replaceChilds(story,
+    ["ui", "export"],
+    v3_fix_chart(story),
+    v3_fix_exports(story)
+  )
 }
 
 //-----------------------------------------------------------------------------

@@ -139,11 +139,11 @@ export function loadEditorSettings(settings) {
 // TODO: Do the same for other settings
 export function saveEditorSettings(settings) {
   return {
-    type: "editor",
+    name: "editor",
     attributes: {},
     elements: [
       {
-        type: "draft",
+        name: "draft",
         attributes: {
           words: settings.left.words,
           indexed: settings.left.indexed.join(",")

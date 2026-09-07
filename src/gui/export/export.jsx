@@ -155,7 +155,7 @@ export function saveExportSettings(settings) {
     acts, chapters, scenes,
     prefix_act, prefix_chapter, prefix_scene
   } = settings
-  return {type: "export", attributes: {
+  return {name: "export", attributes: {
     content,
     type,
     acts,

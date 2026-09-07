@@ -6,7 +6,7 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import { elemFind, elem2Text } from "../xmljs/elemutil";
+import { createElem, createText, elemFind, elem2Text, elemFilter, elemIsElem } from "../xmljs/elemutil";
 
 //-----------------------------------------------------------------------------
 
@@ -19,27 +19,29 @@ export function importMoe(story) {
 
   return {
     elements: [
-      elem("story", {format: "mawe", version: "4", name: optional(title, "title")}, [
+      createElem("story", {format: "mawe", version: "4", name: optional(title, "title")}, [
         parseHead(title),
         parseExport(title),
-        elem("body", {}, body),
-        elem("notes", {}, notes),
-        elem("ui"),
+        createElem("body", {}, body),
+        createElem("notes", {}, notes),
+        createElem("ui"),
       ]),
     ],
   }
 }
 
 function parseHead(title) {
-  return elem("head", {}, [
+  const elements = [
     optionalElem(title, "title"),
     optionalElem(title, "subtitle"),
     optionalElem(title, "author"),
-  ])
+  ].filter(element => element)
+
+  return createElem("head", {}, elements)
 }
 
 function parseExport(title) {
-  return elem("export", {
+  return createElem("export", {
     content: "draft",
     type: exportType(title),
     acts: "none",
@@ -89,8 +91,8 @@ function parseTitleItem(title) {
 
   if(!scenes.length) return undefined
 
-  return elem("act", {name: "TitleItem", numbered: false}, [
-    elem("chapter", {numbered: false}, scenes),
+  return createElem("act", {name: "TitleItem", numbered: false}, [
+    createElem("chapter", {numbered: false}, scenes),
   ])
 }
 
@@ -104,12 +106,12 @@ function parseTitleItemChild(child) {
   const text = elem2Text(child)
   if(!text) return undefined
 
-  return elem("scene", {
+  return createElem("scene", {
     name: child.name,
     content: child.name === "synopsis" ? "synopsis" : "notes",
   }, [
-    elem("p", {}, [
-      textElem(text),
+    createElem("p", {}, [
+      createText(text),
     ]),
   ])
 }
@@ -128,7 +130,7 @@ function parseTopLevelAct(story, included) {
 
   if(!chapters.length) return []
   return [
-    elem("act", {}, chapters),
+    createElem("act", {}, chapters),
   ]
 }
 
@@ -139,7 +141,7 @@ function parseTopLevelChapter(item, included) {
 
   if(!scenes.length) return undefined
 
-  return elem("chapter", {name: optional(item, "name")}, scenes)
+  return createElem("chapter", {name: optional(item, "name")}, scenes)
 }
 
 function topLevelItems(story) {
@@ -208,7 +210,7 @@ function fieldScene(field, content, included) {
   if(!paragraphs.length) return []
 
   return [{
-    scene: elem("scene", {name: field.name, content}, paragraphs),
+    scene: createElem("scene", {name: field.name, content}, paragraphs),
     included,
   }]
 }
@@ -216,9 +218,9 @@ function fieldScene(field, content, included) {
 function parseScene(scene) {
   const paragraphs = sceneContent(scene)
 
-  return elem("scene", {
+  return createElem("scene", {
     name: optional(scene, "name"),
-  }, paragraphs.length ? paragraphs : [elem("br")])
+  }, paragraphs.length ? paragraphs : [createElem("br")])
 }
 
 function sceneContent(scene) {
@@ -241,7 +243,7 @@ function parseTextBlock(block, type, formatting) {
     .split(/\n+/u)
     .map(text => text.trim())
     .filter(text => text)
-    .map(text => elem(type, {}, markedTextElems(text, type === "p" ? formatting : undefined)))
+    .map(text => createElem(type, {}, markedTextElems(text, type === "p" ? formatting : undefined)))
 }
 
 function sceneIncluded(scene) {
@@ -256,8 +258,8 @@ function markedTextElems(text, formatting) {
   const textNodes = inlineMarkedText(text)
 
   switch(formatting) {
-    case "bold": return [elem("b", {}, textNodes)]
-    case "italic": return [elem("i", {}, textNodes)]
+    case "bold": return [createElem("b", {}, textNodes)]
+    case "italic": return [createElem("i", {}, textNodes)]
     default: return textNodes
   }
 }
@@ -270,23 +272,23 @@ function inlineMarkedText(text) {
     const start = findNextMark(text, index)
 
     if(start < 0) {
-      nodes.push(textElem(text.slice(index)))
+      nodes.push(createText(text.slice(index)))
       break
     }
 
     if(start > index) {
-      nodes.push(textElem(text.slice(index, start)))
+      nodes.push(createText(text.slice(index, start)))
     }
 
     const delimiter = text[start]
     const end = text.indexOf(delimiter, start + 1)
 
     if(end < 0) {
-      nodes.push(textElem(text.slice(start)))
+      nodes.push(createText(text.slice(start)))
       break
     }
 
-    nodes.push(elem(markElement(delimiter), {}, inlineMarkedText(text.slice(start + 1, end))))
+    nodes.push(createElem(markElement(delimiter), {}, inlineMarkedText(text.slice(start + 1, end))))
     index = end + 1
   }
 
@@ -308,7 +310,7 @@ function markElement(delimiter) {
 
 function optionalElem(parent, name) {
   const text = optional(parent, name)
-  return text ? elem(name, {}, [textElem(text)]) : undefined
+  return text ? createElem(name, {}, [createText(text)]) : undefined
 }
 
 function optional(parent, name) {
@@ -317,45 +319,29 @@ function optional(parent, name) {
 }
 
 function childElements(parent) {
-  return parent?.elements?.filter(child => child.type === "element") ?? []
+  return elemFilter(parent?.elements, elemIsElem)
 }
 
 function emptySection(name) {
-  return elem(name, {}, [
+  return createElem(name, {}, [
     emptyAct(),
   ])
 }
 
 function emptyAct() {
-  return elem("act", {}, [
+  return createElem("act", {}, [
     emptyChapter(),
   ])
 }
 
 function emptyChapter() {
-  return elem("chapter", {}, [
+  return createElem("chapter", {}, [
     emptyScene(),
   ])
 }
 
 function emptyScene() {
-  return elem("scene", {}, [
-    elem("br"),
+  return createElem("scene", {}, [
+    createElem("br"),
   ])
-}
-
-function elem(name, attributes = {}, elements = []) {
-  return {
-    type: "element",
-    name,
-    attributes,
-    elements: elements.filter(element => element),
-  }
-}
-
-function textElem(text) {
-  return {
-    type: "text",
-    text,
-  }
 }

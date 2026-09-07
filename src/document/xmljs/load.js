@@ -7,7 +7,7 @@
 //*****************************************************************************
 
 import {uuid as getUUID, nanoid, file2buf, buf2tree} from "../fileutil.js";
-import {elemFind, elemFindall, elem2Text} from "./elemutil";
+import {createElem, createText, elemFind, elemFindall, elem2Text} from "./elemutil";
 import {wcNode, wcChildren, createHeaderNode} from "../nodeutil.js";
 import {textToInt} from "../../util";
 
@@ -172,7 +172,7 @@ function parseSection(section) {
 
   function getActs() {
     const acts = elemFindall(section, "act")
-    if(!acts.length) return [{type: "element", name: "act"}]
+    if(!acts.length) return [createElem("act")]
     return acts
   }
 }
@@ -192,7 +192,7 @@ function parseAct(act, index) {
     numbered,
     target,
   )]
-  const empty = [{type: "element", name: "chapter"}]
+  const empty = [createElem("chapter")]
   const elements = act.elements?.length ? act.elements : empty
 
   const children = elements.map(parseChapter)
@@ -228,7 +228,7 @@ function parseChapter(chapter, index) {
     numbered,
     target,
   )]
-  const empty = [{type: "element", name: "scene"}]
+  const empty = [createElem("scene")]
   const elements = chapter.elements?.length ? chapter.elements : empty
 
   const children = elements.map(parseScene)
@@ -271,7 +271,7 @@ function parseScene(scene, index) {
     target,
   )]
 
-  const empty = [{type: "element", name: "p", children: []}]
+  const empty = [createElem("p")]
   const elements = scene.elements?.length ? scene.elements : empty
 
   const children = elements.map(parseParagraph).filter(e => e).map(elem => ({...elem, words: wcNode(elem)}))
@@ -304,11 +304,7 @@ function parseParagraph(elem, index) {
   const {review: reviewStr} = elem?.attributes ?? {}
   const review = reviewStr === "true"
 
-  const empty = [{
-    type: "element",
-    name: "p",
-    children: [{type: "text", text: ""}]
-  }]
+  const empty = [createElem("p", {}, [createText("")])]
   const elements = elem.elements?.length ? elem.elements : empty
 
   const children = elements.map(e => parseMarks(e, {})).flat()

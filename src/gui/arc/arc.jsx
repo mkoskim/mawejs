@@ -44,7 +44,7 @@ export function loadArcSettings(settings) {
 }
 
 export function saveArcSettings(settings) {
-  return {type: "arc",
+  return {name: "arc",
     attributes: {
       elements: settings.elements,
       template: settings.template,
