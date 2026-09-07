@@ -37,6 +37,16 @@ Important directories:
 Keep renderer/client logic in `src/` when possible. Use Electron and preload
 code for host integration instead of putting editor behavior in the backend.
 
+## Typing Responsiveness
+
+Fast, consistent typing response is a primary requirement. The entire component tree from document state in `src/gui/app/app.jsx`
+(`const [doc, updateDoc] = useImmer(null)`) through editor canvas rendering in `src/gui/editor/editor.jsx` (`Object.entries(editors).map(([key, editor]) =>`) is performance-critical. These code anchors identify the scope even when line
+numbers change.
+
+This applies to every component rendered anywhere along that path or alongside the editor: toolbars, both indexes, editor canvases, buttons, comboboxes, labels, dialogs, menus, and wrapper components or divs. Any component added to this tree must be treated as performance-critical, however small or visually simple it is. The same care applies to shared helpers used by these components.
+
+Small changes anywhere in this tree can add work to every keystroke and make typing noticeably less responsive, even without changes to Slate code. When changing these components, consider which state and context updates trigger their rendering, the work they perform, and the updates they cause elsewhere. Preserve fast, consistent typing response; improvements to initial rendering or large paste operations must not compromise normal typing responsiveness.
+
 ## Dead or Local Code
 
 Some directories are intentionally not reliable sources for current behavior:
