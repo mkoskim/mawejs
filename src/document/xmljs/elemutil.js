@@ -4,6 +4,8 @@
 //
 //*****************************************************************************
 
+import {isObject} from "../../util";
+
 //-----------------------------------------------------------------------------
 // Element creation
 //-----------------------------------------------------------------------------
@@ -74,6 +76,39 @@ export function getElem(parent, name) {
 
 export function elemFindall(parent, name) {
   return elemFilter(parent?.elements, e => e.type === "element" && e.name === name)
+}
+
+export function elemIsElem(e) { return e.type === "element"}
+export function elemMatchName(e, name) { return e.name === name}
+
+export function elemMatchAttributes(elem, attributes) {
+  return Object.entries(attributes).every(([key, value]) => elem.attributes?.[key] === value);
+}
+
+// Find matching descendant elements in document order, including root itself.
+export function elemFindDeep(root, match) {
+  const found = [];
+
+  const matcher = (() => {
+    const t = typeof match
+    switch(t) {
+      case "function": return match
+      case "string": return e => elemMatchName(e, match)
+      case "object": if(isObject(match)) return e => elemMatchAttributes(e, match)
+      default: return
+    }
+  })()
+
+  function visit(elements = []) {
+    for (const elem of elements) {
+      if (elem.type !== "element") continue;
+      if (matcher(elem)) found.push(elem);
+      visit(elem.elements);
+    }
+  }
+
+  if(matcher && root) visit([root].flat());
+  return found;
 }
 
 //-----------------------------------------------------------------------------

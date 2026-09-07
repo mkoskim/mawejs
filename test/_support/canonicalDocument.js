@@ -75,22 +75,6 @@ function nodeToLine(node) {
   return parts.join("|");
 }
 
-/*
-function isContainer(node) {
-  return node.type === "act" || node.type === "chapter" || node.type === "scene";
-}
-
-function isCtrlNode(node) {
-  return (
-    node.type === "hact"
-    || node.type === "hchapter"
-    || node.type === "hscene"
-    || node.type === "hsynopsis"
-    || node.type === "hnotes"
-  );
-}
-*/
-
 function blockText(node) {
   return (node.children ?? [])
     .map(child => child.text ?? "")

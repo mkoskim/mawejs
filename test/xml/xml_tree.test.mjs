@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import {test, describe} from "node:test";
+
 import { buf2tree } from "../../src/document/fileutil.js";
 
 console.log("XML tree shape tests...");
@@ -19,24 +21,24 @@ const cases = [
     expected: { elements: [{ type: "doctype", doctype: "story" }, story] },
   },
   {
-    name: "processing instructions are included in elements",
+    name: "Processing instructions are included in elements",
     xml: '<?custom value?><story format="mawe"/>',
     expected: {
       elements: [{ type: "instruction", name: "custom", instruction: "value" }, story],
     },
   },
   {
-    name: "comments are ignored by the application parser settings",
+    name: "Comments are ignored by the application parser settings",
     xml: '<!-- comment --><story format="mawe"/>',
     expected: { elements: [story] },
   },
 ];
 
-for (const { name, xml, expected } of cases) {
-  const tree = buf2tree(xml);
-  console.log(`${name}`);
-  assert.deepEqual(tree, expected, name);
-  //console.log(`${name}: ${JSON.stringify(tree)}`);
-}
-
-console.log("XML tree shape tests passed");
+describe("XML tree shape", { concurrency: false }, () => {
+  for (const { name, xml, expected } of cases) {
+    test(name, () => {
+      const tree = buf2tree(xml);
+      assert.deepEqual(tree, expected);
+    });
+  }
+});

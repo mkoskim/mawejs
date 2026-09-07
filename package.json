@@ -11,15 +11,11 @@
     "audit": "npm audit --omit=dev",
     "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
     "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox",
-    "test": "node test/run.mjs",
-    "test:dev": "node --watch test/run.mjs",
-    "test:xml": "node test/run.mjs --group xml",
-    "test:load": "node test/run.mjs --group load",
+    "test": "npm run test:node && node test/run.mjs",
+    "test:node": "node --test test/all.test.mjs",
     "test:import": "node test/run.mjs --group import",
     "test:export": "node test/run.mjs --group export",
-    "test:slate": "node test/run.mjs --group slate",
-    "test:misc": "node test/run.mjs --group misc",
-    "test:update": "node test/run.mjs --update"
+    "test:update": "node test/update.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

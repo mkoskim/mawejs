@@ -1,19 +1,11 @@
 import assert from "node:assert/strict";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { installFakeIpc } from "../../support/fakeIpc.js";
-import { canonicalDocumentText } from "../../support/canonicalDocument.js";
-import { mawe } from "../../../src/document/index.js";
+import { installFakeIpc } from "../../_support/fakeIpc.js";
+import { fixtures, loadSource, loadExpected } from "./fixtures.mjs";
 
 installFakeIpc();
 
 console.log("MOE import tests...");
-
-const fixtures = [
-  "basic",
-  "parts",
-  "hiddenparts",
-];
 
 const expectedNames = {
   basic: "Basic MOE Fixture",
@@ -27,27 +19,18 @@ const expectedExports = {
   hiddenparts: {type: "long", acts: "none", chapters: "numbered"},
 };
 
-const updateSnapshots = process.argv.includes("--update");
-
-if (updateSnapshots) {
-  console.log("MOE import tests: updating reference files...")
-  await updateReferenceFiles()
-  console.log("MOE import tests: files updated")
-} else {
-  for (const fixture of fixtures) {
-    await testFixture(fixture);
-  }
-  console.log("MOE import tests passed");
+for (const fixture of fixtures) {
+  await testFixture(fixture);
 }
+console.log("MOE import tests passed");
 
-async function testFixture(fixture) {
-  const source = sourceFilename(fixture);
-  const expectedFile = expectedFilename(fixture);
+async function testFixture({sourcefile: source, expectedfile, operation}) {
+  const fixture = path.basename(source, ".moe");
 
   console.log("MOE import test:", source)
 
-  const doc = await mawe.load(source);
-  const expected = await readFile(expectedFile, "utf8");
+  const doc = await loadSource(source);
+  const expected = await loadExpected(expectedfile);
 
   assert.ok(doc.key, `${source}: imported MOE document should get a React key`);
   assert.equal(doc.file, undefined, `${source}: imported MOE document should not get file`);
@@ -55,29 +38,7 @@ async function testFixture(fixture) {
   assert.equal(doc.head.name, expectedNames[fixture], `${source}: title should also become document name`);
   assertExports(doc, fixture);
   assertMarks(doc, fixture);
-  assert.equal(canonicalDocumentText(doc), expected, `${source}: canonical text mismatch`);
-}
-
-async function updateReferenceFiles() {
-  for (const fixture of fixtures) {
-    const source = sourceFilename(fixture);
-    const doc = await mawe.load(source);
-    const actual = canonicalDocumentText(doc);
-    await writeExpected(expectedFilename(fixture), actual);
-  }
-}
-
-function sourceFilename(fixture) {
-  return path.join("test", "test_import", "moe", "test_fixtures", `${fixture}.moe`);
-}
-
-function expectedFilename(fixture) {
-  return path.join("test", "test_import", "moe", "expected", `${fixture}.txt`);
-}
-
-async function writeExpected(filename, text) {
-  await mkdir(path.dirname(filename), { recursive: true });
-  await writeFile(filename, text);
+  assert.equal(operation(doc), expected, `${source}: canonical text mismatch`);
 }
 
 function assertMarks(doc, fixture) {

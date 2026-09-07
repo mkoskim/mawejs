@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { installFakeIpc } from "../support/fakeIpc.js";
+import { installFakeIpc } from "../_support/fakeIpc.js";
 import { mawe } from "../../src/document/index.js";
 import { storyToBatches, flattedFormat, exportAs } from "../../src/document/export/index.js";
 

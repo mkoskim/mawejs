@@ -1,61 +1,37 @@
+import {describe, test} from "node:test"
 import assert from "node:assert/strict";
 import { Editor } from "slate";
 import { nodeHeadParse, nodeHeading } from "../../src/document/nodeutil.js";
 import { getCoreEditor } from "../../src/slatejs/slateEditor.js";
 import { dndDrop } from "../../src/slatejs/slateDnD.js";
 
-console.log("Slate DnD test...");
+describe("Slate DnD tests", () => {
 
-await testBuffer();
-await testMoveThirdSceneToLast();
-await testMoveFifthSceneToThird();
-await testMoveHeaderlessFirstSceneToThird();
-await testMoveThirdSceneToFirst();
-await testMoveSceneToPreviousChapter();
-await testMoveSceneToNextChapter();
-await testMoveSecondChapterToFirst();
-await testMoveFirstChapterToSecond();
-await testMoveSecondActToFirst();
-await testMoveFirstActToSecond();
+  //-----------------------------------------------------------------------------
+  // Check test buffer
+  //-----------------------------------------------------------------------------
 
-console.log("Slate DnD test passed");
+  test("Test initial buffer", () => {
+    const editor = getCoreEditor();
+    editor.children = createChildren();
 
-//*****************************************************************************
-//
-// Check test buffer
-//
-//*****************************************************************************
+    assertBlockOrder(editor, [
+      "Act 1",
+      "Chapter 1",
+      "<Unnamed>",
+      "Scene 2",
+      "Scene 3",
+      "Scene 4",
+      "Scene 5",
+      "Chapter 2",
+      "Scene 6",
+      "Scene 7",
+      "Act 2",
+      "Chapter 3",
+      "Scene 8",
+    ]);
+  })
 
-function testBuffer() {
-  console.log("- Test buffer...");
-
-  const editor = getCoreEditor();
-  editor.children = createChildren();
-
-  assertBlockOrder(editor, [
-    "Act 1",
-    "Chapter 1",
-    "<Unnamed>",
-    "Scene 2",
-    "Scene 3",
-    "Scene 4",
-    "Scene 5",
-    "Chapter 2",
-    "Scene 6",
-    "Scene 7",
-    "Act 2",
-    "Chapter 3",
-    "Scene 8",
-  ]);
-}
-
-//*****************************************************************************
-//
-// Drag-and-drop tests.
-//
-//*****************************************************************************
-
-function testMoveThirdSceneToLast() {
   testDrop("Test moving third scene to last...", [0, 1, 3], [0, 1], 5, [
     "Act 1",
     "Chapter 1",
@@ -71,9 +47,7 @@ function testMoveThirdSceneToLast() {
     "Chapter 3",
     "Scene 8",
   ]);
-}
 
-function testMoveFifthSceneToThird() {
   testDrop("Test moving fifth scene to third...", [0, 1, 5], [0, 1], 3, [
     "Act 1",
     "Chapter 1",
@@ -89,9 +63,7 @@ function testMoveFifthSceneToThird() {
     "Chapter 3",
     "Scene 8",
   ]);
-}
 
-function testMoveHeaderlessFirstSceneToThird() {
   testDrop("Test moving headerless first scene to third...", [0, 1, 1], [0, 1], 3, [
     "Act 1",
     "Chapter 1",
@@ -107,9 +79,7 @@ function testMoveHeaderlessFirstSceneToThird() {
     "Chapter 3",
     "Scene 8",
   ]);
-}
 
-function testMoveThirdSceneToFirst() {
   testDrop("Test moving third scene to first...", [0, 1, 3], [0, 1], 1, [
     "Act 1",
     "Chapter 1",
@@ -125,9 +95,7 @@ function testMoveThirdSceneToFirst() {
     "Chapter 3",
     "Scene 8",
   ]);
-}
 
-function testMoveSceneToPreviousChapter() {
   testDrop("Test moving scene to previous chapter...", [0, 2, 1], [0, 1], 6, [
     "Act 1",
     "Chapter 1",
@@ -143,9 +111,7 @@ function testMoveSceneToPreviousChapter() {
     "Chapter 3",
     "Scene 8",
   ]);
-}
 
-function testMoveSceneToNextChapter() {
   testDrop("Test moving scene to next chapter...", [0, 1, 3], [0, 2], 1, [
     "Act 1",
     "Chapter 1",
@@ -161,9 +127,7 @@ function testMoveSceneToNextChapter() {
     "Chapter 3",
     "Scene 8",
   ]);
-}
 
-function testMoveSecondChapterToFirst() {
   testDrop("Test moving second chapter to first...", [0, 2], [0], 1, [
     "Act 1",
     "Chapter 2",
@@ -179,9 +143,7 @@ function testMoveSecondChapterToFirst() {
     "Chapter 3",
     "Scene 8",
   ]);
-}
 
-function testMoveFirstChapterToSecond() {
   testDrop("Test moving first chapter to second...", [0, 1], [0], 2, [
     "Act 1",
     "Chapter 2",
@@ -197,9 +159,7 @@ function testMoveFirstChapterToSecond() {
     "Chapter 3",
     "Scene 8",
   ]);
-}
 
-function testMoveSecondActToFirst() {
   testDrop("Test moving second act to first...", [1], [], 0, [
     "Act 2",
     "Chapter 3",
@@ -215,9 +175,7 @@ function testMoveSecondActToFirst() {
     "Scene 6",
     "Scene 7",
   ]);
-}
 
-function testMoveFirstActToSecond() {
   testDrop("Test moving first act to second...", [0], [], 1, [
     "Act 2",
     "Chapter 3",
@@ -233,29 +191,22 @@ function testMoveFirstActToSecond() {
     "Scene 6",
     "Scene 7",
   ]);
-}
+})
 
 function testDrop(name, srcPath, dstPath, dstIndex, expected) {
-  console.log("-", name);
+  test(name, () => {
+    const editor = getCoreEditor();
+    editor.children = createChildren();
 
-  const editor = getCoreEditor();
-  editor.children = createChildren();
-
-  const droppedPath = dndDrop(editor, srcPath, editor, dstPath, dstIndex);
-  assertBlockOrder(editor, expected);
-  assertSelectionAtStart(editor, droppedPath);
+    const droppedPath = dndDrop(editor, srcPath, editor, dstPath, dstIndex);
+    assertBlockOrder(editor, expected);
+    assertSelectionAtStart(editor, droppedPath);
+  })
 }
 
-//*****************************************************************************
-//
+//-----------------------------------------------------------------------------
 // Assert the order of scenes, chapters and acts.
-//
-//*****************************************************************************
-
-function assertBlockOrder(editor, expected) {
-  const order = containerNames(editor);
-  assert.deepEqual(order, expected);
-}
+//-----------------------------------------------------------------------------
 
 function assertSelectionAtStart(editor, path) {
   const { path: focusPath } = Editor.start(editor, path);
@@ -264,12 +215,10 @@ function assertSelectionAtStart(editor, path) {
   assert.equal(editor.selection.focus.offset, 0);
 }
 
-//*****************************************************************************
-//
-// Creating test data. We are only interested about the order of blocks after
-// drag-and-drop, so we can keep the structure of the document simple.
-//
-//*****************************************************************************
+function assertBlockOrder(editor, expected) {
+  const order = containerNames(editor);
+  assert.deepEqual(order, expected);
+}
 
 function containerNames(editor) {
   const containerTypes = ["act", "chapter", "scene"];
@@ -282,6 +231,11 @@ function containerName(container) {
   const { name } = nodeHeadParse(head);
   return name || "<Unnamed>";
 }
+
+//-----------------------------------------------------------------------------
+// Creating test data. We are only interested about the order of blocks after
+// drag-and-drop, so we can keep the structure of the document simple.
+//-----------------------------------------------------------------------------
 
 function createChildren() {
   return [
