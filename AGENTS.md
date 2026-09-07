@@ -37,6 +37,22 @@ Important directories:
 Keep renderer/client logic in `src/` when possible. Use Electron and preload
 code for host integration instead of putting editor behavior in the backend.
 
+## Manuscript Safety
+
+Load/save correctness protects months or years of the user's writing. A broken
+GUI or a loading exception is recoverable while the original file remains
+intact; saving broken state over that file can permanently destroy the work.
+A successful write is not enough: MaweJS must be able to load the saved content
+back without losing manuscript content.
+
+Before changing document state, GUI save callbacks, Slate structure, migration,
+serialization, compression or file writing, read
+[Load/save safety: protect the manuscript](src/document/README.md#loadsave-safety-protect-the-manuscript).
+Always save the latest document, finish conversion and compression before
+touching the destination, and preserve the existing file when preparation fails.
+Verify affected behavior with load, roundtrip and save tests, including failure
+cases. This requirement applies even when no code in `src/document/` changes.
+
 ## Typing Responsiveness
 
 Fast, consistent typing response is a primary requirement. The entire component tree from document state in `src/gui/app/app.jsx`

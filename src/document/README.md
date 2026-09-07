@@ -15,6 +15,56 @@ Important areas:
 
 Be careful with compatibility when changing document loading, saving, or migration code. Existing `.mawe` files and migration examples should keep working unless the task explicitly changes the format.
 
+Load/save safety: protect the manuscript
+--------------------------------------
+
+A manuscript can represent months or years of irreplaceable work. Treat load
+and save correctness as a data-preservation requirement across the entire
+application, including GUI callbacks, Slate operations, normalization, migration,
+serialization, compression and file access.
+
+A loading or editing bug may produce a broken tree, display incorrect content,
+or crash the GUI. As long as the stored manuscript remains intact, that bug can
+be fixed and the file loaded again. The critical escalation is allowing that
+broken in-memory state to overwrite the manuscript with corrupt, incomplete or
+unreadable content. That can turn a recoverable software bug into the permanent
+loss of years of writing.
+
+A successful file write is not sufficient evidence of a successful save. The
+saved content must be readable by MaweJS and preserve the manuscript. Even valid
+XML can be unusable or silently omit text. Serialization completing without an
+exception does not, by itself, prove that the source tree was valid.
+
+Preserve these requirements when changing any part of the document flow:
+
+- Save the latest document state. A stale React closure can pass an old, otherwise
+  valid document to the saver and silently lose recent edits.
+- Complete document conversion, XML serialization and any compression before
+  opening the destination for writing. If preparation throws, do not call the
+  file writer, truncate or replace an existing file, or create a new destination.
+- Preserve content through save/load roundtrips, including `.mawe.gz` compression
+  and decompression, and retain compatibility with existing migration examples.
+- Do not hide structural failures by silently discarding manuscript content or
+  substituting an empty document merely to let saving succeed. Deliberate format
+  handling, such as omitting editor control nodes, must preserve their intended
+  content and metadata.
+
+The tests in `test/load/` protect complementary parts of this contract:
+
+- Roundtrip tests check that serialized documents can be loaded back with the
+  expected content.
+- Save tests exercise `mawe.save()` and `mawe.saveas()` through actual temporary
+  files, including compressed files, and verify the loaded result.
+- Save failure tests deliberately break trees, assert that serialization throws,
+  and verify that the file writer is never called, existing bytes remain intact
+  and loadable, and an absent destination remains absent.
+
+These failure tests cover the deliberately exercised exceptions; they do not
+prove that every malformed tree is rejected. When changing structural handling,
+consider both failure modes: an exception before writing and a conversion that
+succeeds while losing or corrupting content. Run the relevant load, roundtrip
+and save tests, and add cases for newly affected behavior.
+
 Control elements and editable metadata
 --------------------------------------
 
