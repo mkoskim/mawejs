@@ -28,6 +28,15 @@ Memoization, stable references and other React bailouts may avoid individual
 component renders; the update path does not mean that every component always
 renders. Preserve those boundaries when changing this tree.
 
+## DocIndex: do not defer rendering
+
+Do not defer `DocIndex` rendering, for example by wrapping it in `DeferredRender`
+or feeding it a deferred version of the index tree. Drag-and-drop depends on
+the index rendering in sync with its current structure; deferring that render
+breaks DnD behavior. Preserve this constraint when optimizing either index.
+This concerns the index structure itself, not a blanket ban on deferred values
+for auxiliary calculations such as word-count formatting.
+
 ## Main render branches
 
 Simplified component tree; shared layout wrappers, controls and library internals are omitted here and project components are listed below. Both indexes reuse `DocIndex` and its row components.
