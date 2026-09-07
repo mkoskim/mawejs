@@ -47,6 +47,10 @@ This applies to every component rendered anywhere along that path or alongside t
 
 Small changes anywhere in this tree can add work to every keystroke and make typing noticeably less responsive, even without changes to Slate code. When changing these components, consider which state and context updates trigger their rendering, the work they perform, and the updates they cause elsewhere. Preserve fast, consistent typing response; improvements to initial rendering or large paste operations must not compromise normal typing responsiveness.
 
+See [Performance-critical components](src/gui/perf_critical_components.md) for
+the render branches and component inventory. Keep it updated when changing
+the component structure in this area.
+
 ## Dead or Local Code
 
 Some directories are intentionally not reliable sources for current behavior:
