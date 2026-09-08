@@ -21,7 +21,7 @@ import { wcNode, wcCompare, nodeHeading, nodeHeadParse, nodeHeadAttrs} from '../
 
 import {
   nodeTypes,
-  paragraphTypes, MARKUP,
+  paragraphTypes,
   nodeIsContainer,
   nodeIsBreak,
   nodeBreaks,
@@ -172,6 +172,12 @@ function withTextPaste(editor) {
 // With Markups
 //
 //*****************************************************************************
+
+const MARKUP = Object.fromEntries(
+  Object.entries(paragraphTypes)
+    .filter(([type, {markup}]) => markup)
+    .map(([type, {markup}]) => [`${markup} `, {type}])
+)
 
 function withMarkup(editor) {
 

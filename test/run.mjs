@@ -8,10 +8,6 @@ console.log("Node version:", process.versions.node)
 //-----------------------------------------------------------------------------
 
 const testGroups = {
-  import: [
-    "test/import/text/test_import_text.js",
-    //"test/import/moe/test_import_moe.js",
-  ],
   export: [
     "test/export/test_export.js",
     "test/export/test_splits.js",
@@ -19,7 +15,6 @@ const testGroups = {
 };
 
 testGroups.all = [
-  ...testGroups.import,
   ...testGroups.export,
 ];
 

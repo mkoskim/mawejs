@@ -8,7 +8,7 @@ pseudonym=
 [section:draft]
 act|numbered=true|name=
 chapter|numbered=true|name=Chapter
-scene|content=scene|name=Scene
+scene|name=Scene
 p|text=If loaded correctly:
 p|text=- Story title is "Title v3/1".
 p|text=- Arc view shows chapters.
@@ -17,10 +17,10 @@ br|text=
 [section:notes]
 act|numbered=true|name=
 chapter|numbered=true|name=
-scene|content=scene|name=
+scene|name=
 br|text=
 [section:storybook]
 act|numbered=true|name=
 chapter|numbered=true|name=
-scene|content=scene|name=
+scene|name=
 br|text=

@@ -6,7 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import { gunzipSync } from "node:zlib";
 import { installFakeIpc } from "../_support/fakeIpc.js";
-import { canonicalDocumentText } from "../_support/canonicalDocument.js";
+import { canonicalDocumentText } from "../testutil/canonicalDocument.js";
 
 import fs from "../../src/system/localfs.js";
 

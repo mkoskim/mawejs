@@ -4,8 +4,6 @@
 //
 //*****************************************************************************
 
-import {IsKey} from "../gui/common/hotkeys"
-
 //-----------------------------------------------------------------------------
 // Node types
 //-----------------------------------------------------------------------------
@@ -25,7 +23,7 @@ export const nodeTypes = {
 
   "hact":      {parent: "act",     breaks: true, },
   "hchapter":  {parent: "chapter", breaks: true, },
-  "hscene":    {parent: "scene",   breaks: true, ctrl: {content: "scene"}},
+  "hscene":    {parent: "scene",   breaks: true, ctrl: {content: undefined}},
   "hsynopsis": {parent: "scene",   breaks: true, ctrl: {content: "synopsis"}},
   "hnotes":    {parent: "scene",   breaks: true, ctrl: {content: "notes"}},
 
@@ -72,6 +70,14 @@ export function nodeBreaks(node) {
 }
 
 //-----------------------------------------------------------------------------
+// Control nodes create slate-editable node to edit values in containers.
+//-----------------------------------------------------------------------------
+
+export function nodeIsCtrl(node) {
+  return nodeIsBreak(node)
+}
+
+//-----------------------------------------------------------------------------
 // Paragraph types
 //
 //    eol     Pressing ENTER at end-of-line continues this style
@@ -81,53 +87,21 @@ export function nodeBreaks(node) {
 //-----------------------------------------------------------------------------
 
 export const paragraphTypes = {
-  "hact":      {name: "Act",      markup: "**", shortcut: "Ctrl-Alt-1", eol: "p", bk: "p",},
-  "hchapter":  {name: "Chapter",  markup: "#",  shortcut: "Ctrl-Alt-2", eol: "p", bk: "p",},
-  "hscene":    {name: "Scene",    markup: "##", shortcut: "Ctrl-Alt-3", eol: "p", bk: "p",},
-  "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl-Alt-S", eol: "p", bk: "p",},
-  "hnotes":    {name: "Notes",    markup: "%%", shortcut: "Ctrl-Alt-N", eol: "p", bk: "p",},
+  "hact":      {name: "Act",      markup: "**", shortcut: "Ctrl+Alt+1", eol: "p", bk: "p",},
+  "hchapter":  {name: "Chapter",  markup: "#",  shortcut: "Ctrl+Alt+2", eol: "p", bk: "p",},
+  "hscene":    {name: "Scene",    markup: "##", shortcut: "Ctrl+Alt+3", eol: "p", bk: "p",},
+  "hsynopsis": {name: "Synopsis", markup: ">>", shortcut: "Ctrl+Alt+S", eol: "p", bk: "p",},
+  "hnotes":    {name: "Notes",    markup: "%%", shortcut: "Ctrl+Alt+N", eol: "p", bk: "p",},
 
-  "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl-Alt-C",           bk: "p", reset: "p" },
-  "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl-Alt-M",           bk: "p", reset: "p" },
-  "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl-Alt-B", eol: "p", bk: "p", reset: "p" },
+  "comment":   {name: "Comment",  markup: "//", shortcut: "Ctrl+Alt+C",           bk: "p", reset: "p" },
+  "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl+Alt+M",           bk: "p", reset: "p" },
+  "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl+Alt+B", eol: "p", bk: "p", reset: "p" },
   "tags":      {name: "Tags",     markup: "@@",                         eol: "p", bk: "p", reset: "p" },
-  "quote":     {name: "Quote",                  shortcut: "Ctrl-Alt-Q",           bk: "p", reset: "p" },
-  "p":         {name: "Text",                   shortcut: "Ctrl-Alt-0"},
-}
+  "quote":     {name: "Quote",                  shortcut: "Ctrl+Alt+Q",           bk: "p", reset: "p" },
+  "p":         {name: "Text",                   shortcut: "Ctrl+Alt+0"},
 
-//-----------------------------------------------------------------------------
-// Paragraph shortcuts & markups
-//-----------------------------------------------------------------------------
-
-export const nodeShortcuts = [
-  {shortcut: IsKey.CtrlAlt0, node: {type: "p"}},
-  {shortcut: IsKey.CtrlAlt1, node: {type: "hact"}},
-  {shortcut: IsKey.CtrlAlt2, node: {type: "hchapter"}},
-  {shortcut: IsKey.CtrlAlt3, node: {type: "hscene"}},
-  {shortcut: IsKey.CtrlAltS, node: {type: "hsynopsis"}},
-  {shortcut: IsKey.CtrlAltN, node: {type: "hnotes"}},
-  {shortcut: IsKey.CtrlAltB, node: {type: "bookmark"}},
-  {shortcut: IsKey.CtrlAltC, node: {type: "comment"}},
-  {shortcut: IsKey.CtrlAltM, node: {type: "missing"}},
-  {shortcut: IsKey.CtrlAltQ, node: {type: "quote"}},
-]
-
-export const markShortcuts = [
-  {shortcut: IsKey.CtrlB, mark: "bold"},
-  {shortcut: IsKey.CtrlI, mark: "italic"},
-]
-
-export const MARKUP = {
-  "** ": {type: "hact"},
-  "# " : {type: "hchapter"},
-  "## ": {type: "hscene"},
-  '>> ': {type: "hsynopsis"},
-  '%% ': {type: 'hnotes'},
-  '=> ': {type: "bookmark"},
-  '!! ': {type: 'missing'},
-  '// ': {type: 'comment'},
-  '@@ ': {type: 'tags'},
-  //'++ ': {type: 'fill'},
+  // Unused markups
+  //'++ ':
   //'-- ':
   //'<<':
   //'((':
@@ -135,4 +109,9 @@ export const MARKUP = {
   //'==':
   //'??':
   //'::':
+}
+
+export const textTypes = {
+  "bold":   {name: "Bold",   shortcut: "Ctrl+B"},
+  "italic": {name: "Italic", shortcut: "Ctrl+I"},
 }

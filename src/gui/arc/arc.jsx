@@ -272,7 +272,7 @@ function createData(section, elements) {
     }
 
     return [
-      ...filterCtrlNodes(chapter.children).filter(s => s.content === "scene").map(flatScene),
+      ...filterCtrlNodes(chapter.children).filter(s => s.content === undefined).map(flatScene),
       pad(chapter.words.padding)
     ]
   }

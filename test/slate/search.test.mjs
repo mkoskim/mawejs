@@ -6,6 +6,10 @@ import { nodeID } from "../../src/document/nodeutil.js";
 import { getCoreEditor } from "../../src/slatejs/slateEditor.js";
 import { foldNode } from "../../src/slatejs/slateFolding.js";
 import {
+  createAct, createChapter, createScene,
+} from "../testutil/nodetree.mjs"
+
+import {
   searchNextMatch,
   searchPrevMatch,
 } from "../../src/slatejs/slateSearch.js";
@@ -18,41 +22,19 @@ const SEARCH_TEXT = "beef";
 
 function createChildren() {
   return [
-    {
-      type: "act",
-      children: [
-        { type: "hact", children: [{ text: "Act 1" }] },
-        {
-          type: "chapter",
-          children: [
-            { type: "hchapter", children: [{ text: "Chapter 1" }] },
-            createScene(undefined, "BEEF"),
-            createScene("Header beef", "dead beef"),
-            createScene("Header without match", "deadbeef"),
-            createScene("debeefed header", "nothing here"),
-            createScene("Final scene", "dead only"),
-          ],
-        },
-        {
-          type: "chapter",
-          children: [
-            { type: "hchapter", children: [{ text: "Chapter 2" }] },
-            createScene("Another beef header", "quiet paragraph"),
-          ],
-        },
-      ],
-    },
+    createAct("Act 1", [
+      createChapter("Chapter 1", [
+          createScene(undefined, "BEEF"),
+          createScene("Header beef", "dead beef"),
+          createScene("Header without match", "deadbeef"),
+          createScene("debeefed header", "nothing here"),
+          createScene("Final scene", "dead only"),
+      ]),
+      createChapter("Chapter 2", [
+          createScene("Another beef header", "quiet paragraph"),
+      ]),
+    ]),
   ];
-}
-
-function createScene(header, text) {
-  return {
-    type: "scene",
-    children: [
-      ...(header ? [{ type: "hscene", children: [{ text: header }] }] : []),
-      { type: "p", children: [{ text }] },
-    ],
-  };
 }
 
 //-----------------------------------------------------------------------------

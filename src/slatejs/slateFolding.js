@@ -112,6 +112,8 @@ export function toggleFold(editor) {
 
 //-----------------------------------------------------------------------------
 // Fold by node type
+// TODO: This needs rework! act, chapter and scene are node types, synopsis
+// and notes are scene.content types.
 //-----------------------------------------------------------------------------
 
 export const FOLD = {
@@ -164,7 +166,7 @@ export function foldByType(editor, types) {
       if(Editor.isEditor(n)) return false;
       if(!Element.isElement(n)) return false;
 
-      const type = n.type === "scene" ? n.content : n.type
+      const type = n.type === "scene" ? (n.content ?? n.type) : n.type
 
       if(!(type in types)) return false;
       if(n.folded === types[type]) return false
@@ -174,7 +176,8 @@ export function foldByType(editor, types) {
 
   Editor.withoutNormalizing(editor, () => {
     for(const [node, path] of matches) {
-      const fold = node.type === "scene" ? types[node.content] : types[node.type]
+      const type = node.type === "scene" ? (node.content ?? node.type) : node.type
+      const fold = types[type]
       foldNode(editor, node, path, fold)
     }
   })

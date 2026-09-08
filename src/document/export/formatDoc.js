@@ -281,7 +281,7 @@ export function batchToFlatted(content, story, { actOffset = 0, chapterOffset = 
       //case "storybook": return true
       default: break
     }
-    return s.content === "scene"
+    return s.content === undefined
   }
 
   //---------------------------------------------------------------------------

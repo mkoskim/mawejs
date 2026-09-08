@@ -35,6 +35,8 @@ export function importText(content, settings = {}) {
     }]
   }
 
+  //---------------------------------------------------------------------------
+
   function isBreak(prefix, line) {
     if(!prefix.length) return false
     if(!line) return false
@@ -76,6 +78,10 @@ export function importText(content, settings = {}) {
     return createElem("p", {}, [{type: "text", text: line}])
   }
 }
+
+//-----------------------------------------------------------------------------
+// Helper functions
+//-----------------------------------------------------------------------------
 
 function getLinebreak(linebreak) {
   switch(linebreak) {

@@ -422,7 +422,7 @@ class SceneItem extends React.PureComponent {
     >
     <IndexItem
       id={id}
-      type={node.content}
+      type={node.content ?? node.type}
       name={node.name}
       folded={node.folded}
       words={node.words}

@@ -41,16 +41,16 @@ export function saveViewSettings(settings) {
 }
 
 export const IsKey = {
-  CtrlAlt0: "Ctrl-Alt-0",
-  CtrlAlt1: "Ctrl-Alt-1",
-  CtrlAlt2: "Ctrl-Alt-2",
-  CtrlAlt3: "Ctrl-Alt-3",
-  CtrlAltS: "Ctrl-Alt-S",
-  CtrlAltN: "Ctrl-Alt-N",
-  CtrlAltB: "Ctrl-Alt-B",
-  CtrlAltC: "Ctrl-Alt-C",
-  CtrlAltM: "Ctrl-Alt-M",
-  CtrlAltQ: "Ctrl-Alt-Q",
-  CtrlB: "Ctrl-B",
-  CtrlI: "Ctrl-I",
+  CtrlAlt0: undefined,
+  CtrlAlt1: undefined,
+  CtrlAlt2: undefined,
+  CtrlAlt3: undefined,
+  CtrlAltS: undefined,
+  CtrlAltN: undefined,
+  CtrlAltB: undefined,
+  CtrlAltC: undefined,
+  CtrlAltM: undefined,
+  CtrlAltQ: undefined,
+  CtrlB: undefined,
+  CtrlI: undefined,
 };

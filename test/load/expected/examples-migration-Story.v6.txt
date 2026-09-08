@@ -8,9 +8,9 @@ pseudonym=
 [section:draft]
 act|numbered=false|target=2000|name=ACT
 chapter|numbered=false|name=File Format v6
-scene|content=scene|name=Check!
+scene|name=Check!
 p|text=Check that conversion from reference to storybook worked.
-scene|content=scene|name=Features
+scene|name=Features
 p|text=File format v6 paragraph styles:
 p|text=Regular text.
 bookmark|text=Bookmarks
@@ -23,7 +23,7 @@ br|text=
 p|text=Scenes: File format v6 has three scene content types: regular scene, synopsis and notes.
 br|text=
 p|text=Sections: v6 files have three sections: draft, notes and storybook.
-scene|content=scene|name=Scene
+scene|name=Scene
 p|text=Scenes building the story.
 scene|content=synopsis|name=Synopsis scene
 p|text=Synopsis scenes can be used to write story synopses. They are excluded from draft export, but can be exported as a synopsis document. See Export view, and content type selection.
@@ -40,33 +40,33 @@ p|text=Notes scenes contain different notes for the writer. Like with scene bloc
 br|text=
 p|text=Notes: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
 chapter|numbered=false|name=Prologue
-scene|content=scene|name=Unnumbered chapters and acts
+scene|name=Unnumbered chapters and acts
 p|text=Adding "*" after the act or chapter name turns off numbering.
 chapter|numbered=true|target=500|name=Ch1
-scene|content=scene|name=Target word counts
+scene|name=Target word counts
 p|text=Another new feature are target word counts for containers (scene, chapter, act). It is possible to set target word count by inserting double colon (::) and giving a number after that. The length of the container is padded to the target count, if the word count is less than the target.
 chapter|numbered=true|target=500|name=Ch2
-scene|content=scene|name=
+scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
-scene|content=scene|name=
+scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
 chapter|numbered=true|target=500|name=Ch3
-scene|content=scene|name=
+scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
-scene|content=scene|name=
+scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
 chapter|numbered=false|name=Epilogue
-scene|content=scene|name=
+scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
 br|text=
 [section:notes]
 act|numbered=false|name=
 chapter|numbered=false|name=
-scene|content=scene|name=
+scene|name=
 br|text=
 [section:storybook]
 act|numbered=false|name=
 chapter|numbered=false|name=
-scene|content=scene|name=Check this!
+scene|name=Check this!
 p|text=Check that conversion from reference to storybook worked.
 br|text=

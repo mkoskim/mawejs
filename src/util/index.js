@@ -15,6 +15,6 @@ export {
   splitByLeadingElem, splitByTrailingElem,
   isEmpty, isNotEmpty, isObject,
   sleep,
-  numfmt, textToInt,
-  text2lines, text2words, wordcount
+  numfmt,
+  text2int, text2lines, text2words, wordcount
 } from "./generic"

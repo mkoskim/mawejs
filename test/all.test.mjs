@@ -2,11 +2,12 @@ import { after } from "node:test";
 import { loadTest } from "./_support/loadTest.mjs";
 
 //-----------------------------------------------------------------------------
-// Utility functions: We run these low level functions first, as they
-// are used in certain other functions, so failing will cause them
-// to fail, too.
+// Utility functions (including test utility): We run these low level
+// functions first, as they are used in certain other functions, so failing
+// will cause them to fail, too.
 //-----------------------------------------------------------------------------
 
+await loadTest("test/testutil/validate.test.mjs", after);
 await loadTest("test/util/split.test.mjs", after);
 await loadTest("test/util/gzip.test.mjs", after);
 
@@ -25,6 +26,7 @@ await loadTest("test/xml/xml_tree.test.mjs", after);
 //-----------------------------------------------------------------------------
 
 await loadTest("test/load/format_detection.test.mjs", after);
+await loadTest("test/load/loader.test.mjs", after);
 await loadTest("test/load/load.test.mjs", after);
 await loadTest("test/load/roundtrip.test.mjs", after);
 await loadTest("test/load/save.test.mjs", after);
@@ -33,6 +35,7 @@ await loadTest("test/load/save.test.mjs", after);
 // Importing
 //-----------------------------------------------------------------------------
 
+await loadTest("test/import/text/import_text.test.mjs", after);
 await loadTest("test/import/moe/import_moe.test.mjs", after);
 
 //-----------------------------------------------------------------------------

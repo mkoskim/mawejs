@@ -1,7 +1,7 @@
 import path from "node:path";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { mawe } from "../../src/document/index.js";
-import { canonicalDocumentText } from "../_support/canonicalDocument.js";
+import { canonicalDocumentText } from "../testutil/canonicalDocument.js";
 
 //-----------------------------------------------------------------------------
 

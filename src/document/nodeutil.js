@@ -4,8 +4,15 @@
 //
 //*****************************************************************************
 
-import {text2words, textToInt} from "../util"
-import {nodeBreaks, nodeIsBreak, nodeTypes} from "./elements";
+import {text2words, text2int} from "../util"
+import {
+  nodeTypes,
+  nodeBreaks, nodeIsBreak, nodeIsCtrl,
+} from "./elements";
+
+//-----------------------------------------------------------------------------
+
+export {nodeIsCtrl}
 
 //-----------------------------------------------------------------------------
 
@@ -28,10 +35,6 @@ export function IDtoPath(ID) {
 
 //-----------------------------------------------------------------------------
 
-export function nodeIsCtrl(node) {
-  return nodeIsBreak(node)
-}
-
 export function filterCtrlNodes(nodes) {
   return nodes.filter(node => !nodeIsCtrl(node))
 }
@@ -44,6 +47,11 @@ export function nodeAsText(node) {
     .join("")
   )
 }
+
+//-----------------------------------------------------------------------------
+// Header control elements. Header node is the first in the container, and
+// reflects its values to container itself (see slate normalization).
+//-----------------------------------------------------------------------------
 
 export function nodeHeading(node) {
 
@@ -75,7 +83,7 @@ export function createHeaderNode(type, name, numbered, target) {
     children: [
       {text: name ?? ""},
       ...numbered ? [] : [{text: "*"}],
-      ...target ? [{text: ` ::${target}`}] : [],
+      ...target ? [{text: `::${target}`}] : [],
     ],
   }
 }
@@ -85,7 +93,7 @@ export function nodeHeadParse(head) {
   const all = nodeAsText(head)
   const [textStr, targetStr] = all.split("::")
   const text = textStr.trim()
-  const target = textToInt(targetStr)
+  const target = text2int(targetStr)
   const [name, numbered] = text.endsWith("*") ? [text.slice(0, -1), false] : [text, true]
   return {
     name: name.trim(),
@@ -123,7 +131,7 @@ export function createWordTable(section) {
   for(const act of section.acts) {
     for(const chapter of filterCtrlNodes(act.children)) {
       for(const scene of filterCtrlNodes(chapter.children)) {
-        if(scene.content !== "scene") continue
+        if(scene.content !== undefined) continue
         for(const p of scene.children) {
           if(p.type !== "p" && p.type !== "quote") continue
           for(const word of text2words(nodeAsText(p))) {
@@ -223,7 +231,7 @@ export function wcNode(node) {
       return wcChildren(node.children, node.target)
 
     case "scene":
-      if(node.content === "scene") return wcChildren(node.children, node.target)
+      if(node.content === undefined) return wcChildren(node.children, node.target)
       return undefined
 
     case "p":
@@ -267,7 +275,7 @@ export function wcCumulative(section, IDprefix) {
       cumulative[chapterID] = summed
 
       for(const [index, scene] of chapter.children.entries()) {
-        if(scene.content !== "scene") continue
+        if(scene.content !== undefined) continue
         const sceneID = childID(chapterID, index)
         summed += (scene.words?.text ?? 0) + (scene.words?.missing ?? 0)
         cumulative[sceneID] = summed

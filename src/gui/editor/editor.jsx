@@ -617,7 +617,7 @@ class Searching extends React.PureComponent {
     if (typeof(searchText) !== "string") {
       return (
         <IconButton
-          tooltip="Search text (Ctrl-F)"
+          tooltip="Search text (Ctrl+F)"
           onClick={ev => setSearchText("")}
         >
           <Icon.Action.Search/>
@@ -643,8 +643,8 @@ class Searching extends React.PureComponent {
           }
         }}
       />
-      <IconButton tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up/></IconButton>
-      <IconButton tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down/></IconButton>
+      <IconButton tooltip="Search previous (Ctrl+Shift+G)" onClick={this.searchPrevious}><Icon.Arrow.Up/></IconButton>
+      <IconButton tooltip="Search next (Ctrl+G)" onClick={this.searchNext}><Icon.Arrow.Down/></IconButton>
       <IconButton tooltip="Clear" onClick={this.clearSearch}><Icon.Close/></IconButton>
     </>
   }

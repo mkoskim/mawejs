@@ -8,7 +8,7 @@ pseudonym=
 [section:draft]
 act|numbered=true|name=
 chapter|numbered=true|name=Chapter
-scene|content=scene|name=Scene
+scene|name=Scene
 p|text=If loaded correctly, story title is "Story".
 p|text=Check, that Story Arc view shows chapters.
 p|text=Check, that Export chapter element is chapter.
@@ -16,10 +16,10 @@ br|text=
 [section:notes]
 act|numbered=true|name=
 chapter|numbered=true|name=
-scene|content=scene|name=
+scene|name=
 br|text=
 [section:storybook]
 act|numbered=true|name=
 chapter|numbered=true|name=
-scene|content=scene|name=
+scene|name=
 br|text=

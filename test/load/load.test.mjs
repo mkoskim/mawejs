@@ -1,6 +1,7 @@
-import {test, describe} from "node:test"
+import {test, describe, it} from "node:test"
 import assert from "node:assert/strict";
-import { installFakeIpc } from "../_support/fakeIpc.js";
+import {installFakeIpc} from "../_support/fakeIpc.js";
+import {validateSection} from "../testutil/validateSection.js";
 import {fixtures, loadSource, loadExpected} from "./fixtures.mjs"
 
 installFakeIpc();
@@ -10,8 +11,11 @@ describe("Load test", {concurrency: false}, () => {
     test(sourcefile, async () => {
       const doc = await loadSource(sourcefile);
 
-      assert.ok(doc.key, `Expected generated key`);
-      assert.ok(doc.uuid, `Expected uuid`);
+      it("has generated key", () => assert.ok(doc.key))
+      it("has UUID", () => assert.ok(doc.uuid))
+      it("has valid draft", () => validateSection(doc.draft.acts))
+      it("has valid notes", () => validateSection(doc.notes.acts))
+      it("has valid storybook", () => validateSection(doc.storybook.acts))
 
       /*
       assert.ok(doc.head, `${filename}: expected head`);
@@ -20,9 +24,11 @@ describe("Load test", {concurrency: false}, () => {
       assert.ok(doc.storybook?.acts?.length > 0, `${filename}: expected storybook acts`);
       */
 
-      const actual = operation(doc);
-      const expected = await loadExpected(expectedfile);
-      assert.equal(actual, expected, `${sourcefile}: canonical text mismatch`);
+      it("equals to test fixture", async () => {
+        const actual = operation(doc);
+        const expected = await loadExpected(expectedfile);
+        assert.equal(actual, expected);
+      })
     })
   }
 })

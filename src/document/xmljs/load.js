@@ -9,7 +9,7 @@
 import {uuid as getUUID, nanoid, file2buf, buf2tree} from "../fileutil.js";
 import {createElem, createText, elemFind, elemFindall, elem2Text} from "./elemutil";
 import {wcNode, wcChildren, createHeaderNode} from "../nodeutil.js";
-import {textToInt} from "../../util";
+import {text2int} from "../../util";
 
 import {loadArcSettings} from "../../gui/arc/arc";
 import {loadViewSettings} from "../../gui/app/views";
@@ -177,21 +177,21 @@ function parseSection(section) {
   }
 }
 
+function containerHeader(type, index, {name, numbered, folded, target, content}) {
+  if(!index && !name && !content && numbered && !folded && !target) return []
+  return [createHeaderNode(type, name, numbered, target)]
+}
+
 function parseAct(act, index) {
   if(act.type !== "element" || act.name !== "act") {
     console.log("Invalid act:", act)
     throw new Error("Invalid act", act)
   }
   const {name, folded: foldedStr, numbered: numberedStr = "true", target: targetStr} = act.attributes ?? {};
-  const target = textToInt(targetStr)
+  const target = text2int(targetStr)
   const folded = foldedStr === "true"
   const numbered = numberedStr === "true"
-  const header = (!index && !name && !folded && !target) ? [] : [createHeaderNode(
-    "hact",
-    name,
-    numbered,
-    target,
-  )]
+  const header = containerHeader("hact", index, {name, numbered, folded, target})
   const empty = [createElem("chapter")]
   const elements = act.elements?.length ? act.elements : empty
 
@@ -218,16 +218,11 @@ function parseChapter(chapter, index) {
     throw new Error("Invalid chapter:", chapter)
   }
   const {name, folded: foldedStr, numbered: numberedStr = "true", target: targetStr} = chapter.attributes ?? {};
-  const target = textToInt(targetStr)
+  const target = text2int(targetStr)
   const folded = foldedStr === "true"
   const numbered = numberedStr === "true"
 
-  const header = (!index && !name && !folded && !target) ? [] : [createHeaderNode(
-    "hchapter",
-    name,
-    numbered,
-    target,
-  )]
+  const header = containerHeader("hchapter", index, {name, numbered, folded, target})
   const empty = [createElem("scene")]
   const elements = chapter.elements?.length ? chapter.elements : empty
 
@@ -254,28 +249,24 @@ function parseScene(scene, index) {
     throw new Error("Invalid scene", scene)
   }
 
-  const {name, folded: foldedStr, target: targetStr, content = "scene"} = scene.attributes ?? {};
-  const target = textToInt(targetStr)
+  const {name, folded: foldedStr, target: targetStr, content} = scene.attributes ?? {};
+  const target = text2int(targetStr)
   const folded = foldedStr === "true"
+  const numbered = true
 
-  const htype = {
-    "scene": "hscene",
+  const htype = content === undefined ? "hscene" : {
     "synopsis": "hsynopsis",
     "notes": "hnotes",
   }[content]
 
-  const header = (!index && !name && !folded && content == "scene") ? [] : [createHeaderNode(
-    htype,
-    name,
-    true,
-    target,
-  )]
+  const header = containerHeader(htype, index, {name, numbered, content, folded, target})
 
   const empty = [createElem("p")]
   const elements = scene.elements?.length ? scene.elements : empty
 
   const children = elements.map(parseParagraph).filter(e => e).map(elem => ({...elem, words: wcNode(elem)}))
-  const words = (content === "scene") ? wcChildren(children, target) : undefined
+  // TODO: wcChildren needs container contain type to return words in correct attribute!
+  const words = (content === undefined) ? wcChildren(children, target) : undefined
 
   return {
     type: "scene",
@@ -362,8 +353,8 @@ function parseWordEntry(elem) {
   return {
     type: "words",
     date,
-    text: textToInt(text),
-    missing: textToInt(missing),
-    chars: textToInt(chars),
+    text: text2int(text),
+    missing: text2int(missing),
+    chars: text2int(chars),
   }
 }

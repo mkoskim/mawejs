@@ -6,7 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import { gzipSync } from "node:zlib";
 import { installFakeIpc } from "../_support/fakeIpc.js";
-import { canonicalDocumentText } from "../_support/canonicalDocument.js";
+import { canonicalDocumentText } from "../testutil/canonicalDocument.js";
 
 import { mawe } from "../../src/document/index.js";
 import { suffix2format } from "../../src/document/fileutil.js";

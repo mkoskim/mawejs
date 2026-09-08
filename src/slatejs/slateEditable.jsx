@@ -14,8 +14,7 @@ import {
 import { useSlate, Editable } from 'slate-react'
 
 import {
-  nodeShortcuts,
-  markShortcuts,
+  paragraphTypes, textTypes,
 } from '../document/elements';
 
 import { toggleMark } from './slateMarks';
@@ -31,6 +30,7 @@ import {
 } from "./slateFolding"
 
 import { addClass, IsKey } from '../gui/common/factory';
+import isHotkey from "../util/is-hotkey.js"
 
 //-----------------------------------------------------------------------------
 
@@ -200,6 +200,22 @@ onPaste={useCallback(
 // Custom hotkeys
 //
 //*****************************************************************************
+
+const nodeShortcuts = Object.entries(paragraphTypes)
+  .filter(([type, {shortcut}]) => shortcut)
+  .map(([type, {shortcut}]) => ({
+    // Display Ctrl, but use Command on Mac as in the other editor shortcuts.
+    shortcut: isHotkey(shortcut.replace(/^Ctrl\+/, "Mod+")),
+    node: {type},
+  }))
+
+const markShortcuts = Object.entries(textTypes)
+  .filter(([type, {shortcut}]) => shortcut)
+  .map(([type, {shortcut}]) => ({
+    // Display Ctrl, but use Command on Mac as in the other editor shortcuts.
+    shortcut: isHotkey(shortcut.replace(/^Ctrl\+/, "Mod+")),
+    mark: type,
+  }))
 
 function onKeyDown(editor, event) {
 

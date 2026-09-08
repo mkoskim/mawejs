@@ -212,7 +212,7 @@ function toScene(scene) {
       name: "scene",
       attributes: {
         name: name ? name : undefined,
-        content: content !== "scene" ? content : undefined,
+        content,
         folded: folded ? true : undefined,
         target: target ? target : undefined,
       },

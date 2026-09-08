@@ -4,6 +4,13 @@ import assert from "node:assert/strict";
 import { Editor, Transforms } from "slate";
 import { getCoreEditor } from "../../src/slatejs/slateEditor.js";
 import {
+  createAct, createChapter, createScene,
+} from "../testutil/nodetree.mjs";
+
+import { nodeHeading } from "../../src/document/nodeutil.js";
+import { nodeTypes } from "../../src/document/elements.js";
+
+import {
   nodeIsFolded,
   FOLD,
   foldByType,
@@ -11,8 +18,6 @@ import {
   toggleFold,
   topmostFoldedNode,
 } from "../../src/slatejs/slateFolding.js";
-import { nodeHeading } from "../../src/document/nodeutil.js";
-import { nodeTypes } from "../../src/document/elements.js";
 
 //-----------------------------------------------------------------------------
 // Test buffer
@@ -24,28 +29,11 @@ function createChildren({
   sceneFolded = false,
 } = {}) {
   return [
-    {
-      type: "act",
-      folded: actFolded,
-      children: [
-        { type: "hact", children: [{ text: "Act 1" }] },
-        {
-          type: "chapter",
-          folded: chapterFolded,
-          children: [
-            { type: "hchapter", children: [{ text: "Chapter 1" }] },
-            {
-              type: "scene",
-              folded: sceneFolded,
-              children: [
-                { type: "hscene", children: [{ text: "Scene 1" }] },
-                { type: "p", children: [{ text: "Hello Slate." }] },
-              ],
-            },
-          ],
-        },
-      ],
-    }
+    createAct("Act 1", {folded: actFolded}, [
+        createChapter("Chapter 1", {folded: chapterFolded}, [
+            createScene("Scene 1", {folded: sceneFolded}, "Text"),
+        ])
+    ])
   ];
 }
 
@@ -69,7 +57,7 @@ describe("Slate folding test...", {concurrency: false}, () => {
     Transforms.select(editor, point);
 
     assert.equal(editor.children.length, 1);
-    assert.equal(Editor.string(editor, [0]), "Act 1Chapter 1Scene 1Hello Slate.");
+    assert.equal(Editor.string(editor, [0]), "Act 1Chapter 1Scene 1Text");
     assert.deepEqual(editor.selection.focus, point);
   })
 
@@ -124,23 +112,12 @@ describe("Slate folding test...", {concurrency: false}, () => {
   test("FoldNode()", () => {
     const editor = getCoreEditor();
     editor.children = [
-      {
-        type: "act",
-        children: [
-          {
-            type: "chapter",
-            children: [
-              {
-                type: "scene",
-                children: [
-                  { type: "p", children: [{ text: "Hello Slate." }] },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    ];
+      createAct(undefined, [
+        createChapter(undefined, [
+          createScene(undefined, "Text")
+        ])
+      ])
+    ]
 
     doFold([0, 0, 0]);
     doFold([0, 0]);

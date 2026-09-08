@@ -13,7 +13,6 @@
     "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox",
     "test": "npm run test:node && node test/run.mjs",
     "test:node": "node --test test/all.test.mjs",
-    "test:import": "node test/run.mjs --group import",
     "test:export": "node test/run.mjs --group export",
     "test:update": "node test/update.mjs"
   },

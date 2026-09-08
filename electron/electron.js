@@ -6,10 +6,9 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import { app, session, BrowserWindow } from "electron";
+import { app, BrowserWindow } from "electron";
 import {is} from '@electron-toolkit/utils'
 import path from "path"
-import os from "os"
 import windowStateKeeper from "electron-window-state"
 import {initIpcDispatch} from "./backend/ipcmain.js";
 import localShortcut from "electron-localshortcut";

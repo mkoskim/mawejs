@@ -8,15 +8,15 @@ pseudonym=
 [section:draft]
 act|numbered=true|name=
 chapter|numbered=true|name=Hidden Root Scene Part
-scene|content=scene|name=Hidden Root Scene Part
+scene|name=Hidden Root Scene Part
 p|text=Hidden root scene part content.
 [section:notes]
 act|numbered=true|name=
 chapter|numbered=true|name=Hidden Group Part
-scene|content=scene|name=Hidden Group Notes Scene
+scene|name=Hidden Group Notes Scene
 p|text=Hidden group notes scene content.
 [section:storybook]
 act|numbered=true|name=
 chapter|numbered=true|name=
-scene|content=scene|name=
+scene|name=
 br|text=

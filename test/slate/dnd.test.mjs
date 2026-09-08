@@ -1,9 +1,46 @@
 import {describe, test} from "node:test"
 import assert from "node:assert/strict";
+
 import { Editor } from "slate";
-import { nodeHeadParse, nodeHeading } from "../../src/document/nodeutil.js";
+import {
+  createAct, createChapter, createScene,
+} from "../testutil/nodetree.mjs";
+
 import { getCoreEditor } from "../../src/slatejs/slateEditor.js";
 import { dndDrop } from "../../src/slatejs/slateDnD.js";
+import { nodeHeadParse, nodeHeading } from "../../src/document/nodeutil.js";
+
+//-----------------------------------------------------------------------------
+// Creating test data. We are only interested about the order of blocks after
+// drag-and-drop, so we can keep the structure of the document simple.
+//-----------------------------------------------------------------------------
+
+function createChildren() {
+  return [
+    createAct("Act 1", [
+        createChapter("Chapter 1", [
+          createScene(undefined, "Scene 1"),
+          createScene("Scene 2"),
+          createScene("Scene 3"),
+          createScene("Scene 4"),
+          createScene("Scene 5"),
+        ]),
+        createChapter("Chapter 2", [
+            createScene("Scene 6"),
+            createScene("Scene 7"),
+        ]),
+    ]),
+    createAct("Act 2", [
+      createChapter("Chapter 3", [
+        createScene("Scene 8"),
+      ])
+    ])
+  ];
+}
+
+//-----------------------------------------------------------------------------
+// Test cases
+//-----------------------------------------------------------------------------
 
 describe("Slate DnD tests", () => {
 
@@ -193,6 +230,10 @@ describe("Slate DnD tests", () => {
   ]);
 })
 
+//-----------------------------------------------------------------------------
+// Assert the order of scenes, chapters and acts.
+//-----------------------------------------------------------------------------
+
 function testDrop(name, srcPath, dstPath, dstIndex, expected) {
   test(name, () => {
     const editor = getCoreEditor();
@@ -204,9 +245,10 @@ function testDrop(name, srcPath, dstPath, dstIndex, expected) {
   })
 }
 
-//-----------------------------------------------------------------------------
-// Assert the order of scenes, chapters and acts.
-//-----------------------------------------------------------------------------
+function assertBlockOrder(editor, expected) {
+  const order = containerNames(editor);
+  assert.deepEqual(order, expected);
+}
 
 function assertSelectionAtStart(editor, path) {
   const { path: focusPath } = Editor.start(editor, path);
@@ -215,10 +257,9 @@ function assertSelectionAtStart(editor, path) {
   assert.equal(editor.selection.focus.offset, 0);
 }
 
-function assertBlockOrder(editor, expected) {
-  const order = containerNames(editor);
-  assert.deepEqual(order, expected);
-}
+//-----------------------------------------------------------------------------
+// Test helpers
+//-----------------------------------------------------------------------------
 
 function containerNames(editor) {
   const containerTypes = ["act", "chapter", "scene"];
@@ -230,62 +271,4 @@ function containerName(container) {
   const head = nodeHeading(container);
   const { name } = nodeHeadParse(head);
   return name || "<Unnamed>";
-}
-
-//-----------------------------------------------------------------------------
-// Creating test data. We are only interested about the order of blocks after
-// drag-and-drop, so we can keep the structure of the document simple.
-//-----------------------------------------------------------------------------
-
-function createChildren() {
-  return [
-    {
-      type: "act",
-      children: [
-        { type: "hact", children: [{ text: "Act 1" }] },
-        {
-          type: "chapter",
-          children: [
-            { type: "hchapter", children: [{ text: "Chapter 1" }] },
-            createScene("Scene 1", false),
-            createScene("Scene 2"),
-            createScene("Scene 3"),
-            createScene("Scene 4"),
-            createScene("Scene 5"),
-          ],
-        },
-        {
-          type: "chapter",
-          children: [
-            { type: "hchapter", children: [{ text: "Chapter 2" }] },
-            createScene("Scene 6"),
-            createScene("Scene 7"),
-          ],
-        },
-      ],
-    },
-    {
-      type: "act",
-      children: [
-        { type: "hact", children: [{ text: "Act 2" }] },
-        {
-          type: "chapter",
-          children: [
-            { type: "hchapter", children: [{ text: "Chapter 3" }] },
-            createScene("Scene 8"),
-          ],
-        },
-      ],
-    },
-  ];
-}
-
-function createScene(name, header = true) {
-  return {
-    type: "scene",
-    children: [
-      ...(header ? [{ type: "hscene", children: [{ text: name }] }] : []),
-      { type: "p", children: [{ text: `${name} text.` }] },
-    ],
-  };
 }

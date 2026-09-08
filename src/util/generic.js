@@ -21,6 +21,10 @@ export function isObject(a) {
   )
 }
 
+export function isArray(a) {
+  return Array.isArray(a)
+}
+
 //-----------------------------------------------------------------------------
 // Number formatting
 //-----------------------------------------------------------------------------
@@ -31,7 +35,7 @@ export const numfmt = {
   gsign: Intl.NumberFormat(undefined, {signDisplay: "always", useGrouping: true}),
 }
 
-export function textToInt(text) {
+export function text2int(text) {
   if(!text) return undefined
   const number = parseInt(text.trim())
   return isNaN(number) ? undefined : number

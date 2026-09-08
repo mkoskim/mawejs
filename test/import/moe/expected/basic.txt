@@ -30,7 +30,7 @@ scene|content=notes|name=year
 p|text=2026
 act|numbered=true|name=
 chapter|numbered=true|name=Root Draft Scene
-scene|content=scene|name=Root Draft Scene
+scene|name=Root Draft Scene
 p|text=Root-level draft scene.
 chapter|numbered=true|name=Draft Group
 scene|content=synopsis|name=synopsis
@@ -41,7 +41,7 @@ scene|content=notes|name=description
 p|text=Draft group description.
 scene|content=notes|name=sketch
 p|text=Draft group sketch.
-scene|content=scene|name=Draft Scene
+scene|name=Draft Scene
 bookmark|text=Scene synopsis.
 bookmark|text=Second synopsis paragraph.
 comment|text=Scene description.
@@ -54,25 +54,25 @@ scene|content=notes|name=name
 p|text=Nested Draft Group
 scene|content=synopsis|name=synopsis
 p|text=Nested group synopsis.
-scene|content=scene|name=Nested Draft Scene
+scene|name=Nested Draft Scene
 p|text=Nested draft scene.
 [section:notes]
 act|numbered=true|name=
 chapter|numbered=true|name=Root Notes Scene
-scene|content=scene|name=Root Notes Scene
+scene|name=Root Notes Scene
 p|text=Root-level excluded scene.
 chapter|numbered=true|name=Draft Group
-scene|content=scene|name=Excluded Draft Scene
+scene|name=Excluded Draft Scene
 p|text=Scene include becomes notes content.
 chapter|numbered=true|name=Notes Group
 scene|content=synopsis|name=synopsis
 p|text=Notes group synopsis.
 scene|content=notes|name=comments
 p|text=Notes group comment.
-scene|content=scene|name=Notes Scene
+scene|name=Notes Scene
 p|text=Bold notes content.
 [section:storybook]
 act|numbered=true|name=
 chapter|numbered=true|name=
-scene|content=scene|name=
+scene|name=
 br|text=
