@@ -6,8 +6,8 @@ subtitle=
 author=
 pseudonym=
 [section:draft]
-act|numbered=true|name=
-chapter|numbered=true|name=Chapter
+act|name=
+chapter|name=Chapter
 scene|name=Scene
 p|text=If loaded correctly:
 p|text=- Story title is "Title v3/1".
@@ -15,12 +15,12 @@ p|text=- Arc view shows chapters.
 p|text=- Export chapters are numbered.
 br|text=
 [section:notes]
-act|numbered=true|name=
-chapter|numbered=true|name=
+act|name=
+chapter|name=
 scene|name=
 br|text=
 [section:storybook]
-act|numbered=true|name=
-chapter|numbered=true|name=
+act|name=
+chapter|name=
 scene|name=
 br|text=

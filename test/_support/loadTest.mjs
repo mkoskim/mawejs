@@ -24,14 +24,13 @@ const stubMap = new Map([
 
 const fakeElectronModule = path.resolve(workdir, "test/_support/fakeElectron.js");
 
-// Node tests defer cleanup until their after hook; legacy tests run on import.
-export async function loadTest(testFile, registerCleanup) {
+// Build an entry point with the shared test environment.
+export async function buildTest(testFile) {
   const absEntry = path.resolve(workdir, testFile);
   const outdir = await mkdtemp(path.join(os.tmpdir(), "mawe-test-"));
   const outfile = path.join(outdir, "bundle.mjs");
 
   const cleanup = () => rm(outdir, { force: true, recursive: true });
-  let deferredCleanup = false;
 
   try {
     await build({
@@ -43,6 +42,7 @@ export async function loadTest(testFile, registerCleanup) {
         ".css": "empty",
       },
       outfile,
+      sourcemap: "inline",
       platform: "node",
       target: "node24",
       plugins: [
@@ -66,12 +66,20 @@ export async function loadTest(testFile, registerCleanup) {
       ],
     });
 
-    if (registerCleanup) {
-      registerCleanup(cleanup);
-      deferredCleanup = true;
-    }
+    return { outfile, cleanup };
+  } catch (error) {
+    await cleanup();
+    throw error;
+  }
+}
+
+// Fixture tools can also import a prepared entry point directly.
+export async function loadTest(testFile, registerCleanup) {
+  const { outfile, cleanup } = await buildTest(testFile);
+  try {
+    if (registerCleanup) registerCleanup(cleanup);
     return await import(pathToFileURL(outfile).href);
   } finally {
-    if (!deferredCleanup) await cleanup();
+    if (!registerCleanup) await cleanup();
   }
 }

@@ -4,7 +4,7 @@
 
 import { nodeIsContainer, nodeTypes } from "../../src/document/elements.js";
 import { nodeAsText } from "../../src/document/nodeutil.js";
-import { isObject, isArray } from "../../src/util/generic.js";
+import { isObject, isArray } from "../../src/util";
 export { validateSection } from "./validateSection.js";
 
 //-----------------------------------------------------------------------------
@@ -19,6 +19,7 @@ export function createAct(header, children, extra) {
   const [attributes, content = []] = isObject(children) ? [children, extra] : [{}, children]
   return {
     type: "act",
+    name: header,
     ...attributes,
     children: [
       ...(header ? [createParagraph("hact", header)] : []),
@@ -31,6 +32,7 @@ export function createChapter(header, children, extra) {
   const [attributes, content = []] = isObject(children) ? [children, extra] : [{}, children]
   return {
     type: "chapter",
+    name: header,
     ...attributes,
     children: [
       ...(header ? [createParagraph("hchapter", header)] : []),
@@ -45,6 +47,7 @@ export function createScene(header, text, extra) {
 
   return {
     type: "scene",
+    name: header,
     ...attributes,
     children: [
       ...(header ? [createParagraph("hscene", header)] : []),
@@ -58,8 +61,8 @@ export function createParagraph(type, text) {
   return { type, children}
 }
 
-export function createText(text) {
-  return {text}
+export function createText(text = "", marks) {
+  return {text, ...(marks ? {marks} : {})}
 }
 
 //-----------------------------------------------------------------------------

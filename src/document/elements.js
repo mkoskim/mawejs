@@ -31,13 +31,14 @@ export const nodeTypes = {
   // Paragraphs
   //---------------------------------------------------------------------------
 
+  "p":         {parent: "scene", },
+  "br":        {parent: "scene", },
+  "quote":     {parent: "scene", },
+  "missing":   {parent: "scene", },
+
   "bookmark":  {parent: "scene", },
   "comment":   {parent: "scene", },
-  "missing":   {parent: "scene", },
   "tags":      {parent: "scene", },
-  "p":         {parent: "scene", },
-  "quote":     {parent: "scene", },
-  "br":        {parent: "scene", },
 }
 
 //-----------------------------------------------------------------------------

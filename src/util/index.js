@@ -13,7 +13,8 @@ export {nanoid} from "nanoid"
 
 export {
   splitByLeadingElem, splitByTrailingElem,
-  isEmpty, isNotEmpty, isObject,
+  isEmpty, isNotEmpty,
+  isObject, isArray,
   sleep,
   numfmt,
   text2int, text2lines, text2words, wordcount

@@ -69,8 +69,8 @@ describe("Node tree creation", {concurrency: false}, () => {
   shouldFail("Fail: Empty paragraph", [
     createAct("Act", [createChapter("Chapter", [createScene("Scene", [createParagraph("p", [])])])]),
   ])
-  shouldFail("Fail: Empty text", [
-    createAct("Act", [createChapter("Chapter", [createScene("Scene", [createParagraph("p")])])]),
+  shouldFail("Fail: Missing text", [
+    createAct("Act", [createChapter("Chapter", [createScene("Scene", [createParagraph("p", [{}])])])]),
   ])
 
   //---------------------------------------------------------------------------

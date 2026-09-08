@@ -8,6 +8,42 @@ describe("splitByXXX tests", () => {
     return value.startsWith("#");
   }
 
+  describe("excludeMatch", () => {
+    const cases = [
+      {name: "Empty list", input: [], leading: [], trailing: []},
+      {name: "No matches", input: ["a", "b"], leading: [["a", "b"]], trailing: [["a", "b"]]},
+      {name: "Interior matches", input: ["a", "#1", "b", "#2", "c"], leading: [["a"], ["b"], ["c"]], trailing: [["a"], ["b"], ["c"]]},
+      {name: "Leading match", input: ["#1", "a"], leading: [["a"]], trailing: [[], ["a"]]},
+      {name: "Consecutive leading matches", input: ["#1", "#2", "a"], leading: [[], ["a"]], trailing: [[], [], ["a"]]},
+      {name: "Trailing match", input: ["a", "#1"], leading: [["a"], []], trailing: [["a"]]},
+      {name: "Consecutive trailing matches", input: ["a", "#1", "#2"], leading: [["a"], [], []], trailing: [["a"], []]},
+      {name: "Consecutive matches", input: ["a", "#1", "#2", "b"], leading: [["a"], [], ["b"]], trailing: [["a"], [], ["b"]]},
+      {name: "Single match", input: ["#1"], leading: [[]], trailing: [[]]},
+      {name: "Only matches", input: ["#1", "#2"], leading: [[], []], trailing: [[], []]},
+    ];
+
+    for (const {name, input, leading, trailing} of cases) {
+      test(name, () => {
+        // Excluding matches preserves the groups they start or end,
+        // even when removing the match leaves a group empty.
+        assert.deepEqual(splitByLeadingElem(input, isBreak, {excludeMatch: true}), leading);
+        assert.deepEqual(splitByTrailingElem(input, isBreak, {excludeMatch: true}), trailing);
+      });
+    }
+
+    test("Explicit false retains matched elements", () => {
+      const input = ["a", "#1", "b"];
+      assert.deepEqual(
+        splitByLeadingElem(input, isBreak, {excludeMatch: false}),
+        [["a"], ["#1", "b"]],
+      );
+      assert.deepEqual(
+        splitByTrailingElem(input, isBreak, {excludeMatch: false}),
+        [["a", "#1"], ["b"]],
+      );
+    });
+  });
+
   test("No matches", () => {
     assert.deepEqual(
       splitByLeadingElem(["a", "b"], isBreak),

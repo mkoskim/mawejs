@@ -11,9 +11,8 @@
     "audit": "npm audit --omit=dev",
     "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
     "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox",
-    "test": "npm run test:node && node test/run.mjs",
-    "test:node": "node --test test/all.test.mjs",
-    "test:export": "node test/run.mjs --group export",
+    "test": "node test/run.mjs",
+    "test:coverage": "node test/run.mjs --experimental-test-coverage",
     "test:update": "node test/update.mjs"
   },
   "dependencies": {

@@ -1,54 +1,56 @@
-import { after } from "node:test";
-import { loadTest } from "./_support/loadTest.mjs";
+//*
+//import "./export/flatten.test.mjs";
 
+/**/
 //-----------------------------------------------------------------------------
 // Utility functions (including test utility): We run these low level
 // functions first, as they are used in certain other functions, so failing
 // will cause them to fail, too.
 //-----------------------------------------------------------------------------
 
-await loadTest("test/testutil/validate.test.mjs", after);
-await loadTest("test/util/split.test.mjs", after);
-await loadTest("test/util/gzip.test.mjs", after);
+import "./testutil/validate.test.mjs";
+import "./util/split.test.mjs";
+import "./util/gzip.test.mjs";
 
 //-----------------------------------------------------------------------------
 // XML tree handling
 //-----------------------------------------------------------------------------
 
-await loadTest("test/xml/elem_create.test.mjs", after);
-await loadTest("test/xml/elemutil.test.mjs", after);
-await loadTest("test/xml/elem_find_deep.test.mjs", after);
-await loadTest("test/xml/elem_manipulation.test.mjs", after);
-await loadTest("test/xml/xml_tree.test.mjs", after);
+import "./xml/elem_create.test.mjs";
+import "./xml/elemutil.test.mjs";
+import "./xml/elem_find_deep.test.mjs";
+import "./xml/elem_manipulation.test.mjs";
+import "./xml/xml_tree.test.mjs";
 
 //-----------------------------------------------------------------------------
 // File operations
 //-----------------------------------------------------------------------------
 
-await loadTest("test/load/format_detection.test.mjs", after);
-await loadTest("test/load/loader.test.mjs", after);
-await loadTest("test/load/load.test.mjs", after);
-await loadTest("test/load/roundtrip.test.mjs", after);
-await loadTest("test/load/save.test.mjs", after);
+import "./load/format_detection.test.mjs";
+import "./load/loader.test.mjs";
+import "./load/load.test.mjs";
+import "./load/roundtrip.test.mjs";
+import "./load/save.test.mjs";
 
 //-----------------------------------------------------------------------------
 // Importing
 //-----------------------------------------------------------------------------
 
-await loadTest("test/import/text/import_text.test.mjs", after);
-await loadTest("test/import/moe/import_moe.test.mjs", after);
+import "./import/text/import_text.test.mjs";
+import "./import/moe/import_moe.test.mjs";
 
 //-----------------------------------------------------------------------------
 // SlateJS
 //-----------------------------------------------------------------------------
 
-await loadTest("test/slate/search.test.mjs", after);
-await loadTest("test/slate/dnd.test.mjs", after);
-await loadTest("test/slate/folding.test.mjs", after);
+import "./slate/search.test.mjs";
+import "./slate/dnd.test.mjs";
+import "./slate/folding.test.mjs";
 
 //-----------------------------------------------------------------------------
 // Misc.
 //-----------------------------------------------------------------------------
 
-await loadTest("test/misc/path_suggestions.test.mjs", after);
-await loadTest("test/misc/history.test.mjs", after);
+import "./misc/path_suggestions.test.mjs";
+import "./misc/history.test.mjs";
+/**/

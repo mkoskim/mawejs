@@ -6,20 +6,20 @@ subtitle=
 author=
 pseudonym=
 [section:draft]
-act|numbered=true|name=
-chapter|numbered=true|name=Chapter
+act|name=
+chapter|name=Chapter
 scene|name=Scene
 p|text=If loaded correctly, story title is "Story".
 p|text=Check, that Story Arc view shows chapters.
 p|text=Check, that Export chapter element is chapter.
 br|text=
 [section:notes]
-act|numbered=true|name=
-chapter|numbered=true|name=
+act|name=
+chapter|name=
 scene|name=
 br|text=
 [section:storybook]
-act|numbered=true|name=
-chapter|numbered=true|name=
+act|name=
+chapter|name=
 scene|name=
 br|text=

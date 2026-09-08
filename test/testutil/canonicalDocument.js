@@ -1,4 +1,6 @@
-import { nodeIsBreak, nodeIsContainer } from "../../src/document/elements";
+import { nodeIsCtrl, nodeIsContainer } from "../../src/document/elements";
+import { nodeAsText } from "../../src/document/nodeutil";
+import { nodeFindDeep } from "./nodetree.mjs";
 
 export function canonicalDocumentText(doc) {
   return [
@@ -13,39 +15,23 @@ export function canonicalDocumentText(doc) {
 function storyToText(doc = {}) {
   return [
     "[story]",
-    `name=${escapeText(doc.head?.name)}`,
+    `name=${doc.head?.name ?? ""}`,
   ].join("\n");
 }
 
 function headToText(head = {}) {
   return [
     "[head]",
-    `title=${escapeText(head.title)}`,
-    `subtitle=${escapeText(head.subtitle)}`,
-    `author=${escapeText(head.author)}`,
-    `pseudonym=${escapeText(head.pseudonym)}`,
+    `title=${head.title ?? ""}`,
+    `subtitle=${head.subtitle ?? ""}`,
+    `author=${head.author ?? ""}`,
+    `pseudonym=${head.pseudonym ?? ""}`,
   ].join("\n");
 }
 
 function sectionToText(name, section) {
-  const lines = [`[section:${name}]`];
-
-  for (const act of section?.acts ?? []) {
-    appendNode(lines, act);
-  }
-
-  return lines.join("\n");
-}
-
-function appendNode(lines, node) {
-  if (!node?.type || nodeIsBreak(node)) {
-    return;
-  }
-  lines.push(nodeToLine(node));
-
-  for (const child of node.children ?? []) {
-    appendNode(lines, child);
-  }
+  const nodes = nodeFindDeep(section?.acts, node => !nodeIsCtrl(node));
+  return [`[section:${name ?? ""}]`, ...nodes.map(nodeToLine)].join("\n");
 }
 
 function nodeToLine(node) {
@@ -54,35 +40,14 @@ function nodeToLine(node) {
   const {numbered, content, folded, name, target, review} = node;
 
   if (nodeIsContainer(node)) {
-    switch(node.type) {
-      case "act":
-      case "chapter":
-        parts.push(`numbered=${numbered}`);
-        break;
-
-      case "scene":
-        if(content) parts.push(`content=${escapeText(content)}`);
-        break;
-    }
-
+    if(numbered === false) parts.push(`numbered=${numbered}`);
+    if(content) parts.push(`content=${content}`);
     if(folded) parts.push(`folded=${folded}`);
     if(target) parts.push(`target=${target}`);
-    parts.push(`name=${escapeText(name)}`);
+    parts.push(`name=${name ?? ""}`);
   } else {
     if(review) parts.push(`review=${review}`);
-    parts.push(`text=${escapeText(blockText(node))}`);
+    parts.push(`text=${nodeAsText(node)}`);
   }
   return parts.join("|");
-}
-
-function blockText(node) {
-  return (node.children ?? [])
-    .map(child => child.text ?? "")
-    .join("");
-}
-
-function escapeText(text) {
-  return String(text ?? "")
-    .replaceAll("\\", "\\\\")
-    .replaceAll("\n", "\\n");
 }

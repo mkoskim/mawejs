@@ -46,15 +46,15 @@ p|text=Text with review mark is counted as missing text. There is a menu at righ
 chapter|numbered=false|name=Prologue
 scene|name=Unnumbered chapters and acts
 p|text=Adding "*" after the act or chapter name turns off numbering.
-chapter|numbered=true|target=500|name=Ch1
+chapter|target=500|name=Ch1
 scene|name=Target word counts
 p|text=Another new feature are target word counts for containers (scene, chapter, act). It is possible to set target word count by inserting double colon (::) and giving a number after that. The length of the container is padded to the target count, if the word count is less than the target.
-chapter|numbered=true|folded=true|target=500|name=Ch2
+chapter|folded=true|target=500|name=Ch2
 scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
 scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
-chapter|numbered=true|target=500|name=Ch3
+chapter|target=500|name=Ch3
 scene|name=
 p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
 scene|folded=true|name=

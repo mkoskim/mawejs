@@ -6,17 +6,17 @@ subtitle=Hidden parts become unexported acts
 author=Writer
 pseudonym=
 [section:draft]
-act|numbered=true|name=
-chapter|numbered=true|name=Hidden Root Scene Part
+act|name=
+chapter|name=Hidden Root Scene Part
 scene|name=Hidden Root Scene Part
 p|text=Hidden root scene part content.
 [section:notes]
-act|numbered=true|name=
-chapter|numbered=true|name=Hidden Group Part
+act|name=
+chapter|name=Hidden Group Part
 scene|name=Hidden Group Notes Scene
 p|text=Hidden group notes scene content.
 [section:storybook]
-act|numbered=true|name=
-chapter|numbered=true|name=
+act|name=
+chapter|name=
 scene|name=
 br|text=

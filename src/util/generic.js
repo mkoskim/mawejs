@@ -75,19 +75,28 @@ export function wordcount(text) {
 // Split list to groups starting by a specific element
 //-----------------------------------------------------------------------------
 
-export function splitByLeadingElem(list, match) {
+export function splitByLeadingElem(list, match, options = {}) {
+  const {excludeMatch = false} = options
+
   const groups = [];
   let group = [];
+  let started = false;
 
   for(const elem of list) {
-    if(match(elem) && group.length) {
-      groups.push(group);
-      group = [];
+    if(match(elem)) {
+      if(started) {
+        groups.push(group);
+        group = [];
+      }
+      if(!excludeMatch) group.push(elem)
     }
-    group.push(elem);
+    else {
+      group.push(elem);
+    }
+    started = true;
   }
 
-  if(group.length) groups.push(group);
+  if(started) groups.push(group);
   return groups;
 }
 
@@ -95,16 +104,20 @@ export function splitByLeadingElem(list, match) {
 // Split list to groups ending with a specific element
 //-----------------------------------------------------------------------------
 
-export function splitByTrailingElem(list, match) {
+export function splitByTrailingElem(list, match, options = {}) {
+  const {excludeMatch = false} = options
+
   const groups = [];
   let group = [];
 
   for(const elem of list) {
-    group.push(elem);
 
     if(match(elem)) {
+      if(!excludeMatch) group.push(elem)
       groups.push(group);
       group = [];
+    } else {
+      group.push(elem);
     }
   }
 
