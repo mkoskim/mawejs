@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+/test/export/export.test.*
 
 # Builds
 /build

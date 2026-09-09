@@ -4,7 +4,7 @@
 //
 //*****************************************************************************
 
-import { isNotEmpty } from "../../util"
+import { isNotEmpty, splitByTrailingElem } from "../../util"
 import { nodeIsCtrl } from "../elements"
 
 /******************************************************************************
@@ -65,7 +65,7 @@ const headertype = {
 //
 //*****************************************************************************
 
-export function flattenDoc(doc, settings) {
+export function flattenDoc(doc, settings = {}) {
 
   //---------------------------------------------------------------------------
   // Selections
@@ -97,27 +97,11 @@ export function flattenDoc(doc, settings) {
     return new Set(["p", "br", "quote", "missing"]);
   }
 
-  function selectHeaderTypes(settings) {
-    const {type = "short"} = settings
-    const pgbr = type === "long"
-
-    const {acts = "none", prefix_act} = settings
-    const {chapters = "none", prefix_chapter} = settings
-    const {scenes = "none", prefix_scene} = settings
-
-    return {
-      act: { header: acts, prefix: prefix_act, pgbr},
-      chapter: {header: chapters, prefix: prefix_chapter, pgbr},
-      scene: {header: scenes, prefix: prefix_scene},
-    }
-  }
-
   //---------------------------------------------------------------------------
 
   const section    = selectSection(settings)
   const containers = selectContainerFilter(settings)
   const paragraphs = selectParagraphFilter(settings)
-  const headers    = selectHeaderTypes(settings)
 
   return flatSection(section)
 
@@ -137,118 +121,172 @@ export function flattenDoc(doc, settings) {
   }
 
   //---------------------------------------------------------------------------
-
-  function flatSection(section)
-  {
-    const nodes = section.acts
-      .filter(filterContainer)
-      .map(flatAct)
-      .filter(isNotEmpty)
-      .map(isFirst)
-      .flat()
-
-    return addNumbering(nodes)
-  }
-
-  //---------------------------------------------------------------------------
   // Flattening
   //---------------------------------------------------------------------------
 
+  function processChildren(children, fn) {
+    return children
+      .filter(filterContainer)
+      .flatMap(fn)
+      .filter(isNotEmpty)
+  }
+
+  function childNode(head, children) {
+    if(!children.length) return
+    return [head, ...children]
+  }
+
+  //---------------------------------------------------------------------------
+
+  function flatSection(section)
+  {
+    const nodes = processChildren(section.acts, flatAct)
+
+    return addNumbers(nodes)
+  }
+
   function flatAct(act) {
     const {type, name, numbered = true} = act
-    const header = headers[type]
-    const children = act.children
-      .filter(filterContainer)
-      .map(flatChapter)
-      .filter(isNotEmpty)
-      .map(isFirst)
-      .flat()
+    const children = processChildren(act.children, flatChapter)
 
-    if(!children.length) return
-
-    return {
-      head: {type, numbered, ...header, children: [{text: name}]},
+    return childNode(
+      {type, numbered, children: [{text: name}]},
       children
-    }
+    )
   }
 
   function flatChapter(chapter) {
     const {type, name, numbered = true} = chapter
-    const header = headers[type]
-    const children = chapter.children
-      .filter(filterContainer)
-      .map(flatScene)
-      .filter(isNotEmpty)
-      .map(isFirst)
-      .flat()
+    const children = processChildren(chapter.children, flatScene)
 
-    if(!children.length) return
-    return {
-      head: {type, numbered, ...header, children: [{text: name}]},
+    return childNode(
+      {type, numbered, children: [{text: name}]},
       children
-    }
-  }
-
-  function isFirst({head, children = []}, index) {
-    return [
-      (!index ? {...head, first: true} : head),
-      ...children
-    ]
+    )
   }
 
   function flatScene(scene) {
     const {type, name, numbered = true} = scene
-    const header = headers[type]
-    const children = scene.children
-      .filter(filterParagraph)
-
-    if(!children.length) return
-
-    return {
-      head: {type, numbered, ...header, children: [{text: name}]},
+    const children = flatSplits(scene.children)
+    //console.log(children)
+    return childNode(
+      {type, numbered, children: [{text: name}]},
       children
-    }
+    )
   }
 
-  //---------------------------------------------------------------------------
-  // Numbering
-  //---------------------------------------------------------------------------
+  function flatSplits(children) {
+    const nodes = children.filter(filterParagraph)
 
-  function addNumbering(nodes) {
-    let act_number = 0
-    let chapter_number = 0
-    let scene_number = 0
+    const splits = splitByTrailingElem(nodes, ({type}) => type === "br", {excludeMatch: true})
+      .filter(split => split.length)
 
-    function addNumber(node) {
-      const {type, numbered, ...rest} = node
-      if(numbered) switch(type) {
-        case "act": {
-          act_number = act_number + 1
-          return {type, number: act_number, ...rest}
-        }
-        case "chapter": {
-          chapter_number = chapter_number + 1
-          return {type, number: chapter_number, ...rest}
-        }
-        case "scene": {
-          scene_number = scene_number + 1
-          return {type, number: scene_number, ...rest}
-        }
-        default: break
-      }
-      return {type, ...rest}
-    }
-
-    return nodes.map(addNumber)
+    const flatted = splits
+      .flatMap((split, index) => index
+        ? [{type: "br", children: [{text: ""}]}, ...split]
+        : split
+      )
+    return flatted
   }
+
 }
 
 //*****************************************************************************
 //
-// Format paragraph list
+// Convert paragraph list with converter
 //
 //*****************************************************************************
 
-export function formatFlatted(flatted, formatter) {
+export function convertFlatted(converter, flatted, settings = {}) {
 
+  function selectHeaderTypes(settings) {
+    const {type = "short"} = settings
+    const pgbr = type === "long"
+
+    const {acts = "none", prefix_act} = settings
+    const {chapters = "none", prefix_chapter} = settings
+    const {scenes = "none", prefix_scene} = settings
+
+    return {
+      act: { header: acts, prefix: prefix_act, pgbr},
+      chapter: {header: chapters, prefix: prefix_chapter, pgbr},
+      scene: {header: scenes, prefix: prefix_scene},
+    }
+  }
+
+  const headers = selectHeaderTypes(settings)
+
+  return addFirst(flatted, headers).map(convert).filter(line => line !== undefined).join("\n")
+
+  function convert(node) {
+    const {type, children, ...rest} = node
+    const text = convertText(node)
+    if(!(type in converter)) return text
+    const header = (type in headers) ? headers[type] : {}
+    return converter[type]({type, ...header, ...rest, text})
+  }
+
+  function convertText(node) {
+    return node.children.map(node => converter.text(node)).join("")
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Numbering
+//-----------------------------------------------------------------------------
+
+function addNumbers(nodes) {
+  let act_number = 0
+  let chapter_number = 0
+  let scene_number = 0
+
+  function addNumber(node) {
+    const {type, numbered, ...rest} = node
+    if(numbered) switch(type) {
+      case "act": {
+        act_number = act_number + 1
+        return {type, number: act_number, ...rest}
+      }
+      case "chapter": {
+        chapter_number = chapter_number + 1
+        return {type, number: chapter_number, ...rest}
+      }
+      case "scene": {
+        scene_number = scene_number + 1
+        return {type, number: scene_number, ...rest}
+      }
+      default: break
+    }
+    return {type, ...rest}
+  }
+
+  return nodes.map(addNumber)
+}
+
+//-----------------------------------------------------------------------------
+// "First of kind" determination. This affects to two places:
+//
+// 1. Inside scenes, there are "splits" separated by breaks (br element).
+//    First paragraph in the split does not have inline indentation, see
+//    e.g. src/gui/common/sheet/sheet.editor.css, line 226:
+//
+//          p, div.br {
+//            margin: 0pt;
+//            p + & { text-indent: 1.0cm; }
+//          }
+//
+// 2. Between containers, when header style is "separated". Separator is
+//    only placed between corresponding elements.
+//
+//-----------------------------------------------------------------------------
+
+function addFirst(nodes, headers) {
+  // TODO: Determine visual first flags using the selected container headers.
+  // A header of "none" must not split the visual group of its child containers:
+  // e.g. chapters separated across hidden act boundaries form one group.
+  // Mark the first container in each visual group to suppress its separator,
+  // and the first paragraph (p/quote/missing) of each scene/BR split to suppress
+  // indentation. Decide the traversal/grouping here; flattening only preserves
+  // content and boundaries. Until implemented, leave the list unchanged.
+  return nodes
 }

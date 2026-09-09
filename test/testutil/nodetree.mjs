@@ -61,8 +61,8 @@ export function createParagraph(type, text) {
   return { type, children}
 }
 
-export function createText(text = "", marks) {
-  return {text, ...(marks ? {marks} : {})}
+export function createText(text = "", marks = {}) {
+  return {text, ...marks}
 }
 
 //-----------------------------------------------------------------------------

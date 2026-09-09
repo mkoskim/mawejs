@@ -1,7 +1,7 @@
-//*
-//import "./export/flatten.test.mjs";
+/*
+import "./export/flatten.test.mjs";
 
-/**/
+/*/
 //-----------------------------------------------------------------------------
 // Utility functions (including test utility): We run these low level
 // functions first, as they are used in certain other functions, so failing
@@ -38,6 +38,13 @@ import "./load/save.test.mjs";
 
 import "./import/text/import_text.test.mjs";
 import "./import/moe/import_moe.test.mjs";
+
+//-----------------------------------------------------------------------------
+// Exporting
+//-----------------------------------------------------------------------------
+
+import "./export/flatten.test.mjs";
+import "./export/convert.test.mjs";
 
 //-----------------------------------------------------------------------------
 // SlateJS
