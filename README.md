@@ -2,220 +2,119 @@
 
 # MaweJS
 
-Looking for an editor for your story? Notepad, Word and Google Docs are too simple. Scrivener, Manuskript and yWriter are too complex. You like Word-style editors for writing stories, but once the manuscript grows large it becomes difficult to restructure. You may have tried Scrivener-style tools, but dislike how much setup they require before you can even begin writing, and editing scene-by-scene feels restrictive when you just want to add things here and there.
+Looking for an editor for your story? Word feels too simple, Scrivener too complex? You enjoy writing in a continuous document, but once your manuscript grows, restructuring it becomes a struggle. Dedicated writing tools offer more structure, yet setting up an outline or editing one scene at a time may feel restrictive when you just want to write.
 
 How about trying MaweJS?
 
-## MaweJS, Story Editor for Plantsers
+## A story editor for plantsers
 
-Writers can roughly be divided into two types: pantsers and planners. Pantsers start writing the story and let the flow take them wherever it goes. Planners (sometimes called plotters) first make plans and outlines before they start writing.
+Writers are often described as **pantsers** or **planners**. Pantsers start writing and follow the story wherever it goes. Planners (or plotters) build an outline before they begin.
 
-Pantsers are usually fine with tools like Notepad or Word. Planners are catered to by dedicated writing tools such as Scrivener and its counterparts like Manuskript and yWriter.
+But there is a third category: **plantsers**. I happen to be one of them. I start writing like a pantser, then at some point I need to plan, reorganize, and reshape what I have written. That is why I wrote Mawe.
 
-But there is a third category: **plantsers**. These writers fall somewhere between pantsers and planners, and I happen to be one of them. I start writing like a pantser, but at some point I begin to plan, reorganize, and restructure the story like a planner.
+**MaweJS is what you use when Word stops working.** When copy-paste and scrolling are no longer enough, bring your text into MaweJS and keep writing.
 
-Sadly, neither Notepad nor Scrivener supports plantsers particularly well. That is why I needed a tool for myself, and why I wrote Mawe. **MaweJS is a story editor for plantsers: writers who start writing first and structure their story later**.
+MaweJS follows a simple principle: **write first, structure later**. You can begin with nothing but text and use the structural tools when you need them. Perhaps you already have 100,000 words and are wondering how to turn them into a finished novel. MaweJS helps you see the structure in that text and move it into shape.
 
-MaweJS follows a simple principle: **write first, structure later**. It focuses on structuring existing text rather than planning it beforehand. It is the kind of tool you reach for when you already have a large manuscript — perhaps 100,000 words — and you are no longer sure how to shape it into a finished novel. Instead of imposing a predefined outline, MaweJS helps writers analyze, reorganize, and understand the structure of the text they have already written.
+## Writing with MaweJS
 
-At the same time, it remains a true *just start writing* tool: you can begin with nothing but text, and only use the structural tools if and when you need them. If you do not need them, you can simply keep writing.
+MaweJS feels like a continuous document editor, with scenes, chapters, and acts underneath. You decide how much of that structure to use.
 
-MaweJS is not meant to replace planning tools like Scrivener. **MaweJS is what you use when Word stops working**. When your manuscript grows too large to manage with copy-paste and scrolling, you can simply move your text from Word into MaweJS and continue working on it there.
+### Just start writing
 
-## Used in real writing
+Open a new file and start your story. There is no outline to prepare or project to set up.
 
-MaweJS is actively used for writing fiction and has already been used to write hundreds of stories in various lenghts. MaweJS is the latest editor in a series of writing tools developed and used for real fiction writing since the mid-2000s.
+![Writing in MaweJS](https://github.com/user-attachments/assets/c52dea46-c157-498d-9d0c-1b5ef8c88201)
 
-Examples of stories written with MaweJS:
+### Shape your manuscript as it grows
 
-- My Archive of Our Own account: https://archiveofourown.org/users/MaKo71/works
-- A collection of other works written with MaweJS: https://github.com/mkoskim/mawejs/discussions/236
+**Split text into scenes and groups.** Adding structure works much like applying headings in Word or LibreOffice. You can write freely first and divide the text later.
 
-## Interested?
+![Splitting a manuscript into scenes and groups](https://github.com/user-attachments/assets/3cb93599-c2bf-44b4-8d1d-b8da2eea5173)
 
-Want to give a try? If so, read my Wiki page about the subject:
+**Move things around.** Drag scenes to a new position in the story index, or move a group of related scenes together. Your draft and notes have their own sections. Even if you use nothing else, a drag-and-drop story index can make a large manuscript much easier to manage.
 
-https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F
+**Fold text out of the way.** Hide the parts you are not working on and choose which scenes remain visible. Work on one scene or keep several passages open together.
 
-## News
+![Folding sections of a manuscript](https://github.com/user-attachments/assets/dfba61bf-36d3-44be-be49-05976b48f9dd)
 
-**Major change:** Material UI as an UI library was replaced by Base-UI. See the discussion about the change:
+**Leave yourself comments.** Keep reminders alongside the story for as long as you need them. They will not appear in the exported manuscript.
 
-https://github.com/mkoskim/mawejs/discussions/440
+**Mark what is missing.** Leave a description of an unfinished passage and come back to it later. Set target word counts for scenes, chapters, and acts to see how much is still missing.
 
-## Known Issues
+**Explore story structure.** View a diagram of your story and compare it with K. M. Weiland's story structure templates or Blake Snyder's Beat Sheet.
 
-**AppImage:** In newer Ubuntus you may encounter errors due to changed permissions. You may need to run AppImage without sandboxing:
+![Story structure diagram](https://user-images.githubusercontent.com/10298548/224184109-1d1e4dc6-afb7-462f-9798-cff04fa2eade.png)
 
-    $ mawejs-x.y.z.AppImage --no-sandbox
+### Used in real writing
 
-# Writing with MaweJS
+MaweJS has been used to write hundreds of stories of various lengths. It is the latest in a series of tools I have developed and used for fiction writing since the mid-2000s.
 
-## What MaweJS is?
+Here it is while I am editing one of my stories in Finnish. The draft index is on the left, the manuscript in the middle, and the notes index on the right:
 
-In short, MaweJS is an externally unstructured editor (like Notepad, Word or Googledocs), and internally a structured editor (like yWriter, Scrivener and Manuscript). MaweJS is a story editor that feels like Word, but works like Scrivener underneath.
+![Editing a story with draft and notes indexes](https://user-images.githubusercontent.com/10298548/218349525-c385016b-f2f3-4605-9601-5fd095345646.png)
 
-## Just start writing
+You can read the story in [Finnish](https://archiveofourown.org/works/76325336/chapters/199756276) (also on [my blog](https://jumalhamara.wordpress.com/gjerta-avaruudessa/)) or in [English translation](https://archiveofourown.org/works/76329611/chapters/199767531). More writing is available on [my AO3 account](https://archiveofourown.org/users/MaKo71/works) and in this [collection of works written with MaweJS](https://github.com/mkoskim/mawejs/discussions/236).
 
-When you create a new file, you can just start writing your story, just like opening Notepad or Word. There is absolutely no setup required — just start writing.
+## Try MaweJS
 
-![image](https://github.com/user-attachments/assets/c52dea46-c157-498d-9d0c-1b5ef8c88201)
+Interested? Start with [Thinking about trying MaweJS?](https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F) in the Wiki. If you would like to run the source code or work on the editor yourself, follow the steps below.
 
-## Apply tools when you need them
+## Development
 
-**Cutting text to pieces:** The most powerful feature in MaweJS is, that it is internally a structured editor just like Manuskript, yWriter or Scrivener. When your text mass grows, you can start splitting your text to scenes, and gather scenes together to groups. Splitting text to scenes and groups works just like applying headers in editors like Word or LibreOffice:
+Are you a writer who also codes? That is how MaweJS started, and I would welcome help making it better. Getting a local copy running is the first step.
 
-![image](https://github.com/user-attachments/assets/3cb93599-c2bf-44b4-8d1d-b8da2eea5173)
+### Get the source and run it
 
-**Moving stuff around:** Splitting your text to scenes allows you to move them around with drag-and-drop. Putting them in the same group allows you to move a bunch of related scenes at once. There are two "sections": your draft and notes. I am pretty sure that if you don't want to use anything else, you will love drag'n'droppable story index! It can really make your life much easier.
+You need Git and Node.js with npm installed. On Windows, Git Bash is a convenient shell for these commands.
 
-**Folding:** Furthermore, a very powerful tool for writing is **folding**, you can hide parts of your text when working with other parts:
+Clone the repository and enter its directory:
 
-![image](https://github.com/user-attachments/assets/dfba61bf-36d3-44be-be49-05976b48f9dd)
+```sh
+git clone https://github.com/mkoskim/mawejs.git
+cd mawejs
+```
 
-Folding makes the editor to resemble a bit more conventional structured editor, where you have one scene visible for editing at time. In this case, you can choose which scenes are visible when you write your story.
+If you plan to contribute, fork the repository and clone your fork instead.
 
-**Commenting:** You can make comments for you, that will not get exported to manuscript. So, you can keep your comments within the story as long as you like.
+Install the dependencies, then launch MaweJS:
 
-**Missing text, fillers & target counts:** You can write descriptions of story pieces still missing. So, you don't have to complete a scene at once, but you can leave there a mark, and come back to those issues later. You can also give scenes, chapters and acts target word counts, and see how much you are still missing.
+```sh
+npm install
+npm run dev
+```
 
-**Story structure:** You can view a pie diagram of your story, and compare it to selected template:
+Open one of the [example documents](examples/) to try the editor without using your own manuscript.
 
-![image](https://user-images.githubusercontent.com/10298548/224184109-1d1e4dc6-afb7-462f-9798-cff04fa2eade.png)
+### Find your way around
 
-There is currently K. M. Weiland's story structure templates and Blake Snyder's Beat Sheet, but we may add more later. It wouldn't be bad, that you could have a collection of different templates for various purposes (thrillers, romances, etc).
+The app uses Electron, React, and Slate, with JavaScript and JSX sources. The [client code](src/README.md) contains the UI, editor, and document logic; [Electron](electron/README.md) provides desktop services such as file access. Each area has a README to help you get started.
 
-**Live screenshot** while editing one of my stories (written in Finnish):
+For changes to writing behavior, start with the [Slate editor](src/slatejs/README.md). Available test and build commands are in [package.json](package.json).
 
-![image](https://user-images.githubusercontent.com/10298548/218349525-c385016b-f2f3-4605-9601-5fd095345646.png)
+See [Want to contribute?](https://github.com/mkoskim/mawejs/discussions/86) and [Most wanted!](https://github.com/mkoskim/mawejs/discussions/219) for ways to help, or join the [discussions](https://github.com/mkoskim/mawejs/discussions) to talk about an idea.
 
-At topmost, there is the selection of view. Below that is a toolbar to change settings in the editor. The main editing view contains three parts: (1) index of the draft, (2) editor display, and (3) index of notes.
+### Update your local copy
 
-If you like to see the result, the story in the screenshot is available online (in Finnish):
+Pull the latest changes and refresh dependencies:
 
-https://jumalhamara.wordpress.com/gjerta-avaruudessa/
+```sh
+git pull
+npm install
+```
 
-https://archiveofourown.org/works/76325336/chapters/199756276
+### Troubleshooting
 
-I have also made an English translation from the story:
+**Ubuntu sandbox permissions:** If running from source fails because of Chrome sandbox permissions, run `npm run fix`. This uses `sudo` to set the owner and SUID bit on Electron's `chrome-sandbox` binary, and may need repeating after Electron updates. The commands are visible in [package.json](package.json).
 
-https://archiveofourown.org/works/76329611/chapters/199767531
+**AppImage:** If you encounter a sandbox error, the workaround below disables Chromium's sandbox:
 
-# Development
+```sh
+./mawejs-x.y.z.AppImage --no-sandbox
+```
 
-## Tools
+**Debugging:** If React DevTools do not appear, try reloading the application window. See the [Electron DevTools issue](https://github.com/electron/electron/issues/41613#issuecomment-2644018998) or the [VS Code Electron debugging guide](https://github.com/Microsoft/vscode-recipes/tree/master/Electron) for more background.
 
-You need two tools, git and npm. Check you have them:
+## License
 
-    $ git -v
-    $ npm -v
-
-Install the needed tools, if you don't have them already. On Linux you can do that from command line, on Windows you can get the installation packages from web.
-
-**Windows:** It is probably easier to use Git bash shell as the npm commands are bash commands.
-
-## Cloning
-
-Clone the repository:
-
-    $ git clone https://github.com/mkoskim/mawejs.git
-    $ cd mawejs
-    mawejs$
-
-**Note:** If you want to contribute, you need to make a fork.
-
-## Dependencies
-
-Get dependencies:
-
-    mawejs$ npm i
-
-## Running
-
-Run application from sources:
-
-    mawejs$ npm run dev
-
-**Ubuntu:** In newer Ubuntus, if you run the sources, you may need to set Chrome SUID bit on. You need to do this every time ElectronJS is updated. There is now npm run target to do that:
-
-    mawejs$ npm run fix
-
-It uses `sudo`, so it will ask your password. If you don't trust my target, you can do it manually, too:
-
-    mawejs$ sudo chown root node_modules/electron/dist/chrome-sandbox
-    mawejs$ sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
-
-## Building
-
-Building:
-
-    mawejs$ npm run build
-
-Building produces platform-specific result file (AppImage for Linux). Remember to use `--no-sandbox` to run the AppImage in newer Ubuntus:
-
-    mawejs$ dist/mawejs-x.y.z.AppImage --no-sandbox
-
-**Windows:** At the moment, there are some problems with Windows builds: https://github.com/mkoskim/mawejs/issues/404
-
-## Updating
-
-If you update the project with 'git pull', you may need to update the libraries, too:
-
-    mawejs$ git pull
-    mawejs$ npm i
-
-**Ubuntu:** Remember to reapply SUID bit, if Electron package was updated.
-
-## Debugging
-
-VS Code Electron debugging: https://github.com/Microsoft/vscode-recipes/tree/master/Electron
-
-React DevTools are installed by default (by electron-devtools-installer), but you need to reload the window before they are attached to devtools, see:
-
-https://github.com/electron/electron/issues/41613#issuecomment-2644018998
-
-## Example files
-
-You can test MaweJS with example files located in examples/
-
-https://github.com/mkoskim/mawejs/tree/master/examples
-
-## Want to contribute?
-
-There are few articles in the Discussions tab which you might be interested:
-
-- Want to contribute? https://github.com/mkoskim/mawejs/discussions/86
-
-- Most wanted! https://github.com/mkoskim/mawejs/discussions/219
-
-# Read more
-
-Read more about MaweJS from Wiki pages:
-
-https://github.com/mkoskim/mawejs/wiki
-
-Or check out discussion board:
-
-https://github.com/mkoskim/mawejs/discussions
-
-# MIT License
-
-Copyright (c) 2021 Markus Koskimies
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+MaweJS is available under the [MIT License](LICENSE).

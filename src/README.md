@@ -1,19 +1,10 @@
-Electron renderer sources
--------------------------
+# Renderer / client
 
-This directory contains the renderer/client side of MaweJS.
+Editor and document logic live here. Access desktop capabilities through
+[system](system/README.md) wrappers to keep the client independent of Electron.
 
-The project aims to keep the editor and document logic on the client side, so
-that the application could possibly be adapted into a web application later.
-Electron-specific host access should go through the abstractions in `system/`
-instead of being used directly from UI or document code.
-
-Main directories:
-
-- `gui/` - React UI, editor views, SlateJS integration, styling, and other
-  user interface code.
-- `document/` - document model utilities, loading, saving, migration, analysis,
-  and export support.
-- `system/` - renderer-side wrappers for host services such as local files,
-  dialogs, and app-level Electron services.
-- `util/` - general utility code shared by renderer modules.
+- [gui](gui/README.md): React application, views, and styling.
+- [slatejs](slatejs/README.md): main text editor and editing behavior.
+- [document](document/README.md): document model, loading, saving, migration, and export.
+- [system](system/README.md): host-service wrappers.
+- `util/`: shared utilities.

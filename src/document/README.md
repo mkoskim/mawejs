@@ -1,43 +1,27 @@
-Document model, load, save, and export
---------------------------------------
+# Document model
 
-This directory contains document-level logic for MaweJS stories.
+Document structure, loading, saving, migration, analysis, and export belong here.
+GUI code should use this layer instead of duplicating format logic.
 
-Use this area for code that works with the document model itself: loading,
-saving, migration, export, structural utilities, and document analysis. GUI
-code should call into this layer instead of duplicating document-format logic.
+- `elements.js`: element types and markup definitions.
+- `head.js`: document header metadata.
+- `util.js`: structural helpers and word counts.
+- `xmljs/`: XML loading, saving, tree handling, and migration.
+- [export](export/README.md): output formats.
 
-Important areas:
+Preserve compatibility with existing `.mawe` files unless a format change is
+explicitly intended. Use `npm run test:load`, `npm run test:export`, and
+[migration examples](../../examples/migration/README.md) as appropriate.
 
-- `elements.js` - document element types and markup definitions.
-- `head.js` - document header metadata.
-- `util.js` - document utility functions used by GUI and editor code.
-- `xmljs/` - XML-based loading, saving, tree handling, and migration.
-- `export/` - exporting documents to external formats.
+## Editable metadata and control elements
 
-Be careful with compatibility when changing document loading, saving, or
-migration code. Existing `.mawe` files and migration examples should keep
-working unless the task explicitly changes the format.
+The manuscript is a nested Slate-compatible tree of acts, chapters, scenes,
+headings, notes, and paragraphs. Editable metadata needs nodes with text leaves
+under `children`, rather than only plain container attributes.
 
-Control elements and editable metadata
---------------------------------------
-
-MaweJS stores manuscripts in a Slate-compatible tree. This affects the
-document model itself, not only the editor UI: anything that must be editable
-inside Slate has to be represented as a node with editable text leaves under
-`children`.
-
-Acts, chapters, and scenes have metadata such as name, target word count,
-folded state, and numbering state. That metadata cannot be edited directly as
-plain object attributes inside Slate. Instead, editable metadata is represented
-with control elements:
-
-- `hact` for act metadata.
-- `hchapter` for chapter metadata.
-- `hscene` for scene metadata.
-
-These header/control elements are children of the block they describe. For
-example, a named chapter is shaped like this:
+`hact`, `hchapter`, and `hscene` represent act, chapter, and scene metadata
+(name, target word count, folding, and numbering). These control elements are
+children of their containers and act as structural breaks:
 
 ```text
 chapter
@@ -46,18 +30,12 @@ chapter
   scene
 ```
 
-This shape is intentional. The header is both an editable Slate block and a
-structural break between containers. Normalization code keeps the control
-element and the container attributes in sync, and headers can also be generated
-from container attributes when needed.
+Normalization synchronizes control elements with container attributes; headers
+can also be generated from those attributes.
 
-Do not assume every container has a header. The first implicit/default act,
-chapter, or scene may omit its header so a new document can start directly in
-the manuscript text. A header is added when it is needed for editable metadata,
-folding, drag-and-drop, or another structural operation.
+**Headers are optional.** Implicit/default first blocks may omit them so writing
+can start directly in manuscript text. Folding may add a header as a visible
+handle; drag-and-drop may add one to prevent neighboring blocks from merging.
 
-This means child indexes are not always content indexes. If a container has a
-header, its first content block is at child index `1`; without a header, it is
-at child index `0`. Code that moves through acts, chapters, scenes, or
-paragraphs should use document helpers such as `elemHeading()` instead of
-assuming fixed offsets.
+The first content child is therefore at index `0` without a header or `1` with
+one. Use helpers such as `elemHeading()` in `util.js` instead of fixed offsets.
