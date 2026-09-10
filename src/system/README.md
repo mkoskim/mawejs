@@ -1,21 +1,12 @@
-Renderer-side host services
----------------------------
+# Host-service wrappers
 
-This directory contains renderer/client abstractions for services provided by
-the host environment.
+Client access to desktop services through the [preload bridge](../../electron/preload/README.md).
+GUI and document code should use these wrappers instead of calling `window.ipc` directly.
 
-In the current Electron application these services call through the preload/IPC
-bridge to the Electron backend. Keeping these wrappers here helps keep the GUI
-and document logic independent from Electron-specific APIs, which leaves room
-for a possible web application implementation later.
+- `ipc.js`: low-level IPC helper.
+- `host.js`: application services, including logging, quit, and zoom.
+- `dialog.js`: native dialogs.
+- `localfs.js`: local files.
+- `scanner.js`: file scanning.
 
-Main files:
-
-- `ipc.js` - low-level IPC call helper.
-- `host.js` - app-level host services such as logging, app info, quit, and zoom.
-- `dialog.js` - system dialog wrappers.
-- `localfs.js` - local file system wrappers.
-- `scanner.js` - file scanning helpers.
-
-When adding host functionality, prefer extending this abstraction layer rather
-than calling `window.ipc` directly from GUI or document code.
+See [Electron](../../electron/README.md) when adding a host capability.

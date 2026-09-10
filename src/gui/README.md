@@ -1,22 +1,12 @@
-GUI
----
+# GUI
 
-React renderer UI for MaweJS.
+React application and views. Core text editing lives in [slatejs](../slatejs/README.md).
 
-The main text editor is implemented with SlateJS. Slate-specific editor logic
-lives in `../slatejs/`; higher-level editing views and tool components live in
-the GUI directories.
+- `app/`: application shell, views, context, settings, and recent files.
+- `common/`: shared components, icons, hotkeys, document index helpers, and themes.
+- [editor](editor/README.md): editor views and tools around Slate.
+- `import/`, `export/`: import previews and export UI.
+- `arc/`, `stats/`: story structure and statistics views.
 
-Main directories and files:
-
-- `app/` - application shell, views, context, settings, and recent files.
-- `common/` - shared UI components, icons, hotkeys, document index helpers,
-  and shared CSS themes.
-- `editor/` - editor view components and editing-related UI around the Slate
-  editor.
-- `import/` - importing text and previewing imported content.
-- `export/` - export UI.
-- `arc/` - story arc view.
-- `stats/` - story statistics view.
-- `sketches/` - old and experimental UI code. Do not treat this as production
-  code unless a task explicitly asks for it.
+[sketches](sketches/README.md) and [app/store](app/store/README.md) are inactive
+experiments; their documentation is historical.

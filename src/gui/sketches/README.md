@@ -1,3 +1,6 @@
-## Sketches
+# GUI sketches
 
-This directory holds some code for different kinds of sketching. Not all of them are working, but some might be taken back at some point of the future.
+Historical and experimental code; this directory and its documentation do not
+represent the current application. Reuse or revive it only when explicitly requested.
+
+For active UI, see [GUI](../README.md) and [Slate](../../slatejs/README.md).
