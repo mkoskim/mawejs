@@ -183,7 +183,7 @@ export function flattenDoc(doc, settings = {}) {
 
     const flatted = splits
       .flatMap((split, index) => index
-        ? [{type: "br", children: [{text: ""}]}, ...split]
+        ? [{type: "br"}, ...split]
         : split
       )
     return flatted
@@ -210,13 +210,16 @@ export function convertFlatted(converter, flatted, settings = {}) {
     return {
       act: { header: acts, prefix: prefix_act, pgbr},
       chapter: {header: chapters, prefix: prefix_chapter, pgbr},
-      scene: {header: scenes, prefix: prefix_scene},
+      scene: {header: (scenes === "none" ? "break" : scenes), prefix: prefix_scene},
     }
   }
 
   const headers = selectHeaderTypes(settings)
 
-  return addFirst(flatted, headers).map(convert).filter(line => line !== undefined).join("\n")
+  return addFirst(flatted, headers)
+    .map(convert)
+    .filter(line => line !== undefined)
+    .join("\n")
 
   function convert(node) {
     const {type, children, ...rest} = node
@@ -227,38 +230,44 @@ export function convertFlatted(converter, flatted, settings = {}) {
   }
 }
 
+//-----------------------------------------------------------------------------
+
 export function convertNode(converter, node) {
   const {type} = node
   return converter[type](node)
 }
 
 export function convertText(converter, children) {
-  return children.map(node => converter.text(node)).join("")
+  return children?.map(node => converter.text(node)).join("")
 }
 
-//-----------------------------------------------------------------------------
+//*****************************************************************************
+//
 // Numbering
-//-----------------------------------------------------------------------------
+//
+//*****************************************************************************
 
 function addNumbers(nodes) {
-  let act_number = 0
-  let chapter_number = 0
-  let scene_number = 0
+  let number = {
+    act: 0,
+    chapter: 0,
+    scene: 0,
+  }
 
   function addNumber(node) {
     const {type, numbered, ...rest} = node
     if(numbered) switch(type) {
       case "act": {
-        act_number = act_number + 1
-        return {type, number: act_number, ...rest}
+        number.act = number.act + 1
+        return {type, number: number.act, ...rest}
       }
       case "chapter": {
-        chapter_number = chapter_number + 1
-        return {type, number: chapter_number, ...rest}
+        number.chapter = number.chapter + 1
+        return {type, number: number.chapter, ...rest}
       }
       case "scene": {
-        scene_number = scene_number + 1
-        return {type, number: scene_number, ...rest}
+        number.scene = number.scene + 1
+        return {type, number: number.scene, ...rest}
       }
       default: break
     }
@@ -267,6 +276,12 @@ function addNumbers(nodes) {
 
   return nodes.map(addNumber)
 }
+
+//*****************************************************************************
+//
+// addFirst(): "First of kind" determination.
+//
+//*****************************************************************************
 
 //-----------------------------------------------------------------------------
 // "First of kind" determination. This affects to two places:
@@ -285,13 +300,39 @@ function addNumbers(nodes) {
 //
 //-----------------------------------------------------------------------------
 
-function addFirst(nodes, headers) {
-  // TODO: Determine visual first flags using the selected container headers.
-  // A header of "none" must not split the visual group of its child containers:
-  // e.g. chapters separated across hidden act boundaries form one group.
-  // Mark the first container in each visual group to suppress its separator,
-  // and the first paragraph (p/quote/missing) of each scene/BR split to suppress
-  // indentation. Decide the traversal/grouping here; flattening only preserves
-  // content and boundaries. Until implemented, leave the list unchanged.
-  return nodes
+export function addFirst(nodes, headers) {
+  const first = {
+    act: true,
+    chapter: true,
+    scene: true,
+    paragraph: true,
+  }
+
+  return nodes.map(({first: previousFirst, ...node}) => {
+    const {type} = node
+    const key = type === "br" ? undefined : type in first ? type : "paragraph"
+    const isFirst = key !== undefined && first[key]
+    if(key !== undefined) first[key] = false
+
+    // Hidden act/chapter headers keep the lower levels in the same group.
+    // Scene boundaries and BR always start a new paragraph group.
+    switch(type) {
+      case "act":
+        if(headers.act.header !== "none") {
+          first.chapter = first.scene = first.paragraph = true
+        }
+        break;
+      case "chapter":
+        if(headers.chapter.header !== "none") {
+          first.scene = first.paragraph = true
+        }
+        break;
+      case "scene":
+      case "br":
+        first.paragraph = true
+        break;
+    }
+
+    return isFirst ? {...node, first: true} : node
+  })
 }

@@ -24,7 +24,7 @@ const format_tex = getTEXConverter()
 
 //*****************************************************************************
 //
-// Test cases for text (including tests for escaping for certain formats)
+// Test text generation (including tests for escaping for certain formats)
 //
 //*****************************************************************************
 
@@ -87,7 +87,7 @@ describe("Text conversion", () => {
 
 //*****************************************************************************
 //
-// Test cases for paragraphs
+// Test cases for paragraph conversions. Text generation is already tested.
 //
 //*****************************************************************************
 
@@ -102,17 +102,22 @@ describe("Paragraph conversion", () => {
     const node = {type: "quote", text: "Text"}
     test("MD", () => assert.equal(convertNode(format_md, node), "> Text\n>"));
   })
+
+  it("Converts br to string", () => {
+    const node = {type: "br"}
+    test("MD", () => assert.equal(convertNode(format_md, node), "\n"));
+  })
 })
 
 //*****************************************************************************
 //
-// Test cases for headers
+// Test header (and later title) escaping
 //
 //*****************************************************************************
 
-describe("Header conversion", () => {
+describe("Header&title escaping", () => {
 
-  it("Converts numbered act with special characters in prefix", () => {
+  it("Escapes special characters in prefix", () => {
     const node = {
       type: "act", header: "numbered", number: 1,
       prefix: String.raw`<>&"'\{}%$#_~^|`,
@@ -134,12 +139,16 @@ describe("Header conversion", () => {
     //   {\textless}{\textgreater}\&{\textquotedbl}'{\textbackslash}\{\}\%\$\#\_{\textasciitilde}{\textasciicircum}{\textbar} 1
   })
 
+  // TODO: This is already tested? See test case above
   it("Escapes HTML numbering prefix", () => {
     assert.equal(convertNode(format_html, {
       type: "chapter", header: "numbered", prefix: "<A&B>", number: 1, text: "Title",
     }), "<h2>&lt;A&amp;B&gt; 1</h2>");
   })
 
+  // TODO: This is already tested? See text generation tests. We may add
+  // there a test case, that ensures, that text is escaped before placing
+  // control elements (bold, italic in various formats)
   it("Escapes HTML heading text before adding markup", () => {
     const nodes = [{
       type: "chapter", number: 1,
@@ -149,6 +158,15 @@ describe("Header conversion", () => {
       chapters: "numbered&named", prefix_chapter: "<Luku>",
     }), "<h2>&lt;Luku&gt; 1. <b>&lt;Anna &amp; Albert&gt;</b></h2>");
   })
+})
+
+//*****************************************************************************
+//
+// Test header generation (none, separated, etc)
+//
+//*****************************************************************************
+
+describe("Header generation", () => {
 
   it("Converts scene/header=none", () => {
     const node = {type: "scene", header: "none", text: "Text"}

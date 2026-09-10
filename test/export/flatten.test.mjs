@@ -266,11 +266,11 @@ describe("Export: Flatten basic cases", () => {
       { type: 'p', children: [{text: "Paragraph"}] },
       { type: 'p', children: [{text: "Paragraph"}] },
       { type: 'p', children: [{text: "Paragraph"}] },
-      { type: 'br', children: [{text: ""}] },
+      { type: 'br' },
       { type: 'missing', children: [{text: "Missing"}] },
       { type: 'p', children: [{text: "Paragraph"}] },
       { type: 'p', children: [{text: "Paragraph"}] },
-      { type: 'br', children: [{text: ""}] },
+      { type: 'br' },
       { type: 'quote', children: [{text: "Quote"}] },
       { type: 'p', children: [{text: "Paragraph"}] },
       { type: 'p', children: [{text: "Paragraph"}] },
@@ -452,7 +452,6 @@ describe("Export: Flatten basic cases", () => {
       { type: 'p', children: [{text: "Text"}] },
       { type: 'scene', number: 16, children: [{text: "Scene"}]},
       { type: 'p', children: [{text: "Text"}] },
-
 
       // Epilogue
       { type: 'act', children: [{text: "Epilogue"}]},

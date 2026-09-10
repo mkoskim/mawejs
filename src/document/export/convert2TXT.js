@@ -95,6 +95,7 @@ function makeHeader(tag, {header = "none", prefix, first, number, pgbr = false, 
   switch(header) {
     default:
     case "none": return undefined
+    case "break": return "\n"
     case "separated": return `${tag} ${first ? "" : "* * *\n"}`
     case "numbered": if(number) { return `${tag} ${numbering}\n`}
     // Fall-through

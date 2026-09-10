@@ -74,6 +74,7 @@ function makeHeader(tag, {header = "none", prefix, first, number, pgbr, text}) {
   switch(header) {
     default:
     case "none": return;
+    case "break": return '<br/>'
     case "separated": return first ? undefined : '<div class="separator">* * *</div>';
     case "numbered": title = numbering || text; break;
     case "named": title = text; break;
