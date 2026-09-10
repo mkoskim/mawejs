@@ -1,8 +1,5 @@
-WORKSPACES
-==========
+# Workspace experiment
 
-Components for workspace management.
-
-Workspace itself is basically just a list of opened files. But we are also interested
-making multiple switchable workspaces. For example, you may want to make a collection
-of somehow related novellettes, and gather them together in a workspace.
+Historical, inactive GUI code; not a description of current application behavior.
+The experiment explored lists of open files and switching between workspaces
+containing related stories. See [sketches](../README.md).
