@@ -211,6 +211,7 @@ export function convertFlatted(converter, flatted, settings = {}) {
       act: { header: acts, prefix: prefix_act, pgbr},
       chapter: {header: chapters, prefix: prefix_chapter, pgbr},
       scene: {header: (scenes === "none" ? "break" : scenes), prefix: prefix_scene},
+      br: { header: "break" }
     }
   }
 
