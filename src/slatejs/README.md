@@ -11,12 +11,13 @@ typing, paste, normalization, folding, search, drag-and-drop, and save/load.
 
 Before changing structure, normalization, folding, drag-and-drop, focus, or
 load/save behavior, read the [document model](../document/README.md), especially
-its optional control elements. Check `elements.js` and `util.js` there for
+its load/save safety requirements and optional control elements. Check `elements.js` and `nodeutil.js` there for
 nesting, headings, element types, and word counts.
 
 Preserve the nested manuscript model. Document-format changes belong in
 `src/document/`; UI-shell changes belong in `src/gui/`.
 
-Run `npm run test:slate` for editor changes and load/export tests when relevant
-(see [development](../../README.md#development)). Check affected interactions
+Run `npm test` for editor changes; see the [Slate](../../test/slate/),
+[load](../../test/load/), and [export](../../test/export/) tests for relevant
+coverage. Check affected interactions
 with real [.mawe examples](../../examples/README.md).
