@@ -220,15 +220,20 @@ export function convertFlatted(converter, flatted, settings = {}) {
 
   function convert(node) {
     const {type, children, ...rest} = node
-    const text = convertText(node)
+    const text = convertText(converter, children)
     if(!(type in converter)) return text
     const header = (type in headers) ? headers[type] : {}
-    return converter[type]({type, ...header, ...rest, text})
+    return convertNode(converter, {type, ...header, ...rest, text})
   }
+}
 
-  function convertText(node) {
-    return node.children.map(node => converter.text(node)).join("")
-  }
+export function convertNode(converter, node) {
+  const {type} = node
+  return converter[type](node)
+}
+
+export function convertText(converter, children) {
+  return children.map(node => converter.text(node)).join("")
 }
 
 //-----------------------------------------------------------------------------
