@@ -58,7 +58,11 @@ You can read the story in [Finnish](https://archiveofourown.org/works/76325336/c
 
 ## Try MaweJS
 
-Interested? Start with [Thinking about trying MaweJS?](https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F) in the Wiki. If you would like to run the source code or work on the editor yourself, follow the steps below.
+Interested? Start a [discussion](https://github.com/mkoskim/mawejs/discussions) - I would love to hear how you write and what you need from your tools. You do not need to have tried MaweJS to join in.
+
+Want to give it a try? Start with [Thinking about trying MaweJS?](https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F) in the Wiki.
+
+If you have tried it, let me know what worked and what got in your way. Share your experience in Discussions, or [open an issue](https://github.com/mkoskim/mawejs/issues) for a specific bug or improvement. You do not need to be a programmer to help shape MaweJS.
 
 ## Development
 
