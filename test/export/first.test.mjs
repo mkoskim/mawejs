@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import {
   createAct, createChapter, createScene, createParagraph,
 } from "../testutil/nodetree.mjs";
-import {flattenDoc, addFirst} from "../../src/document/export/processDoc.js";
+import {flattenDoc, addFirst} from "../../src/document/export/process.js";
 
 //-----------------------------------------------------------------------------
 

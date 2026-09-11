@@ -12,7 +12,7 @@ import {
   createParagraph, createText,
 } from "../testutil/nodetree.mjs";
 
-import {flattenDoc} from "../../src/document/export/processDoc.js";
+import {flattenDoc} from "../../src/document/export/process.js";
 
 //-----------------------------------------------------------------------------
 // What does not need to be tested:

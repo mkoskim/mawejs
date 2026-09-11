@@ -354,9 +354,9 @@ class PopupArrow extends React.PureComponent {
 
 export class Popup extends React.PureComponent {
   render() {
-    const {trigger, nativeButton, children} = this.props
+    const {trigger, open, onOpenChange, nativeButton, children} = this.props
 
-    return <BUIPopover.Root>
+    return <BUIPopover.Root open={open} onOpenChange={onOpenChange}>
       <BUIPopover.Trigger nativeButton={nativeButton} render={trigger}/>
       <BUIPopover.Portal>
         <BUIPopover.Positioner className="Positioner" sideOffset={3} align="start">

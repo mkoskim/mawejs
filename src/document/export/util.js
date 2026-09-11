@@ -7,7 +7,7 @@
 //-----------------------------------------------------------------------------
 
 export function textEscape(text, escapes) {
-  return text && text.split("").map(char => escapes[char] || char).join("")
+  return text?.split("").map(char => escapes[char] || char).join("")
 }
 
 //-----------------------------------------------------------------------------

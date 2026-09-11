@@ -5,8 +5,9 @@
 //*****************************************************************************
 
 import { getHeader } from "../head";
+import { getLangRTF } from "../lang";
 
-export function getRTFConverter(options) {
+export function getRTFConverter(options = {}) {
   return {suffix: ".rtf", ...file(options), ...formatter};
 }
 
@@ -122,18 +123,19 @@ function escape(text) {
 //
 //*****************************************************************************
 
-function file(options) {
+function file(options = {}) {
+  const {sides = "single"} = options
   return {
     header(head) {
       const dimensions = getDimensions(options)
       return [
         "{\\rtf1\\ansi\\uc1",
-        rtfLangCode(head),
+        rtfLang(head),
         docInfo(head),
         fontTable(),
         colorTable(),
         paper(dimensions, options),
-        pageHeader(dimensions, head),
+        pageHeader(dimensions, sides, head),
         "\\f0\\sl440",
         docTitle(head),
       ].join("\n");
@@ -144,17 +146,14 @@ function file(options) {
 
 //-----------------------------------------------------------------------------
 
-function rtfLangCode({lang}) {
-  // lang is BCP 47 identifier
-  switch(lang) {
-    case "fi": return "\\lang1035";
-    case "en-US": return "\\lang1033";
-    // No/unknown language:
-    default: return "\\lang255"; // (works w/ LibreOffice)
-    //default: return "\\lang1024"; // Does not work in LibreOffice
-    //default: return "\\noproof"; // Does not work in LibreOffice
-    //default: return "\\lang1024\\noproof"; // Does not work in LibreOffice
-  }
+function rtfLang({lang}) {
+  const langcode = getLangRTF(lang) ?? 255
+  // Unknown language:
+  // "\\lang255" (works w/ LibreOffice)
+  // "\\lang1024" // Does not work in LibreOffice
+  // "\\noproof"; // Does not work in LibreOffice
+  // "\\lang1024\\noproof"; // Does not work in LibreOffice
+  return `\\lang${langcode}`
 }
 
 //-----------------------------------------------------------------------------
@@ -180,22 +179,23 @@ function docTitle(head) {
   ].join("\n")
 }
 
-function pageHeader(dimensions, head) {
+function pageHeader(dimensions, sides, head) {
   const headinfo = getHeader(head)
   const pgnum = "{\\field{\\*\\fldinst PAGE}}"
   const pgtot = "{\\field{\\*\\fldinst NUMPAGES}}"
-  const lang = rtfLangCode(head)
+  const lang = rtfLang(head)
 
   const header = `${escape(headinfo)}\\tab ${pgnum} / ${pgtot}`
   //const tabs = "\\f0\\tqr\\tx8496"
   const tabs = `\\f0\\tqr\\tx${dimensions.text.width}`
 
-  return [
-    //`{\\header\\lang${langcode}\\tqr\\tx8496`,
-    `{\\header${lang}${tabs} ${header}\\par}`,
+  switch(sides) {
+    case "single": return `{\\header${lang}${tabs} ${header}\\par}`;
+    case "double": return [
     `{\\headerl${lang}${tabs} ${header}\\par}`,
     `{\\headerr${lang}${tabs} ${header}\\par}`,
-  ].join("\n")
+    ].join("\n")
+  }
 }
 
 //-----------------------------------------------------------------------------

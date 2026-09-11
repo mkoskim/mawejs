@@ -16,18 +16,21 @@ import {
   MakeToggleGroup, DropDown,
   Popup,
   Separator,
+  IsKey,
 } from "./factory";
 
 import { mawe } from "../../document"
 import {reqOpenFolder} from '../app/context';
 import {getHeader} from '../../document/head';
 import { numfmt } from '../../util';
+import { getLangNative } from '../../document/lang';
 
 //-----------------------------------------------------------------------------
 // Head info editing box
 //-----------------------------------------------------------------------------
 
 export function updateDocName(updateDoc, value)  { updateDoc(doc => {doc.head.name = value}) }
+export function updateDocLang(updateDoc, value)  { updateDoc(doc => {doc.head.lang = value}) }
 export function updateDocTitle(updateDoc, value) { updateDoc(doc => {doc.head.title = value})}
 export function updateDocSubtitle(updateDoc, value) { updateDoc(doc => {doc.head.subtitle = value})}
 export function updateDocAuthor(updateDoc, value) { updateDoc(doc => {doc.head.author = value})}
@@ -58,6 +61,42 @@ export class EditHeadButton extends React.PureComponent {
 
     return <Popup trigger={<Button tooltip="Edit story info">{text}<Icon.Arrow.Head.Down/></Button>}>
       <EditHead head={head} updateDoc={updateDoc} expanded={expanded}/>
+    </Popup>
+  }
+}
+
+//-----------------------------------------------------------------------------
+// Element to choose document language
+//-----------------------------------------------------------------------------
+
+export class ChooseLanguage extends React.PureComponent {
+  state = {open: false}
+  render() {
+    const {lang, updateDoc} = this.props
+    //return <Button>{lang ?? "[None]"}</Button>
+    return <Popup
+      open={this.state.open}
+      onOpenChange={open => this.setState({open})}
+      trigger={<Button tooltip="Language">{getLangNative(lang) ?? "[None]"}</Button>}
+      >
+      <Input
+        label="Language"
+        spellCheck={false}
+        defaultValue={lang}
+        autoFocus
+        //onChange={ev => setSearchText(ev.target.value)}
+        onKeyDown={ev => {
+          if (IsKey.Enter(ev)) {
+            const {value} = ev.target
+            ev.preventDefault();
+            ev.stopPropagation();
+            updateDocLang(updateDoc, value ? value : undefined)
+            this.setState({open: false})
+            //if (searchText === "") setSearchText(undefined);
+            //searchFirst(editor, searchText, true);
+          }
+        }}
+      />
     </Popup>
   }
 }
@@ -125,43 +164,6 @@ export class ChooseVisibleElements extends React.PureComponent {
 // Button group to choose how words are shown
 //-----------------------------------------------------------------------------
 
-/*
-export class ChooseWordFormat extends React.PureComponent {
-
-  static buttons = {
-    "off": {
-      tooltip: "Don't show words",
-      icon: <Icon.StatType.Off />
-    },
-    "numbers": {
-      tooltip: "Words as numbers",
-      icon: <Icon.StatType.Words />,
-    },
-    "compact": {
-      tooltip: "Compact word count",
-      icon: <Icon.StatType.Compact style={{transform: "rotate(90deg)"}}/>
-    },
-    "cumulative": {
-      tooltip: "Words as cumulative",
-      icon: <Icon.StatType.Cumulative />
-    },
-    "percent": {
-      tooltip: "Words as cumulative percent",
-      icon: <Icon.StatType.Percent />
-    },
-  }
-
-  render() {
-    const {choices, selected, setSelected} = this.props
-    return <MakeToggleGroup
-      buttons={this.constructor.buttons}
-      choices={choices}
-      selected={selected}
-      setSelected={setSelected}
-    />
-  }
-}
-/*/
 export class ChooseWordFormat extends React.PureComponent {
 
   static selections = {
@@ -293,6 +295,8 @@ export class HeadInfo extends React.PureComponent {
 
     return <>
       <EditHeadButton text={header} updateDoc={updateDoc} head={head} expanded={true}/>
+      <Separator/>
+      <ChooseLanguage lang={head.lang} updateDoc={updateDoc}/>
     </>
   }
 }

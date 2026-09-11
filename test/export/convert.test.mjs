@@ -7,7 +7,7 @@
 import {describe, test, it} from "node:test"
 import assert from "node:assert/strict";
 
-import { convertText, convertNode, convertFlatted } from "../../src/document/export/processDoc.js";
+import { convertText, convertNode } from "../../src/document/export/process.js";
 import { getTextConverter } from "../../src/document/export/convert2TXT.js";
 import { getHTMLConverter } from "../../src/document/export/convert2HTML.js";
 import { getRTFConverter } from "../../src/document/export/convert2RTF.js";

@@ -137,6 +137,8 @@ function optional(elem, name, parse) {
 
 function parseHead(head) {
   return {
+    lang: optional(head, "lang", elem2Text),
+
     title: optional(head, "title", elem2Text),
     subtitle: optional(head, "subtitle", elem2Text),
 

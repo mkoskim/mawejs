@@ -88,6 +88,7 @@ export function toXML(doc) {
 function toHead(head) {
   return xmlLines(
     {name: "head"},
+    optional("lang", head.lang),
     optional("title", head.title),
     optional("subtitle", head.subtitle),
     optional("author", head.author),
