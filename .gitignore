@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Temporary files
+.~*
+
 # dependencies
 /node_modules
 /.pnp
@@ -7,7 +10,7 @@
 
 # testing
 /coverage
-/test/**/.dev.*
+/test/**/dev.*
 
 # Builds
 /build
