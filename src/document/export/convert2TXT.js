@@ -5,6 +5,7 @@
 //*****************************************************************************
 
 import { mawe } from "..";
+import { textLinify } from "./util";
 
 export function getTextConverter({format = "md"}) {
   switch(format) {
@@ -36,6 +37,12 @@ const file = {
     ].join("\n\n")
   },
   footer() { return; },
+  postprocess(text) {
+    return text
+      .split("\n")
+      .map(line => textLinify(line, {width: 80}))
+      .join("\n")
+  }
 }
 
 //*****************************************************************************

@@ -14,7 +14,7 @@
     "test": "node test/run.mjs",
     "test:coverage": "node test/run.mjs --experimental-test-coverage",
     "test:update": "node test/update.mjs",
-    "run:dev": "node test/run.dev.mjs"
+    "run:dev": "node test/.dev.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
