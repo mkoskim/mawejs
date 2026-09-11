@@ -123,30 +123,3 @@ function makeHeader(tag, {header = "none", prefix, first, number, pgbr = false, 
 function escape(text) {
   return text;
 }
-
-//*****************************************************************************
-//
-// Utils for plain (non-MD) exports (not used atm)
-//
-//*****************************************************************************
-
-function linify(text) {
-  const words = escape(text).split(" ").filter(p => p.length)
-  var lines = [""]
-  for(const word of words) {
-    const last = lines[lines.length-1]
-    if(!last.length) {
-      lines[lines.length-1] = word
-    } else if(last.length + word.length + 1 < 80) {
-      lines[lines.length-1] = last + " " + word
-    } else {
-      lines.push(word)
-    }
-  }
-  return lines.join("\n")
-}
-
-function center(text) {
-  const escaped = escape(text)
-  return escaped.padStart((40+escaped.length/2), " ")
-}

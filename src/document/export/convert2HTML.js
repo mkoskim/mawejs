@@ -2,7 +2,9 @@
 // Basic HTML converter for export development and previews.
 //*****************************************************************************
 
+import { getHeader } from "../head";
 import { mawe } from "..";
+import {textEscape} from "./util.js";
 
 export function getHTMLConverter({format = "html"} = {}) {
   switch(format) {
@@ -144,11 +146,14 @@ function makeHeader({type, header = "none", prefix, first, number, pgbr, text}) 
 
 //-----------------------------------------------------------------------------
 
+const escapes = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;"
+};
+
 function escape(text) {
-  return String(text ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+  return text && textEscape(text, escapes)
 }

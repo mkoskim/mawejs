@@ -4,9 +4,13 @@
 //
 //*****************************************************************************
 
+import {textEscape} from "./util.js";
+
 export function getTEXConverter(options={}) {
   return {suffix: ".tex", ...file, ...formatter};
 }
+
+// TODO: File postprocessing, e.g. linify
 
 //-----------------------------------------------------------------------------
 
@@ -16,6 +20,18 @@ const file = {
 }
 
 const formatter = {
+
+  //---------------------------------------------------------------------------
+  // Paragraph styles
+  //---------------------------------------------------------------------------
+
+  p({first, text}) {return `${first ? "\\noindent " : ""}${text}\n`; },
+  missing({first, text}) { return `{${first ? "\\noindent" : ""}\\color{red}${text}}\n`; },
+  quote({text}) { return (text ? `{${text}\\par}` : "\\par\\null") + "\n"; },
+
+  bookmark() { return; },
+  comment() { return; },
+  tags() { return; },
 
   //---------------------------------------------------------------------------
   // Character styles
@@ -33,12 +49,6 @@ const formatter = {
 
 //-----------------------------------------------------------------------------
 
-function escape(text) {
-  // Replace source characters once so generated commands are not escaped.
-  // Unicode text remains unchanged for UTF-8 output (modern LaTeX's default).
-  return text && text.replace(/[\\&%$#_{}~^"<>|]/g, char => escapes[char])
-}
-
 const escapes = {
   '\\': "{\\textbackslash}",
   '&': "\\&",
@@ -54,4 +64,10 @@ const escapes = {
   '<': "{\\textless}",
   '>': "{\\textgreater}",
   '|': "{\\textbar}",
+}
+
+function escape(text) {
+  // Replace source characters once so generated commands are not escaped.
+  // Unicode text remains unchanged for UTF-8 output (modern LaTeX's default).
+  return textEscape(text, escapes)
 }

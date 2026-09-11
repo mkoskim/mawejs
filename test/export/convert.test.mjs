@@ -32,12 +32,28 @@ describe("Text conversion", () => {
 
   test("Basic text", () => {
 
+    it("Converts undefined text to empty string", () => {
+      const node = []
+      test("MD", () => assert.equal(convertText(format_md, node), ""));
+      test("HTML", () => assert.equal(convertText(format_html, node), ""));
+      test("RTF", () => assert.equal(convertText(format_rtf, node), ""));
+      test("TeX", () => assert.equal(convertText(format_tex, node), ""));
+    })
+
     it("Converts text node to string", () => {
       const node = [{text: "Text"}]
       test("MD", () => assert.equal(convertText(format_md, node), "Text"));
       test("HTML", () => assert.equal(convertText(format_html, node), "Text"));
       test("RTF", () => assert.equal(convertText(format_rtf, node), "Text"));
       test("TeX", () => assert.equal(convertText(format_tex, node), "Text"));
+    })
+
+    it("Combines text elements", () => {
+      const node = [{text: "A"}, {text: "B"}, {text: "C"}]
+      test("MD", () => assert.equal(convertText(format_md, node), "ABC"));
+      test("HTML", () => assert.equal(convertText(format_html, node), "ABC"));
+      test("RTF", () => assert.equal(convertText(format_rtf, node), "ABC"));
+      test("TeX", () => assert.equal(convertText(format_tex, node), "ABC"));
     })
 
     it("Escapes text correctly", () => {
@@ -74,20 +90,19 @@ describe("Text conversion", () => {
       test("RTF", () => assert.equal(convertText(format_rtf, node), "{\\i Text}"));
       test("TeX", () => assert.equal(convertText(format_tex, node), "\\textit{Text}"));
     })
-
-    it("Combines text elements", () => {
-      const node = [{text: "Text"}, {text: "A"}]
-      test("MD", () => assert.equal(convertText(format_md, node), "TextA"));
-      test("HTML", () => assert.equal(convertText(format_html, node), "TextA"));
-      test("RTF", () => assert.equal(convertText(format_rtf, node), "TextA"));
-      test("TeX", () => assert.equal(convertText(format_tex, node), "TextA"));
-    })
   })
 })
 
 //*****************************************************************************
 //
 // Test cases for paragraph conversions. Text generation is already tested.
+// When exporting, we like to separate paragraphs by indentation, but we don't
+// want to indent the first paragraph. HTML can handle this with CSS, MD does
+// not like have spaces at the beginning of the line. RTF and TeX need manual
+// indentation.
+//
+// Quotations (quote) are more like "pre-formatted" text, and do not use first
+// logic.
 //
 //*****************************************************************************
 
@@ -98,6 +113,7 @@ describe("Paragraph (first) conversion", () => {
     test("MD", () => assert.equal(convertNode(format_md, node), "Text\n"));
     test("HTML", () => assert.equal(convertNode(format_html, node), "<p>Text</p>"));
     test("RTF", () => assert.equal(convertNode(format_rtf, node), "{Text\\par}"));
+    test("TeX", () => assert.equal(convertNode(format_tex, node), "\\noindent Text\n"));
   })
 
   it("Converts missing to string", () => {
@@ -105,6 +121,7 @@ describe("Paragraph (first) conversion", () => {
     test("MD", () => assert.equal(convertNode(format_md, node), "!! Text\n"));
     test("HTML", () => assert.equal(convertNode(format_html, node), '<p class="missing">Text</p>'));
     test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\cf2 Text\\par}"));
+    test("TeX", () => assert.equal(convertNode(format_tex, node), "{\\noindent\\color{red}Text}\n"));
   })
 })
 
@@ -115,6 +132,7 @@ describe("Paragraph (non-first) conversion", () => {
     test("MD", () => assert.equal(convertNode(format_md, node), "Text\n"));
     test("HTML", () => assert.equal(convertNode(format_html, node), "<p>Text</p>"));
     test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\fi567 Text\\par}"));
+    test("TeX", () => assert.equal(convertNode(format_tex, node), "Text\n"));
   })
 
   it("Converts missing to string", () => {
@@ -122,6 +140,7 @@ describe("Paragraph (non-first) conversion", () => {
     test("MD", () => assert.equal(convertNode(format_md, node), "!! Text\n"));
     test("HTML", () => assert.equal(convertNode(format_html, node), '<p class="missing">Text</p>'));
     test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\fi567\\cf2 Text\\par}"));
+    test("TeX", () => assert.equal(convertNode(format_tex, node), "{\\color{red}Text}\n"));
   })
 
   it("Converts quote to string", () => {
@@ -129,16 +148,17 @@ describe("Paragraph (non-first) conversion", () => {
     test("MD", () => assert.equal(convertNode(format_md, node), "> Text\n>"));
     test("HTML", () => assert.equal(convertNode(format_html, node), '<blockquote>Text</blockquote>'));
     test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\li1134\\ri1134 Text\\par}"));
+    test("TeX", () => assert.equal(convertNode(format_tex, node), "{Text\\par}\n"));
   })
 })
 
 //*****************************************************************************
 //
-// Test header (and later title) escaping
+// Test prefix (and later title) escaping
 //
 //*****************************************************************************
 
-describe("Header&title escaping", () => {
+describe("Header prefix escaping", () => {
 
   it("Escapes special characters in prefix", () => {
     const node = {
@@ -152,7 +172,6 @@ describe("Header&title escaping", () => {
       String.raw`<h4>&lt;&gt;&amp;&quot;&#39;\{}%$#_~^| 1</h4>`));
     test("RTF", () => assert.equal(convertNode(format_rtf, node),
       String.raw`{\sb480\b <>&"'\\\{\}%$#_~^| 1\par}`));
-
     // TeX content (literal file text, not a JS string):
     //   {\textless}{\textgreater}\&{\textquotedbl}'{\textbackslash}\{\}\%\$\#\_{\textasciitilde}{\textasciicircum}{\textbar} 1
   })
@@ -225,29 +244,35 @@ describe("Header generation", () => {
   // that they are not added.
   //---------------------------------------------------------------------------
 
+  function testNamedAct(header, fields) {
+    const node = {type: "act", header, ...fields}
+    test("MD", () => assert.equal(convertNode(format_md, node), "## Name\n"));
+    test("HTML", () => assert.equal(convertNode(format_html, node), "<h2>Name</h2>"));
+    test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\qc\\b\\fs32 Name\\par}"));
+  }
+
+  function testNamedChapter(header, fields) {
+    const node = {type: "chapter", header, ...fields}
+    test("MD", () => assert.equal(convertNode(format_md, node), "### Name\n"));
+    test("HTML", () => assert.equal(convertNode(format_html, node), "<h3>Name</h3>"));
+    test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\b\\fs28 Name\\par}"));
+  }
+
+  function testNamedScene(header, fields) {
+    const node = {type: "scene", header, ...fields}
+    test("MD", () => assert.equal(convertNode(format_md, node), "#### Name\n"));
+    test("HTML", () => assert.equal(convertNode(format_html, node), "<h4>Name</h4>"));
+    test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\b Name\\par}"));
+  }
+
+  //---------------------------------------------------------------------------
+
   it("Converts named headers", () => {
     const header = "named"
 
-    it("Act", () => {
-      const node = {type: "act", header, text: "Name", prefix: "Prefix", number: 3}
-      test("MD", () => assert.equal(convertNode(format_md, node), "## Name\n"));
-      test("HTML", () => assert.equal(convertNode(format_html, node), "<h2>Name</h2>"));
-      test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\qc\\b\\fs32 Name\\par}"));
-    })
-
-    it("Chapter", () => {
-      const node = {type: "chapter", header, text: "Name", prefix: "Prefix", number: 15}
-      test("MD", () => assert.equal(convertNode(format_md, node), "### Name\n"));
-      test("HTML", () => assert.equal(convertNode(format_html, node), "<h3>Name</h3>"));
-      test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\b\\fs28 Name\\par}"));
-    })
-
-    it("Scene", () => {
-      const node = {type: "scene", header, text: "Name", prefix: "Prefix", number: 145}
-      test("MD", () => assert.equal(convertNode(format_md, node), "#### Name\n"));
-      test("HTML", () => assert.equal(convertNode(format_html, node), "<h4>Name</h4>"));
-      test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\b Name\\par}"));
-    })
+    it("Act", () => testNamedAct(header, {text: "Name", prefix: "Prefix", number: 3}))
+    it("Chapter", () => testNamedChapter(header, {text: "Name", prefix: "Prefix", number: 15}))
+    it("Scene", () => testNamedScene(header, {text: "Name", prefix: "Prefix", number: 145}))
   })
 
   //---------------------------------------------------------------------------
@@ -314,26 +339,10 @@ describe("Header generation", () => {
 
   test("If header=numbered, unnumbered headers fall back to named", () => {
     const header = "numbered"
-    test("Act", () => {
-      const node = {type: "act", header, text: "Name", prefix: "Prefix"}
-      test("MD", () => assert.equal(convertNode(format_md, node), "## Name\n"));
-      test("HTML", () => assert.equal(convertNode(format_html, node), "<h2>Name</h2>"));
-      test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\qc\\b\\fs32 Name\\par}"));
-    })
 
-    test("Chapter", () => {
-      const node = {type: "chapter", header, text: "Name", prefix: "Prefix"}
-      test("MD", () => assert.equal(convertNode(format_md, node), "### Name\n"));
-      test("HTML", () => assert.equal(convertNode(format_html, node), "<h3>Name</h3>"));
-      test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\b\\fs28 Name\\par}"));
-    })
-
-    test("Scene", () => {
-      const node = {type: "scene", header, text: "Name", prefix: "Prefix"}
-      test("MD", () => assert.equal(convertNode(format_md, node), "#### Name\n"));
-      test("HTML", () => assert.equal(convertNode(format_html, node), "<h4>Name</h4>"));
-      test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\b Name\\par}"));
-    })
+    it("Act", () => testNamedAct(header, {text: "Name", prefix: "Prefix"}))
+    it("Chapter", () => testNamedChapter(header, {text: "Name", prefix: "Prefix"}))
+    it("Scene", () => testNamedScene(header, {text: "Name", prefix: "Prefix"}))
   })
 
   //---------------------------------------------------------------------------
@@ -342,25 +351,9 @@ describe("Header generation", () => {
 
   test("If header=numbered&named, unnumbered headers fall back to named", () => {
     const header = "numbered&named"
-    test("Act", () => {
-      const node = {type: "act", header, text: "Name", prefix: "Prefix"}
-      test("MD", () => assert.equal(convertNode(format_md, node), "## Name\n"));
-      test("HTML", () => assert.equal(convertNode(format_html, node), "<h2>Name</h2>"));
-      test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\qc\\b\\fs32 Name\\par}"));
-    })
 
-    test("Chapter", () => {
-      const node = {type: "chapter", header, text: "Name", prefix: "Prefix"}
-      test("MD", () => assert.equal(convertNode(format_md, node), "### Name\n"));
-      test("HTML", () => assert.equal(convertNode(format_html, node), "<h3>Name</h3>"));
-      test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\b\\fs28 Name\\par}"));
-    })
-
-    test("Scene", () => {
-      const node = {type: "scene", header, text: "Name", prefix: "Prefix"}
-      test("MD", () => assert.equal(convertNode(format_md, node), "#### Name\n"));
-      test("HTML", () => assert.equal(convertNode(format_html, node), "<h4>Name</h4>"));
-      test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\b Name\\par}"));
-    })
+    it("Act", () => testNamedAct(header, {text: "Name", prefix: "Prefix"}))
+    it("Chapter", () => testNamedChapter(header, {text: "Name", prefix: "Prefix"}))
+    it("Scene", () => testNamedScene(header, {text: "Name", prefix: "Prefix"}))
   })
 })
