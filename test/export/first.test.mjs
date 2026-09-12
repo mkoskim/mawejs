@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import {
   createAct, createChapter, createScene, createParagraph,
 } from "../testutil/nodetree.mjs";
-import {flattenDoc, addFirst} from "../../src/document/export/process.js";
+import {doc2flatted, addFirst} from "../../src/document/export/process.js";
 
 //-----------------------------------------------------------------------------
 
@@ -64,7 +64,7 @@ const headers = {
 };
 
 test("Export: first flags across hidden acts and scene/BR boundaries", () => {
-  const nodes = flattenDoc(doc);
+  const nodes = doc2flatted(doc);
 
   const result = addFirst(nodes, headers);
 
@@ -130,7 +130,7 @@ for(const {act, chapter, chapters, scenes} of [
   },
 ]) {
   test(`Export: first groups with act ${act}, chapter ${chapter}`, () => {
-    const nodes = flattenDoc(doc);
+    const nodes = doc2flatted(doc);
     const original = structuredClone(nodes);
     const result = addFirst(nodes, {
       act: {header: act},

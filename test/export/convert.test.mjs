@@ -63,7 +63,7 @@ describe("Text conversion", () => {
       test("RTF", () => assert.equal(convertText(format_rtf, node),
         String.raw`{\i {\b \\\{\}&%$#_~^"<>'|}}`));
       test("TeX", () => assert.equal(convertText(format_tex, node),
-        String.raw`\textit{\textbf{{\textbackslash}\{\}\&\%\$\#\_{\textasciitilde}{\textasciicircum}{\textquotedbl}{\textless}{\textgreater}'{\textbar}}}`));
+        String.raw`\textit{\textbf{{\textbackslash}\{\}\&\%\$\#\_{\textasciitilde}{\textasciicircum}''{\textless}{\textgreater}'{\textbar}}}`));
     })
 
     it("Preserves Unicode text", () => {
@@ -172,8 +172,8 @@ describe("Header prefix escaping", () => {
       String.raw`<h4>&lt;&gt;&amp;&quot;&#39;\{}%$#_~^| 1</h4>`));
     test("RTF", () => assert.equal(convertNode(format_rtf, node),
       String.raw`{\sb480\b <>&"'\\\{\}%$#_~^| 1\par}`));
-    // TeX content (literal file text, not a JS string):
-    //   {\textless}{\textgreater}\&{\textquotedbl}'{\textbackslash}\{\}\%\$\#\_{\textasciitilde}{\textasciicircum}{\textbar} 1
+    test("TeX", () => assert.equal(convertNode(format_tex, node),
+      String.raw`\scene{{\textless}{\textgreater}\&'''{\textbackslash}\{\}\%\$\#\_{\textasciitilde}{\textasciicircum}{\textbar} 1}{}` + "\n"));
   })
 })
 
@@ -207,6 +207,7 @@ describe("Header generation", () => {
     test("MD", () => assert.equal(convertNode(format_md, node), "&nbsp;\n"));
     test("HTML", () => assert.equal(convertNode(format_html, node), "<br/>"));
     test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\fi567\\par}"));
+    test("TeX", () => assert.equal(convertNode(format_tex, node), "\\null\n"));
   })
 
   //---------------------------------------------------------------------------
@@ -216,6 +217,7 @@ describe("Header generation", () => {
     test("MD", () => assert.equal(convertNode(format_md, node), undefined));
     test("HTML", () => assert.equal(convertNode(format_html, node), undefined));
     test("RTF", () => assert.equal(convertNode(format_rtf, node), undefined));
+    test("TeX", () => assert.equal(convertNode(format_tex, node), undefined));
   })
 
   //---------------------------------------------------------------------------
@@ -228,6 +230,7 @@ describe("Header generation", () => {
       test("MD", () => assert.equal(convertNode(format_md, node), undefined));
       test("HTML", () => assert.equal(convertNode(format_html, node), undefined));
       test("RTF", () => assert.equal(convertNode(format_rtf, node), undefined));
+      test("TeX", () => assert.equal(convertNode(format_tex, node), undefined));
     })
 
     it("Non-first separated", () => {
@@ -235,6 +238,7 @@ describe("Header generation", () => {
       test("MD", () => assert.equal(convertNode(format_md, node), "#### * * *\n"));
       test("HTML", () => assert.equal(convertNode(format_html, node), '<div class="separator">* * *</div>'));
       test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\qc * * *\\par}"));
+      test("TeX", () => assert.equal(convertNode(format_tex, node), "\\separator{* * *}\n"));
     })
   })
 
@@ -249,6 +253,7 @@ describe("Header generation", () => {
     test("MD", () => assert.equal(convertNode(format_md, node), "## Name\n"));
     test("HTML", () => assert.equal(convertNode(format_html, node), "<h2>Name</h2>"));
     test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\qc\\b\\fs32 Name\\par}"));
+    test("TeX", () => assert.equal(convertNode(format_tex, node), "\\act{}{Name}\n"));
   }
 
   function testNamedChapter(header, fields) {
@@ -256,6 +261,7 @@ describe("Header generation", () => {
     test("MD", () => assert.equal(convertNode(format_md, node), "### Name\n"));
     test("HTML", () => assert.equal(convertNode(format_html, node), "<h3>Name</h3>"));
     test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\b\\fs28 Name\\par}"));
+    test("TeX", () => assert.equal(convertNode(format_tex, node), "\\chapt{}{Name}\n"));
   }
 
   function testNamedScene(header, fields) {
@@ -263,6 +269,7 @@ describe("Header generation", () => {
     test("MD", () => assert.equal(convertNode(format_md, node), "#### Name\n"));
     test("HTML", () => assert.equal(convertNode(format_html, node), "<h4>Name</h4>"));
     test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\b Name\\par}"));
+    test("TeX", () => assert.equal(convertNode(format_tex, node), "\\scene{}{Name}\n"));
   }
 
   //---------------------------------------------------------------------------
@@ -288,6 +295,7 @@ describe("Header generation", () => {
       test("MD", () => assert.equal(convertNode(format_md, node), "## Prefix 3\n"));
       test("HTML", () => assert.equal(convertNode(format_html, node), "<h2>Prefix 3</h2>"));
       test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\qc\\b\\fs32 Prefix 3\\par}"));
+      test("TeX", () => assert.equal(convertNode(format_tex, node), "\\act{Prefix 3}{}\n"));
     })
 
     test("Chapter", () => {
@@ -295,6 +303,7 @@ describe("Header generation", () => {
       test("MD", () => assert.equal(convertNode(format_md, node), "### Prefix 15\n"));
       test("HTML", () => assert.equal(convertNode(format_html, node), "<h3>Prefix 15</h3>"));
       test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\b\\fs28 Prefix 15\\par}"));
+      test("TeX", () => assert.equal(convertNode(format_tex, node), "\\chapt{Prefix 15}{}\n"));
     })
 
     test("Scene", () => {
@@ -302,6 +311,7 @@ describe("Header generation", () => {
       test("MD", () => assert.equal(convertNode(format_md, node), "#### Prefix 145\n"));
       test("HTML", () => assert.equal(convertNode(format_html, node), "<h4>Prefix 145</h4>"));
       test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\b Prefix 145\\par}"));
+      test("TeX", () => assert.equal(convertNode(format_tex, node), "\\scene{Prefix 145}{}\n"));
     })
   })
 
@@ -316,6 +326,7 @@ describe("Header generation", () => {
       test("MD", () => assert.equal(convertNode(format_md, node), "## Prefix 3. Name\n"));
       test("HTML", () => assert.equal(convertNode(format_html, node), "<h2>Prefix 3. Name</h2>"));
       test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\qc\\b\\fs32 Prefix 3. Name\\par}"));
+      test("TeX", () => assert.equal(convertNode(format_tex, node), "\\act{Prefix 3.}{Name}\n"));
     })
 
     test("Chapter", () => {
@@ -323,6 +334,7 @@ describe("Header generation", () => {
       test("MD", () => assert.equal(convertNode(format_md, node), "### Prefix 15. Name\n"));
       test("HTML", () => assert.equal(convertNode(format_html, node), "<h3>Prefix 15. Name</h3>"));
       test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\b\\fs28 Prefix 15. Name\\par}"));
+      test("TeX", () => assert.equal(convertNode(format_tex, node), "\\chapt{Prefix 15.}{Name}\n"));
     })
 
     test("Scene", () => {
@@ -330,6 +342,7 @@ describe("Header generation", () => {
       test("MD", () => assert.equal(convertNode(format_md, node), "#### Prefix 145. Name\n"));
       test("HTML", () => assert.equal(convertNode(format_html, node), "<h4>Prefix 145. Name</h4>"));
       test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\b Prefix 145. Name\\par}"));
+      test("TeX", () => assert.equal(convertNode(format_tex, node), "\\scene{Prefix 145.}{Name}\n"));
     })
   })
 

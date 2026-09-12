@@ -45,6 +45,7 @@ import "./import/moe/import_moe.test.mjs";
 
 import "./export/flatten.test.mjs";
 import "./export/convert.test.mjs";
+import "./export/first.test.mjs";
 
 //-----------------------------------------------------------------------------
 // SlateJS

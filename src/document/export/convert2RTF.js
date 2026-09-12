@@ -4,6 +4,8 @@
 //
 //*****************************************************************************
 
+import { mawe } from "..";
+import { lines2text } from "../../util";
 import { getHeader } from "../head";
 import { getLangRTF } from "../lang";
 
@@ -128,7 +130,7 @@ function file(options = {}) {
   return {
     header(head) {
       const dimensions = getDimensions(options)
-      return [
+      return lines2text([
         "{\\rtf1\\ansi\\uc1",
         rtfLang(head),
         docInfo(head),
@@ -138,7 +140,7 @@ function file(options = {}) {
         pageHeader(dimensions, sides, head),
         "\\f0\\sl440",
         docTitle(head),
-      ].join("\n");
+      ]);
     },
     footer() { return "}"; },
   }
@@ -159,24 +161,24 @@ function rtfLang({lang}) {
 //-----------------------------------------------------------------------------
 
 function docInfo(head) {
-  const {author, title} = head
+  const {author, title} = mawe.info(head)
 
-  return [
+  return lines2text([
     "{\\info",
     `{\\title ${escape(title)}}`,
     author ? `{\\author ${escape(author)}}` : "",
     "}"
-  ].join("\n")
+  ])
 }
 
 function docTitle(head) {
-  const {author, title, subtitle} = head
+  const {author, title, subtitle} = mawe.info(head)
 
-  return [
+  return lines2text([
     author ? `{\\sa220\\qc ${escape(author)}\\par}` : "",
     `{\\sa440\\qc\\b\\fs34 ${escape(title)}\\par}`,
     subtitle ? `{\\sa440\\qc\\b\\fs28 ${escape(subtitle)}\\par}` : "",
-  ].join("\n")
+  ])
 }
 
 function pageHeader(dimensions, sides, head) {
@@ -191,31 +193,31 @@ function pageHeader(dimensions, sides, head) {
 
   switch(sides) {
     case "single": return `{\\header${lang}${tabs} ${header}\\par}`;
-    case "double": return [
+    case "double": return lines2text([
     `{\\headerl${lang}${tabs} ${header}\\par}`,
     `{\\headerr${lang}${tabs} ${header}\\par}`,
-    ].join("\n")
+    ])
   }
 }
 
 //-----------------------------------------------------------------------------
 
 function fontTable() {
-  return [
+  return lines2text([
     "{\\fonttbl",
     "    \\f0\\froman\\fcharset0 Times New Roman;",
     //"    \\f0\\froman\\fcharset0 Arial;",
     "}",
-  ].join("\n")
+  ])
 }
 
 function colorTable() {
-  return [
+  return lines2text([
     "{\\colortbl;",
     "    \\red0\\green0\\blue0;",
     "    \\red180\\green20\\blue20;",
     "}",
-  ].join("\n")
+  ])
 }
 
 //-----------------------------------------------------------------------------
@@ -266,11 +268,11 @@ function paper(dimensions, {sides = "single"} = {}) {
     }
   }
 
-  return [
+  return lines2text([
     `\\paperw${Math.round(paper.width)}\\paperh${Math.round(paper.height)}`,
     `\\margt${Math.round(margin.top)}\\margb${Math.round(margin.bottom)}`,
     `\\margl${Math.round(margin.left)}\\margr${Math.round(margin.right)}`,
     sides == "double" ? "\\facingp\\margmirror" : "",
     "\\gutter0",
-  ].join("\n")
+  ])
 }

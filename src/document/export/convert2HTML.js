@@ -19,20 +19,21 @@ const file = {
   suffix: ".html",
   header(head) {
     const {title, subtitle, author} = mawe.info(head)
-    const titleElem = title ? `<center><h1>${escape(title)}</h1></center>\n`: ""
-    const subtitleElem = subtitle ? `<center><h2>${escape(subtitle)}</h2></center>\n`: ""
-    const authorElem = author ? `<center><author>${escape(author)}</author></center>\n`: ""
+    const titleElem = title ? `<h1>${escape(title)}</h1>\n`: ""
+    const subtitleElem = subtitle ? `<h2>${escape(subtitle)}</h2>\n`: ""
+    const authorElem = author ? `<p class="author">${escape(author)}</p>\n`: ""
     return `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${title}</title>
+<title>${escape(title)}</title>
 <style>
   body {
     max-width: 6in; margin: 1in auto; line-height: 1.6;
     font-family: Times New Roman, serif;
   }
+  h1, h2, p.author {text-align: center}
   p, br {margin: 0; p + & { text-indent: 1.0cm; }}
   .missing { color: #a33; }
   blockquote { margin: 0 2cm; }

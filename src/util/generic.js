@@ -60,6 +60,12 @@ export function text2lines(content, linebreak = "\n\n") {
     .map(line => line.replaceAll(/\s+/g, " ").trim())
 }
 
+export function lines2text(lines, linebreak = "\n") {
+  return lines
+    .filter(line => line !== undefined)
+    .join(linebreak)
+}
+
 const reSplit2Words = new RegExp(/[^\p{L}\p{N}]+/, "iu")
 
 export function text2words(text) {

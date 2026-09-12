@@ -65,7 +65,7 @@ const headertype = {
 //
 //*****************************************************************************
 
-export function flattenDoc(doc, settings = {}) {
+export function doc2flatted(doc, settings = {}) {
 
   //---------------------------------------------------------------------------
   // Selections
@@ -225,7 +225,7 @@ export function convertFlatted(converter, flatted, settings = {}) {
   function convert(node) {
     const {type, children, ...rest} = node
     const text = convertText(converter, children)
-    if(!(type in converter)) return text
+    if(!(type in converter)) return undefined
     const header = (type in headers) ? headers[type] : {}
     return convertNode(converter, {type, ...header, ...rest, text})
   }
@@ -240,6 +240,18 @@ export function convertNode(converter, node) {
 
 export function convertText(converter, children) {
   return children?.map(node => converter.text(node)).join("")
+}
+
+//-----------------------------------------------------------------------------
+
+export function flatted2file(converter, doc, flatted) {
+  const {head, exports} = doc
+  const content = [
+    converter.header?.(head, exports),
+    convertFlatted(converter, flatted, exports),
+    converter.footer?.(exports),
+  ].filter(part => part !== undefined).join("\n")
+  return converter.postprocess ? converter.postprocess(content) : content
 }
 
 //*****************************************************************************

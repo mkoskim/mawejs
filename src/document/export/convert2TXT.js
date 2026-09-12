@@ -37,12 +37,7 @@ const file = {
     ].join("\n\n")
   },
   footer() { return; },
-  postprocess(text) {
-    return text
-      .split("\n")
-      .map(line => textLinify(line, {width: 80}))
-      .join("\n")
-  }
+  postprocess(text) { return text; }
 }
 
 //*****************************************************************************
@@ -50,6 +45,8 @@ const file = {
 // MD (MarkDown) format
 //
 //*****************************************************************************
+
+function linify(text) { return textLinify(text, {width: 80})}
 
 const formatMD = {
 
@@ -72,9 +69,9 @@ const formatMD = {
   // Format paragraphs: MD does not like indentations.
   //---------------------------------------------------------------------------
 
-  p({first, text}) { return `${text}\n`; },
-  missing({first, text}) { return `!! ${text}\n`; },
-  quote({first, text}) { return `> ${text}\n>`; },
+  p({first, text}) { return linify(`${text}\n`); },
+  missing({first, text}) { return linify(`!! ${text}\n`); },
+  quote({first, text}) { return linify(`> ${text}\n>`); },
 
   //p({first, text}) { return `${first ? "" : "    "}${text}\n`; },
   //quote({first, text}) { return `${text}\n`; },

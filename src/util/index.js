@@ -17,5 +17,7 @@ export {
   isObject, isArray,
   sleep,
   numfmt,
-  text2int, text2lines, text2words, wordcount
+  text2int,
+  text2lines, lines2text,
+  text2words, wordcount
 } from "./generic"
