@@ -58,11 +58,11 @@ class CharStyleButtons extends React.PureComponent {
 
   static buttons = {
     "bold": {
-      tooltip: "Bold (Ctrl-B)",
+      tooltip: "Bold (Ctrl+B)",
       icon: <Icon.Style.Bold />
     },
     "italic": {
-      tooltip: "Italic (Ctrl-I)",
+      tooltip: "Italic (Ctrl+I)",
       icon: <Icon.Style.Italic />,
     },
   }
@@ -174,7 +174,7 @@ export class FoldButtons extends React.PureComponent {
     function onUnfoldSynopsis(e) { foldByType(editor, FOLD.unfoldSynopsis); doRefocus();}
 
     return <Menu trigger={<Button tooltip="Folding">Fold <Icon.DropDown/></Button>}>
-      <MenuItem title="Fold All" endAdornment="Alt-A" onClick={e => {onFoldAll(e)}}/>
+      <MenuItem title="Fold All" endAdornment="Alt+A" onClick={e => {onFoldAll(e)}}/>
       <Separator/>
       <MenuItem title="Fold Chapters" onClick={e => {onFoldChapters(e)}}/>
       <MenuItem title="Unfold Chapters" onClick={e => {onUnfoldChapters(e)}}/>
@@ -182,7 +182,7 @@ export class FoldButtons extends React.PureComponent {
       <MenuItem title="Unfold Synopsis" onClick={e => {onUnfoldSynopsis(e)}}/>
       <MenuItem title="Unfold Draft" onClick={e => {onUnfoldScenes(e)}}/>
       <Separator/>
-      <MenuItem title="Unfold All" endAdornment="Alt-S" onClick={e => {onUnfoldAll(e)}}/>
+      <MenuItem title="Unfold All" endAdornment="Alt+S" onClick={e => {onUnfoldAll(e)}}/>
     </Menu>
   }
 }

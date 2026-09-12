@@ -35,7 +35,7 @@ export function loadViewSettings(settings) {
 }
 
 export function saveViewSettings(settings) {
-  return {type: "view",
+  return {name: "view",
     attributes: {
       //selected: settings.selected,
     }

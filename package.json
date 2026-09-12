@@ -1,6 +1,6 @@
 {
   "name": "mawejs",
-  "version": "0.27.0",
+  "version": "0.28.0",
   "description": "Editor for writers.",
   "author": "Markus Koskimies <mkoskim@gmail.com>",
   "scripts": {
@@ -12,14 +12,12 @@
     "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
     "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox",
     "test": "node test/run.mjs",
-    "test:update": "node test/run.mjs --update",
-    "test:load": "node test/run.mjs --group load",
-    "test:export": "node test/run.mjs --group export",
-    "test:slate": "node test/run.mjs --group slate",
-    "test:misc": "node test/run.mjs --group misc"
+    "test:coverage": "node test/run.mjs --experimental-test-coverage",
+    "test:update": "node test/update.mjs",
+    "run:dev": "node test/dev.mjs"
   },
   "dependencies": {
-    "@base-ui/react": "^1.7.0",
+    "@base-ui/react": "^1.8.0",
     "@electron-toolkit/utils": "^4.0.0",
     "@hello-pangea/dnd": "^18.0.1",
     "electron-devtools-installer": "^4.0.0",
@@ -31,8 +29,8 @@
     "nanoid": "^6.0.1",
     "notistack": "^3.0.2",
     "pako": "^3.0.1",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-infinite-scroll-component": "7.2.1",
     "recharts": "^3.10.1",
     "slate": "^0.126.2",
@@ -46,10 +44,10 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.2.0",
-    "electron": "^41.10.3",
+    "electron": "^41.10.7",
     "electron-builder": "^26.15.3",
     "electron-vite": "^5.0.0",
-    "node": "^24.20.0"
+    "node": "^24.21.0"
   },
   "main": "./out/main/index.js",
   "build": {

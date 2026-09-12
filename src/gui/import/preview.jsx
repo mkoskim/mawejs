@@ -5,51 +5,90 @@
 //*****************************************************************************
 
 import React from "react"
-import { DeferredRender } from "../common/factory"
+import {InfiniteScroll} from "../common/factory"
+import {elemFind} from "../../document/xmljs/elemutil.js"
+import {getStoryRoot} from "../../document/xmljs/load.js"
+
+const previewChunk = 100
 
 //-----------------------------------------------------------------------------
 
-export class Preview extends React.PureComponent {
-  render() {
-    const {imported = []} = this.props
+export function Preview({imported = undefined}) {
+  const flatted = React.useMemo(() => flatImported(imported), [imported])
 
-    return <>
-      <ImportIndex
-        style={{minWidth: "200px", maxWidth: "300px", width: "300px"}}
-        imported={imported}
-        />
-      <div className="Filler Board Editor"
-        style={{borderRight: "1px solid lightgray", borderLeft: "1px solid lightgray"}}
-        tabIndex={0}
-        >
-        <div className="Sheet Regular">
-          <DeferredRender>{imported.map(PreviewAct)}</DeferredRender>
-          </div>
-      </div>
-    </>
+  return <>
+    <ImportIndex
+      style={{minWidth: "200px", maxWidth: "300px", width: "300px"}}
+      flatted={flatted}
+      />
+    <ImportPreview flatted={flatted}/>
+  </>
+}
+
+function flatImported(imported) {
+  if(!imported) return []
+
+  const root = getStoryRoot(imported)
+  const body = elemFind(root, "body")
+  const result = []
+
+  for(const act of body.elements) {
+    result.push(act)
+    for(const chapter of act.elements) {
+      result.push(chapter)
+      for(const scene of chapter.elements) {
+        result.push(scene)
+        for(const p of scene.elements) {
+          result.push(p)
+        }
+      }
+    }
   }
+  return result
 }
 
-function PreviewAct(act, index) {
-  return <div className="chapter" key={index}>
-    <h4>{act.attributes.name}</h4>
-    {act.elements.map(PreviewChapter)}
-  </div>
+//-----------------------------------------------------------------------------
+// Import Preview
+//-----------------------------------------------------------------------------
+
+function ImportPreview({flatted}) {
+  const [count, setCount] = React.useState(previewChunk)
+
+  React.useEffect(() => {
+    setCount(previewChunk)
+  }, [flatted])
+
+  const visible = flatted.slice(0, count)
+
+  return <div
+    className="Filler Board Editor"
+    id="ImportPreview"
+    style={{borderRight: "1px solid lightgray", borderLeft: "1px solid lightgray", overflowY: "auto"}}
+    tabIndex={0}
+    >
+      <div className="Sheet Regular">
+        <InfiniteScroll
+          scrollableTarget="ImportPreview"
+          dataLength={visible.length}
+          next={() => setCount(count => Math.min(count + previewChunk, flatted.length))}
+          hasMore={visible.length < flatted.length}
+          scrollThreshold={0.95}
+          loader={null}
+        >
+          {visible.map(RenderElement)}
+        </InfiniteScroll>
+      </div>
+    </div>
 }
 
-
-function PreviewChapter(chapter, index) {
-  return <div className="chapter" key={index}>
-    <h5>{chapter.attributes.name}</h5>
-    {chapter.elements.map(PreviewScene)}
-  </div>
-}
-
-function PreviewScene(scene, index) {
-  return <div className="scene" key={index}>
-    <h6>{scene.attributes.name}</h6>
-    {scene.elements.map(PreviewParagraph)}
-  </div>
+function RenderElement(elem, index) {
+  switch(elem.name) {
+    case "act": return <h4 key={index}>{elem.attributes.name}</h4>
+    case "chapter": return <h5 key={index}>{elem.attributes.name}</h5>
+    case "scene": return <h6 key={index}>{elem.attributes.name}</h6>
+    case "p": return PreviewParagraph(elem, index)
+    default: return null
+  }
 }
 
 function PreviewParagraph(p, index) {
@@ -60,23 +99,31 @@ function PreviewParagraph(p, index) {
   </p>
 }
 
-function ImportIndex({imported}) {
+//-----------------------------------------------------------------------------
+// Import Index
+//-----------------------------------------------------------------------------
+
+function ImportIndex({flatted}) {
   return <div className="TOC" style={{maxWidth: "300px"}}>
-    <DeferredRender>{imported.map(actIndex)}</DeferredRender>
+    {/*flatted.map(actIndex)}*/}
+    {flatted.map(RenderIndex)}
   </div>
 
+  function RenderIndex(elem, index) {
+    switch(elem.name) {
+      case "act": return actIndex(elem, index)
+      case "chapter": return chapterIndex(elem, index)
+      case "scene": return sceneIndex(elem, index)
+      default: return null
+    }
+  }
+
   function actIndex(act, index) {
-    return <div key={index} className="Act">
-      <div className="Entry ActName"><div className="Name">{act.attributes.name}</div></div>
-      {act.elements.map(chapterIndex)}
-    </div>
+    return <div key={index} className="Entry ActName"><div className="Name">{act.attributes.name}</div></div>
   }
 
   function chapterIndex(chapter, index) {
-    return <div key={index} className="Chapter">
-      <div className="Entry ChapterName"><div className="Name">{chapter.attributes.name}</div></div>
-      {chapter.elements.map(sceneIndex)}
-    </div>
+    return <div key={index} className="Entry ChapterName"><div className="Name">{chapter.attributes.name}</div></div>
   }
 
   function sceneIndex(scene, index) {

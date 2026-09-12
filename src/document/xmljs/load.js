@@ -6,17 +6,18 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid as getUUID, nanoid, file2buf, wcElem, wcChildren, makeHeader, textToInt} from "../util";
-import { xml2js } from "xml-js";
+import {uuid as getUUID, nanoid, file2buf, buf2tree} from "../fileutil.js";
+import {createElem, createText, elemFind, elemFindall, elem2Text} from "./elemutil";
+import {wcNode, wcChildren, createHeaderNode} from "../nodeutil.js";
+import {text2int} from "../../util";
 
-import { loadArcSettings } from "../../gui/arc/arc";
-import { loadViewSettings } from "../../gui/app/views";
-import { loadEditorSettings } from "../../gui/editor/editor";
-import { loadExportSettings } from "../../gui/export/export";
-import { referenceWords } from "../history";
+import {loadArcSettings} from "../../gui/arc/arc";
+import {loadViewSettings} from "../../gui/app/views";
+import {loadEditorSettings} from "../../gui/editor/editor";
+import {loadExportSettings} from "../../gui/export/export";
+import {referenceWords} from "../history";
 
-import { migrate } from "./migration";
-import { elemFind, elemFindall, elem2Text } from "./tree";
+import {migrate} from "./migration";
 
 //-----------------------------------------------------------------------------
 // File structure:
@@ -24,18 +25,20 @@ import { elemFind, elemFindall, elem2Text } from "./tree";
 // <story format="mawe" version="x" uuid="xxx">
 //    <head> ... </head>
 //    <draft name="xxx">
-//      <chapter> ... </chapter>
-//      <chapter> ... </chapter>
+//      <act>
+//        <chapter> ... </chapter>
+//        <chapter> ... </chapter>
+//      </act>
 //      ...
 //    </draft>
 //    <notes>
-//      <chapter> ... </chapter>
-//      <chapter> ... </chapter>
+//      <act> ... </act>
+//      <act> ... </act>
 //      ...
 //    </notes>
 //    <storybook>
-//      <chapter> ... </chapter>
-//      <chapter> ... </chapter>
+//      <act> ... </act>
+//      <act> ... </act>
 //      ...
 //    </storybook>
 //
@@ -54,22 +57,21 @@ export function maweFromBuffer(buffer) {
 }
 
 export function maweFromTree(tree) {
-  const story = fromXML(tree)
+  //console.log("Tree", tree)
+  const root = getStoryRoot(tree)
+  return maweFromRoot(root)
   //console.log("Story:", story)
-  return {
-    key: nanoid(),
-    ...story
-  }
 }
 
-export function buf2tree(buffer) {
-  return xml2js(buffer, {
-    compact: false,
-    ignoreComment: true,
-  });
+export function getStoryRoot(tree) {
+  const story = elemFind(tree, "story");
+
+  if(!story) throw new Error(`File has no story.`);
+
+  return story;
 }
 
-export function fromXML(root) {
+export function maweFromRoot(root) {
   const story = migrate(root)
 
   //console.log("Migrated:", story)
@@ -107,6 +109,7 @@ export function fromXML(root) {
   return {
     // format - generated at save
     // format version - generated at save
+    key: nanoid(),
     uuid: uuid ?? getUUID(),
     head: {
       ...head,
@@ -134,6 +137,8 @@ function optional(elem, name, parse) {
 
 function parseHead(head) {
   return {
+    lang: optional(head, "lang", elem2Text),
+
     title: optional(head, "title", elem2Text),
     subtitle: optional(head, "subtitle", elem2Text),
 
@@ -169,9 +174,14 @@ function parseSection(section) {
 
   function getActs() {
     const acts = elemFindall(section, "act")
-    if(!acts.length) return [{type: "element", name: "act"}]
+    if(!acts.length) return [createElem("act")]
     return acts
   }
+}
+
+function containerHeader(type, index, {name, numbered, folded, target, content}) {
+  if(!index && !name && !content && numbered && !folded && !target) return []
+  return [createHeaderNode(type, name, numbered, target)]
 }
 
 function parseAct(act, index) {
@@ -180,16 +190,11 @@ function parseAct(act, index) {
     throw new Error("Invalid act", act)
   }
   const {name, folded: foldedStr, numbered: numberedStr = "true", target: targetStr} = act.attributes ?? {};
-  const target = textToInt(targetStr)
+  const target = text2int(targetStr)
   const folded = foldedStr === "true"
   const numbered = numberedStr === "true"
-  const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
-    "hact",
-    name,
-    numbered,
-    target,
-  )]
-  const empty = [{type: "element", name: "chapter"}]
+  const header = containerHeader("hact", index, {name, numbered, folded, target})
+  const empty = [createElem("chapter")]
   const elements = act.elements?.length ? act.elements : empty
 
   const children = elements.map(parseChapter)
@@ -215,17 +220,12 @@ function parseChapter(chapter, index) {
     throw new Error("Invalid chapter:", chapter)
   }
   const {name, folded: foldedStr, numbered: numberedStr = "true", target: targetStr} = chapter.attributes ?? {};
-  const target = textToInt(targetStr)
+  const target = text2int(targetStr)
   const folded = foldedStr === "true"
   const numbered = numberedStr === "true"
 
-  const header = (!index && !name && !folded && !target) ? [] : [makeHeader(
-    "hchapter",
-    name,
-    numbered,
-    target,
-  )]
-  const empty = [{type: "element", name: "scene"}]
+  const header = containerHeader("hchapter", index, {name, numbered, folded, target})
+  const empty = [createElem("scene")]
   const elements = chapter.elements?.length ? chapter.elements : empty
 
   const children = elements.map(parseScene)
@@ -251,28 +251,24 @@ function parseScene(scene, index) {
     throw new Error("Invalid scene", scene)
   }
 
-  const {name, folded: foldedStr, target: targetStr, content = "scene"} = scene.attributes ?? {};
-  const target = textToInt(targetStr)
+  const {name, folded: foldedStr, target: targetStr, content} = scene.attributes ?? {};
+  const target = text2int(targetStr)
   const folded = foldedStr === "true"
+  const numbered = true
 
-  const htype = {
-    "scene": "hscene",
+  const htype = content === undefined ? "hscene" : {
     "synopsis": "hsynopsis",
     "notes": "hnotes",
   }[content]
 
-  const header = (!index && !name && !folded && content == "scene") ? [] : [makeHeader(
-    htype,
-    name,
-    true,
-    target,
-  )]
+  const header = containerHeader(htype, index, {name, numbered, content, folded, target})
 
-  const empty = [{type: "element", name: "p", children: []}]
+  const empty = [createElem("p")]
   const elements = scene.elements?.length ? scene.elements : empty
 
-  const children = elements.map(parseParagraph).filter(e => e).map(elem => ({...elem, words: wcElem(elem)}))
-  const words = (content === "scene") ? wcChildren(children, target) : undefined
+  const children = elements.map(parseParagraph).filter(e => e).map(elem => ({...elem, words: wcNode(elem)}))
+  // TODO: wcChildren needs container contain type to return words in correct attribute!
+  const words = (content === undefined) ? wcChildren(children, target) : undefined
 
   return {
     type: "scene",
@@ -301,11 +297,7 @@ function parseParagraph(elem, index) {
   const {review: reviewStr} = elem?.attributes ?? {}
   const review = reviewStr === "true"
 
-  const empty = [{
-    type: "element",
-    name: "p",
-    children: [{type: "text", text: ""}]
-  }]
+  const empty = [createElem("p", {}, [createText("")])]
   const elements = elem.elements?.length ? elem.elements : empty
 
   const children = elements.map(e => parseMarks(e, {})).flat()
@@ -363,8 +355,8 @@ function parseWordEntry(elem) {
   return {
     type: "words",
     date,
-    text: textToInt(text),
-    missing: textToInt(missing),
-    chars: textToInt(chars),
+    text: text2int(text),
+    missing: text2int(missing),
+    chars: text2int(chars),
   }
 }

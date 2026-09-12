@@ -6,7 +6,7 @@
 
 import { Editor, Element } from "slate";
 import { mawe } from "../document"
-import { nodeID, wcElem } from "../document/util";
+import { nodeID, wcNode } from "../document/nodeutil";
 import { getUIEditor } from "./slateEditor";
 import { isAstChange } from "./slateHelpers";
 
@@ -85,7 +85,7 @@ function updateSection(editor, key, updateDoc) {
       const { children } = editor
       //console.log("Update:", key, children)
       doc[key].acts = children
-      doc[key].words = wcElem({ type: "sect", children })
+      doc[key].words = wcNode({ type: "sect", children })
       doc.track = track
     })
   } else {

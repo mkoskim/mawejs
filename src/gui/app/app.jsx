@@ -363,11 +363,11 @@ class FileMenu extends React.PureComponent {
     //return <Button>{name}</Button>
     return <Menu trigger={trigger}>
       <MenuItem
-        title="New" endAdornment="Ctrl-N"
+        title="New" endAdornment="Ctrl+N"
         onClick={e => { reqNew({ setCommand }); }}
         />
       <MenuItem
-        title="Open" endAdornment="Ctrl-O"
+        title="Open" endAdornment="Ctrl+O"
         onClick={e => { reqOpenFile({ setCommand, file }); }}
         />
       <Submenu trigger={<MenuItem title="Open Recent..." endIcon={<Icon.Arrow.Head.Right/>}/>}>
@@ -384,7 +384,7 @@ class FileMenu extends React.PureComponent {
         />
       <Separator />
       <MenuItem
-        title="Save" endAdornment="Ctrl-S"
+        title="Save" endAdornment="Ctrl+S"
         disabled={!file} onClick={e => { reqSaveFile({ setCommand, file }); }}
         />
       <MenuItem
@@ -401,12 +401,12 @@ class FileMenu extends React.PureComponent {
         disabled={!file} onClick={e => { this.toggleCompress(setCommand, file); }}
         />
       <MenuItem
-        title="Close" endAdornment="Ctrl-W"
+        title="Close" endAdornment="Ctrl+W"
         disabled={!hasdoc} onClick={e => { reqCloseFile({ setCommand, file }); }}
         />
       <Separator />
       <MenuItem
-        title="Quit" //endAdornment="Ctrl-Q"
+        title="Quit" //endAdornment="Ctrl+Q"
         onClick={e => { reqQuit({setCommand}); }}
       />
     </Menu>

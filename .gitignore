@@ -1,5 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Temporary files
+.~*
+
 # dependencies
 /node_modules
 /.pnp
@@ -7,11 +10,15 @@
 
 # testing
 /coverage
+/test/**/dev.*
 
 # Builds
 /build
 /dist
 /out
+
+# Local data
+/local
 
 # misc
 .DS_Store
@@ -19,11 +26,11 @@
 .env.development.local
 .env.test.local
 .env.production.local
-.codex
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Local data
-/local
+# AI agents
+.codex
+.agents

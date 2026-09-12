@@ -15,7 +15,7 @@ import {
   Label,
 } from "../common/factory";
 
-import {createTagTable} from "../../document/util";
+import {createTagTable} from "../../document/nodeutil";
 import {foldByTags} from '../../slatejs/slateFolding';
 
 //-----------------------------------------------------------------------------
