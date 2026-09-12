@@ -1,0 +1,26 @@
+[story]
+name=Story v3/1
+[head]
+title=Title v3/1
+subtitle=
+author=
+pseudonym=
+[section:draft]
+act|name=
+chapter|name=Chapter
+scene|name=Scene
+p|text=If loaded correctly:
+p|text=- Story title is "Title v3/1".
+p|text=- Arc view shows chapters.
+p|text=- Export chapters are numbered.
+br|text=
+[section:notes]
+act|name=
+chapter|name=
+scene|name=
+br|text=
+[section:storybook]
+act|name=
+chapter|name=
+scene|name=
+br|text=

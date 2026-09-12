@@ -66,8 +66,8 @@ import {
   ChooseVisibleElements, ChooseWordFormat,
 } from "../common/components";
 
-import {wcElem, IDtoPath, nanoid} from "../../document/util";
-import {elemFind} from "../../document/xmljs/tree";
+import {wcNode, IDtoPath} from "../../document/nodeutil";
+import {elemFind} from "../../document/xmljs/elemutil";
 import { toggleReview } from "../../slatejs/slateReview";
 
 //*****************************************************************************
@@ -135,13 +135,15 @@ export function loadEditorSettings(settings) {
   }
 }
 
+// TODO: Make it XML element (type = element, name = "editor")
+// TODO: Do the same for other settings
 export function saveEditorSettings(settings) {
   return {
-    type: "editor",
+    name: "editor",
     attributes: {},
     elements: [
       {
-        type: "draft",
+        name: "draft",
         attributes: {
           words: settings.left.words,
           indexed: settings.left.indexed.join(",")
@@ -615,7 +617,7 @@ class Searching extends React.PureComponent {
     if (typeof(searchText) !== "string") {
       return (
         <IconButton
-          tooltip="Search text (Ctrl-F)"
+          tooltip="Search text (Ctrl+F)"
           onClick={ev => setSearchText("")}
         >
           <Icon.Action.Search/>
@@ -641,8 +643,8 @@ class Searching extends React.PureComponent {
           }
         }}
       />
-      <IconButton tooltip="Search previous (Ctrl-Shift-G)" onClick={this.searchPrevious}><Icon.Arrow.Up/></IconButton>
-      <IconButton tooltip="Search next (Ctrl-G)" onClick={this.searchNext}><Icon.Arrow.Down/></IconButton>
+      <IconButton tooltip="Search previous (Ctrl+Shift+G)" onClick={this.searchPrevious}><Icon.Arrow.Up/></IconButton>
+      <IconButton tooltip="Search next (Ctrl+G)" onClick={this.searchNext}><Icon.Arrow.Down/></IconButton>
       <IconButton tooltip="Clear" onClick={this.clearSearch}><Icon.Close/></IconButton>
     </>
   }
@@ -706,17 +708,17 @@ class ASTChildren extends React.PureComponent {
     return children && <div>
       {"children: ["}
       <div style={{paddingLeft: "0.5cm"}}>
-      {children.map((elem, i) => <ASTElement key={elem.id ?? i} elem={elem}/>)}
+      {children.map((node, i) => <ASTNode key={node.id ?? i} node={node}/>)}
       </div>
       {"]"}
     </div>
   }
 }
 
-class ASTElement extends React.PureComponent {
+class ASTNode extends React.PureComponent {
   render() {
-    const {elem} = this.props
-    const {type, children, words, ...props} = elem
+    const {node} = this.props
+    const {type, children, words, ...props} = node
 
     const entries = Object.entries(props)
     //console.log(entries.map(([key, value]) => ({[key]: value})))

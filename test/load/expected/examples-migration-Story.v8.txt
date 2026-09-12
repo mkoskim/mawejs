@@ -1,0 +1,81 @@
+[story]
+name=Story v8
+[head]
+title=
+subtitle=
+author=
+pseudonym=
+[section:draft]
+act|numbered=false|target=2000|name=Frontmatter
+chapter|numbered=false|name=File Format v7
+scene|name=Check!
+p|text=Check that conversion from reference to storybook worked.
+scene|name=Features
+p|text=File format v6 paragraph styles:
+p|text=Regular text.
+bookmark|text=Bookmarks
+comment|text=Comments
+missing|text=Missing text
+tags|text=tags
+br|text=
+p|text=Two character styles are supported: bold and italic.
+br|text=
+p|text=Scenes: File format v6 has three scene content types: regular scene, synopsis and notes.
+br|text=
+p|text=Sections: v6 files have three sections: draft, notes and storybook.
+scene|name=Scene
+p|text=Scenes building the story.
+scene|content=synopsis|name=Synopsis scene
+p|text=Synopsis scenes can be used to write story synopses. They are excluded from draft export, but can be exported as a synopsis document. See Export view, and content type selection.
+p|text=As a scene, synopsis blocks can have all the regular paragraph styles, like:
+bookmark|text=Bookmarks
+comment|text=Comments
+missing|text=Missing text
+comment|text=Filler elements
+tags|text=tags
+br|text=
+p|text=Synopsis: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
+scene|content=notes|name=Notes scene
+p|text=Notes scenes contain different notes for the writer. Like with scene blocks, notes can have regular paragraph styles.
+br|text=
+p|text=Notes: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
+scene|name=Review aid
+p|text=Paragraphs can be marked for review:
+p|review=true|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
+p|text=Text with review mark is counted as missing text. There is a menu at right hand, where you can mark the entire story to be reviewed, or cancel the review (remove review attribute).
+act|name=Mainmatter
+chapter|numbered=false|name=Prologue
+scene|name=Unnumbered chapters and acts
+p|text=Adding "*" after the act or chapter name turns off numbering.
+chapter|target=500|name=Ch1
+scene|name=Target word counts
+p|text=Another new feature are target word counts for containers (scene, chapter, act). It is possible to set target word count by inserting double colon (::) and giving a number after that. The length of the container is padded to the target count, if the word count is less than the target.
+chapter|folded=true|target=500|name=Ch2
+scene|name=
+p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
+scene|name=
+p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
+chapter|target=500|name=Ch3
+scene|name=
+p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
+scene|folded=true|name=
+p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
+chapter|numbered=false|name=Epilogue
+scene|name=
+p|text=Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sagittis faucibus odio, sed fringilla lacus tempor eu. Curabitur lacinia ante quis urna placerat, vitae ullamcorper dolor accumsan.
+br|text=
+act|numbered=false|name=Backmatter
+chapter|name=
+scene|name=
+br|text=
+[section:notes]
+act|name=
+chapter|name=
+scene|name=
+br|text=
+[section:storybook]
+act|name=
+chapter|name=
+scene|name=Check this!
+p|text=Check that conversion from reference to storybook worked.
+br|text=

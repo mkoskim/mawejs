@@ -26,11 +26,6 @@
     margin-bottom: 1cm;
   }
 
-  h2 { /* Subtitle */
-    font-size: 14pt;
-    text-align: center;
-  }
-
   hr { /* Page break */
     border: 0;
     border-top: 1px dashed LightSteelBlue;
@@ -40,7 +35,7 @@
   /* Acts */
   /*-------------------------------------------------------------------------*/
 
-  h4 { /* Act */
+  h2 { /* Act */
     font-family: Arial, Helvetica, sans-serif;
     text-transform: uppercase;
     text-align: center;
@@ -71,7 +66,7 @@
   /* Chapters */
   /*-------------------------------------------------------------------------*/
 
-  h5 { /* Chapter */
+  h3 { /* Chapter */
     font-family: Arial, Helvetica, sans-serif;
     font-size: inherit;
     color: #666;
@@ -102,7 +97,7 @@
   /* Scenes */
   /*-------------------------------------------------------------------------*/
 
-  h6 { /* Scene / Synopsis */
+  h4 { /* Scene / Synopsis */
     font-size: inherit;
     color: #888;
     /*
@@ -171,7 +166,7 @@
       content: "[+]";
     }
 
-    h4, h5, h6 {
+    h2, h3, h4 {
       display: inline;
       color: #AAA;
     }

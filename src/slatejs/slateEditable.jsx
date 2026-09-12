@@ -14,8 +14,7 @@ import {
 import { useSlate, Editable } from 'slate-react'
 
 import {
-  nodeShortcuts,
-  markShortcuts,
+  paragraphTypes, textTypes,
 } from '../document/elements';
 
 import { toggleMark } from './slateMarks';
@@ -31,6 +30,7 @@ import {
 } from "./slateFolding"
 
 import { addClass, IsKey } from '../gui/common/factory';
+import isHotkey from "../util/is-hotkey.js"
 
 //-----------------------------------------------------------------------------
 
@@ -117,11 +117,11 @@ function renderElement({element, attributes, children}) {
     // Container breaks
     //-------------------------------------------------------------------------
 
-    case "hact": return <h4 className={numClass} {...attributes}>{children}</h4>
-    case "hchapter": return <h5 className={numClass} {...attributes}>{children}</h5>
+    case "hact": return <h2 className={numClass} {...attributes}>{children}</h2>
+    case "hchapter": return <h3 className={numClass} {...attributes}>{children}</h3>
     case "hsynopsis":
     case "hnotes":
-    case "hscene": return <h6 {...attributes}>{children}</h6>
+    case "hscene": return <h4 {...attributes}>{children}</h4>
 
     //-------------------------------------------------------------------------
     // Paragraph styles
@@ -200,6 +200,22 @@ onPaste={useCallback(
 // Custom hotkeys
 //
 //*****************************************************************************
+
+const nodeShortcuts = Object.entries(paragraphTypes)
+  .filter(([type, {shortcut}]) => shortcut)
+  .map(([type, {shortcut}]) => ({
+    // Display Ctrl, but use Command on Mac as in the other editor shortcuts.
+    shortcut: isHotkey(shortcut.replace(/^Ctrl\+/, "Mod+")),
+    node: {type},
+  }))
+
+const markShortcuts = Object.entries(textTypes)
+  .filter(([type, {shortcut}]) => shortcut)
+  .map(([type, {shortcut}]) => ({
+    // Display Ctrl, but use Command on Mac as in the other editor shortcuts.
+    shortcut: isHotkey(shortcut.replace(/^Ctrl\+/, "Mod+")),
+    mark: type,
+  }))
 
 function onKeyDown(editor, event) {
 

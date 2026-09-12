@@ -17,6 +17,10 @@
     scroll-margin-bottom: 2cm;
   }
 
+  div.header { /* Page header */
+    margin-bottom: 1cm;
+  }
+
   h1 { /* Title */
     font-size: 17pt;
     font-weight: bold;
@@ -24,9 +28,9 @@
     margin-bottom: 1cm;
   }
 
-  h2 { /* Subtitle */
-    font-size: 14pt;
+  p.author { /* Author */
     text-align: center;
+    margin-bottom: 12pt;
   }
 
   hr { /* Page break */
@@ -38,7 +42,7 @@
   /* Act */
   /*-------------------------------------------------------------------------*/
 
-  h4 { /* Act */
+  h2 { /* Act */
     font-size: 16pt;
     text-align: center;
     margin-top: 12pt;
@@ -62,7 +66,7 @@
   /* Chapter */
   /*-------------------------------------------------------------------------*/
 
-  h5 { /* Chapter */
+  h3 { /* Chapter */
     font-size: 14pt;
     font-weight: bold;
     margin-bottom: 0.5cm;
@@ -86,10 +90,10 @@
   }
 
   /*-------------------------------------------------------------------------*/
-  /* Chapter */
+  /* Scene */
   /*-------------------------------------------------------------------------*/
 
-  h6 { /* Scene / Synopsis */
+  h4 { /* Scene / Synopsis */
     font-size: inherit;
     font-weight: bold;
     margin-top: 12pt;
@@ -116,7 +120,7 @@
   /* Sheet Subelements */
   /*-------------------------------------------------------------------------*/
 
-  p, div.br {
+  p, br, div.br {
     margin: 0pt;
     p + & { text-indent: 1.0cm; }
   }

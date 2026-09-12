@@ -52,7 +52,7 @@ function reviewableNodes(editor) {
 
       if(n.type === "p" || n.type === "br" || n.type === "quote") {
         const [parent] = Editor.above(editor, {at: p})
-        if(parent.content !== "scene") return false
+        if(parent.content !== undefined) return false
         return true
       }
       return false

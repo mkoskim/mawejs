@@ -6,7 +6,8 @@
 //*****************************************************************************
 //*****************************************************************************
 
-import {uuid as getUUID, buf2file, filterCtrlElems} from "../util";
+import {uuid as getUUID, buf2file} from "../fileutil.js";
+import {filterCtrlNodes} from "../nodeutil.js";
 
 import {saveViewSettings} from "../../gui/app/views";
 import {saveArcSettings} from "../../gui/arc/arc";
@@ -33,7 +34,7 @@ export function toXML(doc) {
 
   return xmlLines(
     {
-      type: "story",
+      name: "story",
       attributes: {
         uuid: doc.uuid ?? getUUID(),
         format: "mawe",
@@ -86,7 +87,8 @@ export function toXML(doc) {
 
 function toHead(head) {
   return xmlLines(
-    {type: "head"},
+    {name: "head"},
+    optional("lang", head.lang),
     optional("title", head.title),
     optional("subtitle", head.subtitle),
     optional("author", head.author),
@@ -98,9 +100,9 @@ function toHead(head) {
     //optional("version", head.version),
   )
 
-  function optional(type, value, attributes) {
+  function optional(name, value, attributes) {
     if(!value || value === "") return ""
-    return xmlElem({type, attributes}, toText(value))
+    return xmlElem({name, attributes}, toText(value))
   }
 }
 
@@ -120,7 +122,7 @@ function toDraft(draft) {
 
   return xmlLines(
     {
-      type: "draft",
+      name: "draft",
       attributes: {
         name: name ?? "Draft"
       }
@@ -134,7 +136,7 @@ function toNotes(notes) {
 
   return xmlLines(
     {
-      type: "notes",
+      name: "notes",
       attributes: {
         name: name ?? "Notes"
       }
@@ -148,7 +150,7 @@ function toStorybook(storybook) {
 
   return xmlLines(
     {
-      type: "storybook",
+      name: "storybook",
       attributes: {
         name: name ?? "Storybook"
       }
@@ -166,7 +168,7 @@ function toAct(act) {
 
   return xmlLines(
     {
-      type: "act",
+      name: "act",
       attributes: {
         name: name ? name : undefined,
         folded: folded ? true : undefined,
@@ -174,7 +176,7 @@ function toAct(act) {
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(act.children).map(toChapter),
+    ...filterCtrlNodes(act.children).map(toChapter),
   )
 }
 
@@ -187,7 +189,7 @@ function toChapter(chapter) {
 
   return xmlLines(
     {
-      type: "chapter",
+      name: "chapter",
       attributes: {
         name: name ? name : undefined,
         folded: folded ? true : undefined,
@@ -195,7 +197,7 @@ function toChapter(chapter) {
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(chapter.children).map(toScene),
+    ...filterCtrlNodes(chapter.children).map(toScene),
   )
 }
 
@@ -208,15 +210,15 @@ function toScene(scene) {
 
   return xmlLines(
     {
-      type: "scene",
+      name: "scene",
       attributes: {
         name: name ? name : undefined,
-        content: content !== "scene" ? content : undefined,
+        content,
         folded: folded ? true : undefined,
         target: target ? target : undefined,
       },
     },
-    ...filterCtrlElems(scene.children).map(toParagraph),
+    ...filterCtrlNodes(scene.children).map(toParagraph),
   )
 }
 
@@ -229,7 +231,7 @@ function toParagraph(elem) {
 
   return xmlElem(
     {
-      type,
+      name: type,
       attributes: {
         review: review ? true : undefined
       }
@@ -240,7 +242,7 @@ function toParagraph(elem) {
 function isBold(elem, text) {
   const {bold} = elem
   if(bold) {
-    return xmlElem({type: "b"}, text)
+    return xmlElem({name: "b"}, text)
   }
   return text
 }
@@ -248,7 +250,7 @@ function isBold(elem, text) {
 function isItalic(elem, text) {
   const {italic} = elem
   if(italic) {
-    return xmlElem({type: "i"}, text)
+    return xmlElem({name: "i"}, text)
   }
   return text
 }
@@ -268,7 +270,7 @@ function toMarks(elem) {
 function toUI(ui) {
   return xmlTree(
     {
-      type: "ui",
+      name: "ui",
       elements: [
         saveViewSettings(ui.view),
         saveArcSettings(ui.arc),
@@ -287,7 +289,7 @@ function toUI(ui) {
 function toHistory(doc) {
   return xmlTree(
     {
-      type: "history",
+      name: "history",
       elements: doc.history.map(toHistoryEntry).filter(e => e)
     }
   )
@@ -303,7 +305,7 @@ function toHistoryEntry(entry) {
 function toWordEntry(words) {
   //console.log(words)
   return {
-    type: "words",
+    name: "words",
     attributes: {
       date: words.date,
       text: words.text,
@@ -318,15 +320,6 @@ function toWordEntry(words) {
 // Creating XML elements
 //
 //*****************************************************************************
-
-function toElem({type, attributes = undefined, elements = []}) {
-  return {
-    type: "element",
-    name: type,
-    attributes,
-    elements,
-  }
-}
 
 // Quick fix: xml-js does not escape string attributes
 function toText(text) {
@@ -364,7 +357,7 @@ function xmlAttributes(attributes) {
 }
 
 function xmlElemOpen(elem, isEmpty="") {
-  if(elem.type === "element") {
+  if((elem.type ?? "element") === "element") {
     const name = elem.name
     const attrs = xmlAttributes(elem.attributes)
     if(attrs) {
@@ -376,7 +369,7 @@ function xmlElemOpen(elem, isEmpty="") {
 }
 
 function xmlElemClose(elem) {
-  if(elem.type === "element") {
+  if((elem.type ?? "element") === "element") {
     return `</${elem.name}>`
   }
   return ""
@@ -385,15 +378,14 @@ function xmlElemClose(elem) {
 function xmlElem(root, ...content) {
   if(!root) return ""
 
-  const elem = toElem(root)
   const value = content.join("")
   if(!value) {
-    return xmlElemOpen(elem, "/");
+    return xmlElemOpen(root, "/");
   }
   return [
-    xmlElemOpen(elem),
+    xmlElemOpen(root),
     value,
-    xmlElemClose(elem)
+    xmlElemClose(root)
   ].join("")
 }
 
@@ -404,11 +396,10 @@ function xmlLines(root, ...lines) {
   if(!value) {
     return xmlElem(root)
   }
-  const elem = toElem(root)
   return [
-    xmlElemOpen(elem),
+    xmlElemOpen(root),
     value,
-    xmlElemClose(elem)
+    xmlElemClose(root)
   ].join("\n")
 }
 
@@ -421,11 +412,10 @@ function xmlTree(root) {
     return xmlElem(root)
   }
 
-  const elem = toElem(root)
   return [
-    xmlElemOpen(elem),
+    xmlElemOpen(root),
     value,
-    xmlElemClose(elem)
+    xmlElemClose(root)
   ].join("\n")
 }
 

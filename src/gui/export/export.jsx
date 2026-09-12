@@ -6,6 +6,8 @@
 
 import "./export.css"
 
+import { useState } from "react";
+
 import {
   VBox, HBox, VFiller,
   Button, Input,
@@ -16,14 +18,16 @@ import {
   DropDown,
 } from "../common/factory";
 
-import { getSuffix, text2words } from "../../document/util";
+import {getTextConverter} from "../../document/export/convert2TXT";
+import {getHTMLConverter} from "../../document/export/convert2HTML";
+import {getTEXConverter} from "../../document/export/convert2TEX";
+import {getRTFConverter} from "../../document/export/convert2RTF";
+import {doc2flatted, flatted2file, convertFlatted, convertText, convertNode } from "../../document/export/process";
 
-import { exportAs, flattedFormat, flattedToText, storyToBatches } from "../../document/export"
-
-import { numfmt } from "../../util";
+import { numfmt, text2words } from "../../util";
+import { nodeAsText } from "../../document/nodeutil";
+import { getSuffix } from "../../document/fileutil";
 import fs from "../../system/localfs"
-
-import { useState } from "react";
 
 //*****************************************************************************
 //
@@ -35,10 +39,13 @@ import { useState } from "react";
 // Export formats
 //-----------------------------------------------------------------------------
 
+const formatPreview = getHTMLConverter({format: "preview"})
+const formatPlain = getTextConverter({format: "plain"})
+
 const formatters = {
   "rtf1": {
     name: "RTF, A4, 1-side",
-    formatter: exportAs.RTF
+    formatter: getRTFConverter({size: "a4", sides: "single"}),
   },
   /*
   "rtf2": {
@@ -48,20 +55,22 @@ const formatters = {
   */
   "tex1": {
     name: "LaTeX, A5, 1-side",
-    formatter: exportAs.TEX1,
+    formatter: getTEXConverter({size: "a5", sides: "single"}),
   },
   "tex2": {
     name: "LaTeX, A5 booklet",
-    formatter: exportAs.TEX2,
+    formatter: getTEXConverter({size: "a5", sides: "double"}),
   },
   "md": {
     name: "MD (Mark Down)",
-    formatter: exportAs.MD,
+    formatter: getTextConverter({format: "md"}),
   },
+  /*
   "txt": {
     name: "Text (wrapped)",
     formatter: exportAs.TXT,
   },
+  */
   choices: [
     //<ListSubheader>RTF</ListSubheader>
     "rtf1",
@@ -155,7 +164,7 @@ export function saveExportSettings(settings) {
     acts, chapters, scenes,
     prefix_act, prefix_chapter, prefix_scene
   } = settings
-  return {type: "export", attributes: {
+  return {name: "export", attributes: {
     content,
     type,
     acts,
@@ -172,9 +181,9 @@ function updateDocStoryContent(updateDoc, value) { updateDoc(doc => {doc.exports
 function updateDocStoryType(updateDoc, value) { updateDoc(doc => {doc.exports.type = value})}
 
 function updateDocSplit(updateDoc, value) { updateDoc(doc => {doc.exports.split = value === "none" ? undefined : value})}
-function updateDocActElem(updateDoc, value) { updateDoc(doc => {doc.exports.acts = value})}
-function updateDocChapterElem(updateDoc, value) { updateDoc(doc => {doc.exports.chapters = value})}
-function updateDocSceneElem(updateDoc, value) { updateDoc(doc => {doc.exports.scenes = value})}
+function updateDocActNode(updateDoc, value) { updateDoc(doc => {doc.exports.acts = value})}
+function updateDocChapterNode(updateDoc, value) { updateDoc(doc => {doc.exports.chapters = value})}
+function updateDocSceneNode(updateDoc, value) { updateDoc(doc => {doc.exports.scenes = value})}
 
 function updateDocActPrefix(updateDoc, value) { updateDoc(doc => {doc.exports.prefix_act = value})}
 function updateDocChapterPrefix(updateDoc, value) { updateDoc(doc => {doc.exports.prefix_chapter = value})}
@@ -188,13 +197,12 @@ function updateDocScenePrefix(updateDoc, value) { updateDoc(doc => {doc.exports.
 
 export function ExportView({ doc, updateDoc }) {
 
-  const {exports} = doc
-  const batches = storyToBatches(doc)
+  const flatted = doc2flatted(doc)
 
   return <HBox overflow="hidden">
-    <ExportIndex style={{overflow: "auto", maxWidth: "300px", width: "300px", borderRight: "1px solid lightgray" }} batches={batches}/>
-    <Preview batches={batches}/>
-    <ExportSettings style={{overflow: "auto", minWidth: "300px"}} batches={batches} exports={exports} updateDoc={updateDoc}/>
+    <ExportIndex doc={doc} flatted={flatted} style={{overflow: "auto", maxWidth: "300px", width: "300px", borderRight: "1px solid lightgray" }}/>
+    <Preview doc={doc} flatted={flatted}/>
+    <ExportSettings doc={doc} flatted={flatted} updateDoc={updateDoc} style={{overflow: "auto", minWidth: "300px"}}/>
   </HBox>
 }
 
@@ -202,8 +210,8 @@ export function ExportView({ doc, updateDoc }) {
 // Export settings
 //-----------------------------------------------------------------------------
 
-function ExportInfo({batches}) {
-  const text = batches.map(b => flattedToText(b.flatted)).join("\n")
+function ExportInfo({doc, flatted}) {
+  const text = flatted2file(formatPlain, doc, flatted)
 
   const words = text2words(text)
   const wc = words.length
@@ -225,14 +233,15 @@ function ExportInfo({batches}) {
 //
 //-----------------------------------------------------------------------------
 
-function ExportSettings({ style, batches, exports, updateDoc}) {
+function ExportSettings({ doc, flatted, updateDoc, style}) {
   const [exportedFile, setExportedFile] = useState(null);
 
+  const {exports} = doc;
   const {format} = exports
   const {formatter} = formatters[format]
 
   return <VBox style={style} side="right" className="Panel">
-    <ExportInfo batches={batches}/>
+    <ExportInfo doc={doc} flatted={flatted}/>
 
     <Separator/>
 
@@ -245,6 +254,7 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
       setSelected={value => updateDocFormat(updateDoc, value)}
     />
 
+    {/* Batches temporarily disabled
     <DropDown
       as="text"
       label="Split by"
@@ -253,13 +263,14 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
       selections={splittype}
       setSelected={value => updateDocSplit(updateDoc, value)}
     />
+    */}
 
-    <Button variant="filled" color="success" onClick={e => exportToFile(formatter, batches, setExportedFile)}>Export</Button>
-    {/*
-    <Button variant="filled" disabled={!exportedFile} color={exportedFile ? "success" : "default"} onClick={() => fs.openexternal(exportedFile)}>
+    <Button disabled={!doc.file} variant="filled" color="success" onClick={e => exportToFile(formatter, doc, flatted, setExportedFile)}>Export</Button>
+    {//*
+    <Button disabled={!exportedFile} variant="filled" color={exportedFile ? "success" : "default"} onClick={() => fs.openexternal(exportedFile)}>
       Open exported file
     </Button>
-    */}
+    /**/}
 
     <Separator/>
     <Separator/>
@@ -287,7 +298,7 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
       choices={headertype.choices}
       selected={exports.acts}
       selections={headertype}
-      setSelected={value => updateDocActElem(updateDoc, value)}
+      setSelected={value => updateDocActNode(updateDoc, value)}
     />
     <DropDown
       as="text"
@@ -295,7 +306,7 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
       choices={headertype.choices}
       selected={exports.chapters}
       selections={headertype}
-      setSelected={value => updateDocChapterElem(updateDoc, value)}
+      setSelected={value => updateDocChapterNode(updateDoc, value)}
     />
     <DropDown
       as="text"
@@ -303,7 +314,7 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
       choices={headertype.choices}
       selected={exports.scenes}
       selections={headertype}
-      setSelected={value => updateDocSceneElem(updateDoc, value)}
+      setSelected={value => updateDocSceneNode(updateDoc, value)}
     />
 
     <Separator/>
@@ -318,20 +329,55 @@ function ExportSettings({ style, batches, exports, updateDoc}) {
 // Export to file
 //-----------------------------------------------------------------------------
 
-async function exportToFile(formatter, batches, setExportedFile) {
+async function exportToFile(formatter, doc, flatted, setExportedFile) {
 
-  if (!batches.length) return
+  if(!flatted?.length) return;
 
-  const {file, options} = batches[0].flatted
-  const typesuffix = getTypeSuffix(options.content)
+  const {file} = doc
   const dirname = await fs.dirname(file.id)
   const name = await fs.basename(file.id)
   const filesuffix = getSuffix(name, [".mawe", ".mawe.gz"])
   const basename = await fs.basename(name, filesuffix)
 
+  const filename = basename + contentSuffix() + formatter.suffix
+  const fullname = await fs.makepath(dirname, filename)
+
+  console.log("Export to:", fullname)
+  //console.log("Settings:", doc.exports)
+  const content = flatted2file(formatter, doc, flatted)
+
+  //*
+  fs.write(fullname, content)
+    .then(async (file) => {
+      console.log("Exported to:", file.id)
+      setExportedFile(file.id)
+      const name = await fs.basename(file.id)
+      Inform.success(`Exported: ${name}`)
+    })
+    .catch(err => Inform.error(err))
+  /**/
+
+  function contentSuffix() {
+    switch(doc.exports.content) {
+      case "storybook": return ".storybook"
+      case "synopsis": return ".synopsis"
+      default:
+      case "draft": return ""
+    }
+  }
+
+  //---------------------------------------------------------------------------
+  // TODO: Batches will be added later
+  //---------------------------------------------------------------------------
+
+  /*
+  if (!batches.length) return
+
+  const {file, options} = batches[0].flatted
+  const typesuffix = getTypeSuffix(options.content)
+
   Promise.all(batches.map(async ({suffix, flatted}) => {
     const content = flattedFormat(formatter, flatted)
-    const filename = await fs.makepath(dirname, basename + typesuffix + suffix + formatter.suffix)
     console.log("Export to:", filename)
     return fs.write(filename, content)
   }))
@@ -343,22 +389,22 @@ async function exportToFile(formatter, batches, setExportedFile) {
     Inform.success(msg)
   })
   .catch(err => Inform.error(err))
+  */
 }
 
 //-----------------------------------------------------------------------------
 // Export preview
 //-----------------------------------------------------------------------------
 
-function Preview({ batches }) {
+function Preview({ doc, flatted }) {
+  const __html = flatted2file(formatPreview, doc, flatted)
 
   return <div className="Filler Board Preview">
     <DeferredRender>
-      {batches.map(({suffix, flatted}) =>
-        <div key={suffix}
-          className="Sheet Regular"
-          dangerouslySetInnerHTML={{ __html: flattedFormat(exportAs.HTML, flatted) }}
-        />
-      )}
+      <div
+        className="Sheet Regular"
+        dangerouslySetInnerHTML={{__html}}
+      />
     </DeferredRender>
   </div>
 }
@@ -367,32 +413,44 @@ function Preview({ batches }) {
 // Export index
 //-----------------------------------------------------------------------------
 
-function ExportIndex({ style, batches }) {
-  //const content = batches.flatMap(b => b.flatted.content)
-
-  return <VFiller className="TOC" style={style}>
-    {batches.map((batch, index) => indexBatch(batch, index))}
-  </VFiller>
-
-  function indexBatch(batch, index) {
-    return <div key={index} className="Batch">
-      {batch.flatted.content.map((node, index) => indexItem(node, index))}
-    </div>
+function ExportIndex({ doc, flatted, style }) {
+  const {acts, chapters, scenes} = doc?.exports ?? {};
+  const header = {
+    "act": acts,
+    "chapter": chapters,
+    "scene": scenes,
   }
 
+  // NOTE: Index always shows the name of the elements, as well as
+  // their number (if they have one), even if exported headers do not
+  // contain them.
+  //
+  // TODO: Clickable index temporarily not working (no IDs generated)
+
+  return <VFiller className="TOC" style={style}>
+    {flatted.map((node, index) => indexItem(node, index))}
+  </VFiller>
+
   function indexItem(node, index) {
+    switch(header[node.type]) {
+      case "numbered":
+      case "named":
+      case "numbered&named":
+        break
+      default: return
+    }
+
     switch(node.type) {
-      case "hact": return <ActItem key={index} node={node}/>
-      case "hchapter": return <ChapterItem key={index} node={node}/>
-      case "hscene": return <SceneItem key={index} node={node}/>
-      case "hsynopsis": return <SceneItem key={index} node={node}/>
-      case "hnotes": return <SceneItem key={index} node={node}/>
+      case "act": return <ActItem key={index} node={node}/>
+      case "chapter": return <ChapterItem key={index} node={node}/>
+      case "scene": return <SceneItem key={index} node={node}/>
     }
   }
 }
 
 function ActItem({node}) {
-  const { name, number, anchor } = node;
+  const { number, anchor } = node;
+  const name = nodeAsText(node)
 
   return <div
       className="Entry Act"
@@ -403,18 +461,20 @@ function ActItem({node}) {
 }
 
 function ChapterItem({node}) {
-  const { name, number, anchor } = node;
+  const { number, anchor } = node;
+  const name = nodeAsText(node)
 
   return <div
       className="Entry Chapter"
       onClick={() => scrollToId(anchor)}
     >
       <span className="Name">{number ? number + ". " + name : name}</span>
-      </div>
+    </div>
 }
 
 function SceneItem({node}) {
-  const { name, number, anchor } = node;
+  const { number, anchor } = node;
+  const name = nodeAsText(node)
 
   return <div
     className="Entry Scene"

@@ -66,8 +66,8 @@ function TestMenu1() {
   const trigger = <Button>Menu</Button>
 
   return <Menu trigger={trigger}>
-    <MenuItem title="New" endAdornment="Ctrl-N"/>
-    <MenuItem title="Open" endAdornment="Ctrl-O"/>
+    <MenuItem title="New" endAdornment="Ctrl+N"/>
+    <MenuItem title="Open" endAdornment="Ctrl+O"/>
     <Submenu trigger={<MenuItem title="Open Recent..." endIcon={<Icon.Arrow.Head.Right/>}/>}>
       <MenuItem title="Test"/>
     </Submenu>
@@ -76,10 +76,10 @@ function TestMenu1() {
     <MenuItem title="Import From Clipboard"/>
     <Separator />
     <MenuItem
-      title="Save" endAdornment="Ctrl-S" disabled={true}/>
+      title="Save" endAdornment="Ctrl+S" disabled={true}/>
     <MenuItem title="Save as..." disabled={true}/>
     <MenuItem title="Rename..." disabled={true}/>
-    <MenuItem title="Close" endAdornment="Ctrl-W" disabled={true}/>
+    <MenuItem title="Close" endAdornment="Ctrl+W" disabled={true}/>
     <Separator />
     <MenuItem title="Quit"/>
   </Menu>

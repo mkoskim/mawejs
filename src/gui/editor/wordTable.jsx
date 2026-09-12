@@ -22,7 +22,7 @@ import {
   Separator,
 } from "../common/factory";
 
-import {createWordTable} from "../../document/util";
+import {createWordTable} from "../../document/nodeutil";
 import {text2Regexp} from "../../slatejs/slateSearch"
 
 //-----------------------------------------------------------------------------
