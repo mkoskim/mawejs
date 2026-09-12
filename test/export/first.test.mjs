@@ -68,7 +68,7 @@ test("Export: first flags across hidden acts and scene/BR boundaries", () => {
 
   const result = addFirst(nodes, headers);
 
-  console.log(result)
+  //console.log(result)
   assert.deepEqual(result.map(node => node.first ?? false), [
     true, true, true, true,           // Prologue
     false, false, true, true, false,  // Act I, Chapter 1, Scene 1

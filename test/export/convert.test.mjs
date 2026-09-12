@@ -236,7 +236,7 @@ describe("Header generation", () => {
     it("Non-first separated", () => {
       const node = {type: "scene", header}
       test("MD", () => assert.equal(convertNode(format_md, node), "#### * * *\n"));
-      test("HTML", () => assert.equal(convertNode(format_html, node), '<div class="separator">* * *</div>'));
+      test("HTML", () => assert.equal(convertNode(format_html, node), '<br/><center>* * *</center><br/>'));
       test("RTF", () => assert.equal(convertNode(format_rtf, node), "{\\sb480\\sa480\\qc * * *\\par}"));
       test("TeX", () => assert.equal(convertNode(format_tex, node), "\\separator{* * *}\n"));
     })

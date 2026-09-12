@@ -9,19 +9,15 @@ import { textLinify } from "./util";
 
 export function getTextConverter({format = "md"}) {
   switch(format) {
-    default:
     case "md": return {
       suffix: ".md",
       ...file,
       ...formatMD,
     }
-    /*
-    case "txt": return {
-      suffix: ".txt",
-      ...file,
-      ...formatter,
+    default:
+    case "plain": return {
+      ...formatPlain,
     }
-    */
   }
 }
 
@@ -37,7 +33,6 @@ const file = {
     ].join("\n\n")
   },
   footer() { return; },
-  postprocess(text) { return text; }
 }
 
 //*****************************************************************************
@@ -48,22 +43,18 @@ const file = {
 
 function linify(text) { return textLinify(text, {width: 80})}
 
+//-----------------------------------------------------------------------------
+
 const formatMD = {
-
-  //---------------------------------------------------------------------------
-  // Title, subtitle, author
-  //---------------------------------------------------------------------------
-
-  title(head) { return; },
 
   //---------------------------------------------------------------------------
   // Format headers
   //---------------------------------------------------------------------------
 
-  act(node) { return makeHeader("##", node); },
-  chapter(node) { return makeHeader("###", node); },
-  scene(node) { return makeHeader("####", node); },
-  br(node) { return makeHeader(undefined, node); },
+  act(node) { return makeMDHeader("##", node); },
+  chapter(node) { return makeMDHeader("###", node); },
+  scene(node) { return makeMDHeader("####", node); },
+  br(node) { return makeMDHeader("&nbsp;", node); },
 
   //---------------------------------------------------------------------------
   // Format paragraphs: MD does not like indentations.
@@ -72,10 +63,6 @@ const formatMD = {
   p({first, text}) { return linify(`${text}\n`); },
   missing({first, text}) { return linify(`!! ${text}\n`); },
   quote({first, text}) { return linify(`> ${text}\n>`); },
-
-  //p({first, text}) { return `${first ? "" : "    "}${text}\n`; },
-  //quote({first, text}) { return `${text}\n`; },
-  //missing({first, text}) { return `${first ? "" : "    "}!! ${text}\n`; },
 
   bookmark() { return; },
   comment() { return; },
@@ -95,13 +82,27 @@ const formatMD = {
   italic(text) { return `_${text}_`; },
 }
 
+//-----------------------------------------------------------------------------
+
+const formatPlain = {
+  act(node) { return makePlainHeader(node); },
+  chapter(node) { return makePlainHeader(node); },
+  scene(node) { return makePlainHeader(node); },
+
+  p({text}) { return `${text}\n`; },
+  missing({text}) { return `${text}\n`; },
+  quote({text}) { return `${text}\n`; },
+
+  text({text}) { return text; },
+}
+
 //*****************************************************************************
 //
 // Helpers
 //
 //*****************************************************************************
 
-function makeHeader(tag, {header = "none", prefix, first, number, pgbr = false, text}) {
+function makeMDHeader(tag, {header = "none", prefix, first, number, pgbr = false, text}) {
 
   switch(header) {
     case "none": return undefined
@@ -120,6 +121,29 @@ function makeHeader(tag, {header = "none", prefix, first, number, pgbr = false, 
     }
   }
   return `${tag} ${text}\n`;
+}
+
+//-----------------------------------------------------------------------------
+
+function makePlainHeader({header = "none", prefix, first, number, text}) {
+
+  switch(header) {
+    case "none": return undefined
+    case "break": return undefined
+    case "separated": return "* * *\n"
+    default: break;
+  }
+
+  if(number) {
+    const numbering = `${prefix ? (escape(prefix) + " ") : ""}${number}`
+
+    switch(header) {
+      case "numbered": return `${numbering}\n`
+      case "numbered&named": return `${number ? numbering + ". " : ""}${text}\n`
+      default: break;
+    }
+  }
+  return `${text}\n`;
 }
 
 //-----------------------------------------------------------------------------

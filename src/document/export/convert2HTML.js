@@ -2,80 +2,17 @@
 // Basic HTML converter for export development and previews.
 //*****************************************************************************
 
-import { getHeader } from "../head";
-import { mawe } from "..";
-import {textEscape} from "./util.js";
+import {mawe} from "..";
+import {getHeader} from "../head";
+import {textEscape, textLinify} from "./util.js";
+import {lines2text} from "../../util/";
 
 export function getHTMLConverter({format = "html"} = {}) {
   switch(format) {
-    case "preview": return formatter;
+    case "preview": return {...preview, ...formatter};
+    default: return {...file, ...formatter};
   }
-  return {...file, ...formatter};
 }
-
-//-----------------------------------------------------------------------------
-
-const file = {
-  suffix: ".html",
-  header(head) {
-    const {title, subtitle, author} = mawe.info(head)
-    const titleElem = title ? `<h1>${escape(title)}</h1>\n`: ""
-    const subtitleElem = subtitle ? `<h2>${escape(subtitle)}</h2>\n`: ""
-    const authorElem = author ? `<p class="author">${escape(author)}</p>\n`: ""
-    return `<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escape(title)}</title>
-<style>
-  body {
-    max-width: 6in; margin: 1in auto; line-height: 1.6;
-    font-family: Times New Roman, serif;
-  }
-  h1, h2, p.author {text-align: center}
-  p, br {margin: 0; p + & { text-indent: 1.0cm; }}
-  .missing { color: #a33; }
-  blockquote { margin: 0 2cm; }
-  .separator { text-align: center; margin: 1em 0; }
-  @media print { .page-break { break-before: page; } }
-</style>
-</head>
-<body>
-${authorElem}${titleElem}${subtitleElem}
-`;
-  },
-  footer() { return "</body>\n</html>"; },
-};
-
-//-----------------------------------------------------------------------------
-
-const preview = {
-  header(head) {
-    const headinfo = getHeader(head) // Add this to page top :)
-  },
-  footer() {}
-}
-
-/* Old code for preview title block:
-
-function formatFile(head, content, options) {
-  const {author, title, subtitle} = head
-  const headinfo = getHeader(head)
-  return `\
-<div style="margin-bottom: 1cm">${escape(headinfo)}</div>\n
-<center>${escape(author ?? "")}</center>
-<div style="margin-bottom: 0.5in">
-<h1>${escape(title ?? "<New Story>")}</h1>
-${subtitle ? "<h2>" + escape(subtitle) + "</h2>" : ""}
-</div>
-${content}
-`
-}
-*/
-
-// Also, remember, that preview uses <hr/> as page break indicator
-//   const pgbreak = p.pgbreak ? "<hr/>\n" : ""
 
 //-----------------------------------------------------------------------------
 
@@ -129,7 +66,7 @@ function makeHeader({type, header = "none", prefix, first, number, pgbr, text}) 
   switch(header) {
     case "none": return;
     case "break": return first ? undefined : '<br/>'
-    case "separated": return first ? undefined : '<div class="separator">* * *</div>';
+    case "separated": return first ? undefined : `<br/><center>${escape("* * *")}</center><br/>`;
     default: break;
   }
 
@@ -143,6 +80,77 @@ function makeHeader({type, header = "none", prefix, first, number, pgbr, text}) 
     }
   }
   return `<${tag}>${text}</${tag}>`;
+}
+
+//-----------------------------------------------------------------------------
+
+const file = {
+  suffix: ".html",
+  header(head) {
+    return `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+${metaTitle(head)}
+<style>
+  body {
+    max-width: 6in; margin: 1in auto; line-height: 1.6;
+    font-family: Times New Roman, serif;
+  }
+  h1, h2, p.author {text-align: center}
+  p, br {margin: 0; p + & { text-indent: 1.0cm; }}
+  .missing { color: #a33; }
+  blockquote { margin: 0 2cm; }
+  .separator { text-align: center; margin: 1em 0; }
+  @media print { .page-break { break-before: page; } }
+</style>
+</head>
+<body>
+${bodyTitle(head)}
+`;
+  },
+  footer() { return "</body>\n</html>"; },
+  postprocess(text) {
+    return text
+      .split("\n")
+      .map(line => textLinify(line, {width: 80}))
+      .join("\n")
+  },
+};
+
+//-----------------------------------------------------------------------------
+
+const preview = {
+  header(head) {
+    return lines2text([
+      bodyHeader(head),
+      bodyTitle(head),
+    ])
+  },
+  footer() {}
+}
+
+// Also, remember, that preview uses <hr/> as page break indicator
+// const pgbreak = p.pgbreak ? "<hr/>\n" : ""
+
+function metaTitle(head) {
+  const {title} = mawe.info(head)
+  return `<title>${title}</title>`
+}
+
+function bodyHeader(head) {
+  return `<div class="header">${escape(getHeader(head))}</div>`
+}
+
+function bodyTitle(head) {
+  const {title, subtitle, author} = mawe.info(head)
+
+  return lines2text([
+    author ? `<p class="author">${escape(author)}</p>\n` : undefined,
+    title  ? `<h1>${escape(title)}</h1>\n`: undefined,
+    subtitle ? `<h2>${escape(subtitle)}</h2>\n`: undefined,
+  ])
 }
 
 //-----------------------------------------------------------------------------

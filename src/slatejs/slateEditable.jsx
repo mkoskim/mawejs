@@ -117,11 +117,11 @@ function renderElement({element, attributes, children}) {
     // Container breaks
     //-------------------------------------------------------------------------
 
-    case "hact": return <h4 className={numClass} {...attributes}>{children}</h4>
-    case "hchapter": return <h5 className={numClass} {...attributes}>{children}</h5>
+    case "hact": return <h2 className={numClass} {...attributes}>{children}</h2>
+    case "hchapter": return <h3 className={numClass} {...attributes}>{children}</h3>
     case "hsynopsis":
     case "hnotes":
-    case "hscene": return <h6 {...attributes}>{children}</h6>
+    case "hscene": return <h4 {...attributes}>{children}</h4>
 
     //-------------------------------------------------------------------------
     // Paragraph styles

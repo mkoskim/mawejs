@@ -14,6 +14,10 @@ import {
 
 import {doc2flatted} from "../../src/document/export/process.js";
 
+function inject(doc, exports) {
+  return doc2flatted({...doc, exports})
+}
+
 //-----------------------------------------------------------------------------
 // What does not need to be tested:
 //
@@ -45,8 +49,8 @@ describe("Export: Flatten basic cases", () => {
   //---------------------------------------------------------------------------
 
   test("Empty document", () => {
-    it("Accepts empty doc", () => assert.deepEqual(doc2flatted({draft: {acts: []}}), []))
-    it("Throws for invalid doc", () => assert.throws(() => doc2flatted({draft: {acts: undefined}})))
+    it("Accepts empty doc", () => assert.deepEqual(inject({draft: {acts: []}}), []))
+    it("Throws for invalid doc", () => assert.throws(() => inject({draft: {acts: undefined}})))
   })
 
   //---------------------------------------------------------------------------
@@ -78,21 +82,21 @@ describe("Export: Flatten basic cases", () => {
 
     const original = structuredClone(doc)
 
-    it("Selects draft", () => assert.deepEqual(doc2flatted(doc, {content: "draft"}), [
+    it("Selects draft", () => assert.deepEqual(inject(doc, {content: "draft"}), [
       { type: 'act', number: 1, children: [{text: "Draft"}]},
       { type: 'chapter', number: 1, children: [{text: "Draft"}]},
       { type: 'scene', number: 1, children: [{text: "Draft"}]},
       { type: 'p', children: [{text: "Draft"}] },
     ]))
 
-    it("Selects synopsis", () => assert.deepEqual(doc2flatted(doc, {content: "synopsis"}), [
+    it("Selects synopsis", () => assert.deepEqual(inject(doc, {content: "synopsis"}), [
       { type: 'act', number: 1, children: [{text: "Draft"}]},
       { type: 'chapter', number: 1, children: [{text: "Draft"}]},
       { type: 'scene', number: 1, children: [{text: "Synopsis"}]},
       { type: 'p', children: [{text: "Synopsis"}] },
     ]))
 
-    it("Selects storybook", () => assert.deepEqual(doc2flatted(doc, {content: "storybook"}), [
+    it("Selects storybook", () => assert.deepEqual(inject(doc, {content: "storybook"}), [
       { type: 'act', number: 1, children: [{text: "Storybook"}]},
       { type: 'chapter', number: 1, children: [{text: "Storybook"}]},
       { type: 'scene', number: 1, children: [{text: "Storybook"}]},
@@ -182,7 +186,7 @@ describe("Export: Flatten basic cases", () => {
     const original = structuredClone(doc)
 
     // Content selection default (draft)
-    it("Filters draft correctly", () => assert.deepEqual(doc2flatted(doc), [
+    it("Filters draft correctly", () => assert.deepEqual(inject(doc), [
       { type: 'act', number: 1, children: [{text: "Included"}]},
       { type: 'chapter', number: 1, children: [{text: "Included"}]},
       { type: 'scene', number: 1, children: [{text: "Included"}]},
@@ -202,7 +206,7 @@ describe("Export: Flatten basic cases", () => {
     ]))
 
     // Content selection synopsis
-    it("Filters synopsis correctly", () => assert.deepEqual(doc2flatted(doc, {content: "synopsis"}), [
+    it("Filters synopsis correctly", () => assert.deepEqual(inject(doc, {content: "synopsis"}), [
       { type: 'act', number: 1, children: [{text: "Included"}]},
       { type: 'chapter', number: 1, children: [{text: "Included"}]},
       { type: 'scene', number: 1, children: [{text: "Synopsis"}]},
@@ -259,7 +263,7 @@ describe("Export: Flatten basic cases", () => {
     }
     const original = structuredClone(doc)
 
-    it("Filters BRs correctly", () => assert.deepEqual(doc2flatted(doc), [
+    it("Filters BRs correctly", () => assert.deepEqual(inject(doc), [
       { type: 'act', number: 1, children: [{text: "Act"}]},
       { type: 'chapter', number: 1, children: [{text: "Chapter"}]},
       { type: 'scene', number: 1, children: [{text: "Scene"}]},
@@ -311,7 +315,7 @@ describe("Export: Flatten basic cases", () => {
       }
     }
     const original = structuredClone(doc)
-    it("Results empty list", () => assert.deepEqual(doc2flatted(doc), []))
+    it("Results empty list", () => assert.deepEqual(inject(doc), []))
     it("Does not mutate doc", () => assert.deepEqual(doc, original))
   })
 
@@ -394,7 +398,7 @@ describe("Export: Flatten basic cases", () => {
     }
     const original = structuredClone(doc)
 
-    it("Generates numbers correctly", () => assert.deepEqual(doc2flatted(doc), [
+    it("Generates numbers correctly", () => assert.deepEqual(inject(doc), [
       // Prologue
       { type: 'act', children: [{text: "Prologue"}]},
       { type: 'chapter', children: [{text: "Prologue"}]},

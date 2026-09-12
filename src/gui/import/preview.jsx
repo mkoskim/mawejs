@@ -83,9 +83,9 @@ function ImportPreview({flatted}) {
 
 function RenderElement(elem, index) {
   switch(elem.name) {
-    case "act": return <h4 key={index}>{elem.attributes.name}</h4>
-    case "chapter": return <h5 key={index}>{elem.attributes.name}</h5>
-    case "scene": return <h6 key={index}>{elem.attributes.name}</h6>
+    case "act": return <h2 key={index}>{elem.attributes.name}</h2>
+    case "chapter": return <h3 key={index}>{elem.attributes.name}</h3>
+    case "scene": return <h4 key={index}>{elem.attributes.name}</h4>
     case "p": return PreviewParagraph(elem, index)
     default: return null
   }

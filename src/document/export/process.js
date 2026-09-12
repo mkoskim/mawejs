@@ -65,7 +65,7 @@ const headertype = {
 //
 //*****************************************************************************
 
-export function doc2flatted(doc, settings = {}) {
+export function doc2flatted(doc) {
 
   //---------------------------------------------------------------------------
   // Selections
@@ -99,9 +99,11 @@ export function doc2flatted(doc, settings = {}) {
 
   //---------------------------------------------------------------------------
 
-  const section    = selectSection(settings)
-  const containers = selectContainerFilter(settings)
-  const paragraphs = selectParagraphFilter(settings)
+  const {exports = {}} = doc
+
+  const section    = selectSection(exports)
+  const containers = selectContainerFilter(exports)
+  const paragraphs = selectParagraphFilter(exports)
 
   return flatSection(section)
 
