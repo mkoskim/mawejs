@@ -339,10 +339,10 @@ async function exportToFile(formatter, doc, flatted, setExportedFile) {
   const filesuffix = getSuffix(name, [".mawe", ".mawe.gz"])
   const basename = await fs.basename(name, filesuffix)
 
-  const filename = basename + formatter.suffix
+  const filename = basename + contentSuffix() + formatter.suffix
   const fullname = await fs.makepath(dirname, filename)
 
-  //console.log("Export to:", fullname)
+  console.log("Export to:", fullname)
   //console.log("Settings:", doc.exports)
   const content = flatted2file(formatter, doc, flatted)
 
@@ -357,8 +357,17 @@ async function exportToFile(formatter, doc, flatted, setExportedFile) {
     .catch(err => Inform.error(err))
   /**/
 
+  function contentSuffix() {
+    switch(doc.exports.content) {
+      case "storybook": return ".storybook"
+      case "synopsis": return ".synopsis"
+      default:
+      case "draft": return ""
+    }
+  }
+
   //---------------------------------------------------------------------------
-  // Batches will be added later
+  // TODO: Batches will be added later
   //---------------------------------------------------------------------------
 
   /*
@@ -412,7 +421,11 @@ function ExportIndex({ doc, flatted, style }) {
     "scene": scenes,
   }
 
-  // Clickable index temporarily not working (no IDs generated)
+  // NOTE: Index always shows the name of the elements, as well as
+  // their number (if they have one), even if exported headers do not
+  // contain them.
+  //
+  // TODO: Clickable index temporarily not working (no IDs generated)
 
   return <VFiller className="TOC" style={style}>
     {flatted.map((node, index) => indexItem(node, index))}

@@ -44,7 +44,7 @@ async function testFixture({sourcefile, expectedfile, operation}) {
     assert.equal(doc.origin.id, path.resolve(sourcefile), `Document should keep origin`);
     assert.equal(doc.head.name, expectedNames[fixture], `Title should become document name`);
     assertExports(doc, fixture);
-    //assertMarks(doc, fixture);
+    assertMarks(doc, fixture);
 
     function assertExports(doc, fixture) {
       for(const [key, value] of Object.entries(expectedExports[fixture])) {

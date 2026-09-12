@@ -94,27 +94,23 @@ function makeHeader({type, header = "none", prefix, first, number, pgbr, text}) 
 
 //-----------------------------------------------------------------------------
 
-const escapes = {
-  '\\': "{\\textbackslash}",
-  '&': "\\&",
-  '%': "\\%",
-  '$': "\\$",
-  '#': "\\#",
-  '_': "\\_",
-  '{': "\\{",
-  '}': "\\}",
-  '~': "{\\textasciitilde}",
-  '^': "{\\textasciicircum}",
-  '"': "''",
-  '<': "{\\textless}",
-  '>': "{\\textgreater}",
-  '|': "{\\textbar}",
-}
-
 function escape(text) {
-  // Replace source characters once so generated commands are not escaped.
-  // Unicode text remains unchanged for UTF-8 output (modern LaTeX's default).
-  return textEscape(text, escapes)
+  return textEscape(text, {
+    '\\': "{\\textbackslash}",
+    '&': "\\&",
+    '%': "\\%",
+    '$': "\\$",
+    '#': "\\#",
+    '_': "\\_",
+    '{': "\\{",
+    '}': "\\}",
+    '~': "{\\textasciitilde}",
+    '^': "{\\textasciicircum}",
+    '"': "''",
+    '<': "{\\textless}",
+    '>': "{\\textgreater}",
+    '|': "{\\textbar}",
+  })
 }
 
 //*****************************************************************************

@@ -136,7 +136,7 @@ const preview = {
 
 function metaTitle(head) {
   const {title} = mawe.info(head)
-  return `<title>${title}</title>`
+  return `<title>${escape(title)}</title>`
 }
 
 function bodyHeader(head) {
@@ -155,14 +155,12 @@ function bodyTitle(head) {
 
 //-----------------------------------------------------------------------------
 
-const escapes = {
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&#39;"
-};
-
 function escape(text) {
-  return text && textEscape(text, escapes)
+  return textEscape(text, {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })
 }

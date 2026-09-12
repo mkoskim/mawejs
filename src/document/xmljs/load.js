@@ -245,21 +245,27 @@ function parseChapter(chapter, index) {
   }
 }
 
+function sceneContent(contentType) {
+  switch(contentType) {
+    case "synopsis": return {content: contentType, htype: "hsynopsis"}
+    case "notes": return {content: contentType, htype: "hnotes"}
+    default:
+    case "scene": return {content: undefined, htype: "hscene"}
+  }
+}
+
 function parseScene(scene, index) {
   if(scene.type !== "element" || scene.name !== "scene") {
     console.log("Invalid scene:", scene)
     throw new Error("Invalid scene", scene)
   }
 
-  const {name, folded: foldedStr, target: targetStr, content} = scene.attributes ?? {};
+  const {name, folded: foldedStr, target: targetStr, content: contentType} = scene.attributes ?? {};
   const target = text2int(targetStr)
   const folded = foldedStr === "true"
   const numbered = true
 
-  const htype = content === undefined ? "hscene" : {
-    "synopsis": "hsynopsis",
-    "notes": "hnotes",
-  }[content]
+  const {content, htype} = sceneContent(contentType)
 
   const header = containerHeader(htype, index, {name, numbered, content, folded, target})
 
