@@ -1,0 +1,80 @@
+name: Release packages
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: electronuserland/builder:wine
+
+    env:
+      HOME: ${{ github.workspace }}/.home
+      WINEPREFIX: ${{ github.workspace }}/.wine
+
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v6
+        with:
+          ref: refs/tags/${{ github.event.release.tag_name }}
+
+      - name: Prepare Wine environment
+        run: |
+          mkdir -p "$HOME"
+          mkdir -p "$WINEPREFIX"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Show versions
+        run: |
+          node --version
+          npm --version
+          wine --version
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build release packages
+        run: npm run build:release
+
+      - name: Upload Linux build
+        uses: actions/upload-artifact@v7
+        with:
+          name: mawejs-linux
+          path: dist/*.AppImage
+          if-no-files-found: error
+
+      - name: Upload Windows builds
+        uses: actions/upload-artifact@v7
+        with:
+          name: mawejs-windows
+          path: dist/*.exe
+          if-no-files-found: error
+
+  attach:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download release packages
+        uses: actions/download-artifact@v8
+        with:
+          pattern: mawejs-*
+          path: dist
+          merge-multiple: true
+
+      - name: Attach packages to existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" dist/*.AppImage dist/*.exe --clobber

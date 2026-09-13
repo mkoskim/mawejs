@@ -36,13 +36,13 @@ jobs:
         run: npm run build:release
 
       - name: Upload Linux build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mawejs-linux
           path: dist/*.AppImage
 
       - name: Upload Windows builds
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: mawejs-windows
           path: dist/*.exe
