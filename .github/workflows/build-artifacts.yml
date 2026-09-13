@@ -1,0 +1,48 @@
+name: Build artifacts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: electronuserland/builder:wine
+
+    env:
+      HOME: ${{ github.workspace }}/.home
+      WINEPREFIX: ${{ github.workspace }}/.wine
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Prepare Wine environment
+        run: |
+          mkdir -p "$HOME"
+          mkdir -p "$WINEPREFIX"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Show versions
+        run: |
+          node --version
+          npm --version
+          wine --version
+
+      - name: Build release packages
+        run: npm run build:release
+
+      - name: Upload Linux build
+        uses: actions/upload-artifact@v4
+        with:
+          name: mawejs-linux
+          path: dist/*.AppImage
+
+      - name: Upload Windows builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: mawejs-windows
+          path: dist/*.exe
