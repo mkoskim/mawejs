@@ -50,25 +50,35 @@
     "electron-vite": "^5.0.0",
     "node": "^24.21.0"
   },
+  "desktopName": "io.github.mkoskim.mawejs",
   "main": "./out/main/index.js",
   "build": {
+    "appId": "io.github.mkoskim.mawejs",
     "files": [
       "out/**/*",
       "package.json"
     ],
     "extraResources": [
+      {
+        "from": "src/icon.png",
+        "to": "icon.png"
+      },
       "examples/tutorial/*"
     ],
     "linux": {
       "target": [
         "AppImage"
-      ]
+      ],
+      "icon": "src/icon.png",
+      "category": "Office",
+      "syncDesktopName": true
     },
     "win": {
       "target": [
         "portable",
         "nsis"
-      ]
+      ],
+      "icon": "src/icon.png"
     }
   },
   "allowScripts": {
