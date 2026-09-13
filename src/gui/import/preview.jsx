@@ -5,11 +5,10 @@
 //*****************************************************************************
 
 import React from "react"
-import {InfiniteScroll} from "../common/factory"
+import {DeferredRender} from "../common/factory"
 import {elemFind} from "../../document/xmljs/elemutil.js"
 import {getStoryRoot} from "../../document/xmljs/load.js"
-
-const previewChunk = 100
+import { lines2text } from "../../util/generic.js"
 
 //-----------------------------------------------------------------------------
 
@@ -21,7 +20,7 @@ export function Preview({imported = undefined}) {
       style={{minWidth: "200px", maxWidth: "300px", width: "300px"}}
       flatted={flatted}
       />
-    <ImportPreview flatted={flatted}/>
+    <HTMLPreview flatted={flatted}/>
   </>
 }
 
@@ -50,6 +49,41 @@ function flatImported(imported) {
 //-----------------------------------------------------------------------------
 // Import Preview
 //-----------------------------------------------------------------------------
+
+function HTMLPreview({flatted}) {
+  const __html = lines2text(flatted.map(elem2html))
+
+  return <div className="Filler Board Preview">
+      <div
+        className="Filler Board Editor"
+        //id="ImportPreview"
+        style={{borderRight: "1px solid lightgray", borderLeft: "1px solid lightgray", overflowY: "auto"}}
+        tabIndex={0}
+      >
+        <DeferredRender>
+        <div className="Sheet Regular"
+          dangerouslySetInnerHTML={{__html}}
+        />
+        </DeferredRender>
+      </div>
+  </div>
+
+  function elem2html(elem) {
+    switch(elem.name) {
+      case "act": return `<h2>${elem.attributes.name}</h2>`
+      case "chapter": return `<h3>${elem.attributes.name}</h3>`
+      case "scene": return `<h4>${elem.attributes.name}</h4>`
+      case "p": {
+        const text = elem.elements.map(n => n.text).join(" ")
+        return `<p>${text}<span style={{marginLeft: "2pt", color: "grey"}}>&para;</span></p>`
+      }
+      default: return null
+    }
+  }
+}
+
+/*
+const previewChunk = 100
 
 function ImportPreview({flatted}) {
   const [count, setCount] = React.useState(previewChunk)
@@ -98,6 +132,7 @@ function PreviewParagraph(p, index) {
     <span style={{marginLeft: "2pt", color: "grey"}}>&para;</span>
   </p>
 }
+*/
 
 //-----------------------------------------------------------------------------
 // Import Index
