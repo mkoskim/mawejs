@@ -58,11 +58,35 @@ You can read the story in [Finnish](https://archiveofourown.org/works/76325336/c
 
 ## Try MaweJS
 
-Interested? Start a [discussion](https://github.com/mkoskim/mawejs/discussions) - I would love to hear how you write and what you need from your tools. You do not need to have tried MaweJS to join in.
+Open the [latest release](https://github.com/mkoskim/mawejs/releases/latest) and expand **Assets** to download the package for your system. In the filenames below, `x.y.z` is the release version.
 
-Want to give it a try? Start with [Thinking about trying MaweJS?](https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F) in the Wiki.
+- **Windows Portable — try without installing:** Download `mawejs.x.y.z.exe` and run it.
+- **Windows Setup (NSIS) — install MaweJS:** Download `mawejs.Setup.x.y.z.exe` and run the installer.
+- **Mac:** Mac binaries need paid signing keys and I don't have them. You can run MaweJS from sources.
+- **Linux:** Download `mawejs-x.y.z.AppImage`, make it executable, and run it. In a terminal opened in the download folder, use the actual filename in these commands:
 
-If you have tried it, let me know what worked and what got in your way. Share your experience in Discussions, or [open an issue](https://github.com/mkoskim/mawejs/issues) for a specific bug or improvement. You do not need to be a programmer to help shape MaweJS.
+```sh
+chmod +x mawejs-x.y.z.AppImage
+./mawejs-x.y.z.AppImage
+```
+
+**Windows security warnings:** The Windows packages are not digitally signed, so Windows may warn that the publisher is unknown or the app is unrecognized. Download only from this project's GitHub releases. See [Getting MaweJS](https://github.com/mkoskim/mawejs/wiki/Getting-MaweJS) in the Wiki for detailed download and installation instructions, including Windows security warnings.
+
+If the AppImage reports a sandbox error, this workaround disables Chromium's sandbox:
+
+```sh
+./mawejs-x.y.z.AppImage --no-sandbox
+```
+
+### I could try, but...
+
+Interested, but unsure about trying it? [Thinking about trying MaweJS?](https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F) in the Wiki walks through exploring the editor, trying it with your writing, and getting your text back out if it is not for you.
+
+### Feedback
+
+I would love to hear what would help MaweJS work for you. If something makes you hesitate to try it, tell me what worries you. If you tried it and it did not fit your way of writing, tell me what got in the way. If you want a feature, tell me what you would use it for and why it matters to you.
+
+Start a [discussion](https://github.com/mkoskim/mawejs/discussions), or [open an issue](https://github.com/mkoskim/mawejs/issues) for a specific bug or improvement. You do not need to have tried MaweJS or be a programmer to join the conversation.
 
 ## Development
 
@@ -110,12 +134,6 @@ npm install
 ### Troubleshooting
 
 **Ubuntu sandbox permissions:** If running from source fails because of Chrome sandbox permissions, run `npm run fix`. This uses `sudo` to set the owner and SUID bit on Electron's `chrome-sandbox` binary, and may need repeating after Electron updates. The commands are visible in [package.json](package.json).
-
-**AppImage:** If you encounter a sandbox error, the workaround below disables Chromium's sandbox:
-
-```sh
-./mawejs-x.y.z.AppImage --no-sandbox
-```
 
 **Debugging:** If React DevTools do not appear, try reloading the application window. See the [Electron DevTools issue](https://github.com/electron/electron/issues/41613#issuecomment-2644018998) or the [VS Code Electron debugging guide](https://github.com/Microsoft/vscode-recipes/tree/master/Electron) for more background.
 
