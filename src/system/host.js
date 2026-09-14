@@ -58,3 +58,11 @@ export async function appZoomOut() {
 export function appZoomReset() {
   return appZoomTo(1);
 }
+
+export function getSpellcheckLanguages() {
+  return syscall("getSpellcheckLanguages");
+}
+
+export function setSpellcheck(lang, enabled) {
+  return syscall("setSpellcheck", lang, enabled);
+}

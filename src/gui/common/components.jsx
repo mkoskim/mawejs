@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 
 import {
-  VBox,
+  VBox, Checkbox,
   Button, Input,
   Icon, IconButton,
   MakeToggleGroup, DropDown,
@@ -20,15 +20,18 @@ import {
   IsKey,
 } from "./factory";
 
+import {SpellcheckContext} from "../app/spellcheck";
+
 import { mawe } from "../../document"
 import {reqOpenFolder} from '../app/context';
 import {getHeader} from '../../document/head';
 import { numfmt } from '../../util';
 import {
+  languageOptions,
+  getLangName,
   getLangNative,
   isLangSupported,
   languageMatches,
-  languageOptions,
 } from '../../document/lang';
 
 //-----------------------------------------------------------------------------
@@ -76,6 +79,7 @@ export class EditHeadButton extends React.PureComponent {
 //-----------------------------------------------------------------------------
 
 export class ChooseLanguage extends React.PureComponent {
+  static contextType = SpellcheckContext
   state = {open: false, value: ""}
   inputRef = React.createRef()
 
@@ -94,11 +98,15 @@ export class ChooseLanguage extends React.PureComponent {
   render() {
     const {lang} = this.props
     const supported = lang && isLangSupported(lang)
+    const tooltip = "Language"
+    /*
     const tooltip = lang
       ? `Language: ${lang} (${supported ? "supported" : "unsupported"})`
       : "Language"
+    */
 
-    return <Autocomplete.Root
+    return <>
+    <Autocomplete.Root
       items={languageOptions}
       itemToStringValue={item => item.code}
       filter={languageMatches}
@@ -118,9 +126,9 @@ export class ChooseLanguage extends React.PureComponent {
         <Button
           className="LanguageButton"
           tooltip={tooltip}
-          color={lang ? supported ? "success" : "error" : undefined}
+          //color={lang ? supported ? "success" : "error" : undefined}
         >
-          {getLangNative(lang) ?? "[None]"}
+          {(supported ? `${getLangNative(lang)}` : lang) ?? "[none]"}
         </Button>
       }/>
       <Autocomplete.Portal>
@@ -151,7 +159,7 @@ export class ChooseLanguage extends React.PureComponent {
                   value={item}
                 >
                   <span className="LanguageCode">{item.code}</span>
-                  <span className="LanguageNative"> - {item.native}</span>
+                  <span className="LanguageNative">{item.native} / {item.name}</span>
                 </Autocomplete.Item>}
               </Autocomplete.List>
             </form>
@@ -159,6 +167,16 @@ export class ChooseLanguage extends React.PureComponent {
         </Autocomplete.Positioner>
       </Autocomplete.Portal>
     </Autocomplete.Root>
+    <Checkbox
+      tooltip="Spellcheck"
+      aria-label="Spellcheck"
+      checked={this.props.spellcheck === true}
+      onCheckedChange={checked => {
+        this.props.updateDoc(doc => {doc.head.spellcheck = checked})
+      }}
+      style={this.context === undefined ? {color: "gray"} : undefined}
+    />
+    </>
   }
 }
 
@@ -357,7 +375,7 @@ export class HeadInfo extends React.PureComponent {
     return <>
       <EditHeadButton text={header} updateDoc={updateDoc} head={head} expanded={true}/>
       <Separator/>
-      <ChooseLanguage lang={head.lang} updateDoc={updateDoc}/>
+      <ChooseLanguage lang={head.lang} spellcheck={head.spellcheck} updateDoc={updateDoc}/>
     </>
   }
 }

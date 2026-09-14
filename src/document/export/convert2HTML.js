@@ -106,7 +106,7 @@ ${metaTitle(head)}
   @media print { .page-break { break-before: page; } }
 </style>
 </head>
-<body>
+<body${head.lang ? ` lang="${escape(head.lang)}"` : ""}>
 ${bodyTitle(head)}
 `;
   },

@@ -89,6 +89,7 @@ function toHead(head) {
   return xmlLines(
     {name: "head"},
     optional("lang", head.lang),
+    optional("spellcheck", head.spellcheck === undefined ? undefined : String(head.spellcheck)),
     optional("title", head.title),
     optional("subtitle", head.subtitle),
     optional("author", head.author),

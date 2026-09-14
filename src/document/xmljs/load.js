@@ -138,6 +138,7 @@ function optional(elem, name, parse) {
 function parseHead(head) {
   return {
     lang: optional(head, "lang", elem2Text),
+    spellcheck: optional(head, "spellcheck", elem => elem2Text(elem) === "true"),
 
     title: optional(head, "title", elem2Text),
     subtitle: optional(head, "subtitle", elem2Text),
