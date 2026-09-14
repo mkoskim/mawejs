@@ -60,23 +60,31 @@ You can read the story in [Finnish](https://archiveofourown.org/works/76325336/c
 
 Open the [latest release](https://github.com/mkoskim/mawejs/releases/latest) and expand **Assets** to download the package for your system. In the filenames below, `x.y.z` is the release version.
 
+### Windows
+
 - **Windows Portable — try without installing:** Download `mawejs.x.y.z.exe` and run it.
 - **Windows Setup (NSIS) — install MaweJS:** Download `mawejs.Setup.x.y.z.exe` and run the installer.
-- **Mac:** Mac binaries need paid signing keys and I don't have them. You can run MaweJS from sources.
+
+**Windows security warnings:** The Windows packages are not digitally signed, so Windows may warn that the publisher is unknown or the app is unrecognized. Download only from this project's GitHub releases. See [Getting MaweJS](https://github.com/mkoskim/mawejs/wiki/Getting-MaweJS) in the Wiki for detailed download and installation instructions, including Windows security warnings.
+
+### Linux
+
 - **Linux:** Download `mawejs-x.y.z.AppImage`, make it executable, and run it. In a terminal opened in the download folder, use the actual filename in these commands:
 
 ```sh
-chmod +x mawejs-x.y.z.AppImage
-./mawejs-x.y.z.AppImage
+$ chmod +x mawejs-x.y.z.AppImage
+$ ./mawejs-x.y.z.AppImage
 ```
-
-**Windows security warnings:** The Windows packages are not digitally signed, so Windows may warn that the publisher is unknown or the app is unrecognized. Download only from this project's GitHub releases. See [Getting MaweJS](https://github.com/mkoskim/mawejs/wiki/Getting-MaweJS) in the Wiki for detailed download and installation instructions, including Windows security warnings.
 
 If the AppImage reports a sandbox error, this workaround disables Chromium's sandbox:
 
 ```sh
-./mawejs-x.y.z.AppImage --no-sandbox
+$ ./mawejs-x.y.z.AppImage --no-sandbox
 ```
+
+### Mac
+
+Mac binaries need paid signing keys and I don't have them. You can run MaweJS from sources.
 
 ### I could try, but...
 
