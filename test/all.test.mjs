@@ -60,6 +60,7 @@ import "./slate/folding.test.mjs";
 //-----------------------------------------------------------------------------
 
 import "./document/lang.test.mjs";
+import "./document/generate-languages.test.mjs";
 import "./misc/path_suggestions.test.mjs";
 import "./misc/history.test.mjs";
 import "./misc/spellcheck.test.mjs";
