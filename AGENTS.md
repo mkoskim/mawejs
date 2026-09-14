@@ -9,5 +9,10 @@
 - `local/` contains untracked local test material, not application source.
 - Keep editor and document logic in `src/`; Electron provides host integration.
 - For editor behavior, start in `src/slatejs/` and follow existing patterns.
+- The GUI uses Base UI through the centralized wrappers and exports in
+  `src/gui/common/factory.jsx`. Use that factory for UI components instead of
+  importing Base UI directly in feature components. If a component is missing,
+  add its wrapper or export to the factory. This keeps the underlying GUI
+  library replaceable.
 - Follow the existing JavaScript/JSX style. Check documentation claims against
   active code, and run checks appropriate to the change (see README).

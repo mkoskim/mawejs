@@ -19,6 +19,41 @@ input {
   /*background: yellow;*/
 }
 
+.Checkbox {
+  /*
+  border-radius: 3px;
+  cursor: pointer;
+  box-sizing: border-box;
+  flex: 0 0 --var(font-size);
+  min-width: --var(font-size);
+  flex-shrink: 0;
+  */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+
+  /**/
+  width: calc(var(--font-size)*1.1);
+  height: calc(var(--font-size)*1.1);
+  /*/
+  width: 24px;
+  height: 24px;
+  /**/
+
+  &:focus-visible {
+    outline: 2px solid;
+    outline-offset: 2px;
+  }
+
+  .CheckboxIndicator { display: flex; }
+  .Icon {
+    width: var(--font-size);
+    height: var(--font-size);
+    color: inherit;
+  }
+}
+
 /* This is a div needed to wrap inputs with labels */
 .InputWrap {
   display: flex;

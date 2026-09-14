@@ -14,6 +14,8 @@ export default {
   log,
   beep,
   zoom,
+  getSpellcheckLanguages,
+  setSpellcheck,
 }
 
 function info() {
@@ -43,4 +45,25 @@ function zoom(window, factor) {
     return limit;
   }
   return Math.trunc(window.webContents.getZoomFactor() * 100) / 100;
+}
+
+function getSpellcheckLanguages(window) {
+  return window.webContents.session.availableSpellCheckerLanguages
+}
+
+function setSpellcheck(window, lang, enabled) {
+  const session = window.webContents.session
+
+  session.setSpellCheckerEnabled(false)
+
+  try {
+    session.setSpellCheckerLanguages([lang])
+  } catch {
+    session.setSpellCheckerLanguages([])
+    return undefined
+  }
+
+  // Setting languages also enables spellchecking, so apply the user's choice last.
+  session.setSpellCheckerEnabled(!!enabled)
+  return !!enabled
 }

@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 
 import {
-  VBox,
+  VBox, Checkbox,
   Button, Input,
   Icon, IconButton,
   MakeToggleGroup, DropDown,
@@ -19,6 +19,8 @@ import {
   Separator,
   IsKey,
 } from "./factory";
+
+import {SpellcheckContext} from "../app/spellcheck";
 
 import { mawe } from "../../document"
 import {reqOpenFolder} from '../app/context';
@@ -77,6 +79,7 @@ export class EditHeadButton extends React.PureComponent {
 //-----------------------------------------------------------------------------
 
 export class ChooseLanguage extends React.PureComponent {
+  static contextType = SpellcheckContext
   state = {open: false, value: ""}
   inputRef = React.createRef()
 
@@ -102,7 +105,8 @@ export class ChooseLanguage extends React.PureComponent {
       : "Language"
     */
 
-    return <Autocomplete.Root
+    return <>
+    <Autocomplete.Root
       items={languageOptions}
       itemToStringValue={item => item.code}
       filter={languageMatches}
@@ -163,6 +167,16 @@ export class ChooseLanguage extends React.PureComponent {
         </Autocomplete.Positioner>
       </Autocomplete.Portal>
     </Autocomplete.Root>
+    <Checkbox
+      tooltip="Spellcheck"
+      aria-label="Spellcheck"
+      checked={this.props.spellcheck === true}
+      onCheckedChange={checked => {
+        this.props.updateDoc(doc => {doc.head.spellcheck = checked})
+      }}
+      style={this.context === undefined ? {color: "gray"} : undefined}
+    />
+    </>
   }
 }
 
@@ -361,7 +375,7 @@ export class HeadInfo extends React.PureComponent {
     return <>
       <EditHeadButton text={header} updateDoc={updateDoc} head={head} expanded={true}/>
       <Separator/>
-      <ChooseLanguage lang={head.lang} updateDoc={updateDoc}/>
+      <ChooseLanguage lang={head.lang} spellcheck={head.spellcheck} updateDoc={updateDoc}/>
     </>
   }
 }

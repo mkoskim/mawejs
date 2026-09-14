@@ -66,7 +66,7 @@ export function SlateEditable({className, visible, highlight, ...props}) {
     //readOnly={!active}
     className={addClass(className, !visible ? "Hidden" : undefined)}
     //className={className}
-    spellCheck={false} // Keep false until you find out how to change language
+    spellCheck={true}
     renderElement={renderElement}
     renderLeaf={renderLeaf}
     decorate={highlighter}

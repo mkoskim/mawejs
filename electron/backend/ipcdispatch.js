@@ -31,6 +31,8 @@ function dispatch(browserWindow, channel, cmd, ...args) {
         case "log": return hostapp.log(...args)
         case "beep": return hostapp.beep(...args)
         case "zoom": return hostapp.zoom(browserWindow, ...args)
+        case "getSpellcheckLanguages": return hostapp.getSpellcheckLanguages(browserWindow, ...args)
+        case "setSpellcheck": return hostapp.setSpellcheck(browserWindow, ...args)
         default: break;
       }
       throw Error(`IPC: ${channel}/${cmd}: Not implemented.`);

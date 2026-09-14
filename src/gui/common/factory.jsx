@@ -17,6 +17,7 @@ import { isNotEmpty } from "../../util";
 
 import {
   Autocomplete as BUIAutocomplete,
+  Checkbox as BUICheckbox,
   //Button as BUIButton,
   //Toggle as BUIToggle,
   //Input,
@@ -149,6 +150,16 @@ export function Tooltip({tooltip, children}) {
 export function Button({tooltip, ...props}) {
   return <Tooltip tooltip={tooltip}>
     <button {...props}/>
+  </Tooltip>
+}
+
+export function Checkbox({tooltip, className, ...props}) {
+  return <Tooltip tooltip={tooltip}>
+    <BUICheckbox.Root className={addClass("Checkbox", className)} {...props}>
+      <BUICheckbox.Indicator className="CheckboxIndicator">
+        <Icon.Checked/>
+      </BUICheckbox.Indicator>
+    </BUICheckbox.Root>
   </Tooltip>
 }
 

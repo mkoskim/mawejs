@@ -49,6 +49,7 @@ import {
 
 import { SettingsContext, useSetting } from "./settings"
 import { ViewSelectButtons, ViewSwitch } from "./views";
+import { SpellcheckContext, useSpellcheck } from "./spellcheck";
 import { useImmer } from "use-immer"
 
 import { appInfo, appLog, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
@@ -221,11 +222,13 @@ export function App(props) {
 //*****************************************************************************
 
 function View({ doc, updateDoc }) {
+  const spellcheck = useSpellcheck(doc?.head?.lang, doc?.head?.spellcheck === true)
 
   //const [view, setView] = useSetting(doc?.file?.id, getViewDefaults(null))
   //const [view, setView] = useState(() => getViewDefaults())
 
   return (
+    <SpellcheckContext.Provider value={spellcheck}>
     <VBox className="ViewPort">
       {/* <WorkspaceBar doc={doc}/> /**/}
       {//*
@@ -233,6 +236,7 @@ function View({ doc, updateDoc }) {
       /**/}
       <ViewSwitch doc={doc} updateDoc={updateDoc} />
     </VBox>
+    </SpellcheckContext.Provider>
   )
 }
 
