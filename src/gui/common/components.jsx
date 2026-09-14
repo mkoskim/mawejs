@@ -25,10 +25,11 @@ import {reqOpenFolder} from '../app/context';
 import {getHeader} from '../../document/head';
 import { numfmt } from '../../util';
 import {
+  languageOptions,
+  getLangName,
   getLangNative,
   isLangSupported,
   languageMatches,
-  languageOptions,
 } from '../../document/lang';
 
 //-----------------------------------------------------------------------------
@@ -94,9 +95,12 @@ export class ChooseLanguage extends React.PureComponent {
   render() {
     const {lang} = this.props
     const supported = lang && isLangSupported(lang)
+    const tooltip = "Language"
+    /*
     const tooltip = lang
       ? `Language: ${lang} (${supported ? "supported" : "unsupported"})`
       : "Language"
+    */
 
     return <Autocomplete.Root
       items={languageOptions}
@@ -118,9 +122,9 @@ export class ChooseLanguage extends React.PureComponent {
         <Button
           className="LanguageButton"
           tooltip={tooltip}
-          color={lang ? supported ? "success" : "error" : undefined}
+          //color={lang ? supported ? "success" : "error" : undefined}
         >
-          {getLangNative(lang) ?? "[None]"}
+          {(supported ? `${lang}: ${getLangNative(lang)}` : lang) ?? "[none]"}
         </Button>
       }/>
       <Autocomplete.Portal>
@@ -151,7 +155,7 @@ export class ChooseLanguage extends React.PureComponent {
                   value={item}
                 >
                   <span className="LanguageCode">{item.code}</span>
-                  <span className="LanguageNative"> - {item.native}</span>
+                  <span className="LanguageNative">{item.native} / {item.name}</span>
                 </Autocomplete.Item>}
               </Autocomplete.List>
             </form>

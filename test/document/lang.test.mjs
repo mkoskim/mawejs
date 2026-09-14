@@ -10,11 +10,11 @@ describe("Language selection", () => {
   test("builds choices from the language table", () => {
     assert.deepEqual(
       languageOptions.find(({code}) => code === "fi"),
-      {code: "fi", native: "suomi"},
+      {code: "fi", name: "Finnish", native: "suomi"},
     )
     assert.deepEqual(
       languageOptions.find(({code}) => code === "en"),
-      {code: "en", native: "English"},
+      {code: "en", name: "English", native: "English"},
     )
   })
 
