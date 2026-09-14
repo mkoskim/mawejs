@@ -15,6 +15,7 @@ import {
   Icon, IconButton,
   MakeToggleGroup, DropDown,
   Popup,
+  Autocomplete,
   Separator,
   IsKey,
 } from "./factory";
@@ -23,7 +24,12 @@ import { mawe } from "../../document"
 import {reqOpenFolder} from '../app/context';
 import {getHeader} from '../../document/head';
 import { numfmt } from '../../util';
-import { getLangNative } from '../../document/lang';
+import {
+  getLangNative,
+  isLangSupported,
+  languageMatches,
+  languageOptions,
+} from '../../document/lang';
 
 //-----------------------------------------------------------------------------
 // Head info editing box
@@ -70,34 +76,89 @@ export class EditHeadButton extends React.PureComponent {
 //-----------------------------------------------------------------------------
 
 export class ChooseLanguage extends React.PureComponent {
-  state = {open: false}
+  state = {open: false, value: ""}
+  inputRef = React.createRef()
+
+  setOpen(open) {
+    this.setState({
+      open,
+      ...(open && {value: this.props.lang ?? ""}),
+    })
+  }
+
+  selectLanguage(value) {
+    updateDocLang(this.props.updateDoc, value ? value : undefined)
+    this.setState({open: false, value})
+  }
+
   render() {
-    const {lang, updateDoc} = this.props
-    //return <Button>{lang ?? "[None]"}</Button>
-    return <Popup
+    const {lang} = this.props
+    const supported = lang && isLangSupported(lang)
+    const tooltip = lang
+      ? `Language: ${lang} (${supported ? "supported" : "unsupported"})`
+      : "Language"
+
+    return <Autocomplete.Root
+      items={languageOptions}
+      itemToStringValue={item => item.code}
+      filter={languageMatches}
+      autoHighlight
       open={this.state.open}
-      onOpenChange={open => this.setState({open})}
-      trigger={<Button tooltip="Language">{getLangNative(lang) ?? "[None]"}</Button>}
-      >
-      <Input
-        label="Language"
-        spellCheck={false}
-        defaultValue={lang}
-        autoFocus
-        //onChange={ev => setSearchText(ev.target.value)}
-        onKeyDown={ev => {
-          if (IsKey.Enter(ev)) {
-            const {value} = ev.target
-            ev.preventDefault();
-            ev.stopPropagation();
-            updateDocLang(updateDoc, value ? value : undefined)
-            this.setState({open: false})
-            //if (searchText === "") setSearchText(undefined);
-            //searchFirst(editor, searchText, true);
-          }
-        }}
-      />
-    </Popup>
+      onOpenChange={open => this.setOpen(open)}
+      value={this.state.value}
+      onValueChange={(value, details) => {
+        if (details.reason === "item-press") {
+          this.selectLanguage(value)
+        } else {
+          this.setState({value})
+        }
+      }}
+    >
+      <Autocomplete.Trigger render={
+        <Button
+          className="LanguageButton"
+          tooltip={tooltip}
+          color={lang ? supported ? "success" : "error" : undefined}
+        >
+          {getLangNative(lang) ?? "[None]"}
+        </Button>
+      }/>
+      <Autocomplete.Portal>
+        <Autocomplete.Positioner className="Positioner" sideOffset={3} align="start">
+          <Autocomplete.Popup className="VBox Popup LanguagePopup">
+            <form
+              className="VBox LanguageForm"
+              onSubmit={ev => {
+                ev.preventDefault()
+                this.selectLanguage(this.inputRef.current?.value ?? this.state.value)
+              }}
+            >
+              <Autocomplete.Input
+                ref={this.inputRef}
+                className="LanguageInput"
+                aria-label="Language code or native name"
+                placeholder="Language code or native name"
+                spellCheck={false}
+                autoFocus
+              />
+              <Autocomplete.Empty className="LanguageEmpty">
+                No matching language. Press Enter to use this code.
+              </Autocomplete.Empty>
+              <Autocomplete.List className="LanguageList" aria-label="Languages">
+                {item => <Autocomplete.Item
+                  key={item.code}
+                  className="LanguageItem"
+                  value={item}
+                >
+                  <span className="LanguageCode">{item.code}</span>
+                  <span className="LanguageNative"> - {item.native}</span>
+                </Autocomplete.Item>}
+              </Autocomplete.List>
+            </form>
+          </Autocomplete.Popup>
+        </Autocomplete.Positioner>
+      </Autocomplete.Portal>
+    </Autocomplete.Root>
   }
 }
 
