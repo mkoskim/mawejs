@@ -59,6 +59,7 @@ import "./slate/folding.test.mjs";
 // Misc.
 //-----------------------------------------------------------------------------
 
+import "./document/lang.test.mjs";
 import "./misc/path_suggestions.test.mjs";
 import "./misc/history.test.mjs";
 /**/

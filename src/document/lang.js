@@ -13,6 +13,20 @@ export const languages = {
   "en": {native: "English", rtf: 1033 },
 }
 
+export const languageOptions = Object.entries(languages).map(([code, {native}]) => ({
+  code,
+  native,
+}))
+
+export function isLangSupported(lang) {
+  return Object.hasOwn(languages, lang)
+}
+
+export function languageMatches({code, native}, query) {
+  const search = query.trim().toLowerCase()
+  return code.toLowerCase().includes(search) || native.toLowerCase().includes(search)
+}
+
 export function getLangNative(lang) {
   return languages[lang]?.native ?? lang
 }

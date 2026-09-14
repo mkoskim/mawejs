@@ -16,6 +16,7 @@ import { enqueueSnackbar, closeSnackbar } from "notistack";
 import { isNotEmpty } from "../../util";
 
 import {
+  Autocomplete as BUIAutocomplete,
   //Button as BUIButton,
   //Toggle as BUIToggle,
   //Input,
@@ -32,6 +33,7 @@ import {
 export { default as InfiniteScroll } from "react-infinite-scroll-component";
 
 export {
+  BUIAutocomplete as Autocomplete,
   Icon,
   IsKey, addHotkeys,
 }

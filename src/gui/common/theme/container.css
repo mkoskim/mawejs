@@ -146,6 +146,59 @@
   box-shadow: 5px 5px 10px var(--popup-border);
 }
 
+.LanguageButton {
+  white-space: nowrap;
+}
+
+.LanguagePopup {
+  box-sizing: border-box;
+  width: 18rem;
+  max-width: calc(100dvw - 16px);
+  padding: 6px;
+
+  .LanguageForm {
+    gap: 4px;
+  }
+
+  .LanguageInput {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 5px 7px;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+  }
+
+  .LanguageList {
+    max-height: 12rem;
+    overflow-y: auto;
+    outline: none;
+  }
+
+  .LanguageItem {
+    display: flex;
+    align-items: baseline;
+    padding: 5px 7px;
+    border-radius: 3px;
+    cursor: default;
+
+    &[data-highlighted] {
+      background-color: #8BF;
+    }
+  }
+
+  .LanguageCode {
+    min-width: 2.5rem;
+    font-family: monospace;
+    font-weight: bold;
+  }
+
+  .LanguageEmpty {
+    padding: 5px 7px;
+    color: gray;
+    font-size: var(--font-size-small);
+  }
+}
+
 /******************************************************************************
 *
 * Menus
