@@ -54,33 +54,41 @@ Here it is while I am editing one of my stories in Finnish. The draft index is o
 
 ![Editing a story with draft and notes indexes](https://user-images.githubusercontent.com/10298548/218349525-c385016b-f2f3-4605-9601-5fd095345646.png)
 
-You can read the story in [Finnish](https://archiveofourown.org/works/76325336/chapters/199756276) (also on [my blog](https://jumalhamara.wordpress.com/gjerta-avaruudessa/)) or in [English translation](https://archiveofourown.org/works/76329611/chapters/199767531). More writing is available on [my AO3 account](https://archiveofourown.org/users/MaKo71/works) and in this [collection of works written with MaweJS](https://github.com/mkoskim/mawejs/discussions/236).
+You can read the story in [Finnish](https://archiveofourown.org/works/76325336/chapters/199756276) or in [English translation](https://archiveofourown.org/works/76329611/chapters/199767531). More writing is available on [my AO3 account](https://archiveofourown.org/users/MaKo71/works) and in this [collection of works written with MaweJS](https://github.com/mkoskim/mawejs/discussions/236).
 
 ## Try MaweJS
 
 Open the [latest release](https://github.com/mkoskim/mawejs/releases/latest) and expand **Assets** to download the package for your system. In the filenames below, `x.y.z` is the release version.
 
+### Windows
+
 - **Windows Portable — try without installing:** Download `mawejs.x.y.z.exe` and run it.
 - **Windows Setup (NSIS) — install MaweJS:** Download `mawejs.Setup.x.y.z.exe` and run the installer.
-- **Mac:** Mac binaries need paid signing keys and I don't have them. You can run MaweJS from sources.
-- **Linux:** Download `mawejs-x.y.z.AppImage`, make it executable, and run it. In a terminal opened in the download folder, use the actual filename in these commands:
-
-```sh
-chmod +x mawejs-x.y.z.AppImage
-./mawejs-x.y.z.AppImage
-```
 
 **Windows security warnings:** The Windows packages are not digitally signed, so Windows may warn that the publisher is unknown or the app is unrecognized. Download only from this project's GitHub releases. See [Getting MaweJS](https://github.com/mkoskim/mawejs/wiki/Getting-MaweJS) in the Wiki for detailed download and installation instructions, including Windows security warnings.
+
+### Linux
+
+Download `mawejs-x.y.z.AppImage`, make it executable, and run it. In a terminal opened in the download folder, use the actual filename in these commands:
+
+```sh
+$ chmod +x mawejs-x.y.z.AppImage
+$ ./mawejs-x.y.z.AppImage
+```
 
 If the AppImage reports a sandbox error, this workaround disables Chromium's sandbox:
 
 ```sh
-./mawejs-x.y.z.AppImage --no-sandbox
+$ ./mawejs-x.y.z.AppImage --no-sandbox
 ```
+
+### Mac
+
+Mac binaries need paid signing keys and I don't have them. You can run MaweJS from sources.
 
 ### I could try, but...
 
-Interested, but unsure about trying it? [Thinking about trying MaweJS?](https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F) in the Wiki walks through exploring the editor, trying it with your writing, and getting your text back out if it is not for you.
+Interested, but unsure about trying it? ["Thinking about trying MaweJS?"](https://github.com/mkoskim/mawejs/wiki/Thinking-about-trying-MaweJS%3F) in the Wiki walks through exploring the editor, trying it with your writing, and getting your text back out if it is not for you.
 
 ### Feedback
 
