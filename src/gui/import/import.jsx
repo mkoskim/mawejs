@@ -30,6 +30,7 @@ import { Preview } from "./preview";
 import { ImportText } from "./importText";
 
 import mammoth from "mammoth"
+
 import fs from "../../system/localfs"
 import { CmdContext, doImport } from "../app/context";
 
@@ -121,7 +122,13 @@ async function getContent(filename) {
   const ext  = await fs.extname(file.id)
 
   switch (ext) {
-    //case ".rtf":
+    /*
+    case ".rtf": return {
+      content: rtfToText(file),
+      format: "text",
+      origin: file,
+    }
+    /**/
     case ".docx": return {
       content: docxToText(file),
       format: "text",
@@ -140,6 +147,14 @@ async function docxToText(file) {
   const result = await mammoth.extractRawText({ arrayBuffer: buffer })
   return result.value
 }
+
+/*
+async function rtfToText(file) {
+  const buffer = await fs.read(file.id, null)
+  const result = await parseRTF.string(buffer)
+  return result
+}
+/**/
 
 //-----------------------------------------------------------------------------
 
