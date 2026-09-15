@@ -95,6 +95,12 @@ export class ChooseLanguage extends React.PureComponent {
     this.setState({open: false, value})
   }
 
+  submitLanguage() {
+    const value = this.inputRef.current?.value ?? this.state.value
+    const match = value && languageOptions.find(item => languageMatches(item, value))
+    this.selectLanguage(match ? match.code : value)
+  }
+
   render() {
     const {lang} = this.props
     const supported = lang && isLangSupported(lang)
@@ -138,7 +144,7 @@ export class ChooseLanguage extends React.PureComponent {
               className="VBox LanguageForm"
               onSubmit={ev => {
                 ev.preventDefault()
-                this.selectLanguage(this.inputRef.current?.value ?? this.state.value)
+                this.submitLanguage()
               }}
             >
               <Autocomplete.Input
@@ -148,6 +154,15 @@ export class ChooseLanguage extends React.PureComponent {
                 placeholder="Language code or native name"
                 spellCheck={false}
                 autoFocus
+                onKeyDown={ev => {
+                  if (ev.key !== "Enter" || ev.nativeEvent.isComposing || ev.which === 229) return
+                  // Let Base UI accept the highlighted item for nonempty input.
+                  if (ev.currentTarget.value !== "") return
+                  // Handle empty input before Base UI selects the highlighted item.
+                  ev.preventBaseUIHandler()
+                  ev.preventDefault()
+                  this.submitLanguage()
+                }}
               />
               <Autocomplete.Empty className="LanguageEmpty">
                 No matching language. Press Enter to use this code.
@@ -167,13 +182,13 @@ export class ChooseLanguage extends React.PureComponent {
       </Autocomplete.Portal>
     </Autocomplete.Root>
     <Checkbox
-      tooltip="Spellcheck"
+      tooltip={`Spellcheck${this.context === undefined ? " not supported" : ""}`}
       aria-label="Spellcheck"
       checked={this.props.spellcheck === true}
       onCheckedChange={checked => {
         this.props.updateDoc(doc => {doc.head.spellcheck = checked})
       }}
-      style={this.context === undefined ? {color: "red"} : {color: "green"}}
+      style={this.context === undefined ? {color: "red"} : {}}
     />
     </>
   }
