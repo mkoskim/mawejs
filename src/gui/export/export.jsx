@@ -424,8 +424,6 @@ function ExportIndex({ doc, flatted, style }) {
   // NOTE: Index always shows the name of the elements, as well as
   // their number (if they have one), even if exported headers do not
   // contain them.
-  //
-  // TODO: Clickable index temporarily not working (no IDs generated)
 
   return <VFiller className="TOC" style={style}>
     {flatted.map((node, index) => indexItem(node, index))}

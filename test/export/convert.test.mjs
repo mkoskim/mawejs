@@ -282,6 +282,21 @@ describe("Header generation", () => {
     it("Scene", () => testNamedScene(header, {text: "Name", prefix: "Prefix", number: 145}))
   })
 
+  it("Adds IDs to HTML headers", () => {
+    assert.equal(
+      convertNode(format_html, {type: "act", header: "named", text: "Name", anchor: "hact-1"}),
+      '<h2 id="hact-1">Name</h2>'
+    )
+    assert.equal(
+      convertNode(format_html, {type: "chapter", header: "named", text: "Name", anchor: "hchapter-2"}),
+      '<h3 id="hchapter-2">Name</h3>'
+    )
+    assert.equal(
+      convertNode(format_html, {type: "scene", header: "named", text: "Name", anchor: "hscene-3"}),
+      '<h4 id="hscene-3">Name</h4>'
+    )
+  })
+
   //---------------------------------------------------------------------------
   // Test header row formatting with header=numbered. Prefix is added before
   // number.
