@@ -54,7 +54,7 @@ const formatter = {
 
 //-----------------------------------------------------------------------------
 
-function makeHeader({type, header = "none", prefix, first, number, pgbr, text}) {
+function makeHeader({type, header = "none", prefix, first, number, pgbr, text, anchor}) {
   let tag
 
   switch(type) {
@@ -70,16 +70,18 @@ function makeHeader({type, header = "none", prefix, first, number, pgbr, text}) 
     default: break;
   }
 
+  const id = anchor ? ` id="${escape(anchor)}"` : ""
+
   if(number) {
     const numbering = `${prefix ? (escape(prefix) + " ") : ""}${number}`
 
     switch(header) {
-      case "numbered": return `<${tag}>${numbering}</${tag}>`
-      case "numbered&named": return `<${tag}>${numbering}. ${text}</${tag}>`
+      case "numbered": return `<${tag}${id}>${numbering}</${tag}>`
+      case "numbered&named": return `<${tag}${id}>${numbering}. ${text}</${tag}>`
       default: break;
     }
   }
-  return `<${tag}>${text}</${tag}>`;
+  return `<${tag}${id}>${text}</${tag}>`;
 }
 
 //-----------------------------------------------------------------------------

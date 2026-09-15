@@ -16,6 +16,7 @@ import {doc2flatted} from "../../src/document/export/process.js";
 
 function inject(doc, exports) {
   return doc2flatted({...doc, exports})
+    .map(({anchor, ...node}) => node)
 }
 
 //-----------------------------------------------------------------------------
@@ -465,6 +466,18 @@ describe("Export: Flatten basic cases", () => {
       { type: 'scene', number: 18, children: [{text: "Scene"}]},
       { type: 'p', children: [{text: "Text"}] },
     ]))
+
+    it("Generates sequential anchors independently of numbering", () => {
+      const headings = doc2flatted(doc)
+        .filter(({type}) => ["act", "chapter", "scene"].includes(type))
+
+      for(const [type, count] of [["act", 5], ["chapter", 9], ["scene", 18]]) {
+        assert.deepEqual(
+          headings.filter(node => node.type === type).map(node => node.anchor),
+          Array.from({length: count}, (_, index) => `h${type}-${index + 1}`)
+        )
+      }
+    })
 
     it("Does not mutate doc", () => assert.deepEqual(doc, original))
   })

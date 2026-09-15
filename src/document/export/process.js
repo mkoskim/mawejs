@@ -144,7 +144,7 @@ export function doc2flatted(doc) {
   {
     const nodes = processChildren(section.acts, flatAct)
 
-    return addNumbers(nodes)
+    return addAnchors(addNumbers(nodes))
   }
 
   function flatAct(act) {
@@ -290,6 +290,28 @@ function addNumbers(nodes) {
   }
 
   return nodes.map(addNumber)
+}
+
+//*****************************************************************************
+//
+// Header anchors
+//
+//*****************************************************************************
+
+function addAnchors(nodes) {
+  const number = {
+    act: 0,
+    chapter: 0,
+    scene: 0,
+  }
+
+  return nodes.map(node => {
+    const {type} = node
+    if(!(type in number)) return node
+
+    number[type] = number[type] + 1
+    return {...node, anchor: `h${type}-${number[type]}`}
+  })
 }
 
 //*****************************************************************************
