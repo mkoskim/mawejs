@@ -11,7 +11,7 @@ export const session = {
 
 function createSession() {
   return {
-    availableSpellCheckerLanguages: ["pu"],
+    availableSpellCheckerLanguages: ["en", "en-US"],
     spellCheckerLanguages: [],
     spellCheckerEnabled: false,
     setSpellCheckerLanguages(languages) {

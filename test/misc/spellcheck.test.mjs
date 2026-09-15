@@ -13,13 +13,13 @@ describe("Spellcheck IPC", {concurrency: false}, () => {
   before(() => installFakeIpc());
 
   test("returns the supported languages", async () => {
-    assert.deepEqual(await getSpellcheckLanguages(), ["pu"]);
+    assert.deepEqual(await getSpellcheckLanguages(), ["en", "en-US"]);
   });
 
-  test("pu supports enabling and disabling spellchecking", async () => {
+  test("en supports enabling and disabling spellchecking", async () => {
     for (const enabled of [true, false]) {
-      assert.equal(await setSpellcheck("pu", enabled), enabled);
-      assert.deepEqual(session.spellCheckerLanguages, ["pu"]);
+      assert.equal(await setSpellcheck("en", enabled), enabled);
+      assert.deepEqual(session.spellCheckerLanguages, ["en"]);
       assert.equal(session.spellCheckerEnabled, enabled);
     }
   });
@@ -27,7 +27,7 @@ describe("Spellcheck IPC", {concurrency: false}, () => {
   for (const lang of [undefined, "aa"]) {
     test(`${lang} clears the previous language and disables spellchecking`, async () => {
       for (const enabled of [true, false]) {
-        await setSpellcheck("pu", true);
+        await setSpellcheck("en", true);
         assert.equal(await setSpellcheck(lang, enabled), undefined);
         assert.deepEqual(session.spellCheckerLanguages, []);
         assert.equal(session.spellCheckerEnabled, false);

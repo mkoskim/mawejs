@@ -128,7 +128,7 @@ export class ChooseLanguage extends React.PureComponent {
           tooltip={tooltip}
           //color={lang ? supported ? "success" : "error" : undefined}
         >
-          {(supported ? `${getLangNative(lang)}` : lang) ?? "[none]"}
+          {lang ?? "[none]"}
         </Button>
       }/>
       <Autocomplete.Portal>
@@ -158,8 +158,7 @@ export class ChooseLanguage extends React.PureComponent {
                   className="LanguageItem"
                   value={item}
                 >
-                  <span className="LanguageCode">{item.code}</span>
-                  <span className="LanguageNative">{item.native} / {item.name}</span>
+                  <span className="LanguageNative">{item.code}: {item.native ?? item.name}</span>
                 </Autocomplete.Item>}
               </Autocomplete.List>
             </form>
@@ -174,7 +173,7 @@ export class ChooseLanguage extends React.PureComponent {
       onCheckedChange={checked => {
         this.props.updateDoc(doc => {doc.head.spellcheck = checked})
       }}
-      style={this.context === undefined ? {color: "gray"} : undefined}
+      style={this.context === undefined ? {color: "red"} : {color: "green"}}
     />
     </>
   }
