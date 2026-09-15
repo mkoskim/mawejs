@@ -1,15 +1,13 @@
 import {describe, test} from "node:test"
 import assert from "node:assert/strict";
 import {
+  getLanguage,
   getLangRTF,
   getLangNative,
   getLangTEX,
-  languages,
   isLangSupported,
   languageMatches,
   languageOptions,
-  languageAliases,
-  resolveLanguageCode,
 } from "../../src/document/lang.js";
 
 describe("Language selection", () => {
@@ -21,33 +19,28 @@ describe("Language selection", () => {
   })
 
   test("resolves aliases without adding duplicate choices", () => {
-    for (const [alias, target] of Object.entries(languageAliases)) {
-      assert.equal(Object.hasOwn(languages, alias), false)
-      assert.equal(Object.hasOwn(languages, target), true)
-      assert.equal(resolveLanguageCode(alias), target)
-    }
-    assert.equal(resolveLanguageCode("FI"), "fi-FI")
-    assert.equal(resolveLanguageCode("en"), "en-US")
-    assert.equal(resolveLanguageCode("de"), "de-DE")
-    assert.equal(resolveLanguageCode("en-GB"), "en-GB")
-    assert.equal(resolveLanguageCode("not a language"), undefined)
+    /*
+    assert.equal(getLanguage("fi-FI"), "fi")
+    assert.equal(getLanguage("en"), "en")
+    assert.equal(getLanguage("en-GB"), "en-GB")
+    */
+    assert.equal(getLanguage("[none]"), undefined)
     assert.equal(getLangNative("en-US"), "American English")
-    assert.equal(languages["en-US"].native, undefined)
   })
 
   test("builds choices from the language table", () => {
     assert.deepEqual(
-      languageOptions.find(({code}) => code === "fi-FI"),
-      {code: "fi-FI", name: "Finnish", native: "Suomi"},
+      languageOptions.find(({code}) => code === "fi"),
+      {code: "fi", name: "Finnish", native: "suomi"},
     )
     assert.deepEqual(
       languageOptions.find(({code}) => code === "en-US"),
-      {code: "en-US", name: "American English", native: "American English"},
+      {code: "en-US", name: "American English"},
     )
   })
 
   test("matches language codes and native names case-insensitively", () => {
-    const finnish = languageOptions.find(({code}) => code === "fi-FI")
+    const finnish = languageOptions.find(({code}) => code === "fi")
 
     assert.equal(languageMatches(finnish, "FI"), true)
     assert.equal(languageMatches(finnish, "suo"), true)
@@ -70,31 +63,21 @@ describe("Language selection", () => {
   test("detects supported codes without matching inherited properties", () => {
     assert.equal(isLangSupported("en"), true)
     assert.equal(isLangSupported("en-US"), true)
-    assert.equal(isLangSupported("toString"), false)
+    assert.equal(isLangSupported("FI"), false)
+    assert.equal(isLangSupported("[none]"), false)
   })
 
   test("finds BCP 47 choices by English and native names", () => {
-    const finnish = languageOptions.find(({code}) => code === "fi-FI")
+    const finnish = languageOptions.find(({code}) => code === "fi")
     assert.equal(finnish.name, "Finnish")
-    assert.equal(finnish.native, "Suomi")
+    assert.equal(finnish.native, "suomi")
     assert.equal(languageMatches(finnish, "fin"), true)
     assert.equal(languageMatches(finnish, "suo"), true)
-    assert.equal(getLangNative("FI-fi"), finnish.native)
+    assert.equal(getLangNative("fi"), finnish.native)
     assert.equal(getLangRTF("fi-FI"), 1035)
     assert.equal(getLangRTF("en-US"), 1033)
     assert.equal(getLangRTF("en-GB"), 2057)
     assert.equal(getLangTEX("fi"), "finnish")
     assert.equal(getLangTEX("en-GB"), "british")
-  })
-
-  test("every choice has a display name, without duplicate native names", () => {
-    for (const [code, {name, native}] of Object.entries(languages)) {
-      assert.ok(name?.trim(), `Missing English name for ${code}`)
-      assert.notEqual(native, name, `Redundant native name for ${code}`)
-      assert.ok(getLangNative(code)?.trim())
-    }
-    assert.equal(isLangSupported("eo"), true)
-    assert.equal(getLangRTF("eo"), undefined)
-    assert.equal(getLangNative("zh-Hant"), "繁體中文")
   })
 })

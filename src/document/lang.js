@@ -27,7 +27,7 @@ export function resolveLanguageCode(lang) {
 }
 */
 
-function getLanguage(lang) {
+export function getLanguage(lang) {
   const code = aliases[lang] ?? lang
   return languages[code]
 }
@@ -36,11 +36,13 @@ function getLanguage(lang) {
 // Language support functions: Query languages by BCP 47 language tags
 //-----------------------------------------------------------------------------
 
-export const languageOptions = Object.entries(languages).map(([code, {name, native}]) => ({
-  code,
-  name,
-  native: native ?? name,
-}))
+export const languageOptions = Object.entries(languages)
+  .map(([code, {name, native}]) => ({
+    code,
+    name,
+    ...(native ? {native} : {}),
+  }))
+  //.sorted((a, b) => a.code.localeCompare(b.code))
 
 export function isLangSupported(lang) {
   return getLanguage(lang) !== undefined
@@ -51,7 +53,7 @@ export function languageMatches({code, name, native}, query) {
   return (
     code.toLowerCase().startsWith(search) ||
     name.toLowerCase().split(' ').some(word => word.startsWith(search)) ||
-    native.toLowerCase().split(' ').some(word => word.startsWith(search))
+    native?.toLowerCase().split(' ').some(word => word.startsWith(search))
   )
 }
 

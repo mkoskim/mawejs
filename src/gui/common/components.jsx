@@ -158,7 +158,7 @@ export class ChooseLanguage extends React.PureComponent {
                   className="LanguageItem"
                   value={item}
                 >
-                  <span className="LanguageNative">{item.code}: {item.native}</span>
+                  <span className="LanguageNative">{item.code}: {item.native ?? item.name}</span>
                 </Autocomplete.Item>}
               </Autocomplete.List>
             </form>
