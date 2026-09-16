@@ -182,13 +182,14 @@ export class ChooseLanguage extends React.PureComponent {
       </Autocomplete.Portal>
     </Autocomplete.Root>
     <Checkbox
-      tooltip={`Spellcheck${this.context === undefined ? " not supported" : ""}`}
+      //tooltip={`Spellcheck${this.context === undefined ? " not supported" : ""}`}
+      tooltip={`Spellcheck`}
       aria-label="Spellcheck"
       checked={this.props.spellcheck === true}
       onCheckedChange={checked => {
         this.props.updateDoc(doc => {doc.head.spellcheck = checked})
       }}
-      style={this.context === undefined ? {color: "red"} : {}}
+      style={this.context === undefined ? {color: "lightgray"} : {}}
     />
     </>
   }

@@ -57,6 +57,7 @@ import { ImportDialog } from "../import/import";
 
 import { peekKeys } from "../common/hotkeys";
 import { RecentDialog } from "./recent";
+import { getSpellcheckLanguages } from "../../system/host.js";
 
 //*****************************************************************************
 //
@@ -78,6 +79,9 @@ export function App(props) {
       console.log("Application:", info)
       console.log("React:", React.version)
       setAppInfo(info)
+    })
+    getSpellcheckLanguages().then(langs => {
+      console.log("Spellcheck:", langs.join(", "))
     })
   }, [])
 

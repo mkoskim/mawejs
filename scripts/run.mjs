@@ -1,3 +1,3 @@
-import {generateLanguages} from './languages/main.mjs';
+import {generateLanguages} from './languages/generate.mjs';
 
 await generateLanguages()
