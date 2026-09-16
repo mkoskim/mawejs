@@ -188,7 +188,7 @@ export class ChooseLanguage extends React.PureComponent {
       onCheckedChange={checked => {
         this.props.updateDoc(doc => {doc.head.spellcheck = checked})
       }}
-      style={this.context === undefined ? {color: "red"} : {}}
+      style={this.context === undefined ? {color: "lightgray"} : {}}
     />
     </>
   }
