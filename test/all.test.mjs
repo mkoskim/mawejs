@@ -54,6 +54,7 @@ import "./export/first.test.mjs";
 import "./slate/search.test.mjs";
 import "./slate/dnd.test.mjs";
 import "./slate/folding.test.mjs";
+import "./slate/normalization.test.mjs";
 
 //-----------------------------------------------------------------------------
 // Misc.
