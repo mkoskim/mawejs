@@ -53,10 +53,9 @@
     "node": "^24.21.0",
     "tar": "^7.5.22"
   },
-  "desktopName": "io.github.mkoskim.mawejs",
   "main": "./out/main/index.js",
   "build": {
-    "appId": "io.github.mkoskim.mawejs",
+    "appId": "io.github.koskimim.mawejs",
     "files": [
       "out/**/*",
       "package.json"
