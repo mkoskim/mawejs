@@ -42,11 +42,13 @@ console.log("- userData:", hostfs.fsGetLocation("userData"))
 // Main Window
 //-----------------------------------------------------------------------------
 
+/*
 const iconPath = app.isPackaged
   ? path.join(process.resourcesPath, 'icon.png')
   : path.join(app.getAppPath(), 'src/icon.png')
 
-registerIcon(iconPath, !app.isPackaged);
+registerIcon(iconPath);
+*/
 
 var mainWindow = null;
 
@@ -62,7 +64,7 @@ async function createWindow()
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
-    icon: iconPath,
+    icon: path.join(__dirname, "mawejs.png"),
 
     webPreferences: {
       preload: path.join(__dirname, "../preload/index.js"),

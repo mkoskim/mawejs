@@ -8,6 +8,9 @@ GUI code should use this layer instead of duplicating format logic.
 - `nodeutil.js`: structural helpers and word counts.
 - `xmljs/`: XML loading, saving, tree handling, and migration.
 - [export](export/README.md): output formats.
+- `lang.js`: document language choices and lookup functions. The checked-in
+  language data is rebuilt manually with `npm run generate`; see
+  [the generator](../../scripts/languages/README.md) for sources and update instructions.
 
 ## Load/save safety: protect the manuscript
 

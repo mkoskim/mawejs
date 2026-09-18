@@ -153,7 +153,9 @@
 .LanguagePopup {
   box-sizing: border-box;
   width: 18rem;
+  /*
   max-width: calc(100dvw - 16px);
+  */
   padding: 6px;
 
   .LanguageForm {
