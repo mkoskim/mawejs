@@ -44,6 +44,12 @@ jobs:
       - name: Build release packages
         run: npm run build:release
 
+      - name: Verify update metadata
+        run: |
+          test -s dist/latest.yml
+          test -s dist/latest-linux.yml
+          test -s dist/*.exe.blockmap
+
       - name: Upload Linux build
         uses: actions/upload-artifact@v7
         with:
@@ -55,7 +61,18 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: mawejs-windows
-          path: dist/*.exe
+          path: |
+            dist/*.exe
+            dist/*.exe.blockmap
+          if-no-files-found: error
+
+      - name: Upload update metadata
+        uses: actions/upload-artifact@v7
+        with:
+          name: mawejs-update-metadata
+          path: |
+            dist/latest.yml
+            dist/latest-linux.yml
           if-no-files-found: error
 
   attach:
@@ -77,4 +94,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: gh release upload "$RELEASE_TAG" dist/*.AppImage dist/*.exe --clobber
+        run: gh release upload "$RELEASE_TAG" dist/*.AppImage dist/*.exe dist/*.exe.blockmap --clobber
+
+      # Expose updates only after all packages and blockmaps are available.
+      - name: Attach update metadata to existing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" dist/latest.yml dist/latest-linux.yml --clobber
