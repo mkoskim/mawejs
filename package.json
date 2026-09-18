@@ -4,19 +4,20 @@
   "description": "Editor for writers.",
   "author": "Markus Koskimies <mkoskim@gmail.com>",
   "scripts": {
-    "generate": "node scripts/run.mjs",
     "dev": "electron-vite -w dev",
     "build": "npm run build:vite && electron-builder",
     "build:vite": "electron-vite build",
     "build:release": "npm run build:vite && electron-builder --linux --windows --publish never",
     "preview": "electron-vite preview",
     "audit": "npm audit --omit=dev",
-    "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
-    "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox",
     "test": "node test/run.mjs",
     "test:coverage": "node test/run.mjs --experimental-test-coverage",
     "test:update": "node test/update.mjs",
-    "run:dev": "node test/dev.mjs"
+    "run:dev": "node test/dev.mjs",
+    "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
+    "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox",
+    "generate": "node scripts/generate.mjs",
+    "register": "node scripts/register.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -55,16 +56,11 @@
   },
   "main": "./out/main/index.js",
   "build": {
-    "appId": "io.github.koskimim.mawejs",
+    "appId": "io.github.mkoskim.mawejs",
     "files": [
-      "out/**/*",
-      "package.json"
+      "out/**/*"
     ],
     "extraResources": [
-      {
-        "from": "src/icon.png",
-        "to": "icon.png"
-      },
       "examples/tutorial/*"
     ],
     "linux": {
