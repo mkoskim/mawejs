@@ -49,6 +49,9 @@ export async function buildTest(testFile) {
         {
           name: "mawe-test-stubs",
           setup(build) {
+            build.onResolve({ filter: /^electron-updater$/ }, () => {
+              return { path: path.resolve(workdir, "test/_support/fakeUpdater.js") };
+            });
             build.onResolve({ filter: /^electron$/ }, () => {
               return { path: fakeElectronModule };
             });

@@ -64,4 +64,5 @@ import "./document/lang.test.mjs";
 import "./misc/path_suggestions.test.mjs";
 import "./misc/history.test.mjs";
 import "./misc/spellcheck.test.mjs";
+import "./misc/updates.test.mjs";
 /**/

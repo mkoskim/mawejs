@@ -9,6 +9,7 @@
 import hostapp from "./hostapp.js";
 import hostfs from "./hostfs.js";
 import dialog from "./hostdialog.js";
+import { getUpdateStatus, downloadUpdate, quitAndInstall } from "./hostupdate.js";
 
 export async function ipcDispatch(browserWindow, channel, cmd, ...args) {
   try {
@@ -26,6 +27,9 @@ function dispatch(browserWindow, channel, cmd, ...args) {
   switch(channel) {
     case "app": {
       switch(cmd) {
+        case "getUpdateStatus": return getUpdateStatus()
+        case "downloadUpdate": return downloadUpdate()
+        case "quitAndInstall": return quitAndInstall()
         case "info": return hostapp.info(...args)
         case "quit": return hostapp.quit(...args)
         case "log": return hostapp.log(...args)

@@ -25,6 +25,7 @@
     "@hello-pangea/dnd": "^18.0.1",
     "electron-devtools-installer": "^4.0.0",
     "electron-localshortcut": "^3.2.1",
+    "electron-updater": "^6.8.9",
     "electron-window-state": "^5.0.3",
     "immer": "^11.1.18",
     "is-gzip": "^2.0.0",
@@ -57,6 +58,11 @@
   "main": "./out/main/index.js",
   "build": {
     "appId": "io.github.mkoskim.mawejs",
+    "publish": {
+      "provider": "github",
+      "owner": "mkoskim",
+      "repo": "mawejs"
+    },
     "files": [
       "out/**/*"
     ],
@@ -70,6 +76,9 @@
       "icon": "src/icon.png",
       "category": "Office",
       "syncDesktopName": true
+    },
+    "nsis": {
+      "artifactName": "${name}.Setup.${version}.${ext}"
     },
     "win": {
       "target": [

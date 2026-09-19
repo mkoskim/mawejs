@@ -66,3 +66,21 @@ export function getSpellcheckLanguages() {
 export function setSpellcheck(lang, enabled) {
   return syscall("setSpellcheck", lang, enabled);
 }
+
+export function getUpdateStatus() {
+  return syscall("getUpdateStatus");
+}
+
+export function downloadUpdate() {
+  return syscall("downloadUpdate");
+}
+
+// Finish saving documents before calling this function.
+export function quitAndInstall() {
+  return syscall("quitAndInstall");
+}
+
+// Returns an unsubscribe function. Only status data crosses the preload bridge.
+export function onUpdateStatus(callback) {
+  return window.ipc.onUpdateStatus(callback);
+}

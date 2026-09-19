@@ -3,6 +3,7 @@ import { SnackbarProvider } from "notistack";
 import {Tooltip} from "@base-ui/react/tooltip"
 
 import {App} from "./gui/app/app.jsx"
+import {UpdatesProvider} from "./gui/app/updates.jsx"
 
 //import {store} from "./gui/app/store"
 //import {Provider} from "react-redux"
@@ -15,7 +16,9 @@ import {App} from "./gui/app/app.jsx"
 createRoot(document.getElementById('root')).render(
   <Tooltip.Provider>
   <SnackbarProvider>
-    <App />
+    <UpdatesProvider>
+      <App />
+    </UpdatesProvider>
   </SnackbarProvider>
   </Tooltip.Provider>
 );

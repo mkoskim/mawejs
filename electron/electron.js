@@ -14,6 +14,7 @@ import {initIpcDispatch} from "./backend/ipcmain.js";
 import localShortcut from "electron-localshortcut";
 import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import hostfs from "./backend/hostfs.js";
+import { initUpdates } from "./backend/hostupdate.js";
 
 const __dirname = import.meta.dirname;
 
@@ -121,6 +122,7 @@ app.whenReady().then(async () => {
   }
   initIpcDispatch();
   createWindow();
+  initUpdates();
 });
 
 app.on("window-all-closed", () => {
