@@ -3,6 +3,15 @@ name: Release packages
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Existing release tag to rebuild (for example v0.28.0); replaces matching assets"
+        required: true
+        type: string
+
+env:
+  RELEASE_TAG: ${{ inputs.release_tag || github.event.release.tag_name }}
 
 permissions:
   contents: read
@@ -22,7 +31,7 @@ jobs:
       - name: Checkout release tag
         uses: actions/checkout@v6
         with:
-          ref: refs/tags/${{ github.event.release.tag_name }}
+          ref: refs/tags/${{ env.RELEASE_TAG }}
 
       - name: Prepare Wine environment
         run: |
@@ -31,6 +40,24 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # Older tags lack the configuration needed to generate update metadata.
+      # Change only the build checkout; the release tag itself stays unchanged.
+      - name: Configure updates for manual rebuild
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const filename = 'package.json';
+          const pkg = JSON.parse(fs.readFileSync(filename, 'utf8'));
+          const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+          pkg.build.publish = { provider: 'github', owner, repo };
+          pkg.build.nsis = {
+            ...pkg.build.nsis,
+            artifactName: '${name}.Setup.${version}.${ext}',
+          };
+          fs.writeFileSync(filename, JSON.stringify(pkg, null, 2) + '\n');
+          NODE
 
       - name: Show versions
         run: |
@@ -93,7 +120,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: gh release upload "$RELEASE_TAG" dist/*.AppImage dist/*.exe dist/*.exe.blockmap --clobber
 
       # Expose updates only after all packages and blockmaps are available.
@@ -101,5 +127,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: gh release upload "$RELEASE_TAG" dist/latest.yml dist/latest-linux.yml --clobber
