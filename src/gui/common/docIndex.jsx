@@ -7,7 +7,7 @@
 //*****************************************************************************
 
 import React, {
-  useCallback, useRef,
+  useCallback, useRef, useMemo,
   useEffect,
   useDeferredValue,
 } from "react"
@@ -17,7 +17,6 @@ import { Droppable, Draggable } from "@hello-pangea/dnd";
 import {
   VBox, HBox, Filler,
   addClass,
-  DeferredRender
 } from "./factory";
 
 import {FormatWords} from "./components";
@@ -468,6 +467,11 @@ class IndexItem extends React.PureComponent {
 
   static numbered = ["act", "chapter"]
 
+  onClick = () => {
+    const {onActivate, id} = this.props
+    return onActivate && onActivate(id)
+  }
+
   render() {
     const {className, isCurrent, refCurrent, id, type, name, folded, numbered, words, wcFormat, onActivate, ...rest} = this.props
 
@@ -483,17 +487,29 @@ class IndexItem extends React.PureComponent {
       (isCurrent) ? "Current" : "",
     )
 
-    function onClick(ev) {
-      return onActivate && onActivate(id)
-    }
+    return <div ref={isCurrent ? refCurrent : null} className={classes} onClick={this.onClick} {...rest}>
+      <DeferredIndexItemContent id={id} type={type} name={name} words={words} wcFormat={wcFormat}/>
+    </div>
+  }
+}
 
-    return <div ref={isCurrent ? refCurrent : null} className={classes} onClick={onClick} {...rest}>
-      <DeferredRender>
+// Defer only presentation data. The row's identity, DnD props, activation,
+// current marker and ref stay on the immediately updated IndexItem shell.
+function DeferredIndexItemContent({id, type, name, words, wcFormat}) {
+  const content = useMemo(() => ({id, type, name, words, wcFormat}),
+    [id, type, name, words, wcFormat])
+  const deferredContent = useDeferredValue(content)
+  return <IndexItemContent {...deferredContent}/>
+}
+
+class IndexItemContent extends React.PureComponent {
+  render() {
+    const {id, type, name, words, wcFormat} = this.props
+    return <>
       <ItemIcon type={type}/>
       <ItemLabel type={type} name={name}/>
       {wcFormat && <><Filler/><div className="WordCount">{wcFormat(id, words)}</div></>}
-      </DeferredRender>
-    </div>
+    </>
   }
 }
 

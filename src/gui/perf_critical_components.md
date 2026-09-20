@@ -34,6 +34,11 @@ Keep both indexes in sync with their current structure. Wrapping `DocIndex` in
 This restriction concerns index structure; auxiliary calculations such as
 word-count formatting may still use deferred values.
 
+`IndexItem` updates its row shell, DnD props, activation target, current marker,
+and ref immediately. `DeferredIndexItemContent` defers a memoized presentation
+snapshot before rendering the `IndexItemContent` PureComponent (icon, label,
+and word count). The word-count formatter runs inside that deferred content.
+
 ## Main render branches
 
 Layout wrappers and many controls are omitted; both indexes reuse `DocIndex`.
@@ -44,7 +49,7 @@ App
 │  ├─ DocBar → WithDoc
 │  │  ├─ FileMenu → RecentItems
 │  │  ├─ ViewSelectButtons
-│  │  ├─ OpenFolderButton, HeadInfo, word/character counters
+│  │  ├─ OpenFolderButton, HeadInfo, DeferredWordCounts → WordCounts
 │  │  └─ HelpButton
 │  └─ ViewSwitch → EditView
 │     ├─ LeftPanel
@@ -52,7 +57,7 @@ App
 │     │  └─ ShowIndices → SectionIndex → DocIndex
 │     ├─ EditorBox
 │     │  ├─ FoldButtons, StyleButtons, Searching, ReviewButtons
-│     │  └─ Slate → SlateEditable → Editable
+│     │  └─ EditorSurface → Slate → SlateEditable → Editable
 │     └─ RightPanel
 │        ├─ ChooseRightPanel
 │        └─ RightPanelContent
@@ -67,6 +72,22 @@ App
 
 `Slate` and `Editable` above come from `slate-react`. Editor instances and index rows repeat according to the document and view settings.
 
+`EditorSurface` is a `PureComponent` per editor. Inactive surfaces stay mounted for index
+navigation, but changes to another section do not change their props. The active
+surface also receives `track` to preserve selection-driven updates.
+
+`DeferredWordCounts` defers the existing word-count object; its
+`WordCounts` PureComponent child renders the counters when that deferred value changes.
+
+`LeftPanelMenu` receives only its settings, style, and document updater and is
+a `PureComponent`. `RenderDialogs` is also a `PureComponent`, so unchanged dialog state does not
+render on document updates.
+
+`SectionIndex` receives the section name separately and receives section content
+only when its index is visible on that side. Its `current` prop is the cursor ID
+only for that visible section. Visible index structure is never deferred; moving
+the cursor to another section clears the previous section's current marker.
+
 ## Component inventory
 
 Each project component definition is listed once, regardless of instance count.
@@ -75,12 +96,12 @@ this inventory but remain relevant to performance.
 
 | Source | Components |
 | --- | --- |
-| [src/gui/app/app.jsx](app/app.jsx) | `App`, `View`, `DocBar`, `WithDoc`, `FileMenu`, `RecentItems`, `HelpButton`, `RenderDialogs`, `ZoomSnackbar` |
+| [src/gui/app/app.jsx](app/app.jsx) | `App`, `View`, `DocBar`, `WithDoc`, `FileMenu`, `RecentItems`, `HelpButton`, `RenderDialogs`, `ZoomSnackbar`, `DeferredWordCounts`, `WordCounts` |
 | [src/gui/common/factory.jsx](common/factory.jsx) | `VBox`, `ToolBox`, `HBox`, `Button`, `Tooltip`, `PopupArrow`, `IconButton`, `Menu`, `MenuItem`, `Filler`, `Submenu`, `Separator`, `MakeToggleGroup`, `ToggleButton`, `Popup`, `Input`, `DropDown`, `DeferredRender`, `Label`, `Dialog`, `VFiller` |
 | [src/gui/app/views.jsx](app/views.jsx) | `ViewSelectButtons`, `ViewSwitch` |
 | [src/gui/common/components.jsx](common/components.jsx) | `OpenFolderButton`, `HeadInfo`, `EditHeadButton`, `EditHead`, `ActualWords`, `WordsToday`, `TargetWords`, `MissingWords`, `CharInfo`, `ChooseVisibleElements`, `ChooseWordFormat`, `FormatWords` |
-| [src/gui/editor/editor.jsx](editor/editor.jsx) | `EditView`, `LeftPanel`, `LeftPanelMenu`, `ShowIndices`, `SectionIndex`, `SectionName`, `EditorBox`, `Searching`, `RightPanel`, `ChooseRightPanel`, `RightPanelContent` |
-| [src/gui/common/docIndex.jsx](common/docIndex.jsx) | `DocIndex`, `ActDropZone`, `ActItem`, `IndexItem`, `ItemIcon`, `ItemLabel`, `ChapterDropZone`, `ChapterItem`, `SceneDropZone`, `SceneItem` |
+| [src/gui/editor/editor.jsx](editor/editor.jsx) | `EditView`, `LeftPanel`, `LeftPanelMenu`, `ShowIndices`, `SectionIndex`, `SectionName`, `EditorBox`, `EditorSurface`, `Searching`, `RightPanel`, `ChooseRightPanel`, `RightPanelContent` |
+| [src/gui/common/docIndex.jsx](common/docIndex.jsx) | `DocIndex`, `ActDropZone`, `ActItem`, `IndexItem`, `DeferredIndexItemContent`, `IndexItemContent`, `ItemIcon`, `ItemLabel`, `ChapterDropZone`, `ChapterItem`, `SceneDropZone`, `SceneItem` |
 | [src/slatejs/slateButtons.jsx](../slatejs/slateButtons.jsx) | `FoldButtons`, `StyleButtons`, `ParagraphStyleSelect`, `CharStyleButtons`, `ReviewButtons` |
 | [src/slatejs/slateEditable.jsx](../slatejs/slateEditable.jsx) | `SlateEditable` |
 | [src/gui/editor/wordTable.jsx](editor/wordTable.jsx) | `WordTable`, `WordCountRow` |

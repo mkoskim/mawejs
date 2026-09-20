@@ -247,12 +247,15 @@ function View({ doc, updateDoc }) {
 //
 //*****************************************************************************
 
-function RenderDialogs({ dialogs, setDialogs, setRecent }) {
-  return <>
-    {dialogs.importing && <ImportDialog setDialogs={setDialogs} {...dialogs.importing}/>}
-    {dialogs.recent && <RecentDialog setDialogs={setDialogs} setRecent={setRecent} {...dialogs.recent}/>}
-    {dialogs.zoom && <ZoomSnackbar setDialogs={setDialogs} {...dialogs.zoom} />}
-  </>
+class RenderDialogs extends React.PureComponent {
+  render() {
+    const {dialogs, setDialogs, setRecent} = this.props
+    return <>
+      {dialogs.importing && <ImportDialog setDialogs={setDialogs} {...dialogs.importing}/>}
+      {dialogs.recent && <RecentDialog setDialogs={setDialogs} setRecent={setRecent} {...dialogs.recent}/>}
+      {dialogs.zoom && <ZoomSnackbar setDialogs={setDialogs} {...dialogs.zoom} />}
+    </>
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -316,13 +319,6 @@ function WithDoc({doc, updateDoc}) {
   const { head, draft } = doc
   const setSelected = useCallback(value => updateDoc(doc => { doc.ui.view.selected = value }), [])
 
-  const { chars, text, missing } = useDeferredValue({
-    chars: 0,
-    text: 0,
-    missing: 0,
-    ...(draft.words ?? {})
-  })
-
   useEffect(() => addHotkeys([
     [IsKey.CtrlS, (e) => reqSaveFile({setCommand})],
     [IsKey.CtrlW, (e) => reqCloseFile({setCommand})],
@@ -341,21 +337,39 @@ function WithDoc({doc, updateDoc}) {
     <Filler />
     <Separator />
 
-    <ActualWords text={text} />
-    <Separator />
-    <WordsToday text={text} last={doc.head.last} />
-    <Separator />
-    <TargetWords text={text} missing={missing} />
-    &nbsp;
-    <MissingWords missing={missing} />
-    <Separator />
-    <CharInfo chars={chars} />
+    <DeferredWordCounts words={draft.words} last={head.last} />
     {/* <CloseButton setCommand={setCommand}/> */}
 
     <Separator />
     <HelpButton setCommand={setCommand} />
     {/* <SettingsButton /> */}
   </ToolBox>
+}
+
+//-----------------------------------------------------------------------------
+
+const DeferredWordCounts = React.memo(function DeferredWordCounts({words, last}) {
+  const deferredWords = useDeferredValue(words)
+  return <WordCounts words={deferredWords} last={last} />
+})
+
+class WordCounts extends React.PureComponent {
+  render() {
+    const {words, last} = this.props
+    const {chars = 0, text = 0, missing = 0} = words ?? {}
+
+    return <>
+      <ActualWords text={text} />
+      <Separator />
+      <WordsToday text={text} last={last} />
+      <Separator />
+      <TargetWords text={text} missing={missing} />
+      &nbsp;
+      <MissingWords missing={missing} />
+      <Separator />
+      <CharInfo chars={chars} />
+    </>
+  }
 }
 
 //-----------------------------------------------------------------------------
