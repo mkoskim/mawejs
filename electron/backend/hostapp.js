@@ -25,8 +25,9 @@ function info() {
   }
 }
 
-function quit() {
-  app.quit();
+function quit(window, forced = false) {
+  if (forced) window.destroy();
+  else app.quit();
 }
 
 function log(message) {

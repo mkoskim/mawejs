@@ -422,7 +422,7 @@ export class Submenu extends React.PureComponent {
 export function MenuItem({ title, startIcon, endAdornment, endIcon, className, children, ...props }) {
   return <BUIMenu.Item className={addClass("Item", className)} {...props}>
     <span className="startIcon">{startIcon}</span>
-    {title}{children}<Filler />
+    <span className="Title">{title}{children}</span>
     <span className="endAdornment">{endAdornment}</span>
     <span className="endIcon">{endIcon}</span>
   </BUIMenu.Item>

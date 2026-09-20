@@ -9,7 +9,7 @@
 import "../common/theme/theme.css"
 
 import React, {
-  useEffect, useState, useCallback,
+  useEffect, useState, useCallback, useRef,
   useMemo, useContext,
   useDeferredValue,
 } from "react"
@@ -54,7 +54,7 @@ import { ViewSelectButtons, ViewSwitch } from "./views";
 import { SpellcheckContext, useSpellcheck } from "./spellcheck";
 import { useImmer } from "use-immer"
 
-import { appLog, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
+import { appQuit, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
 import { ImportDialog } from "../import/import";
 
 import { peekKeys } from "../common/hotkeys";
@@ -136,19 +136,27 @@ export function App(props) {
     }
   }, [command])
 
-  /*
   //---------------------------------------------------------------------------
   // Prevent window from closing when there are unsaved changes. We will ask
   // user, if they want to save changes before closing.
   //---------------------------------------------------------------------------
 
-  window.onbeforeunload = async (event) => {
-    appLog("onbeforeunload");
-    const response = await cmdDispatch({action: "do-confirm"}, dispatchArgs)
-    appLog(`Confirm response: ${response}`)
-    //if(!response) event.preventDefault();
-  }
-  */
+  const confirmingClose = useRef(false)
+
+  useEffect(() => {
+    window.onbeforeunload = (event) => {
+      if (!dirty) return
+      event.preventDefault()
+      event.returnValue = false
+      if (confirmingClose.current) return
+      confirmingClose.current = true
+      cmdDispatch({action: "do-confirm"}, dispatchArgs)
+        .then(confirmed => { if (confirmed) return appQuit(true) })
+        .catch(error => Inform.error(error.message))
+        .finally(() => { confirmingClose.current = false })
+    }
+    return () => { window.onbeforeunload = null }
+  })
 
   //---------------------------------------------------------------------------
   // Startup command
@@ -239,12 +247,15 @@ function View({ doc, updateDoc }) {
 //
 //*****************************************************************************
 
-function RenderDialogs({ dialogs, setDialogs, setRecent }) {
-  return <>
-    {dialogs.importing && <ImportDialog setDialogs={setDialogs} {...dialogs.importing}/>}
-    {dialogs.recent && <RecentDialog setDialogs={setDialogs} setRecent={setRecent} {...dialogs.recent}/>}
-    {dialogs.zoom && <ZoomSnackbar setDialogs={setDialogs} {...dialogs.zoom} />}
-  </>
+class RenderDialogs extends React.PureComponent {
+  render() {
+    const {dialogs, setDialogs, setRecent} = this.props
+    return <>
+      {dialogs.importing && <ImportDialog setDialogs={setDialogs} {...dialogs.importing}/>}
+      {dialogs.recent && <RecentDialog setDialogs={setDialogs} setRecent={setRecent} {...dialogs.recent}/>}
+      {dialogs.zoom && <ZoomSnackbar setDialogs={setDialogs} {...dialogs.zoom} />}
+    </>
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -308,13 +319,6 @@ function WithDoc({doc, updateDoc}) {
   const { head, draft } = doc
   const setSelected = useCallback(value => updateDoc(doc => { doc.ui.view.selected = value }), [])
 
-  const { chars, text, missing } = useDeferredValue({
-    chars: 0,
-    text: 0,
-    missing: 0,
-    ...(draft.words ?? {})
-  })
-
   useEffect(() => addHotkeys([
     [IsKey.CtrlS, (e) => reqSaveFile({setCommand})],
     [IsKey.CtrlW, (e) => reqCloseFile({setCommand})],
@@ -333,21 +337,39 @@ function WithDoc({doc, updateDoc}) {
     <Filler />
     <Separator />
 
-    <ActualWords text={text} />
-    <Separator />
-    <WordsToday text={text} last={doc.head.last} />
-    <Separator />
-    <TargetWords text={text} missing={missing} />
-    &nbsp;
-    <MissingWords missing={missing} />
-    <Separator />
-    <CharInfo chars={chars} />
+    <DeferredWordCounts words={draft.words} last={head.last} />
     {/* <CloseButton setCommand={setCommand}/> */}
 
     <Separator />
     <HelpButton setCommand={setCommand} />
     {/* <SettingsButton /> */}
   </ToolBox>
+}
+
+//-----------------------------------------------------------------------------
+
+const DeferredWordCounts = React.memo(function DeferredWordCounts({words, last}) {
+  const deferredWords = useDeferredValue(words)
+  return <WordCounts words={deferredWords} last={last} />
+})
+
+class WordCounts extends React.PureComponent {
+  render() {
+    const {words, last} = this.props
+    const {chars = 0, text = 0, missing = 0} = words ?? {}
+
+    return <>
+      <ActualWords text={text} />
+      <Separator />
+      <WordsToday text={text} last={last} />
+      <Separator />
+      <TargetWords text={text} missing={missing} />
+      &nbsp;
+      <MissingWords missing={missing} />
+      <Separator />
+      <CharInfo chars={chars} />
+    </>
+  }
 }
 
 //-----------------------------------------------------------------------------

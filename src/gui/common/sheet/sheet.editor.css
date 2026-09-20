@@ -262,5 +262,6 @@
   blockquote {
     margin-left: 2cm;
     margin-right: 2cm;
+    &::before {content: "> ";}
   }
 }

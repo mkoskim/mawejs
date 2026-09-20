@@ -368,35 +368,36 @@ function LeftPanel({settings}) {
   const {style, indexed, words} = left
 
   return <VBox side="left" style={style}>
-    <LeftPanelMenu settings={settings}/>
+    <LeftPanelMenu left={left} style={doc.ui.editor.toolbox.left} updateDoc={settings.updateDoc}/>
     <ShowIndices settings={settings} side="left" indexed={indexed} words={words}/>
   </VBox>
 }
 
-function LeftPanelMenu({settings}) {
+class LeftPanelMenu extends React.PureComponent {
+  setIndexed = value => this.props.updateDoc(doc => {doc.ui.editor.left.indexed = value})
+  setWords = value => this.props.updateDoc(doc => {doc.ui.editor.left.words = value})
 
-  const {doc, updateDoc} = settings
+  render() {
+    const {left, style} = this.props
+    const {indexed, words} = left
 
-  const {indexed, words} = doc.ui.editor.left
-  const setIndexed = useCallback(value => updateDoc(doc => {doc.ui.editor.left.indexed = value}), [updateDoc])
-  const setWords = useCallback(value => updateDoc(doc => {doc.ui.editor.left.words = value}), [updateDoc])
-
-  return <ToolBox side="top" style={doc.ui.editor.toolbox.left}>
-    {/* <ChooseLeftPanel disabled={disabled} selected={selected} setSelected={setSelected}/> */}
-    <ChooseVisibleElements
-      choices={LeftIndexChoices.visible}
-      selected={indexed}
-      setSelected={setIndexed}
-    />
-    {/*<Separator/>*/}
-    <Filler/>
-    <Separator/>
-    <ChooseWordFormat
-      choices={LeftIndexChoices.words}
-      selected={words}
-      setSelected={setWords}
-    />
-  </ToolBox>
+    return <ToolBox side="top" style={style}>
+      {/* <ChooseLeftPanel disabled={disabled} selected={selected} setSelected={setSelected}/> */}
+      <ChooseVisibleElements
+        choices={LeftIndexChoices.visible}
+        selected={indexed}
+        setSelected={this.setIndexed}
+      />
+      {/*<Separator/>*/}
+      <Filler/>
+      <Separator/>
+      <ChooseWordFormat
+        choices={LeftIndexChoices.words}
+        selected={words}
+        setSelected={this.setWords}
+      />
+    </ToolBox>
+  }
 }
 
 //---------------------------------------------------------------------------
@@ -508,6 +509,7 @@ function ShowIndices({style, settings, side, indexed, words}) {
     track,
   } = settings
   const {indexing} = doc.ui.editor
+  const currentSection = track?.id ? IDtoPath(track.id).sectID : undefined
   const updateIndexing = useCallback((sectID, value) => updateDoc(doc => {doc.ui.editor.indexing[sectID] = value}), [updateDoc])
 
   return <VBox style={style} className="TOC">
@@ -516,14 +518,15 @@ function ShowIndices({style, settings, side, indexed, words}) {
       <SectionIndex
         key={key}
         sectID={key}
-        section={doc[key]}
+        name={doc[key].name}
+        section={indexing[key] === side ? doc[key] : undefined}
         side={side}
         indexing={indexing}
         updateIndexing={updateIndexing}
         indexed={indexed}
         words={words}
         setActive={setActive}
-        track={track}
+        current={indexing[key] === side && currentSection === key ? track.id : undefined}
       />
     )
   }
@@ -533,8 +536,7 @@ function ShowIndices({style, settings, side, indexed, words}) {
 class SectionIndex extends React.PureComponent {
 
   render() {
-    const {section, sectID, side, indexing, updateIndexing, indexed, words, setActive, track} = this.props
-    const {name} = section
+    const {name, section, sectID, side, indexing, updateIndexing, indexed, words, setActive, current} = this.props
     const visible = indexing[sectID] === side
 
     return <div className="SectionZone">
@@ -552,7 +554,7 @@ class SectionIndex extends React.PureComponent {
         include={indexed}
         wcFormat={words}
         setActive={setActive}
-        current={track?.id}
+        current={current}
       />}
     </div>
   }
@@ -687,13 +689,30 @@ function EditorBox({style, settings}) {
     <div className="Board Editor" style={{...style}}>
     {
       Object.entries(editors).map(([key, editor]) =>
-        <Slate key={key} editor={editor} initialValue={editor.children}>
-          <SlateEditable visible={active === key} className="Sheet Regular" highlight={highlightText}/>
-        </Slate>
+        <EditorSurface
+          key={key}
+          editor={editor}
+          value={editor.children}
+          visible={active === key}
+          highlight={highlightText}
+          track={active === key ? track : undefined}
+        />
       )
     }
     </div>
   </VBox>
+}
+
+// Keep inactive editors mounted for index navigation, without rendering them
+// on changes to another section. Track keeps the active surface updating on
+// selection changes as well as content changes.
+class EditorSurface extends React.PureComponent {
+  render() {
+    const {editor, value, visible, highlight} = this.props
+    return <Slate editor={editor} initialValue={value}>
+      <SlateEditable visible={visible} className="Sheet Regular" highlight={highlight}/>
+    </Slate>
+  }
 }
 
 //*****************************************************************************

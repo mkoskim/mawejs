@@ -11,7 +11,7 @@ import {
   Transforms,
   Element,
 } from 'slate'
-import { useSlate, Editable } from 'slate-react'
+import { useSlateStatic, Editable } from 'slate-react'
 
 import {
   paragraphTypes, textTypes,
@@ -37,9 +37,9 @@ import isHotkey from "../util/is-hotkey.js"
 export function SlateEditable({className, visible, highlight, ...props}) {
   //console.log("Search:", search)
 
-  const editor = useSlate()
+  const editor = useSlateStatic()
 
-  const re = useMemo(() => searchPattern(highlight), [highlight])
+  const re = useMemo(() => highlight?.length > 1 ? searchPattern(highlight) : undefined, [highlight])
 
   const highlighter = useCallback(
     re

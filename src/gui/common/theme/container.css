@@ -224,13 +224,18 @@
       min-width: 12pt;
     }
 
+    .Title {
+      margin-right: 12pt;
+      flex-grow: 1;
+    }
+
     .endAdornment {
       color: grey;
     }
 
     .endIcon {
       min-width: 12pt;
-      color: grey;
+      /*color: grey;*/
     }
 
     /*

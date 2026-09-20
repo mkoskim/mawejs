@@ -83,7 +83,13 @@ async function createWindow()
   //console.log("Languages:", mainWindow.webContents.session.availableSpellCheckerLanguages)
   //mainWindow.webContents.session.setSpellCheckerLanguages(['fi'])
 
-  localShortcut.register(mainWindow, 'F5', () => { mainWindow.webContents.reloadIgnoringCache(); });
+  localShortcut.register(mainWindow, 'F5', () => {
+    const contents = mainWindow.webContents;
+    // F5 is a development reset: discard changes without the close confirmation.
+    contents.executeJavaScript('window.onbeforeunload = null;')
+      .then(() => contents.reloadIgnoringCache())
+      .catch(error => console.error('Reload failed:', error));
+  });
   localShortcut.register(mainWindow, 'F12', () => { mainWindow.webContents.toggleDevTools(); });
 
   if(is.dev && process.env.ELECTRON_RENDERER_URL)

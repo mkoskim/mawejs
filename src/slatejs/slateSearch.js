@@ -26,11 +26,8 @@ export function text2Regexp(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
 }
 
-const MIN_SEARCH_LENGTH = 2
-
 export function searchPattern(text, opts = "gi") {
   if(typeof(text) !== "string") return undefined
-  if(text.length < MIN_SEARCH_LENGTH) return undefined
   return new RegExp(text2Regexp(text), opts)
 }
 
