@@ -1,0 +1,11 @@
+/* NoteCard owns the appearance; updater owns its position and size. */
+.update-notification {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1;
+  width: max-content;
+  min-width: min(300px, calc(100vw - 32px));
+  max-width: min(440px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+}

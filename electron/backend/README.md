@@ -6,3 +6,4 @@ Main-process services called through the [Electron bridge](../README.md).
 - `hostfs.js`: local files and system paths.
 - `hostdialog.js`: native dialogs.
 - `hostapp.js`: application actions and information.
+- `hostupdate.js`: checks, downloads and installs application updates.

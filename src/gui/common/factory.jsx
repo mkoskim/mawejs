@@ -12,7 +12,7 @@ import React, {
 
 import { Icon } from "./icons"
 import { IsKey, addHotkeys } from "./hotkeys"
-import { enqueueSnackbar, closeSnackbar } from "notistack";
+import { enqueueSnackbar, closeSnackbar, MaterialDesignContent } from "notistack";
 import { isNotEmpty } from "../../util";
 
 import {
@@ -453,6 +453,20 @@ export function Dialog({children, size, className = "Dialog", ...props}) {
 // Snackbar inform
 //
 //*****************************************************************************
+
+// Render the notification appearance directly, without a provider or queue.
+// Positioning, visibility and lifetime belong to the caller.
+export function Notification({variant, message, action, iconVariant = {}, ...props}) {
+  return <div {...props}>
+    <MaterialDesignContent
+      variant={variant}
+      message={message}
+      action={action}
+      iconVariant={iconVariant}
+      style={{minWidth: 0, width: "100%", boxSizing: "border-box"}}
+    />
+  </div>
+}
 
 export const Inform = {
   success: msg => {

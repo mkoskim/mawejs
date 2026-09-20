@@ -4,59 +4,59 @@
 //
 //*****************************************************************************
 
-//-----------------------------------------------------------------------------
-// ISO 639-1: https://en.wikipedia.org/wiki/ISO_639-1
-// IETF BCP 47: https://en.wikipedia.org/wiki/IETF_language_tag
-// BCP 47: https://developer.mozilla.org/en-US/docs/Glossary/BCP_47_language_tag
-//-----------------------------------------------------------------------------
+import {languages, aliases} from './languages.json';
 
 //-----------------------------------------------------------------------------
-// Import iso-639-1 library and fill in RTF & TeX support..
+// Languages as list, sorted alphabetically by BCP 47 tag
 //-----------------------------------------------------------------------------
 
-import ISO6391 from 'iso-639-1';
+export const languageOptions = Object.entries(languages)
+  .map(([code, {name, native}]) => ({
+    code,
+    name,
+    ...(native ? {native} : {}),
+  }))
+  .sort((a, b) => a.code.localeCompare(b.code))
 
-const support = {
-  "fi": {rtf: 1035, tex: "finnish"},
-  "en": {rtf: 1033 },
+//-----------------------------------------------------------------------------
+// Language support functions: Query languages by BCP 47 language tags
+//-----------------------------------------------------------------------------
+
+export function getLanguage(lang) {
+  const code = aliases[lang] ?? lang
+  return languages[code]
 }
-
-export const languages = Object.fromEntries(
-  ISO6391.getLanguages(ISO6391.getAllCodes())
-  .map(({code, name, nativeName}) => [code, {name, native: nativeName, ...support[code]}])
-);
-
-export const languageOptions = Object.entries(languages).map(([code, {name, native}]) => ({
-  code,
-  name,
-  native,
-}))
 
 export function isLangSupported(lang) {
-  return Object.hasOwn(languages, lang)
+  return getLanguage(lang) !== undefined
 }
+
+export function getLangName(lang) {
+  return getLanguage(lang)?.name ?? lang
+}
+
+export function getLangNative(lang) {
+  const language = getLanguage(lang)
+  return language?.native ?? language?.name ?? lang
+}
+
+export function getLangRTF(lang) {
+  return getLanguage(lang)?.rtf
+}
+
+export function getLangTEX(lang) {
+  return getLanguage(lang)?.babel
+}
+
+//-----------------------------------------------------------------------------
+// Query matcher for autocomplete
+//-----------------------------------------------------------------------------
 
 export function languageMatches({code, name, native}, query) {
   const search = query.trim().toLowerCase()
   return (
     code.toLowerCase().startsWith(search) ||
-    name.toLowerCase().startsWith(search) ||
-    native.toLowerCase().startsWith(search)
+    name.toLowerCase().split(' ').some(word => word.startsWith(search)) ||
+    native?.toLowerCase().split(' ').some(word => word.startsWith(search))
   )
-}
-
-export function getLangName(lang) {
-  return languages[lang]?.name ?? lang
-}
-
-export function getLangNative(lang) {
-  return languages[lang]?.native ?? lang
-}
-
-export function getLangRTF(lang) {
-  return languages[lang]?.rtf
-}
-
-export function getLangTEX(lang) {
-  return languages[lang]?.tex
 }

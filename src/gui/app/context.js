@@ -5,7 +5,7 @@
 //*****************************************************************************
 
 import {
-  createContext
+  createContext, createElement, useState
 } from "react"
 
 import { fileOpenDialog, fileSaveDialog } from "../../system/dialog"
@@ -21,9 +21,8 @@ import {
   referenceWords, updateWordsHistory
 } from "../../document/history";
 import { confirmUnsavedDlg } from "../../system/dialog";
-import { appQuit } from "../../system/host"
+import { appQuit, downloadUpdate, quitAndInstall } from "../../system/host"
 import { recentRemove, recentAdd } from "./settings"
-
 
 //-----------------------------------------------------------------------------
 // "Command" Context is meant for subcomponents to trigger top level components
@@ -31,6 +30,16 @@ import { recentRemove, recentAdd } from "./settings"
 //-----------------------------------------------------------------------------
 
 export const CmdContext = createContext(null)
+export const CommandStateContext = createContext(undefined)
+
+// Share commands with App's siblings without exposing document state. Keep the
+// stable sender separate from command state so only the handler observes commands.
+export function CmdProvider({children}) {
+  const [command, setCommand] = useState()
+  return createElement(CmdContext.Provider, {value: setCommand},
+    createElement(CommandStateContext.Provider, {value: command}, children)
+  )
+}
 
 //-----------------------------------------------------------------------------
 
@@ -149,6 +158,7 @@ export async function cmdDispatch(command, args) {
     case "req-rename": return reqRename(command);
     case "req-close": return reqClose(command);
     case "req-quit": return reqQuit(command);
+    case "req-relaunch": return reqRelaunch(command);
 
     // Low level actions
 
@@ -283,6 +293,12 @@ export async function cmdDispatch(command, args) {
     const proceed = await confirmUnsaved()
     if(!proceed) return
     appQuit()
+  }
+
+  async function reqRelaunch() {
+    const proceed = await confirmUnsaved()
+    if(!proceed) return
+    quitAndInstall()
   }
 
   //---------------------------------------------------------------------------
@@ -457,6 +473,20 @@ export async function reqOpenFolder(filename) {
   const dirname = await fs.dirname(filename ?? ".")
   console.log("Open folder:", dirname)
   fs.openexternal(dirname)
+}
+
+//-----------------------------------------------------------------------------
+// Autoupdater requests
+//-----------------------------------------------------------------------------
+
+export function reqUpdateDownload({setCommand}) {
+  console.log("reqUpdateDownload")
+  downloadUpdate()
+}
+
+export function reqRelaunch({setCommand}) {
+  console.log("reqUpdateInstall")
+  setCommand({action: "req-relaunch"})
 }
 
 //-----------------------------------------------------------------------------

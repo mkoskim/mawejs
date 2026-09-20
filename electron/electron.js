@@ -14,7 +14,7 @@ import {initIpcDispatch} from "./backend/ipcmain.js";
 import localShortcut from "electron-localshortcut";
 import { installExtension, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import hostfs from "./backend/hostfs.js";
-import { registerIcon } from "./desktop.js";
+import { initUpdates } from "./backend/hostupdate.js";
 
 const __dirname = import.meta.dirname;
 
@@ -42,12 +42,6 @@ console.log("- userData:", hostfs.fsGetLocation("userData"))
 // Main Window
 //-----------------------------------------------------------------------------
 
-const iconPath = app.isPackaged
-  ? path.join(process.resourcesPath, 'icon.png')
-  : path.join(app.getAppPath(), 'src/icon.png')
-
-registerIcon(iconPath, !app.isPackaged);
-
 var mainWindow = null;
 
 async function createWindow()
@@ -62,13 +56,13 @@ async function createWindow()
     y: mainWindowState.y,
     width: mainWindowState.width,
     height: mainWindowState.height,
-    icon: iconPath,
 
     webPreferences: {
       preload: path.join(__dirname, "../preload/index.js"),
     },
 
     /*
+    icon: path.join(__dirname, "src", "icon.png"),
     // remove the default titlebar
     titleBarStyle: 'hidden',
     // expose window controlls in Windows/Linux
@@ -128,6 +122,7 @@ app.whenReady().then(async () => {
   }
   initIpcDispatch();
   createWindow();
+  initUpdates();
 });
 
 app.on("window-all-closed", () => {

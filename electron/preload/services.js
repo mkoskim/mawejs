@@ -10,4 +10,9 @@ const {contextBridge, ipcRenderer} = require("electron");
 
 contextBridge.exposeInMainWorld("ipc", {
   invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args),
+  onUpdateStatus: callback => {
+    const listener = (_event, status) => callback(status);
+    ipcRenderer.on("app:update-status", listener);
+    return () => ipcRenderer.removeListener("app:update-status", listener);
+  },
 });

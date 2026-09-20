@@ -5,6 +5,11 @@ conditional menus, dialogs, and right-panel alternatives. Other main views and
 `WithoutDoc` are excluded. This is a source-level map of possible render branches,
 not a measurement of mounted instances or renders per keystroke.
 
+`CmdProvider` in `src/index.jsx` wraps both `App` and `UpdateNotifier`.
+Its stable `CmdContext` value sends commands; only `App` consumes
+`CommandStateContext` and handles them with current document state.
+`UpdateNotifier` is an `App` sibling, so typing does not render the update card.
+
 ## Typing update path
 
 In [slateDocument.js](../slatejs/slateDocument.js), `bindEditors()` calls

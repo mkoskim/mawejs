@@ -146,10 +146,6 @@
   box-shadow: 5px 5px 10px var(--popup-border);
 }
 
-.LanguageButton {
-  white-space: nowrap;
-}
-
 .LanguagePopup {
   box-sizing: border-box;
   width: 18rem;
@@ -172,6 +168,7 @@
     max-height: 12rem;
     overflow-y: auto;
     outline: none;
+    overflow-x: hidden;
   }
 
   .LanguageItem {
@@ -180,13 +177,14 @@
     padding: 5px 7px;
     border-radius: 3px;
     cursor: default;
+    white-space: nowrap;
 
     &[data-highlighted] {
       background-color: #8BF;
     }
   }
 
-  .LanguageCode {
+  .xLanguageCode {
     min-width: 2.5rem;
     font-family: monospace;
     font-weight: bold;

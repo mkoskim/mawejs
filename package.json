@@ -10,12 +10,14 @@
     "build:release": "npm run build:vite && electron-builder --linux --windows --publish never",
     "preview": "electron-vite preview",
     "audit": "npm audit --omit=dev",
-    "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
-    "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox",
     "test": "node test/run.mjs",
     "test:coverage": "node test/run.mjs --experimental-test-coverage",
     "test:update": "node test/update.mjs",
-    "run:dev": "node test/dev.mjs"
+    "run:dev": "node test/dev.mjs",
+    "fresh": "rm -rf dist build node_modules package-lock.json && npm install",
+    "fix": "sudo chown root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox",
+    "generate": "node scripts/generate.mjs",
+    "register": "node scripts/register.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
@@ -23,10 +25,10 @@
     "@hello-pangea/dnd": "^18.0.1",
     "electron-devtools-installer": "^4.0.0",
     "electron-localshortcut": "^3.2.1",
+    "electron-updater": "^6.8.9",
     "electron-window-state": "^5.0.3",
     "immer": "^11.1.18",
     "is-gzip": "^2.0.0",
-    "iso-639-1": "^3.1.6",
     "mammoth": "^1.12.3",
     "nanoid": "^6.0.1",
     "notistack": "^3.0.2",
@@ -49,21 +51,22 @@
     "electron": "^41.10.7",
     "electron-builder": "^26.15.3",
     "electron-vite": "^5.0.0",
-    "node": "^24.21.0"
+    "lcid": "^5.0.0",
+    "node": "^24.21.0",
+    "tar": "^7.5.22"
   },
-  "desktopName": "io.github.mkoskim.mawejs",
   "main": "./out/main/index.js",
   "build": {
     "appId": "io.github.mkoskim.mawejs",
+    "publish": {
+      "provider": "github",
+      "owner": "mkoskim",
+      "repo": "mawejs"
+    },
     "files": [
-      "out/**/*",
-      "package.json"
+      "out/**/*"
     ],
     "extraResources": [
-      {
-        "from": "src/icon.png",
-        "to": "icon.png"
-      },
       "examples/tutorial/*"
     ],
     "linux": {
@@ -73,6 +76,9 @@
       "icon": "src/icon.png",
       "category": "Office",
       "syncDesktopName": true
+    },
+    "nsis": {
+      "artifactName": "${name}.Setup.${version}.${ext}"
     },
     "win": {
       "target": [
