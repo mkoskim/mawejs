@@ -98,7 +98,7 @@ export const paragraphTypes = {
   "missing":   {name: "Missing",  markup: "!!", shortcut: "Ctrl+Alt+M",           bk: "p", reset: "p" },
   "bookmark":  {name: "Bookmark", markup: "=>", shortcut: "Ctrl+Alt+B", eol: "p", bk: "p", reset: "p" },
   "tags":      {name: "Tags",     markup: "@@",                         eol: "p", bk: "p", reset: "p" },
-  "quote":     {name: "Quote",                  shortcut: "Ctrl+Alt+Q",           bk: "p", reset: "p" },
+  "quote":     {name: "Quote",    markup: ">",  shortcut: "Ctrl+Alt+Q",           bk: "p", reset: "p" },
   "p":         {name: "Text",                   shortcut: "Ctrl+Alt+0"},
 
   // Unused markups
