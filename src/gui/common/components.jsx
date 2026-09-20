@@ -130,7 +130,7 @@ export class ChooseLanguage extends React.PureComponent {
     >
       <Autocomplete.Trigger render={
         <Button
-          className="LanguageButton"
+          //className="LanguageButton"
           tooltip={tooltip}
           //color={lang ? supported ? "success" : "error" : undefined}
         >

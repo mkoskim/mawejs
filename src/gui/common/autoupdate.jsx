@@ -6,7 +6,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { getUpdateStatus, onUpdateStatus } from "../../system/host";
 import { CmdContext, reqUpdateDownload, reqRelaunch } from "../app/context";
 import { useAppInfo } from "../app/appinfo";
-import { Button, MenuItem } from "./factory";
+import { Button, IconButton, Icon, MenuItem, Notification } from "./factory";
 import "./theme/autoupdate.css";
 
 //-----------------------------------------------------------------------------
@@ -57,7 +57,7 @@ export function UpdateMenuItem({setCommand}) {
   const status = useUpdates()
   const app = useAppInfo() ?? {version: "---"}
 
-  console.log("[Update menu]", status)
+  //console.log("[Update menu]", status)
   switch(status.status) {
     //case "idle":
     //case "up-to-date":
@@ -89,17 +89,19 @@ export function UpdateMenuItem({setCommand}) {
 
 export function UpdateNotifier() {
   const {status, version, updateMethod, percent } = useUpdates();
+  const timeout = 3000
 
   switch (status) {
-    case "checking":   return <UpdateNote status={status} text={"Checking..."}/>
-    case "skipped":    return <UpdateNote status={status} text={"Skipped"} timeout={3000}/>
-    case "up-to-date": return <UpdateNote status={status} text={"Up to date"} timeout={3000}/>
+    case "checking":   return <UpdateNote status={status} message={"Checking..."}/>
+    case "skipped":    return <UpdateNote status={status} message={"Skipped"} timeout={timeout}/>
+    case "up-to-date": return <UpdateNote status={status} variant="success" message={"Up to date"} timeout={timeout}/>
     case "available":  return <UpdateAvailable status={status} version={version} updateMethod={updateMethod}/>
-    case "error":      return <UpdateNote status={status} text={"Error"}/>
 
-    case "downloading": return <UpdateNote status={status} text={`Downloading: ${Math.round(percent)}%`}/>
+    case "downloading": return <UpdateNote status={status} message={`Downloading: ${Math.round(percent)}%`}/>
     case "downloaded":  return <UpdateInstall status={status} version={version}/>
-    case "installing":  return <UpdateNote status={status} text={"Installing"}/>
+    case "installing":  return <UpdateNote status={status} message={"Installing"}/>
+
+    case "error":      return <UpdateNote status={status} variant="error" message={"Error"}/>
 
     case "idle":
     default: return null;
@@ -113,15 +115,17 @@ export function UpdateNotifier() {
 function UpdateAvailable({status, version, updateMethod}) {
   if(updateMethod === "automatic") {
     return <UpdateNote
-    status={status}
-      text={`Download: v${version}`}
-      action={reqUpdateDownload}
+      status={status}
+      message={`Available: v${version}`}
+      variant="warning"
+      action={<Button onClick={() => reqUpdateDownload({})}>Download</Button>}
       dismissable={true}
     />
   }
   return <UpdateNote
     status={status}
-    text={`Available: v${version}`}
+    variant="warning"
+    message={`Available: v${version}`}
     dismissable={true}
   />
 }
@@ -130,8 +134,9 @@ function UpdateInstall({status, version}) {
   const setCommand = useContext(CmdContext)
   return <UpdateNote
     status={status}
-    text={`Relaunch to update`}
-    action={() => reqRelaunch({setCommand})}
+    variant="warning"
+    message={`Relaunch to update`}
+    action={<Button onClick={() => reqRelaunch({setCommand})}>Relaunch</Button>}
     dismissable={true}
   />
 }
@@ -141,7 +146,7 @@ function UpdateInstall({status, version}) {
 // do not render it. Only transient results need a timer; idle does no work.
 //-----------------------------------------------------------------------------
 
-function UpdateNote({status, text, timeout, dismissable = false, action}) {
+function UpdateNote({status, message, variant, timeout, dismissable = false, action}) {
 
   const [dismissed, setDismissed] = useState(false);
 
@@ -160,25 +165,24 @@ function UpdateNote({status, text, timeout, dismissable = false, action}) {
   }
 
   if (dismissed) {
-    console.log("[Update note]", "Closed")
+    //console.log("[Update note]", "Closed")
     return null;
   }
 
   console.log("[Update note]", status)
 
-  return <aside
+  return <Notification
       className="update-notification"
-      data-status={status}
-      aria-label="Application updates"
-      onClick={action}
+      //onClick={action}
+      variant={variant}
+      message={message}
+      action={
+        <div className="HBox Toolbar">
+          {action}
+          {dismissable && <IconButton onClick={onDismiss}><Icon.Close/></IconButton>}
+        </div>
+      }
+
     >
-    <div className="update-notification-message" role="status" aria-live="polite" aria-atomic="true">
-      {text}
-    </div>
-    {dismissable &&
-      <Button className="update-notification-close" onClick={onDismiss}>
-        X
-      </Button>
-    }
-  </aside>;
+  </Notification>;
 }
