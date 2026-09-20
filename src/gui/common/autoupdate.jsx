@@ -113,19 +113,15 @@ export function UpdateNotifier() {
 //-----------------------------------------------------------------------------
 
 function UpdateAvailable({status, version, updateMethod}) {
-  if(updateMethod === "automatic") {
-    return <UpdateNote
-      status={status}
-      message={`Available: v${version}`}
-      variant="warning"
-      action={<Button onClick={() => reqUpdateDownload({})}>Download</Button>}
-      dismissable={true}
-    />
-  }
+  const action = (updateMethod === "automatic")
+    ? <Button onClick={() => reqUpdateDownload({})}>Download</Button>
+    : undefined
+
   return <UpdateNote
     status={status}
-    variant="warning"
     message={`Available: v${version}`}
+    variant="warning"
+    action={action}
     dismissable={true}
   />
 }
