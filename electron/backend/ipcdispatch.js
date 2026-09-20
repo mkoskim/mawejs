@@ -31,7 +31,7 @@ function dispatch(browserWindow, channel, cmd, ...args) {
         case "downloadUpdate": return downloadUpdate()
         case "quitAndInstall": return quitAndInstall()
         case "info": return hostapp.info(...args)
-        case "quit": return hostapp.quit(...args)
+        case "quit": return hostapp.quit(browserWindow, ...args)
         case "log": return hostapp.log(...args)
         case "beep": return hostapp.beep(...args)
         case "zoom": return hostapp.zoom(browserWindow, ...args)

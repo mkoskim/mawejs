@@ -21,8 +21,9 @@ function syscall(cmd, ...args) {
 // System dialogs
 //-----------------------------------------------------------------------------
 
-export function appQuit(options) {
-  return syscall("quit", options);
+// Force only after confirming unsaved changes and finishing any save.
+export function appQuit(forced = false) {
+  return syscall("quit", forced);
 }
 
 export function appLog(message) {

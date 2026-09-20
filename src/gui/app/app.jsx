@@ -9,7 +9,7 @@
 import "../common/theme/theme.css"
 
 import React, {
-  useEffect, useState, useCallback,
+  useEffect, useState, useCallback, useRef,
   useMemo, useContext,
   useDeferredValue,
 } from "react"
@@ -54,7 +54,7 @@ import { ViewSelectButtons, ViewSwitch } from "./views";
 import { SpellcheckContext, useSpellcheck } from "./spellcheck";
 import { useImmer } from "use-immer"
 
-import { appLog, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
+import { appQuit, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
 import { ImportDialog } from "../import/import";
 
 import { peekKeys } from "../common/hotkeys";
@@ -136,19 +136,27 @@ export function App(props) {
     }
   }, [command])
 
-  /*
   //---------------------------------------------------------------------------
   // Prevent window from closing when there are unsaved changes. We will ask
   // user, if they want to save changes before closing.
   //---------------------------------------------------------------------------
 
-  window.onbeforeunload = async (event) => {
-    appLog("onbeforeunload");
-    const response = await cmdDispatch({action: "do-confirm"}, dispatchArgs)
-    appLog(`Confirm response: ${response}`)
-    //if(!response) event.preventDefault();
-  }
-  */
+  const confirmingClose = useRef(false)
+
+  useEffect(() => {
+    window.onbeforeunload = (event) => {
+      if (!dirty) return
+      event.preventDefault()
+      event.returnValue = false
+      if (confirmingClose.current) return
+      confirmingClose.current = true
+      cmdDispatch({action: "do-confirm"}, dispatchArgs)
+        .then(confirmed => { if (confirmed) return appQuit(true) })
+        .catch(error => Inform.error(error.message))
+        .finally(() => { confirmingClose.current = false })
+    }
+    return () => { window.onbeforeunload = null }
+  })
 
   //---------------------------------------------------------------------------
   // Startup command
