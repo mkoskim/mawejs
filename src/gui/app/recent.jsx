@@ -45,6 +45,9 @@ export function RecentDialog({ setDialogs, setRecent }) {
     <ToolBox side="top">
       <Label style={{fontWeight: "bold"}}>Open recent</Label>
       <Filler/>
+      <Separator/>
+      <Button onClick={onOpenFiles}>Open...</Button>
+      <Separator/>
       <IconButton onClick={cancel}><Icon.Close/></IconButton>
     </ToolBox>
 
@@ -53,10 +56,6 @@ export function RecentDialog({ setDialogs, setRecent }) {
       <FileEntry key={entry.id} name={entry.name} id={entry.id} onClick={onClick} onRemove={onRemove}/>
     ))}
     </VBox>
-
-    <HBox className="Panel" justify="end" side="bottom">
-      <Button color="success" variant="filled" onClick={onOpenFiles}>Open files...</Button>
-    </HBox>
   </Dialog>
 }
 
@@ -82,7 +81,7 @@ function FileEntry({name, id, onClick, onRemove}) {
 
   return (
    <HBox className="Entry" style={{color: color(), alignItems: "center"}}>
-    <VFiller text={name} onClick={e => exists && onClick(id)}>
+    <VFiller text={name} onDoubleClick={e => exists && onClick(id)}>
       <Label text={name} style={{ fontWeight: 500 }} />
       <Label
           text={squeezeDirPath(id, name, 8)}
