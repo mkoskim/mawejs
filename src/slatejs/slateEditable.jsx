@@ -39,7 +39,7 @@ export function SlateEditable({className, visible, highlight, ...props}) {
 
   const editor = useSlate()
 
-  const re = useMemo(() => searchPattern(highlight), [highlight])
+  const re = useMemo(() => highlight?.length > 1 ? searchPattern(highlight) : undefined, [highlight])
 
   const highlighter = useCallback(
     re
