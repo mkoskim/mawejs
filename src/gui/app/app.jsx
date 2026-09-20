@@ -28,10 +28,12 @@ import {
   HeadInfo, CharInfo, WordsToday, ActualWords, TargetWords, MissingWords
 } from "../common/components";
 
+import { UpdateMenuItem } from "../common/autoupdate.jsx";
+
 //import { WorkspaceBar } from "../sketches/workspacebar/workspacebar";
 
 import {
-  CmdContext, cmdDispatch,
+  CmdContext, CommandStateContext, cmdDispatch,
   reqNew,
   reqOpenFile,
   reqLoadFile, reqLoadResource,
@@ -52,12 +54,12 @@ import { ViewSelectButtons, ViewSwitch } from "./views";
 import { SpellcheckContext, useSpellcheck } from "./spellcheck";
 import { useImmer } from "use-immer"
 
-import { appInfo, appLog, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
+import { appLog, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
 import { ImportDialog } from "../import/import";
 
 import { peekKeys } from "../common/hotkeys";
 import { RecentDialog } from "./recent";
-import { getSpellcheckLanguages } from "../../system/host.js";
+import { useAppInfo } from "./appinfo.jsx";
 
 //*****************************************************************************
 //
@@ -68,22 +70,10 @@ import { getSpellcheckLanguages } from "../../system/host.js";
 export function App(props) {
 
   //---------------------------------------------------------------------------
-  // Get application info (name & version)
+  // Application info
   //---------------------------------------------------------------------------
 
-  const [app, setAppInfo] = useState()
-
-  useEffect(() => {
-    console.clear()
-    appInfo().then(info => {
-      console.log("Application:", info)
-      console.log("React:", React.version)
-      setAppInfo(info)
-    })
-    getSpellcheckLanguages().then(langs => {
-      console.log("Spellcheck:", langs.join(", "))
-    })
-  }, [])
+  const app = useAppInfo()
 
   //---------------------------------------------------------------------------
   // External settings
@@ -127,7 +117,8 @@ export function App(props) {
   // to perform operations
   //---------------------------------------------------------------------------
 
-  const [command, setCommand] = useState()
+  const command = useContext(CommandStateContext)
+  const setCommand = useContext(CmdContext)
   const dispatchArgs = {dirty, doc, updateDoc, setSaved, recent, setRecent, setCommand, setDialogs}
 
   useEffect(() => {
@@ -211,10 +202,8 @@ export function App(props) {
 
   return (
     <SettingsContext value={settings}>
-      <CmdContext value={setCommand}>
         <View key={doc?.key} doc={doc} updateDoc={updateDoc}/>
         <RenderDialogs dialogs={dialogs} setDialogs={setDialogs} setRecent={setRecent} />
-      </CmdContext>
     </SettingsContext>
   )
 }
@@ -285,7 +274,6 @@ function ZoomSnackbar({ factor, setDialogs }) {
 //*****************************************************************************
 
 function DocBar({ doc, updateDoc }) {
-  const { recent } = useContext(SettingsContext)
   const setCommand = useContext(CmdContext)
   const file = doc?.file
 
@@ -295,11 +283,14 @@ function DocBar({ doc, updateDoc }) {
   ]), [file]);
 
   //console.log("Recent:", recent)
-  if (!doc) return <WithoutDoc setCommand={setCommand} recent={recent} />
-  return <WithDoc setCommand={setCommand} recent={recent} doc={doc} updateDoc={updateDoc} />
+  if (!doc) return <WithoutDoc/>
+  return <WithDoc doc={doc} updateDoc={updateDoc} />
 }
 
-function WithoutDoc({ setCommand, recent }) {
+function WithoutDoc({}) {
+  const setCommand = useContext(CmdContext)
+  const { recent } = useContext(SettingsContext)
+
   return <ToolBox side="top">
     <FileMenu setCommand={setCommand} recent={recent} />
     <Separator />
@@ -310,7 +301,9 @@ function WithoutDoc({ setCommand, recent }) {
   </ToolBox>
 }
 
-function WithDoc({ setCommand, doc, updateDoc, recent }) {
+function WithDoc({doc, updateDoc}) {
+  const setCommand = useContext(CmdContext)
+  const { recent } = useContext(SettingsContext)
   const file = doc?.file
   const { head, draft } = doc
   const setSelected = useCallback(value => updateDoc(doc => { doc.ui.view.selected = value }), [])
@@ -413,6 +406,7 @@ class FileMenu extends React.PureComponent {
         disabled={!hasdoc} onClick={e => { reqCloseFile({ setCommand, file }); }}
         />
       <Separator />
+      <UpdateMenuItem setCommand={setCommand}/>
       <MenuItem
         title="Quit" //endAdornment="Ctrl+Q"
         onClick={e => { reqQuit({setCommand}); }}
@@ -427,6 +421,8 @@ class FileMenu extends React.PureComponent {
     doRename({setCommand, filename})
   }
 }
+
+//-----------------------------------------------------------------------------
 
 class RecentItems extends React.PureComponent {
   render() {

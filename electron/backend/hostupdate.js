@@ -15,6 +15,8 @@ import { BrowserWindow } from "electron";
 // - Windows portable builds can also check for a new version.
 // - Windows portable replacement is not supported by this NSIS installation
 //   flow, even though portable builds can check for updates.
+// - Available updates include updateMethod: "manual" for Windows portable,
+//   "automatic" otherwise. Manual updates cannot be downloaded or installed here.
 //
 // - The `app` IPC group exposes `getUpdateStatus`, `downloadUpdate`, and
 //   `quitAndInstall`.
@@ -33,6 +35,11 @@ import { BrowserWindow } from "electron";
 //-----------------------------------------------------------------------------
 
 let updateStatus = { status: "idle" };
+
+// electron-builder's portable launcher sets this to the outer executable path.
+const updateMethod = process.platform === "win32" && process.env.PORTABLE_EXECUTABLE_FILE
+  ? "manual"
+  : "automatic";
 
 export function getUpdateStatus() {
   return { ...updateStatus };
@@ -58,12 +65,12 @@ function notifySkipped() {
   notifyUpdateStatus({ status: "skipped" });
 }
 
-function notifyUpdateAvailable({version}) {
-  notifyUpdateStatus({status: "available", version})
-}
-
 function notifyUpToDate({version}) {
   notifyUpdateStatus({status: "up-to-date", version})
+}
+
+function notifyUpdateAvailable({version}) {
+  notifyUpdateStatus({status: "available", version, updateMethod})
 }
 
 function notifyDownloading(version, {percent, transferred, total, bytesPerSecond}) {
@@ -108,7 +115,7 @@ export async function initUpdates() {
     const { autoUpdater } = electronUpdater;
 
     autoUpdater.autoDownload = false;
-    autoUpdater.autoInstallOnAppQuit = true;
+    autoUpdater.autoInstallOnAppQuit = updateMethod === "automatic";
     autoUpdater.allowPrerelease = false;
     autoUpdater.allowDowngrade = false;
     autoUpdater.logger = console;
@@ -146,6 +153,7 @@ export async function initUpdates() {
 // Consent covers both downloading now and installation on normal application quit.
 // A failed download can be retried; repeated clicks cannot start another download.
 export async function downloadUpdate() {
+  if (updateMethod === "manual") return getUpdateStatus();
   if (!availableVersion || downloaded || updateStatus.status === "downloading") {
     return getUpdateStatus();
   }
@@ -162,6 +170,7 @@ export async function downloadUpdate() {
 // The caller must finish saving documents before requesting installation.
 // Otherwise the downloaded update waits for normal application quit.
 export function quitAndInstall() {
+  if (updateMethod === "manual") return getUpdateStatus();
   if (!downloaded || updateStatus.status === "installing") return getUpdateStatus();
 
   notifyInstalling(availableVersion)

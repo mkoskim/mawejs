@@ -7,11 +7,8 @@ response. Before changing the editor view or its surrounding components, read
 the [performance constraints and component map](perf_critical_components.md).
 
 - `app/`: application shell, views, context, settings, and recent files.
-  `app/updates.jsx` provides `UpdatesProvider` and `useUpdates()` with
-  `{ status, downloadUpdate, quitAndInstall }`. It subscribes to host updates,
-  reads the initial status, and removes its listener on unmount.
 - `common/`: shared components, icons, hotkeys, document index helpers, and themes.
-- [editor](editor/README.md): editor views and tools around Slate.
+- `editor/`: editor views and tools around Slate.
 - `import/`, `export/`: import previews and export UI.
 - `arc/`, `stats/`: story structure and statistics views.
 
