@@ -46,7 +46,7 @@ export function RecentDialog({ setDialogs, setRecent }) {
       <Label style={{fontWeight: "bold"}}>Open recent</Label>
       <Filler/>
       <Separator/>
-      <Button onClick={onOpenFiles}>Open...</Button>
+      <Button onClick={onOpenFiles}>File browser...</Button>
       <Separator/>
       <IconButton onClick={cancel}><Icon.Close/></IconButton>
     </ToolBox>
