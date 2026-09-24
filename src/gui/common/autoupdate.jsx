@@ -101,7 +101,7 @@ export function UpdateNotifier() {
     case "downloaded":  return <UpdateInstall status={status} version={version}/>
     case "installing":  return <UpdateNote status={status} message={"Installing"}/>
 
-    case "error":      return <UpdateNote status={status} variant="error" message={"Error"}/>
+    case "error":      return <UpdateNote status={status} variant="error" message={"Error"} dismissable={true}/>
 
     case "idle":
     default: return null;
