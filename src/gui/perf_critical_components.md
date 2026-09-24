@@ -109,7 +109,7 @@ this inventory but remain relevant to performance.
 | [src/gui/import/import.jsx](import/import.jsx) | `ImportDialog`, `SelectFormat` |
 | [src/gui/import/preview.jsx](import/preview.jsx) | `Preview`, `ImportIndex`, `ImportPreview` |
 | [src/gui/import/importText.jsx](import/importText.jsx) | `ImportText`, `UpdateImported` |
-| [src/gui/app/recent.jsx](app/recent.jsx) | `RecentDialog`, `FileEntry` |
+| [src/gui/app/recentdlg.jsx](app/recentdlg.jsx) | `RecentDialog`, `FileEntry` |
 
 ## Updating this map
 

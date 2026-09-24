@@ -162,6 +162,7 @@ export async function cmdDispatch(command, args) {
 
     // Low level actions
 
+    case "do-new": return docNew();
     case "do-load": return docFromFile(command);
     case "do-import": return docImportTree(command);
     case "do-rename": return docRename(command);
@@ -227,7 +228,7 @@ export async function cmdDispatch(command, args) {
   async function reqNew() {
     const proceed = await confirmUnsaved()
     if(!proceed) return
-    docFromBuffer({buffer: '<story format="mawe"/>'})
+    docNew()
   }
 
   async function reqResource(command) {
@@ -304,6 +305,10 @@ export async function cmdDispatch(command, args) {
   //---------------------------------------------------------------------------
   // Low level actions
   //---------------------------------------------------------------------------
+
+  function docNew() {
+    docFromBuffer({buffer: '<story format="mawe"/>'})
+  }
 
   function docFromBuffer({ buffer }) {
     const content = createDocument(buffer)
@@ -493,8 +498,8 @@ export function reqRelaunch({setCommand}) {
 // Low level requests
 //-----------------------------------------------------------------------------
 
-export function doRename({setCommand, filename}) {
-  setCommand({action: "do-rename", filename})
+export function doNew({setCommand}) {
+  setCommand({action: "do-new"})
 }
 
 export function doLoadFile({setCommand, filename}) {
@@ -503,6 +508,10 @@ export function doLoadFile({setCommand, filename}) {
 
 export function doImport({setCommand, story}) {
   setCommand({action: "do-import", story})
+}
+
+export function doRename({setCommand, filename}) {
+  setCommand({action: "do-rename", filename})
 }
 
 //-----------------------------------------------------------------------------
