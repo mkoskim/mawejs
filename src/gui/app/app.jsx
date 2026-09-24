@@ -43,6 +43,7 @@ import {
   reqCloseFile, reqQuit,
   doRename, doLoadFile,
   reqOpenRecentDlg,
+  doNew,
 } from "./context"
 
 import {
@@ -58,7 +59,7 @@ import { appQuit, appZoomIn, appZoomOut, appZoomReset } from "../../system/host"
 import { ImportDialog } from "../import/import";
 
 import { peekKeys } from "../common/hotkeys";
-import { RecentDialog } from "./recent";
+import { RecentDialog } from "./recentdlg.jsx";
 import { useAppInfo } from "./appinfo.jsx";
 
 //*****************************************************************************
@@ -147,7 +148,6 @@ export function App(props) {
     window.onbeforeunload = (event) => {
       if (!dirty) return
       event.preventDefault()
-      event.returnValue = false
       if (confirmingClose.current) return
       confirmingClose.current = true
       cmdDispatch({action: "do-confirm"}, dispatchArgs)
@@ -163,9 +163,10 @@ export function App(props) {
   //---------------------------------------------------------------------------
 
   useEffect(() => {
-     //*
+    //*
+    //doNew({setCommand})
     //console.log("Recent:", recent)
-    if (recent?.length) doLoadFile({ setCommand, filename: recent[0].id })
+    if (recent?.length) doLoadFile({ setCommand, filename: recent[0].id }); else doNew({setCommand});
     //doLoadFile({ setCommand, filename: "./examples/import/Frankenstein.mawe.gz" })
     /*/
     setCommand({
@@ -393,9 +394,7 @@ class FileMenu extends React.PureComponent {
         title="Open" endAdornment="Ctrl+O"
         onClick={e => { reqOpenFile({ setCommand, file }); }}
         />
-      <Submenu trigger={<MenuItem title="Open Recent..." endIcon={<Icon.Arrow.Head.Right/>}/>}>
-        <RecentItems recent={recent} setCommand={setCommand}/>
-      </Submenu>
+      <RecentItems recent={recent} setCommand={setCommand}/>
       <Separator />
       <MenuItem
         title="Import File..."
@@ -449,10 +448,19 @@ class FileMenu extends React.PureComponent {
 class RecentItems extends React.PureComponent {
   render() {
     const { recent, setCommand } = this.props
-    if (!recent?.length) return null
+    const disabled = !recent?.length
+    const trigger = <MenuItem
+      disabled={disabled}
+      title="Open Recent..."
+        endIcon={<Icon.Arrow.Head.Right/>}
+      />
+
     //console.log("Recent:", recent.length)
+
+    if(disabled) return trigger
+
     const head = recent.slice(0, 5)
-    return <>
+    return <Submenu trigger={trigger}>
       {head.map(entry => <MenuItem
         key={entry.id}
         title={entry.name}
@@ -463,7 +471,7 @@ class RecentItems extends React.PureComponent {
       <MenuItem title="More..."
         onClick={(e => { reqOpenRecentDlg({ setCommand }); })}
       />
-    </>
+    </Submenu>
   }
 }
 
