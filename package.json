@@ -1,6 +1,6 @@
 {
   "name": "mawejs",
-  "version": "0.29.0",
+  "version": "0.30.0",
   "description": "Editor for writers.",
   "author": "Markus Koskimies <mkoskim@gmail.com>",
   "scripts": {
@@ -27,7 +27,7 @@
     "electron-localshortcut": "^3.2.1",
     "electron-updater": "^6.8.11",
     "electron-window-state": "^5.0.3",
-    "immer": "^11.2.9",
+    "immer": "^11.2.13",
     "is-gzip": "^2.0.0",
     "mammoth": "^1.12.3",
     "nanoid": "^6.0.2",
@@ -36,7 +36,7 @@
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "react-infinite-scroll-component": "7.2.1",
-    "recharts": "^3.10.1",
+    "recharts": "^3.11.2",
     "slate": "^0.126.2",
     "slate-dom": "^0.126.0",
     "slate-history": "^0.113.1",
@@ -52,8 +52,8 @@
     "electron-builder": "^26.15.3",
     "electron-vite": "^5.0.0",
     "lcid": "^5.0.0",
-    "node": "^24.21.0",
-    "tar": "^7.5.22"
+    "node": "^24.22.3",
+    "tar": "^7.5.24"
   },
   "main": "./out/main/index.js",
   "build": {
