@@ -1,0 +1,2 @@
+# Canonical document snapshots use LF on every platform.
+test/**/expected/*.txt text eol=lf

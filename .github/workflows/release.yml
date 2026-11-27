@@ -18,25 +18,34 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
-    container:
-      image: electronuserland/builder:wine
-
-    env:
-      HOME: ${{ github.workspace }}/.home
-      WINEPREFIX: ${{ github.workspace }}/.wine
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: windows-latest
+            platform: windows
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
 
     steps:
+      # Manual rebuilds may check out tags that predate .gitattributes.
+      - name: Preserve repository line endings
+        run: git config --global core.autocrlf false
+
       - name: Checkout release tag
         uses: actions/checkout@v6
         with:
           ref: refs/tags/${{ env.RELEASE_TAG }}
 
-      - name: Prepare Wine environment
-        run: |
-          mkdir -p "$HOME"
-          mkdir -p "$WINEPREFIX"
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -63,21 +72,26 @@ jobs:
         run: |
           node --version
           npm --version
-          wine --version
 
       - name: Run tests
         run: npm test
 
       - name: Build release packages
-        run: npm run build:release
+        run: |
+          npm run build:vite
+          npx electron-builder --${{ matrix.platform }} --x64 --publish never
 
       - name: Verify update metadata
         run: |
-          test -s dist/latest.yml
-          test -s dist/latest-linux.yml
-          test -s dist/*.exe.blockmap
+          if [ "${{ matrix.platform }}" = "windows" ]; then
+            test -s dist/latest.yml
+            test -s dist/*.exe.blockmap
+          else
+            test -s dist/latest-linux.yml
+          fi
 
       - name: Upload Linux build
+        if: matrix.platform == 'linux'
         uses: actions/upload-artifact@v7
         with:
           name: mawejs-linux
@@ -85,6 +99,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload Windows builds
+        if: matrix.platform == 'windows'
         uses: actions/upload-artifact@v7
         with:
           name: mawejs-windows
@@ -96,10 +111,9 @@ jobs:
       - name: Upload update metadata
         uses: actions/upload-artifact@v7
         with:
-          name: mawejs-update-metadata
+          name: mawejs-update-metadata-${{ matrix.platform }}
           path: |
-            dist/latest.yml
-            dist/latest-linux.yml
+            dist/latest*.yml
           if-no-files-found: error
 
   attach:

@@ -5,23 +5,28 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
-    container:
-      image: electronuserland/builder:wine
-
-    env:
-      HOME: ${{ github.workspace }}/.home
-      WINEPREFIX: ${{ github.workspace }}/.wine
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+          - os: windows-latest
+            platform: windows
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Prepare Wine environment
-        run: |
-          mkdir -p "$HOME"
-          mkdir -p "$WINEPREFIX"
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
@@ -30,18 +35,21 @@ jobs:
         run: |
           node --version
           npm --version
-          wine --version
 
       - name: Build release packages
-        run: npm run build:release
+        run: |
+          npm run build:vite
+          npx electron-builder --${{ matrix.platform }} --x64 --publish never
 
       - name: Upload Linux build
+        if: matrix.platform == 'linux'
         uses: actions/upload-artifact@v7
         with:
           name: mawejs-linux
           path: dist/*.AppImage
 
       - name: Upload Windows builds
+        if: matrix.platform == 'windows'
         uses: actions/upload-artifact@v7
         with:
           name: mawejs-windows
